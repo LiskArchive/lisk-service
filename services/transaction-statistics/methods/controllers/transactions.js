@@ -33,17 +33,9 @@ const getTransactionsStatistics = async (params) => {
 		dateFrom,
 	};
 
-	const timelineRaw = await txStatisticsService.getStatsTimeline(statsParams);
-	const timeline = timelineRaw.map((el) => ({
-		...el,
-		timestamp: Date.parse(el.date) / 1000,
-		transactionCount: parseInt(el.transactionCount, 10),
-	}));
-
-	const distributionByType = await txStatisticsService
-		.getDistributionByType(statsParams);
-	const distributionByAmount = await txStatisticsService
-		.getDistributionByAmount(statsParams);
+	const timeline = await txStatisticsService.getStatsTimeline(statsParams);
+	const distributionByType = await txStatisticsService.getDistributionByType(statsParams);
+	const distributionByAmount = await txStatisticsService.getDistributionByAmount(statsParams);
 
 	return {
 		data: {

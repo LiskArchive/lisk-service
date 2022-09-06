@@ -42,7 +42,16 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 let numTrxTypes;
 
-const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema, MYSQL_ENDPOINT);
+const getDbInstance = () => getTableInstance(
+	txStatisticsIndexSchema.tableName,
+	txStatisticsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
+const CONSTANT = Object.freeze({
+	ANY: 'any',
+	UNAVAILABLE: 'na',
+});
 
 const getSelector = async (params) => {
 	const result = { property: 'date' };
@@ -66,7 +75,7 @@ const getWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
 		count: 0,
 		volume: 0,
-		tokenID: null,
+		tokenID: CONSTANT.UNAVAILABLE,
 	};
 	return acc[moduleCommand]
 		? acc[moduleCommand][range] || defaultValue
@@ -84,7 +93,7 @@ const getRange = tx => {
 
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
-		moduleCommand: 'any',
+		moduleCommand: CONSTANT.ANY,
 		amount: String(1e8),
 		fee: String(1e7),
 	};
@@ -190,28 +199,55 @@ const transactionStatisticsQueue = Queue(
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
 
-	const result = await db.find(await getSelector(params), ['date', 'count', 'volume']);
+	// TODO: Update code once MySql supports distinct query
+	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName} WHERE tokenID IS NOT NULL`);
 
-	const unorderedfinalResult = {};
-	result.forEach(entry => {
-		const currFormattedDate = moment.unix(entry.date).format(params.dateFormat);
-		if (!unorderedfinalResult[currFormattedDate]) {
-			unorderedfinalResult[currFormattedDate] = {
-				date: currFormattedDate,
-				transactionCount: 0,
-				volume: 0,
-			};
-		}
+	const tokenStats = {};
 
-		const statForDate = unorderedfinalResult[currFormattedDate];
-		statForDate.transactionCount += entry.count;
-		statForDate.volume += entry.volume;
-	});
+	await BluebirdPromise.map(
+		tokens.map(e => e.tokenID),
+		async tokenID => {
+			const queryParams = await getSelector(params);
+			const result = await db.find(
+				{
+					...queryParams,
+					whereIn: { property: 'tokenID', values: [tokenID, CONSTANT.UNAVAILABLE] },
+				},
+				['date', 'count', 'volume', 'tokenID'],
+			);
 
-	const orderedFinalResult = Object.values(unorderedfinalResult)
-		.sort((a, b) => a.date.localeCompare(b.date)).reverse();
+			const unorderedfinalResult = {};
+			result.forEach(entry => {
+				const currFormattedDate = moment.unix(entry.date).format(params.dateFormat);
 
-	return orderedFinalResult;
+				if (!unorderedfinalResult[currFormattedDate]) {
+					unorderedfinalResult[currFormattedDate] = {
+						date: currFormattedDate,
+						transactionCount: 0,
+						volume: 0,
+					};
+				}
+
+				const statForDate = unorderedfinalResult[currFormattedDate];
+				statForDate.transactionCount += entry.count;
+				statForDate.volume += entry.volume;
+			});
+
+			if (tokenID !== CONSTANT.UNAVAILABLE) {
+				const timelineRaw = Object.values(unorderedfinalResult)
+					.sort((a, b) => a.date.localeCompare(b.date)).reverse();
+
+				tokenStats[tokenID] = timelineRaw.map((el) => ({
+					...el,
+					timestamp: Date.parse(el.date) / 1000,
+					transactionCount: parseInt(el.transactionCount, 10),
+				}));
+			}
+		},
+		{ concurrency: tokens.length },
+	);
+
+	return tokenStats;
 };
 
 const getDistributionByAmount = async params => {

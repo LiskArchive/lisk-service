@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'transaction_statistics',
 	primaryKey: 'id',
 	schema: {
 		amount_range: { type: 'string' },
@@ -22,7 +23,7 @@ module.exports = {
 		id: { type: 'string' },
 		moduleCommand: { type: 'string' },
 		volume: { type: 'bigInteger' },
-		tokenID: { type: 'string' },
+		tokenID: { type: 'string', null: false },
 	},
 	indexes: {
 		date: { type: 'range' },

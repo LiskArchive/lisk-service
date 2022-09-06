@@ -31,7 +31,7 @@ const resolveGlobalTokenID = (transaction) => {
 	const localID = transaction.params.tokenID.slice(8);
 	// TODO: Remove once chainID is available from network status
 	if (!chainID) chainID = transaction.params.tokenID.slice(0, 8);
-	const globalTokenID = `${chainID}:${localID}`;
+	const globalTokenID = `${chainID}${localID}`;
 	return globalTokenID;
 };
 
