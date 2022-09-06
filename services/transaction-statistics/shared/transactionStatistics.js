@@ -202,7 +202,7 @@ const getStatsTimeline = async params => {
 	// TODO: Update code once MySql supports distinct query
 	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName} WHERE tokenID IS NOT NULL`);
 
-	const tokenStats = {};
+	const tokenStatsTimeline = {};
 
 	await BluebirdPromise.map(
 		tokens.map(e => e.tokenID),
@@ -213,7 +213,7 @@ const getStatsTimeline = async params => {
 					...queryParams,
 					whereIn: { property: 'tokenID', values: [tokenID, CONSTANT.UNAVAILABLE] },
 				},
-				['date', 'count', 'volume', 'tokenID'],
+				['date', 'count', 'volume'],
 			);
 
 			const unorderedfinalResult = {};
@@ -237,7 +237,7 @@ const getStatsTimeline = async params => {
 				const timelineRaw = Object.values(unorderedfinalResult)
 					.sort((a, b) => a.date.localeCompare(b.date)).reverse();
 
-				tokenStats[tokenID] = timelineRaw.map((el) => ({
+				tokenStatsTimeline[tokenID] = timelineRaw.map((el) => ({
 					...el,
 					timestamp: Date.parse(el.date) / 1000,
 					transactionCount: parseInt(el.transactionCount, 10),
@@ -247,25 +247,48 @@ const getStatsTimeline = async params => {
 		{ concurrency: tokens.length },
 	);
 
-	return tokenStats;
+	return tokenStatsTimeline;
 };
 
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(await getSelector(params), ['amount_range', 'count'])).filter(o => o.count > 0);
+	// TODO: Update code once MySql supports distinct query
+	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName} WHERE tokenID IS NOT NULL`);
 
-	const unorderedfinalResult = {};
-	result.forEach(entry => {
-		if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
-		unorderedfinalResult[entry.amount_range] += entry.count;
-	});
+	const tokenDistributionByAmount = {};
 
-	const orderedFinalResult = {};
-	Object.keys(unorderedfinalResult).sort().reverse()
-		.forEach(amountRange => orderedFinalResult[amountRange] = unorderedfinalResult[amountRange]);
+	await BluebirdPromise.map(
+		tokens.map(e => e.tokenID),
+		async tokenID => {
+			const queryParams = await getSelector(params);
+			const result = (await db.find(
+				{
+					...queryParams,
+					whereIn: { property: 'tokenID', values: [tokenID, CONSTANT.UNAVAILABLE] },
+				},
+				['amount_range', 'count'])).filter(o => o.count > 0);
 
-	return orderedFinalResult;
+			const unorderedfinalResult = {};
+			result.forEach(entry => {
+				if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
+				unorderedfinalResult[entry.amount_range] += entry.count;
+			});
+
+			if (tokenID !== CONSTANT.UNAVAILABLE) {
+				const orderedFinalResult = {};
+				Object.keys(unorderedfinalResult).sort().reverse()
+					.forEach(amountRange => {
+						orderedFinalResult[amountRange] = unorderedfinalResult[amountRange];
+					});
+
+				tokenDistributionByAmount[tokenID] = orderedFinalResult;
+			}
+		},
+		{ concurrency: tokens.length },
+	);
+
+	return tokenDistributionByAmount;
 };
 
 const getDistributionByType = async params => {
