@@ -29,6 +29,7 @@ const {
 const moment = require('moment');
 const BigNumber = require('big-number');
 
+const { resolveGlobalTokenID } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 const requestAll = require('./utils/requestAll');
 
@@ -65,6 +66,7 @@ const getWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
 		count: 0,
 		volume: 0,
+		tokenID: null,
 	};
 	return acc[moduleCommand]
 		? acc[moduleCommand][range] || defaultValue
@@ -101,6 +103,7 @@ const computeTransactionStats = transactions => transactions.reduce((acc, tx) =>
 			count: getWithFallback(acc, tx.moduleCommand, getRange(tx)).count + 1,
 			volume: BigNumber(getWithFallback(acc, tx.moduleCommand, getRange(tx)).volume)
 				.add(getTxValue(tx)),
+			tokenID: resolveGlobalTokenID(tx),
 		},
 	},
 }), getInitialValueToEnsureEachDayHasAtLeastOneEntry());
@@ -108,11 +111,12 @@ const computeTransactionStats = transactions => transactions.reduce((acc, tx) =>
 const transformStatsObjectToList = statsObject => (
 	Object.entries(statsObject).reduce((acc, [moduleCommand, rangeObject]) => ([
 		...acc,
-		...Object.entries(rangeObject).map(([range, { count, volume }]) => ({
+		...Object.entries(rangeObject).map(([range, { count, volume, tokenID }]) => ({
 			moduleCommand,
 			volume: Math.ceil(volume),
 			count,
 			range,
+			tokenID,
 		})),
 	]), [])
 );

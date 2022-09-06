@@ -17,14 +17,26 @@ const { requestIndexer } = require('./request');
 
 let chainID;
 
-const getChainID = async () => {
-	if (!chainID) {
-		const networkStatus = await requestIndexer('network.status');
-		chainID = networkStatus.chainID;
-	}
-	return chainID;
+const setChainID = async () => {
+    if (!chainID) {
+        const networkStatus = await requestIndexer('network.status');
+        chainID = networkStatus.data.chainID;
+    }
+};
+
+const getChainID = async () => chainID;
+
+const resolveGlobalTokenID = (transaction) => {
+    if (!transaction.params.tokenID) return null;
+    const localID = transaction.params.tokenID.slice(8);
+    // TODO: Remove once chainID is available from network status
+    if (!chainID) chainID = transaction.params.tokenID.slice(0, 8);
+    const globalTokenID = `${chainID}:${localID}`;
+    return globalTokenID;
 };
 
 module.exports = {
-	getChainID,
+    setChainID,
+    getChainID,
+    resolveGlobalTokenID,
 };
