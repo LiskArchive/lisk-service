@@ -16,7 +16,6 @@
 const transactionsStatisticsSource = require('../../../sources/version3/transactionsStatistics');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
-const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -25,10 +24,8 @@ module.exports = {
 	tags: ['Transactions'],
 	params: {
 		interval: { optional: false, type: 'string', enum: ['day', 'month'] },
-		tokenName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		tokenID: { optional: true, type: 'string', min: 1, max: 21 },
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
-		offset: { optional: true, type: 'number', min: 0, default: 0 },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
 	},
 	get schema() {
 		const transactionSchema = {};
