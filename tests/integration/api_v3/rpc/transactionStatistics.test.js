@@ -53,7 +53,8 @@ describe('get.transactions.statistics', () => {
 				expect(result.data).toMap(transactionStatisticsSchema);
 				const tokensList = Object.keys(result.data.timeline);
 				tokensList.forEach((token) => {
-					result.data.timeline[token].forEach((timelineItem, i) => {
+					const tokenStatsTimeline = result.data.timeline[token];
+					tokenStatsTimeline.forEach((timelineItem, i) => {
 						const date = moment(startOfUnitUtc).subtract(i, interval);
 						expect(timelineItem).toMap(timelineItemSchema, {
 							date: date.format(dateFormat),
@@ -73,8 +74,9 @@ describe('get.transactions.statistics', () => {
 				expect(result.data).toMap(transactionStatisticsSchema);
 				const tokensList = Object.keys(result.data.timeline);
 				tokensList.forEach((token) => {
-					expect(result.data.timeline[token]).toHaveLength(1);
-					result.data.timeline[token].forEach(timelineItem => expect(timelineItem)
+					const tokenStatsTimeline = result.data.timeline[token];
+					expect(tokenStatsTimeline).toHaveLength(1);
+					tokenStatsTimeline.forEach(timelineItem => expect(timelineItem)
 						.toMap(timelineItemSchema, {
 							date: startOfUnitUtc.format(dateFormat),
 							timestamp: startOfUnitUtc.unix(),
@@ -96,8 +98,9 @@ describe('get.transactions.statistics', () => {
 					expect(result.data).toMap(transactionStatisticsSchema);
 					const tokensList = Object.keys(result.data.timeline);
 					tokensList.forEach((token) => {
-						expect(result.data.timeline[token]).toHaveLength(1);
-						result.data.timeline[token].forEach(timelineItem => expect(timelineItem)
+						const tokenStatsTimeline = result.data.timeline[token];
+						expect(tokenStatsTimeline).toHaveLength(1);
+						tokenStatsTimeline.forEach(timelineItem => expect(timelineItem)
 							.toMap(timelineItemSchema, {
 								date: startOfYesterday.format(dateFormat),
 								timestamp: startOfYesterday.unix(),
@@ -125,8 +128,9 @@ describe('get.transactions.statistics', () => {
 					expect(result.data).toMap(transactionStatisticsSchema);
 					const tokensList = Object.keys(result.data.timeline);
 					tokensList.forEach((token) => {
-						expect(result.data.timeline[token]).toHaveLength(2);
-						result.data.timeline[token].forEach((timelineItem, i) => {
+						const tokenStatsTimeline = result.data.timeline[token];
+						expect(tokenStatsTimeline).toHaveLength(2);
+						tokenStatsTimeline.forEach((timelineItem, i) => {
 							const date = moment(startOfUnitUtc).subtract(i + offset, interval);
 							expect(timelineItem).toMap(timelineItemSchema, {
 								date: date.format(dateFormat),

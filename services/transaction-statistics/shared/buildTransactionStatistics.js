@@ -89,7 +89,7 @@ const computeTransactionStats = transactions => transactions.reduce((acc, tx) =>
 			count: getWithFallback(acc, tx.moduleCommand, getRange(tx)).count + 1,
 			volume: BigNumber(getWithFallback(acc, tx.moduleCommand, getRange(tx)).volume)
 				.add(getTxValue(tx)),
-			tokenID: resolveGlobalTokenID(tx),
+			tokenID: resolveGlobalTokenID(tx.params.tokenID),
 		},
 	},
 }), getInitialValueToEnsureEachDayHasAtLeastOneEntry());

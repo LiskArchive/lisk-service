@@ -27,13 +27,13 @@ const setChainID = async () => {
 
 const getChainID = async () => chainID;
 
-const resolveGlobalTokenID = (transaction) => {
-	if (!transaction.params.tokenID) return config.CONSTANT.UNAVAILABLE;
+const resolveGlobalTokenID = (tokenID) => {
+	if (!tokenID) return config.CONSTANT.UNAVAILABLE;
 
 	// TODO: Remove once chainID is available from network status
-	if (!chainID) return transaction.params.tokenID;
+	if (!chainID) return tokenID;
 
-	const localID = transaction.params.tokenID.slice(8);
+	const localID = tokenID.slice(8);
 	const globalTokenID = `${chainID}${localID}`;
 	return globalTokenID;
 };

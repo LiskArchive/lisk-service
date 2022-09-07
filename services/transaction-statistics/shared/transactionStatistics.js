@@ -20,6 +20,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
+// const { getTokensMetaInfo } = require('./utils/metadata');
 const { requestIndexer } = require('./utils/request');
 
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
@@ -55,14 +56,10 @@ const getSelector = async (params) => {
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
-
-	// TODO: Update code once MySql supports distinct query
-	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
-
 	const tokenStatsTimeline = {};
 
 	await BluebirdPromise.map(
-		tokens.map(e => e.tokenID),
+		params.tokenIDs,
 		async tokenID => {
 			const queryParams = await getSelector(params);
 			const result = await db.find(
@@ -101,7 +98,7 @@ const getStatsTimeline = async params => {
 				}));
 			}
 		},
-		{ concurrency: tokens.length },
+		{ concurrency: params.tokenIDs.length },
 	);
 
 	return tokenStatsTimeline;
@@ -109,14 +106,10 @@ const getStatsTimeline = async params => {
 
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance();
-
-	// TODO: Update code once MySql supports distinct query
-	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
-
 	const tokenDistributionByAmount = {};
 
 	await BluebirdPromise.map(
-		tokens.map(e => e.tokenID),
+		params.tokenIDs,
 		async tokenID => {
 			const queryParams = await getSelector(params);
 			const result = (await db.find(
@@ -142,7 +135,7 @@ const getDistributionByAmount = async params => {
 				tokenDistributionByAmount[tokenID] = orderedFinalResult;
 			}
 		},
-		{ concurrency: tokens.length },
+		{ concurrency: params.tokenIDs.length },
 	);
 
 	return tokenDistributionByAmount;
@@ -170,6 +163,8 @@ const getDistributionByType = async params => {
 };
 
 const getTransactionsStatistics = async params => {
+	const db = await getDbInstance();
+
 	const transactionsStatistics = {
 		data: {},
 		meta: {},
@@ -184,10 +179,16 @@ const getTransactionsStatistics = async params => {
 	const dateFrom = moment(dateTo)
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
+
+	// TODO: Update code once MySql supports distinct query
+	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
+	const tokenIDs = tokens.map(e => e.tokenID);
+
 	const statsParams = {
 		dateFormat,
 		dateTo,
 		dateFrom,
+		tokenIDs,
 	};
 
 	const timeline = await getStatsTimeline(statsParams);
@@ -197,6 +198,7 @@ const getTransactionsStatistics = async params => {
 	transactionsStatistics.data = { timeline, distributionByType, distributionByAmount };
 
 	transactionsStatistics.meta = {
+		// info: await getTokensMetaInfo(tokenIDs),
 		limit: params.limit,
 		offset: params.offset,
 		dateFormat,
