@@ -13,44 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
-
 const txStatisticsService = require('../../shared/transactionStatistics');
 
 const getTransactionsStatistics = async (params) => {
-	const dateFormat = params.interval === 'day' ? 'YYYY-MM-DD' : 'YYYY-MM';
-
-	const dateTo = moment()
-		.utc()
-		.endOf(params.interval)
-		.subtract(params.offset, params.interval);
-	const dateFrom = moment(dateTo)
-		.startOf(params.interval)
-		.subtract(params.limit - 1, params.interval);
-	const statsParams = {
-		dateFormat,
-		dateTo,
-		dateFrom,
+	const transactionsStatistics = {
+		data: {},
+		meta: {},
 	};
 
-	const timeline = await txStatisticsService.getStatsTimeline(statsParams);
-	const distributionByType = await txStatisticsService.getDistributionByType(statsParams);
-	const distributionByAmount = await txStatisticsService.getDistributionByAmount(statsParams);
+	const response = await txStatisticsService.getTransactionsStatistics(params);
+	if (response.data) transactionsStatistics.data = response.data;
+	if (response.meta) transactionsStatistics.meta = response.meta;
 
-	return {
-		data: {
-			timeline,
-			distributionByType,
-			distributionByAmount,
-		},
-		meta: {
-			limit: params.limit,
-			offset: params.offset,
-			dateFormat,
-			dateFrom: dateFrom.format(dateFormat),
-			dateTo: dateTo.format(dateFormat),
-		},
-	};
+	return transactionsStatistics;
 };
 
 module.exports = {
