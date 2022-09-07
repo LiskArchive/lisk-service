@@ -10,11 +10,11 @@
                 "$ref": "#/definitions/TransactionsStatistics"
             },
             "meta": {
-                "$ref": "#/definitions/transactionStatisticsMeta"
+                "$ref": "#/definitions/TransactionStatisticsMeta"
             }
         }
     },
-    "transactionStatisticsMeta": {
+    "TransactionStatisticsMeta": {
         "type": "object",
         "required": [
             "count",

@@ -59,7 +59,7 @@ const getWithFallback = (acc, moduleCommand, range) => {
 		: defaultValue;
 };
 
-const getTxValue = tx => BigNumber(tx.amount).plus(tx.fee);
+const getTxValue = tx => BigNumber(tx.params.amount).plus(tx.fee);
 
 const getRange = tx => {
 	const value = getTxValue(tx);
@@ -71,7 +71,7 @@ const getRange = tx => {
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
 		moduleCommand: config.CONSTANT.ANY,
-		amount: String(1e8),
+		params: { amount: String(1e8) },
 		fee: String(1e7),
 	};
 	return {
