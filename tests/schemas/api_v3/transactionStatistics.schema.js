@@ -14,6 +14,7 @@
  *
  */
 import Joi from 'joi';
+import regex from './regex';
 
 const allowedDateFormats = ['YYYY-MM-DD', 'YYYY-MM'];
 
@@ -31,12 +32,24 @@ const timelineItemSchema = {
 };
 
 const transactionStatisticsSchema = {
-	timeline: Joi.array().items(timelineItemSchema).required(),
+	timeline: Joi.object().required(),
 	distributionByType: Joi.object().required(),
 	distributionByAmount: Joi.object().required(),
 };
 
+const logo = {
+	png: Joi.string().optional(),
+	svg: Joi.string().optional(),
+};
+
+const info = {
+	tokenName: Joi.string().pattern(regex.NAME).required(),
+	symbol: Joi.string().required(),
+	logo: Joi.object(logo).optional(),
+};
+
 const metaSchema = {
+	info: Joi.object(info).optional(),
 	limit: Joi.number().required(),
 	offset: Joi.number().required(),
 	aggregateBy: Joi.string().optional(),
