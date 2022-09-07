@@ -10,7 +10,70 @@
                 "$ref": "#/definitions/TransactionsStatistics"
             },
             "meta": {
-                "$ref": "#/definitions/Pagination"
+                "$ref": "#/definitions/transactionStatisticsMeta"
+            }
+        }
+    },
+    "transactionStatisticsMeta": {
+        "type": "object",
+        "required": [
+            "count",
+            "offset",
+            "total"
+        ],
+        "properties": {
+            "info": {
+                "type": "object",
+                "properties": {
+                    "0000000100000000": {
+                        "type": "object",
+                        "properties": {
+                            "tokenName": {
+                                "type": "string",
+                                "example": "Lisk",
+                                "description": "Name of the blockchain application"
+                            },
+                            "symbol": {
+                                "type": "string",
+                                "example": "LSK",
+                                "description": "The symbol for the token. Example: LSK"
+                            },
+                            "logo": {
+                                "type": "object",
+                                "properties": {
+                                    "png": {
+                                        "type": "string",
+                                        "example": "https://downloads.lisk.com/lisk/images/logo.png",
+                                        "description": "URI to the PNG format of the application logo"
+                                    },
+                                    "svg": {
+                                        "type": "string",
+                                        "example": "https://downloads.lisk.com/lisk/images/logo.svg",
+                                        "description": "URI to the SVG format of the application logo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "count": {
+                "type": "integer",
+                "example": 10,
+                "minimum": 0,
+                "description": "Number of items returned in the request."
+            },
+            "offset": {
+                "type": "integer",
+                "example": 10,
+                "minimum": 0,
+                "description": "Number of items skipped in the response."
+            },
+            "total": {
+                "type": "integer",
+                "example": 100,
+                "minimum": 0,
+                "description": "Number of items returned in the response."
             }
         }
     },
@@ -18,52 +81,74 @@
         "type": "object",
         "description": "Transactions statistics",
         "required": [
-            "timeline",
             "distributionByType",
-            "distributionByAmount"
+            "distributionByAmount",
+            "timeline"
         ],
         "properties": {
-            "timeline": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": [
-                        "timestamp",
-                        "date",
-                        "transactionCount",
-                        "volume"
-                    ],
-                    "properties": {
-                        "timestamp": {
-                            "type": "integer",
-                            "description": "UNIX timestamp representing the beginning of the aggregation interval",
-                            "example": 1556100060
-                        },
-                        "date": {
-                            "type": "string",
-                            "description": "Date representing the beginning of the aggregation interval",
-                            "example": "2019-11-27"
-                        },
-                        "transactionCount": {
-                            "type": "integer",
-                            "description": "Count of all transactions in the given time span",
-                            "example": "14447177193385"
-                        },
-                        "volume": {
-                            "type": "string",
-                            "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows)",
-                            "example": "14447177193385"
+            "distributionByType": {
+                "type": "object",
+                "description": "Count of transactions by transaction type in the whole time interval",
+                "properties": {
+                    "token:transfer": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                }
+            },
+            "distributionByAmount": {
+                "type": "object",
+                "description": "Count of transactions by amount range in the whole time interval",
+                "properties": {
+                    "0000000100000000": {
+                        "type": "object",
+                        "properties": {
+                            "1_10": {
+                                "type": "integer",
+                                "example": 1
+                            }
                         }
                     }
                 }
             },
-            "distributionByType": {
+            "timeline": {
                 "type": "object",
-                "description": "Count of transactions by transaction type in the whole time interval"
-            },
-            "distributionByAmount": {
-                "type": "object",
-                "description": "Count of transactions by amount range in the whole time interval"
+                "properties": {
+                    "0000000100000000": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "timestamp",
+                                "date",
+                                "transactionCount",
+                                "volume"
+                            ],
+                            "properties": {
+                                "timestamp": {
+                                    "type": "integer",
+                                    "description": "UNIX timestamp representing the beginning of the aggregation interval",
+                                    "example": 1556100060
+                                },
+                                "date": {
+                                    "type": "string",
+                                    "description": "Date representing the beginning of the aggregation interval",
+                                    "example": "2019-11-27"
+                                },
+                                "transactionCount": {
+                                    "type": "integer",
+                                    "description": "Count of all transactions in the given time span",
+                                    "example": "14447177193385"
+                                },
+                                "volume": {
+                                    "type": "string",
+                                    "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows)",
+                                    "example": "14447177193385"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
