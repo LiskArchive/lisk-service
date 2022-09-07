@@ -16,6 +16,7 @@
 import moment from 'moment';
 
 const config = require('../../../config');
+const regex = require('../../../schemas/api_v3/regex');
 const { api } = require('../../../helpers/api');
 
 const {
@@ -51,10 +52,10 @@ describe('Transaction statistics API', () => {
 					const response = await api.get(`${baseEndpoint}?interval=${interval}`);
 					expect(response).toMap(goodRequestSchema);
 					expect(response.data).toMap(transactionStatisticsSchema);
-					const tokensList = Object.keys(response.data.timeline);
-					tokensList.forEach((token) => {
-						const tokenStatsTimeline = response.data.timeline[token];
-						tokenStatsTimeline.forEach((timelineItem, i) => {
+					const tokensListEntries = Object.entries(response.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						timeline.forEach((timelineItem, i) => {
 							const date = moment(startOfUnitUtc).subtract(i, interval);
 							expect(timelineItem).toMap(timelineItemSchema, {
 								date: date.format(dateFormat),
@@ -71,11 +72,11 @@ describe('Transaction statistics API', () => {
 					const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}`);
 					expect(response).toMap(goodRequestSchema);
 					expect(response.data).toMap(transactionStatisticsSchema);
-					const tokensList = Object.keys(response.data.timeline);
-					tokensList.forEach((token) => {
-						const tokenStatsTimeline = response.data.timeline[token];
-						expect(tokenStatsTimeline).toHaveLength(1);
-						tokenStatsTimeline.forEach(timelineItem => expect(timelineItem)
+					const tokensListEntries = Object.entries(response.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						expect(timeline).toHaveLength(1);
+						timeline.forEach(timelineItem => expect(timelineItem)
 							.toMap(timelineItemSchema, {
 								date: startOfUnitUtc.format(dateFormat),
 								timestamp: startOfUnitUtc.unix(),
@@ -93,23 +94,23 @@ describe('Transaction statistics API', () => {
 						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
 						expect(response).toMap(goodRequestSchema);
 						expect(response.data).toMap(transactionStatisticsSchema);
-						const tokensList = Object.keys(response.data.timeline);
-						tokensList.forEach((token) => {
-							const tokenStatsTimeline = response.data.timeline[token];
-							expect(tokenStatsTimeline).toHaveLength(1);
-							tokenStatsTimeline.forEach(timelineItem => expect(timelineItem)
+						const tokensListEntries = Object.entries(response.data.timeline);
+						tokensListEntries.forEach(([tokenID, timeline]) => {
+							expect(tokenID).toMatch(regex.TOKEN_ID);
+							expect(timeline).toHaveLength(1);
+							timeline.forEach(timelineItem => expect(timelineItem)
 								.toMap(timelineItemSchema, {
 									date: startOfYesterday.format(dateFormat),
 									timestamp: startOfYesterday.unix(),
 								}));
 						});
-						expect(response.meta).toMap(metaSchema, {
-							limit,
-							offset,
+
+						expect(response.meta.date).toMatchObject({
 							dateFormat,
 							dateFrom: startOfYesterday.format(dateFormat),
 							dateTo: startOfYesterday.format(dateFormat),
 						});
+						expect(response.meta).toMap(metaSchema, { limit, offset });
 					}
 				});
 
@@ -121,9 +122,9 @@ describe('Transaction statistics API', () => {
 						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
 						expect(response).toMap(goodRequestSchema);
 						expect(response.data).toMap(transactionStatisticsSchema);
-						const tokensList = Object.keys(response.data.timeline);
-						tokensList.forEach((token) => {
-							const timeline = response.data.timeline[token];
+						const tokensListEntries = Object.entries(response.data.timeline);
+						tokensListEntries.forEach(([tokenID, timeline]) => {
+							expect(tokenID).toMatch(regex.TOKEN_ID);
 							expect(timeline).toBeInstanceOf(Array);
 							expect(timeline.length).toBeGreaterThanOrEqual(1);
 							expect(timeline.length).toBeLessThanOrEqual(limit);
@@ -135,11 +136,9 @@ describe('Transaction statistics API', () => {
 								});
 							});
 						});
-						expect(response.meta).toMap(metaSchema, {
-							limit,
-							offset,
-							dateFormat,
-						});
+
+						expect(response.meta.date).toMatchObject({ dateFormat });
+						expect(response.meta).toMap(metaSchema, { limit, offset });
 					}
 				});
 

@@ -31,31 +31,27 @@ const timelineItemSchema = {
 	volume: Joi.number().integer().min(0).required(),
 };
 
+const timelineKey = Joi.string().pattern(regex.TOKEN_ID).required();
+const timelineEntry = Joi.array().items(timelineItemSchema).required();
+
 const transactionStatisticsSchema = {
-	timeline: Joi.object().required(),
+	timeline: Joi.object().pattern(timelineKey, timelineEntry).required(),
 	distributionByType: Joi.object().required(),
 	distributionByAmount: Joi.object().required(),
 };
 
-const logo = {
-	png: Joi.string().optional(),
-	svg: Joi.string().optional(),
-};
-
-const info = {
-	tokenName: Joi.string().pattern(regex.NAME).required(),
-	symbol: Joi.string().required(),
-	logo: Joi.object(logo).optional(),
-};
-
-const metaSchema = {
-	info: Joi.object(info).optional(),
-	limit: Joi.number().required(),
-	offset: Joi.number().required(),
-	aggregateBy: Joi.string().optional(),
+const date = {
 	dateFormat: Joi.string().valid(...allowedDateFormats).required(),
 	dateFrom: Joi.string().required(),
 	dateTo: Joi.string().required(),
+};
+
+const metaSchema = {
+	limit: Joi.number().required(),
+	offset: Joi.number().required(),
+	total: Joi.number().required(),
+	date: Joi.object(date).required(),
+	info: Joi.object().optional(),
 };
 
 module.exports = {

@@ -20,7 +20,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-// const { getTokensMetaInfo } = require('./utils/metadata');
+const { getTokensMetaInfo } = require('./utils/metadata');
 const { requestIndexer } = require('./utils/request');
 
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
@@ -197,13 +197,19 @@ const getTransactionsStatistics = async params => {
 
 	transactionsStatistics.data = { timeline, distributionByType, distributionByAmount };
 
+	const [{ date: minDate }] = await db.find({ sort: 'date:asc' }, 'date');
+	const total = moment().diff(moment.unix(minDate), params.interval);
+
 	transactionsStatistics.meta = {
-		// info: await getTokensMetaInfo(tokenIDs),
 		limit: params.limit,
 		offset: params.offset,
-		dateFormat,
-		dateFrom: dateFrom.format(dateFormat),
-		dateTo: dateTo.format(dateFormat),
+		total,
+		date: {
+			dateFormat,
+			dateFrom: dateFrom.format(dateFormat),
+			dateTo: dateTo.format(dateFormat),
+		},
+		info: { ...await getTokensMetaInfo(tokenIDs) },
 	};
 
 	return transactionsStatistics;

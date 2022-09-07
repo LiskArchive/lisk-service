@@ -28,10 +28,13 @@ module.exports = {
 		meta: {
 			limit: '=,number',
 			offset: '=,number',
-			aggregateBy: '=,string',
-			dateFormat: '=,string',
-			dateFrom: '=,string',
-			dateTo: '=,string',
+			total: '=,number',
+			date: {
+				dateFormat: '=,string',
+				dateFrom: '=,string',
+				dateTo: '=,string',
+			},
+			info: '=',
 		},
 		links: {},
 	},

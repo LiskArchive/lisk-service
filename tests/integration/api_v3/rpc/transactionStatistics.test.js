@@ -16,6 +16,7 @@
 import moment from 'moment';
 
 const config = require('../../../config');
+const regex = require('../../../schemas/api_v3/regex');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
@@ -51,10 +52,10 @@ describe('get.transactions.statistics', () => {
 				const { result } = response;
 				expect(result).toMap(goodRequestSchema);
 				expect(result.data).toMap(transactionStatisticsSchema);
-				const tokensList = Object.keys(result.data.timeline);
-				tokensList.forEach((token) => {
-					const tokenStatsTimeline = result.data.timeline[token];
-					tokenStatsTimeline.forEach((timelineItem, i) => {
+				const tokensListEntries = Object.entries(result.data.timeline);
+				tokensListEntries.forEach(([tokenID, timeline]) => {
+					expect(tokenID).toMatch(regex.TOKEN_ID);
+					timeline.forEach((timelineItem, i) => {
 						const date = moment(startOfUnitUtc).subtract(i, interval);
 						expect(timelineItem).toMap(timelineItemSchema, {
 							date: date.format(dateFormat),
@@ -72,11 +73,11 @@ describe('get.transactions.statistics', () => {
 				const { result } = response;
 				expect(result).toMap(goodRequestSchema);
 				expect(result.data).toMap(transactionStatisticsSchema);
-				const tokensList = Object.keys(result.data.timeline);
-				tokensList.forEach((token) => {
-					const tokenStatsTimeline = result.data.timeline[token];
-					expect(tokenStatsTimeline).toHaveLength(1);
-					tokenStatsTimeline.forEach(timelineItem => expect(timelineItem)
+				const tokensListEntries = Object.entries(result.data.timeline);
+				tokensListEntries.forEach(([tokenID, timeline]) => {
+					expect(tokenID).toMatch(regex.TOKEN_ID);
+					expect(timeline).toHaveLength(1);
+					timeline.forEach(timelineItem => expect(timelineItem)
 						.toMap(timelineItemSchema, {
 							date: startOfUnitUtc.format(dateFormat),
 							timestamp: startOfUnitUtc.unix(),
@@ -96,23 +97,23 @@ describe('get.transactions.statistics', () => {
 					const { result } = response;
 					expect(result).toMap(goodRequestSchema);
 					expect(result.data).toMap(transactionStatisticsSchema);
-					const tokensList = Object.keys(result.data.timeline);
-					tokensList.forEach((token) => {
-						const tokenStatsTimeline = result.data.timeline[token];
-						expect(tokenStatsTimeline).toHaveLength(1);
-						tokenStatsTimeline.forEach(timelineItem => expect(timelineItem)
+					const tokensListEntries = Object.entries(result.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						expect(timeline).toHaveLength(1);
+						timeline.forEach(timelineItem => expect(timelineItem)
 							.toMap(timelineItemSchema, {
 								date: startOfYesterday.format(dateFormat),
 								timestamp: startOfYesterday.unix(),
 							}));
 					});
-					expect(result.meta).toMap(metaSchema, {
-						limit,
-						offset,
+
+					expect(result.meta.date).toMatchObject({
 						dateFormat,
 						dateFrom: startOfYesterday.format(dateFormat),
 						dateTo: startOfYesterday.format(dateFormat),
 					});
+					expect(result.meta).toMap(metaSchema, { limit, offset });
 				}
 			});
 
@@ -126,11 +127,11 @@ describe('get.transactions.statistics', () => {
 					const { result } = response;
 					expect(result).toMap(goodRequestSchema);
 					expect(result.data).toMap(transactionStatisticsSchema);
-					const tokensList = Object.keys(result.data.timeline);
-					tokensList.forEach((token) => {
-						const tokenStatsTimeline = result.data.timeline[token];
-						expect(tokenStatsTimeline).toHaveLength(2);
-						tokenStatsTimeline.forEach((timelineItem, i) => {
+					const tokensListEntries = Object.entries(result.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						expect(timeline).toHaveLength(2);
+						timeline.forEach((timelineItem, i) => {
 							const date = moment(startOfUnitUtc).subtract(i + offset, interval);
 							expect(timelineItem).toMap(timelineItemSchema, {
 								date: date.format(dateFormat),
@@ -138,11 +139,9 @@ describe('get.transactions.statistics', () => {
 							});
 						});
 					});
-					expect(result.meta).toMap(metaSchema, {
-						limit,
-						offset,
-						dateFormat,
-					});
+
+					expect(result.meta.date).toMatchObject({ dateFormat });
+					expect(result.meta).toMap(metaSchema, { limit, offset });
 				}
 			});
 

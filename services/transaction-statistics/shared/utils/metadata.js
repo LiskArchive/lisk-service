@@ -16,23 +16,32 @@
 const BluebirdPromise = require('bluebird');
 
 const { requestAppRegistry } = require('./request');
+const config = require('../../config');
 
+// TODO: Resolve network from network status response once available
 const getTokenMetadataByID = async (tokenID) => {
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { tokenID });
+	const tokenMetadata = await requestAppRegistry(
+		'blockchain.apps.meta.tokens',
+		{ tokenID, network: 'mainnet' },
+	);
 	return tokenMetadata;
 };
 
 const getTokensMetaInfo = async (tokenIDs) => {
-	const tokensMetaInfo = await BluebirdPromise.map(
+	const tokensMetaInfo = {};
+	await BluebirdPromise.map(
 		tokenIDs,
 		async tokenID => {
-			const [tokenMetadata] = (await getTokenMetadataByID(tokenID)).data;
-			return {
-				tokenName: tokenMetadata.tokenName,
-				tokenID,
-				symbol: tokenMetadata.symbol,
-				logo: tokenMetadata.logo,
-			};
+			if (tokenID !== config.CONSTANT.UNAVAILABLE) {
+				const [tokenMetadata] = (await getTokenMetadataByID(tokenID)).data;
+				if (tokenMetadata) {
+					tokensMetaInfo[tokenID] = {
+						tokenName: tokenMetadata.tokenName,
+						symbol: tokenMetadata.symbol,
+						logo: tokenMetadata.logo,
+					};
+				}
+			}
 		},
 		{ concurrency: tokenIDs.length },
 	);
