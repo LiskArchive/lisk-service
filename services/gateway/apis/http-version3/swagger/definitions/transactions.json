@@ -22,6 +22,41 @@
             "total"
         ],
         "properties": {
+            "count": {
+                "type": "integer",
+                "example": 10,
+                "minimum": 0,
+                "description": "Number of items returned in the request."
+            },
+            "offset": {
+                "type": "integer",
+                "example": 10,
+                "minimum": 0,
+                "description": "Number of items skipped in the response."
+            },
+            "total": {
+                "type": "integer",
+                "example": 100,
+                "minimum": 0,
+                "description": "Number of items returned in the response."
+            },
+            "date": {
+                "type": "object",
+                "properties": {
+                    "dateFormat": {
+                        "type": "string",
+                        "example": "YYYY-MM"
+                    },
+                    "dateFrom": {
+                        "type": "string",
+                        "example": "2021-12"
+                    },
+                    "dateTo": {
+                        "type": "string",
+                        "example": "2022-09"
+                    }
+                }
+            },
             "info": {
                 "type": "object",
                 "properties": {
@@ -56,24 +91,6 @@
                         }
                     }
                 }
-            },
-            "count": {
-                "type": "integer",
-                "example": 10,
-                "minimum": 0,
-                "description": "Number of items returned in the request."
-            },
-            "offset": {
-                "type": "integer",
-                "example": 10,
-                "minimum": 0,
-                "description": "Number of items skipped in the response."
-            },
-            "total": {
-                "type": "integer",
-                "example": 100,
-                "minimum": 0,
-                "description": "Number of items returned in the response."
             }
         }
     },
