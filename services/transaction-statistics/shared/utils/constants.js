@@ -19,10 +19,8 @@ const config = require('../../config');
 let chainID;
 
 const setChainID = async () => {
-	if (!chainID) {
-		const networkStatus = await requestIndexer('network.status');
-		chainID = networkStatus.data.chainID;
-	}
+	const networkStatus = await requestIndexer('network.status');
+	chainID = networkStatus.data.chainID;
 };
 
 const getChainID = async () => chainID;
