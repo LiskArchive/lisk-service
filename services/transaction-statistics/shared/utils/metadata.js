@@ -31,7 +31,9 @@ const getTokenMetadataByID = async (tokenID) => {
 		);
 		return tokenMetadata;
 	} catch (error) {
-		const tokensMetadataURL = `${config.mainnetServiceURL}/api/v2/blockchain/apps/meta/tokens`;
+		// TODO: Refactor code once chainID is available in network status response
+		const { serviceURL } = config.networks.find(e => e.name === network);
+		const tokensMetadataURL = `${serviceURL}/api/v3/blockchain/apps/meta/tokens`;
 		const tokenMetadata = await request(tokensMetadataURL, { tokenID, network });
 		return tokenMetadata;
 	}

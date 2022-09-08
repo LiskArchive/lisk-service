@@ -61,6 +61,21 @@ config.queue = {
 	},
 };
 
+config.networks = [
+	{
+		name: 'mainnet',
+		serviceURL: 'https://service.lisk.com',
+	},
+	{
+		name: 'testnet',
+		serviceURL: 'https://testnet-service.lisk.com',
+	},
+	{
+		name: 'betanet',
+		serviceURL: 'https://betanet-service.lisk.com',
+	},
+];
+
 config.mainnetServiceURL = 'https://service.lisk.com';
 
 module.exports = config;
