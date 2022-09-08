@@ -29,10 +29,10 @@ module.exports = {
 			limit: '=,number',
 			offset: '=,number',
 			total: '=,number',
-			date: {
-				dateFormat: '=,string',
-				dateFrom: '=,string',
-				dateTo: '=,string',
+			duration: {
+				format: '=,string',
+				from: '=,string',
+				to: '=,string',
 			},
 			info: '=',
 		},

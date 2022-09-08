@@ -14,9 +14,18 @@
  *
  */
 const { requestIndexer } = require('./request');
-const config = require('../../config');
 
 let chainID;
+
+const DB_CONSTANT = {
+	ANY: 'any',
+	UNAVAILABLE: 'na',
+};
+
+const DATE_FORMAT = {
+	DAY: 'YYYY-MM-DD',
+	MONTH: 'YYYY-MM',
+};
 
 const setChainID = async () => {
 	const networkStatus = await requestIndexer('network.status');
@@ -26,7 +35,7 @@ const setChainID = async () => {
 const getChainID = async () => chainID;
 
 const resolveGlobalTokenID = (tokenID) => {
-	if (!tokenID) return config.CONSTANT.UNAVAILABLE;
+	if (!tokenID) return DB_CONSTANT.UNAVAILABLE;
 
 	// TODO: Remove once chainID is available from network status
 	if (!chainID) return tokenID;
@@ -40,4 +49,7 @@ module.exports = {
 	setChainID,
 	getChainID,
 	resolveGlobalTokenID,
+
+	DB_CONSTANT,
+	DATE_FORMAT,
 };

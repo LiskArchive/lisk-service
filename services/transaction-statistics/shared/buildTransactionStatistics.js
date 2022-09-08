@@ -31,7 +31,7 @@ const {
 } = require('lisk-service-framework');
 
 const { getDistributionByType } = require('./transactionStatistics');
-const { resolveGlobalTokenID } = require('./utils/constants');
+const { resolveGlobalTokenID, DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 const requestAll = require('./utils/requestAll');
 
@@ -52,7 +52,7 @@ const getWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
 		count: 0,
 		volume: 0,
-		tokenID: config.CONSTANT.UNAVAILABLE,
+		tokenID: DB_CONSTANT.UNAVAILABLE,
 	};
 	return acc[moduleCommand]
 		? acc[moduleCommand][range] || defaultValue
@@ -70,7 +70,7 @@ const getRange = tx => {
 
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
-		moduleCommand: config.CONSTANT.ANY,
+		moduleCommand: DB_CONSTANT.ANY,
 		params: { amount: String(1e8) },
 		fee: String(1e7),
 	};
@@ -203,7 +203,7 @@ const validateTransactionStatistics = async historyLengthDays => {
 	const dateTo = moment().utc().endOf('day').subtract(0, 'day');
 	const dateFrom = moment(dateTo).startOf('day').subtract(historyLengthDays, 'day');
 	const params = {
-		dateFormat: 'YYYY-MM-DD',
+		dateFormat: DATE_FORMAT.DAY,
 		dateTo,
 		dateFrom,
 	};

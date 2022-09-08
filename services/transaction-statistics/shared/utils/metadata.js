@@ -15,16 +15,26 @@
  */
 const BluebirdPromise = require('bluebird');
 
+const { HTTP: { request } } = require('lisk-service-framework');
+
+const { DB_CONSTANT } = require('./constants');
 const { requestAppRegistry } = require('./request');
 const config = require('../../config');
 
 // TODO: Resolve network from network status response once available
 const getTokenMetadataByID = async (tokenID) => {
-	const tokenMetadata = await requestAppRegistry(
-		'blockchain.apps.meta.tokens',
-		{ tokenID, network: 'mainnet' },
-	);
-	return tokenMetadata;
+	const network = 'mainnet';
+	try {
+		const tokenMetadata = await requestAppRegistry(
+			'blockchain.apps.meta.tokens',
+			{ tokenID, network },
+		);
+		return tokenMetadata;
+	} catch (error) {
+		const tokensMetadataURL = `${config.mainnetServiceURL}/api/v2/blockchain/apps/meta/tokens`;
+		const tokenMetadata = await request(tokensMetadataURL, { tokenID, network });
+		return tokenMetadata;
+	}
 };
 
 const getTokensMetaInfo = async (tokenIDs) => {
@@ -32,9 +42,10 @@ const getTokensMetaInfo = async (tokenIDs) => {
 	await BluebirdPromise.map(
 		tokenIDs,
 		async tokenID => {
-			if (tokenID !== config.CONSTANT.UNAVAILABLE) {
-				const [tokenMetadata] = (await getTokenMetadataByID(tokenID)).data;
-				if (tokenMetadata) {
+			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
+				const response = await getTokenMetadataByID(tokenID);
+				if (response && response.data) {
+					const [tokenMetadata] = response.data.data;
 					tokensMetaInfo[tokenID] = {
 						tokenName: tokenMetadata.tokenName,
 						symbol: tokenMetadata.symbol,

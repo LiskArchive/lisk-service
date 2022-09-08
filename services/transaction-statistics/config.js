@@ -61,4 +61,6 @@ config.queue = {
 	},
 };
 
+config.mainnetServiceURL = 'https://service.lisk.com';
+
 module.exports = config;

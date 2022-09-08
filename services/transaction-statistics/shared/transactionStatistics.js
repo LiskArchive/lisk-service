@@ -20,6 +20,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
+const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { getTokensMetaInfo } = require('./utils/metadata');
 const { requestIndexer } = require('./utils/request');
 
@@ -65,7 +66,7 @@ const getStatsTimeline = async params => {
 			const result = await db.find(
 				{
 					...queryParams,
-					whereIn: { property: 'tokenID', values: [tokenID, config.CONSTANT.UNAVAILABLE] },
+					whereIn: { property: 'tokenID', values: [tokenID, DB_CONSTANT.UNAVAILABLE] },
 				},
 				['date', 'count', 'volume'],
 			);
@@ -87,7 +88,7 @@ const getStatsTimeline = async params => {
 				statForDate.volume += entry.volume;
 			});
 
-			if (tokenID !== config.CONSTANT.UNAVAILABLE) {
+			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
 				const timelineRaw = Object.values(unorderedfinalResult)
 					.sort((a, b) => a.date.localeCompare(b.date)).reverse();
 
@@ -115,7 +116,7 @@ const getDistributionByAmount = async params => {
 			const result = (await db.find(
 				{
 					...queryParams,
-					whereIn: { property: 'tokenID', values: [tokenID, config.CONSTANT.UNAVAILABLE] },
+					whereIn: { property: 'tokenID', values: [tokenID, DB_CONSTANT.UNAVAILABLE] },
 				},
 				['amount_range', 'count'])).filter(o => o.count > 0);
 
@@ -125,7 +126,7 @@ const getDistributionByAmount = async params => {
 				unorderedfinalResult[entry.amount_range] += entry.count;
 			});
 
-			if (tokenID !== config.CONSTANT.UNAVAILABLE) {
+			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
 				const orderedFinalResult = {};
 				Object.keys(unorderedfinalResult).sort().reverse()
 					.forEach(amountRange => {
@@ -170,7 +171,7 @@ const getTransactionsStatistics = async params => {
 		meta: {},
 	};
 
-	const dateFormat = params.interval === 'day' ? 'YYYY-MM-DD' : 'YYYY-MM';
+	const dateFormat = params.interval === 'day' ? DATE_FORMAT.DAY : DATE_FORMAT.MONTH;
 
 	const dateTo = moment()
 		.utc()
@@ -204,10 +205,10 @@ const getTransactionsStatistics = async params => {
 		limit: params.limit,
 		offset: params.offset,
 		total,
-		date: {
-			dateFormat,
-			dateFrom: dateFrom.format(dateFormat),
-			dateTo: dateTo.format(dateFormat),
+		duration: {
+			format: dateFormat,
+			from: dateFrom.format(dateFormat),
+			to: dateTo.format(dateFormat),
 		},
 		info: { ...await getTokensMetaInfo(tokenIDs) },
 	};

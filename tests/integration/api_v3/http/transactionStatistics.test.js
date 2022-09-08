@@ -46,7 +46,7 @@ describe('Transaction statistics API', () => {
 			dateFormat: 'YYYY-MM',
 		}].forEach(({ interval, dateFormat }) => {
 			describe(`GET /transactions/statistics?interval=${interval}`, () => {
-				const startOfUnitUtc = moment().utc().startOf(interval);
+				const startOfIntervalInUTC = moment().utc().startOf(interval);
 
 				it(`returns stats for last 10 ${interval}s if called without any params`, async () => {
 					const response = await api.get(`${baseEndpoint}?interval=${interval}`);
@@ -56,7 +56,7 @@ describe('Transaction statistics API', () => {
 					tokensListEntries.forEach(([tokenID, timeline]) => {
 						expect(tokenID).toMatch(regex.TOKEN_ID);
 						timeline.forEach((timelineItem, i) => {
-							const date = moment(startOfUnitUtc).subtract(i, interval);
+							const date = moment(startOfIntervalInUTC).subtract(i, interval);
 							expect(timelineItem).toMap(timelineItemSchema, {
 								date: date.format(dateFormat),
 								timestamp: date.unix(),
@@ -78,8 +78,8 @@ describe('Transaction statistics API', () => {
 						expect(timeline).toHaveLength(1);
 						timeline.forEach(timelineItem => expect(timelineItem)
 							.toMap(timelineItemSchema, {
-								date: startOfUnitUtc.format(dateFormat),
-								timestamp: startOfUnitUtc.unix(),
+								date: startOfIntervalInUTC.format(dateFormat),
+								timestamp: startOfIntervalInUTC.unix(),
 							}));
 					});
 					expect(response.meta).toMap(metaSchema, { limit });
@@ -89,7 +89,7 @@ describe('Transaction statistics API', () => {
 					if (interval === 'day') {
 						const limit = 1;
 						const offset = 1;
-						const startOfYesterday = moment(startOfUnitUtc).subtract(1, interval);
+						const startOfYesterday = moment(startOfIntervalInUTC).subtract(1, interval);
 
 						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
 						expect(response).toMap(goodRequestSchema);
@@ -129,7 +129,7 @@ describe('Transaction statistics API', () => {
 							expect(timeline.length).toBeGreaterThanOrEqual(1);
 							expect(timeline.length).toBeLessThanOrEqual(limit);
 							timeline.forEach((timelineItem, i) => {
-								const date = moment(startOfUnitUtc).subtract(i + offset, interval);
+								const date = moment(startOfIntervalInUTC).subtract(i + offset, interval);
 								expect(timelineItem).toMap(timelineItemSchema, {
 									date: date.format(dateFormat),
 									timestamp: date.unix(),

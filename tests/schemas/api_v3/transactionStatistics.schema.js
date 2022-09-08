@@ -54,7 +54,7 @@ const logo = {
 const info = {
 	tokenName: Joi.string().pattern(regex.NAME).required(),
 	symbol: Joi.string().required(),
-	logo: Joi.object(logo).optional(),
+	logo: Joi.object(logo).required(),
 };
 
 const infoKey = Joi.string().pattern(regex.TOKEN_ID).required();

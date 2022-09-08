@@ -19,14 +19,16 @@
         "required": [
             "count",
             "offset",
-            "total"
+            "total",
+            "duration",
+            "info"
         ],
         "properties": {
             "count": {
                 "type": "integer",
                 "example": 10,
                 "minimum": 0,
-                "description": "Number of items returned in the request."
+                "description": "Number of timeline items per tokenID returned in the response."
             },
             "offset": {
                 "type": "integer",
@@ -38,22 +40,25 @@
                 "type": "integer",
                 "example": 100,
                 "minimum": 0,
-                "description": "Number of items returned in the response."
+                "description": "Total number of items matching the request query."
             },
-            "date": {
+            "duration": {
                 "type": "object",
                 "properties": {
-                    "dateFormat": {
+                    "format": {
                         "type": "string",
-                        "example": "YYYY-MM"
+                        "example": "YYYY-MM",
+                        "description": "Date/month format of aggregation interval."
                     },
-                    "dateFrom": {
+                    "from": {
                         "type": "string",
-                        "example": "2021-12"
+                        "example": "2021-12",
+                        "description": "Date/month representing the beginning of the aggregation interval."
                     },
-                    "dateTo": {
+                    "to": {
                         "type": "string",
-                        "example": "2022-09"
+                        "example": "2022-09",
+                        "description": "Date/month representing the ending of the aggregation interval."
                     }
                 }
             },
@@ -105,7 +110,7 @@
         "properties": {
             "distributionByType": {
                 "type": "object",
-                "description": "Count of transactions by transaction type in the whole time interval",
+                "description": "Count of transactions segregated by transaction type (i.e. moduleCommand) for the stated time interval in the response 'meta'",
                 "properties": {
                     "token:transfer": {
                         "type": "integer",
@@ -115,7 +120,7 @@
             },
             "distributionByAmount": {
                 "type": "object",
-                "description": "Count of transactions by amount range in the whole time interval",
+                "description": "Count of Token Transfer transactions segregated by amount range for the stated time interval in the response 'meta'",
                 "properties": {
                     "0000000100000000": {
                         "type": "object",
