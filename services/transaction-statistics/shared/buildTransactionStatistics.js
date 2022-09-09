@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
+// Rename all methods once MySQL implementation is updated
 const {
 	Logger,
 	Queue,
@@ -42,13 +43,13 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getDbInstance = () => getTableInstance(
+const getDBInstance = () => getTableInstance(
 	txStatisticsIndexSchema.tableName,
 	txStatisticsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getWithFallback = (acc, moduleCommand, range) => {
+const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
 		count: 0,
 		volume: 0,
@@ -59,56 +60,78 @@ const getWithFallback = (acc, moduleCommand, range) => {
 		: defaultValue;
 };
 
-const getTxValue = tx => BigNumber(tx.params.amount).plus(tx.fee);
+const getTxValue = tx => {
+	const totalValue = Object.keys(tx.params).reduce(
+		(total, property) => {
+			if (property.endsWith('Fee') || property === 'amount') {
+				total.plus(tx.params[property]);
+			}
+			return total;
+		},
+		BigNumber(tx.fee),
+	);
+
+	return totalValue;
+};
 
 const getRange = tx => {
-	const value = getTxValue(tx);
-	const lowerBound = Math.pow(10, Math.floor(Math.log10(value / 1e8)));
-	const upperBound = Math.pow(10, Math.floor(Math.log10(value / 1e8)) + 1);
+	const txValue = getTxValue(tx);
+	// TODO: Make the conversion factor (1e8) dynamic based on token decimal
+	const lowerBoundExponent = Math.floor(Math.log10(txValue / 1e8));
+	const lowerBound = Math.pow(10, lowerBoundExponent);
+	const upperBound = Math.pow(10, lowerBoundExponent + 1);
 	return `${lowerBound}_${upperBound}`;
 };
 
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
 		moduleCommand: DB_CONSTANT.ANY,
-		params: { amount: String(1e8) },
-		fee: String(1e7),
+		params: { amount: String(0) },
+		fee: String(0),
 	};
 	return {
 		[transaction.moduleCommand]: {
-			[getRange(transaction)]: getWithFallback({}),
+			[getRange(transaction)]: getTxStatsWithFallback({}),
 		},
 	};
 };
 
-const computeTransactionStats = transactions => transactions.reduce((acc, tx) => ({
-	...acc,
-	[tx.moduleCommand]: {
-		...acc[tx.moduleCommand],
-		[getRange(tx)]: {
-			count: getWithFallback(acc, tx.moduleCommand, getRange(tx)).count + 1,
-			volume: BigNumber(getWithFallback(acc, tx.moduleCommand, getRange(tx)).volume)
-				.add(getTxValue(tx)),
-			tokenID: resolveGlobalTokenID(tx.params.tokenID),
-		},
+const computeTransactionStats = transactions => transactions.reduce(
+	(acc, tx) => {
+		const txStatsWithFallback = getTxStatsWithFallback(acc, tx.moduleCommand, getRange(tx));
+		return {
+			...acc,
+			[tx.moduleCommand]: {
+				...acc[tx.moduleCommand],
+				[getRange(tx)]: {
+					count: txStatsWithFallback.count + 1,
+					volume: BigNumber(txStatsWithFallback.volume).add(getTxValue(tx)),
+					tokenID: resolveGlobalTokenID(tx.params.tokenID),
+				},
+			},
+		};
 	},
-}), getInitialValueToEnsureEachDayHasAtLeastOneEntry());
-
-const transformStatsObjectToList = statsObject => (
-	Object.entries(statsObject).reduce((acc, [moduleCommand, rangeObject]) => ([
-		...acc,
-		...Object.entries(rangeObject).map(([range, { count, volume, tokenID }]) => ({
-			moduleCommand,
-			volume: Math.ceil(volume),
-			count,
-			range,
-			tokenID,
-		})),
-	]), [])
+	getInitialValueToEnsureEachDayHasAtLeastOneEntry(),
 );
 
-const insertToDb = async (statsList, date) => {
-	const db = await getDbInstance();
+const transformStatsObjectToList = statsObject => (
+	Object.entries(statsObject).reduce(
+		(acc, [moduleCommand, rangeObject]) => ([
+			...acc,
+			...Object.entries(rangeObject).map(([range, { count, volume, tokenID }]) => ({
+				moduleCommand,
+				volume: Math.ceil(volume),
+				count,
+				range,
+				tokenID,
+			})),
+		]),
+		[],
+	)
+);
+
+const insertToDB = async (statsList, date) => {
+	const db = await getDBInstance();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
 	try {
@@ -122,11 +145,10 @@ const insertToDb = async (statsList, date) => {
 
 		statsList.map(statistic => {
 			Object.assign(statistic, { date, amount_range: statistic.range });
-			statistic.id = String(statistic.date)
-				.concat('-', statistic.moduleCommand)
-				.concat('-', statistic.amount_range);
-			delete statistic.range;
-			return statistic;
+			// TODO: Remove next line when CRUD operations are supported by composite primary key
+			statistic.id = `${statistic.date}-${statistic.moduleCommand}-${statistic.amount_range}`;
+			const { range, ...finalStats } = statistic;
+			return finalStats;
 		});
 		await db.upsert(statsList, trx);
 		await commitDbTransaction(trx);
@@ -158,7 +180,7 @@ const queueJob = async (job) => {
 		const transactions = await fetchTransactions(date);
 		const statsObject = computeTransactionStats(transactions);
 		const statsList = transformStatsObjectToList(statsObject);
-		return insertToDb(statsList, date);
+		return insertToDB(statsList, date);
 	} catch (err) {
 		return Promise.reject(err);
 	}
@@ -174,7 +196,7 @@ const transactionStatisticsQueue = Queue(
 );
 
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
-	const db = await getDbInstance();
+	const db = await getDBInstance();
 	const scheduledDays = [];
 	for (let i = 0; i < n; i++) {
 		/* eslint-disable no-await-in-loop */

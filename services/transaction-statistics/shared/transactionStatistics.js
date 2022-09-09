@@ -31,7 +31,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 let numTrxTypes;
 
-const getDbInstance = () => getTableInstance(
+const getDBInstance = () => getTableInstance(
 	txStatisticsIndexSchema.tableName,
 	txStatisticsIndexSchema,
 	MYSQL_ENDPOINT,
@@ -56,7 +56,7 @@ const getSelector = async (params) => {
 };
 
 const getStatsTimeline = async params => {
-	const db = await getDbInstance();
+	const db = await getDBInstance();
 	const tokenStatsTimeline = {};
 
 	await BluebirdPromise.map(
@@ -106,7 +106,7 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
-	const db = await getDbInstance();
+	const db = await getDBInstance();
 	const tokenDistributionByAmount = {};
 
 	await BluebirdPromise.map(
@@ -128,7 +128,8 @@ const getDistributionByAmount = async params => {
 
 			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
 				const orderedFinalResult = {};
-				Object.keys(unorderedfinalResult).sort().reverse()
+				Object.keys(unorderedfinalResult)
+					.sort((a, b) => String(a).localeCompare(String(b)))
 					.forEach(amountRange => {
 						orderedFinalResult[amountRange] = unorderedfinalResult[amountRange];
 					});
@@ -143,7 +144,7 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
-	const db = await getDbInstance();
+	const db = await getDBInstance();
 
 	const result = (await db.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
 
@@ -155,7 +156,7 @@ const getDistributionByType = async params => {
 
 	const orderedFinalResult = {};
 	Object.keys(unorderedfinalResult)
-		.sort((a, b) => Number(a) - Number(b))
+		.sort((a, b) => String(a).localeCompare(String(b)))
 		.forEach(moduleCommand => {
 			orderedFinalResult[moduleCommand] = unorderedfinalResult[moduleCommand];
 		});
@@ -164,7 +165,7 @@ const getDistributionByType = async params => {
 };
 
 const getTransactionsStatistics = async params => {
-	const db = await getDbInstance();
+	const db = await getDBInstance();
 
 	const transactionsStatistics = {
 		data: {},
@@ -181,7 +182,7 @@ const getTransactionsStatistics = async params => {
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
 
-	// TODO: Update code once MySql supports distinct query
+	// TODO: Update code once MySQL supports distinct query
 	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
 	const tokenIDs = tokens.map(e => e.tokenID);
 

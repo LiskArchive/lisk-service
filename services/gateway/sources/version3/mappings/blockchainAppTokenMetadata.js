@@ -29,7 +29,7 @@ module.exports = {
 	baseDenom: '=,string',
 	denomUnits: ['denomUnits', {
 		denom: '=,string',
-		decimal: '=,number',
+		decimals: '=,number',
 		aliases: '=',
 	}],
 };

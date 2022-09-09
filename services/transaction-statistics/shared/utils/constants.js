@@ -27,12 +27,14 @@ const DATE_FORMAT = {
 	MONTH: 'YYYY-MM',
 };
 
-const setChainID = async () => {
-	const networkStatus = await requestIndexer('network.status');
-	chainID = networkStatus.data.chainID;
-};
+const getChainID = async () => {
+	if (typeof chainID === 'undefined') {
+		const networkStatus = await requestIndexer('network.status');
+		chainID = networkStatus.data.chainID;
+	}
 
-const getChainID = async () => chainID;
+	return chainID;
+};
 
 const resolveGlobalTokenID = (tokenID) => {
 	if (!tokenID) return DB_CONSTANT.UNAVAILABLE;
@@ -46,7 +48,6 @@ const resolveGlobalTokenID = (tokenID) => {
 };
 
 module.exports = {
-	setChainID,
 	getChainID,
 	resolveGlobalTokenID,
 

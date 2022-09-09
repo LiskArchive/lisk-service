@@ -40,7 +40,7 @@
                 "type": "integer",
                 "example": 100,
                 "minimum": 0,
-                "description": "Total number of items matching the request query."
+                "description": "Total number of available timeline items per tokenID matching the request query."
             },
             "duration": {
                 "type": "object",
@@ -48,7 +48,7 @@
                     "format": {
                         "type": "string",
                         "example": "YYYY-MM",
-                        "description": "Date/month format of aggregation interval."
+                        "description": "Date/month format for the stated aggregation interval ('from' & 'to')."
                     },
                     "from": {
                         "type": "string",
@@ -71,12 +71,12 @@
                             "tokenName": {
                                 "type": "string",
                                 "example": "Lisk",
-                                "description": "Name of the blockchain application"
+                                "description": "Name of the blockchain application."
                             },
                             "symbol": {
                                 "type": "string",
                                 "example": "LSK",
-                                "description": "The symbol for the token. Example: LSK"
+                                "description": "The symbol for the token. Example: LSK."
                             },
                             "logo": {
                                 "type": "object",
@@ -84,12 +84,12 @@
                                     "png": {
                                         "type": "string",
                                         "example": "https://downloads.lisk.com/lisk/images/logo.png",
-                                        "description": "URI to the PNG format of the application logo"
+                                        "description": "URI to the PNG format of the application logo."
                                     },
                                     "svg": {
                                         "type": "string",
                                         "example": "https://downloads.lisk.com/lisk/images/logo.svg",
-                                        "description": "URI to the SVG format of the application logo"
+                                        "description": "URI to the SVG format of the application logo."
                                     }
                                 }
                             }
@@ -110,7 +110,7 @@
         "properties": {
             "distributionByType": {
                 "type": "object",
-                "description": "Count of transactions segregated by transaction type (i.e. moduleCommand) for the stated time interval in the response 'meta'",
+                "description": "Count of transactions segregated by transaction type (i.e. moduleCommand) for the stated time interval in the response 'meta'.",
                 "properties": {
                     "token:transfer": {
                         "type": "integer",
@@ -120,7 +120,7 @@
             },
             "distributionByAmount": {
                 "type": "object",
-                "description": "Count of Token Transfer transactions segregated by amount range for the stated time interval in the response 'meta'",
+                "description": "Count of Token Transfer transactions segregated by amount range for the stated time interval in the response 'meta'.",
                 "properties": {
                     "0000000100000000": {
                         "type": "object",
@@ -149,22 +149,22 @@
                             "properties": {
                                 "timestamp": {
                                     "type": "integer",
-                                    "description": "UNIX timestamp representing the beginning of the aggregation interval",
+                                    "description": "UNIX timestamp representing the beginning of the aggregation interval.",
                                     "example": 1556100060
                                 },
                                 "date": {
                                     "type": "string",
-                                    "description": "Date representing the beginning of the aggregation interval",
+                                    "description": "Date representing the beginning of the aggregation interval.",
                                     "example": "2019-11-27"
                                 },
                                 "transactionCount": {
                                     "type": "integer",
-                                    "description": "Count of all transactions in the given time span",
+                                    "description": "Count of all transactions in the given time span.",
                                     "example": "14447177193385"
                                 },
                                 "volume": {
                                     "type": "string",
-                                    "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows)",
+                                    "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows).",
                                     "example": "14447177193385"
                                 }
                             }

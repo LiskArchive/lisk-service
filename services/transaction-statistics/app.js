@@ -24,7 +24,6 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/utils/request');
-const { setChainID } = require('./shared/utils/constants');
 
 const loggerConf = {
 	...config.log,
@@ -58,7 +57,6 @@ app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(async () => {
-	await setChainID();
 	logger.info(`Service started ${packageJson.name}`);
 }).catch(err => {
 	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
