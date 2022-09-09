@@ -17,7 +17,6 @@ const BluebirdPromise = require('bluebird');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
-// Rename all methods once MySQL implementation is updated
 const {
 	Logger,
 	Queue,
