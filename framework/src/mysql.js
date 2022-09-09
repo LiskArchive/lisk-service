@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// TODO: Rename all methods to use 'DB' instead of 'Db'
+
 const Logger = require('./logger').get;
 
 const logger = Logger();

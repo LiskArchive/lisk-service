@@ -171,10 +171,6 @@ const getTransactions = async params => {
 			transaction.confirmations = (await getLastBlock()).height - indexedTxInfo.height + 1;
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 
-			// The following two lines below are necessary for transaction statistics
-			if (transaction.moduleCommand) transaction.type = transaction.moduleCommand;
-			transaction.amount = transaction.params.amount || 0;
-
 			return transaction;
 		},
 		{ concurrency: transactions.data.length },

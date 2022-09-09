@@ -359,7 +359,7 @@
                             "example": "lsk",
                             "description": "Supported denomination. Example: Beddows, LSK"
                         },
-                        "decimal": {
+                        "decimals": {
                             "type": "integer",
                             "example": 8,
                             "description": "The exponent over base 10 by which the denomination is a factor of the baseDenom. Example: 8 for LSK (1 LSK = 10^8 Beddows)"

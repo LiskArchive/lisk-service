@@ -26,7 +26,7 @@ const getGenerators = async () => {
 		generatorsList,
 		async generator => {
 			const { name, publicKey } = await getIndexedAccountInfo(
-				{ address: generator.addres, limit: 1 },
+				{ address: generator.address, limit: 1 },
 				['name', 'publicKey'],
 			);
 

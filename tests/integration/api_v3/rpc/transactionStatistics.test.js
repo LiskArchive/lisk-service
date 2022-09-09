@@ -16,6 +16,7 @@
 import moment from 'moment';
 
 const config = require('../../../config');
+const regex = require('../../../schemas/api_v3/regex');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
@@ -43,7 +44,7 @@ describe('get.transactions.statistics', () => {
 		dateFormat: 'YYYY-MM',
 	}].forEach(({ interval, dateFormat }) => {
 		describe(`get.transactions.statistics by interval as ${interval}`, () => {
-			const startOfUnitUtc = moment().utc().startOf(interval);
+			const startOfIntervalInUTC = moment().utc().startOf(interval);
 
 			it(`returns stats for aggregated by ${interval}, if called without any params`, async () => {
 				const response = await requestTransactionStatistics({ interval });
@@ -51,6 +52,17 @@ describe('get.transactions.statistics', () => {
 				const { result } = response;
 				expect(result).toMap(goodRequestSchema);
 				expect(result.data).toMap(transactionStatisticsSchema);
+				const tokensListEntries = Object.entries(result.data.timeline);
+				tokensListEntries.forEach(([tokenID, timeline]) => {
+					expect(tokenID).toMatch(regex.TOKEN_ID);
+					timeline.forEach((timelineItem, i) => {
+						const date = moment(startOfIntervalInUTC).subtract(i, interval);
+						expect(timelineItem).toMap(timelineItemSchema, {
+							date: date.format(dateFormat),
+							timestamp: date.unix(),
+						});
+					});
+				});
 				expect(result.meta).toMap(metaSchema);
 			});
 
@@ -61,12 +73,16 @@ describe('get.transactions.statistics', () => {
 				const { result } = response;
 				expect(result).toMap(goodRequestSchema);
 				expect(result.data).toMap(transactionStatisticsSchema);
-				expect(result.data.timeline).toHaveLength(1);
-				result.data.timeline.forEach(timelineItem => expect(timelineItem)
-					.toMap(timelineItemSchema, {
-						date: startOfUnitUtc.format(dateFormat),
-						timestamp: startOfUnitUtc.unix(),
-					}));
+				const tokensListEntries = Object.entries(result.data.timeline);
+				tokensListEntries.forEach(([tokenID, timeline]) => {
+					expect(tokenID).toMatch(regex.TOKEN_ID);
+					expect(timeline).toHaveLength(1);
+					timeline.forEach(timelineItem => expect(timelineItem)
+						.toMap(timelineItemSchema, {
+							date: startOfIntervalInUTC.format(dateFormat),
+							timestamp: startOfIntervalInUTC.unix(),
+						}));
+				});
 				expect(result.meta).toMap(metaSchema, { limit });
 			});
 
@@ -74,26 +90,30 @@ describe('get.transactions.statistics', () => {
 				if (interval === 'day') {
 					const limit = 1;
 					const offset = 1;
-					const startOfYesterday = moment(startOfUnitUtc).subtract(1, interval);
+					const startOfYesterday = moment(startOfIntervalInUTC).subtract(1, interval);
 
 					const response = await requestTransactionStatistics({ interval, limit, offset });
 					expect(response).toMap(jsonRpcEnvelopeSchema);
 					const { result } = response;
 					expect(result).toMap(goodRequestSchema);
 					expect(result.data).toMap(transactionStatisticsSchema);
-					expect(result.data.timeline).toHaveLength(1);
-					result.data.timeline.forEach(timelineItem => expect(timelineItem)
-						.toMap(timelineItemSchema, {
-							date: startOfYesterday.format(dateFormat),
-							timestamp: startOfYesterday.unix(),
-						}));
-					expect(result.meta).toMap(metaSchema, {
-						limit,
-						offset,
+					const tokensListEntries = Object.entries(result.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						expect(timeline).toHaveLength(1);
+						timeline.forEach(timelineItem => expect(timelineItem)
+							.toMap(timelineItemSchema, {
+								date: startOfYesterday.format(dateFormat),
+								timestamp: startOfYesterday.unix(),
+							}));
+					});
+
+					expect(result.meta.date).toMatchObject({
 						dateFormat,
 						dateFrom: startOfYesterday.format(dateFormat),
 						dateTo: startOfYesterday.format(dateFormat),
 					});
+					expect(result.meta).toMap(metaSchema, { limit, offset });
 				}
 			});
 
@@ -107,19 +127,21 @@ describe('get.transactions.statistics', () => {
 					const { result } = response;
 					expect(result).toMap(goodRequestSchema);
 					expect(result.data).toMap(transactionStatisticsSchema);
-					expect(result.data.timeline).toHaveLength(2);
-					result.data.timeline.forEach((timelineItem, i) => {
-						const date = moment(startOfUnitUtc).subtract(i + offset, interval);
-						expect(timelineItem).toMap(timelineItemSchema, {
-							date: date.format(dateFormat),
-							timestamp: date.unix(),
+					const tokensListEntries = Object.entries(result.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						expect(timeline).toHaveLength(2);
+						timeline.forEach((timelineItem, i) => {
+							const date = moment(startOfIntervalInUTC).subtract(i + offset, interval);
+							expect(timelineItem).toMap(timelineItemSchema, {
+								date: date.format(dateFormat),
+								timestamp: date.unix(),
+							});
 						});
 					});
-					expect(result.meta).toMap(metaSchema, {
-						limit,
-						offset,
-						dateFormat,
-					});
+
+					expect(result.meta.date).toMatchObject({ dateFormat });
+					expect(result.meta).toMap(metaSchema, { limit, offset });
 				}
 			});
 
