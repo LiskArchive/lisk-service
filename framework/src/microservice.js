@@ -54,6 +54,8 @@ const Microservice = (config = {}) => {
 	const logger = loggerLib.get();
 	const log4jsConfig = loggerLib.getConfig();
 
+	const jobsToBeScheduled = [];
+
 	const broker = new ServiceBroker({
 		transporter: moleculerConfig.transporter,
 		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
@@ -121,7 +123,7 @@ const Microservice = (config = {}) => {
 		return true;
 	};
 
-	const addJob = job => {
+	const scheduleJob = job => {
 		const validDefinition = validator.validate(job, jobSchema);
 		if (validDefinition !== true) {
 			logger.warn([
@@ -181,6 +183,14 @@ const Microservice = (config = {}) => {
 				.forEach(item => fnMap[type].call(this, item)));
 	};
 
+	const scheduleJobs = async () => {
+		jobsToBeScheduled.forEach(job => {
+			scheduleJob(job);
+		});
+
+		jobsToBeScheduled.length = 0;
+	};
+
 	const addMethods = folderPath => {
 		_addItems(folderPath, 'method');
 	};
@@ -193,6 +203,10 @@ const Microservice = (config = {}) => {
 		_addItems(folderPath, 'job');
 	};
 
+	const addJob = job => {
+		jobsToBeScheduled.push(job);
+	};
+
 	const run = () => {
 		logger.info(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
 
@@ -200,7 +214,11 @@ const Microservice = (config = {}) => {
 		broker.createService(moleculerConfig);
 
 		// Start server
-		return broker.start();
+		return broker
+		.start()
+		.then(() => {
+			scheduleJobs();
+		});
 	};
 
 	const requestRpc = (method, params) => new Promise((resolve, reject) => {
