@@ -123,6 +123,10 @@ const Microservice = (config = {}) => {
 		return true;
 	};
 
+	const addJob = job => {
+		jobsToBeScheduled.push(job);
+	};
+
 	const scheduleJob = job => {
 		const validDefinition = validator.validate(job, jobSchema);
 		if (validDefinition !== true) {
@@ -201,10 +205,6 @@ const Microservice = (config = {}) => {
 
 	const addJobs = folderPath => {
 		_addItems(folderPath, 'job');
-	};
-
-	const addJob = job => {
-		jobsToBeScheduled.push(job);
 	};
 
 	const run = () => {
