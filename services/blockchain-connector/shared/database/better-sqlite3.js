@@ -15,6 +15,7 @@
  */
 const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
+const config = require('../../config');
 
 const logger = Logger();
 
@@ -121,9 +122,8 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	return rows;
 };
 
-const getDbConnection = async (tableName) => {
+const getDbConnection = async (tableName, dbDataDir) => {
 	if (!connectionPool[tableName]) {
-		const dbDataDir = 'db_data';
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 		connectionPool[tableName] = await createDbConnection(dbDataDir, tableName);
 	}
@@ -147,10 +147,10 @@ const commitDbTransaction = async transaction => transaction.commit();
 
 const rollbackDbTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableName, tableConfig) => {
+const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDataDir) => {
 	const { primaryKey, schema } = tableConfig;
 
-	const knex = await getDbConnection(tableName);
+	const knex = await getDbConnection(tableName, dbDataDir);
 
 	const createDefaultTransaction = async connection => startDbTransaction(connection);
 
@@ -410,8 +410,7 @@ const getTableInstance = async (tableName, tableConfig) => {
 			.raw(queryStatement)
 			.then(async result => {
 				await trx.commit();
-				const [resultSet] = result;
-				return resultSet;
+				return result;
 			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);

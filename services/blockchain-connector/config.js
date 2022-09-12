@@ -84,4 +84,6 @@ config.caching = {
 	isEnabled: Boolean(String(process.env.ENABLE_CACHING).toLowerCase() !== 'false'), // Enabled by default
 };
 
+config.dbDataDir = process.env.CACHING_DATA_DIRECTORY || 'db_data';
+
 module.exports = config;
