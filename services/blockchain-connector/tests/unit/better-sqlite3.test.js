@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { rm } = require('../../shared/utils/fs');
+
 const {
 	getTableInstance,
 	// startDbTransaction,
@@ -39,7 +41,7 @@ describe('Test MySQL', () => {
 
 	afterAll(async () => {
 		// Drop table
-		// await testTable.rawQuery(`DROP TABLE ${tableName}`);
+		await rm(`${process.cwd()}/db_data`, { recursive: true });
 	});
 
 	describe('Generic MySQL validation', () => {
