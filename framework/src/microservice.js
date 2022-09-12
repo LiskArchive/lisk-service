@@ -127,7 +127,7 @@ const Microservice = (config = {}) => {
 		jobsToBeScheduled.push(job);
 	};
 
-	const scheduleJob = job => {
+	const scheduleJob = async job => {
 		const validDefinition = validator.validate(job, jobSchema);
 		if (validDefinition !== true) {
 			logger.warn([
@@ -174,6 +174,13 @@ const Microservice = (config = {}) => {
 		return true;
 	};
 
+	const scheduleJobs = async () => {
+		while (jobsToBeScheduled.length > 0) {
+			const job = jobsToBeScheduled.pop();
+			scheduleJob(job);
+		}
+	};
+
 	const _addItems = (folderPath, type) => {
 		const items = requireAllJs(folderPath);
 		const fnMap = {
@@ -185,14 +192,6 @@ const Microservice = (config = {}) => {
 		Object.keys(items)
 			.forEach(itemGroup => items[itemGroup]
 				.forEach(item => fnMap[type].call(this, item)));
-	};
-
-	const scheduleJobs = async () => {
-		jobsToBeScheduled.forEach(job => {
-			scheduleJob(job);
-		});
-
-		jobsToBeScheduled.length = 0;
 	};
 
 	const addMethods = folderPath => {
