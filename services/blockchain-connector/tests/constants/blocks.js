@@ -47,7 +47,7 @@ const blockWithTransaction = {
 	header: {
 		version: 2,
 		timestamp: 1649855393,
-		height: 1,
+		height: 2,
 		previousBlockID: '2d7c1de74a7353a8bea6f1af1620e5bbb9f6170fa4b5376267f8fb3d0e314d32',
 		generatorAddress: '1348bdced23cbdfb92cf3c74742d8f3d96f436de',
 		transactionRoot: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
@@ -62,7 +62,7 @@ const blockWithTransaction = {
 			certificateSignature: '',
 		},
 		signature: 'efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e7404',
-		id: '85aaccf5de6988651b7555bdd125c7295fe2cba6c8ede013fce574a0035f4be3',
+		id: '90aaccf5de6988651b7555bdd125c7295fe2cba6c8ede013fce574a0035f4be3',
 	},
 	assets: [
 		{
