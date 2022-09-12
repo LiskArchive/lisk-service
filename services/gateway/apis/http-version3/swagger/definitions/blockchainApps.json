@@ -2,14 +2,14 @@
     "BlockchainApp": {
         "type": "object",
         "required": [
-            "name",
+            "chainName",
             "chainID",
             "state",
             "address",
             "isDefault"
         ],
         "properties": {
-            "name": {
+            "chainName": {
                 "type": "string",
                 "example": "Lisk",
                 "description": "Name of the blockchain application"

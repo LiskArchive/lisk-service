@@ -45,7 +45,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	await crossChainMessagesDB.upsert(tx, dbTrx);
 
 	const appInfo = {
-		name: tx.params.ownName,
+		chainName: tx.params.ownName,
 		chainID: tx.params.ownChainID,
 		address: '', // TODO: Verify and update address
 		isDefault: config.defaultApps.some(e => e === tx.params.ownName),

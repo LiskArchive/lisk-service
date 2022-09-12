@@ -18,7 +18,7 @@ module.exports = {
 	primaryKey: 'chainID',
 	schema: {
 		chainID: { type: 'string' },
-		name: { type: 'string' },
+		chainName: { type: 'string' },
 		state: { type: 'string' },
 		address: { type: 'string' },
 		isDefault: { type: 'boolean', null: false, defaultValue: false },
@@ -28,7 +28,7 @@ module.exports = {
 	indexes: {
 		chainID: { type: 'key' },
 		state: { type: 'key' },
-		name: { type: 'key' },
+		chainName: { type: 'key' },
 		isDefault: { type: 'key' },
 	},
 	purge: {},

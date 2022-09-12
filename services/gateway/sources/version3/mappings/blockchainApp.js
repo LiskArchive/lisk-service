@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	name: '=,string',
+	chainName: '=,string',
 	chainID: '=,number',
 	state: '=,string',
 	address: '=,string',

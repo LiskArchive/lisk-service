@@ -44,7 +44,7 @@ const getBlockchainApps = async (params) => {
 		params = remParams;
 
 		params.search = {
-			property: 'name',
+			property: 'chainName',
 			pattern: search,
 		};
 	}
@@ -69,7 +69,7 @@ const getBlockchainApps = async (params) => {
 		response,
 		async (appInfo) => {
 			if (!appInfo.isDefault) {
-				const isDefault = config.defaultApps.some(e => e === appInfo.name);
+				const isDefault = config.defaultApps.some(e => e === appInfo.chainName);
 				const blockchainAppInfo = {
 					...appInfo,
 					isDefault,

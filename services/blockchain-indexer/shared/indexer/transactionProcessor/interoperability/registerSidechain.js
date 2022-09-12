@@ -46,7 +46,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
 	const appInfo = {
-		name: tx.params.name,
+		chainName: tx.params.name,
 		chainID: '',
 		address: '', // TODO: Verify and update address
 		isDefault: config.defaultApps.some(e => e === tx.params.name),
