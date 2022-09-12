@@ -15,37 +15,52 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const {
-	CacheLRU,
-} = require('lisk-service-framework');
+const { getTableInstance } = require('../database/better-sqlite3');
 
-const BLOCKS_CACHE = 'cache_blocks';
-const TX_TO_BLOCK_ID_MAP = 'mapTransactionIDToBlockID';
+const cacheBlockSchema = require('../database/schema/blocks');
+const mapTxIDtoBlockIDSchema = require('../database/schema/transactions');
 
-const blocksCache = CacheLRU(BLOCKS_CACHE, { max: 250 });
-const txToBlockCache = CacheLRU(TX_TO_BLOCK_ID_MAP, { max: 3000 });
-
-const mapTransactionIDstoBlockID = async (transactions, blockID) => BluebirdPromise.map(
-	transactions,
-	async transaction => txToBlockCache.set(transaction.id, blockID),
-	{ concurrency: transactions.length },
+const getBlocksCacheIndex = () => getTableInstance(
+	cacheBlockSchema.tableName,
+	cacheBlockSchema,
 );
 
+const getTxIDtoBlockIDCacheIndex = () => getTableInstance(
+	mapTxIDtoBlockIDSchema.tableName,
+	mapTxIDtoBlockIDSchema,
+);
+
+const mapTransactionIDstoBlockID = async (transactions, blockID) => {
+	const txToBlockCache = await getTxIDtoBlockIDCacheIndex();
+
+	await BluebirdPromise.map(
+		transactions,
+		async transaction => txToBlockCache.upsert({ transactionID: transaction.id, blockID }),
+		{ concurrency: transactions.length },
+	);
+};
+
 const cacheBlocks = async (blocks) => {
+	const blocksCache = await getBlocksCacheIndex();
+
 	const blocksToCache = Array.isArray(blocks) ? blocks : [blocks];
 
 	await BluebirdPromise.map(
 		blocksToCache,
 		async block => {
-			await blocksCache.set(block.header.id, JSON.stringify(block));
-			await mapTransactionIDstoBlockID(block.transactions, block.header.id);
+			await blocksCache.upsert({ id: block.header.id, block });
+			if (block.transactions.length) {
+				await mapTransactionIDstoBlockID(block.transactions, block.header.id);
+			}
 		},
 		{ concurrency: blocksToCache.length },
 	);
 };
 
-const getBlockByIDFromCache = async (blockID) => {
-	const block = await blocksCache.get(blockID);
+const getBlockByIDFromCache = async (id) => {
+	const blocksCache = await getBlocksCacheIndex();
+	const [{ block } = {}] = await blocksCache.find({ id }, ['block']);
+	if (Object.keys(block).length === 0) return null;
 	const parsedBlock = JSON.parse(block);
 	return parsedBlock;
 };
@@ -61,7 +76,9 @@ const getBlockByIDsFromCache = async (blockIDs) => {
 };
 
 const getTransactionByIDFromCache = async (transactionID) => {
-	const blockID = await txToBlockCache.get(transactionID);
+	const txToBlockCache = await getTxIDtoBlockIDCacheIndex();
+	const [{ blockID }] = await txToBlockCache.find({ transactionID }, ['blockID']);
+	if (!blockID) return null;
 	const block = await getBlockByIDFromCache(blockID);
 	const transaction = block.transactions.find(tx => tx === transactionID);
 	return transaction;
