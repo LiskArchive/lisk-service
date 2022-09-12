@@ -30,7 +30,7 @@ const logger = Logger();
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getBase32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -57,7 +57,7 @@ const normalizeBlock = async (originalblock) => {
 		};
 
 		if (block.generatorAddress) {
-			block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+			block.generatorAddress = await getLisk32AddressFromHex(block.generatorAddress);
 
 			const generatorInfo = await getIndexedAccountInfo(
 				{ address: block.generatorAddress, limit: 1 },
@@ -81,7 +81,7 @@ const normalizeBlock = async (originalblock) => {
 		// TODO: get reward value from block event
 		block.totalForged = BigInt(reward || '0');
 		block.totalBurnt = BigInt('0');
-		block.totalFee = BigInt('0');
+		block.networkFee = BigInt('0');
 
 		block.transactions = await BluebirdPromise.map(
 			block.transactions,
@@ -91,7 +91,7 @@ const normalizeBlock = async (originalblock) => {
 				block.size += txn.size;
 				block.totalForged += BigInt(txn.fee);
 				block.totalBurnt += BigInt(txn.minFee);
-				block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
+				block.networkFee += BigInt(txn.fee) - BigInt(txn.minFee);
 				return txn;
 			},
 			{ concurrency: 1 },
@@ -99,7 +99,7 @@ const normalizeBlock = async (originalblock) => {
 
 		return parseToJSONCompatObj(block);
 	} catch (error) {
-		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}:\n${error.stack}`);
+		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}, id: ${originalblock.header.id}:\n${error.stack}`);
 		throw error;
 	}
 };

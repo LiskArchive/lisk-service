@@ -27,7 +27,6 @@ const transactionsIndexSchema = require('../../../database/schema/transactions')
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = '00000001';
 const commandName = 'registerkeys';
 
 // eslint-disable-next-line no-unused-vars
@@ -47,7 +46,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

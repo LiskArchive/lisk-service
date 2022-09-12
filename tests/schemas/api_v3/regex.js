@@ -27,6 +27,8 @@ const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:
 const FILE_NAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
 const FILE_URL = /^\/api\/v2\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet){1}\b$/;
+const MODULE_COMMAND = /[a-zA-Z]{1,32}:[a-zA-Z]{1,32}/;
+const TOKEN_ID = /^[0-9a-fA-F]{16}$/;
 
 module.exports = {
 	ADDRESS_BASE32,
@@ -43,4 +45,6 @@ module.exports = {
 	FILE_NAME,
 	FILE_URL,
 	NETWORK,
+	MODULE_COMMAND,
+	TOKEN_ID,
 };

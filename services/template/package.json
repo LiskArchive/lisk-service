@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-template-moleculer",
-  "version": "0.6.1",
+  "version": "0.7.0-alpha.0",
   "description": "Lisk Service Template",
   "keywords": [
     "lisk",
@@ -19,8 +19,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": ">=16.14.0 <=16",
-    "npm": ">=8.3.1"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "start": "node app.js",

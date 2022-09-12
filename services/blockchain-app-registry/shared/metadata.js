@@ -163,15 +163,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
-	if (params.network) {
-		const { network, ...remParams } = params;
-		params = remParams;
-		params.whereIn = {
-			property: 'network',
-			values: network.split(','),
-		};
-	}
-
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
@@ -181,10 +172,14 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
-	const tokensResultSet = await tokensDB.find(params, ['network', 'chainID']);
+	const tokensResultSet = await tokensDB.find(params, ['network', 'chainID', 'chainName']);
 
-	blockchainAppsTokenMetadata.data = await BluebirdPromise.map(
-		tokensResultSet,
+	const uniqueChainMap = {};
+	tokensResultSet.forEach(item => uniqueChainMap[item.chainID] = item);
+	const uniqueChainList = Object.values(uniqueChainMap);
+
+	await BluebirdPromise.map(
+		uniqueChainList,
 		async (tokenMeta) => {
 			const [{ appDirName }] = await applicationsDB.find(
 				{ network: tokenMeta.network, chainID: tokenMeta.chainID },
@@ -193,9 +188,16 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			const appPathInClonedRepo = `${dataDir}/${repo}/${tokenMeta.network}/${appDirName}`;
 			const tokenMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.NATIVETOKENS_JSON}`);
 			const parsedTokenMeta = JSON.parse(tokenMetaString);
-			return parsedTokenMeta;
+
+			parsedTokenMeta.tokens.forEach(token => {
+				blockchainAppsTokenMetadata.data.push({
+					...token,
+					chainID: tokenMeta.chainID,
+					chainName: tokenMeta.chainName,
+				});
+			});
 		},
-		{ concurrency: tokensResultSet.length },
+		{ concurrency: uniqueChainList.length },
 	);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188

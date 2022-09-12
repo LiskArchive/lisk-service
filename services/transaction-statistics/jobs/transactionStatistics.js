@@ -20,7 +20,7 @@ const {
 
 const config = require('../config');
 
-const transactionStatistics = require('../shared/transactionStatistics');
+const transactionStatistics = require('../shared/buildTransactionStatistics');
 
 const logger = Logger();
 

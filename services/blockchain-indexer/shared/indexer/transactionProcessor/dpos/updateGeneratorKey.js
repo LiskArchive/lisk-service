@@ -18,7 +18,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getBase32AddressFromPublicKey } = require('../../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
 const config = require('../../../../config');
 
 const logger = Logger();
@@ -32,7 +32,6 @@ const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema,
 const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = '00000004';
 const commandName = 'updateGeneratorKey';
 
 // eslint-disable-next-line no-unused-vars
@@ -41,7 +40,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const validatorsDB = await getValidatorsIndex();
 
 	const account = {
-		address: getBase32AddressFromPublicKey(tx.senderPublicKey),
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		isValidator: true,
 		publicKey: tx.senderPublicKey,
 		generatorKey: tx.params.generatorKey,
@@ -62,7 +61,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

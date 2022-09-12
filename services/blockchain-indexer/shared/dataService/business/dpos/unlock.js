@@ -25,10 +25,10 @@ const {
 } = require('./pom');
 
 const {
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
+	getLisk32AddressFromHex,
+	getHexAddressFromLisk32,
 	getIndexedAccountInfo,
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
 } = require('../../../utils/accountUtils');
 const { getAddressByName } = require('../../../utils/delegateUtils');
@@ -37,7 +37,7 @@ const { requestConnector } = require('../../../utils/request');
 
 const normalizeUnlock = unlock => {
 	const normalizedUnlock = parseToJSONCompatObj(unlock);
-	normalizedUnlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
+	normalizedUnlock.delegateAddress = getLisk32AddressFromHex(unlock.delegateAddress);
 	return normalizedUnlock;
 };
 
@@ -71,10 +71,10 @@ const getUnlocks = async params => {
 	}
 
 	if (params.publicKey) {
-		params.address = await getBase32AddressFromPublicKey(params.publicKey);
+		params.address = await getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
+	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromLisk32(params.address) });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	let normalizedUnlocks;

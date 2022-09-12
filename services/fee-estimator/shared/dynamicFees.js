@@ -14,11 +14,18 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
+const { codec } = require('@liskhq/lisk-codec');
+
+const {
+	utils: { hash },
+} = require('@liskhq/lisk-cryptography');
+
 const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const { calcAvgFeeByteModes, EMAcalc } = require('./utils/dynamicFees');
 const { parseInputBySchema } = require('./utils/parser');
-const { getTxnMinFee, getAllCommandsParamsSchemas } = require('./utils/transactionsUtils');
+const { getTxnMinFee } = require('./utils/transactionsUtils');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
@@ -34,15 +41,27 @@ const calculateBlockSize = async block => {
 };
 
 const calculateWeightedAvg = async blocks => {
-	const blockSizes = await Promise.all(blocks.map(block => calculateBlockSize(block)));
-	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
+	const blockSizes = await BluebirdPromise.map(
+		blocks,
+		async block => calculateBlockSize(block),
+		{ concurrency: blocks.length },
+	);
+	const decayFactor = 1 - (config.feeEstimates.wavgDecayPercentage / 100);
 	let weight = 1;
-	const wavgLastBlocks = blockSizes.reduce((a = 0, b = 0) => {
-		weight *= 1 - decayFactor;
-		return a + (b * weight);
-	});
+	let totalWeight = 0;
 
-	return wavgLastBlocks;
+	const blockSizeSum = blockSizes.reduce(
+		(partialBlockSizeSum, blockSize) => {
+			partialBlockSizeSum += (blockSize * weight);
+			totalWeight += weight;
+			weight *= decayFactor;
+			return partialBlockSizeSum;
+		},
+		0,
+	);
+
+	const blockSizeWeightedAvg = blockSizeSum / totalWeight;
+	return blockSizeWeightedAvg;
 };
 
 const calculateAvgFeePerByte = (mode, transactionDetails) => {
@@ -87,19 +106,33 @@ const calculateFeePerByte = async block => {
 		block.transactions,
 		async tx => {
 			// Calculate minFee from JSON parsed transaction
-			const schema = await getAllCommandsParamsSchemas();
-			const paramsSchema = schema.commands
-				.find(s => s.moduleID === tx.moduleID && s.commandID === tx.commandID);
-			const parsedTxParams = parseInputBySchema(tx.params, paramsSchema);
+			const metadata = await requestConnector('getSystemMetadata');
+			const filteredModule = metadata.modules.find(module => module.name === tx.module);
+			const filteredCommand = filteredModule.commands.find(s => s.name === tx.command);
+
+			const { params } = tx;
+			const decodedParams = codec.decode(filteredCommand.params, Buffer.from(params, 'hex'));
+			const parsedTxParams = parseInputBySchema(decodedParams, filteredCommand.params);
+
+			const schema = await requestConnector('getSchema');
 			const parsedTx = parseInputBySchema(tx, schema.transaction);
-			const minFee = await getTxnMinFee({
-				...parsedTx,
-				params: parsedTxParams,
-			});
+			const parsedTxWithParams = { ...parsedTx, params: parsedTxParams };
+
+			const txBuffer = codec.encode(
+				schema.transaction,
+				{ ...parsedTx, params: Buffer.from(params, 'hex') },
+			);
+
+			// TODO: Remove when transaction ID is available from SDK
+			tx.id = hash(txBuffer).toString('hex');
+			tx.minFee = await getTxnMinFee(parsedTxWithParams);
+			tx.size = txBuffer.length;
+			tx.params = decodedParams;
+
 			return {
 				id: tx.id,
 				size: tx.size,
-				feePriority: Number(tx.fee) - Number(minFee) / tx.size,
+				feePriority: Number(tx.fee) - Number(tx.minFee) / tx.size,
 			};
 		},
 		{ concurrency: block.transactions.length },
@@ -165,17 +198,18 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		/* eslint-disable no-await-in-loop */
 		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
 		const finalEMABatchSize = (() => {
-			const maxEmaBasedOnHeight = prevFeeEstPerByte.blockHeight - genesisHeight;
-			if (idealEMABatchSize > maxEmaBasedOnHeight) return maxEmaBasedOnHeight + 1;
+			const maxEMABasedOnHeight = prevFeeEstPerByte.blockHeight - genesisHeight;
+			if (idealEMABatchSize > maxEMABasedOnHeight) return maxEMABasedOnHeight + 1;
 			return idealEMABatchSize;
 		})();
 
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { header, transactions } = await requestConnector('getBlockByHeight', {
-					height: prevFeeEstPerByte.blockHeight + 1 - i,
-				});
+				const { header, transactions } = await requestConnector(
+					'getBlockByHeight',
+					{ height: prevFeeEstPerByte.blockHeight + 1 - i },
+				);
 				return { ...header, transactions };
 			},
 			{ concurrency: 50 },

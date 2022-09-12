@@ -19,7 +19,7 @@ const {
 
 module.exports = [
 	{
-		name: 'voters',
+		name: 'dpos.votes.received',
 		controller: getVotesReceived,
 		params: {
 			address: { optional: true, type: 'string' },

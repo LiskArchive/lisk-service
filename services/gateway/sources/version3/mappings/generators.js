@@ -16,5 +16,6 @@
 module.exports = {
 	address: '=,string',
 	name: '=,string',
-	nextForgingTime: '=,number',
+	publicKey: '=,string',
+	nextAllocatedTime: '=,number',
 };

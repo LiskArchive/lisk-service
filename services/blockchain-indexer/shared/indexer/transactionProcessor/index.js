@@ -37,21 +37,21 @@ const getCommandProcessors = async (moduleName) => requireAll({
 
 const buildModuleCommandProcessorMap = async () => {
 	const systemMetadata = await requestConnector('getSystemMetadata');
-	const registeredModuleIDs = systemMetadata.modules.map(m => m.id);
+	const registeredModules = systemMetadata.modules.map(m => m.name);
 	const availableModuleProcessors = await getAvailableModuleProcessors();
 
-	const promises = availableModuleProcessors.map(async (moduleName) => {
-		const { index, ...availableCommandProcessors } = await getCommandProcessors(moduleName);
-		const { moduleID } = index;
+	const promises = availableModuleProcessors.map(async (moduleNameVal) => {
+		const { index, ...availableCommandProcessors } = await getCommandProcessors(moduleNameVal);
+		const { moduleName } = index;
 
-		if (registeredModuleIDs.includes(moduleID)) {
-			if (!moduleProcessorMap.has(moduleID)) moduleProcessorMap.set(moduleID, new Map());
+		if (registeredModules.includes(moduleName)) {
+			if (!moduleProcessorMap.has(moduleName)) moduleProcessorMap.set(moduleName, new Map());
 
-			const moduleCommandProcessorMap = moduleProcessorMap.get(moduleID);
+			const moduleCommandProcessorMap = moduleProcessorMap.get(moduleName);
 			Object.values(availableCommandProcessors)
 				.forEach(e => {
-					moduleCommandProcessorMap.set(`apply_${e.commandID}`, e.applyTransaction);
-					moduleCommandProcessorMap.set(`revert_${e.commandID}`, e.revertTransaction);
+					moduleCommandProcessorMap.set(`apply_${e.commandName}`, e.applyTransaction);
+					moduleCommandProcessorMap.set(`revert_${e.commandName}`, e.revertTransaction);
 				});
 		}
 	});
@@ -62,11 +62,11 @@ const buildModuleCommandProcessorMap = async () => {
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
-	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
-	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.moduleID);
+	if (!moduleProcessorMap.has(tx.module)) throw Error(`No processors implemented for transactions related to module: ${tx.module}`);
+	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.module);
 
-	if (!moduleCommandProcessorMap.has(`apply_${tx.commandID}`)) throw Error(`No applyTransaction hook implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
-	const transactionProcessor = moduleCommandProcessorMap.get(`apply_${tx.commandID}`);
+	if (!moduleCommandProcessorMap.has(`apply_${tx.command}`)) throw Error(`No applyTransaction hook implemented for transactions with module: ${tx.module} and command: ${tx.command}`);
+	const transactionProcessor = moduleCommandProcessorMap.get(`apply_${tx.command}`);
 
 	return transactionProcessor(blockHeader, tx, dbTrx);
 };
@@ -74,11 +74,11 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
-	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
-	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.moduleID);
+	if (!moduleProcessorMap.has(tx.module)) throw Error(`No processors implemented for transactions related to module: ${tx.module}`);
+	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.module);
 
-	if (!moduleCommandProcessorMap.has(`revert_${tx.commandID}`)) throw Error(`No revertTransaction hook implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
-	const transactionProcessor = moduleCommandProcessorMap.get(`revert_${tx.commandID}`);
+	if (!moduleCommandProcessorMap.has(`revert_${tx.command}`)) throw Error(`No revertTransaction hook implemented for transactions with module: ${tx.module} and command: ${tx.command}`);
+	const transactionProcessor = moduleCommandProcessorMap.get(`revert_${tx.command}`);
 
 	return transactionProcessor(blockHeader, tx, dbTrx);
 };

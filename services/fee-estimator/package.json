@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-fee-estimator",
-  "version": "0.6.1",
+  "version": "0.7.0-alpha.0",
   "description": "Lisk Service Fee Estimator",
   "keywords": [
     "lisk",
@@ -19,8 +19,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": ">=16.14.0 <=16",
-    "npm": ">=8.3.1"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "start": "node app.js",
@@ -29,7 +29,9 @@
     "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-transactions": "6.0.0-alpha.2",
+    "@liskhq/lisk-codec": "0.3.0-alpha.32139",
+    "@liskhq/lisk-cryptography": "4.0.0-alpha.32139",
+    "@liskhq/lisk-transactions": "6.0.0-alpha.32139",
     "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz"
   },

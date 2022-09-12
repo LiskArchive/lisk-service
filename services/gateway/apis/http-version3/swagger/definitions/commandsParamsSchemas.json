@@ -2,17 +2,11 @@
     "commandsParamsSchema": {
         "type": "object",
         "required": [
-            "moduleCommandID",
-            "moduleCommandName",
+            "moduleCommand",
             "schema"
         ],
         "properties": {
-            "moduleCommandID": {
-                "type": "string",
-                "example": "2:0",
-                "description": "Combination of transaction moduleID:commandID.\n"
-            },
-            "moduleCommandName": {
+            "moduleCommand": {
                 "type": "string",
                 "example": "token:transfer",
                 "description": "Combination of transaction moduleName:commandName.\n"
@@ -140,7 +134,7 @@
             },
             "message": {
                 "type": "string",
-                "example": "Schema corresponding moduleCommandID: '3:1' not found."
+                "example": "Schema corresponding moduleCommand: 'token:transfer' not found."
             }
         }
     }

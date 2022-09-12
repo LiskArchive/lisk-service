@@ -32,11 +32,10 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 	logger.debug(`Estimating fees with 'α' for EMA set to ${alpha}.`);
 
 	const feeEst = {};
-	if (Object.keys(prevFeeEstPerByte).length === 0) prevFeeEstPerByte = {
-		low: 0,
-		med: 0,
-		high: 0,
-	};
+	if (Object.keys(prevFeeEstPerByte).length === 0) {
+		prevFeeEstPerByte = { low: 0, med: 0, high: 0 };
+	}
+
 	Object.keys(feePerByte).forEach((property) => {
 		feeEst[property] = alpha * feePerByte[property] + (1 - alpha) * prevFeeEstPerByte[property];
 	});

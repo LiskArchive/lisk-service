@@ -19,12 +19,12 @@ const {
 	CacheRedis,
 } = require('lisk-service-framework');
 
-const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
+const { getHexAddressFromLisk32, getLisk32AddressFromHex } = require('../../utils/accountUtils');
 
 const { requestConnector } = require('../../utils/request');
 
 const config = require('../../../config');
-const { MODULE_ID } = require('../../constants');
+const { MODULE } = require('../../constants');
 
 const LAST_BLOCK_CACHE = 'lastBlock';
 const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
@@ -33,7 +33,7 @@ const LAST_BLOCK_KEY = 'lastBlock';
 
 const isDposModuleRegistered = async () => {
 	const response = await requestConnector('getSystemMetadata');
-	const isRegistered = response.modules.some(module => module.id === MODULE_ID.DPOS);
+	const isRegistered = response.modules.some(module => module.name === MODULE.DPOS);
 	return isRegistered;
 };
 
@@ -53,6 +53,7 @@ const getAllDelegates = async () => {
 		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
+			delegate.address = getLisk32AddressFromHex(delegate.address);
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.delegateWeight = BigInt('0');
 			} else {
@@ -78,7 +79,7 @@ const getDelegates = async (addresses) => {
 		async address => {
 			const delegate = await requestConnector(
 				'dpos_getDelegate',
-				{ address: getHexAddressFromBase32(address) },
+				{ address: getHexAddressFromLisk32(address) },
 			);
 			return delegate;
 		},

@@ -87,19 +87,19 @@ const getHexAddressFromPublicKey = publicKey => {
 	return binaryAddress.toString('hex');
 };
 
-const getBase32AddressFromHex = address => {
+const getLisk32AddressFromHex = address => {
 	const base32Address = getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 	return base32Address;
 };
 
-const getHexAddressFromBase32 = address => {
+const getHexAddressFromLisk32 = address => {
 	const binaryAddress = getAddressFromLisk32Address(address).toString('hex');
 	return binaryAddress;
 };
 
-const getBase32AddressFromPublicKey = publicKey => {
+const getLisk32AddressFromPublicKey = publicKey => {
 	const hexAddress = getHexAddressFromPublicKey(publicKey);
-	const base32Address = getBase32AddressFromHex(hexAddress);
+	const base32Address = getLisk32AddressFromHex(hexAddress);
 	return base32Address;
 };
 
@@ -198,7 +198,7 @@ const getPublicKeyByAny = async param => {
 const updateAccountPublicKey = async (publicKey) => {
 	const accountsDB = await getAccountsIndex();
 	await accountsDB.upsert({
-		address: getBase32AddressFromPublicKey(publicKey),
+		address: getLisk32AddressFromPublicKey(publicKey),
 		publicKey,
 	});
 };
@@ -212,9 +212,9 @@ module.exports = {
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
 	getLegacyHexAddressFromPublicKey,
 	getHexAddressFromPublicKey,
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromHex,
+	getHexAddressFromLisk32,
+	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
 
 	confirmAnyId,
