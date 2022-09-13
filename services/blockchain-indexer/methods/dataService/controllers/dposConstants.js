@@ -13,26 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
+const dataService = require('../../../shared/dataService');
 
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
-const { getConstants } = require('./constants');
+const getConstants = async params => {
+	const constants = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getConstants(params);
+	if (response.data) constants.data = response.data;
+	if (response.meta) constants.meta = response.meta;
+
+	return constants;
+};
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
-	getUnlocks,
-
 	getConstants,
 };

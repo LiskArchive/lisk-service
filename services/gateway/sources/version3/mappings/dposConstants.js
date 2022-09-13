@@ -13,26 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
-const { getConstants } = require('./constants');
-
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
-	getUnlocks,
-
-	getConstants,
+	factorSelfVotes: '=,number',
+	maxLengthName: '=,number',
+	maxNumberSentVotes: '=,number',
+	maxNumberPendingUnlocks: '=,number',
+	failSafeMissedBlocks: '=,number',
+	failSafeInactiveWindow: '=,number',
+	punishmentWindow: '=,number',
+	roundLength: '=,number',
+	bftThreshold: '=,number',
+	minWeightStandby: '=,string',
+	numberActiveDelegates: '=,number',
+	numberStandbyDelegates: '=,number',
+	tokenIDDPoS: '=,string',
 };

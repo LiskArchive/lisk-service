@@ -14,25 +14,13 @@
  *
  */
 const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
-const { getConstants } = require('./constants');
-
-module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
-	getUnlocks,
-
 	getConstants,
-};
+} = require('./controllers/dposConstants');
+
+module.exports = [
+	{
+		name: 'dpos.constants',
+		controller: getConstants,
+		params: {},
+	},
+];
