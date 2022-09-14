@@ -16,7 +16,10 @@
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const {	jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
+const {
+	jsonRpcEnvelopeSchema,
+	invalidParamsSchema,
+} = require('../../../schemas/rpcGenerics.schema');
 
 const {
 	dposConstantsSchema,
@@ -37,5 +40,12 @@ describe('get.dpos.constants', () => {
 		expect(result.data.minWeightStandby.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDDPoS.length).toBeGreaterThanOrEqual(1);
 		expect(result.meta).toMap(dposConstantsMetaSchema);
+	});
+
+	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
+		const response = await request(wsRpcUrl, 'get.fees', {
+			someparam: 'not_supported',
+		}).catch(e => e);
+		expect(response).toMap(invalidParamsSchema);
 	});
 });

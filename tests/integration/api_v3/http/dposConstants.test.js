@@ -20,6 +20,10 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 
 const {
+	badRequestSchema,
+} = require('../../../schemas/httpGenerics.schema');
+
+const {
 	dposConstantsSchema,
 	dposConstantsMetaSchema,
 } = require('../../../schemas/api_v3/dposConstants.schema');
@@ -34,6 +38,11 @@ describe('DPoS Constants API', () => {
 			expect(response.data.minWeightStandby.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.tokenIDDPoS.length).toBeGreaterThanOrEqual(10);
 			expect(response.meta).toMap(dposConstantsMetaSchema);
+		});
+
+		it('params not supported -> 400 BAD_REQUEST', async () => {
+			const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 });
