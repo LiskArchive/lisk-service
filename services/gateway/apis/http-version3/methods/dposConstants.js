@@ -16,7 +16,7 @@
 
 const dposConstantsSource = require('../../../sources/version3/dposConstants');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const { response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -28,25 +28,24 @@ module.exports = {
 	paramsRequired: true,
 	validParamPairings: [],
 	get schema() {
-		const unlocksSchema = {};
-		unlocksSchema[this.swaggerApiPath] = { get: {} };
-		unlocksSchema[this.swaggerApiPath].get.tags = this.tags;
-		unlocksSchema[this.swaggerApiPath].get.summary = 'Requests DPoS Constants';
-		unlocksSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const constantsSchema = {};
+		constantsSchema[this.swaggerApiPath] = { get: {} };
+		constantsSchema[this.swaggerApiPath].get.tags = this.tags;
+		constantsSchema[this.swaggerApiPath].get.summary = 'Requests DPoS Constants';
+		constantsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns a set of constant values from DPoS Module',
 		});
-		unlocksSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
-		unlocksSchema[this.swaggerApiPath].get.responses = {
+		constantsSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a set of constant values from DPoS Module',
 				schema: {
-					$ref: '#/definitions/dposConstants',
+					$ref: '#/definitions/dposConstantsWithEnvelope',
 				},
 			},
 		};
-		Object.assign(unlocksSchema[this.swaggerApiPath].get.responses, response);
-		return unlocksSchema;
+		Object.assign(constantsSchema[this.swaggerApiPath].get.responses, response);
+		return constantsSchema;
 	},
 	source: dposConstantsSource,
 };
