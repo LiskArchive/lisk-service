@@ -23,7 +23,6 @@ module.exports = {
 	swaggerApiPath: '/dpos/unlocks',
 	rpcMethod: 'get.dpos.unlocks',
 	tags: ['DPoS'],
-	envelope,
 	params: {
 		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
 		name: { optional: true, type: 'string', min: 3, max: 20, pattern: regex.NAME },
@@ -59,4 +58,5 @@ module.exports = {
 		return unlocksSchema;
 	},
 	source: dposUnlocksSource,
+	envelope,
 };

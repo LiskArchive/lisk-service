@@ -16,9 +16,6 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV3 = `${baseUrl}/api/v3`;
-
 const {
 	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
@@ -28,21 +25,19 @@ const {
 	dposConstantsMetaSchema,
 } = require('../../../schemas/api_v3/dposConstants.schema');
 
+const baseUrl = config.SERVICE_ENDPOINT;
+const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/dpos/constants`;
 
 describe('DPoS Constants API', () => {
-	describe(`GET ${endpoint}`, () => {
-		it('Returns unlocks when requested for existing account by address', async () => {
-			const response = await api.get(`${endpoint}`);
-			expect(response.data).toMap(dposConstantsSchema);
-			expect(response.data.minWeightStandby.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.tokenIDDPoS.length).toBeGreaterThanOrEqual(10);
-			expect(response.meta).toMap(dposConstantsMetaSchema);
-		});
+	it('Returns DPoS module constants when called correctly', async () => {
+		const response = await api.get(`${endpoint}`);
+		expect(response.data).toMap(dposConstantsSchema);
+		expect(response.meta).toMap(dposConstantsMetaSchema);
+	});
 
-		it('params not supported -> 400 BAD_REQUEST', async () => {
-			const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
-			expect(response).toMap(badRequestSchema);
-		});
+	it('params not supported -> 400 BAD_REQUEST', async () => {
+		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+		expect(response).toMap(badRequestSchema);
 	});
 });

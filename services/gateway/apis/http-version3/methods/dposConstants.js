@@ -23,15 +23,11 @@ module.exports = {
 	swaggerApiPath: '/dpos/constants',
 	rpcMethod: 'get.dpos.constants',
 	tags: ['DPoS'],
-	envelope,
-	params: {},
-	paramsRequired: true,
-	validParamPairings: [],
 	get schema() {
 		const constantsSchema = {};
 		constantsSchema[this.swaggerApiPath] = { get: {} };
 		constantsSchema[this.swaggerApiPath].get.tags = this.tags;
-		constantsSchema[this.swaggerApiPath].get.summary = 'Requests DPoS Constants';
+		constantsSchema[this.swaggerApiPath].get.summary = 'Requests DPoS Module Constants';
 		constantsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns a set of constant values from DPoS Module',
@@ -48,4 +44,5 @@ module.exports = {
 		return constantsSchema;
 	},
 	source: dposConstantsSource,
+	envelope,
 };

@@ -37,8 +37,6 @@ describe('get.dpos.constants', () => {
 
 		const { result } = response;
 		expect(result.data).toMap(dposConstantsSchema);
-		expect(result.data.minWeightStandby.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.tokenIDDPoS.length).toBeGreaterThanOrEqual(1);
 		expect(result.meta).toMap(dposConstantsMetaSchema);
 	});
 
