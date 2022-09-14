@@ -67,7 +67,8 @@ const getUnlocks = async params => {
 	return unlocks;
 };
 
-// TODO: Remove mocked response once we are able to create vote transactions, also move the import to top
+// TODO: Remove mocked response once we are able to create vote transactions
+// and move the imports to top
 
 // const { HTTP } = require('lisk-service-framework');
 // const { StatusCodes: { NOT_FOUND } } = HTTP;

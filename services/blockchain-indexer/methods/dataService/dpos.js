@@ -13,7 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegates } = require('./controllers/dpos');
+const {
+	getDelegates,
+	getDPoSConstants,
+	getUnlocks,
+	getVotesReceived,
+	getVotesSent,
+} = require('./controllers/dpos');
 
 module.exports = [
 	{
