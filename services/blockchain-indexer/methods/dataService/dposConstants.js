@@ -14,13 +14,13 @@
  *
  */
 const {
-	getConstants,
+	getDPoSConstants,
 } = require('./controllers/dposConstants');
 
 module.exports = [
 	{
 		name: 'dpos.constants',
-		controller: getConstants,
+		controller: getDPoSConstants,
 		params: {},
 	},
 ];

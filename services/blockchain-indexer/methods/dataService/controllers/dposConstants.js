@@ -15,13 +15,13 @@
  */
 const dataService = require('../../../shared/dataService');
 
-const getConstants = async params => {
+const getDPoSConstants = async () => {
 	const constants = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getConstants(params);
+	const response = await dataService.getDPoSConstants();
 	if (response.data) constants.data = response.data;
 	if (response.meta) constants.meta = response.meta;
 
@@ -29,5 +29,5 @@ const getConstants = async params => {
 };
 
 module.exports = {
-	getConstants,
+	getDPoSConstants,
 };
