@@ -30,9 +30,9 @@
     "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-api-client": "6.0.0-alpha.32139",
-    "@liskhq/lisk-codec": "0.3.0-alpha.32139",
-    "@liskhq/lisk-cryptography": "4.0.0-alpha.32139",
+    "@liskhq/lisk-api-client": "6.0.0-alpha.3",
+    "@liskhq/lisk-codec": "0.3.0-alpha.3",
+    "@liskhq/lisk-cryptography": "4.0.0-alpha.3",
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/6b0ca58154c3198b07b7708fd75f9b2c0fca8994/framework/dist/lisk-service-framework-1.4.5.tgz",
