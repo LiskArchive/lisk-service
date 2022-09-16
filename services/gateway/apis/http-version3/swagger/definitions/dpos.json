@@ -290,7 +290,7 @@
             }
         }
     },
-    "dposConstantsWithEnvelope": {
+    "DposConstantsWithEnvelope": {
         "type": "object",
         "required": [
             "data",
