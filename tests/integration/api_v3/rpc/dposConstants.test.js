@@ -41,7 +41,7 @@ describe('get.dpos.constants', () => {
 	});
 
 	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
-		const response = await request(wsRpcUrl, 'get.fees', {
+		const response = await request(wsRpcUrl, 'get.dpos.constants', {
 			someparam: 'not_supported',
 		}).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
