@@ -290,7 +290,7 @@
             }
         }
     },
-    "DposConstantsWithEnvelope": {
+    "DPoSConstantsWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -314,12 +314,12 @@
                     "maxNumberSentVotes": {
                         "type": "integer",
                         "example": 10,
-                        "description": "The maximum size of the sentVotes array of a voter substore entry."
+                        "description": "The maximum size of the sentVotes array of a voter."
                     },
                     "maxNumberPendingUnlocks": {
                         "type": "integer",
                         "example": 20,
-                        "description": "The maximum size of the pendingUnlocks array of a voter substore entry."
+                        "description": "The maximum size of the pendingUnlocks array of a voter."
                     },
                     "failSafeMissedBlocks": {
                         "type": "integer",
@@ -359,7 +359,7 @@
                     "numberStandbyDelegates": {
                         "type": "integer",
                         "example": 2,
-                        "description": "The number of standby delegates. This LIP is specified for the number of standby delegates being 0, 1 or 2."
+                        "description": "The number of standby delegates."
                     },
                     "tokenIDDPoS": {
                         "type": "string",

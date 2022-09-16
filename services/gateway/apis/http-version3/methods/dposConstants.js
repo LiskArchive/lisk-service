@@ -36,7 +36,7 @@ module.exports = {
 			200: {
 				description: 'Returns a set of constants exposed from DPoS Module',
 				schema: {
-					$ref: '#/definitions/DposConstantsWithEnvelope',
+					$ref: '#/definitions/DPoSConstantsWithEnvelope',
 				},
 			},
 		};
