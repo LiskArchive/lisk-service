@@ -68,26 +68,7 @@ const getUnlocks = async params => {
 };
 
 // TODO: Remove mocked response once we are able to create vote transactions
-// and move the imports to top
-
-// const { HTTP } = require('lisk-service-framework');
-// const { StatusCodes: { NOT_FOUND } } = HTTP;
-
-// const {
-// 	confirmAnyId,
-// } = require('../../../shared/accountUtils');
-
 const getVotesReceived = async params => {
-	// const isFound = await confirmAnyId(params);
-	// if (!isFound && params.address) {
-	// 	return {
-	// 		status: NOT_FOUND, data: { error: `Account with address ${params.address} not found.` }
-	// 	}
-	// };
-	// if (!isFound && params.name) {
-	// 	return { status: NOT_FOUND, data: { error: `Account with name ${params.name} not found.` } }
-	// }
-
 	// const votesReceived = {
 	// 	data: {},
 	// 	meta: {},

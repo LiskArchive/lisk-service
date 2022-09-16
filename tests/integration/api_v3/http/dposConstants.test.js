@@ -34,6 +34,8 @@ describe('DPoS Constants API', () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response.data).toMap(dposConstantsSchema);
 		expect(response.meta).toMap(dposConstantsMetaSchema);
+
+		expect(response.data.roundLength).toEqual(response.data.numberActiveDelegates + response.data.numberStandbyDelegates);
 	});
 
 	it('params not supported -> 400 BAD_REQUEST', async () => {
