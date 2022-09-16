@@ -339,7 +339,7 @@
                     "roundLength": {
                         "type": "integer",
                         "example": 10,
-                        "description": "The round length."
+                        "description": "The round length i.e the sum of active and standby delegates"
                     },
                     "bftThreshold": {
                         "type": "integer",
