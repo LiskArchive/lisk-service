@@ -39,7 +39,8 @@ describe('get.dpos.constants', () => {
 		expect(result.data).toMap(dposConstantsSchema);
 		expect(result.meta).toMap(dposConstantsMetaSchema);
 
-		expect(result.data.roundLength).toEqual(result.data.numberActiveDelegates + result.data.numberStandbyDelegates);
+		expect(result.data.roundLength)
+			.toEqual(result.data.numberActiveDelegates + result.data.numberStandbyDelegates);
 	});
 
 	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
