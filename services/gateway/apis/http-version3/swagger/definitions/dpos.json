@@ -314,22 +314,22 @@
                     "maxNumberSentVotes": {
                         "type": "integer",
                         "example": 10,
-                        "description": "The maximum size of the sentVotes array of a voter."
+                        "description": "The maximum number of delegates any voter can vote for."
                     },
                     "maxNumberPendingUnlocks": {
                         "type": "integer",
                         "example": 20,
-                        "description": "The maximum size of the pendingUnlocks array of a voter."
+                        "description": "The maximum number of pending unlocks allowed for a voter."
                     },
                     "failSafeMissedBlocks": {
                         "type": "integer",
                         "example": 50,
-                        "description": "The number of consecutive missed blocks used in the fail safe banning mechanism."
+                        "description": "The number of consecutive missed blocks used in the fail-safe banning mechanism."
                     },
                     "failSafeInactiveWindow": {
                         "type": "integer",
                         "example": 260000,
-                        "description": "The length of the inactivity window used in the fail safe banning mechanism."
+                        "description": "The length of the inactivity window used in the fail-safe banning mechanism."
                     },
                     "punishmentWindow": {
                         "type": "integer",
@@ -339,7 +339,7 @@
                     "roundLength": {
                         "type": "integer",
                         "example": 10,
-                        "description": "The round length i.e the sum of active and standby delegates"
+                        "description": "The number of blocks in a round and is the sum total of the active and the standby delegates."
                     },
                     "bftThreshold": {
                         "type": "integer",
