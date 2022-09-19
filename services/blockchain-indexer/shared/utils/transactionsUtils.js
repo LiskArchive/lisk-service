@@ -27,7 +27,6 @@ const {
 } = require('../constants');
 
 const { requestConnector } = require('./request');
-const { getLisk32AddressFromHex } = require('./accountUtils');
 const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
 const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
 
@@ -79,11 +78,11 @@ const normalizeTransaction = async tx => {
 	tx.moduleCommand = `${tx.module}:${tx.command}`;
 	if (tx.params.recipientAddress) {
 		tx.params
-			.recipientAddress = getLisk32AddressFromHex(tx.params.recipientAddress);
+			.recipientAddress = tx.params.recipientAddress;
 	}
 	if (tx.params.votes && tx.params.votes.length) {
 		tx.params.votes
-			.forEach(vote => vote.delegateAddress = getLisk32AddressFromHex(vote.delegateAddress));
+			.forEach(vote => vote.delegateAddress);
 	}
 
 	// TODO: Set execution status from observing the events

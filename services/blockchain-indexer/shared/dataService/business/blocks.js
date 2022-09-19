@@ -30,7 +30,7 @@ const logger = Logger();
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -57,7 +57,7 @@ const normalizeBlock = async (originalblock) => {
 		};
 
 		if (block.generatorAddress) {
-			block.generatorAddress = await getLisk32AddressFromHex(block.generatorAddress);
+			block.generatorAddress = block.generatorAddress;
 
 			const generatorInfo = await getIndexedAccountInfo(
 				{ address: block.generatorAddress, limit: 1 },

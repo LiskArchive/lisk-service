@@ -87,19 +87,9 @@ const getHexAddressFromPublicKey = publicKey => {
 	return binaryAddress.toString('hex');
 };
 
-const getLisk32AddressFromHex = address => {
-	const base32Address = getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
-	return base32Address;
-};
-
-const getHexAddressFromLisk32 = address => {
-	const binaryAddress = getAddressFromLisk32Address(address).toString('hex');
-	return binaryAddress;
-};
-
 const getLisk32AddressFromPublicKey = publicKey => {
 	const hexAddress = getHexAddressFromPublicKey(publicKey);
-	const base32Address = getLisk32AddressFromHex(hexAddress);
+	const base32Address = hexAddress;
 	return base32Address;
 };
 
@@ -212,8 +202,6 @@ module.exports = {
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
 	getLegacyHexAddressFromPublicKey,
 	getHexAddressFromPublicKey,
-	getLisk32AddressFromHex,
-	getHexAddressFromLisk32,
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
 
