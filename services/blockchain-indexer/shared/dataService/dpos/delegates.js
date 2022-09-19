@@ -47,7 +47,7 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.address === b.address;
+	return a.address.localeCompare(b);
 };
 
 // TODO: Remove code after SDK returns rank
@@ -274,9 +274,8 @@ const updateDelegateListEveryBlock = () => {
 
 // Updates the account details of the delegates
 const updateDelegateListOnAccountsUpdate = () => {
-	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
-		hexAddresses.forEach(async hexAddress => {
-			const address = hexAddress;
+	const updateDelegateListOnAccountsUpdateListener = (addresses) => {
+		addresses.forEach(async address => {
 			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
 			const delegate = delegateList[delegateIndex] || {};
 			if (Object.getOwnPropertyNames(delegate).length) {

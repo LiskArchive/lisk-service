@@ -33,12 +33,6 @@ const { getAddressByName } = require('../../../utils/delegateUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
 
-const normalizeUnlock = unlock => {
-	const normalizedUnlock = parseToJSONCompatObj(unlock);
-	normalizedUnlock.delegateAddress = unlock.delegateAddress;
-	return normalizedUnlock;
-};
-
 const calculateUnlockEndHeight = (unlock, account, delegateAcc) => {
 	if (unlock.delegateAddress === account.address) { // self-unvote
 		const pomHeight = findPomHeightForUnlock(unlock, account, true);
@@ -78,7 +72,7 @@ const getUnlocks = async params => {
 	let normalizedUnlocks;
 
 	if (!response.error) {
-		normalizedUnlocks = response.pendingUnlocks.map(unlock => normalizeUnlock(unlock));
+		normalizedUnlocks = response.pendingUnlocks.map(unlock => parseToJSONCompatObj(unlock));
 	} else {
 		normalizedUnlocks = [];
 	}

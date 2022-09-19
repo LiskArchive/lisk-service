@@ -16,9 +16,7 @@
 const {
 	validateAddress,
 	validatePublicKey,
-	getHexAddressFromPublicKey,
-	getBase32AddressFromHex,
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 } = require('../../shared/helpers/account');
 
 const {
@@ -52,18 +50,8 @@ describe('Account utils', () => {
 	});
 
 	describe('Extract address from a valid publicKey', () => {
-		it('returns correct hex address from a valid publicKey', async () => {
-			const hexAddress = getHexAddressFromPublicKey(valid.publicKey);
-			expect(hexAddress).toBe(valid.hexAddress);
-		});
-
-		it('returns correct base32 address from a valid hex address', async () => {
-			const address = getBase32AddressFromHex(valid.hexAddress);
-			expect(address).toBe(valid.address);
-		});
-
 		it('returns correct base32 address from a valid publicKey', async () => {
-			const address = getBase32AddressFromPublicKey(valid.publicKey);
+			const address = getLisk32AddressFromPublicKey(valid.publicKey);
 			expect(address).toBe(valid.address);
 		});
 	});

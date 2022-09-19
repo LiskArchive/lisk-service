@@ -16,7 +16,7 @@
 const {
 	utils: { hash },
 	address: {
-		getAddressFromPublicKey,
+		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
 	},
 	legacyAddress: {
 		getFirstEightBytesReversed,
@@ -80,16 +80,7 @@ const getLegacyHexAddressFromPublicKey = publicKey => {
 	return legacyHexAddress;
 };
 
-const getHexAddressFromPublicKey = publicKey => {
-	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
-	return binaryAddress.toString('hex');
-};
-
-const getLisk32AddressFromPublicKey = publicKey => {
-	const hexAddress = getHexAddressFromPublicKey(publicKey);
-	const base32Address = hexAddress;
-	return base32Address;
-};
+const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
@@ -199,7 +190,6 @@ module.exports = {
 	getAccountsBySearch,
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
 	getLegacyHexAddressFromPublicKey,
-	getHexAddressFromPublicKey,
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
 
