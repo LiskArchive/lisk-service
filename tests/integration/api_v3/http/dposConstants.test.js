@@ -30,7 +30,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/dpos/constants`;
 
 describe('DPoS Constants API', () => {
-	it('Returns DPoS module constants when called correctly', async () => {
+	it('returns DPoS module constants when called correctly', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response.data).toMap(dposConstantsSchema);
 		expect(response.meta).toMap(dposConstantsMetaSchema);

@@ -298,18 +298,18 @@
         ],
         "properties": {
             "data": {
-                "description": "DPoS Module constants",
+                "description": "DPoS module constants",
                 "type": "object",
                 "properties": {
                     "factorSelfVotes": {
                         "type": "integer",
                         "example": 10,
-                        "description": "The factor multiplying the self-votes of a delegate for the delegate weight computation."
+                        "description": "The factor multiplying the self-votes of a delegate for the delegate weight computation. It is used to set the ceiling for the delegate weight."
                     },
                     "maxLengthName": {
                         "type": "integer",
                         "example": 20,
-                        "description": "The maximum allowed name length for delegates."
+                        "description": "The maximum number of characters allowed for a delegate name."
                     },
                     "maxNumberSentVotes": {
                         "type": "integer",
@@ -344,7 +344,7 @@
                     "bftThreshold": {
                         "type": "integer",
                         "example": 68,
-                        "description": "The precommit and certificate thresholds used by the BFT module."
+                        "description": "The pre-commit and certificate thresholds used by the BFT module."
                     },
                     "minWeightStandby": {
                         "type": "string",
@@ -354,12 +354,12 @@
                     "numberActiveDelegates": {
                         "type": "integer",
                         "example": 101,
-                        "description": "The number of active delegates."
+                        "description": "The number of active delegates in a round."
                     },
                     "numberStandbyDelegates": {
                         "type": "integer",
                         "example": 2,
-                        "description": "The number of standby delegates."
+                        "description": "The number of standby delegates in a round."
                     },
                     "tokenIDDPoS": {
                         "type": "string",

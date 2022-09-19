@@ -31,7 +31,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getDPoSConstants = async (params) => request(wsRpcUrl, 'get.dpos.constants', params);
 
 describe('get.dpos.constants', () => {
-	it('Returns constants from sdk dpos module when requested', async () => {
+	it('returns constants from sdk dpos module when requested', async () => {
 		const response = await getDPoSConstants();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 

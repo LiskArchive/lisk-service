@@ -30,11 +30,11 @@ module.exports = {
 		constantsSchema[this.swaggerApiPath].get.summary = 'Requests DPoS Module Constants';
 		constantsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns a set of constants exposed from DPoS Module',
+			description: 'Requests all the configured constants for the DPoS module',
 		});
 		constantsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a set of constants exposed from DPoS Module',
+				description: 'Returns all the configured constants for the DPoS module',
 				schema: {
 					$ref: '#/definitions/DPoSConstantsWithEnvelope',
 				},
