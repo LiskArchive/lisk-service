@@ -38,7 +38,7 @@ const getLiskBalanceByAddress = async (address) => {
 	const response = await requestConnector(
 		'token_getBalance',
 		{
-			address: address,
+			address,
 			tokenID: LISK_TOKEN_ID,
 		},
 	);

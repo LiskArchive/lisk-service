@@ -51,7 +51,6 @@ const getAllDelegates = async () => {
 		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
-			delegate.address = delegate.address;
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.delegateWeight = BigInt('0');
 			} else {
@@ -77,7 +76,7 @@ const getDelegates = async (addresses) => {
 		async address => {
 			const delegate = await requestConnector(
 				'dpos_getDelegate',
-				{ address: address },
+				{ address },
 			);
 			return delegate;
 		},

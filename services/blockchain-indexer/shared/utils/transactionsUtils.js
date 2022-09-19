@@ -76,10 +76,7 @@ const normalizeTransaction = async tx => {
 	tx.params = decodedParams;
 
 	tx.moduleCommand = `${tx.module}:${tx.command}`;
-	if (tx.params.recipientAddress) {
-		tx.params
-			.recipientAddress = tx.params.recipientAddress;
-	}
+
 	if (tx.params.votes && tx.params.votes.length) {
 		tx.params.votes
 			.forEach(vote => vote.delegateAddress);

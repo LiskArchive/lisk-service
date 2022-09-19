@@ -57,8 +57,6 @@ const normalizeBlock = async (originalblock) => {
 		};
 
 		if (block.generatorAddress) {
-			block.generatorAddress = block.generatorAddress;
-
 			const generatorInfo = await getIndexedAccountInfo(
 				{ address: block.generatorAddress, limit: 1 },
 				['publicKey', 'name'],

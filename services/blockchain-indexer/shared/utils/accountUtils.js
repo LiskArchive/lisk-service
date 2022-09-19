@@ -17,8 +17,6 @@ const {
 	utils: { hash },
 	address: {
 		getAddressFromPublicKey,
-		getLisk32AddressFromAddress,
-		getAddressFromLisk32Address,
 	},
 	legacyAddress: {
 		getFirstEightBytesReversed,
