@@ -22,6 +22,7 @@ const {
 const { getVotesReceived } = require('./votesReceived');
 const { getVotesSent } = require('./votesSent');
 const { getUnlocks } = require('./unlocks');
+const { getDPoSConstants } = require('./constants');
 
 module.exports = {
 	reloadDelegateCache,
@@ -32,4 +33,6 @@ module.exports = {
 	getVotesReceived,
 
 	getUnlocks,
+
+	getDPoSConstants,
 };

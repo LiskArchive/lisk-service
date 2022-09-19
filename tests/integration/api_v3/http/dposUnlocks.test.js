@@ -16,9 +16,6 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV3 = `${baseUrl}/api/v3`;
-
 const {
 	badRequestSchema,
 	metaSchema,
@@ -28,6 +25,8 @@ const {
 	unlockSchema,
 } = require('../../../schemas/api_v3/unlock.schema');
 
+const baseUrl = config.SERVICE_ENDPOINT;
+const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/dpos/unlocks`;
 
 // TODO: Enable when test blockchain is updated

@@ -13,21 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
+const dataService = require('../business');
 
-const getVotesSent = async params => {
-	const votesSent = {
-		data: {},
-		meta: {},
-	};
-
-	const response = await dataService.getVotesSent(params);
-	if (response.data) votesSent.data = response.data;
-	if (response.meta) votesSent.meta = response.meta;
-
-	return votesSent;
+const getDPoSConstants = async () => {
+	const response = await dataService.getDPoSConstants();
+	return response;
 };
 
 module.exports = {
-	getVotesSent,
+	getDPoSConstants,
 };

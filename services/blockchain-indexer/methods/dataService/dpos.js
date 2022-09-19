@@ -13,7 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegates } = require('./controllers/dpos');
+const {
+	getDelegates,
+	getDPoSConstants,
+	getUnlocks,
+	getVotesReceived,
+	getVotesSent,
+} = require('./controllers/dpos');
 
 module.exports = [
 	{
@@ -25,6 +31,42 @@ module.exports = [
 			status: { optional: true, type: 'any' },
 			offset: { optional: true, type: 'any' },
 			limit: { optional: true, type: 'any' },
+		},
+	},
+	{
+		name: 'dpos.constants',
+		controller: getDPoSConstants,
+		params: {},
+	},
+	{
+		name: 'dpos.unlocks',
+		controller: getUnlocks,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'dpos.votes.received',
+		controller: getVotesReceived,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'dpos.votes.sent',
+		controller: getVotesSent,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
 		},
 	},
 ];
