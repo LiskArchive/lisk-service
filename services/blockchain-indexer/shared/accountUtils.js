@@ -13,11 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
-
-const ObjectUtilService = Utils.Data;
-const { isEmptyArray } = ObjectUtilService;
-
 const dataService = require('./dataService');
 
 const isStringType = value => typeof value === 'string';

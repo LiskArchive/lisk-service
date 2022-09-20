@@ -84,7 +84,7 @@ const normalizeTransaction = async tx => {
 	}
 
 	// TODO: Remove conversion from hex once SDK returns LSK addresses
-	if(tx.params.recipientAddress) {
+	if (tx.params.recipientAddress) {
 		tx.params.recipientAddress = getLisk32AddressFromHexAddress(tx.params.recipientAddress.toString('hex'));
 	}
 
