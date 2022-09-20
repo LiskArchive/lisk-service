@@ -23,7 +23,7 @@ module.exports = {
 		generatorAddress: { type: 'string' },
 		size: { type: 'integer' },
 		isFinal: { type: 'boolean', defaultValue: false },
-		assetsModuleIDs: { type: 'json' },
+		assetsModules: { type: 'json' },
 		numberOfEvents: { type: 'integer' },
 		reward: { type: 'bigInteger' },
 	},

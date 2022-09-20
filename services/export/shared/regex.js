@@ -13,14 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
+const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
+
 module.exports = {
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-	},
-	assets: ['assets', {
-		module: '=,string',
-		data: '=', // TODO: Update data schema once confirmed from sdk
-	}],
+	PUBLIC_KEY,
+	ADDRESS_LISK32,
 };

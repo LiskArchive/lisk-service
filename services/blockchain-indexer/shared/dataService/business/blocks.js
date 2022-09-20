@@ -30,7 +30,7 @@ const logger = Logger();
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -57,8 +57,6 @@ const normalizeBlock = async (originalblock) => {
 		};
 
 		if (block.generatorAddress) {
-			block.generatorAddress = await getLisk32AddressFromHex(block.generatorAddress);
-
 			const generatorInfo = await getIndexedAccountInfo(
 				{ address: block.generatorAddress, limit: 1 },
 				['publicKey', 'name'],
@@ -237,9 +235,9 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const filterBlockAssets = (moduleIDs, block) => {
-	const filteredBlockAssets = moduleIDs.length
-		? block.assets.filter(asset => moduleIDs.includes(String(asset.moduleID)))
+const filterBlockAssets = (modules, block) => {
+	const filteredBlockAssets = modules.length
+		? block.assets.filter(asset => modules.includes(String(asset.module)))
 		: block.assets;
 	return filteredBlockAssets;
 };
@@ -251,7 +249,7 @@ const getBlocksAssets = async (params) => {
 		meta: {},
 	};
 
-	const moduleIDs = [];
+	const modules = [];
 
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
@@ -267,12 +265,12 @@ const getBlocksAssets = async (params) => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	if (params.moduleID) {
-		const { moduleID, ...remParams } = params;
-		const moduleIDArr = String(moduleID).split(',');
-		moduleIDs.push(...moduleIDArr);
+	if (params.module) {
+		const { module, ...remParams } = params;
+		const moduleArr = String(module).split(',');
+		modules.push(...moduleArr);
 		params = remParams;
-		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: moduleIDs };
+		params.whereJsonSupersetOf = { property: 'assetsModules', values: modules };
 	}
 
 	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
@@ -291,7 +289,7 @@ const getBlocksAssets = async (params) => {
 					height: block.height,
 					timestamp: block.timestamp,
 				},
-				assets: filterBlockAssets(moduleIDs, block),
+				assets: filterBlockAssets(modules, block),
 			};
 		},
 		{ concurrency: blocksFromDB.length },

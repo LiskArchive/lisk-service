@@ -14,11 +14,9 @@
  *
  */
 const {
-	validateAddress,
+	validateLisk32Address,
 	validatePublicKey,
-	getHexAddressFromPublicKey,
-	getBase32AddressFromHex,
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 } = require('../../shared/helpers/account');
 
 const {
@@ -28,13 +26,13 @@ const {
 
 describe('Account utils', () => {
 	describe('Validate address', () => {
-		it('returns true for valid Base32 address', async () => {
-			const isValid = validateAddress(valid.address);
+		it('returns true for valid Lisk32 address', async () => {
+			const isValid = validateLisk32Address(valid.address);
 			expect(isValid).toBe(true);
 		});
 
-		it('returns false for invalid Base32 address', async () => {
-			const isInvalid = validateAddress(invalid.address);
+		it('returns false for invalid Lisk32 address', async () => {
+			const isInvalid = validateLisk32Address(invalid.address);
 			expect(isInvalid).toBe(false);
 		});
 	});
@@ -52,18 +50,8 @@ describe('Account utils', () => {
 	});
 
 	describe('Extract address from a valid publicKey', () => {
-		it('returns correct hex address from a valid publicKey', async () => {
-			const hexAddress = getHexAddressFromPublicKey(valid.publicKey);
-			expect(hexAddress).toBe(valid.hexAddress);
-		});
-
-		it('returns correct base32 address from a valid hex address', async () => {
-			const address = getBase32AddressFromHex(valid.hexAddress);
-			expect(address).toBe(valid.address);
-		});
-
-		it('returns correct base32 address from a valid publicKey', async () => {
-			const address = getBase32AddressFromPublicKey(valid.publicKey);
+		it('returns correct Lisk32 address from a valid publicKey', async () => {
+			const address = getLisk32AddressFromPublicKey(valid.publicKey);
 			expect(address).toBe(valid.address);
 		});
 	});

@@ -39,13 +39,12 @@
         "minLength": 1,
         "maxLength": 41
     },
-    "status": {
+    "ccmStatus": {
         "name": "status",
         "in": "query",
         "description": "Query CCMs by status",
         "type": "string",
-        "minLength": 1,
-        "default": false
+        "minLength": 1
     },
     "nonce": {
         "name": "nonce",

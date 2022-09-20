@@ -15,7 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { getGenesisConfig } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../utils/delegateUtils');
@@ -31,10 +31,9 @@ const getGenerators = async () => {
 			);
 
 			return {
-				address: getLisk32AddressFromHex(generator.address),
+				...generator,
 				name: name || await getNameByAddress(generator.address),
 				publicKey,
-				nextAllocatedTime: generator.nextAllocatedTime,
 			};
 		});
 

@@ -24,7 +24,6 @@ const {
 } = require('lisk-service-framework');
 
 const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
-const { getHexAddressFromLisk32 } = require('../../utils/accountUtils');
 const { requestConnector, requestAppRegistry } = require('../../utils/request');
 const regex = require('../../utils/regex');
 const { getAccountKnowledge } = require('../../knownAccounts');
@@ -60,15 +59,15 @@ const getTokens = async (params) => {
 
 	// TODO: Add logic to retrieve symbol and name from the SDK once endpoint is available
 	if (params.tokenID && params.address) {
-		const response = await requestConnector('token_getBalance', {
-			address: getHexAddressFromLisk32(params.address), tokenID: params.tokenID,
-		});
+		const response = await requestConnector(
+			'token_getBalance',
+			{ address: params.address, tokenID: params.tokenID });
 
 		tokensInfo = [{ ...response, tokenID: params.tokenID }];
 	} else {
-		const response = await requestConnector('token_getBalances', {
-			address: getHexAddressFromLisk32(params.address),
-		});
+		const response = await requestConnector(
+			'token_getBalances',
+			{ address: params.address });
 
 		tokensInfo = response.balances;
 	}

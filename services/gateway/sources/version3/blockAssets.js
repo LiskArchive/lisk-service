@@ -21,7 +21,7 @@ module.exports = {
 	params: {
 		blockID: '=,string',
 		height: '=,string',
-		moduleID: '=,string',
+		module: '=,string',
 		timestamp: '=,string',
 		offset: '=,number',
 		limit: '=,number',

@@ -25,11 +25,7 @@ const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
-const {
-	getLisk32AddressFromPublicKey,
-	getLisk32AddressFromHex,
-	getHexAddressFromLisk32,
-} = require('../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
@@ -51,8 +47,7 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return Buffer.from(getHexAddressFromLisk32(a.address), 'hex')
-		.compare(Buffer.from(getHexAddressFromLisk32(b.address), 'hex'));
+	return a.address.localeCompare(b.address, 'en');
 };
 
 // TODO: Remove code after SDK returns rank
@@ -139,7 +134,7 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	const allDelegates = await getAllDelegates();
 	const relevantDelegates = allDelegates.filter(delegate => (
 		(!params.name || delegate.name === params.name)
-		&& (!params.address || delegate.account.address === params.address)
+		&& (!params.address || delegate.address === params.address)
 	));
 	return relevantDelegates.length;
 };
@@ -219,8 +214,8 @@ const updateDelegateListEveryBlock = () => {
 						updatedDelegateAddresses
 							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
-						tx.params.votes.forEach(vote => updatedDelegateAddresses
-							.push(getLisk32AddressFromHex(vote.delegateAddress)));
+						tx.params.votes
+							.forEach(vote => updatedDelegateAddresses.push(vote.delegateAddress));
 					}
 				}
 			});
@@ -279,9 +274,8 @@ const updateDelegateListEveryBlock = () => {
 
 // Updates the account details of the delegates
 const updateDelegateListOnAccountsUpdate = () => {
-	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
-		hexAddresses.forEach(async hexAddress => {
-			const address = getLisk32AddressFromHex(hexAddress);
+	const updateDelegateListOnAccountsUpdateListener = (addresses) => {
+		addresses.forEach(async address => {
 			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
 			const delegate = delegateList[delegateIndex] || {};
 			if (Object.getOwnPropertyNames(delegate).length) {

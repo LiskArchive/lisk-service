@@ -25,8 +25,6 @@ const {
 } = require('./pom');
 
 const {
-	getLisk32AddressFromHex,
-	getHexAddressFromLisk32,
 	getIndexedAccountInfo,
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
@@ -34,12 +32,6 @@ const {
 const { getAddressByName } = require('../../../utils/delegateUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
-
-const normalizeUnlock = unlock => {
-	const normalizedUnlock = parseToJSONCompatObj(unlock);
-	normalizedUnlock.delegateAddress = getLisk32AddressFromHex(unlock.delegateAddress);
-	return normalizedUnlock;
-};
 
 const calculateUnlockEndHeight = (unlock, account, delegateAcc) => {
 	if (unlock.delegateAddress === account.address) { // self-unvote
@@ -60,6 +52,8 @@ const standardizeUnlockHeight = (unlock, account, delegateAcc) => ({
 	end: calculateUnlockEndHeight(unlock, account, delegateAcc),
 });
 
+const normalizeUnlock = unlock => parseToJSONCompatObj(unlock);
+
 const getUnlocks = async params => {
 	const unlocks = {
 		data: {},
@@ -74,7 +68,7 @@ const getUnlocks = async params => {
 		params.address = await getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromLisk32(params.address) });
+	const response = await requestConnector('dpos_getVoter', { address: params.address });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	let normalizedUnlocks;

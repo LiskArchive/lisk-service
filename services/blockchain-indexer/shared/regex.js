@@ -13,14 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
+
 module.exports = {
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-	},
-	assets: ['assets', {
-		module: '=,string',
-		data: '=', // TODO: Update data schema once confirmed from sdk
-	}],
+	ADDRESS_BASE32,
 };
