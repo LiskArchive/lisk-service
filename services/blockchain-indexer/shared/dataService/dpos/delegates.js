@@ -134,7 +134,7 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	const allDelegates = await getAllDelegates();
 	const relevantDelegates = allDelegates.filter(delegate => (
 		(!params.name || delegate.name === params.name)
-		&& (!params.address || delegate.account.address === params.address)
+		&& (!params.address || delegate.address === params.address)
 	));
 	return relevantDelegates.length;
 };

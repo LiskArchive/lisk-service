@@ -18,7 +18,6 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
-const { getLisk32AddressFromHexAddress } = require('../../../utils/accountUtils');
 
 const logger = Logger();
 
@@ -51,8 +50,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	tx.amount = tx.params.amount;
 	tx.data = tx.params.data;
 
-	// TODO: Remove once SDK returns Lisk32 address for receipient
-	tx.recipientAddress = getLisk32AddressFromHexAddress(tx.params.recipientAddress);
+	tx.recipientAddress = tx.params.recipientAddress;
 
 	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
 

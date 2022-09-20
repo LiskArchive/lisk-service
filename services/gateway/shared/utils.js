@@ -23,6 +23,8 @@ const transformParams = (type, params) => {
 		let value = {};
 		if (type === 'blocks' && paramKey === 'id') {
 			value = { $ref: '#/parameters/block' };
+		} else if (type === 'DPoS' && paramKey === 'status') {
+			value = { $ref: '#/parameters/delegateStatus' };
 		} else if (type === 'network' && paramKey === 'q') {
 			value = { $ref: '#/parameters/searchQuery' };
 		} else value = { $ref: `#/parameters/${paramKey}` };
