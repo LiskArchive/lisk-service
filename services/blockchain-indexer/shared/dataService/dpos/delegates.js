@@ -47,7 +47,7 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.address.localeCompare(b);
+	return a.address.localeCompare(b.address, 'en');
 };
 
 // TODO: Remove code after SDK returns rank
@@ -214,8 +214,8 @@ const updateDelegateListEveryBlock = () => {
 						updatedDelegateAddresses
 							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
-						tx.params.votes.forEach(vote => updatedDelegateAddresses
-							.push(vote.delegateAddress));
+						tx.params.votes
+							.forEach(vote => updatedDelegateAddresses.push(vote.delegateAddress));
 					}
 				}
 			});

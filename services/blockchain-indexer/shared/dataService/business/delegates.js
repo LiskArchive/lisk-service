@@ -19,8 +19,7 @@ const {
 	CacheRedis,
 } = require('lisk-service-framework');
 
-// TODO: Remove once delegate address is returned in Lisk32 format
-const { getLisk32AddressFromHexAddress } = require('../../utils/accountUtils');
+const { getLisk32Address } = require('../../utils/accountUtils');
 
 const { requestConnector } = require('../../utils/request');
 
@@ -54,9 +53,7 @@ const getAllDelegates = async () => {
 		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
-			// TODO: Remove address conversion once delegate address is LSK
-			delegate.address = getLisk32AddressFromHexAddress(delegate.address);
-
+			delegate.address = getLisk32Address(delegate.address);
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.delegateWeight = BigInt('0');
 			} else {

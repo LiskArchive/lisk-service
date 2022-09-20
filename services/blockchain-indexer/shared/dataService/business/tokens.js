@@ -59,15 +59,15 @@ const getTokens = async (params) => {
 
 	// TODO: Add logic to retrieve symbol and name from the SDK once endpoint is available
 	if (params.tokenID && params.address) {
-		const response = await requestConnector('token_getBalance', {
-			address: params.address, tokenID: params.tokenID,
-		});
+		const response = await requestConnector(
+			'token_getBalance',
+			{ address: params.address, tokenID: params.tokenID });
 
 		tokensInfo = [{ ...response, tokenID: params.tokenID }];
 	} else {
-		const response = await requestConnector('token_getBalances', {
-			address: params.address,
-		});
+		const response = await requestConnector(
+			'token_getBalances',
+			{ address: params.address });
 
 		tokensInfo = response.balances;
 	}

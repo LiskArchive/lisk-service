@@ -14,13 +14,16 @@
  *
  */
 const dataService = require('./dataService');
+const { LSK_ADDRESS } = require('./regex');
 
 const isStringType = value => typeof value === 'string';
 
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
 
+const validateLisk32Address = address => (typeof address === 'string' && address.match(LSK_ADDRESS));
+
 const confirmAddress = async address => {
-	if (!address || typeof address !== 'string') return false;
+	if (validateLisk32Address(address)) return false;
 	const account = await dataService.getCachedAccountByAddress(parseAddress(address));
 	return !!(account && account.address);
 };

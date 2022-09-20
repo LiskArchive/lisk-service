@@ -29,7 +29,7 @@ const {
 const { requestConnector } = require('./request');
 const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
 const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
-const { getLisk32AddressFromHexAddress } = require('./accountUtils');
+const { getLisk32Address } = require('./accountUtils');
 
 const getTxnParamsSchema = async (trx) => {
 	const moduleCommand = `${trx.module}:${trx.command}`;
@@ -74,18 +74,12 @@ const normalizeTransaction = async tx => {
 	tx.id = hash(txBuffer).toString('hex');
 	tx.minFee = await getTxnMinFee(parsedTxWithParams);
 	tx.size = txBuffer.length;
-	tx.params = decodedParams;
+	tx.params = parseToJSONCompatObj(decodedParams);
 
 	tx.moduleCommand = `${tx.module}:${tx.command}`;
 
-	if (tx.params.votes && tx.params.votes.length) {
-		tx.params.votes
-			.forEach(vote => vote.delegateAddress);
-	}
-
-	// TODO: Remove conversion from hex once SDK returns LSK addresses
 	if (tx.params.recipientAddress) {
-		tx.params.recipientAddress = getLisk32AddressFromHexAddress(tx.params.recipientAddress.toString('hex'));
+		tx.params.recipientAddress = getLisk32Address(tx.params.recipientAddress);
 	}
 
 	// TODO: Set execution status from observing the events

@@ -31,10 +31,9 @@ const getGenerators = async () => {
 			);
 
 			return {
-				address: generator.address,
+				...generator,
 				name: name || await getNameByAddress(generator.address),
 				publicKey,
-				nextAllocatedTime: generator.nextAllocatedTime,
 			};
 		});
 

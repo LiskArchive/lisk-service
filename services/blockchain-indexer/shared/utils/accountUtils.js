@@ -49,8 +49,10 @@ const getLegacyFormatAddressFromPublicKey = publicKey => {
 
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
-// TODO: Remove once delegate address is returned in Lisk32 format
 const getLisk32AddressFromHexAddress = address => getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
+
+// TODO: Remove once SDK returns address in Lisk32 format
+const getLisk32Address = address => address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
 
 const updateAccountPublicKey = async (publicKey) => {
 	const accountsDB = await getAccountsIndex();
@@ -65,5 +67,6 @@ module.exports = {
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
 	getLisk32AddressFromPublicKey,
 	getLisk32AddressFromHexAddress,
+	getLisk32Address,
 	updateAccountPublicKey,
 };

@@ -49,7 +49,6 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 	tx.amount = tx.params.amount;
 	tx.data = tx.params.data;
-
 	tx.recipientAddress = tx.params.recipientAddress;
 
 	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });

@@ -20,11 +20,7 @@ const { getAddressByName } = require('../../../utils/delegateUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
 
-const normalizeVote = vote => {
-	const normalizedVote = parseToJSONCompatObj(vote);
-	normalizedVote.delegateAddress = vote.delegateAddress;
-	return normalizedVote;
-};
+const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVotesSent = async params => {
 	const voter = {

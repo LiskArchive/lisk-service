@@ -48,7 +48,7 @@ const reloadKnowledge = async () => {
 				logger.debug(`Updated known accounts database with ${Object.keys(knowledge).length} entries`);
 			}
 		} else {
-			logger.debug(`NetworkID does not exist in the database: ${chainID}`);
+			logger.debug(`ChainID '${chainID}' does not exist in the database`);
 		}
 	} catch (err) {
 		logger.debug(`Could not reload known accounts: ${err.message}`);

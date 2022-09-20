@@ -43,7 +43,7 @@ const getBlockchainApps = async (params) => {
 		data: [
 			{
 				name: 'Lisk',
-				chainID: '00000001',
+				chainID: '10000000',
 				state: 'active',
 				address: 'lsk123bhithjdq8szo3poyqe5dsxwrnazyqnzqhsy',
 				isDefault: true,
@@ -52,7 +52,7 @@ const getBlockchainApps = async (params) => {
 			},
 			{
 				name: 'Test app',
-				chainID: '00000002',
+				chainID: '00000a2e0',
 				state: 'active',
 				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
 				isDefault: false,

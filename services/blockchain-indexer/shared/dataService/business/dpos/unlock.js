@@ -52,6 +52,8 @@ const standardizeUnlockHeight = (unlock, account, delegateAcc) => ({
 	end: calculateUnlockEndHeight(unlock, account, delegateAcc),
 });
 
+const normalizeUnlock = unlock => parseToJSONCompatObj(unlock);
+
 const getUnlocks = async params => {
 	const unlocks = {
 		data: {},
@@ -72,7 +74,7 @@ const getUnlocks = async params => {
 	let normalizedUnlocks;
 
 	if (!response.error) {
-		normalizedUnlocks = response.pendingUnlocks.map(unlock => parseToJSONCompatObj(unlock));
+		normalizedUnlocks = response.pendingUnlocks.map(unlock => normalizeUnlock(unlock));
 	} else {
 		normalizedUnlocks = [];
 	}
