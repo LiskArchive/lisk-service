@@ -17,10 +17,12 @@ const {
 	utils: { hash },
 	address: {
 		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
+		getLisk32AddressFromAddress,
 	},
 	legacyAddress: {
 		getFirstEightBytesReversed,
 		getLegacyAddressFromPublicKey,
+
 	},
 } = require('@liskhq/lisk-cryptography');
 
@@ -81,6 +83,11 @@ const getLegacyHexAddressFromPublicKey = publicKey => {
 };
 
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
+
+// TODO: Remove once delegate address is returned in Lisk32 format
+const getLisk32AddressFromHexAddress = address => {
+	return getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
+}
 
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
@@ -191,6 +198,7 @@ module.exports = {
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
 	getLegacyHexAddressFromPublicKey,
 	getLisk32AddressFromPublicKey,
+	getLisk32AddressFromHexAddress,
 	updateAccountPublicKey,
 
 	confirmAnyId,
