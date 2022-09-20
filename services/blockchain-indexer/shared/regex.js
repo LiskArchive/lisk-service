@@ -14,8 +14,8 @@
  *
  */
 
-const LSK_ADDRESS = /^lsk[a-hjkm-z2-9]{38}$/g;
+const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
 
 module.exports = {
-	LSK_ADDRESS,
+    ADDRESS_BASE32,
 };
