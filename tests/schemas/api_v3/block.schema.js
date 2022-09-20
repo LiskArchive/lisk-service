@@ -44,7 +44,7 @@ const block = {
 };
 
 const asset = {
-	moduleID: Joi.string().required(),
+	module: Joi.string().required(),
 	data: Joi.string().required(), // TODO: Update data schema once confirmed from sdk
 };
 

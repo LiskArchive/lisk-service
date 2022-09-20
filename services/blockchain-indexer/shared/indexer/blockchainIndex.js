@@ -178,7 +178,7 @@ const indexBlock = async job => {
 		// TODO: Fetch reward from events
 		const blockToIndex = {
 			...block,
-			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
+			assetsModules: block.assets.map(asset => asset.module),
 			numberOfEvents: 1,
 			reward: BigInt('0'),
 			// numberOfEvents: events.length,
