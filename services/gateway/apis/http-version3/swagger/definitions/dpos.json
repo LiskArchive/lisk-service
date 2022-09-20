@@ -289,5 +289,89 @@
                 "$ref": "#/definitions/Pagination"
             }
         }
+    },
+    "DPoSConstantsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "DPoS module constants",
+                "type": "object",
+                "properties": {
+                    "factorSelfVotes": {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "The factor multiplying the self-votes of a delegate for the delegate weight computation. It is used to set the ceiling for the delegate weight."
+                    },
+                    "maxLengthName": {
+                        "type": "integer",
+                        "example": 20,
+                        "description": "The maximum number of characters allowed for a delegate name."
+                    },
+                    "maxNumberSentVotes": {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "The maximum number of delegates any voter can vote for."
+                    },
+                    "maxNumberPendingUnlocks": {
+                        "type": "integer",
+                        "example": 20,
+                        "description": "The maximum number of pending unlocks allowed for a voter."
+                    },
+                    "failSafeMissedBlocks": {
+                        "type": "integer",
+                        "example": 50,
+                        "description": "The number of consecutive missed blocks used in the fail-safe banning mechanism."
+                    },
+                    "failSafeInactiveWindow": {
+                        "type": "integer",
+                        "example": 260000,
+                        "description": "The length of the inactivity window used in the fail-safe banning mechanism."
+                    },
+                    "punishmentWindow": {
+                        "type": "integer",
+                        "example": 780000,
+                        "description": "The punishment time for punished delegates."
+                    },
+                    "roundLength": {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "The number of blocks in a round and is the sum total of the active and the standby delegates."
+                    },
+                    "bftThreshold": {
+                        "type": "integer",
+                        "example": 68,
+                        "description": "The pre-commit and certificate thresholds used by the BFT module."
+                    },
+                    "minWeightStandby": {
+                        "type": "string",
+                        "example": "100000000000",
+                        "description": "The minimum delegate weight required to be eligible as a standby delegate."
+                    },
+                    "numberActiveDelegates": {
+                        "type": "integer",
+                        "example": 101,
+                        "description": "The number of active delegates in a round."
+                    },
+                    "numberStandbyDelegates": {
+                        "type": "integer",
+                        "example": 2,
+                        "description": "The number of standby delegates in a round."
+                    },
+                    "tokenIDDPoS": {
+                        "type": "string",
+                        "example": "0000000000000000",
+                        "description": "The universal identifier for the token within the Lisk ecosystem for DPoS module. It is defined as the concatenated value of the chainID and localID. Example: tokenID for LSK would be '0000000100000000' (chainID: '00000001', localID: '00000000')"
+                    }
+                }
+            },
+            "meta": {
+                "type": "object"
+            }
+        }
     }
+
 }

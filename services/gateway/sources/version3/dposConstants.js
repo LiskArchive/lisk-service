@@ -13,20 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getUnlocks,
-} = require('./controllers/dposUnlocks');
+const dposConstants = require('./mappings/dposConstants');
 
-module.exports = [
-	{
-		name: 'dpos.unlocks',
-		controller: getUnlocks,
-		params: {
-			address: { optional: true, type: 'string' },
-			name: { optional: true, type: 'string' },
-			publicKey: { optional: true, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.dpos.constants',
+	params: {},
+	definition: {
+		data: dposConstants,
+		meta: {},
+		links: {},
 	},
-];
+};

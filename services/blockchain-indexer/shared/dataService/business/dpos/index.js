@@ -21,6 +21,7 @@ const {
 	WAIT_TIME_SELF_VOTE,
 	PUNISH_TIME_VOTER,
 	PUNISH_TIME_SELF_VOTE,
+	getDPoSConstants,
 } = require('./constants');
 
 const {
@@ -52,4 +53,5 @@ module.exports = {
 	calculateUnlockEndHeight,
 	standardizeUnlockHeight,
 	getUnlocks,
+	getDPoSConstants,
 };

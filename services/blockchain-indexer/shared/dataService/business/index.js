@@ -82,6 +82,7 @@ const {
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
+	getDPoSConstants,
 } = require('./dpos');
 
 const { getAuthAccountInfo } = require('./auth');
@@ -120,6 +121,7 @@ module.exports = {
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
+	getDPoSConstants,
 	getAuthAccountInfo,
 	getValidator,
 	getEvents,

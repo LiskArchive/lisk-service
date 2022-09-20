@@ -13,21 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
-
-const getUnlocks = async params => {
-	const unlocks = {
-		data: {},
-		meta: {},
-	};
-
-	const response = await dataService.getUnlocks(params);
-	if (response.data) unlocks.data = response.data;
-	if (response.meta) unlocks.meta = response.meta;
-
-	return unlocks;
-};
-
 module.exports = {
-	getUnlocks,
+	factorSelfVotes: '=,number',
+	maxLengthName: '=,number',
+	maxNumberSentVotes: '=,number',
+	maxNumberPendingUnlocks: '=,number',
+	failSafeMissedBlocks: '=,number',
+	failSafeInactiveWindow: '=,number',
+	punishmentWindow: '=,number',
+	roundLength: '=,number',
+	bftThreshold: '=,number',
+	minWeightStandby: '=,string',
+	numberActiveDelegates: '=,number',
+	numberStandbyDelegates: '=,number',
+	tokenIDDPoS: '=,string',
 };

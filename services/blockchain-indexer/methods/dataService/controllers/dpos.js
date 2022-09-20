@@ -41,7 +41,87 @@ const getDelegates = async params => {
 	}
 };
 
+const getDPoSConstants = async () => {
+	const constants = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getDPoSConstants();
+	if (response.data) constants.data = response.data;
+	if (response.meta) constants.meta = response.meta;
+
+	return constants;
+};
+
+const getUnlocks = async params => {
+	const unlocks = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getUnlocks(params);
+	if (response.data) unlocks.data = response.data;
+	if (response.meta) unlocks.meta = response.meta;
+
+	return unlocks;
+};
+
+// TODO: Remove mocked response once we are able to create vote transactions
+const getVotesReceived = async params => {
+	// const votesReceived = {
+	// 	data: {},
+	// 	meta: {},
+	// };
+
+	// const response = await dataService.getVotesReceived(params);
+	// if (response.data) votesReceived.data = response.data;
+	// if (response.meta) votesReceived.meta = response.meta;
+
+	const votesReceived = {
+		data: {
+			account: {
+				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+				publicKey: 'aq02qkbb35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+				name: 'genesis_56',
+			},
+			votes: [
+				{
+					delegateAddress: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+					amount: '1081560729258',
+					name: 'liskhq',
+				},
+			],
+		},
+		meta: {
+			count: 10,
+			offset: params.offset,
+			total: 105,
+		},
+		links: {},
+	};
+
+	return votesReceived;
+};
+
+const getVotesSent = async params => {
+	const votesSent = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getVotesSent(params);
+	if (response.data) votesSent.data = response.data;
+	if (response.meta) votesSent.meta = response.meta;
+
+	return votesSent;
+};
+
 module.exports = {
 	getDelegates,
+	getDPoSConstants,
+	getUnlocks,
+	getVotesReceived,
+	getVotesSent,
 };
 
