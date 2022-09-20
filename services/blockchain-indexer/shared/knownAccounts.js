@@ -32,22 +32,23 @@ const getAccountKnowledge = (address) => {
 	return {};
 };
 
+// TODO: Test the response once static endpoint response will be updated with chainID
 const reloadKnowledge = async () => {
 	logger.debug('Reloading known accounts...');
 
 	try {
 		const netStatus = await requestConnector('getNetworkStatus');
-		const { networkIdentifier } = netStatus.data.constants;
+		const { chainID } = netStatus;
 
 		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`);
-		if (knownNetworks.data[networkIdentifier]) {
-			const knownAccounts = await HTTP.request(`${staticUrl}/known_${knownNetworks.data[networkIdentifier]}.json`);
+		if (knownNetworks.data[chainID]) {
+			const knownAccounts = await HTTP.request(`${staticUrl}/known_${knownNetworks.data[chainID]}.json`);
 			if (isObject(knownAccounts.data)) {
 				knowledge = knownAccounts.data;
 				logger.debug(`Updated known accounts database with ${Object.keys(knowledge).length} entries`);
 			}
 		} else {
-			logger.debug(`NetworkID does not exist in the database: ${networkIdentifier}`);
+			logger.debug(`NetworkID does not exist in the database: ${chainID}`);
 		}
 	} catch (err) {
 		logger.debug(`Could not reload known accounts: ${err.message}`);

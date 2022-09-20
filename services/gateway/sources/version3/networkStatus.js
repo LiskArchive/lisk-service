@@ -21,7 +21,7 @@ module.exports = {
 		data: {
 			version: '=,string',
 			networkVersion: '=,string',
-			networkIdentifier: '=,string',
+			chainID: '=,string',
 			lastBlockID: '=,string',
 			height: '=,number',
 			finalizedHeight: '=,number',

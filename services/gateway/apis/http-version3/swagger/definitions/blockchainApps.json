@@ -15,10 +15,10 @@
                 "description": "Name of the blockchain application"
             },
             "chainID": {
-                "type": "integer",
+                "type": "string",
                 "format": "id",
                 "minLength": 1,
-                "example": 1,
+                "example": "10000000",
                 "description": "Chain ID of the blockchain application"
             },
             "state": {

@@ -22,11 +22,10 @@
                         "example": "3.0",
                         "description": "Current network version"
                     },
-                    "networkIdentifier": {
+                    "chainID": {
                         "type": "string",
-                        "format": "networkIdentifier",
-                        "example": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
-                        "description": "Network identifier"
+                        "example": "10000000",
+                        "description": "Chain ID of the blockchain application"
                     },
                     "lastBlockID": {
                         "type": "string",
