@@ -119,9 +119,8 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 const validateBlock = (block) => !!block && block.height >= 0;
 
 const indexBlock = async job => {
-	const { height } = job.data;
+	const { block } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const block = await getBlockByHeight(height);
 	// const events = await getEventsByHeight(height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
@@ -279,15 +278,14 @@ const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlo
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
-const indexNewBlock = async height => {
+const indexNewBlock = async block => {
 	const blocksDB = await getBlocksIndex();
-	const block = await getBlockByHeight(height);
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 		// Index if doesn't exist, or update if it isn't set to final
-		await indexBlocksQueue.add({ height: block.height });
+		await indexBlocksQueue.add({ block, height: block.height });
 
 		// Update block finality status
 		const finalizedBlockHeight = await getFinalizedHeight();
@@ -419,7 +417,10 @@ const isGenesisBlockIndexed = async () => {
 	return !!block;
 };
 
-const addBlockToQueue = async height => indexBlocksQueue.add({ height });
+const addBlockToQueue = async height => {
+	const block = await getBlockByHeight(height);
+	indexBlocksQueue.add({ block });
+};
 
 const setIndexVerifiedHeight = ({ height }) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, height);
 

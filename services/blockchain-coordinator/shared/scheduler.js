@@ -17,7 +17,6 @@ const MessageQueue = require('bull');
 
 const {
 	Logger,
-	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -88,12 +87,6 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 // };
 
 const initIndexingScheduler = async () => {
-	// Schedule indexing new block
-	const newBlockListener = async ({ blockHeader }) => {
-		scheduleBlocksIndexing(blockHeader.height, true);
-	};
-	Signals.get('newBlock').add(newBlockListener);
-
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
 
