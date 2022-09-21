@@ -285,7 +285,7 @@ const indexNewBlock = async block => {
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 		// Index if doesn't exist, or update if it isn't set to final
-		await indexBlocksQueue.add({ block, height: block.height });
+		await indexBlocksQueue.add({ block });
 
 		// Update block finality status
 		const finalizedBlockHeight = await getFinalizedHeight();
