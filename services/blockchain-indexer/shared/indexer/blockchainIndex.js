@@ -123,11 +123,11 @@ const indexBlock = async job => {
 	const blocksDB = await getBlocksIndex();
 	// const events = await getEventsByHeight(height);
 
-	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
+	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${block.height} }`);
 
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
-	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
+	logger.debug(`Created new MySQL transaction to index block at height ${block.height}`);
 
 	try {
 		if (block.transactions.length) {
@@ -185,18 +185,18 @@ const indexBlock = async job => {
 
 		await blocksDB.upsert(blockToIndex, dbTrx);
 		await commitDbTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
+		logger.debug(`Committed MySQL transaction to index block at height ${block.height}`);
 	} catch (error) {
 		await rollbackDbTransaction(dbTrx);
-		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
+		logger.debug(`Rolled back MySQL transaction to index block at height ${block.height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			const errMessage = `Deadlock encountered while indexing block at height ${height}. Will retry later.`;
+			const errMessage = `Deadlock encountered while indexing block at height ${block.height}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while indexing block at height ${height}. Will retry later.`);
+		logger.warn(`Error occured while indexing block at height ${block.height}. Will retry later.`);
 		throw error;
 	}
 };
