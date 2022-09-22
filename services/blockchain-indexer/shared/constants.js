@@ -27,7 +27,7 @@ const getFinalizedHeight = async () => {
 };
 
 const getGenesisHeight = async () => {
-	if (genesisHeight === undefined) {
+	if (typeof genesisHeight !== 'number') {
 		genesisHeight = await requestConnector('getGenesisHeight');
 	}
 	return genesisHeight;

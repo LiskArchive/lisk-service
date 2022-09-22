@@ -61,13 +61,13 @@ const scheduleGenesisBlockIndexing = async () => {
 	logger.info('Finished scheduling of genesis block indexing');
 };
 
-const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
+const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
 
 	await Promise.all(blockHeights.map(async height => {
-		await blockIndexQueue.add({ height, isNewBlock });
+		await blockIndexQueue.add({ height });
 		logger.debug(`Scheduled indexing for block at height: ${height}`);
 	}));
 };
