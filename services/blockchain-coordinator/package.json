@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "bull": "^4.8.1",
+    "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/6b0ca58154c3198b07b7708fd75f9b2c0fca8994/framework/dist/lisk-service-framework-1.4.5.tgz"
   },
   "devDependencies": {

@@ -14,6 +14,7 @@
  *
  */
 const MessageQueue = require('bull');
+const BluebirdPromise = require('bluebird');
 
 const {
 	Logger,
@@ -66,10 +67,14 @@ const scheduleBlocksIndexing = async (heights) => {
 		? heights
 		: [heights];
 
-	await Promise.all(blockHeights.map(async height => {
-		await blockIndexQueue.add({ height });
-		logger.debug(`Scheduled indexing for block at height: ${height}`);
-	}));
+	await BluebirdPromise.map(
+		blockHeights,
+		async height => {
+			await blockIndexQueue.add({ height });
+			logger.debug(`Scheduled indexing for block at height: ${height}`);
+		},
+		{ concurrency: blockHeights.length },
+	);
 };
 
 // const scheduleDelegateAccountsIndexing = async (addresses) => {
