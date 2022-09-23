@@ -14,10 +14,10 @@
  *
  */
 const MessageQueue = require('bull');
+const BluebirdPromise = require('bluebird');
 
 const {
 	Logger,
-	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -62,15 +62,19 @@ const scheduleGenesisBlockIndexing = async () => {
 	logger.info('Finished scheduling of genesis block indexing');
 };
 
-const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
+const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
 
-	await Promise.all(blockHeights.map(async height => {
-		await blockIndexQueue.add({ height, isNewBlock });
-		logger.debug(`Scheduled indexing for block at height: ${height}`);
-	}));
+	await BluebirdPromise.map(
+		blockHeights,
+		async height => {
+			await blockIndexQueue.add({ height });
+			logger.debug(`Scheduled indexing for block at height: ${height}`);
+		},
+		{ concurrency: blockHeights.length },
+	);
 };
 
 // const scheduleDelegateAccountsIndexing = async (addresses) => {
@@ -88,12 +92,6 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 // };
 
 const initIndexingScheduler = async () => {
-	// Schedule indexing new block
-	const newBlockListener = async ({ blockHeader }) => {
-		scheduleBlocksIndexing(blockHeader.height, true);
-	};
-	Signals.get('newBlock').add(newBlockListener);
-
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
 

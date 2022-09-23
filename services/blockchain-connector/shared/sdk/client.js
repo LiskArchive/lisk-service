@@ -40,9 +40,13 @@ let isClientAlive = false;
 let isInstantiating = false;
 
 const checkIsClientAlive = async () => {
-	await clientCache._channel.invoke('app_getNodeInfo')
-		.then(() => { isClientAlive = true; })
-		.catch(() => { isClientAlive = false; });
+	if (config.isUseLiskIPCClient) {
+		await clientCache._channel.invoke('system_getNodeInfo')
+			.then(() => { isClientAlive = true; })
+			.catch(() => { isClientAlive = false; });
+	} else {
+		isClientAlive = clientCache._channel.isAlive;
+	}
 
 	return isClientAlive;
 };
@@ -52,8 +56,7 @@ const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
 			// TODO: Verify and enable the code
-			// if (!clientCache || !(await checkIsClientAlive())) {
-			if (!clientCache) {
+			if (!clientCache || !(await checkIsClientAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				// if (clientCache) await clientCache.disconnect();

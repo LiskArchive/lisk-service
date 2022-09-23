@@ -22,20 +22,20 @@ let registeredModules;
 let systemMetadata;
 
 const getFinalizedHeight = async () => {
-	const { finalizedHeight } = await requestConnector('getNodeInfo');
+	const { finalizedHeight } = await requestConnector('getNetworkStatus');
 	return finalizedHeight;
 };
 
 const getGenesisHeight = async () => {
-	if (!genesisHeight) {
+	if (typeof genesisHeight !== 'number') {
 		genesisHeight = await requestConnector('getGenesisHeight');
 	}
 	return genesisHeight;
 };
 
 const getCurrentHeight = async () => {
-	const currentHeight = (await requestConnector('getNodeInfo')).height;
-	return currentHeight;
+	const { height } = await requestConnector('getNetworkStatus');
+	return height;
 };
 
 const getGenesisConfig = async () => {

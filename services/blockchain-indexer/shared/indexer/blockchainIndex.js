@@ -119,16 +119,15 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 const validateBlock = (block) => !!block && block.height >= 0;
 
 const indexBlock = async job => {
-	const { height } = job.data;
+	const { block } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const block = await getBlockByHeight(height);
 	// const events = await getEventsByHeight(height);
 
-	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
+	if (!validateBlock(block)) throw new Error(`Error: Invalid block ${block.id} at height ${block.height} }`);
 
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
-	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
+	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}`);
 
 	try {
 		if (block.transactions.length) {
@@ -186,18 +185,18 @@ const indexBlock = async job => {
 
 		await blocksDB.upsert(blockToIndex, dbTrx);
 		await commitDbTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
+		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}`);
 	} catch (error) {
 		await rollbackDbTransaction(dbTrx);
-		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
+		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			const errMessage = `Deadlock encountered while indexing block at height ${height}. Will retry later.`;
+			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while indexing block at height ${height}. Will retry later.`);
+		logger.warn(`Error occured while indexing block ${block.id} at height ${block.height}. Will retry later.`);
 		throw error;
 	}
 };
@@ -279,15 +278,14 @@ const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlo
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
-const indexNewBlock = async height => {
+const indexNewBlock = async block => {
 	const blocksDB = await getBlocksIndex();
-	const block = await getBlockByHeight(height);
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 		// Index if doesn't exist, or update if it isn't set to final
-		await indexBlocksQueue.add({ height: block.height });
+		await indexBlocksQueue.add({ block });
 
 		// Update block finality status
 		const finalizedBlockHeight = await getFinalizedHeight();
@@ -419,7 +417,10 @@ const isGenesisBlockIndexed = async () => {
 	return !!block;
 };
 
-const addBlockToQueue = async height => indexBlocksQueue.add({ height });
+const addBlockToQueue = async height => {
+	const block = await getBlockByHeight(height);
+	indexBlocksQueue.add({ block });
+};
 
 const setIndexVerifiedHeight = ({ height }) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, height);
 
