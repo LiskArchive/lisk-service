@@ -13,6 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	HTTP,
+	Exceptions: { InvalidParamsException },
+} = require('lisk-service-framework');
+
+const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
+
 const appRegistryService = require('../../shared/metadata');
 
 const getBlockchainAppsMetaList = async (params) => {
@@ -42,16 +49,23 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
-	const blockchainAppsMetaList = {
-		data: [],
-		meta: {},
-	};
+	try {
+		const blockchainAppsMetaList = {
+			data: [],
+			meta: {},
+		};
 
-	const response = await appRegistryService.getBlockchainAppsTokenMetadata(params);
-	if (response.data) blockchainAppsMetaList.data = response.data;
-	if (response.meta) blockchainAppsMetaList.meta = response.meta;
+		const response = await appRegistryService.getBlockchainAppsTokenMetadata(params);
+		if (response.data) blockchainAppsMetaList.data = response.data;
+		if (response.meta) blockchainAppsMetaList.meta = response.meta;
 
-	return blockchainAppsMetaList;
+		return blockchainAppsMetaList;
+	} catch (err) {
+		let status;
+		if (err instanceof InvalidParamsException) status = BAD_REQUEST;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 module.exports = {

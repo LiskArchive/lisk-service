@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { expect } = require('chai');
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
@@ -31,7 +32,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/tokens`;
 
 // TODO: Enable/update test cases once off-chain data is available
-xdescribe('Blockchain application tokens metadata API', () => {
+describe('Blockchain application tokens metadata API', () => {
 	it('retrieves blockchain applications off-chain metadata for tokens', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
@@ -102,8 +103,8 @@ xdescribe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by tokenID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=00000000`);
+	it('retrieves blockchain application off-chain metadata for tokens by global tokenID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -111,6 +112,11 @@ xdescribe('Blockchain application tokens metadata API', () => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
 		expect(response.meta).toMap(metaSchema);
+	});
+
+	it.only('fails validation error when only passed local tokenID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000`);
+		expect(response).toMap(badRequestSchema);
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenName', async () => {

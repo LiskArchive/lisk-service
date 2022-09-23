@@ -25,9 +25,9 @@ module.exports = {
 	tags: ['Interoperability'],
 	params: {
 		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		chainID: { optional: true, type: 'string', min: 1, max: 21 },
+		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: /^\b[a-zA-Z0-9]{8}\b$/ },
 		tokenName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		tokenID: { optional: true, type: 'string', min: 1, max: 21 },
+		tokenID: { optional: true, type: 'string', min: 1, max: 21, pattern: /^\b[a-zA-Z0-9]{16}\b$/ },
 		network: { optional: false, type: 'string', min: 1, default: 'mainnet', enum: ['mainnet', 'testnet', 'betanet'] },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },

@@ -63,7 +63,7 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 				chainID: tokenMeta.chainID,
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				localID: token.tokenID.substring(8),
+				localID: token.tokenID.substring(8).toLowerCase(),
 				tokenName: token.name,
 			};
 			return result;
