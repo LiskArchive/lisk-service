@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	tableName: 'applications',
+	tableName: 'application_metadata',
 	primaryKey: ['network', 'chainName'],
 	schema: {
 		chainName: { type: 'string' },

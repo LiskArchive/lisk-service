@@ -63,7 +63,7 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 				chainID: tokenMeta.chainID,
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				tokenID: token.tokenID,
+				localID: token.tokenID.substring(8),
 				tokenName: token.name,
 			};
 			return result;
@@ -155,7 +155,7 @@ const indexAllBlockchainAppsMeta = async () => {
 									logger.debug('Committed MySQL transaction to index blockchain metadata information');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
-									logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
+									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information. error: ${error}`);
 								}
 							}
 						},

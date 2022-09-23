@@ -15,7 +15,10 @@
 */
 const BluebirdPromise = require('bluebird');
 
-const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const {
+	Exceptions: { InvalidParamsException },
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
 
 const config = require('../config');
 
@@ -25,6 +28,8 @@ const { read } = require('./utils/fsUtils');
 
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
+
+const LSK_LOCAL_CHAIN_ID = '00000000';
 
 const getApplicationsIndex = () => getTableInstance(
 	applicationsIndexSchema.tableName,
@@ -172,6 +177,33 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
+	if (params.tokenID) {
+		const { tokenID, ...remParams } = params;
+		params = remParams;
+
+		const chainID = tokenID.substring(0, 8);
+		const localID = tokenID.substring(8);
+		const isGlobalTokenID = chainID !== LSK_LOCAL_CHAIN_ID;
+
+		// chainID should match global tokenID if passed
+		if (isGlobalTokenID && params.chainID && chainID !== params.chainID) {
+			throw new InvalidParamsException('Invalid global tokenID and chainID combination');
+		}
+
+		// chainID must match local tokenID
+		if (!isGlobalTokenID) {
+			if (!params.chainID) throw new InvalidParamsException('chainID is required for local tokenID');
+
+			if (chainID !== params.chainID) throw new InvalidParamsException('Invalid local tokenID and chainID combination');
+		}
+
+		params.chainID = chainID;
+		params.localID = localID;
+	} else if (params.chainID && params.chainID === LSK_LOCAL_CHAIN_ID) {
+		// Request is invalid if tokenID not present for local chainID
+		throw new InvalidParamsException('tokenID is required for local chainID');
+	}
+
 	const tokensResultSet = await tokensDB.find(params, ['network', 'chainID', 'chainName']);
 
 	const uniqueChainMap = {};
@@ -201,7 +233,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(tokenName) as total from tokens');
+	const [{ total }] = await tokensDB.rawQuery('SELECT COUNT(tokenName) as total from token_metadata');
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,
