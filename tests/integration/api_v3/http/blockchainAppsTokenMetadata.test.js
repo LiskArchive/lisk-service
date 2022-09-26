@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { expect } = require('chai');
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
@@ -103,8 +102,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by global tokenID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000100000000`);
+	it.only('retrieves blockchain application off-chain metadata for tokens by global tokenID', async () => {
+		const response = await api.get(`${endpoint}?network=betanet&tokenID=0000000100000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -114,9 +113,22 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it.only('fails validation error when only passed local tokenID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000000000000`);
+	it('fails validation error when only passed local tokenID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000`, 400);
 		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('chainID is required for local tokenID');
+	});
+
+	it('fails validation error when wrong local tokenID and chainID combination passed', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000001`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Invalid local tokenID and chainID combination');
+	});
+
+	it.only('fails validation error when wrong global tokenID and chainID combination passed', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000&chainID=00000000`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Invalid global tokenID and chainID combination');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenName', async () => {

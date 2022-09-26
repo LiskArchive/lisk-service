@@ -226,6 +226,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 					...token,
 					chainID: tokenMeta.chainID,
 					chainName: tokenMeta.chainName,
+					network: tokenMeta.network,
 				});
 			});
 		},

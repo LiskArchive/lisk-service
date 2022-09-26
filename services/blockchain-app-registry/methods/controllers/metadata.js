@@ -18,7 +18,7 @@ const {
 	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
+const { StatusCodes: { BAD_REQUEST } } = HTTP;
 
 const appRegistryService = require('../../shared/metadata');
 

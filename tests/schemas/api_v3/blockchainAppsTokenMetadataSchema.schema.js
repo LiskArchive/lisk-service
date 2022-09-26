@@ -23,14 +23,14 @@ const logo = {
 
 const denomUnit = {
 	denom: Joi.string().pattern(regex.NAME).required(),
-	decimal: Joi.number().integer().required(),
+	decimals: Joi.number().integer().required(),
 	aliases: Joi.array().items(Joi.string()).optional(),
 };
 
 const blockchainAppsTokenMetadataSchema = {
-	chainName: Joi.string().pattern(regex.NAME).required(),
+	chainName: Joi.string().pattern(regex.CASE_INSENSATIVE_NAME).required(),
 	chainID: Joi.string().required(),
-	tokenName: Joi.string().pattern(regex.NAME).required(),
+	tokenName: Joi.string().pattern(regex.CASE_INSENSATIVE_NAME).required(),
 	tokenID: Joi.string().required(),
 	networkType: Joi.string().pattern(regex.NETWORK).required(),
 	description: Joi.string().optional(),
