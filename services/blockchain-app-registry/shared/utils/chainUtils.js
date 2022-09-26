@@ -25,11 +25,11 @@ const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const applicationsIndexSchema = require('../database/schema/application_metadata');
+const applicationMetadataIndexSchema = require('../database/schema/application_metadata');
 
-const getApplicationsIndex = () => getTableInstance(
-	applicationsIndexSchema.tableName,
-	applicationsIndexSchema,
+const getApplicationMetadataIndex = () => getTableInstance(
+	applicationMetadataIndexSchema.tableName,
+	applicationMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -49,9 +49,9 @@ const getChainIDByName = async (name, network) => {
 };
 
 const resolveChainNameByNetworkAppDir = async (network, appDirName) => {
-	const applicationsDB = await getApplicationsIndex();
+	const applicationMetadataTable = await getApplicationMetadataIndex();
 	const EMPTY_STRING = '';
-	const [{ chainName = EMPTY_STRING } = {}] = await applicationsDB.find({ network, appDirName }, ['chainName']);
+	const [{ chainName = EMPTY_STRING } = {}] = await applicationMetadataTable.find({ network, appDirName }, ['chainName']);
 	return chainName.filter(n => n !== EMPTY_STRING);
 };
 

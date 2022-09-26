@@ -31,7 +31,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/tokens`;
 
 // TODO: Enable/update test cases once off-chain data is available
-describe('Blockchain application tokens metadata API', () => {
+xdescribe('Blockchain application tokens metadata API', () => {
 	it('retrieves blockchain applications off-chain metadata for tokens', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
