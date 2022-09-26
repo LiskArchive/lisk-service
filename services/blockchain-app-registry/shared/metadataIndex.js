@@ -33,6 +33,7 @@ const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 
 const config = require('../config');
+const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -63,7 +64,7 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 				chainID: tokenMeta.chainID.toLowerCase(),
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				localID: token.tokenID.substring(8).toLowerCase(),
+				localID: token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
 				tokenName: token.name,
 			};
 			return result;

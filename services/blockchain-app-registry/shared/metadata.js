@@ -21,6 +21,7 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../config');
+const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -40,9 +41,6 @@ const getTokenMetadataIndex = () => getTableInstance(
 	tokenMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
-
-const CHAIN_ID_LOCAL = '00000000';
-const LENGTH_CHAIN_ID = 8;
 
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
@@ -178,7 +176,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
-	if (params.chainID === CHAIN_ID_LOCAL) {
+	if (params.chainID === constants.CHAIN_ID_LOCAL) {
 		throw new InvalidParamsException(`Expected a global chainID, instead received: '${params.chainID}'.`);
 	}
 
@@ -186,9 +184,9 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
 
-		const chainID = tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
-		const localID = tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
-		const isGlobalTokenID = chainID !== CHAIN_ID_LOCAL;
+		const chainID = tokenID.substring(0, constants.LENGTH_CHAIN_ID).toLowerCase();
+		const localID = tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase();
+		const isGlobalTokenID = chainID !== constants.CHAIN_ID_LOCAL;
 
 		if (isGlobalTokenID) {
 			// chainID should match global tokenID when supplied
