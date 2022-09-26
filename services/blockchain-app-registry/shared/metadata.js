@@ -29,8 +29,6 @@ const { read } = require('./utils/fsUtils');
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
-const CHAIN_ID_LOCAL = '00000000';
-
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema.tableName,
 	applicationMetadataIndexSchema,
@@ -42,6 +40,9 @@ const getTokenMetadataIndex = () => getTableInstance(
 	tokenMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
+
+const CHAIN_ID_LOCAL = '00000000';
+const LENGTH_CHAIN_ID = 8;
 
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
@@ -177,30 +178,29 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
+	if (params.chainID === CHAIN_ID_LOCAL) {
+		throw new InvalidParamsException(`Expected a global chainID, instead received: '${params.chainID}'.`);
+	}
+
 	if (params.tokenID) {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
 
-		const chainID = tokenID.substring(0, 8);
-		const localID = tokenID.substring(8).toLowerCase();
+		const chainID = tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
+		const localID = tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
 		const isGlobalTokenID = chainID !== CHAIN_ID_LOCAL;
 
-		// chainID should match global tokenID if passed
-		if (isGlobalTokenID && params.chainID && chainID !== params.chainID) {
-			throw new InvalidParamsException('Invalid global tokenID and chainID combination.');
-		}
-
 		if (isGlobalTokenID) {
-			params.chainID = chainID;
-		} else if (!('chainID' in params) || params.chainID === CHAIN_ID_LOCAL) {
-			// chainID must present for local tokenID
-			throw new InvalidParamsException('global chainID is required when specifying local tokenID.');
-		}
+			// chainID should match global tokenID when supplied
+			if ('chainID' in params && chainID !== params.chainID) {
+				throw new InvalidParamsException('Invalid tokenID and chainID combination specified.');
+			}
 
-		params.localID = localID;
-	} else if (params.chainID && params.chainID === CHAIN_ID_LOCAL) {
-		// Request is invalid if tokenID not present for local chainID
-		throw new InvalidParamsException('tokenID is required when specifying local chainID.');
+			params.chainID = chainID;
+			params.localID = localID;
+		} else if (!('chainID' in params)) {
+			throw new InvalidParamsException('\'chainID\' is required when specifying local tokenID.');
+		}
 	}
 
 	const tokensResultSet = await tokenMetadataTable.find(params, ['network', 'chainID', 'chainName']);
@@ -223,6 +223,8 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			parsedTokenMeta.tokens.forEach(token => {
 				blockchainAppsTokenMetadata.data.push({
 					...token,
+					// TODO: remove the below line after the app-registry schema is updated
+					tokenName: token.name,
 					chainID: tokenMeta.chainID,
 					chainName: tokenMeta.chainName,
 					network: tokenMeta.network,

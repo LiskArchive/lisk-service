@@ -88,7 +88,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by global chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000001' });
+		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000001', network: 'betanet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
