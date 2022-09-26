@@ -25,7 +25,7 @@ const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const applicationsIndexSchema = require('../database/schema/applications');
+const applicationsIndexSchema = require('../database/schema/application_metadata');
 
 const getApplicationsIndex = () => getTableInstance(
 	applicationsIndexSchema.tableName,

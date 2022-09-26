@@ -26,8 +26,8 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const { read } = require('./utils/fsUtils');
 
-const applicationsIndexSchema = require('./database/schema/applications');
-const tokensIndexSchema = require('./database/schema/tokens');
+const applicationsIndexSchema = require('./database/schema/application_metadata');
+const tokensIndexSchema = require('./database/schema/token_metadata');
 
 const LSK_LOCAL_CHAIN_ID = '00000000';
 

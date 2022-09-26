@@ -27,8 +27,8 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const applicationsIndexSchema = require('./database/schema/applications');
-const tokensIndexSchema = require('./database/schema/tokens');
+const applicationsIndexSchema = require('./database/schema/application_metadata');
+const tokensIndexSchema = require('./database/schema/token_metadata');
 
 const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 
