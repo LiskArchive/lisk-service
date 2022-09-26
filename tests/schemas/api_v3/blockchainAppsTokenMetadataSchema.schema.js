@@ -28,9 +28,9 @@ const denomUnit = {
 };
 
 const blockchainAppsTokenMetadataSchema = {
-	chainName: Joi.string().pattern(regex.CASE_INSENSITIVE_NAME).required(),
+	chainName: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.string().required(),
-	tokenName: Joi.string().pattern(regex.CASE_INSENSITIVE_NAME).required(),
+	tokenName: Joi.string().pattern(regex.NAME).required(),
 	tokenID: Joi.string().required(),
 	networkType: Joi.string().pattern(regex.NETWORK).required(),
 	description: Joi.string().optional(),

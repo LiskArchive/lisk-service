@@ -29,6 +29,8 @@ const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /[a-zA-Z]{1,32}:[a-zA-Z]{1,32}/;
+const CHAIN_ID = /^\b[a-zA-Z0-9]{8}\b$/;
+const TOKEN_ID = /^\b[a-zA-Z0-9]{16}\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -47,4 +49,6 @@ module.exports = {
 	NETWORK,
 	APPLICATION_STATE,
 	MODULE_COMMAND,
+	CHAIN_ID,
+	TOKEN_ID,
 };

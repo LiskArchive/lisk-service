@@ -20,8 +20,7 @@ const MODULE_COMMAND_ID = /^\b(?:[0-9]+:[0-9]+)\b$/;
 const MODULE_COMMAND_NAME = /^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
-const CASE_INSENSITIVE_NAME = /^[a-zA-Z0-9!@$&_.]{1,20}$/;
+const NAME = /^[\w!@$&.]{1,20}$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const NONCE = /^[0-9]+$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/;
@@ -39,7 +38,6 @@ module.exports = {
 	MODULE_COMMAND_NAME,
 	PUBLIC_KEY,
 	SEMVER,
-	CASE_INSENSITIVE_NAME,
 	NAME,
 	NEWSFEED_SOURCE,
 	NONCE,

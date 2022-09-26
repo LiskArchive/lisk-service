@@ -29,7 +29,7 @@ const { read } = require('./utils/fsUtils');
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
-const LSK_LOCAL_CHAIN_ID = '00000000';
+const CHAIN_ID_LOCAL = '00000000';
 
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema.tableName,
@@ -80,7 +80,7 @@ const getBlockchainAppsMetaList = async (params) => {
 		.slice(params.offset, params.offset + params.limit);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ total }] = await applicationMetadataTable.rawQuery('SELECT COUNT(chainName) as total from applications');
+	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,
@@ -146,7 +146,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ total }] = await applicationMetadataTable.rawQuery('SELECT COUNT(chainName) as total from applications');
+	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
 
 	blockchainAppsMetadata.meta = {
 		count: blockchainAppsMetadata.data.length,
@@ -182,26 +182,25 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		params = remParams;
 
 		const chainID = tokenID.substring(0, 8);
-		const localID = tokenID.substring(8);
-		const isGlobalTokenID = chainID !== LSK_LOCAL_CHAIN_ID;
+		const localID = tokenID.substring(8).toLowerCase();
+		const isGlobalTokenID = chainID !== CHAIN_ID_LOCAL;
 
 		// chainID should match global tokenID if passed
 		if (isGlobalTokenID && params.chainID && chainID !== params.chainID) {
-			throw new InvalidParamsException('Invalid global tokenID and chainID combination');
+			throw new InvalidParamsException('Invalid global tokenID and chainID combination.');
 		}
 
-		// chainID must match local tokenID
-		if (!isGlobalTokenID) {
-			if (!params.chainID) throw new InvalidParamsException('chainID is required for local tokenID');
-
-			if (chainID !== params.chainID) throw new InvalidParamsException('Invalid local tokenID and chainID combination');
+		if (isGlobalTokenID) {
+			params.chainID = chainID;
+		} else if (!('chainID' in params) || params.chainID === CHAIN_ID_LOCAL) {
+			// chainID must present for local tokenID
+			throw new InvalidParamsException('global chainID is required when specifying local tokenID.');
 		}
 
-		params.chainID = chainID;
 		params.localID = localID;
-	} else if (params.chainID && params.chainID === LSK_LOCAL_CHAIN_ID) {
+	} else if (params.chainID && params.chainID === CHAIN_ID_LOCAL) {
 		// Request is invalid if tokenID not present for local chainID
-		throw new InvalidParamsException('tokenID is required for local chainID');
+		throw new InvalidParamsException('tokenID is required when specifying local chainID.');
 	}
 
 	const tokensResultSet = await tokenMetadataTable.find(params, ['network', 'chainID', 'chainName']);
@@ -234,7 +233,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ total }] = await tokenMetadataTable.rawQuery('SELECT COUNT(tokenName) as total from token_metadata');
+	const [{ total }] = await tokenMetadataTable.rawQuery(`SELECT COUNT(tokenName) as total from ${tokenMetadataIndexSchema.tableName}`);
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,

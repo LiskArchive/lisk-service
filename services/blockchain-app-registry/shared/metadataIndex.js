@@ -155,7 +155,7 @@ const indexAllBlockchainAppsMeta = async () => {
 									logger.debug('Committed MySQL transaction to index blockchain metadata information');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
-									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information. error: ${error}`);
+									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
 								}
 							}
 						},

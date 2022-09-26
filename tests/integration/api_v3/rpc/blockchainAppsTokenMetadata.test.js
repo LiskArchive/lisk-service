@@ -23,6 +23,7 @@ const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
+	emptyResponseSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -86,7 +87,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain application off-chain metadata for tokens by chainID', async () => {
+	it('returns blockchain application off-chain metadata for tokens by global chainID', async () => {
 		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -96,6 +97,11 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
 		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('fails validation error when only passed local chainID', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000000' });
+		expect(response).toMap(emptyResponseSchema);
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by chainName', async () => {
@@ -110,8 +116,8 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain application off-chain metadata for tokens by tokenID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '00000000' });
+	it('returns blockchain application off-chain metadata for tokens by global tokenID', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000100000000', network: 'betanet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -120,6 +126,45 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
 		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application off-chain metadata for tokens by global tokenID and chainID', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000100000000', chainID: '00000001', network: 'betanet' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application off-chain metadata for tokens by local tokenID and global chainID', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000000000000', chainID: '00000001', network: 'betanet' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('fails validation when local tokenID and local chainID specified', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000000000000', chainID: '00000000' });
+		expect(response).toMap(emptyResponseSchema);
+	});
+
+	it('fails validation error when only local tokenID specified', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000000000000' });
+		expect(response).toMap(emptyResponseSchema);
+	});
+
+	it('fails validation error when wrong global tokenID and chainID combination passed', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '1000000000000000', chainID: '00000001' });
+		expect(response).toMap(emptyResponseSchema);
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by tokenName', async () => {
