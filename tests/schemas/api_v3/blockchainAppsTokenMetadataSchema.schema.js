@@ -23,7 +23,7 @@ const logo = {
 
 const denomUnit = {
 	denom: Joi.string().pattern(regex.NAME).required(),
-	decimal: Joi.number().integer().required(),
+	decimals: Joi.number().integer().required(),
 	aliases: Joi.array().items(Joi.string()).optional(),
 };
 
