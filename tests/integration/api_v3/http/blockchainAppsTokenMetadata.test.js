@@ -94,7 +94,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	it('fails validation error when only local chainID specified', async () => {
 		const response = await api.get(`${endpoint}?chainID=00000000`, 400);
 		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Expected a global chainID, instead received: \'00000000\'');
+		expect(response.message).toInclude('Expected a global chainID, instead received:');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by chainName', async () => {
@@ -144,7 +144,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	it('fails validation when local tokenID and local chainID specified', async () => {
 		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000000`, 400);
 		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Expected a global chainID, instead received: \'00000000\'.');
+		expect(response.message).toInclude('Expected a global chainID, instead received:');
 	});
 
 	it('fails validation error when only local tokenID specified', async () => {
@@ -156,7 +156,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	it('fails validation error when wrong global tokenID and chainID combination passed', async () => {
 		const response = await api.get(`${endpoint}?tokenID=0000000100000000&chainID=00000000`, 400);
 		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Expected a global chainID, instead received: \'00000000\'.');
+		expect(response.message).toInclude('Expected a global chainID, instead received:');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenName', async () => {
