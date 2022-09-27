@@ -81,7 +81,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by global chainID', async () => {
-		const response = await api.get(`${endpoint}?network=betanet&chainID=00000001`);
+		const response = await api.get(`${endpoint}?chainID=00000001`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -109,7 +109,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by global tokenID', async () => {
-		const response = await api.get(`${endpoint}?network=betanet&tokenID=0000000100000000`);
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -120,7 +120,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by global tokenID and chainID', async () => {
-		const response = await api.get(`${endpoint}?network=betanet&tokenID=0000000100000000&chainID=00000001`);
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000&chainID=00000001`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -131,7 +131,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by local tokenID and global chainID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000001&network=betanet`);
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000001`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);

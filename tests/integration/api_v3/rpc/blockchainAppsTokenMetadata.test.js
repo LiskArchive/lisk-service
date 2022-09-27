@@ -88,7 +88,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by global chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000001', network: 'betanet' });
+		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -117,7 +117,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by global tokenID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000100000000', network: 'betanet' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000100000000' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -129,7 +129,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by global tokenID and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000100000000', chainID: '00000001', network: 'betanet' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000100000000', chainID: '00000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -141,7 +141,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by local tokenID and global chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000000000000', chainID: '00000001', network: 'betanet' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0000000000000000', chainID: '00000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
