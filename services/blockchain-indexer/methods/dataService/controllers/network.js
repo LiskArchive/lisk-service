@@ -19,7 +19,7 @@ const getNetworkStatus = async () => {
 	const result = await dataService.getNetworkStatus();
 	return {
 		data: result.data,
-		meta: {},
+		meta: result.meta,
 	};
 };
 

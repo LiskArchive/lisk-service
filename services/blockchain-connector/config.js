@@ -51,7 +51,7 @@ config.networks = {
 		},
 		{
 			name: 'testnet',
-			chainID: '10000000',
+			chainID: '01000000',
 			genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
 		},
 		{
@@ -60,7 +60,7 @@ config.networks = {
 			chainID: '',
 			genesisBlockUrl: 'https://downloads.lisk.com/lisk/betanet/genesis_block.json.tar.gz',
 		},
-	]
+	],
 };
 
 /**
