@@ -80,7 +80,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by chainID', async () => {
+	it('retrieves blockchain application off-chain metadata for tokens by global chainID', async () => {
 		const response = await api.get(`${endpoint}?chainID=00000001`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -89,6 +89,12 @@ xdescribe('Blockchain application tokens metadata API', () => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
 		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('fails validation error when only local chainID specified', async () => {
+		const response = await api.get(`${endpoint}?chainID=00000000`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Expected a global chainID, instead received:');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by chainName', async () => {
@@ -102,8 +108,8 @@ xdescribe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by tokenID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=00000000`);
+	it('retrieves blockchain application off-chain metadata for tokens by global tokenID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -111,6 +117,46 @@ xdescribe('Blockchain application tokens metadata API', () => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
 		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application off-chain metadata for tokens by global tokenID and chainID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000&chainID=00000001`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(1);
+		response.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application off-chain metadata for tokens by local tokenID and global chainID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000001`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(1);
+		response.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('fails validation when local tokenID and local chainID specified', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000000`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Expected a global chainID, instead received:');
+	});
+
+	it('fails validation error when only local tokenID specified', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000000000000`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('\'chainID\' is required when specifying local tokenID.');
+	});
+
+	it('fails validation error when wrong global tokenID and chainID combination passed', async () => {
+		const response = await api.get(`${endpoint}?tokenID=0000000100000000&chainID=00000000`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Expected a global chainID, instead received:');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenName', async () => {

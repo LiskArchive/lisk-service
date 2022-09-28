@@ -22,8 +22,8 @@ const {
 const config = require('../../config');
 
 const indexSchemas = {
-	applications: require('./schema/applications'),
-	tokens: require('./schema/tokens'),
+	application_metadata: require('./schema/application_metadata'),
+	token_metadata: require('./schema/token_metadata'),
 };
 
 const initializeSearchIndex = async () => {

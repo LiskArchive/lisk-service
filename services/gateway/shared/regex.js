@@ -18,7 +18,7 @@ const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const NONCE = /^[0-9]+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
-const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
+const NAME = /^[\w!@$&.]{1,20}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
 const DPOS_DELEGATE_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
@@ -29,6 +29,8 @@ const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /[a-zA-Z]{1,32}:[a-zA-Z]{1,32}/;
+const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -47,4 +49,6 @@ module.exports = {
 	NETWORK,
 	APPLICATION_STATE,
 	MODULE_COMMAND,
+	CHAIN_ID,
+	TOKEN_ID,
 };

@@ -14,19 +14,19 @@
  *
  */
 module.exports = {
-	tableName: 'tokens',
-	primaryKey: ['network', 'chainName', 'tokenID'],
+	tableName: 'token_metadata',
+	primaryKey: ['network', 'chainName', 'localID'],
 	schema: {
 		chainID: { type: 'string' },
 		chainName: { type: 'string' },
 		network: { type: 'string' },
-		tokenID: { type: 'string' },
+		localID: { type: 'string' },
 		tokenName: { type: 'string' },
 	},
 	indexes: {
 		chainID: { type: 'key' },
 		chainName: { type: 'key' },
-		tokenID: { type: 'key' },
+		localID: { type: 'key' },
 		tokenName: { type: 'key' },
 		network: { type: 'key' },
 	},
