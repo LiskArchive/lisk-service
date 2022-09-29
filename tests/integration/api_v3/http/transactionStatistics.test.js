@@ -52,6 +52,7 @@ describe('Transaction statistics API', () => {
 					const response = await api.get(`${baseEndpoint}?interval=${interval}`);
 					expect(response).toMap(goodRequestSchema);
 					expect(response.data).toMap(transactionStatisticsSchema);
+
 					const tokensListEntries = Object.entries(response.data.timeline);
 					tokensListEntries.forEach(([tokenID, timeline]) => {
 						expect(tokenID).toMatch(regex.TOKEN_ID);

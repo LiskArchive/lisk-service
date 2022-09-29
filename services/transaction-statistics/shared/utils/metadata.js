@@ -56,7 +56,7 @@ const getTokensMetaInfo = async (tokenIDs) => {
 		async tokenID => {
 			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
 				const response = await getTokenMetadataByID(tokenID);
-				if (response && response.data.length) {
+				if (response && response.data?.length) {
 					const [tokenMetadata] = response.data;
 					tokensMetaInfo[tokenID] = {
 						tokenName: tokenMetadata.tokenName,

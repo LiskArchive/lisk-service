@@ -40,10 +40,10 @@ const transactionStatisticsSchema = {
 	distributionByAmount: Joi.object().required(),
 };
 
-const date = {
-	dateFormat: Joi.string().valid(...allowedDateFormats).required(),
-	dateFrom: Joi.string().required(),
-	dateTo: Joi.string().required(),
+const duration = {
+	format: Joi.string().valid(...allowedDateFormats).required(),
+	from: Joi.string().required(),
+	to: Joi.string().required(),
 };
 
 const logo = {
@@ -64,7 +64,7 @@ const metaSchema = {
 	limit: Joi.number().required(),
 	offset: Joi.number().required(),
 	total: Joi.number().required(),
-	date: Joi.object(date).required(),
+	duration: Joi.object(duration).required(),
 	info: Joi.object().pattern(infoKey, infoEntry).optional(),
 };
 
