@@ -35,7 +35,7 @@ describe('Genesis Block import tests', () => {
 
 	it('Verify if genesis block is downloaded successfully', async () => {
 		const nodeInfo = await broker.call('connector.getNetworkStatus');
-		genesisBlockFilePath = `./data/${nodeInfo.data.networkIdentifier}/genesis_block.json.tar.gz`;
+		genesisBlockFilePath = `./data/${nodeInfo.chainID}/genesis_block.json.tar.gz`;
 
 		const isExists = await exists(genesisBlockFilePath);
 		expect(isExists).toBe(true);

@@ -18,18 +18,17 @@ import regex from './regex';
 
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
-const moduleCommandSchema = {
-	id: Joi.string().required(),
-	name: Joi.string().required(),
+const genesisBlockSchema = {
+	fromFile: Joi.string().required(),
 };
 
 const genesisSchema = {
+	block: Joi.object(genesisBlockSchema).required(),
+	bftBatchSize: Joi.number().integer().required(),
 	blockTime: Joi.number().integer().min(0).required(),
-	communityIdentifier: Joi.string().required(),
+	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	maxTransactionsSize: Joi.number().integer().min(0).required(),
 	minFeePerByte: Joi.number().integer().min(0).required(),
-	baseFees: Joi.array().required(),
-	modules: Joi.object().required(),
 };
 
 const seedPeerSchema = {
@@ -38,6 +37,7 @@ const seedPeerSchema = {
 };
 
 const networkSchema = {
+	version: Joi.string().required(),
 	port: Joi.number().port().required(),
 	seedPeers: Joi.array().items(seedPeerSchema).required(),
 };
@@ -45,8 +45,7 @@ const networkSchema = {
 const networkStatusSchema = {
 	version: Joi.string().pattern(regex.SEMVER).required(),
 	networkVersion: Joi.string().required(),
-	networkIdentifier: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
-		.required(),
+	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
 		.required(),
 	height: Joi.number().integer().min(0).required(),
@@ -55,7 +54,7 @@ const networkStatusSchema = {
 	unconfirmedTransactions: Joi.number().integer().min(0).required(),
 	genesis: Joi.object(genesisSchema).required(),
 	registeredModules: Joi.array().items(Joi.string()).required(),
-	moduleCommands: Joi.array().items(moduleCommandSchema).required(),
+	moduleCommands: Joi.array().items(Joi.string()).required(),
 	network: Joi.object(networkSchema).required(),
 };
 

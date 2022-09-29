@@ -24,10 +24,12 @@
                 "format": "networkVersion",
                 "description": "Network version of Lisk Core that the peer node runs on."
             },
-            "networkID": {
+            "chainID": {
                 "type": "string",
-                "example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-                "description": "Network identifier"
+                "format": "id",
+                "minLength": 1,
+                "example": "10000000",
+                "description": "Chain ID of the blockchain application"
             },
             "state": {
                 "type": "integer",
