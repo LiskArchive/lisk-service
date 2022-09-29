@@ -186,6 +186,10 @@ const getTransactionsStatistics = async params => {
 	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
 	const tokenIDs = tokens.map(e => e.tokenID);
 
+	if (!tokens.length) {
+		return transactionsStatistics;
+	}
+
 	const statsParams = {
 		dateFormat,
 		dateTo,

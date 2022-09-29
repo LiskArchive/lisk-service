@@ -65,10 +65,11 @@ config.gitHub = {
 
 config.dataDir = `${process.cwd()}/data`;
 
+// TODO: update betanet chainID once determined
 config.serviceURL = {
-	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
-	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
-	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
+	'00000000': process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
+	'01000000': process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
+	'': process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
 };
 
 config.supportedNetworks = ['mainnet', 'testnet', 'betanet'];
