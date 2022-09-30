@@ -27,7 +27,8 @@
             "chainID": {
                 "type": "string",
                 "format": "id",
-                "minLength": 1,
+                "minLength": 8,
+                "maxLength": 8,
                 "example": "10000000",
                 "description": "Chain ID of the blockchain application"
             },
