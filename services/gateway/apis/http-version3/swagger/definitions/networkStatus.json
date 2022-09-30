@@ -74,7 +74,9 @@
                             },
                             "chainID": {
                                 "type": "string",
-                                "example": "00000001"
+                                "minLength": 8,
+                                "maxLength": 8,
+                                "example": "00000000"
                             },
                             "minFeePerByte": {
                                 "type": "integer",
@@ -92,37 +94,33 @@
                     },
                     "registeredModules": {
                         "type": "array",
-                        "items": {
-                            "example": [
-                                "token",
-                                "reward",
-                                "validators",
-                                "auth",
-                                "dpos",
-                                "fee",
-                                "random",
-                                "legacy",
-                                "interoperability"
-                            ]
-                        },
+                        "example": [
+                            "token",
+                            "reward",
+                            "validators",
+                            "auth",
+                            "dpos",
+                            "fee",
+                            "random",
+                            "legacy",
+                            "interoperability"
+                        ],
                         "description": "Array of all the current registered modules"
                     },
                     "moduleCommands": {
                         "type": "array",
-                        "items": {
-                            "example": [
-                                "auth:registerMultisignature",
-                                "dpos:registerDelegate",
-                                "dpos:reportDelegateMisbehavior",
-                                "dpos:unlock",
-                                "dpos:updateGeneratorKey",
-                                "dpos:voteDelegate",
-                                "legacy:reclaim",
-                                "legacy:registerKeys",
-                                "token:transfer",
-                                "token:crossChaintransfer"
-                            ]
-                        },
+                        "example": [
+                            "auth:registerMultisignature",
+                            "dpos:registerDelegate",
+                            "dpos:reportDelegateMisbehavior",
+                            "dpos:unlock",
+                            "dpos:updateGeneratorKey",
+                            "dpos:voteDelegate",
+                            "legacy:reclaim",
+                            "legacy:registerKeys",
+                            "token:transfer",
+                            "token:crossChaintransfer"
+                        ],
                         "description": "Array of all current supported transaction types"
                     },
                     "network": {

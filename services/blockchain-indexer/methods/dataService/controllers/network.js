@@ -16,11 +16,16 @@
 const dataService = require('../../../shared/dataService');
 
 const getNetworkStatus = async () => {
-	const result = await dataService.getNetworkStatus();
-	return {
-		data: result.data,
-		meta: result.meta,
+	const networkStatus = {
+		data: {},
+		meta: {},
 	};
+	const response = await dataService.getNetworkStatus();
+
+	if (response.data) networkStatus.data = response.data;
+	if (response.meta) networkStatus.meta = response.meta;
+
+	return networkStatus;
 };
 
 module.exports = {
