@@ -15,7 +15,6 @@
  */
 const fs = require('fs');
 const decompress = require('decompress');
-const decompressTargz = require('decompress-targz');
 
 const { Logger } = require('lisk-service-framework');
 
@@ -63,13 +62,10 @@ const rm = async (directoryPath, options = {}) => {
 	);
 };
 
-const extractTarBall = async (filePath, directoryPath) => decompress(
-	filePath,
-	directoryPath,
-	{ plugins: [decompressTargz()] },
-).then(() => {
-	logger.debug(`Successfully compressed file: ${directoryPath}`);
-});
+const extractTarBall = async (filePath, directoryPath) => decompress(filePath, directoryPath)
+	.then(() => {
+		logger.debug(`Successfully compressed file: ${directoryPath}`);
+	});
 
 module.exports = {
 	exists,

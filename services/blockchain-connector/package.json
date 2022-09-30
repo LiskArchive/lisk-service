@@ -36,7 +36,6 @@
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
     "decompress": "^4.2.1",
-    "decompress-targz": "^4.1.1",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/6b0ca58154c3198b07b7708fd75f9b2c0fca8994/framework/dist/lisk-service-framework-1.4.5.tgz",
     "signals": "^1.0.0",
     "tar": "^6.1.11"

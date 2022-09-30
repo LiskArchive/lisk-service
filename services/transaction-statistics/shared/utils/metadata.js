@@ -26,7 +26,8 @@ const logger = Logger();
 
 const getTokenMetadataByID = async (tokenID) => {
 	const { chainID } = await requestConnector('getNetworkStatus');
-	const [networkInfo] = config.networks.filter(networkInfoItem => networkInfoItem.chainID === chainID);
+	const [networkInfo] = config.networks
+		.filter(networkInfoItem => networkInfoItem.chainID === chainID);
 
 	if (typeof networkInfo === 'undefined') {
 		logger.warn(`Invalid chainID returned by node. chainID:${chainID}`);
@@ -34,17 +35,18 @@ const getTokenMetadataByID = async (tokenID) => {
 	}
 
 	const { networkName } = networkInfo;
+	const tokenMetadataParams = { tokenID, chainID, network: networkName };
 
 	try {
 		const tokenMetadata = await requestAppRegistry(
 			'blockchain.apps.meta.tokens',
-			{ tokenID, chainID, network: networkName },
+			tokenMetadataParams,
 		);
 		return tokenMetadata;
 	} catch (error) {
 		const { serviceURL } = networkInfo;
 		const tokensMetadataURL = `${serviceURL}/api/v3/blockchain/apps/meta/tokens`;
-		const tokenMetadata = await request(tokensMetadataURL, { tokenID, chainID, network: networkName });
+		const tokenMetadata = await request(tokensMetadataURL, tokenMetadataParams);
 		return tokenMetadata;
 	}
 };

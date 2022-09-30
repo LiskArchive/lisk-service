@@ -33,7 +33,9 @@ const buildTimestamp = getBuildTimestamp();
 
 const getStatus = async broker => {
 	let version;
-	const networkStatistics = await broker.call('core.peers.statistics');
+	const networkStatistics = await broker.call('indexer.peers.statistics');
+	const { chainID } = await broker.call('connector.getNetworkStatus');
+
 	if (Object.getOwnPropertyNames(networkStatistics.data.coreVer).length) {
 		version = networkStatistics.data.coreVer;
 	} else {
@@ -49,6 +51,7 @@ const getStatus = async broker => {
 		name: packageJson.name,
 		version: packageJson.version,
 		networkNodeVersion,
+		chainID,
 	};
 };
 

@@ -29,6 +29,7 @@ module.exports = {
 			name: '=',
 			version: '=',
 			networkNodeVersion: '=',
+			chainID: '=',
 		},
 	},
 };

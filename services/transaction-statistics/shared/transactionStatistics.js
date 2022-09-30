@@ -200,7 +200,7 @@ const getTransactionsStatistics = async params => {
 	transactionsStatistics.data = { timeline, distributionByType, distributionByAmount };
 
 	const [{ date: minDate } = {}] = await db.find({ sort: 'date:asc' }, 'date');
-	const total = minDate ? moment().diff(moment.unix(clear), params.interval) : 0;
+	const total = minDate ? moment().diff(moment.unix(minDate), params.interval) : 0;
 
 	transactionsStatistics.meta = {
 		limit: params.limit,
