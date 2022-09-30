@@ -59,13 +59,22 @@
                     "genesis": {
                         "type": "object",
                         "properties": {
+                            "block": {
+                                "type": "object",
+                                "properties": {
+                                    "fromFile": {
+                                        "type": "string",
+                                        "example": "./config/genesis_block.blob"
+                                    }
+                                }
+                            },
                             "blockTime": {
                                 "type": "integer",
                                 "example": 10
                             },
-                            "communityIdentifier": {
+                            "chainID": {
                                 "type": "string",
-                                "example": "Lisk"
+                                "example": "00000001"
                             },
                             "minFeePerByte": {
                                 "type": "integer",
@@ -92,7 +101,8 @@
                                 "dpos",
                                 "fee",
                                 "random",
-                                "legacy"
+                                "legacy",
+                                "interoperability"
                             ]
                         },
                         "description": "Array of all the current registered modules"
@@ -100,33 +110,40 @@
                     "moduleCommands": {
                         "type": "array",
                         "items": {
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "example": "2:0"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "example": "token:transfer"
-                                }
-                            }
+                            "example": [
+                                "auth:registerMultisignature",
+                                "dpos:registerDelegate",
+                                "dpos:reportDelegateMisbehavior",
+                                "dpos:unlock",
+                                "dpos:updateGeneratorKey",
+                                "dpos:voteDelegate",
+                                "legacy:reclaim",
+                                "legacy:registerKeys",
+                                "token:transfer",
+                                "token:crossChaintransfer"
+                            ]
                         },
                         "description": "Array of all current supported transaction types"
                     },
                     "network": {
                         "type": "object",
                         "properties": {
+                            "version": {
+                                "type": "string",
+                                "example": "1.0"
+                            },
                             "port": {
                                 "type": "integer",
                                 "example": 10
                             },
-                            "hostIp": {
-                                "type": "string",
-                                "example": "Lisk"
-                            },
                             "seedPeers": {
-                                "type": "integer",
-                                "example": 1000
+                                "type": "array",
+                                "items": {
+                                    "example": {
+                                        "ip": "127.0.0.1",
+                                        "port": 7667
+                                    }
+                                }
                             },
                             "blacklistedIPs": {
                                 "type": "integer",
