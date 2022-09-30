@@ -15,7 +15,7 @@
  */
 const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
+const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
 const MODULE_COMMAND_ID = /^\b(?:[0-9]+:[0-9]+)\b$/;
 const MODULE_COMMAND_NAME = /^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
@@ -30,6 +30,7 @@ const NETWORK = /^\b(?:mainnet|testnet|betanet){1}\b$/;
 const MODULE_COMMAND = /[a-zA-Z]{1,32}:[a-zA-Z]{1,32}/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
+const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
 
 module.exports = {
 	ADDRESS_BASE32,
@@ -49,4 +50,5 @@ module.exports = {
 	MODULE_COMMAND,
 	TOKEN_ID,
 	CHAIN_ID,
+	DURATION,
 };

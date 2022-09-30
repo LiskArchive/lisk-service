@@ -42,8 +42,8 @@ const transactionStatisticsSchema = {
 
 const duration = {
 	format: Joi.string().valid(...allowedDateFormats).required(),
-	from: Joi.string().required(),
-	to: Joi.string().required(),
+	from: Joi.string().pattern(regex.DURATION).required(),
+	to: Joi.string().pattern(regex.DURATION).required(),
 };
 
 const logo = {

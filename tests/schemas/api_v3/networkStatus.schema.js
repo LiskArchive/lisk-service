@@ -24,10 +24,10 @@ const genesisBlockSchema = {
 
 const genesisSchema = {
 	block: Joi.object(genesisBlockSchema).required(),
-	bftBatchSize: Joi.number().integer().required(),
-	blockTime: Joi.number().integer().min(0).required(),
+	bftBatchSize: Joi.number().integer().positive().required(),
+	blockTime: Joi.number().integer().positive().required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
-	maxTransactionsSize: Joi.number().integer().min(0).required(),
+	maxTransactionsSize: Joi.number().integer().positive().required(),
 	minFeePerByte: Joi.number().integer().min(0).required(),
 };
 
@@ -46,7 +46,7 @@ const networkStatusSchema = {
 	version: Joi.string().pattern(regex.SEMVER).required(),
 	networkVersion: Joi.string().required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
-	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
+	lastBlockID: Joi.string().pattern(regex.HASH_SHA256)
 		.required(),
 	height: Joi.number().integer().min(0).required(),
 	finalizedHeight: Joi.number().min(0).integer().required(),

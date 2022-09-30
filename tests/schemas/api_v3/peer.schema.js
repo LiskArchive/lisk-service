@@ -31,7 +31,7 @@ const peerSchema = {
 	port: Joi.number().port().optional(),
 	networkVersion: Joi.string().required(),
 	state: Joi.string().valid(...allowedPeerStateNames).required(),
-	height: Joi.number().optional(),
+	height: Joi.number().positive().optional(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	location: Joi.object(locationSchema).optional(),
 };

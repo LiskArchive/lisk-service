@@ -44,7 +44,7 @@ const loadConfig = async () => {
 	const nodeInfo = await getNodeInfo();
 	const { chainID } = nodeInfo;
 
-	if (config.genesisBlockUrl !== '') {
+	if (config.genesisBlockUrl !== config.constants.GENESIS_BLOCK_URL_DEFAULT) {
 		genesisBlockUrl = config.genesisBlockUrl;
 		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
 
