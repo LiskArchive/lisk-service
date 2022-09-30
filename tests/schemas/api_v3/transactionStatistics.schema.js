@@ -40,7 +40,7 @@ const transactionStatisticsSchema = {
 	distributionByAmount: Joi.object().required(),
 };
 
-const duration = {
+const durationSchema = {
 	format: Joi.string().valid(...allowedDateFormats).required(),
 	from: Joi.string().pattern(regex.DURATION).required(),
 	to: Joi.string().pattern(regex.DURATION).required(),
@@ -64,7 +64,7 @@ const metaSchema = {
 	limit: Joi.number().required(),
 	offset: Joi.number().required(),
 	total: Joi.number().required(),
-	duration: Joi.object(duration).required(),
+	duration: Joi.object(durationSchema).required(),
 	info: Joi.object().pattern(infoKey, infoEntry).optional(),
 };
 

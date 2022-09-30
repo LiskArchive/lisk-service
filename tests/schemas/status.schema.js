@@ -15,6 +15,15 @@
  */
 import Joi from 'joi';
 
+const statusSchema = {
+	build: Joi.string().required(),
+	description: Joi.string().required(),
+	name: Joi.string().required(),
+	version: Joi.string().required(),
+	chainID: Joi.string().required(),
+	networkNodeVersion: Joi.string().optional(),
+};
+
 const services = {
 	lisk_accounts: Joi.boolean().required(),
 	lisk_blocks: Joi.boolean().required(),
@@ -31,5 +40,6 @@ const readySchema = {
 };
 
 module.exports = {
+	statusSchema: Joi.object(statusSchema).required(),
 	readySchema: Joi.object(readySchema).required(),
 };
