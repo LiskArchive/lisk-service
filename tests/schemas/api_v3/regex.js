@@ -16,7 +16,6 @@
 const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
-const MODULE_COMMAND_ID = /^\b(?:[0-9]+:[0-9]+)\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
@@ -26,6 +25,7 @@ const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:
 const FILE_NAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
 const FILE_URL = /^\/api\/v2\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet){1}\b$/;
+const MODULE = /^[\w!@$&.]{1,20}$/;
 const MODULE_COMMAND = /[a-zA-Z]{1,32}:[a-zA-Z]{1,32}/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
@@ -35,7 +35,7 @@ module.exports = {
 	ADDRESS_BASE32,
 	IP,
 	HASH_SHA256,
-	MODULE_COMMAND_ID,
+	MODULE,
 	MODULE_COMMAND,
 	PUBLIC_KEY,
 	SEMVER,

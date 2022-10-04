@@ -228,9 +228,6 @@ Updates about recent fee estimates.
       "medium": 0,
       "high": 0
     },
-    "baseFeeById": {
-      "5:0": "1000000000"
-    },
     "baseFeeByName": {
       "dpos:registerDelegate": "1000000000"
     },
