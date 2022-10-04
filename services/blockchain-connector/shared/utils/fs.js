@@ -14,7 +14,7 @@
  *
  */
 const fs = require('fs');
-const decompress = require('decompress');
+const tar = require('tar');
 
 const { Logger } = require('lisk-service-framework');
 
@@ -62,10 +62,15 @@ const rm = async (directoryPath, options = {}) => {
 	);
 };
 
-const extractTarBall = async (filePath, directoryPath) => decompress(filePath, directoryPath)
-	.then(() => {
-		logger.debug(`Successfully compressed file: ${directoryPath}`);
+const extractTarBall = async (filePath, directoryPath) => new Promise((resolve, reject) => {
+	const fileStream = fs.createReadStream(filePath);
+	fileStream.pipe(tar.extract({ cwd: directoryPath }));
+	fileStream.on('error', async (err) => reject(new Error(err)));
+	fileStream.on('end', async () => {
+		logger.debug('File extracted successfully.');
+		resolve();
 	});
+});
 
 module.exports = {
 	exists,
