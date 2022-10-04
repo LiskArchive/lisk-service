@@ -30,7 +30,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestFeeEstimate = async () => request(wsRpcUrl, 'get.fees');
 
-// Enable test once response structure is refactored for minFeePerByte
+// TODO: Enable test once response structure is refactored for minFeePerByte
 xdescribe('get.fees', () => {
 	it('returns estimated fees, when supported', async () => {
 		const response = await requestFeeEstimate();
