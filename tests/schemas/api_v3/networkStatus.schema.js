@@ -54,7 +54,7 @@ const networkStatusSchema = {
 	unconfirmedTransactions: Joi.number().integer().min(0).required(),
 	genesis: Joi.object(genesisSchema).required(),
 	registeredModules: Joi.array().items(Joi.string()).required(),
-	moduleCommands: Joi.array().items(Joi.string()).required(),
+	moduleCommands: Joi.array().items(Joi.string().pattern(regex.MODULE_COMMAND)).required(),
 	network: Joi.object(networkSchema).required(),
 };
 
