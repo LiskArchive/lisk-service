@@ -20,7 +20,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getLastBlock, getBlockByID } = require('./blocks');
+const { getBlockByID } = require('./blocks');
 
 const {
 	getLisk32AddressFromPublicKey,
@@ -31,11 +31,13 @@ const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { normalizeTransaction } = require('../../utils/transactionsUtils');
 
 const transactionsIndexSchema = require('../../database/schema/transactions');
+const blocksIndexSchema = require('../../database/schema/blocks');
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 
 const getTransactionIDsByBlockID = async blockID => {
 	const transactionsDB = await getTransactionsIndex();
@@ -101,6 +103,7 @@ const validateParams = async params => {
 
 const getTransactions = async params => {
 	const transactionsDB = await getTransactionsIndex();
+	const blocksTable = await getBlocksIndex();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -162,13 +165,16 @@ const getTransactions = async params => {
 				};
 			}
 
+			const [{ isFinal: isFinalInt }] = await blocksTable.find({ id: indexedTxInfo.blockID }, ['isFinal']);
+			const isFinal = isFinalInt === 1;
+
 			transaction.block = {
 				id: indexedTxInfo.blockID,
 				height: indexedTxInfo.height,
 				timestamp: indexedTxInfo.timestamp,
+				isFinal,
 			};
 
-			transaction.confirmations = (await getLastBlock()).height - indexedTxInfo.height + 1;
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 
 			return transaction;

@@ -28,6 +28,7 @@ module.exports = {
 		id: '=,string',
 		height: '=,number',
 		timestamp: '=,number',
+		isFinal: '=,boolean',
 	},
 	meta: {
 		recipient: {
@@ -36,6 +37,5 @@ module.exports = {
 			name: '=,string',
 		},
 	},
-	confirmations: '=,number',
 	executionStatus: '=,string',
 };
