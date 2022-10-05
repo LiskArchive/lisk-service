@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.dpos.votes.received',
 	tags: ['DPoS'],
 	params: {
-		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		name: { optional: true, type: 'string', min: 3, max: 20, pattern: regex.NAME },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },

@@ -14,13 +14,13 @@
  *
  */
 const dataService = require('./dataService');
-const { ADDRESS_BASE32 } = require('./regex');
+const { ADDRESS_LISK32 } = require('./regex');
 
 const isStringType = value => typeof value === 'string';
 
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
 
-const validateLisk32Address = address => (typeof address === 'string' && ADDRESS_BASE32.test(address));
+const validateLisk32Address = address => (typeof address === 'string' && ADDRESS_LISK32.test(address));
 
 const confirmAddress = async address => {
 	if (!validateLisk32Address(address)) return false;
