@@ -65,12 +65,6 @@ config.gitHub = {
 
 config.dataDir = `${process.cwd()}/data`;
 
-config.serviceURL = {
-	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
-	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
-	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
-};
-
 config.supportedNetworks = ['mainnet', 'testnet', 'betanet'];
 
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];

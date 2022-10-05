@@ -33,8 +33,9 @@ const buildTimestamp = getBuildTimestamp();
 
 const getStatus = async broker => {
 	let version;
-	const networkstatus = await broker.call('core.network.status');
-	const networkStatistics = await broker.call('core.peers.statistics');
+	const networkStatistics = await broker.call('indexer.peers.statistics');
+	const { chainID } = await broker.call('connector.getNetworkStatus');
+
 	if (Object.getOwnPropertyNames(networkStatistics.data.coreVer).length) {
 		version = networkStatistics.data.coreVer;
 	} else {
@@ -49,8 +50,8 @@ const getStatus = async broker => {
 		description: 'Lisk Service Gateway',
 		name: packageJson.name,
 		version: packageJson.version,
-		networkID: networkstatus.data.constants.networkIdentifier,
 		networkNodeVersion,
+		chainID,
 	};
 };
 

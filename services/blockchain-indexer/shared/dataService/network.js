@@ -21,12 +21,15 @@ const getNetworkStatus = async () => {
 
 	status.moduleCommands = await getAvailableModuleCommands();
 	status.registeredModules = await getRegisteredModules();
-	status.lastUpdate = Math.floor(Date.now() / 1000);
-	status.constants = { networkIdentifier: status.networkIdentifier };
+	status.constants = { chainID: status.chainID };
 
 	return {
 		data: status,
-		meta: {},
+		meta: {
+			lastUpdate: Math.floor(Date.now() / 1000),
+			lastBlockHeight: status.height,
+			lastBlockID: status.lastBlockID,
+		},
 	};
 };
 

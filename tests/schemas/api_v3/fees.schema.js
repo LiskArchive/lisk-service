@@ -26,11 +26,8 @@ const feeEstimatePerByteSchema = {
 
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object(feeEstimatePerByteSchema).required(),
-	baseFeeByID: Joi.object()
-		.pattern(regex.MODULE_COMMAND_ID, Joi.string().required())
-		.required(),
 	baseFeeByName: Joi.object()
-		.pattern(regex.MODULE_COMMAND_NAME, Joi.string().required())
+		.pattern(regex.MODULE_COMMAND, Joi.string().required())
 		.required(),
 	minFeePerByte: Joi.number().integer().required(),
 };

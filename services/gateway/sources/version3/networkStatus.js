@@ -33,9 +33,9 @@ module.exports = {
 			network: '=',
 		},
 		meta: {
-			lastUpdate: 'data.lastUpdate,number',
-			lastBlockHeight: 'data.height,number',
-			lastBlockID: 'data.lastBlockID,string',
+			lastUpdate: '=,number',
+			lastBlockHeight: '=,number',
+			lastBlockID: '=,string',
 		},
 		links: {},
 	},

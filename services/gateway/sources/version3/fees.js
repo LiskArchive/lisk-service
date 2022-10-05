@@ -24,7 +24,6 @@ module.exports = {
 				medium: 'med,number',
 				high: '=,number',
 			},
-			baseFeeByID: 'baseFeeByModuleCommandID',
 			baseFeeByName: 'baseFeeByModuleCommandName',
 			minFeePerByte: '=',
 		},

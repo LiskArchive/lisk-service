@@ -31,16 +31,6 @@
                             }
                         }
                     },
-                    "baseFeeById": {
-                        "type": "object",
-                        "properties": {
-                            "5:0": {
-                                "type": "string",
-                                "description": "Base fee for specified moduleCommandID",
-                                "example": 1000000000
-                            }
-                        }
-                    },
                     "baseFeeByName": {
                         "type": "object",
                         "properties": {

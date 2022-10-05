@@ -14,12 +14,8 @@
  *
  */
 const {
-	HTTP,
-	Logger,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
-
-const { requestIndexer } = require('./request');
 
 const config = require('../../config');
 
@@ -33,21 +29,6 @@ const getApplicationMetadataIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const logger = Logger();
-
-const getChainIDByName = async (name, network) => {
-	try {
-		const [response] = await requestIndexer('blockchain.apps', { name });
-		return response.chainID;
-	} catch (error) {
-		logger.debug('Unable to fetch blockchain application information from indexer, fetching directly using HTTP call');
-		const serviceURL = config.serviceURL[network];
-		const response = HTTP.get(`${serviceURL}/api/v3/blockchain/apps`, { name });
-		const { chainID } = response.data[0];
-		return chainID;
-	}
-};
-
 const resolveChainNameByNetworkAppDir = async (network, appDirName) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 	const EMPTY_STRING = '';
@@ -56,6 +37,5 @@ const resolveChainNameByNetworkAppDir = async (network, appDirName) => {
 };
 
 module.exports = {
-	getChainIDByName,
 	resolveChainNameByNetworkAppDir,
 };

@@ -17,7 +17,7 @@ import Joi from 'joi';
 import regex from './regex';
 
 const lockedAmount = {
-	moduleID: Joi.string().pattern(regex.MODULE_COMMAND_ID).required(),
+	module: Joi.string().pattern(regex.MODULE).required(),
 	amount: Joi.string().required(),
 };
 
