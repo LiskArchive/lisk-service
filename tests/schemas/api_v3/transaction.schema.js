@@ -18,7 +18,7 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const sender = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
 	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
 };
@@ -34,7 +34,7 @@ const block = {
 };
 
 const transactionMetaReceipientSchema = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).required(),
 	name: Joi.string().pattern(regex.NAME).allow(null).required(),
 };

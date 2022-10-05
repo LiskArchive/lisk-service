@@ -22,7 +22,7 @@ const topLSKAddressMetaSchema = {
 };
 
 const topLSKAddressSchema = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	balance: Joi.string().required(),
 	owner: Joi.string().allow('').required(),
 	description: Joi.string().allow('').required(),
