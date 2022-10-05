@@ -19,8 +19,8 @@ const regex = require('./regex');
 
 const sender = {
 	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
 };
 
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
@@ -30,6 +30,17 @@ const block = {
 	height: Joi.number().integer().min(1).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
 		.required(),
+	isFinal: Joi.boolean().required(),
+};
+
+const transactionMetaReceipientSchema = {
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).required(),
+	name: Joi.string().pattern(regex.NAME).allow(null).required(),
+};
+
+const transactionMetaSchema = {
+	recipient: Joi.object(transactionMetaReceipientSchema).required(),
 };
 
 const TRANSACTION_EXECUTION_STATUSES = [
@@ -46,8 +57,8 @@ const transactionSchema = {
 	sender: Joi.object(sender).required(),
 	params: Joi.object().required(),
 	block: Joi.object(block).required(),
-	confirmations: Joi.number().required(),
 	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
+	meta: Joi.object(transactionMetaSchema).required(),
 };
 
 const postTransactionSchema = {
