@@ -281,6 +281,18 @@ const getGenerators = async () => {
 	}
 };
 
+const getEventsByHeight = async (height) => {
+	try {
+		const events = await invokeEndpoint('chain_getEvents', { height });
+		return events;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getEvents\'');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	invokeEndpoint,
 	invokeEndpointProxy,
@@ -306,4 +318,5 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	getGenerators,
+	getEventsByHeight,
 };

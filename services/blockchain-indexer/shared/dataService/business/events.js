@@ -54,7 +54,7 @@ const getEventTopicsIndex = () => getTableInstance(
 let registeredModules;
 
 const getEventsByHeight = async (height) => {
-	const events = await requestConnector('chain_getEvents', { height });
+	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
 };
 
