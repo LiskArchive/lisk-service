@@ -19,7 +19,7 @@ const regex = require('./regex');
 
 const sender = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
 };
 
@@ -35,8 +35,8 @@ const block = {
 
 const transactionMetaRecipientSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).required(),
-	name: Joi.string().pattern(regex.NAME).allow(null).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
+	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
 };
 
 const transactionMetaSchema = {
