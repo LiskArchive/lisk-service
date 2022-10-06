@@ -33,14 +33,14 @@ const block = {
 	isFinal: Joi.boolean().required(),
 };
 
-const transactionMetaReceipientSchema = {
+const transactionMetaRecipientSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).required(),
 	name: Joi.string().pattern(regex.NAME).allow(null).required(),
 };
 
 const transactionMetaSchema = {
-	recipient: Joi.object(transactionMetaReceipientSchema).required(),
+	recipient: Joi.object(transactionMetaRecipientSchema).required(),
 };
 
 const TRANSACTION_EXECUTION_STATUSES = [
@@ -58,7 +58,7 @@ const transactionSchema = {
 	params: Joi.object().required(),
 	block: Joi.object(block).required(),
 	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
-	meta: Joi.object(transactionMetaSchema).required(),
+	meta: Joi.object(transactionMetaSchema).optional(),
 };
 
 const postTransactionSchema = {
