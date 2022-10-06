@@ -42,28 +42,27 @@ const getGenesisBlockId = () => genesisBlock.header.id;
 
 const loadConfig = async () => {
 	const nodeInfo = await getNodeInfo();
-	const { networkIdentifier } = nodeInfo;
+	const { chainID } = nodeInfo;
 
-	if (process.env.GENESIS_BLOCK_URL) {
-		logger.info('Genesis block URL is defined by environment variable (GENESIS_BLOCK_URL)');
-
+	if (config.genesisBlockUrl !== config.constants.GENESIS_BLOCK_URL_DEFAULT) {
 		genesisBlockUrl = config.genesisBlockUrl;
 		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
 
-		genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
+		genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
 		logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
 	} else {
-		const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+		// Check if current node is running Lisk Core
+		const [networkConfig] = config.networks.LISK.filter(c => chainID === c.chainID);
 		if (networkConfig) {
-			logger.info(`Found config for ${networkConfig.name} (${networkIdentifier})`);
+			logger.info(`Found config for ${networkConfig.name} (${chainID})`);
 
 			genesisBlockUrl = networkConfig.genesisBlockUrl;
 			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
 
-			genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
+			genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
 			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
 		} else {
-			logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
+			logger.info(`Network is neither defined in the config, nor in the environment variable (${chainID})`);
 			return;
 		}
 	}

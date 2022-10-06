@@ -80,27 +80,6 @@ const getTransactions = async (params) => {
 	}
 };
 
-const getLastTransactions = async (params) => {
-	const result = await dataService.getTransactions({
-		...params,
-		sort: 'timestamp:desc',
-	});
-
-	const meta = {
-		count: result.data.length,
-		limit: result.meta.limit,
-		offset: result.meta.offset,
-		total: result.meta.count,
-	};
-
-	return {
-		data: {
-			data: result.data,
-			meta,
-		},
-	};
-};
-
 const getPendingTransactions = async (params) => {
 	const result = await dataService.getPendingTransactions(params);
 	return {
@@ -115,7 +94,6 @@ const getCommandsParamsSchemas = async (params) => dataService.getCommandsParams
 
 module.exports = {
 	getTransactions,
-	getLastTransactions,
 	getPendingTransactions,
 	postTransactions,
 	getCommandsParamsSchemas,

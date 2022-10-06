@@ -223,8 +223,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			parsedTokenMeta.tokens.forEach(token => {
 				blockchainAppsTokenMetadata.data.push({
 					...token,
-					// TODO: remove the below line after the app-registry schema is updated
-					tokenName: token.name,
 					chainID: tokenMeta.chainID,
 					chainName: tokenMeta.chainName,
 					network: tokenMeta.network,

@@ -61,10 +61,24 @@ config.queue = {
 	},
 };
 
-config.serviceURL = {
-	mainnet: 'https://service.lisk.com',
-	testnet: 'https://testnet-service.lisk.com',
-	betanet: 'https://betanet-service.lisk.com',
-};
+// TODO: Update betanet chainID once determined
+config.networks = [
+	{
+		networkName: 'mainnet',
+		chainID: '00000000',
+		serviceUrl: 'https://service.lisk.com',
+	},
+	{
+		networkName: 'testnet',
+		chainID: '01000000',
+		serviceUrl: 'https://testnet-service.lisk.com',
+
+	},
+	{
+		networkName: 'betanet',
+		chainID: '',
+		serviceUrl: 'https://betanet-service.lisk.com',
+	},
+];
 
 module.exports = config;
