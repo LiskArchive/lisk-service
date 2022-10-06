@@ -28,8 +28,8 @@ const decodeEvent = async (event) => {
 		const schemas = await requestConnector('getSchema');
 		eventSchema = schemas.event;
 	}
-	const eventID = codec.decode(eventSchema, event);
-	return eventID;
+	const decodedEvent = codec.decode(eventSchema, event);
+	return decodedEvent;
 };
 
 const encodeEvent = async (event) => {
@@ -37,11 +37,18 @@ const encodeEvent = async (event) => {
 		const schemas = await requestConnector('getSchema');
 		eventSchema = schemas.event;
 	}
-	const eventID = codec.encode(eventSchema, event);
-	return eventID;
+
+	const schemaCompliantEvent = {
+		...event,
+		data: Buffer.from(event.data, 'utf8'),
+		topics: event.topics.map(t => Buffer.from(t, 'utf8')),
+	};
+
+	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);
+	return encodedEvent;
 };
 
-const getEventsInfoToIndex = async (blockHeader, events) => {
+const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
 		eventsInfo: [],
 		eventTopicsInfo: [],
@@ -50,14 +57,14 @@ const getEventsInfoToIndex = async (blockHeader, events) => {
 	await BluebirdPromise.map(
 		events,
 		async (event) => {
-			const id = hash(event);
-			const encodedEvent = await encodeEvent(event);
+			const encodedEvent = (await encodeEvent(event)).toString('hex');
+			const id = hash(encodedEvent, 'hex').toString('hex');
 
 			const eventInfo = {
 				id,
-				typeID: event.typeID,
-				moduleID: event.moduleID,
-				height: blockHeader.height,
+				name: event.name,
+				module: event.module,
+				height: block.height,
 				index: event.index,
 				event: encodedEvent,
 			};
@@ -67,8 +74,8 @@ const getEventsInfoToIndex = async (blockHeader, events) => {
 			event.topics.forEach(topic => {
 				eventsInfoToIndex.eventTopicsInfo.push({
 					id,
-					height: blockHeader.height,
-					timestamp: blockHeader.timestamp,
+					height: block.height,
+					timestamp: block.timestamp,
 					topic,
 				});
 			});

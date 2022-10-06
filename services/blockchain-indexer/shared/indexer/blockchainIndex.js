@@ -34,7 +34,7 @@ const {
 	getBlockByHeight,
 	getTransactionIDsByBlockID,
 	getTransactions,
-	// getEventsByHeight,
+	getEventsByHeight,
 } = require('../dataService');
 
 const {
@@ -44,7 +44,7 @@ const {
 const { getLisk32AddressFromPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
 
-// const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
 const { updateAddressBalanceQueue } = require('./tokenIndex');
 
@@ -60,8 +60,8 @@ const keyValueDB = require('../database/mysqlKVStore');
 
 const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
-// const eventsIndexSchema = require('../database/schema/events');
-// const eventTopicsIndexSchema = require('../database/schema/eventTopics');
+const eventsIndexSchema = require('../database/schema/events');
+const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -79,16 +79,19 @@ const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema,
 	MYSQL_ENDPOINT,
 );
-// const getEventsIndex = () => getTableInstance(
-// 	eventsIndexSchema.tableName,
-// 	eventsIndexSchema,
-// 	MYSQL_ENDPOINT,
-// );
-// const getEventTopicsIndex = () => getTableInstance(
-// 	eventTopicsIndexSchema.tableName,
-// 	eventTopicsIndexSchema,
-// 	MYSQL_ENDPOINT,
-// );
+
+const getEventsIndex = () => getTableInstance(
+	eventsIndexSchema.tableName,
+	eventsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getEventTopicsIndex = () => getTableInstance(
+	eventTopicsIndexSchema.tableName,
+	eventTopicsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
@@ -121,7 +124,7 @@ const validateBlock = (block) => !!block && block.height >= 0;
 const indexBlock = async job => {
 	const { block } = job.data;
 	const blocksDB = await getBlocksIndex();
-	// const events = await getEventsByHeight(height);
+	const events = await getEventsByHeight(block.height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block ${block.id} at height ${block.height} }`);
 
@@ -160,15 +163,14 @@ const indexBlock = async job => {
 			);
 		}
 
-		// TODO: Enable events indexing logic when chain_getEvents is available
-		// if (events.length) {
-		// 	const eventsDB = await getEventsIndex();
-		// 	const eventTopicsDB = await getEventTopicsIndex();
+		if (events.length) {
+			const eventsDB = await getEventsIndex();
+			const eventTopicsDB = await getEventTopicsIndex();
 
-		// 	const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
-		// 	await eventsDB.upsert(eventsInfo, dbTrx);
-		// 	await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
-		// }
+			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
+			await eventsDB.upsert(eventsInfo, dbTrx);
+			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
+		}
 
 		if (block.generatorAddress) {
 			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
@@ -178,9 +180,8 @@ const indexBlock = async job => {
 		const blockToIndex = {
 			...block,
 			assetsModules: block.assets.map(asset => asset.module),
-			numberOfEvents: 1,
+			numberOfEvents: events.length,
 			reward: BigInt('0'),
-			// numberOfEvents: events.length,
 		};
 
 		await blocksDB.upsert(blockToIndex, dbTrx);

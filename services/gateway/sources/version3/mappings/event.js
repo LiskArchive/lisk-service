@@ -15,11 +15,11 @@
  */
 module.exports = {
 	id: '=,string',
-	moduleID: '=,string',
-	moduleName: '=,string',
-	typeID: '=,string',
+	module: '=,string',
+	name: '=,string',
 	data: '=,string',
 	topics: '=',
+	index: '=,number',
 	block: {
 		id: '=,string',
 		height: '=,number',

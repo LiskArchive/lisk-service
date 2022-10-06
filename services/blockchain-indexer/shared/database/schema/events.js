@@ -18,8 +18,8 @@ module.exports = {
 	primaryKey: 'id',
 	schema: {
 		id: { type: 'string' }, // Unique event identifier
-		typeID: { type: 'string' }, // Type of event
-		moduleID: { type: 'string' },
+		name: { type: 'string' }, // Type of event
+		module: { type: 'string' },
 		height: { type: 'integer' },
 		index: { type: 'integer' },
 		event: { type: 'string' },
