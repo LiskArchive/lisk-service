@@ -29,19 +29,18 @@ const {
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { normalizeTransaction } = require('../../utils/transactionsUtils');
+const { getFinalizedHeight } = require('../../constants');
 
 const transactionsIndexSchema = require('../../database/schema/transactions');
-const blocksIndexSchema = require('../../database/schema/blocks');
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 
 const getTransactionIDsByBlockID = async blockID => {
-	const transactionsDB = await getTransactionsIndex();
-	const transactions = await transactionsDB.find({
+	const transactionsTable = await getTransactionsIndex();
+	const transactions = await transactionsTable.find({
 		whereIn: {
 			property: 'blockId',
 			values: [blockID],
@@ -102,8 +101,7 @@ const validateParams = async params => {
 };
 
 const getTransactions = async params => {
-	const transactionsDB = await getTransactionsIndex();
-	const blocksTable = await getBlocksIndex();
+	const transactionsTable = await getTransactionsIndex();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -111,8 +109,8 @@ const getTransactions = async params => {
 
 	params = await validateParams(params);
 
-	const total = await transactionsDB.count(params);
-	const resultSet = await transactionsDB.find(
+	const total = await transactionsTable.count(params);
+	const resultSet = await transactionsTable.find(
 		{ ...params, limit: params.limit || total },
 		['id', 'timestamp', 'height', 'blockID', 'executionStatus'],
 	);
@@ -165,14 +163,11 @@ const getTransactions = async params => {
 				};
 			}
 
-			const [{ isFinal: isFinalInt }] = await blocksTable.find({ id: indexedTxInfo.blockID }, ['isFinal']);
-			const isFinal = isFinalInt === 1;
-
 			transaction.block = {
 				id: indexedTxInfo.blockID,
 				height: indexedTxInfo.height,
 				timestamp: indexedTxInfo.timestamp,
-				isFinal,
+				isFinal: indexedTxInfo.height <= (await getFinalizedHeight()),
 			};
 
 			transaction.executionStatus = indexedTxInfo.executionStatus;
@@ -229,8 +224,8 @@ const getTransactionsByBlockID = async blockID => {
 			};
 
 			// TODO: Check - this information might not be available yet
-			const transactionsDB = await getTransactionsIndex();
-			const [indexedTxInfo = {}] = await transactionsDB.find(
+			const transactionsTable = await getTransactionsIndex();
+			const [indexedTxInfo = {}] = await transactionsTable.find(
 				{ id: transaction.id, limit: 1 },
 				['executionStatus'],
 			);

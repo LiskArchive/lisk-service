@@ -70,8 +70,8 @@ describe('Test indexer methods', () => {
 		});
 
 		it('validate block indexing progress', async () => {
-			const blocksDB = await getBlocksIndex();
-			const blocks = await blocksDB.find();
+			const blocksTable = await getBlocksIndex();
+			const blocks = await blocksTable.find();
 			expect(blocks.length).toBeGreaterThan(1);
 		});
 	});
