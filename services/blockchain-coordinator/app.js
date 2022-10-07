@@ -43,15 +43,15 @@ const app = Microservice({
 	logger: loggerConf,
 	events: {
 		chainNewBlock: async (payload) => {
-			logger.info('Subscribed to the new block event from connecter');
+			logger.debug('Received a \'chainNewBlock\' event from connecter.');
 			Signals.get('newBlock').dispatch(payload);
 		},
 		chainDeleteBlock: async (payload) => {
-			logger.info('Subscribed to the delete block event from connecter');
+			logger.debug('Received a \'chainDeleteBlock\' event from connecter.');
 			Signals.get('deleteBlock').dispatch(payload);
 		},
 		chainValidatorsChange: async (payload) => {
-			logger.info('Subscribed to the validators change event from connecter');
+			logger.debug('Received a \'chainValidatorsChange\' event from connecter.');
 			Signals.get('newRound').dispatch(payload);
 		},
 	},
