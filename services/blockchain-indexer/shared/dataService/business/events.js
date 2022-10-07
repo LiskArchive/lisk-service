@@ -144,14 +144,14 @@ const getEvents = async (params) => {
 				['id', 'timestamp'],
 			);
 
-			return {
+			return parseToJSONCompatObj({
 				...decodedEvent,
 				block: {
 					id: blockInfo.id,
 					height: eventInfo.height,
 					timestamp: blockInfo.timestamp,
 				},
-			};
+			});
 		},
 		{ concurrency: eventsInfo.length },
 	);

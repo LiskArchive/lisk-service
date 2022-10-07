@@ -17,7 +17,7 @@ module.exports = {
 	id: '=,string',
 	module: '=,string',
 	name: '=,string',
-	data: '=,string',
+	data: '=',
 	topics: '=',
 	index: '=,number',
 	block: {

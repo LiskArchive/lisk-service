@@ -28,7 +28,7 @@ const decodeEvent = async (event) => {
 		const schemas = await requestConnector('getSchema');
 		eventSchema = schemas.event;
 	}
-	const decodedEvent = codec.decode(eventSchema, event);
+	const decodedEvent = codec.decode(eventSchema, Buffer.from(event, 'hex'));
 	return decodedEvent;
 };
 
@@ -73,6 +73,7 @@ const getEventsInfoToIndex = async (block, events) => {
 
 			event.topics.forEach(topic => {
 				eventsInfoToIndex.eventTopicsInfo.push({
+					tempID: id.concat(topic),
 					id,
 					height: block.height,
 					timestamp: block.timestamp,
