@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.dpos.delegates',
 	tags: ['DPoS'],
 	params: {
-		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		status: { optional: true, type: 'string', pattern: regex.DPOS_DELEGATE_STATUS },
 		search: { optional: true, type: 'string', min: 1 },

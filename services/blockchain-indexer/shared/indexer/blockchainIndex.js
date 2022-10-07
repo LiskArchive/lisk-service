@@ -101,12 +101,12 @@ const getTransactionsIndex = () => getTableInstance(
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 // const getGeneratorPkInfoArray = async (blocks) => {
-// 	const blocksDB = await getBlocksIndex();
+// 	const blocksTable = await getBlocksIndex();
 // 	const pkInfoArray = [];
 // 	await BluebirdPromise.map(
 // 		blocks,
 // 		async block => {
-// 			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+// 			const [blockInfo] = await blocksTable.find({ id: block.id, limit: 1 }, ['id']);
 // 			pkInfoArray.push({
 // 				publicKey: block.generatorPublicKey,
 // 				reward: block.reward,
@@ -123,7 +123,7 @@ const validateBlock = (block) => !!block && block.height >= 0;
 
 const indexBlock = async job => {
 	const { block } = job.data;
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const events = await getEventsByHeight(block.height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block ${block.id} at height ${block.height} }`);
@@ -184,7 +184,7 @@ const indexBlock = async job => {
 			reward: BigInt('0'),
 		};
 
-		await blocksDB.upsert(blockToIndex, dbTrx);
+		await blocksTable.upsert(blockToIndex, dbTrx);
 		await commitDbTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}`);
 	} catch (error) {
@@ -203,16 +203,16 @@ const indexBlock = async job => {
 };
 
 const updateBlockIndex = async job => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const { blocks } = job.data;
-	await blocksDB.upsert(blocks);
+	await blocksTable.upsert(blocks);
 };
 
 const deleteIndexedBlocks = async job => {
 	const { blocks } = job.data;
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
@@ -254,7 +254,7 @@ const deleteIndexedBlocks = async job => {
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 			});
 
-		await blocksDB.deleteByPrimaryKey(blockIDs);
+		await blocksTable.deleteByPrimaryKey(blockIDs);
 		await commitDbTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
@@ -280,17 +280,17 @@ const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlo
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
 const indexNewBlock = async block => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
-	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
+	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 		// Index if doesn't exist, or update if it isn't set to final
 		await indexBlocksQueue.add({ block });
 
 		// Update block finality status
 		const finalizedBlockHeight = await getFinalizedHeight();
-		const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
+		const nonFinalBlocks = await blocksTable.find({ isFinal: false, limit: 1000 },
 			Object.keys(blocksIndexSchema.schema));
 		await updateBlockIndexQueue.add({
 			blocks: nonFinalBlocks
@@ -301,8 +301,8 @@ const indexNewBlock = async block => {
 		if (blockInfo && blockInfo.id !== block.id) {
 			// Fork detected
 
-			const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-			const blocksToRemove = await blocksDB.find({
+			const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, ['height']);
+			const blocksToRemove = await blocksTable.find({
 				propBetweens: [{
 					property: 'height',
 					from: block.height + 1,
@@ -348,13 +348,13 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	const totalNumOfBlocks = toHeight - fromHeight + 1;
 	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks)`);
 
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const propBetweens = [{
 		property: 'height',
 		from: fromHeight,
 		to: toHeight,
 	}];
-	const indexedBlockCount = await blocksDB.count({ propBetweens });
+	const indexedBlockCount = await blocksTable.count({ propBetweens });
 
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
@@ -370,7 +370,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 		`;
 
-		const missingBlockRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
+		const missingBlockRanges = await blocksTable.rawQuery(missingBlocksQueryStatement);
 
 		result = missingBlockRanges;
 	}
@@ -382,9 +382,9 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 };
 
 const getMinNonFinalHeight = async () => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 
-	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
+	const [{ height: lastIndexedHeight } = {}] = await blocksTable.find({
 		sort: 'height:asc',
 		limit: 1,
 		isFinal: false,
@@ -412,9 +412,9 @@ const getMissingBlocks = async (params) => {
 };
 
 const isGenesisBlockIndexed = async () => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const genesisHeight = await getGenesisHeight();
-	const [block] = await blocksDB.find({ height: genesisHeight, limit: 1 }, ['height']);
+	const [block] = await blocksTable.find({ height: genesisHeight, limit: 1 }, ['height']);
 	return !!block;
 };
 

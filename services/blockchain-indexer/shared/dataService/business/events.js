@@ -68,7 +68,7 @@ const getModuleNameByID = async (moduleID) => {
 };
 
 const getEvents = async (params) => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const eventsDB = await getEventsIndex();
 	const eventTopicsDB = await getEventTopicsIndex();
 
@@ -117,7 +117,7 @@ const getEvents = async (params) => {
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
 		params = remParams;
-		const [block] = await blocksDB.find({ id: blockID }, ['height']);
+		const [block] = await blocksTable.find({ id: blockID }, ['height']);
 		if ('height' in params && params.height !== block.height) {
 			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 		}
@@ -139,7 +139,7 @@ const getEvents = async (params) => {
 			const decodedEvent = await decodeEvent(eventInfo.event);
 			decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
 
-			const [blockInfo] = await blocksDB.find(
+			const [blockInfo] = await blocksTable.find(
 				{ height: eventInfo.height },
 				['id', 'timestamp'],
 			);
