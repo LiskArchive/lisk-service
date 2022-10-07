@@ -229,6 +229,10 @@
                         "type": "integer",
                         "example": 1613323667,
                         "description": "UNIX Timestamp"
+                    },
+                    "isFinal": {
+                        "type": "boolean",
+                        "example": true
                     }
                 }
             },
@@ -289,10 +293,6 @@
                         "example": "test"
                     }
                 }
-            },
-            "confirmations": {
-                "type": "integer",
-                "example": 0
             },
             "executionStatus": {
                 "type": "string",

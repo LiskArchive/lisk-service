@@ -41,11 +41,11 @@ const getIndexReadyStatus = () => isIndexReady;
 
 const getIndexStats = async () => {
 	try {
-		const blocksDB = await getBlocksIndex();
+		const blocksTable = await getBlocksIndex();
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+		const numBlocksIndexed = await blocksTable.count();
+		const [lastIndexedBlock = {}] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, ['height']);
 		const chainLength = currentChainHeight - genesisHeight + 1;
 		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 

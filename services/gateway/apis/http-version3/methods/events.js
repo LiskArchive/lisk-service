@@ -25,7 +25,7 @@ module.exports = {
 	tags: ['Events'],
 	params: {
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
-		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		topic: { optional: true, type: 'string', min: 1 },
 		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		height: { optional: true, type: 'string', min: 1, pattern: regex.HEIGHT_RANGE },

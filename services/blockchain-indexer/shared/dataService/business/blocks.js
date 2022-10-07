@@ -48,7 +48,7 @@ let latestBlock;
 
 const normalizeBlock = async (originalblock) => {
 	try {
-		const blocksDB = await getBlocksIndex();
+		const blocksTable = await getBlocksIndex();
 
 		const block = {
 			...originalblock.header,
@@ -72,7 +72,7 @@ const normalizeBlock = async (originalblock) => {
 		block.isFinal = block.height <= (await getFinalizedHeight());
 		block.numberOfTransactions = block.transactions.length;
 		block.numberOfAssets = block.assets.length;
-		const [{ numberOfEvents, reward } = {}] = await blocksDB.find({ height: block.height }, ['numberOfEvents', 'reward']);
+		const [{ numberOfEvents, reward } = {}] = await blocksTable.find({ height: block.height }, ['numberOfEvents', 'reward']);
 		block.numberOfEvents = numberOfEvents;
 
 		block.size = 0;
@@ -165,7 +165,7 @@ const isQueryFromIndex = params => {
 };
 
 const getBlocks = async params => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const blocks = {
 		data: [],
 		meta: {},
@@ -185,9 +185,9 @@ const getBlocks = async params => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	const total = await blocksDB.count(params);
+	const total = await blocksTable.count(params);
 	if (isQueryFromIndex(params)) {
-		const resultSet = await blocksDB.find(params, ['id']);
+		const resultSet = await blocksTable.find(params, ['id']);
 		params.ids = resultSet.map(row => row.id);
 	}
 
@@ -243,7 +243,7 @@ const filterBlockAssets = (modules, block) => {
 };
 
 const getBlocksAssets = async (params) => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const blockAssets = {
 		data: [],
 		meta: {},
@@ -274,8 +274,8 @@ const getBlocksAssets = async (params) => {
 	}
 
 	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
-	const total = await blocksDB.count(params);
-	const blocksFromDB = await blocksDB.find(params, ['id']);
+	const total = await blocksTable.count(params);
+	const blocksFromDB = await blocksTable.find(params, ['id']);
 
 	logger.debug(`Requesting blockchain application for blocks with IDs: ${blocksFromDB.map(b => b.id).join(', ')}`);
 	blockAssets.data = await BluebirdPromise.map(

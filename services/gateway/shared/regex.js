@@ -14,7 +14,7 @@
  *
  */
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const NONCE = /^[0-9]+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
@@ -34,7 +34,7 @@ const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
-	ADDRESS_BASE32,
+	ADDRESS_LISK32,
 	NONCE,
 	NAME,
 	TRANSACTION_EXECUTION_STATUS,
