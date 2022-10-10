@@ -14,12 +14,12 @@
  *
  */
 
-const { getEvents } = require('../shared/sdk/events');
+const { getEventsByHeight } = require('../shared/sdk/events');
 
 module.exports = [
 	{
-		name: 'getEvents',
-		controller: getEvents,
+		name: 'getEventsByHeight',
+		controller: getEventsByHeight,
 		params: {},
 	},
 ];

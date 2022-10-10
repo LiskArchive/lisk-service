@@ -53,7 +53,7 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
-const getEvents = async (height) => {
+const getEventsByHeight = async (height) => {
 	try {
 		const chainEvents = await invokeEndpoint('chain_getEvents', { height });
 
@@ -79,4 +79,8 @@ const getEvents = async (height) => {
 	}
 };
 
-module.exports = { subscribeToAllRegisteredEvents, events, getEvents };
+module.exports = {
+	subscribeToAllRegisteredEvents,
+	events,
+	getEventsByHeight,
+};
