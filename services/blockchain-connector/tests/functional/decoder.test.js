@@ -31,8 +31,10 @@ const {
 
 const {
 	transferventInput,
-	decodedTransferEvent
+	decodedTransferEvent,
 } = require('../constants/events');
+
+const { getEventSchemaFromName } = require('../../shared/utils/events');
 
 const config = require('../../config');
 
@@ -92,8 +94,10 @@ describe('Functional tests for decoder', () => {
 
 	// TODO: Update and enable the test once event decoding start to work
 	xit('decode event payload for token:transferEvent', async () => {
+		const tokenTransferEventSchema = await getEventSchemaFromName(transferventInput.name);
 		const result = await broker.call('connector.decodeEventPayload', {
-			event: transferventInput
+			event: transferventInput,
+			schema: tokenTransferEventSchema,
 		});
 		expect(result).toMatchObject(decodedTransferEvent);
 	});

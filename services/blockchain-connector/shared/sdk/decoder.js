@@ -115,8 +115,8 @@ const decodeSubscriptionEventPayload = (eventName, payload) => {
 };
 
 const decodeEventPayload = async (event, schema) => {
-	const decodedEvent = event && schema && event.data !== '' ?
-		await codec.decode(schema, event.data) : '';
+	const decodedEvent = event && schema && event.data !== ''
+		? await codec.decode(schema, event.data) : '';
 
 	return {
 		...event,

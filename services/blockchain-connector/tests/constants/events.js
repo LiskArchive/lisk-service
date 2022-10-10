@@ -30,6 +30,6 @@ const decodedTransferEvent = {
 };
 
 module.exports = {
-    transferventInput,
-    decodedTransferEvent,
+	transferventInput,
+	decodedTransferEvent,
 };
