@@ -43,7 +43,7 @@ const transactionSchema = {
 	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	nonce: Joi.string().required(),
 	fee: Joi.string().required(),
-	size: Joi.integer().positive().required(),
+	size: Joi.number().integer().positive().required(),
 	sender: Joi.object(sender).required(),
 	params: Joi.object().required(),
 	block: Joi.object(block).required(),
