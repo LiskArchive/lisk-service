@@ -100,7 +100,7 @@ const decodeResponse = (endpoint, response) => {
 	return response;
 };
 
-const decodeEventPayload = (eventName, payload) => {
+const decodeSubscriptionEventPayload = (eventName, payload) => {
 	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
 		const decodedBlock = decodeBlock(payload.block);
 		return parseToJSONCompatObj(decodedBlock);
@@ -114,9 +114,20 @@ const decodeEventPayload = (eventName, payload) => {
 	return payload;
 };
 
+const decodeEventPayload = async (event, schema) => {
+	const decodedEvent = event.data !== '' && schema
+		? await codec.decode(schema, event.data) : '';
+
+	return {
+		...event,
+		data: decodedEvent,
+	};
+};
+
 module.exports = {
 	decodeBlock,
 	decodeTransaction,
 	decodeResponse,
+	decodeSubscriptionEventPayload,
 	decodeEventPayload,
 };

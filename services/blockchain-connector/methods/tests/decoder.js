@@ -16,7 +16,7 @@
 const {
 	decodeBlock,
 	decodeTransaction,
-	decodeEventPayload,
+	decodeSubscriptionEventPayload,
 	decodeResponse,
 } = require('../../shared/sdk/decoder');
 
@@ -42,12 +42,12 @@ module.exports = [
 		),
 	},
 	{
-		name: 'decodeEventPayload',
+		name: 'decodeSubscriptionEventPayload',
 		params: {
 			eventName: { optional: false, type: 'string' },
 			payload: { optional: false, type: 'object' },
 		},
-		controller: ({ eventName, payload }) => decodeEventPayload(eventName, payload),
+		controller: ({ eventName, payload }) => decodeSubscriptionEventPayload(eventName, payload),
 	},
 	{
 		name: 'decodeResponse',

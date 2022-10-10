@@ -16,13 +16,11 @@
 const util = require('util');
 const { Signals, Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
 
-const { codec } = require('@liskhq/lisk-codec');
-const {
-	utils: { hash },
-} = require('@liskhq/lisk-cryptography');
 const BluebirdPromise = require('bluebird');
 const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
-const { getRegisteredEvents, getSystemMetadata } = require('./endpoints');
+const { getRegisteredEvents } = require('./endpoints');
+const { decodeEventPayload } = require('./decoder');
+const { getEventID, getEventSchemaFromName } = require('../utils/events');
 
 const logger = Logger();
 const EVENT_CHAIN_FORK = 'chain_forked';
@@ -58,29 +56,16 @@ const subscribeToAllRegisteredEvents = async () => {
 const getEvents = async (height) => {
 	try {
 		const chainEvents = await invokeEndpoint('chain_getEvents', { height });
-		const metadata = await getSystemMetadata();
 
 		const eventsResponse = await BluebirdPromise.map(
 			chainEvents,
 			async (event) => {
-				let schema;
+				const schema = await getEventSchemaFromName(event.name);
 
-				for (let i = 0; i < metadata.modules.length; i++) {
-					const module = metadata.modules[i];
+				event.id = await getEventID(event);
+				const decodedEvent = await decodeEventPayload(event, schema);
 
-					for (let eventIndex = 0; eventIndex < module.events.length; eventIndex++) {
-						const moduleEvent = module.events[eventIndex];
-						if (moduleEvent.name === event.name) schema = module.events[eventIndex].data;
-					}
-				}
-				const decodedEvent = event.data !== '' && schema
-					? await codec.decode(schema, event.data) : '';
-
-				return {
-					...event,
-					data: decodedEvent,
-					id: hash(event),
-				};
+				return decodedEvent;
 			},
 			{ concurrency: chainEvents.length },
 		);
@@ -88,12 +73,10 @@ const getEvents = async (height) => {
 		return eventsResponse;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getLastBlock\'');
+			throw new TimeoutException('Request timed out when calling \'chain_getEvents\'');
 		}
 		throw err;
 	}
 };
-
-// getEvents(109);
 
 module.exports = { subscribeToAllRegisteredEvents, events, getEvents };

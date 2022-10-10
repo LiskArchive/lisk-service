@@ -77,7 +77,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode event payload', async () => {
-		const result = await broker.call('connector.decodeEventPayload', {
+		const result = await broker.call('connector.decodeSubscriptionEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: encodedBlock },
 		});

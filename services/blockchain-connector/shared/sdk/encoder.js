@@ -24,7 +24,9 @@ const {
 	getTransactionParamsSchema,
 } = require('./schema');
 
-const encodeTransaction = (transaction) => {
+const { getSchemas } = require('./endpoints');
+
+const encodeTransaction = async (transaction) => {
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
 	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
@@ -69,7 +71,22 @@ const encodeBlock = (block) => {
 	return blockBuffer.toString('hex');
 };
 
+const encodeEvent = async (event) => {
+	const schemas = await getSchemas();
+	const eventSchema = schemas.event;
+
+	const schemaCompliantEvent = {
+		...event,
+		data: Buffer.from(event.data, 'utf8'),
+		topics: event.topics.map(t => Buffer.from(t, 'utf8')),
+	};
+
+	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);
+	return encodedEvent;
+};
+
 module.exports = {
 	encodeBlock,
 	encodeTransaction,
+	encodeEvent,
 };
