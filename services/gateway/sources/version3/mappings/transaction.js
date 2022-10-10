@@ -18,6 +18,7 @@ module.exports = {
 	moduleCommand: '=,string',
 	nonce: '=,string',
 	fee: '=,string',
+	size: '=,number',
 	sender: {
 		address: '=,string',
 		publicKey: '=,string',

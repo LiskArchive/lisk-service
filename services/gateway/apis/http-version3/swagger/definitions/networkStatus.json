@@ -94,6 +94,9 @@
                     },
                     "registeredModules": {
                         "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
                         "example": [
                             "token",
                             "reward",
@@ -109,6 +112,9 @@
                     },
                     "moduleCommands": {
                         "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
                         "example": [
                             "auth:registerMultisignature",
                             "dpos:registerDelegate",
