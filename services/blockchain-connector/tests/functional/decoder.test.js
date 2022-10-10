@@ -28,6 +28,12 @@ const {
 	transaction,
 	encodedTransaction,
 } = require('../constants/transactions');
+
+const {
+	transferventInput,
+	decodedTransferEvent
+} = require('../constants/events');
+
 const config = require('../../config');
 
 const broker = new ServiceBroker({
@@ -76,12 +82,20 @@ describe('Functional tests for decoder', () => {
 		expect(result).toMatchObject(block);
 	});
 
-	it('decode event payload', async () => {
+	it('decode subscription event payload', async () => {
 		const result = await broker.call('connector.decodeSubscriptionEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: encodedBlock },
 		});
 		expect(result).toMatchObject(block);
+	});
+
+	// TODO: Update and enable the test once event decoding start to work
+	xit('decode event payload for token:transferEvent', async () => {
+		const result = await broker.call('connector.decodeEventPayload', {
+			event: transferventInput
+		});
+		expect(result).toMatchObject(decodedTransferEvent);
 	});
 
 	it('decode response', async () => {

@@ -62,8 +62,8 @@ const getEvents = async (height) => {
 			async (event) => {
 				const schema = await getEventSchemaFromName(event.name);
 
-				event.id = await getEventID(event);
 				const decodedEvent = await decodeEventPayload(event, schema);
+				decodedEvent.id = await getEventID(event);
 
 				return decodedEvent;
 			},
