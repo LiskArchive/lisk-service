@@ -17,14 +17,14 @@ import Joi from 'joi';
 import regex from './regex';
 
 const account = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 	votesUsed: Joi.number().required(),
 };
 
 const votes = {
-	delegateAddress: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	delegateAddress: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 	amount: Joi.string().required(),
 };

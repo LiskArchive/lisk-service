@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
@@ -32,7 +32,7 @@ const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
 
 module.exports = {
-	ADDRESS_BASE32,
+	ADDRESS_LISK32,
 	IP,
 	HASH_SHA256,
 	MODULE,

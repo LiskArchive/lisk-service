@@ -18,7 +18,7 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const exportSchemaAccepted = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	interval: Joi.string().pattern(regex.INTERVAL).required(),
 };
