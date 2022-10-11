@@ -86,6 +86,7 @@ const {
 	postTransactions,
 	getCommandsParamsSchemas,
 	getTransactionsByBlockID,
+	dryRunTransactions,
 } = require('./transactions');
 
 const {
@@ -161,6 +162,7 @@ module.exports = {
 	postTransactions,
 	getCommandsParamsSchemas,
 	getTransactionsByBlockID,
+	dryRunTransactions,
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
