@@ -21,7 +21,7 @@ const { encodeEvent } = require('../sdk/encoder');
 const { getSystemMetadata } = require('../sdk/endpoints');
 
 const getEventID = async (event) => {
-	const encodedEvent = (await encodeEvent(event)).toString('hex');
+	const encodedEvent = await encodeEvent(event);
 	const eventID = hash(encodedEvent, 'hex').toString('hex');
 
 	return eventID;

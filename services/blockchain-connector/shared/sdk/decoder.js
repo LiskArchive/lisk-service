@@ -114,14 +114,11 @@ const decodeSubscriptionEventPayload = (eventName, payload) => {
 	return payload;
 };
 
-const decodeEventPayload = async (event, schema) => {
-	const decodedEvent = event && schema && event.data !== ''
-		? await codec.decode(schema, event.data) : '';
+const decodeEventPayload = async (encodedEvent, schema) => {
+	const decodedEvent = schema && encodedEvent !== ''
+		? await codec.decode(schema, Buffer.from(encodedEvent, 'hex')) : '';
 
-	return {
-		...event,
-		data: decodedEvent,
-	};
+	return parseToJSONCompatObj(decodedEvent);
 };
 
 module.exports = {

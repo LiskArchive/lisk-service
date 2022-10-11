@@ -53,10 +53,10 @@ module.exports = [
 	{
 		name: 'decodeEventPayload',
 		params: {
-			event: { optional: false, type: 'object' },
+			encodedEvent: { optional: false, type: 'string' },
 			schema: { optional: false, type: 'object' },
 		},
-		controller: ({ event, schema }) => decodeEventPayload(event, schema),
+		controller: ({ encodedEvent, schema }) => decodeEventPayload(encodedEvent, schema),
 	},
 	{
 		name: 'decodeResponse',

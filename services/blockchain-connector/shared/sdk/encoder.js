@@ -82,7 +82,7 @@ const encodeEvent = async (event) => {
 	};
 
 	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);
-	return encodedEvent;
+	return encodedEvent.toString('hex');
 };
 
 module.exports = {

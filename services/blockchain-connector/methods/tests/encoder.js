@@ -16,6 +16,7 @@
 const {
 	encodeBlock,
 	encodeTransaction,
+	encodeEvent,
 } = require('../../shared/sdk/encoder');
 
 module.exports = [
@@ -31,6 +32,13 @@ module.exports = [
 		controller: async ({ block }) => encodeBlock(block),
 		params: {
 			block: { optional: false, type: 'object' },
+		},
+	},
+	{
+		name: 'encodeEvent',
+		controller: async ({ event }) => encodeEvent(event),
+		params: {
+			event: { optional: false, type: 'object' },
 		},
 	},
 ];
