@@ -15,13 +15,17 @@
  */
 const { HTTP } = require('lisk-service-framework');
 const dataService = require('../../../shared/dataService');
+const config = require('../../../config');
 
 const isMainchain = async () => {
 	// TODO: Implement logic
 };
 
 const resolveServiceURL = async () => {
-	// TODO: Implement logic
+	const { chainID } = await dataService.getNetworkStatus();
+	const { serviceURL } = config.networks
+		.find(networkInfoItem => networkInfoItem.chainID === chainID);
+	return serviceURL;
 };
 
 const getBlockchainApps = async (params) => {
