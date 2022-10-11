@@ -19,7 +19,7 @@ const { getEventsByHeight } = require('../shared/sdk/events');
 module.exports = [
 	{
 		name: 'getEventsByHeight',
-		controller: async ({height}) => getEventsByHeight(height),
+		controller: async ({ height }) => getEventsByHeight(height),
 		params: {
 			height: { optional: false, type: 'number' },
 		},
