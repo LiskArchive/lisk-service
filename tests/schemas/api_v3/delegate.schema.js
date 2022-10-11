@@ -45,6 +45,9 @@ const delegateSchema = {
 	pomHeights: Joi.array().items(pomHeightsSchema).required(),
 	consecutiveMissedBlocks: Joi.number().integer().positive().min(0)
 		.required(),
+	forgedBlocks: Joi.number().integer().min(0).required(),
+	rank: Joi.number().integer().min(1).required(),
+	rewards: Joi.string().required(),
 };
 
 module.exports = {

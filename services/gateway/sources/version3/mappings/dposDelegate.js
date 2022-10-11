@@ -28,4 +28,6 @@ module.exports = {
 	}],
 	rank: '=,number',
 	consecutiveMissedBlocks: '=,number',
+	forgedBlocks: '=,number',
+	rewards: '=,string',
 };
