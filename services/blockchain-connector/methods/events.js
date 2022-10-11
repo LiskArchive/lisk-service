@@ -20,6 +20,8 @@ module.exports = [
 	{
 		name: 'getEventsByHeight',
 		controller: getEventsByHeight,
-		params: {},
+		params: {
+			height: { optional: false, type: 'number' },
+		},
 	},
 ];
