@@ -109,9 +109,9 @@ xdescribe('Method get.ccm', () => {
 	});
 
 	describe('is able to retrieve CCMs using moduleCrossChainCommands', () => {
-		it('known ccm moduleCrossChainCommandID -> ok', async () => {
+		it('known ccm moduleCrossChainCommand -> ok', async () => {
 			const response = await getCCMs({
-				moduleCrossChainCommandID: refCCM.moduleCrossChainCommandID,
+				moduleCrossChainCommand: refCCM.moduleCrossChainCommand,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -121,7 +121,7 @@ xdescribe('Method get.ccm', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((ccm, i) => {
 				expect(ccm).toMap(crossChainMessageSchema,
-					{ moduleCrossChainCommandID: refCCM.moduleCrossChainCommandID });
+					{ moduleCrossChainCommand: refCCM.moduleCrossChainCommand });
 				if (i > 0) {
 					const prevCCM = result.data[i];
 					const prevCCMTimestamp = prevCCM.block.timestamp;
@@ -131,51 +131,29 @@ xdescribe('Method get.ccm', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('known ccm moduleCrossChainCommandName -> ok', async () => {
-			const response = await getCCMs({
-				moduleCrossChainCommandName: refCCM.moduleCrossChainCommandName,
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach((ccm, i) => {
-				expect(ccm).toMap(crossChainMessageSchema,
-					{ moduleCrossChainCommandName: refCCM.moduleCrossChainCommandName });
-				if (i > 0) {
-					const prevCCM = result.data[i];
-					const prevCCMTimestamp = prevCCM.block.timestamp;
-					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
-				}
-			});
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('invalid ccm moduleCrossChainCommandID -> empty response', async () => {
-			const response = await getCCMs({ moduleCrossChainCommandID: '999' });
+		it('invalid ccm moduleCrossChainCommand -> empty response', async () => {
+			const response = await getCCMs({ moduleCrossChainCommand: '999' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('empty ccm moduleCrossChainCommandID -> empty response', async () => {
-			const response = await getCCMs({ moduleCrossChainCommandID: '' });
+		it('empty ccm moduleCrossChainCommand -> empty response', async () => {
+			const response = await getCCMs({ moduleCrossChainCommand: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('invalid ccm moduleCrossChainCommandName -> empty response', async () => {
-			const response = await getCCMs({ moduleCrossChainCommandName: '999' });
+		it('invalid ccm moduleCrossChainCommand -> empty response', async () => {
+			const response = await getCCMs({ moduleCrossChainCommand: '999' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('empty ccm moduleCrossChainCommandName -> empty response', async () => {
-			const response = await getCCMs({ moduleCrossChainCommandName: '' });
+		it('empty ccm moduleCrossChainCommand -> empty response', async () => {
+			const response = await getCCMs({ moduleCrossChainCommand: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);

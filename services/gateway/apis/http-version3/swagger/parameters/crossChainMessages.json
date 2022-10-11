@@ -17,15 +17,8 @@
         "minLength": 1,
         "maxLength": 64
     },
-    "moduleCrossChainCommandID": {
-        "name": "moduleCrossChainCommandID",
-        "in": "query",
-        "description": "Combination of cross-chain moduleID:commandID",
-        "type": "string",
-        "minLength": 1
-    },
-    "moduleCrossChainCommandName": {
-        "name": "moduleCrossChainCommandName",
+    "moduleCrossChainCommand": {
+        "name": "moduleCrossChainCommand",
         "in": "query",
         "description": "Combination of cross-chain moduleName:commandName",
         "type": "string",

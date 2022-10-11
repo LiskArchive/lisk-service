@@ -98,6 +98,7 @@ const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
+	getCCMs,
 } = require('./interoperability');
 
 const {
@@ -146,6 +147,7 @@ module.exports = {
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 	getBlockchainAppsStatistics,
+	getCCMs,
 	reloadBlockchainAppsStats,
 	getBlockchainApps,
 	reloadDelegateCache,

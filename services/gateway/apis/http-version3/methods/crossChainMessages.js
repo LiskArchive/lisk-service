@@ -26,8 +26,7 @@ module.exports = {
 	params: {
 		id: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
-		moduleCrossChainCommandID: { optional: true, type: 'string', min: 1, max: 21 },
-		moduleCrossChainCommandName: { optional: true, type: 'string', min: 1 },
+		moduleCrossChainCommand: { optional: true, type: 'string', min: 1 },
 		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		status: { optional: true, type: 'string', pattern: regex.CCM_STATUS },
 		nonce: { optional: true, type: 'string', min: 1, pattern: regex.NONCE },

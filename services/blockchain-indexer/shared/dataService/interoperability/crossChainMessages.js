@@ -13,19 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
+const dataService = require('../business');
 
 const getCCMs = async params => {
-	const ccms = {
-		data: {},
-		meta: {},
-	};
-
 	const response = await dataService.getCCMs(params);
-	if (response.data) ccms.data = response.data;
-	if (response.meta) ccms.meta = response.meta;
-
-	return ccms;
+	return response;
 };
 
 module.exports = {

@@ -13,85 +13,42 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// TODO: Enable when available from SDK
-// const { HTTP } = require('lisk-service-framework');
-// const dataService = require('../../../shared/dataService');
+const { HTTP } = require('lisk-service-framework');
+const dataService = require('../../../shared/dataService');
 
-// const isMainchain = async () => {
-// 	// TODO: Implement logic
-// };
+const isMainchain = async () => {
+	// TODO: Implement logic
+};
 
-// const resolveServiceURL = async () => {
-// 	// TODO: Implement logic
-// }
+const resolveServiceURL = async () => {
+	// TODO: Implement logic
+};
 
 const getBlockchainApps = async (params) => {
-	// if (await isMainchain()) {
-	// 	const result = await dataService.getBlockchainApps(params);
-	// } else {
-	// 	// Redirect call to the mainchain service
-	// 	const serviceURL = await resolveServiceURL();
-	// 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`
-	// 	const response = HTTP.request(
-	// 		blockchainAppsEndpoint,
-	// 		params,
-	// 	)
-	// 	return response;
-	// }
-
-	const result = {
-		data: [
-			{
-				name: 'Lisk',
-				chainID: '10000000',
-				state: 'active',
-				address: 'lsk123bhithjdq8szo3poyqe5dsxwrnazyqnzqhsy',
-				isDefault: true,
-				lastCertificateHeight: 900,
-				lastUpdated: 123456789,
-			},
-			{
-				name: 'Test app',
-				chainID: '00000a2e0',
-				state: 'active',
-				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-				isDefault: false,
-				lastCertificateHeight: 1000,
-				lastUpdated: 123456789,
-			}],
-		meta: {
-			count: 10,
-			offset: params.offset,
-			total: 150,
-		},
-	};
-
-	return result;
+	if (await isMainchain()) {
+		const result = await dataService.getBlockchainApps(params);
+		return result;
+	}
+	// Redirect call to the mainchain service
+	const serviceURL = await resolveServiceURL();
+	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`;
+	const response = HTTP.request(
+		blockchainAppsEndpoint,
+		params,
+	);
+	return response;
 };
 
 const getBlockchainAppsStatistics = async () => {
-	// if (await isMainchain()) {
-	// 	 const result = await dataService.getBlockchainAppsStatistics();
-	// } else {
-	// 	// Redirect call to the mainchain service
-	// 	const serviceURL = await resolveServiceURL();
-	// 	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`
-	// 	const response = HTTP.get(blockchainAppsStatsEndpoint);
-	// 	return response;
-	// }
-
-	const result = {
-		data: {
-			registered: 2503,
-			active: 2328,
-			terminated: 35,
-			totalSupplyLSK: '5000000',
-			stakedLSK: '3000000',
-			inflationRate: '4.50',
-		},
-	};
-
-	return result;
+	if (await isMainchain()) {
+		const result = await dataService.getBlockchainAppsStatistics();
+		return result;
+	}
+	// Redirect call to the mainchain service
+	const serviceURL = await resolveServiceURL();
+	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`;
+	const response = HTTP.get(blockchainAppsStatsEndpoint);
+	return response;
 };
 
 module.exports = {

@@ -15,8 +15,10 @@
  */
 const { getBlockchainApps } = require('./blockchainApps');
 const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
+const { getCCMs } = require('./crossChainMessages');
 
 module.exports = {
+	getCCMs,
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,

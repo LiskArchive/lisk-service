@@ -39,8 +39,7 @@ const CCM_STATUSES = [
 
 const crossChainMessageSchema = {
 	id: Joi.string().pattern(regex.HASH_SHA256).required(),
-	moduleCrossChainCommandID: Joi.string().required(),
-	moduleCrossChainCommandName: Joi.string().required(),
+	moduleCrossChainCommand: Joi.string().required(),
 	sendingChainID: Joi.string().required(),
 	receivingChainID: Joi.string().required(),
 	nonce: Joi.string().pattern(regex.NONCE).required(),

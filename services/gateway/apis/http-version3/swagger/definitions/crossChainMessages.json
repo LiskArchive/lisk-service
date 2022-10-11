@@ -13,12 +13,7 @@
             "ccms"
         ],
         "properties": {
-            "moduleCrossChainCommandID": {
-                "type": "string",
-                "example": "64:3",
-                "description": "Combination of cross-chain module:command ID.\n"
-            },
-            "moduleCrossChainCommandName": {
+            "moduleCrossChainCommand": {
                 "type": "string",
                 "example": "interoperability:mainchainCCUpdate",
                 "description": "Combination of cross-chain module:command Name.\n"
@@ -93,7 +88,7 @@
                     },
                     "recipient": {
                         "type": "object",
-                        "properties":{
+                        "properties": {
                             "address": {
                                 "type": "string",
                                 "format": "address",

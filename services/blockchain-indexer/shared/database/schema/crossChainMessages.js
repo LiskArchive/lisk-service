@@ -21,7 +21,7 @@ module.exports = {
 		id: { type: 'string' }, // CCM ID
 		transactionID: { type: 'string' }, // CCU ID - foreign key to transactions.id
 		nonce: { type: 'bigInteger' },
-		moduleCrossChainCommandID: { type: 'string' },
+		moduleCrossChainCommand: { type: 'string' },
 		sendingChainID: { type: 'string' },
 		receivingChainID: { type: 'string' },
 		fee: { type: 'bigInteger' },

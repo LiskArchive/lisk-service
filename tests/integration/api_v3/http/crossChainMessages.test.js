@@ -63,15 +63,15 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns CCMS with known moduleCrossChainCommandID', async () => {
-			const response = await api.get(`${endpoint}?moduleCrossChainCommandID=${refCCM.moduleCrossChainCommandID}`);
+		it('returns CCMS with known moduleCrossChainCommand', async () => {
+			const response = await api.get(`${endpoint}?moduleCrossChainCommand=${refCCM.moduleCrossChainCommand}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((ccm, i) => {
 				expect(ccm).toMap(crossChainMessageSchema,
-					{ moduleCrossChainCommandID: refCCM.moduleCrossChainCommandID });
+					{ moduleCrossChainCommand: refCCM.moduleCrossChainCommand });
 				if (i > 0) {
 					const prevCCM = response.data[i - 1];
 					const prevCCMTimestamp = prevCCM.block.timestamp;
@@ -81,31 +81,13 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns CCMS with known moduleCrossChainCommandName', async () => {
-			const response = await api.get(`${endpoint}?moduleCrossChainCommandName=${refCCM.moduleCrossChainCommandName}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm, i) => {
-				expect(ccm).toMap(crossChainMessageSchema,
-					{ moduleCrossChainCommandName: refCCM.moduleCrossChainCommandName });
-				if (i > 0) {
-					const prevCCM = response.data[i - 1];
-					const prevCCMTimestamp = prevCCM.block.timestamp;
-					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
-		});
-
-		it('invalid moduleCrossChainCommandID -> 404', async () => {
-			const response = await api.get(`${endpoint}?moduleCrossChainCommandID=-124`, 404);
+		it('invalid moduleCrossChainCommand -> 404', async () => {
+			const response = await api.get(`${endpoint}?moduleCrossChainCommand=-124`, 404);
 			expect(response).toMap(notFoundSchema);
 		});
 
-		it('empty moduleCrossChainCommandID ->  ok', async () => {
-			const response = await api.get(`${endpoint}?moduleCrossChainCommandID=`);
+		it('empty moduleCrossChainCommand ->  ok', async () => {
+			const response = await api.get(`${endpoint}?moduleCrossChainCommand=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
