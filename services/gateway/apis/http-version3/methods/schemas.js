@@ -16,7 +16,6 @@
 const SchemasSource = require('../../../sources/version3/schemas');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
-const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',

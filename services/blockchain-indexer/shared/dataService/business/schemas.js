@@ -71,8 +71,14 @@ const getSchemas = async () => {
 
 	const allSchemas = await getAllSchemasFromCache();
 	const systemMetadataSchemas = await getSchemasFromSystemMetadata(allSchemas.systemMetadata);
+	const updatedSchemas = {};
 
-	schemas.data = allSchemas.schema;
+	Object.keys(allSchemas.schema).forEach(schema => {
+		updatedSchemas[schema] = {};
+		updatedSchemas[schema].schema = allSchemas.schema[schema];
+	});
+
+	schemas.data = updatedSchemas;
 	schemas.data.assets = systemMetadataSchemas.assetsSchemas;
 	schemas.data.commands = systemMetadataSchemas.allCommandsParamsSchemas;
 	schemas.data.events = systemMetadataSchemas.eventsSchemas;
