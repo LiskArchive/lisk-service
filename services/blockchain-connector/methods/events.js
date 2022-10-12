@@ -13,30 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	id: '=,string',
-	moduleCommand: '=,string',
-	nonce: '=,string',
-	fee: '=,string',
-	size: '=,number',
-	sender: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-	},
-	params: '=',
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-		isFinal: '=,boolean',
-	},
-	meta: {
-		recipient: {
-			address: '=,string',
-			publicKey: '=,string',
-			name: '=,string',
+
+const { getEventsByHeight } = require('../shared/sdk/events');
+
+module.exports = [
+	{
+		name: 'getEventsByHeight',
+		controller: async ({ height }) => getEventsByHeight(height),
+		params: {
+			height: { optional: false, type: 'number' },
 		},
 	},
-	executionStatus: '=,string',
-};
+];
