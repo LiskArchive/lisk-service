@@ -75,11 +75,7 @@ const encodeEvent = async (event) => {
 	const schemas = await getSchemas();
 	const eventSchema = schemas.event;
 
-	const schemaCompliantEvent = {
-		...event,
-		data: Buffer.from(event.data, 'utf8'),
-		topics: event.topics.map(t => Buffer.from(t, 'utf8')),
-	};
+	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
 
 	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);
 	return encodedEvent.toString('hex');

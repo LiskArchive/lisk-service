@@ -27,7 +27,7 @@ const calculateEventID = async (event) => {
 	return eventID;
 };
 
-const getEventSchemaFromName = async (eventName) => {
+const getEventSchemaByName = async (eventName) => {
 	const metadata = await getSystemMetadata();
 
 	for (let i = 0; i < metadata.modules.length; i++) {
@@ -42,4 +42,4 @@ const getEventSchemaFromName = async (eventName) => {
 	return null;
 };
 
-module.exports = { calculateEventID, getEventSchemaFromName };
+module.exports = { calculateEventID, getEventSchemaByName };

@@ -115,8 +115,7 @@ const decodeAPIClientEventPayload = (eventName, payload) => {
 };
 
 const decodeEvent = async (encodedEvent, schema) => {
-	const decodedEvent = schema && encodedEvent !== ''
-		? await codec.decode(schema, Buffer.from(encodedEvent, 'hex')) : '';
+	const decodedEvent = await codec.decode(schema, Buffer.from(encodedEvent, 'hex'));
 
 	return parseToJSONCompatObj(decodedEvent);
 };

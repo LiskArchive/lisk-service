@@ -20,7 +20,7 @@ const BluebirdPromise = require('bluebird');
 const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
 const { getRegisteredEvents } = require('./endpoints');
 const { decodeEvent } = require('./decoder');
-const { calculateEventID, getEventSchemaFromName } = require('../utils/events');
+const { calculateEventID, getEventSchemaByName } = require('../utils/events');
 
 const logger = Logger();
 const EVENT_CHAIN_FORK = 'chain_forked';
@@ -56,13 +56,12 @@ const subscribeToAllRegisteredEvents = async () => {
 const getEventsByHeight = async (height) => {
 	try {
 		const chainEvents = await invokeEndpoint('chain_getEvents', { height });
-
 		const eventsResponse = await BluebirdPromise.map(
 			chainEvents,
 			async (event) => {
-				const schema = await getEventSchemaFromName(event.name);
-
-				const decodedEventData = await decodeEvent(event.data, schema);
+				const schema = await getEventSchemaByName(event.name);
+				const decodedEventData = schema && event.data !== ''
+					? await decodeEvent(event.data, schema) : {};
 				const eventID = await calculateEventID(event);
 
 				return {
