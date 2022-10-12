@@ -34,9 +34,9 @@ const { getLisk32Address } = require('./accountUtils');
 const getTxnParamsSchema = async (trx) => {
 	const moduleCommand = `${trx.module}:${trx.command}`;
 	const schemas = await getSchemas();
-	const txnParamsSchema = schemas.data.commands
-		.find(command => command.moduleCommand === moduleCommand);
-	return txnParamsSchema.schema;
+	const [schema = {}] = schemas.data.commands
+		.ilter(command => command.moduleCommand === moduleCommand);
+	return schema;
 };
 
 const getTxnMinFee = async (
