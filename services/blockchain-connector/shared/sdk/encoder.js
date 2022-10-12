@@ -33,7 +33,6 @@ const encodeTransaction = async (transaction) => {
 
 	const txSchema = getTransactionSchema();
 	const parsedTx = parseInputBySchema(transaction, txSchema);
-
 	const txBuffer = codec.encode(
 		txSchema,
 		{ ...parsedTx, params: txParamsBuffer },
@@ -59,7 +58,6 @@ const encodeBlock = (block) => {
 	const blockHeaderBuffer = codec.encode(blockHeaderSchema, parsedBlockHeader);
 
 	const blockSchema = getBlockSchema();
-
 	const parsedBlock = parseInputBySchema({
 		header: blockHeaderBuffer,
 		assets: blockAssetBuffer,
@@ -67,14 +65,12 @@ const encodeBlock = (block) => {
 	}, blockSchema);
 
 	const blockBuffer = codec.encode(blockSchema, parsedBlock);
-
 	return blockBuffer.toString('hex');
 };
 
 const encodeEvent = async (event) => {
 	const schemas = await getSchemas();
 	const eventSchema = schemas.event;
-
 	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
 
 	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);

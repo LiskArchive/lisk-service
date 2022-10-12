@@ -14,15 +14,17 @@
  *
  */
 const util = require('util');
+const BluebirdPromise = require('bluebird');
+
 const { Signals, Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
 
-const BluebirdPromise = require('bluebird');
 const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
 const { getRegisteredEvents } = require('./endpoints');
 const { decodeEvent } = require('./decoder');
 const { calculateEventID, getEventSchemaByName } = require('../utils/events');
 
 const logger = Logger();
+
 const EVENT_CHAIN_FORK = 'chain_forked';
 const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
 const EVENT_CHAIN_BLOCK_DELETE = 'chain_deleteBlock';
@@ -61,7 +63,8 @@ const getEventsByHeight = async (height) => {
 			async (event) => {
 				const schema = await getEventSchemaByName(event.name);
 				const decodedEventData = schema && event.data !== ''
-					? await decodeEvent(event.data, schema) : {};
+					? await decodeEvent(event.data, schema)
+					: {};
 				const eventID = await calculateEventID(event);
 
 				return {

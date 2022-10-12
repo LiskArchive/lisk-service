@@ -25,6 +25,8 @@ const getBlockHeaderSchema = () => schemas.header;
 
 const getBlockAssetSchema = () => schemas.asset;
 
+const getEventSchema = () => schemas.event;
+
 const getTransactionSchema = () => schemas.transaction;
 
 const getTransactionParamsSchema = (transaction) => {
@@ -41,6 +43,7 @@ module.exports = {
 	getBlockSchema,
 	getBlockHeaderSchema,
 	getBlockAssetSchema,
+	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 };

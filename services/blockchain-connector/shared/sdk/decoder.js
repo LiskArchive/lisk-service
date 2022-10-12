@@ -73,6 +73,11 @@ const decodeBlock = (encodedBlock) => {
 	return decodedBlock;
 };
 
+const decodeEvent = async (encodedEvent, schema) => {
+	const decodedEvent = await codec.decode(schema, Buffer.from(encodedEvent, 'hex'));
+	return parseToJSONCompatObj(decodedEvent);
+};
+
 const decodeResponse = (endpoint, response) => {
 	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(endpoint)) {
 		const decodedBlock = decodeBlock(response);
@@ -112,12 +117,6 @@ const decodeAPIClientEventPayload = (eventName, payload) => {
 	}
 
 	return payload;
-};
-
-const decodeEvent = async (encodedEvent, schema) => {
-	const decodedEvent = await codec.decode(schema, Buffer.from(encodedEvent, 'hex'));
-
-	return parseToJSONCompatObj(decodedEvent);
 };
 
 module.exports = {

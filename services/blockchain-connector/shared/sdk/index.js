@@ -14,11 +14,20 @@
  *
  */
 const { Signals } = require('lisk-service-framework');
-const { getNodeInfo } = require('./endpoints_1');
+
+const { getNodeInfo, getSchemas } = require('./endpoints_1');
+const { getGenesisBlock } = require('./genesisBlock');
 const { refreshNetworkStatus } = require('./network');
+const { setSchemas } = require('./schema');
 
 const init = async () => {
 	await refreshNetworkStatus();
+
+	// Cache all the schemas
+	setSchemas(await getSchemas());
+
+	// Download the genesis block, if applicable
+	await getGenesisBlock();
 
 	// Register listener to update the nodeInfo cache only when it updates
 	const updateNodeInfoCacheListener = getNodeInfo.bind(null, true);
