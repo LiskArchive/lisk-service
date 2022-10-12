@@ -14,12 +14,33 @@
  *
  */
 module.exports = {
-	block: '=',
-	header: '=',
-	asset: '=',
-	transaction: '=',
-	event: '=',
-	events: '=',
-	assets: '=',
-	commands: '=',
+	block: {
+		schema: '=',
+	},
+	header: {
+		schema: '=',
+	},
+	asset: {
+		schema: '=',
+	},
+	transaction: {
+		schema: '=',
+	},
+	event: {
+		schema: '=',
+	},
+	events: ['data.events', {
+		module: '=,string',
+		name: '=,string',
+		schema: '=',
+	}],
+	assets: ['data.assets', {
+		module: '=,string',
+		version: '=,string',
+		schema: '=',
+	}],
+	commands: ['data.commands', {
+		moduleCommand: '=,string',
+		schema: '=',
+	}],
 };
