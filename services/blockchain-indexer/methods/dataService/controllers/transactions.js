@@ -90,7 +90,7 @@ const getPendingTransactions = async (params) => {
 
 const postTransactions = async (params) => dataService.postTransactions(params);
 
-const getSchemas = async (params) => dataService.getSchemas(params);
+const getSchemas = async () => dataService.getSchemas();
 
 module.exports = {
 	getTransactions,

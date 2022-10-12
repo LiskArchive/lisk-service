@@ -28,13 +28,15 @@ const {
 
 const { requestConnector } = require('./request');
 const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
-const { getCommandsParamsSchemas } = require('../dataService/business/schemas');
+const { getSchemas } = require('../dataService/business/schemas');
 const { getLisk32Address } = require('./accountUtils');
 
 const getTxnParamsSchema = async (trx) => {
 	const moduleCommand = `${trx.module}:${trx.command}`;
-	const { data: [{ schema }] } = await getCommandsParamsSchemas({ moduleCommand });
-	return schema;
+	const schemas = await getSchemas();
+	const txnParamsSchema = schemas.data.commands
+		.find(command => command.moduleCommand === moduleCommand);
+	return txnParamsSchema.schema;
 };
 
 const getTxnMinFee = async (

@@ -23,9 +23,7 @@ module.exports = {
 	swaggerApiPath: '/schemas',
 	rpcMethod: 'get.schemas',
 	tags: ['Transactions'],
-	params: {
-		moduleCommand: { optional: true, type: 'string', min: 3, pattern: regex.MODULE_COMMAND },
-	},
+	params: {},
 	get schema() {
 		const schemas = {};
 		schemas[this.swaggerApiPath] = { get: {} };

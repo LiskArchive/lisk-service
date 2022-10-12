@@ -57,8 +57,6 @@ module.exports = [
 	{
 		name: 'schemas',
 		controller: getSchemas,
-		params: {
-			moduleCommand: { optional: true, type: 'string' },
-		},
+		params: {},
 	},
 ];

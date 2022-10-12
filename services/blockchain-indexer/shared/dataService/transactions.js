@@ -123,23 +123,15 @@ const postTransactions = async params => {
 	}
 };
 
-const getSchemas = async params => {
+const getSchemas = async () => {
 	const schemas = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getSchemas(params);
+	const response = await dataService.getSchemas();
 	if (response.data) schemas.data = response.data;
 	if (response.meta) schemas.meta = response.meta;
-
-	if (!commandsParamsSchemas.data.length && params.moduleCommand) {
-		const errorMessage = `Schema corresponding moduleCommand: '${params.moduleCommand}' not found.`;
-		return {
-			data: { error: errorMessage },
-			status: 'NOT_FOUND',
-		};
-	}
 
 	return schemas;
 };

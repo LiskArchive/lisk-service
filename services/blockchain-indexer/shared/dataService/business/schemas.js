@@ -38,6 +38,7 @@ const getSchemasFromSystemMetadata = async (systemMetadata) => {
 	systemMetadata.modules.forEach(module => {
 		module.events.forEach(event => {
 			const formattedEvents = {};
+			formattedEvents.module = module.name;
 			formattedEvents.name = event.name;
 			formattedEvents.schema = event.data;
 			eventsSchemas.push(formattedEvents);
@@ -45,6 +46,7 @@ const getSchemasFromSystemMetadata = async (systemMetadata) => {
 
 		module.assets.forEach(asset => {
 			const formattedAssets = {};
+			formattedAssets.module = module.name;
 			formattedAssets.version = asset.version;
 			formattedAssets.schema = asset.data;
 			assetsSchemas.push(formattedAssets);

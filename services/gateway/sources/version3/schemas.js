@@ -18,9 +18,7 @@ const schema = require('./mappings/schema');
 module.exports = {
 	type: 'moleculer',
 	method: 'indexer.schemas',
-	params: {
-		moduleCommand: '=,string',
-	},
+	params: {},
 	definition: {
 		data: schema,
 		meta: {
