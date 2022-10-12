@@ -89,15 +89,15 @@ describe('Blocks Assets API', () => {
 		});
 
 		it('returns block assets by multiple modules -> ok', async () => {
-			const arrayOfModules = refBlockAssets.assets.map(asset => asset.moduleID);
-			const response = await api.get(`${endpoint}?module=${arrayOfModules.join(',')}`);
+			const modules = refBlockAssets.assets.map(asset => asset.moduleID);
+			const response = await api.get(`${endpoint}?module=${modules.join(',')}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
-				blockAssets.assets.forEach(asset => expect(arrayOfModules).toContain(asset.module));
+				blockAssets.assets.forEach(asset => expect(modules).toContain(asset.module));
 			});
 			expect(response.meta).toMap(metaSchema);
 		});

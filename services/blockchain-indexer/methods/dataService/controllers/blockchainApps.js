@@ -25,8 +25,8 @@ const isMainchain = async () => {
 
 const resolveMainchainServiceURL = async () => {
 	const { chainID } = await dataService.getNetworkStatus();
-	const { serviceURL } = config.networks
-		.find(networkInfo => networkInfo.chainID === chainID);
+	const [{ serviceURL } = {}] = config.networks
+		.filter(networkInfo => networkInfo.chainID === chainID);
 	return serviceURL;
 };
 
@@ -35,6 +35,7 @@ const getBlockchainApps = async (params) => {
 		const result = await dataService.getBlockchainApps(params);
 		return result;
 	}
+
 	// Redirect call to the mainchain service
 	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`;
@@ -50,6 +51,7 @@ const getBlockchainAppsStatistics = async () => {
 		const result = await dataService.getBlockchainAppsStatistics();
 		return result;
 	}
+
 	// Redirect call to the mainchain service
 	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`;

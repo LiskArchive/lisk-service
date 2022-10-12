@@ -115,13 +115,13 @@ describe('Method get.blocks.assets', () => {
 		});
 
 		it('returns block assets by multiple modules', async () => {
-			const arrayOfModules = refBlockAssets.assets.map(asset => asset.module);
-			const response = await getBlocksAssets({ module: arrayOfModules.join(',') });
+			const modules = refBlockAssets.assets.map(asset => asset.module);
+			const response = await getBlocksAssets({ module: modules.join(',') });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			result.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
-				blockAssets.assets.forEach(asset => expect(arrayOfModules).toContain(asset.module));
+				blockAssets.assets.forEach(asset => expect(modules).toContain(asset.module));
 			});
 		});
 
