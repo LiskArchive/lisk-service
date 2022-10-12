@@ -19,8 +19,8 @@ let allSchemasCache;
 
 const getSchemasFromCore = async () => {
 	const systemMetadata = await requestConnector('getSystemMetadata');
-	const schema = await requestConnector('getSchema');
-	return { schema, systemMetadata };
+	const schemas = await requestConnector('getSchema');
+	return { schemas, systemMetadata };
 };
 
 const getAllSchemasFromCache = async () => {
@@ -31,7 +31,7 @@ const getAllSchemasFromCache = async () => {
 };
 
 const getSchemasFromSystemMetadata = async (systemMetadata) => {
-	const allCommandsParamsSchemas = [];
+	const commandsParamsSchemas = [];
 	const assetsSchemas = [];
 	const eventsSchemas = [];
 
@@ -56,11 +56,11 @@ const getSchemasFromSystemMetadata = async (systemMetadata) => {
 			const formattedTxParams = {};
 			formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
 			formattedTxParams.schema = command.params;
-			allCommandsParamsSchemas.push(formattedTxParams);
+			commandsParamsSchemas.push(formattedTxParams);
 		});
 	});
 
-	return { allCommandsParamsSchemas, assetsSchemas, eventsSchemas };
+	return { commandsParamsSchemas, assetsSchemas, eventsSchemas };
 };
 
 const getSchemas = async () => {
@@ -73,15 +73,17 @@ const getSchemas = async () => {
 	const systemMetadataSchemas = await getSchemasFromSystemMetadata(allSchemas.systemMetadata);
 	const updatedSchemas = {};
 
-	Object.keys(allSchemas.schema).forEach(schema => {
+	Object.keys(allSchemas.schemas).forEach(schema => {
 		updatedSchemas[schema] = {};
-		updatedSchemas[schema].schema = allSchemas.schema[schema];
+		updatedSchemas[schema].schema = allSchemas.schemas[schema];
 	});
 
 	schemas.data = updatedSchemas;
-	schemas.data.assets = systemMetadataSchemas.assetsSchemas;
-	schemas.data.commands = systemMetadataSchemas.allCommandsParamsSchemas;
-	schemas.data.events = systemMetadataSchemas.eventsSchemas;
+	Object.assign(schemas.data, {
+		assets: systemMetadataSchemas.assetsSchemas,
+		commands: systemMetadataSchemas.commandsParamsSchemas,
+		events: systemMetadataSchemas.eventsSchemas,
+	});
 
 	return schemas;
 };
