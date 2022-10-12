@@ -13,10 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
+const { getNodeInfo } = require('./endpoints_1');
 const { refreshNetworkStatus } = require('./network');
 
 const init = async () => {
 	await refreshNetworkStatus();
+
+	// Register listener to update the nodeInfo cache only when it updates
+	const updateNodeInfoCacheListener = getNodeInfo.bind(null, true);
+	Signals.get('chainNewBlock').add(updateNodeInfoCacheListener);
+	Signals.get('chainDeleteBlock').add(updateNodeInfoCacheListener);
 };
 
 module.exports = {

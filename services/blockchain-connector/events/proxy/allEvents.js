@@ -13,10 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
 const { getRegisteredEvents } = require('../../shared/sdk/endpoints');
 const { subscribeToAllRegisteredEvents, events } = require('../../shared/sdk/events');
+
+const logger = Logger();
 
 const toCamelCase = (words) => {
 	let result = '';
@@ -40,7 +42,11 @@ const exportAllEvents = async () => {
 	const allMethods = allEvents.map(event => {
 		const genericController = (regEvent) => (cb) => {
 			const eventListener = async (payload) => {
-				Signals.get(toCamelCase(regEvent.split('_'))).dispatch(payload);
+				const signalName = toCamelCase(regEvent.split('_'));
+				logger.info(`Received ${regEvent} event, dispatching ${signalName} signal.`);
+				logger.debug(`Payload: ${JSON.stringify(payload)}`);
+
+				Signals.get(signalName).dispatch(payload);
 				cb(payload);
 			};
 			Signals.get(regEvent).add(eventListener);

@@ -97,7 +97,7 @@ const getGenesisAccounts = async (limit, offset) => {
 const getGenesisConfig = async () => {
 	try {
 		if (!genesisConfig) {
-			genesisConfig = (await invokeEndpoint('system_getNodeInfo')).genesis;
+			genesisConfig = (await getNodeInfo()).genesis;
 		}
 		return genesisConfig;
 	} catch (err) {
