@@ -207,13 +207,13 @@
             "fee": {
                 "type": "string",
                 "example": "1000000",
-                "description": "Transaction fee associated with this transaction.\n"
+                "description": "Transaction fee associated with the transaction."
             },
             "size": {
                 "type": "integer",
                 "example": 165,
                 "minimum": 1,
-                "description": "Size in bytes of the serialized transaction"
+                "description": "Transaction size in bytes."
             },
             "block": {
                 "type": "object",

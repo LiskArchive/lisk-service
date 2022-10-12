@@ -84,7 +84,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode subscription event payload', async () => {
-		const result = await broker.call('connector.decodeSubscriptionEventPayload', {
+		const result = await broker.call('connector.decodeAPIClientEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: encodedBlock },
 		});
@@ -92,7 +92,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode event payload for token:transferEvent', async () => {
-		const result = await broker.call('connector.decodeEventPayload', {
+		const result = await broker.call('connector.decodeEvent', {
 			encodedEvent: transferEventInput.data,
 			schema: transferEventSchema,
 		});

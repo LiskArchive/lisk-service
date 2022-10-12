@@ -16,9 +16,9 @@
 const {
 	decodeBlock,
 	decodeTransaction,
-	decodeSubscriptionEventPayload,
+	decodeAPIClientEventPayload,
 	decodeResponse,
-	decodeEventPayload,
+	decodeEvent,
 } = require('../../shared/sdk/decoder');
 
 const { parseToJSONCompatObj } = require('../../shared/utils/parser');
@@ -43,20 +43,20 @@ module.exports = [
 		),
 	},
 	{
-		name: 'decodeSubscriptionEventPayload',
+		name: 'decodeAPIClientEventPayload',
 		params: {
 			eventName: { optional: false, type: 'string' },
 			payload: { optional: false, type: 'object' },
 		},
-		controller: ({ eventName, payload }) => decodeSubscriptionEventPayload(eventName, payload),
+		controller: ({ eventName, payload }) => decodeAPIClientEventPayload(eventName, payload),
 	},
 	{
-		name: 'decodeEventPayload',
+		name: 'decodeEvent',
 		params: {
 			encodedEvent: { optional: false, type: 'string' },
 			schema: { optional: false, type: 'object' },
 		},
-		controller: ({ encodedEvent, schema }) => decodeEventPayload(encodedEvent, schema),
+		controller: ({ encodedEvent, schema }) => decodeEvent(encodedEvent, schema),
 	},
 	{
 		name: 'decodeResponse',

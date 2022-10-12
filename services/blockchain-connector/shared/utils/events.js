@@ -20,7 +20,7 @@ const { encodeEvent } = require('../sdk/encoder');
 
 const { getSystemMetadata } = require('../sdk/endpoints');
 
-const getEventID = async (event) => {
+const calculateEventID = async (event) => {
 	const encodedEvent = await encodeEvent(event);
 	const eventID = hash(encodedEvent, 'hex').toString('hex');
 
@@ -42,4 +42,4 @@ const getEventSchemaFromName = async (eventName) => {
 	return null;
 };
 
-module.exports = { getEventID, getEventSchemaFromName };
+module.exports = { calculateEventID, getEventSchemaFromName };

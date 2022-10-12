@@ -19,8 +19,8 @@ const { Signals, Logger, Exceptions: { TimeoutException } } = require('lisk-serv
 const BluebirdPromise = require('bluebird');
 const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
 const { getRegisteredEvents } = require('./endpoints');
-const { decodeEventPayload } = require('./decoder');
-const { getEventID, getEventSchemaFromName } = require('../utils/events');
+const { decodeEvent } = require('./decoder');
+const { calculateEventID, getEventSchemaFromName } = require('../utils/events');
 
 const logger = Logger();
 const EVENT_CHAIN_FORK = 'chain_forked';
@@ -62,8 +62,8 @@ const getEventsByHeight = async (height) => {
 			async (event) => {
 				const schema = await getEventSchemaFromName(event.name);
 
-				const decodedEventData = await decodeEventPayload(event.data, schema);
-				const eventID = await getEventID(event);
+				const decodedEventData = await decodeEvent(event.data, schema);
+				const eventID = await calculateEventID(event);
 
 				return {
 					...decodedEventData,
