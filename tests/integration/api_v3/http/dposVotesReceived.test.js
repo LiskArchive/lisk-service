@@ -30,8 +30,7 @@ const {
 
 const endpoint = `${baseUrlV3}/dpos/votes/received`;
 
-// TODO: Enable when test blockchain is updated
-xdescribe('Votes Received (Voters) API', () => {
+describe('Votes Received (Voters) API', () => {
 	let refDelegate;
 	let refDelegateAddress;
 	beforeAll(async () => {

@@ -30,8 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV2}/fees`;
 
-// TODO: Enable test once response structure is refactored for minFeePerByte
-xdescribe('Fee estimates API', () => {
+describe('Fee estimates API', () => {
 	it('estimate fees true -> 200 OK', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);

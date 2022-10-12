@@ -35,8 +35,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getEvents = async params => request(wsRpcUrl, 'get.events', params);
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Method get.events', () => {
+describe('Method get.events', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await getTransactions({ moduleCommandID: '2:0', limit: 1 });

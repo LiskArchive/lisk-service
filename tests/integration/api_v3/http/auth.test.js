@@ -30,8 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/auth`;
 
-// TODO: Enable when test blockchain is updated
-xdescribe('Auth accounts API', () => {
+describe('Auth accounts API', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommandID=12:0`);
