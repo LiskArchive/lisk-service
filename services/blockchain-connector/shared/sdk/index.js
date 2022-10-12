@@ -15,16 +15,17 @@
  */
 const { Signals } = require('lisk-service-framework');
 
-const { getNodeInfo, getSchemas } = require('./endpoints_1');
+const { getNodeInfo, getSchemas, getSystemMetadata } = require('./endpoints_1');
 const { getGenesisBlock } = require('./genesisBlock');
 const { refreshNetworkStatus } = require('./network');
-const { setSchemas } = require('./schema');
+const { setSchemas, setMetadata } = require('./schema');
 
 const init = async () => {
 	await refreshNetworkStatus();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
+	setMetadata(await getSystemMetadata());
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();

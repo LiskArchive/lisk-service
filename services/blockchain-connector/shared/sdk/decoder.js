@@ -24,9 +24,11 @@ const {
 	getBlockAssetSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
+	getDataSchemaByEventName,
+	getEventSchema,
 } = require('./schema');
 
-const { parseToJSONCompatObj } = require('../utils/parser');
+const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 
 const decodeTransaction = (encodedTransaction) => {
 	const txSchema = getTransactionSchema();
@@ -45,7 +47,7 @@ const decodeTransaction = (encodedTransaction) => {
 		params: transactionParams,
 	};
 
-	return decodedTransaction;
+	return parseToJSONCompatObj(decodedTransaction);
 };
 
 const decodeBlock = (encodedBlock) => {
@@ -70,11 +72,25 @@ const decodeBlock = (encodedBlock) => {
 		assets: blockAssets,
 		transactions: blockTransactions,
 	};
-	return decodedBlock;
+	return parseToJSONCompatObj(decodedBlock);
 };
 
-const decodeEvent = async (encodedEvent, schema) => {
-	const decodedEvent = await codec.decode(schema, Buffer.from(encodedEvent, 'hex'));
+const decodeEvent = (event) => {
+	const eventSchema = getEventSchema();
+	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
+	const eventBuffer = codec.encode(eventSchema, schemaCompliantEvent);
+	const eventID = hash(eventBuffer);
+
+	const eventDataSchema = getDataSchemaByEventName(event.name);
+	const eventData = eventDataSchema
+		? codec.decode(eventDataSchema, Buffer.from(event.data, 'hex'))
+		: event.data;
+
+	const decodedEvent = {
+		...event,
+		data: eventData,
+		id: eventID,
+	};
 	return parseToJSONCompatObj(decodedEvent);
 };
 
@@ -122,7 +138,7 @@ const decodeAPIClientEventPayload = (eventName, payload) => {
 module.exports = {
 	decodeBlock,
 	decodeTransaction,
+	decodeEvent,
 	decodeResponse,
 	decodeAPIClientEventPayload,
-	decodeEvent,
 };

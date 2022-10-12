@@ -14,6 +14,7 @@
 *
 */
 let schemas;
+let metadata;
 
 const setSchemas = (_schemas) => schemas = _schemas;
 
@@ -36,8 +37,25 @@ const getTransactionParamsSchema = (transaction) => {
 	return schema;
 };
 
+const setMetadata = (_metadata) => metadata = _metadata;
+
+const getDataSchemaByEventName = (eventName) => {
+	// TODO: Optimize
+	for (let i = 0; i < metadata.modules.length; i++) {
+		const module = metadata.modules[i];
+
+		for (let eventIndex = 0; eventIndex < module.events.length; eventIndex++) {
+			const moduleEvent = module.events[eventIndex];
+			if (moduleEvent.name === eventName) return module.events[eventIndex].data;
+		}
+	}
+
+	return null;
+};
+
 module.exports = {
 	setSchemas,
+	setMetadata,
 
 	getAccountSchema,
 	getBlockSchema,
@@ -46,4 +64,5 @@ module.exports = {
 	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
+	getDataSchemaByEventName,
 };

@@ -14,14 +14,16 @@
  *
  */
 const util = require('util');
-const BluebirdPromise = require('bluebird');
 
-const { Signals, Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const {
+	Exceptions: { TimeoutException },
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
 
 const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
 const { getRegisteredEvents } = require('./endpoints');
 const { decodeEvent } = require('./decoder');
-const { calculateEventID, getEventSchemaByName } = require('../utils/events');
 
 const logger = Logger();
 
@@ -58,24 +60,8 @@ const subscribeToAllRegisteredEvents = async () => {
 const getEventsByHeight = async (height) => {
 	try {
 		const chainEvents = await invokeEndpoint('chain_getEvents', { height });
-		const eventsResponse = await BluebirdPromise.map(
-			chainEvents,
-			async (event) => {
-				const schema = await getEventSchemaByName(event.name);
-				const decodedEventData = schema && event.data !== ''
-					? await decodeEvent(event.data, schema)
-					: {};
-				const eventID = await calculateEventID(event);
-
-				return {
-					...decodedEventData,
-					id: eventID,
-				};
-			},
-			{ concurrency: chainEvents.length },
-		);
-
-		return eventsResponse;
+		const decodedEvents = chainEvents.map((event) => decodeEvent(event));
+		return decodedEvents;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'chain_getEvents\'');
