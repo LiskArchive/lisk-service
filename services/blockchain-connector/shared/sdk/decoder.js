@@ -30,21 +30,24 @@ const {
 
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 
-const decodeTransaction = (encodedTransaction) => {
+const decodeTransaction = (transaction) => {
 	const txSchema = getTransactionSchema();
-	const transactionBuffer = Buffer.isBuffer(encodedTransaction)
-		? encodedTransaction
-		: Buffer.from(encodedTransaction, 'hex');
-	const transaction = codec.decode(txSchema, transactionBuffer);
-	transaction.id = hash(transactionBuffer);
-	transaction.size = transactionBuffer.length;
+	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
+	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
+	const transactionID = hash(transactionBuffer);
+	const transactionSize = transactionBuffer.length;
 
+	// TODO: Fix after SDK fixes the schema for token transfer transaction
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const transactionParams = codec.decode(txParamsSchema, transaction.params);
+	const transactionParams = transaction.module !== 'token' && transaction.command !== 'transfer'
+		? codec.decode(txParamsSchema, transaction.params)
+		: transaction.params;
 
 	const decodedTransaction = {
 		...transaction,
 		params: transactionParams,
+		size: transactionSize,
+		id: transactionID,
 	};
 
 	return parseToJSONCompatObj(decodedTransaction);

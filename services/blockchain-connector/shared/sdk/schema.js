@@ -31,9 +31,8 @@ const getEventSchema = () => schemas.event;
 const getTransactionSchema = () => schemas.transaction;
 
 const getTransactionParamsSchema = (transaction) => {
-	const { schema } = schemas.commands
-		.find(paramsSchema => paramsSchema.moduleID === transaction.moduleID
-			&& paramsSchema.commandID === transaction.commandID);
+	const moduleMetadata = metadata.modules.find(m => m.name === transaction.module);
+	const { params: schema } = moduleMetadata.commands.find(c => c.name === transaction.command);
 	return schema;
 };
 

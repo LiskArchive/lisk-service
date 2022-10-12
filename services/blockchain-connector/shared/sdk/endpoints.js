@@ -32,7 +32,7 @@ const {
 	getSystemMetadata,
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
-const { decodeAccount } = require('./decoder');
+const { decodeAccount, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../utils/parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
@@ -235,7 +235,7 @@ const getEventsByHeight = async (height) => {
 const getTransactionByID = async (id) => {
 	try {
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
-		return transaction;
+		return decodeTransaction(transaction);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionByID' for ID: ${id}`);
@@ -246,8 +246,8 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const transaction = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
-		return transaction;
+		const transactions = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
+		return transactions.map(t => decodeTransaction(t));
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}`);
@@ -259,7 +259,7 @@ const getTransactionsByIDs = async (ids) => {
 const getTransactionsFromPool = async () => {
 	try {
 		const transactions = await invokeEndpoint('txpool_getTransactionsFromPool');
-		return transactions;
+		return transactions.map(t => decodeTransaction(t));
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTransactionsFromPool\'');
