@@ -42,7 +42,7 @@ module.exports = {
 			200: {
 				description: 'Returns a boolean representing the validity of BLS key and Proof Of Possesion pair',
 				schema: {
-					$ref: '#/definitions/BLSKeyValidationWithEnvelope',
+					$ref: '#/definitions/blsKeyValidationWithEnvelope',
 				},
 			},
 		};
