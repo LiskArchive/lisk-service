@@ -15,7 +15,7 @@
  */
 const SchemasSource = require('../../../sources/version3/schemas');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
+const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -27,30 +27,20 @@ module.exports = {
 		const schemas = {};
 		schemas[this.swaggerApiPath] = { get: {} };
 		schemas[this.swaggerApiPath].get.tags = this.tags;
-		schemas[this.swaggerApiPath].get.summary = 'Requests schemas';
+		schemas[this.swaggerApiPath].get.summary = 'Requests schemas.';
 		schemas[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns schemas',
+			description: 'Returns schemas.',
 		});
-		schemas[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		schemas[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of schemas',
+				description: 'Returns a list of schemas.',
 				schema: {
-					$ref: '#/definitions/commandsParamsSchemaWithEnvelope',
+					$ref: '#/definitions/schemaWithEnvelope',
 				},
 			},
 			404: {
-				description: 'Not found',
-				schema: {
-					$ref: '#/definitions/notFoundEnvelope',
-				},
-			},
-			400: {
-				description: 'Bad input parameter',
-				schema: {
-					$ref: '#/definitions/badRequest',
-				},
+				$ref: '#/responses/notFound',
 			},
 		};
 		return schemas;
