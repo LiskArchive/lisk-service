@@ -33,11 +33,10 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getAuthAccountInfo = async (params) => request(wsRpcUrl, 'get.auth', params);
 const getTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
 
-// TODO: Enable when test blockchain is updated
-xdescribe('get.auth', () => {
+describe('get.auth', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '12:0', limit: 1 });
+		const response = await getTransactions({ moduleCommand: 'auth:registerMultisignature', limit: 1 });
 		[refTransaction] = response.result.data;
 	});
 

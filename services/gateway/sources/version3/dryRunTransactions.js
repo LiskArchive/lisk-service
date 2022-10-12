@@ -14,20 +14,13 @@
  *
  */
 module.exports = {
-	name: '=,string',
-	totalVotesReceived: '=,string',
-	selfVotes: '=,string',
-	voteWeight: 'delegateWeight,string',
-	address: '=,string',
-	lastGeneratedHeight: '=,number',
-	status: '=,string',
-	isBanned: '=,boolean',
-	pomHeights: ['pomHeights', {
-		start: '=,number',
-		end: '=,number',
-	}],
-	rank: '=,number',
-	consecutiveMissedBlocks: '=,number',
-	forgedBlocks: '=,number',
-	rewards: '=,string',
+	type: 'moleculer',
+	method: 'indexer.transactions.dryrun',
+	params: {
+		transaction: '=,string',
+	},
+	definition: {
+		data: '=',
+		meta: '=',
+	},
 };

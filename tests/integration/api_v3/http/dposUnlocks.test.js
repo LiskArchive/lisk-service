@@ -29,11 +29,10 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/dpos/unlocks`;
 
-// TODO: Enable when test blockchain is updated
-xdescribe('DPoS Unlocks API', () => {
+describe('DPoS Unlocks API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommandID=13:1`);
+		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommand=dpos:registerDelegate`);
 		[refTransaction] = response.data;
 	});
 

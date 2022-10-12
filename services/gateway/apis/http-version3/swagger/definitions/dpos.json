@@ -70,6 +70,21 @@
             "consecutiveMissedBlocks": {
                 "type": "integer",
                 "example": 0
+            },
+            "forgedBlocks": {
+                "type": "integer",
+                "example": 1000,
+                "description": "Number of blocks forged by the delegate."
+            },
+            "rank": {
+                "type": "integer",
+                "example": 93,
+                "description": "Delegate rank."
+            },
+            "rewards": {
+                "type": "string",
+                "example": "109000000000",
+                "description": "Rewards earned by the delegate for forging blocks in terms of the current chain's native token, e.g.: LSK on the mainchain."
             }
         }
     },
@@ -373,5 +388,4 @@
             }
         }
     }
-
 }

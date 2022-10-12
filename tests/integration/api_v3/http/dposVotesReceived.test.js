@@ -30,14 +30,13 @@ const {
 
 const endpoint = `${baseUrlV3}/dpos/votes/received`;
 
-// TODO: Enable when test blockchain is updated
-xdescribe('Votes Received (Voters) API', () => {
+describe('Votes Received (Voters) API', () => {
 	let refDelegate;
 	let refDelegateAddress;
 	beforeAll(async () => {
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			const { data: [voteTx] = [] } = await api.get(`${baseUrlV3}/transactions?moduleCommandID=13:1&limit=1`);
+			const { data: [voteTx] = [] } = await api.get(`${baseUrlV3}/transactions?moduleCommand=dpos:voteDelegate&limit=1`);
 			if (voteTx) {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { votes: [vote] } } = voteTx;

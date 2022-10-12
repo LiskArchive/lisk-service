@@ -30,14 +30,13 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getVoters = async params => request(wsRpcUrl, 'get.dpos.votes.received', params);
 
-// TODO: Enable when test blockchain is updated
-xdescribe('get.dpos.votes.received', () => {
+describe('get.dpos.votes.received', () => {
 	let refDelegate;
 	let refDelegateAddress;
 	beforeAll(async () => {
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			const response1 = await request(wsRpcUrl, 'get.transactions', { moduleCommandID: '13:1', limit: 1 });
+			const response1 = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'dpos:voteDelegate', limit: 1 });
 			const { data: [voteTx] = [] } = response1.result;
 			if (voteTx) {
 				// Destructure to refer first entry of all the sent votes within the transaction

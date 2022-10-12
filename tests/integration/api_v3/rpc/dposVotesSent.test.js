@@ -30,8 +30,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getVotes = async (params) => request(wsRpcUrl, 'get.dpos.votes.sent', params);
 
-// TODO: Enable when test blockchain is updated
-xdescribe('get.dpos.votes.sent', () => {
+describe('get.dpos.votes.sent', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		let response;

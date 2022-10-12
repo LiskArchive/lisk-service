@@ -31,6 +31,7 @@ const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
+const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -51,4 +52,5 @@ module.exports = {
 	MODULE_COMMAND,
 	CHAIN_ID,
 	TOKEN_ID,
+	TRANSACTION,
 };
