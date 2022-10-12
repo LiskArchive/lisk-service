@@ -15,7 +15,7 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.transactions.dry.run',
+	method: 'indexer.transactions.dryrun',
 	params: {
 		transaction: '=,string',
 	},

@@ -63,7 +63,7 @@ module.exports = [
 		},
 	},
 	{
-		name: 'transactions.dry.run',
+		name: 'transactions.dryrun',
 		controller: dryRunTransactions,
 		params: {
 			transaction: { optional: false, type: 'string' },
