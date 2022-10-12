@@ -20,13 +20,13 @@ const regex = require('../../../shared/utils/regex');
 
 const isMainchain = async () => {
 	const { chainID } = (await dataService.getNetworkStatus()).data;
-	return chainID.slice(2).match(regex.MAINCHAIN);
+	return chainID.match(regex.MAINCHAIN);
 };
 
-const resolveServiceURL = async () => {
+const resolveMainchainServiceURL = async () => {
 	const { chainID } = await dataService.getNetworkStatus();
 	const { serviceURL } = config.networks
-		.find(networkInfoItem => networkInfoItem.chainID === chainID);
+		.find(networkInfo => networkInfo.chainID === chainID);
 	return serviceURL;
 };
 
@@ -36,7 +36,7 @@ const getBlockchainApps = async (params) => {
 		return result;
 	}
 	// Redirect call to the mainchain service
-	const serviceURL = await resolveServiceURL();
+	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`;
 	const response = HTTP.request(
 		blockchainAppsEndpoint,
@@ -51,7 +51,7 @@ const getBlockchainAppsStatistics = async () => {
 		return result;
 	}
 	// Redirect call to the mainchain service
-	const serviceURL = await resolveServiceURL();
+	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`;
 	const response = HTTP.get(blockchainAppsStatsEndpoint);
 	return response;

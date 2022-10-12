@@ -34,7 +34,7 @@ const getTransactions = async (params) => request(wsRpcUrl, 'get.transactions', 
 describe('get.dpos.unlocks', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '13:1', limit: 1 });
+		const response = await getTransactions({ moduleCommand: 'dpos:registerDelegate', limit: 1 });
 		[refTransaction] = response.result.data;
 	});
 

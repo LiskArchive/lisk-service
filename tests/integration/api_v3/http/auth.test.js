@@ -33,7 +33,7 @@ const endpoint = `${baseUrlV3}/auth`;
 describe('Auth accounts API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommandID=12:0`);
+		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommand=auth:registerMultisignature`);
 		[refTransaction] = response.data;
 	});
 

@@ -36,7 +36,7 @@ const endpoint = `${baseUrl}/events`;
 describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommandID=2:0`);
+		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
 		[refTransaction] = response.data;
 	});
 

@@ -193,7 +193,7 @@ const getDelegates = async params => {
 			return {
 				...delegate,
 				forgedBlocks: validatorInfo.forgedBlocks || 0,
-				rewards: validatorInfo.rewards || 0,
+				rewards: validatorInfo.rewards || BigInt('0'),
 			};
 		}, { concurrency: allDelegates.length },
 	);

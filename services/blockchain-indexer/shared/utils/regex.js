@@ -14,7 +14,7 @@
  *
  */
 const TOKEN_ID = /[0-9A-Fa-f]{16}/g;
-const MAINCHAIN = /^0{6}$/g;
+const MAINCHAIN = /^\d{2}0{6}$/;
 
 module.exports = {
 	TOKEN_ID,

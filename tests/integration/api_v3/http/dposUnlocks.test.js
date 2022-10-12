@@ -32,7 +32,7 @@ const endpoint = `${baseUrlV3}/dpos/unlocks`;
 describe('DPoS Unlocks API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommandID=13:1`);
+		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommand=dpos:registerDelegate`);
 		[refTransaction] = response.data;
 	});
 

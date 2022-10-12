@@ -38,7 +38,7 @@ const getTransactions = async params => request(wsRpcUrl, 'get.transactions', pa
 describe('Method get.events', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '2:0', limit: 1 });
+		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
 		[refTransaction] = response.result.data;
 	});
 
