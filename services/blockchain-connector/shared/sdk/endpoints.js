@@ -13,14 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const {
-	Logger,
-	Exceptions: {
-		NotFoundException,
-		TimeoutException,
-	},
+	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
 const {
@@ -32,11 +26,7 @@ const {
 	getSystemMetadata,
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
-const { decodeAccount, decodeTransaction } = require('./decoder');
-const { parseToJSONCompatObj } = require('../utils/parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
-
-const logger = Logger();
 
 const getConnectedPeers = async () => {
 	try {
@@ -82,42 +72,6 @@ const updateForgingStatus = async (config) => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'updateForgingStatus\'');
-		}
-		throw err;
-	}
-};
-
-const getAccount = async (address) => {
-	try {
-		const encodedAccount = await invokeEndpoint('app_getAccount', { address });
-		const account = await decodeAccount(encodedAccount);
-		return { ...parseToJSONCompatObj(account), _raw: encodedAccount };
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAccount' for address: ${address}`);
-		} else if (err.message === `Specified key accounts:address:${address} does not exist`) {
-			throw new NotFoundException(`Account ${address} does not exist on the blockchain`);
-		}
-		logger.warn(`Unable to currently fetch account information for address: ${address}. The network synchronization process might still be in progress for the Lisk Core node or the requested account has not been migrated yet.`);
-		throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
-	}
-};
-
-const getAccounts = async (addresses) => {
-	try {
-		const encodedAccounts = await invokeEndpoint('app_getAccounts', { address: addresses });
-		const accounts = await BluebirdPromise.map(
-			encodedAccounts,
-			async (account) => ({
-				...(await decodeAccount(account)),
-				_raw: account,
-			}),
-			{ concurrency: encodedAccounts.length },
-		);
-		return parseToJSONCompatObj(accounts);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAccounts' for addresses: ${addresses}`);
 		}
 		throw err;
 	}
@@ -235,7 +189,7 @@ const getEventsByHeight = async (height) => {
 const getTransactionByID = async (id) => {
 	try {
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
-		return decodeTransaction(transaction);
+		return transaction;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionByID' for ID: ${id}`);
@@ -247,7 +201,7 @@ const getTransactionByID = async (id) => {
 const getTransactionsByIDs = async (ids) => {
 	try {
 		const transactions = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
-		return transactions.map(t => decodeTransaction(t));
+		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}`);
@@ -259,7 +213,7 @@ const getTransactionsByIDs = async (ids) => {
 const getTransactionsFromPool = async () => {
 	try {
 		const transactions = await invokeEndpoint('txpool_getTransactionsFromPool');
-		return transactions.map(t => decodeTransaction(t));
+		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTransactionsFromPool\'');
@@ -319,8 +273,6 @@ module.exports = {
 	getDisconnectedPeers,
 	getForgingStatus,
 	updateForgingStatus,
-	getAccount,
-	getAccounts,
 	getLastBlock,
 	getBlockByID,
 	getBlocksByIDs,

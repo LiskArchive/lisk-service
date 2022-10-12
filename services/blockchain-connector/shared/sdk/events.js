@@ -15,15 +15,11 @@
  */
 const util = require('util');
 
-const {
-	Exceptions: { TimeoutException },
-	Logger,
-	Signals,
-} = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
-const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
-const { getRegisteredEvents } = require('./endpoints');
+const { getApiClient } = require('./client');
 const { decodeEvent } = require('./decoder');
+const { getRegisteredEvents, getEventsByHeight } = require('./endpoints');
 
 const logger = Logger();
 
@@ -57,21 +53,15 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
-const getEventsByHeight = async (height) => {
-	try {
-		const chainEvents = await invokeEndpoint('chain_getEvents', { height });
-		const decodedEvents = chainEvents.map((event) => decodeEvent(event));
-		return decodedEvents;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'chain_getEvents\'');
-		}
-		throw err;
-	}
+const getEventsByHeightDecoded = async (height) => {
+	const chainEvents = await getEventsByHeight(height);
+	const decodedEvents = chainEvents.map((event) => decodeEvent(event));
+	return decodedEvents;
 };
 
 module.exports = {
-	subscribeToAllRegisteredEvents,
 	events,
-	getEventsByHeight,
+
+	subscribeToAllRegisteredEvents,
+	getEventsByHeight: getEventsByHeightDecoded,
 };

@@ -15,9 +15,51 @@
  */
 const { Signals } = require('lisk-service-framework');
 
-const { getNodeInfo, getSchemas, getSystemMetadata } = require('./endpoints_1');
-const { getGenesisBlock } = require('./genesisBlock');
-const { refreshNetworkStatus } = require('./network');
+const {
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+} = require('./blocks');
+
+const {
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+} = require('./transactions');
+
+const {
+	getGenesisHeight,
+	getGenesisBlockID,
+	getGenesisBlock,
+	getGenesisConfig,
+} = require('./genesisBlock');
+
+const {
+	getGenerators,
+	getForgingStatus,
+	updateForgingStatus,
+	invokeEndpointProxy,
+	getSchemas,
+	getRegisteredActions,
+	getRegisteredEvents,
+	getRegisteredModules,
+	getNodeInfo,
+	getSystemMetadata,
+} = require('./endpoints');
+
+const {
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
+} = require('./peers');
+
+const { getEventsByHeight } = require('./events');
+const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
 
 const init = async () => {
@@ -38,4 +80,42 @@ const init = async () => {
 
 module.exports = {
 	init,
+
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+
+	getEventsByHeight,
+
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+
+	getGenesisHeight,
+	getGenesisBlockID,
+	getGenesisBlock,
+	getGenesisConfig,
+
+	getGenerators,
+	getForgingStatus,
+	updateForgingStatus,
+
+	getNetworkStatus,
+
+	invokeEndpointProxy,
+	getSchemas,
+	getRegisteredActions,
+	getRegisteredEvents,
+	getRegisteredModules,
+	getNodeInfo,
+	getSystemMetadata,
+
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
 };
