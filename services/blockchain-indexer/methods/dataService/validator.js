@@ -15,6 +15,7 @@
  */
 const {
 	getValidator,
+	validateBLSKey,
 } = require('./controllers/validator');
 
 module.exports = [
@@ -23,6 +24,14 @@ module.exports = [
 		controller: getValidator,
 		params: {
 			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'validateBLSKey',
+		controller: validateBLSKey,
+		params: {
+			proofOfPossession: { optional: false, type: 'string' },
+			blsKey: { optional: false, type: 'string' },
 		},
 	},
 ];

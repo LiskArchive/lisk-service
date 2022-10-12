@@ -14,6 +14,7 @@
  *
  */
 // const dataService = require('../../../shared/dataService');
+const business = require('../../../shared/dataService/business');
 
 // eslint-disable-next-line no-unused-vars
 const getValidator = async params => {
@@ -42,6 +43,19 @@ const getValidator = async params => {
 	return validator;
 };
 
+const validateBLSKey = async params => {
+	const result = {
+		data: {},
+		meta: {},
+	};
+	const response = await business.validateBLSKey(params);
+	if (response.data) result.data = response.data;
+	if (response.meta) result.meta = response.meta;
+
+	return result;
+};
+
 module.exports = {
 	getValidator,
+	validateBLSKey,
 };

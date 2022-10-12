@@ -13,11 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getValidator } = require('./validatorInfo');
-
-const { validateBLSKey } = require('./validateBLSKey');
-
 module.exports = {
-	getValidator,
-	validateBLSKey,
+	type: 'moleculer',
+	method: 'indexer.validateBLSKey',
+	params: {
+		blsKey: '=,string',
+		proofOfPossession: '=,string',
+	},
+	definition: {
+		data: {
+			isValid: '=,boolean',
+		},
+		meta: {},
+		links: {},
+	},
 };

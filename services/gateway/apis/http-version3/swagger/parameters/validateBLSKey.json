@@ -1,0 +1,11 @@
+{
+    "validateBLSKeyParams" : {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "description": "The request body must contain two properties:\n- proofOfPossession (required): proof of Possession message\n- blsKey (required): BLS Key",
+        "schema": {
+            "$ref": "#/definitions/BLSKeyValidationParamEnvelope"
+        }
+    }
+}

@@ -13,11 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getValidator } = require('./validatorInfo');
+const { requestConnector } = require('../../../utils/request');
 
-const { validateBLSKey } = require('./validateBLSKey');
+const validateBLSKey = async params => {
+	const { proofOfPossession, blsKey } = params;
+
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	const { valid: isValid } = await requestConnector('validators_validateBLSKey', {
+		proofOfPossession,
+		blsKey,
+	});
+
+	response.data.isValid = isValid;
+
+	return response;
+};
 
 module.exports = {
-	getValidator,
 	validateBLSKey,
 };
