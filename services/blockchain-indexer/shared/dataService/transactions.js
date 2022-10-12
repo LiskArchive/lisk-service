@@ -148,6 +148,11 @@ const initPendingTransactionsList = () => dataService.loadAllPendingTransactions
 
 const reload = () => dataService.loadAllPendingTransactions();
 
+const dryRunTransactions = async params => {
+	const response = await dataService.dryRunTransactions(params);
+	return response;
+};
+
 module.exports = {
 	getTransactions,
 	getPendingTransactions,
@@ -156,4 +161,5 @@ module.exports = {
 	postTransactions,
 	getCommandsParamsSchemas,
 	getTransactionsByBlockID: dataService.getTransactionsByBlockID,
+	dryRunTransactions,
 };

@@ -18,6 +18,7 @@ const {
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
+	dryRunTransaction,
 } = require('../shared/sdk/endpoints');
 
 module.exports = [
@@ -43,6 +44,13 @@ module.exports = [
 	{
 		name: 'postTransaction',
 		controller: async ({ transaction }) => postTransaction(transaction),
+		params: {
+			transaction: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'dryRunTransaction',
+		controller: async ({ transaction }) => dryRunTransaction(transaction),
 		params: {
 			transaction: { optional: false, type: 'string' },
 		},

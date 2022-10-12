@@ -30,8 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/list`;
 
-// TODO: Enable/update test cases once off-chain data is available
-xdescribe('Blockchain application meta list API', () => {
+describe('Blockchain application meta list API', () => {
 	it('retrieves list', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);

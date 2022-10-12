@@ -31,8 +31,7 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/dpos/delegates`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('DPOS Delegates API', () => {
+describe('DPOS Delegates API', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		const response = await api.get(`${endpoint}?limit=1`);

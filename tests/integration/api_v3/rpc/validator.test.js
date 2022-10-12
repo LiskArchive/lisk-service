@@ -33,8 +33,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getValidator = async (params) => request(wsRpcUrl, 'get.validator', params);
 const getGenerators = async (params) => request(wsRpcUrl, 'get.generators', params);
 
-// TODO: Enable when test blockchain is updated
-xdescribe('get.validator', () => {
+describe('get.validator', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		const response = await getGenerators({ limit: 1 });

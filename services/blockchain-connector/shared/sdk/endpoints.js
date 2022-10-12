@@ -220,6 +220,18 @@ const getBlocksByIDs = async (ids) => {
 	}
 };
 
+const getEventsByHeight = async (height) => {
+	try {
+		const events = await invokeEndpoint('chain_getEvents', { height });
+		return events;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getEvents\'');
+		}
+		throw err;
+	}
+};
+
 const getTransactionByID = async (id) => {
 	try {
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
@@ -269,6 +281,19 @@ const postTransaction = async (transaction) => {
 	}
 };
 
+const dryRunTransaction = async (transaction) => {
+	try {
+		const apiClient = await getApiClient();
+		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction });
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'dryRunTransaction' with transaction: ${transaction}`);
+		}
+		throw err;
+	}
+};
+
 const getGenerators = async () => {
 	try {
 		const generators = await invokeEndpoint('chain_getGeneratorList');
@@ -276,18 +301,6 @@ const getGenerators = async () => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getGenerators\'');
-		}
-		throw err;
-	}
-};
-
-const getEventsByHeight = async (height) => {
-	try {
-		const events = await invokeEndpoint('chain_getEvents', { height });
-		return events;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getEvents\'');
 		}
 		throw err;
 	}
@@ -313,10 +326,11 @@ module.exports = {
 	getBlocksByIDs,
 	getBlockByHeight,
 	getBlocksByHeightBetween,
+	getEventsByHeight,
 	getTransactionByID,
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
+	dryRunTransaction,
 	getGenerators,
-	getEventsByHeight,
 };

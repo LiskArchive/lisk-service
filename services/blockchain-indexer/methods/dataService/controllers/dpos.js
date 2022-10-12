@@ -67,39 +67,15 @@ const getUnlocks = async params => {
 	return unlocks;
 };
 
-// TODO: Remove mocked response once we are able to create vote transactions
 const getVotesReceived = async params => {
-	// const votesReceived = {
-	// 	data: {},
-	// 	meta: {},
-	// };
-
-	// const response = await dataService.getVotesReceived(params);
-	// if (response.data) votesReceived.data = response.data;
-	// if (response.meta) votesReceived.meta = response.meta;
-
 	const votesReceived = {
-		data: {
-			account: {
-				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-				publicKey: 'aq02qkbb35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-				name: 'genesis_56',
-			},
-			votes: [
-				{
-					delegateAddress: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-					amount: '1081560729258',
-					name: 'liskhq',
-				},
-			],
-		},
-		meta: {
-			count: 10,
-			offset: params.offset,
-			total: 105,
-		},
-		links: {},
+		data: {},
+		meta: {},
 	};
+
+	const response = await dataService.getVotesReceived(params);
+	if (response.data) votesReceived.data = response.data;
+	if (response.meta) votesReceived.meta = response.meta;
 
 	return votesReceived;
 };

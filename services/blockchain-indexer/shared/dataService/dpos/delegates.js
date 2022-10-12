@@ -20,6 +20,7 @@ const {
 	CacheRedis,
 	Logger,
 	Signals,
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const dataService = require('../business');
 
@@ -29,6 +30,15 @@ const { getLisk32AddressFromPublicKey } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const validatorsIndexSchema = require('../../database/schema/validators');
+
+const getValidatorsIndex = () => getTableInstance(
+	validatorsIndexSchema.tableName,
+	validatorsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
 
@@ -140,6 +150,8 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const getDelegates = async params => {
+	const validatorsTable = await getValidatorsIndex();
+
 	const delegates = {
 		data: [],
 		meta: {},
@@ -174,7 +186,17 @@ const getDelegates = async params => {
 		: (acc[entity] && acc[entity] === params[entity]),
 	);
 
-	delegates.data = allDelegates;
+	delegates.data = await BluebirdPromise.map(
+		allDelegates,
+		async delegate => {
+			const [validatorInfo = {}] = await validatorsTable.find({ name: delegate.name });
+			return {
+				...delegate,
+				forgedBlocks: validatorInfo.forgedBlocks || 0,
+				rewards: validatorInfo.rewards || BigInt('0'),
+			};
+		}, { concurrency: allDelegates.length },
+	);
 
 	if (params.address) {
 		delegates.data = filterBy(delegates.data, 'address');
