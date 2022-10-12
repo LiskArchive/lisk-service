@@ -14,10 +14,13 @@
  *
  */
 const util = require('util');
-const { Signals, Logger } = require('lisk-service-framework');
+const { Signals, Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
 
+const BluebirdPromise = require('bluebird');
+const { getApiClient, invokeEndpoint, timeoutMessage } = require('./client');
 const { getRegisteredEvents } = require('./endpoints');
-const { getApiClient } = require('./client');
+const { decodeEvent } = require('./decoder');
+const { calculateEventID, getEventSchemaByName } = require('../utils/events');
 
 const logger = Logger();
 const EVENT_CHAIN_FORK = 'chain_forked';
@@ -50,4 +53,36 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
-module.exports = { subscribeToAllRegisteredEvents, events };
+const getEventsByHeight = async (height) => {
+	try {
+		const chainEvents = await invokeEndpoint('chain_getEvents', { height });
+		const eventsResponse = await BluebirdPromise.map(
+			chainEvents,
+			async (event) => {
+				const schema = await getEventSchemaByName(event.name);
+				const decodedEventData = schema && event.data !== ''
+					? await decodeEvent(event.data, schema) : {};
+				const eventID = await calculateEventID(event);
+
+				return {
+					...decodedEventData,
+					id: eventID,
+				};
+			},
+			{ concurrency: chainEvents.length },
+		);
+
+		return eventsResponse;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'chain_getEvents\'');
+		}
+		throw err;
+	}
+};
+
+module.exports = {
+	subscribeToAllRegisteredEvents,
+	events,
+	getEventsByHeight,
+};

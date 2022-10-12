@@ -57,7 +57,9 @@ const parseInputBySchema = (input, schema) => {
 			return acc;
 		}, {});
 		return formattedObj;
-	} if (schemaType === 'array') {
+	}
+
+	if (schemaType === 'array') {
 		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
 		return formattedArray;
 	}

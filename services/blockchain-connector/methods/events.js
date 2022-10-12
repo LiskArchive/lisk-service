@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getEventsByHeight } = require('../shared/sdk/endpoints');
+const { getEventsByHeight } = require('../shared/sdk/events');
 
 module.exports = [
 	{
