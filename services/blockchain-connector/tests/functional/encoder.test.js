@@ -28,6 +28,12 @@ const {
 	invalidTransaction,
 	encodedTransaction,
 } = require('../constants/transactions');
+
+const {
+	transferEventInput,
+	encodedTransferEvent,
+} = require('../constants/events');
+
 const config = require('../../config');
 
 const broker = new ServiceBroker({
@@ -57,6 +63,12 @@ describe('Functional tests for encoder', () => {
 		const result = await broker.call('connector.encodeBlock', { block });
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedBlock);
+	});
+
+	it('encode event', async () => {
+		const result = await broker.call('connector.encodeEvent', { event: transferEventInput });
+		expect(typeof result).toBe('string');
+		expect(result).toEqual(encodedTransferEvent);
 	});
 
 	it('throws error when encoding invalid transaction', async () => {

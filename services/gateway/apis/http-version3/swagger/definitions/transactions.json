@@ -180,6 +180,7 @@
             "id",
             "moduleCommand",
             "fee",
+            "size",
             "nonce",
             "block",
             "sender",
@@ -206,7 +207,13 @@
             "fee": {
                 "type": "string",
                 "example": "1000000",
-                "description": "Transaction fee associated with this transaction.\n"
+                "description": "Transaction fee associated with the transaction."
+            },
+            "size": {
+                "type": "integer",
+                "example": 165,
+                "minimum": 1,
+                "description": "Transaction size in bytes."
             },
             "block": {
                 "type": "object",
