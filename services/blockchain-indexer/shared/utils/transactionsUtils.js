@@ -28,7 +28,7 @@ const {
 
 const { requestConnector } = require('./request');
 const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
-const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
+const { getCommandsParamsSchemas } = require('../dataService/business/schemas');
 const { getLisk32Address } = require('./accountUtils');
 
 const getTxnParamsSchema = async (trx) => {

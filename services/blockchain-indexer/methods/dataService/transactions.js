@@ -18,7 +18,7 @@ const {
 	getTransactions,
 	getPendingTransactions,
 	postTransactions,
-	getCommandsParamsSchemas,
+	getSchemas,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -55,8 +55,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'commands.parameters.schemas',
-		controller: getCommandsParamsSchemas,
+		name: 'schemas',
+		controller: getSchemas,
 		params: {
 			moduleCommand: { optional: true, type: 'string' },
 		},

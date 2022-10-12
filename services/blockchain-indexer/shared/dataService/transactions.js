@@ -123,15 +123,15 @@ const postTransactions = async params => {
 	}
 };
 
-const getCommandsParamsSchemas = async params => {
-	const commandsParamsSchemas = {
-		data: [],
+const getSchemas = async params => {
+	const schemas = {
+		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getCommandsParamsSchemas(params);
-	if (response.data) commandsParamsSchemas.data = response.data;
-	if (response.meta) commandsParamsSchemas.meta = response.meta;
+	const response = await dataService.getSchemas(params);
+	if (response.data) schemas.data = response.data;
+	if (response.meta) schemas.meta = response.meta;
 
 	if (!commandsParamsSchemas.data.length && params.moduleCommand) {
 		const errorMessage = `Schema corresponding moduleCommand: '${params.moduleCommand}' not found.`;
@@ -141,7 +141,7 @@ const getCommandsParamsSchemas = async params => {
 		};
 	}
 
-	return commandsParamsSchemas;
+	return schemas;
 };
 
 const initPendingTransactionsList = () => dataService.loadAllPendingTransactions();
@@ -154,6 +154,6 @@ module.exports = {
 	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
 	postTransactions,
-	getCommandsParamsSchemas,
+	getSchemas,
 	getTransactionsByBlockID: dataService.getTransactionsByBlockID,
 };

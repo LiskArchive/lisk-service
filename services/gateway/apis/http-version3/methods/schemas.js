@@ -13,32 +13,32 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const commandsParamsSchemaSource = require('../../../sources/version3/commandsParamsSchemas');
+const SchemasSource = require('../../../sources/version3/schemas');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
 const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/commands/parameters/schemas',
-	rpcMethod: 'get.commands.parameters.schemas',
+	swaggerApiPath: '/schemas',
+	rpcMethod: 'get.schemas',
 	tags: ['Transactions'],
 	params: {
 		moduleCommand: { optional: true, type: 'string', min: 3, pattern: regex.MODULE_COMMAND },
 	},
 	get schema() {
-		const commandsParamsSchema = {};
-		commandsParamsSchema[this.swaggerApiPath] = { get: {} };
-		commandsParamsSchema[this.swaggerApiPath].get.tags = this.tags;
-		commandsParamsSchema[this.swaggerApiPath].get.summary = 'Requests commands params schema';
-		commandsParamsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const schemas = {};
+		schemas[this.swaggerApiPath] = { get: {} };
+		schemas[this.swaggerApiPath].get.tags = this.tags;
+		schemas[this.swaggerApiPath].get.summary = 'Requests schemas';
+		schemas[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns commands params schema',
+			description: 'Returns schemas',
 		});
-		commandsParamsSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
-		commandsParamsSchema[this.swaggerApiPath].get.responses = {
+		schemas[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		schemas[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of commands params schemas',
+				description: 'Returns a list of schemas',
 				schema: {
 					$ref: '#/definitions/commandsParamsSchemaWithEnvelope',
 				},
@@ -56,8 +56,8 @@ module.exports = {
 				},
 			},
 		};
-		return commandsParamsSchema;
+		return schemas;
 	},
-	source: commandsParamsSchemaSource,
+	source: SchemasSource,
 	envelope,
 };

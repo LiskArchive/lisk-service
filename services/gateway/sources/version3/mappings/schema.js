@@ -13,21 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const commandsParamsSchema = require('./mappings/commandsParamsSchema');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.commands.parameters.schemas',
-	params: {
-		moduleCommand: '=,string',
-	},
-	definition: {
-		data: ['data', commandsParamsSchema],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	block: '=',
+	header: '=',
+	asset: '=',
+	transaction: '=',
+	event: '=',
+	events: '=',
+	assets: '=',
+	commands: '=',
 };

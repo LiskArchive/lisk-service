@@ -13,7 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const schema = require('./mappings/schema');
+
 module.exports = {
-	moduleCommand: '=,string',
-	schema: '=',
+	type: 'moleculer',
+	method: 'indexer.schemas',
+	params: {
+		moduleCommand: '=,string',
+	},
+	definition: {
+		data: schema,
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
