@@ -23,10 +23,8 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const transactionsIndexSchema = require('../../../database/schema/transactions');
-const crossChainMessagesIndexSchema = require('../../../database/schema/crossChainMessages');
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const commandName = 'stateRecovery';
@@ -34,12 +32,9 @@ const commandName = 'stateRecovery';
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
-	const crossChainMessagesDB = await getCrossChainMessagesIndex();
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
-
-	await crossChainMessagesDB.upsert(tx, dbTrx);
+	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
 	await transactionsDB.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
 };

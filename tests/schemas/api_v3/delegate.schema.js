@@ -47,7 +47,7 @@ const delegateSchema = {
 		.required(),
 	forgedBlocks: Joi.number().integer().min(0).required(),
 	rank: Joi.number().integer().min(1).required(),
-	rewards: Joi.string().required(),
+	rewards: Joi.string().pattern(regex.DIGITS).allow('').required(),
 };
 
 module.exports = {

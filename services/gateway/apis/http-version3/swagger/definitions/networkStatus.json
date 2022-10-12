@@ -96,7 +96,7 @@
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "Array of all the current registered modules"
+                            "description": "List of all the current registered modules."
                         },
                         "example": [
                             "token",
@@ -114,7 +114,7 @@
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "Array of all current supported transaction types"
+                            "description": "List of all current supported transaction types."
                         },
                         "example": [
                             "auth:registerMultisignature",

@@ -52,7 +52,7 @@ module.exports = [
 		name: 'transactions.post',
 		controller: postTransactions,
 		params: {
-			transaction: { optional: true, type: 'string' },
+			transaction: { optional: false, type: 'string' },
 		},
 	},
 	{
@@ -66,7 +66,7 @@ module.exports = [
 		name: 'transactions.dry.run',
 		controller: dryRunTransactions,
 		params: {
-			transaction: { optional: true, type: 'string' },
+			transaction: { optional: false, type: 'string' },
 		},
 	},
 ];

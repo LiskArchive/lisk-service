@@ -395,7 +395,7 @@
                                         "tokenID": {
                                             "type": "string",
                                             "example": "0000000000000000",
-                                            "description": "Token unique identifier"
+                                            "description": "Token unique identifier."
                                         },
                                         "amount": {
                                             "type": "string",

@@ -74,17 +74,17 @@
             "forgedBlocks": {
                 "type": "integer",
                 "example": 1000,
-                "description": "Number of blocks forged by a delegate"
+                "description": "Number of blocks forged by the delegate."
             },
             "rank": {
                 "type": "integer",
                 "example": 93,
-                "description": "Delegate rank"
+                "description": "Delegate rank."
             },
             "rewards": {
                 "type": "string",
                 "example": "109000000000",
-                "description": "Amount of rewards in LSK collected during forging"
+                "description": "Rewards earned by the delegate for forging blocks in terms of the current chain's native token, e.g.: LSK on the mainchain."
             }
         }
     },

@@ -34,7 +34,11 @@ const config = require('../../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const validatorsIndexSchema = require('../../database/schema/validators');
 
-const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
+const getValidatorsIndex = () => getTableInstance(
+	validatorsIndexSchema.tableName,
+	validatorsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
 
@@ -185,16 +189,11 @@ const getDelegates = async params => {
 	delegates.data = await BluebirdPromise.map(
 		allDelegates,
 		async delegate => {
-			const [validatorInfo] = await validatorsTable.find({ name: delegate.name });
-
+			const [validatorInfo = {}] = await validatorsTable.find({ name: delegate.name });
 			return {
 				...delegate,
-				forgedBlocks: validatorInfo && validatorInfo.forgedBlocks
-					? validatorInfo.forgedBlocks
-					: 0,
-				rewards: validatorInfo && validatorInfo.rewards
-					? validatorInfo.rewards
-					: 0,
+				forgedBlocks: validatorInfo.forgedBlocks || 0,
+				rewards: validatorInfo.rewards || 0,
 			};
 		}, { concurrency: allDelegates.length },
 	);

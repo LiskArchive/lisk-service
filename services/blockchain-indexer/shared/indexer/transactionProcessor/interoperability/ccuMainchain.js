@@ -23,11 +23,9 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const transactionsIndexSchema = require('../../../database/schema/transactions');
-const crossChainMessagesIndexSchema = require('../../../database/schema/crossChainMessages');
 const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
@@ -36,13 +34,11 @@ const commandName = 'mainchainCCUpdate';
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
-	const crossChainMessagesDB = await getCrossChainMessagesIndex();
 	const blockchainAppsDB = await getBlockchainAppsIndex();
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}`);
 
-	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
-	await crossChainMessagesDB.upsert(tx, dbTrx);
+	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
 
 	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
 	const appInfo = {

@@ -29,15 +29,15 @@ module.exports = {
 		const dryRunTransactionSchema = {};
 		dryRunTransactionSchema[this.swaggerApiPath] = { post: {} };
 		dryRunTransactionSchema[this.swaggerApiPath].post.tags = this.tags;
-		dryRunTransactionSchema[this.swaggerApiPath].post.summary = 'Dry-run transactions';
+		dryRunTransactionSchema[this.swaggerApiPath].post.summary = 'Dry run transactions.';
 		dryRunTransactionSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Dry-run transactions',
+			description: 'Dry run transactions.',
 		});
 		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transaction' }];
 		dryRunTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
-				description: 'Dry-run transactions',
+				description: 'Dry run transactions',
 				schema: {
 					$ref: '#/definitions/dryTransactionWithEnvelope',
 				},
