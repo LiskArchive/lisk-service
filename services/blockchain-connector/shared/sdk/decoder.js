@@ -15,6 +15,7 @@
  */
 const { codec } = require('@liskhq/lisk-codec');
 const { utils: { hash } } = require('@liskhq/lisk-cryptography');
+const { computeMinFee } = require('@liskhq/lisk-transactions');
 
 const {
 	getBlockAssetDataSchemaByModule,
@@ -37,11 +38,13 @@ const decodeTransaction = (transaction) => {
 	const transactionParams = transaction.module !== 'token' && transaction.command !== 'transfer'
 		? codec.decode(txParamsSchema, transaction.params)
 		: transaction.params;
+	const transactionMinFee = computeMinFee(schemaCompliantTransaction, txParamsSchema);
 
 	const decodedTransaction = {
 		...transaction,
 		params: transactionParams,
 		size: transactionSize,
+		minFee: transactionMinFee,
 	};
 
 	return parseToJSONCompatObj(decodedTransaction);
