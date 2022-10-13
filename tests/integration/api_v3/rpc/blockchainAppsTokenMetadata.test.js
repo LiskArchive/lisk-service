@@ -33,8 +33,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsTokenMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.tokens', params);
 
-// TODO: Enable/update test cases once off-chain data is available
-xdescribe('get.blockchain.apps.meta.tokens', () => {
+describe('get.blockchain.apps.meta.tokens', () => {
 	it('returns blockchain applications off-chain metadata for tokens', async () => {
 		const response = await getBlockchainAppsTokenMetadata();
 		expect(response).toMap(jsonRpcEnvelopeSchema);

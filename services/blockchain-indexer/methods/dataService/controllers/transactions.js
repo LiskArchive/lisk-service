@@ -92,9 +92,12 @@ const postTransactions = async (params) => dataService.postTransactions(params);
 
 const getSchemas = async () => dataService.getSchemas();
 
+const dryRunTransactions = async (params) => dataService.dryRunTransactions(params);
+
 module.exports = {
 	getTransactions,
 	getPendingTransactions,
 	postTransactions,
 	getSchemas,
+	dryRunTransactions,
 };

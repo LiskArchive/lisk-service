@@ -19,6 +19,7 @@ const {
 	getPendingTransactions,
 	postTransactions,
 	getSchemas,
+	dryRunTransactions,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -51,12 +52,19 @@ module.exports = [
 		name: 'transactions.post',
 		controller: postTransactions,
 		params: {
-			transaction: { optional: true, type: 'any' },
+			transaction: { optional: false, type: 'string' },
 		},
 	},
 	{
 		name: 'schemas',
 		controller: getSchemas,
 		params: {},
+	},
+	{
+		name: 'transactions.dryrun',
+		controller: dryRunTransactions,
+		params: {
+			transaction: { optional: false, type: 'string' },
+		},
 	},
 ];

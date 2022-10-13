@@ -95,7 +95,8 @@
                     "registeredModules": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "List of all the current registered modules."
                         },
                         "example": [
                             "token",
@@ -107,13 +108,13 @@
                             "random",
                             "legacy",
                             "interoperability"
-                        ],
-                        "description": "Array of all the current registered modules"
+                        ]
                     },
                     "moduleCommands": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "List of all current supported transaction types."
                         },
                         "example": [
                             "auth:registerMultisignature",
@@ -126,8 +127,7 @@
                             "legacy:registerKeys",
                             "token:transfer",
                             "token:crossChaintransfer"
-                        ],
-                        "description": "Array of all current supported transaction types"
+                        ]
                     },
                     "network": {
                         "type": "object",
@@ -157,9 +157,7 @@
                                 "type": "integer",
                                 "example": 10
                             },
-                            "whitelistedPeers": {
-
-                            }
+                            "whitelistedPeers": {}
                         }
                     }
                 }

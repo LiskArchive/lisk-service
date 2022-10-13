@@ -79,24 +79,19 @@ config.operations = {
 config.networks = [
 	{
 		name: 'mainnet',
-		address: '',
+		chainID: '00000000',
 		serviceURL: 'https://service.lisk.com',
-		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 	},
 	{
 		name: 'testnet',
-		address: '',
+		chainID: '01000000',
 		serviceURL: 'https://testnet-service.lisk.com',
-		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
+
 	},
 	{
 		name: 'betanet',
-		address: '',
+		chainID: '',
 		serviceURL: 'https://betanet-service.lisk.com',
-		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/betanet/genesis_block.json.tar.gz',
 	},
 ];
 

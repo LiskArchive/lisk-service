@@ -32,8 +32,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getDelegates = async params => request(wsRpcUrl, 'get.dpos.delegates', params);
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Method get.dpos.delegates', () => {
+describe('Method get.dpos.delegates', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		const response = await getDelegates({ limit: 1 });

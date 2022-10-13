@@ -13,21 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { requestConnector } = require('../../utils/request');
+
+const dryRunTransactions = async params => {
+	const dryRunTransactionsRes = {
+		data: [],
+		meta: {},
+	};
+	const { transaction } = params;
+
+	dryRunTransactionsRes.data = await requestConnector('dryRunTransaction', { transaction });
+	dryRunTransactionsRes.meta = { params };
+
+	return dryRunTransactionsRes;
+};
+
 module.exports = {
-	name: '=,string',
-	totalVotesReceived: '=,string',
-	selfVotes: '=,string',
-	voteWeight: 'delegateWeight,string',
-	address: '=,string',
-	lastGeneratedHeight: '=,number',
-	status: '=,string',
-	isBanned: '=,boolean',
-	pomHeights: ['pomHeights', {
-		start: '=,number',
-		end: '=,number',
-	}],
-	rank: '=,number',
-	consecutiveMissedBlocks: '=,number',
-	forgedBlocks: '=,number',
-	rewards: '=,string',
+	dryRunTransactions,
 };

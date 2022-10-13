@@ -31,11 +31,10 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getUnlocks = async (params) => request(wsRpcUrl, 'get.dpos.unlocks', params);
 const getTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
 
-// TODO: Enable when test blockchain is updated
-xdescribe('get.dpos.unlocks', () => {
+describe('get.dpos.unlocks', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '13:1', limit: 1 });
+		const response = await getTransactions({ moduleCommand: 'dpos:registerDelegate', limit: 1 });
 		[refTransaction] = response.result.data;
 	});
 

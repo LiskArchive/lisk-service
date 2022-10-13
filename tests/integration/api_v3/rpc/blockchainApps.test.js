@@ -66,8 +66,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Enable test case once blockchain app implementation is done
-	xit('returns list of all default blockchain applications', async () => {
+	it('returns list of all default blockchain applications', async () => {
 		const response = await getBlockchainApps({ isDefault: true });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -79,8 +78,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Enable test case once blockchain app implementation is done
-	xit('returns list of all non-default blockchain applications', async () => {
+	it('returns list of all non-default blockchain applications', async () => {
 		const response = await getBlockchainApps({ isDefault: false });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -92,8 +90,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('returns list of all blockchain applications by chainID', async () => {
+	it('returns list of all blockchain applications by chainID', async () => {
 		const response = await getBlockchainApps({ chainID: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -103,8 +100,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('returns list of all blockchain applications by state', async () => {
+	it('returns list of all blockchain applications by state', async () => {
 		const response = await getBlockchainApps({ state: 'active' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -115,8 +111,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('returns list of all blockchain applications by partial search', async () => {
+	it('returns list of all blockchain applications by partial search', async () => {
 		const response = await getBlockchainApps({ search: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

@@ -33,11 +33,10 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/events`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Events API', () => {
+describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommandID=2:0`);
+		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
 		[refTransaction] = response.data;
 	});
 
