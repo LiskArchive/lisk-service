@@ -15,7 +15,10 @@
  */
 const {
 	getValidator,
+	validateBLSKey,
 } = require('./controllers/validator');
+
+const regex = require('../../shared/regex');
 
 module.exports = [
 	{
@@ -23,6 +26,14 @@ module.exports = [
 		controller: getValidator,
 		params: {
 			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'validateBLSKey',
+		controller: validateBLSKey,
+		params: {
+			blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
+			proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
 		},
 	},
 ];

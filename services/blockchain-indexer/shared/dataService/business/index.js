@@ -90,8 +90,8 @@ const {
 } = require('./dpos');
 
 const { getAuthAccountInfo } = require('./auth');
-const { getValidator } = require('./validator');
 const { getEvents, getEventsByHeight } = require('./events');
+const { getValidator, validateBLSKey } = require('./validator');
 
 module.exports = {
 	getBlocks,
@@ -128,7 +128,10 @@ module.exports = {
 	getUnlocks,
 	getDPoSConstants,
 	getAuthAccountInfo,
+
 	getValidator,
+	validateBLSKey,
+
 	getEvents,
 	getEventsByHeight,
 	getLegacyAccountInfo,
