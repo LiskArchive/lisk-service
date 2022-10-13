@@ -13,30 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { requestConnector } = require('../../utils/request');
+
+const dryRunTransactions = async params => {
+	const dryRunTransactionsRes = {
+		data: [],
+		meta: {},
+	};
+	const { transaction } = params;
+
+	dryRunTransactionsRes.data = await requestConnector('dryRunTransaction', { transaction });
+	dryRunTransactionsRes.meta = { params };
+
+	return dryRunTransactionsRes;
+};
+
 module.exports = {
-	id: '=,string',
-	moduleCommand: '=,string',
-	nonce: '=,string',
-	fee: '=,string',
-	size: '=,number',
-	sender: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-	},
-	params: '=',
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-		isFinal: '=,boolean',
-	},
-	meta: {
-		recipient: {
-			address: '=,string',
-			publicKey: '=,string',
-			name: '=,string',
-		},
-	},
-	executionStatus: '=,string',
+	dryRunTransactions,
 };

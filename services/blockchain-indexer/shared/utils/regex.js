@@ -13,8 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const TOKEN_ID = /[0-9A-Fa-f]{16}/g;
+const TOKEN_ID = /[0-9A-Fa-f]{16}/;
+const MAINCHAIN = /^\d{2}0{6}$/;
 
 module.exports = {
 	TOKEN_ID,
+	MAINCHAIN,
 };

@@ -60,6 +60,10 @@ const {
 } = require('./postTransactions');
 
 const {
+	dryRunTransactions,
+} = require('./dryRunTransactions');
+
+const {
 	getTokens,
 	getTopLiskAddresses,
 	getSupportedTokens,
@@ -108,6 +112,7 @@ module.exports = {
 	isDposModuleRegistered,
 	getGenerators,
 	getNumberOfGenerators,
+	dryRunTransactions,
 	postTransactions,
 	getTokens,
 	getTopLiskAddresses,

@@ -28,6 +28,13 @@ const {
 	transaction,
 	encodedTransaction,
 } = require('../constants/transactions');
+
+const {
+	decodedTransferEventData,
+	transferEventSchema,
+	transferEventInput,
+} = require('../constants/events');
+
 const config = require('../../config');
 
 const broker = new ServiceBroker({
@@ -76,12 +83,20 @@ describe('Functional tests for decoder', () => {
 		expect(result).toMatchObject(block);
 	});
 
-	it('decode event payload', async () => {
-		const result = await broker.call('connector.decodeEventPayload', {
+	it('decode subscription event payload', async () => {
+		const result = await broker.call('connector.decodeAPIClientEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: encodedBlock },
 		});
 		expect(result).toMatchObject(block);
+	});
+
+	it('decode event payload for token:transferEvent', async () => {
+		const result = await broker.call('connector.decodeEvent', {
+			encodedEvent: transferEventInput.data,
+			schema: transferEventSchema,
+		});
+		expect(result).toMatchObject(decodedTransferEventData);
 	});
 
 	it('decode response', async () => {

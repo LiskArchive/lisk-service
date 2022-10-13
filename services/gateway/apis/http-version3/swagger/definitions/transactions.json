@@ -180,6 +180,7 @@
             "id",
             "moduleCommand",
             "fee",
+            "size",
             "nonce",
             "block",
             "sender",
@@ -206,7 +207,13 @@
             "fee": {
                 "type": "string",
                 "example": "1000000",
-                "description": "Transaction fee associated with this transaction.\n"
+                "description": "Transaction fee associated with the transaction."
+            },
+            "size": {
+                "type": "integer",
+                "example": 165,
+                "minimum": 1,
+                "description": "Transaction size in bytes."
             },
             "block": {
                 "type": "object",
@@ -366,6 +373,95 @@
                 "type": "string",
                 "example": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b",
                 "description": "Binary payload"
+            }
+        }
+    },
+    "dryTransactionWithEnvelope": {
+        "type": "object",
+        "properties": {
+            "data": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "events": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "senderAddress": {
+                                            "type": "string",
+                                            "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`.\n"
+                                        },
+                                        "tokenID": {
+                                            "type": "string",
+                                            "example": "0000000000000000",
+                                            "description": "Unique token identifier."
+                                        },
+                                        "amount": {
+                                            "type": "string",
+                                            "example": "100003490",
+                                            "description": "Amount of tokens transferred in this transaction. The type of token can be identified by the 'tokenID' property."
+                                        },
+                                        "recipientAddress": {
+                                            "type": "string",
+                                            "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`.\n"
+                                        }
+                                    }
+                                },
+                                "index": {
+                                    "type": "integer",
+                                    "example": 0
+                                },
+                                "module": {
+                                    "type": "string",
+                                    "example": "token"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "transferEvent"
+                                },
+                                "topics": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "example": [
+                                        "86afcdd640846bf41525481938653ee942be3fac1ecbcff08e98f9aeda3a9583",
+                                        "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                                        "0000000000000000",
+                                        "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99"
+                                    ]
+                                },
+                                "height": {
+                                    "type": "number",
+                                    "example": 10
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "properties": {
+                    "params": {
+                        "type": "object",
+                        "properties": {
+                            "transaction": {
+                                "type": "string",
+                                "example": "0a05746f6b656e12087472616e7366657218002080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a40639d43851b1277a059903f3eca7e98b083148a60838ad2380296d3989781b6e0f848fbbb2694885d2f447d7cb59dde3306f202d85ba7b36922f5035933879c09"
+                            }
+                        }
+                    }
+                }
             }
         }
     }

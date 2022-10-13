@@ -61,8 +61,7 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	// TODO: Enable test case once blockchain app implementation is done
-	xit('retrieves list of all default blockchain applications', async () => {
+	it('retrieves list of all default blockchain applications', async () => {
 		const response = await api.get(`${endpoint}?isDefault=true`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -73,8 +72,7 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	// TODO: Enable test case once blockchain app implementation is done
-	xit('retrieves list of all non-default blockchain applications', async () => {
+	it('retrieves list of all non-default blockchain applications', async () => {
 		const response = await api.get(`${endpoint}?isDefault=false`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -85,8 +83,7 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('retrieves blockchain application by chainID', async () => {
+	it('retrieves blockchain application by chainID', async () => {
 		const response = await api.get(`${endpoint}?chainID=`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -95,8 +92,7 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('retrieves blockchain applications by status', async () => {
+	it('retrieves blockchain applications by status', async () => {
 		const response = await api.get(`${endpoint}?status=active`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -106,8 +102,7 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('retrieves blockchain applications by partial search', async () => {
+	it('retrieves blockchain applications by partial search', async () => {
 		const response = await api.get(`${endpoint}?search=`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);

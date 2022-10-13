@@ -281,6 +281,19 @@ const getGenerators = async () => {
 	}
 };
 
+const dryRunTransaction = async (transaction) => {
+	try {
+		const apiClient = await getApiClient();
+		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction });
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'dryRunTransaction' with transaction: ${transaction}`);
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	invokeEndpoint,
 	invokeEndpointProxy,
@@ -306,4 +319,5 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	getGenerators,
+	dryRunTransaction,
 };

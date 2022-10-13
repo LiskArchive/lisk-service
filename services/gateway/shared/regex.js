@@ -33,6 +33,7 @@ const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
+const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -55,4 +56,5 @@ module.exports = {
 	TOKEN_ID,
 	BLS_KEY,
 	PROOF_OF_POSSESSION,
+	TRANSACTION,
 };
