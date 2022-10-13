@@ -107,7 +107,7 @@ const {
 
 const { getEvents } = require('./events');
 const { getAuthAccountInfo } = require('./auth');
-const { getValidator } = require('./validator');
+const { getValidator, validateBLSKey } = require('./validator');
 
 module.exports = {
 	getMultisignatureGroups,
@@ -169,6 +169,7 @@ module.exports = {
 	getEventsByHeight,
 	getAuthAccountInfo,
 	getValidator,
+	validateBLSKey,
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,

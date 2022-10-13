@@ -13,19 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getValidator = async params => {
-	const response = await dataService.getValidator(params);
-	return response;
-};
+const { requestConnector } = require('../../../utils/request');
 
 const validateBLSKey = async params => {
-	const response = await dataService.validateBLSKey(params);
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	const { blsKey, proofOfPossession } = params;
+	const { valid } = await requestConnector('validateBLSKey', {
+		blsKey,
+		proofOfPossession,
+	});
+
+	response.data.isValid = valid;
+
 	return response;
 };
 
 module.exports = {
-	getValidator,
 	validateBLSKey,
 };

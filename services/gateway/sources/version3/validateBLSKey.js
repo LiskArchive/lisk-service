@@ -13,19 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getValidator = async params => {
-	const response = await dataService.getValidator(params);
-	return response;
-};
-
-const validateBLSKey = async params => {
-	const response = await dataService.validateBLSKey(params);
-	return response;
-};
-
 module.exports = {
-	getValidator,
-	validateBLSKey,
+	type: 'moleculer',
+	method: 'indexer.validateBLSKey',
+	params: {
+		blsKey: '=,string',
+		proofOfPossession: '=,string',
+	},
+	definition: {
+		data: {
+			isValid: '=,boolean',
+		},
+		meta: {},
+		links: {},
+	},
 };
