@@ -16,19 +16,19 @@
 const { requestConnector } = require('../../../utils/request');
 
 const validateBLSKey = async params => {
-	const { proofOfPossession, blsKey } = params;
+	const { blsKey, proofOfPossession } = params;
 
 	const response = {
 		data: {},
 		meta: {},
 	};
 
-	const { valid: isValid } = await requestConnector('validators_validateBLSKey', {
-		proofOfPossession,
+	const { valid } = await requestConnector('validators_validateBLSKey', {
 		blsKey,
+		proofOfPossession,
 	});
 
-	response.data.isValid = isValid;
+	response.data.isValid = valid;
 
 	return response;
 };

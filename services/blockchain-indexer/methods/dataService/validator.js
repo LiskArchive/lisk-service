@@ -30,8 +30,8 @@ module.exports = [
 		name: 'validateBLSKey',
 		controller: validateBLSKey,
 		params: {
-			proofOfPossession: { optional: false, type: 'string' },
 			blsKey: { optional: false, type: 'string' },
+			proofOfPossession: { optional: false, type: 'string' },
 		},
 	},
 ];
