@@ -49,6 +49,7 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	validateBLSKey,
 } = require('./endpoints');
 
 const {
@@ -113,6 +114,7 @@ module.exports = {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	validateBLSKey,
 
 	getPeers,
 	getConnectedPeers,

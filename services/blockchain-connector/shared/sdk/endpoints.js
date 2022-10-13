@@ -15,6 +15,7 @@
  */
 const {
 	Exceptions: { TimeoutException },
+	Logger,
 } = require('lisk-service-framework');
 
 const {
@@ -27,6 +28,8 @@ const {
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
+
+const logger = Logger();
 
 const getConnectedPeers = async () => {
 	try {
@@ -260,6 +263,20 @@ const getGenerators = async () => {
 	}
 };
 
+const validateBLSKey = async ({ blsKey, proofOfPossession }) => {
+	try {
+		const apiClient = await getApiClient();
+		const response = await apiClient._channel.invoke('validators_validateBLSKey', { blsKey, proofOfPossession });
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			logger.warn(`Request timed out when calling 'validateBLSKey' with:\nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`);
+			throw new TimeoutException('Request timed out when calling \'validateBLSKey\'');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	invokeEndpoint,
 	invokeEndpointProxy,
@@ -285,4 +302,5 @@ module.exports = {
 	postTransaction,
 	dryRunTransaction,
 	getGenerators,
+	validateBLSKey,
 };

@@ -13,19 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getValidator = async params => {
-	const response = await dataService.getValidator(params);
-	return response;
-};
-
-const validateBLSKey = async params => {
-	const response = await dataService.validateBLSKey(params);
-	return response;
-};
+const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
+const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 
 module.exports = {
-	getValidator,
-	validateBLSKey,
+	BLS_KEY,
+	PROOF_OF_POSSESSION,
 };

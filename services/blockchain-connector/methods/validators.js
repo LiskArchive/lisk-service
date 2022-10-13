@@ -13,19 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const { validateBLSKey } = require('../shared/sdk');
+const regex = require('../shared/utils/regex');
 
-const getValidator = async params => {
-	const response = await dataService.getValidator(params);
-	return response;
-};
-
-const validateBLSKey = async params => {
-	const response = await dataService.validateBLSKey(params);
-	return response;
-};
-
-module.exports = {
-	getValidator,
-	validateBLSKey,
-};
+module.exports = [
+	{
+		name: 'validateBLSKey',
+		controller: async ({ blsKey, proofOfPossession }) => validateBLSKey({
+			blsKey,
+			proofOfPossession,
+		}),
+		params: {
+			blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
+			proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
+		},
+	},
+];

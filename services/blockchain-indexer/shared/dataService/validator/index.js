@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getValidator } = require('./validatorInfo');
+const { getValidator, validateBLSKey } = require('./validatorInfo');
 
 module.exports = {
 	getValidator,
+	validateBLSKey,
 };
