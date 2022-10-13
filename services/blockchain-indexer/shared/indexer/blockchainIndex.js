@@ -63,6 +63,7 @@ const blocksIndexSchema = require('../database/schema/blocks');
 const eventsIndexSchema = require('../database/schema/events');
 const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
+const validatorsIndexSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -98,6 +99,12 @@ const getTransactionsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const getValidatorsIndex = () => getTableInstance(
+	validatorsIndexSchema.tableName,
+	validatorsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 // const getGeneratorPkInfoArray = async (blocks) => {
@@ -122,6 +129,8 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 const validateBlock = (block) => !!block && block.height >= 0;
 
 const indexBlock = async job => {
+	let blockReward = BigInt('0');
+
 	const { block } = job.data;
 	const blocksTable = await getBlocksIndex();
 	const events = await getEventsByHeight(block.height);
@@ -163,6 +172,19 @@ const indexBlock = async job => {
 			);
 		}
 
+		// Update producedBlocks count for the block generator
+		const validatorsTable = await getValidatorsIndex();
+		const numRowsAffected = await validatorsTable.increment({
+			increment: { producedBlocks: 1 },
+			where: { address: block.generatorAddress },
+		}, dbTrx);
+		if (numRowsAffected === 0) {
+			await validatorsTable.upsert({
+				address: block.generatorAddress,
+				producedBlocks: 1,
+			}, dbTrx);
+		}
+
 		if (events.length) {
 			const eventsDB = await getEventsIndex();
 			const eventTopicsDB = await getEventTopicsIndex();
@@ -170,18 +192,28 @@ const indexBlock = async job => {
 			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
 			await eventsDB.upsert(eventsInfo, dbTrx);
 			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
+
+			// Update the generator's rewards
+			// TODO: Create constants
+			const blockRewardEvent = events.find(e => e.module === 'reward' && e.name === 'Reward Minted Data');
+			if (blockRewardEvent) {
+				blockReward = BigInt(blockRewardEvent.data.amount || '0');
+				await validatorsTable.increment({
+					increment: { rewards: blockReward },
+					where: { address: block.generatorAddress },
+				}, dbTrx);
+			}
 		}
 
 		if (block.generatorAddress) {
 			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
 		}
 
-		// TODO: Fetch reward from events
 		const blockToIndex = {
 			...block,
 			assetsModules: block.assets.map(asset => asset.module),
 			numberOfEvents: events.length,
-			reward: BigInt('0'),
+			reward: blockReward,
 		};
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
