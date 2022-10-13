@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/schemas',
 	rpcMethod: 'get.schemas',
-	tags: ['Transactions'],
+	tags: ['Schemas'],
 	params: {},
 	get schema() {
 		const schemas = {};
