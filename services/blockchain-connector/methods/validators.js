@@ -19,10 +19,12 @@ const regex = require('../shared/utils/regex');
 module.exports = [
 	{
 		name: 'validateBLSKey',
-		controller: async ({ blsKey, proofOfPossession }) => validateBLSKey({ blsKey, proofOfPossession }),
+		controller: async ({ blsKey, proofOfPossession }) => validateBLSKey({
+			blsKey,
+			proofOfPossession }),
 		params: {
-            blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
-            proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
+			blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
+			proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
 		},
 	},
 ];
