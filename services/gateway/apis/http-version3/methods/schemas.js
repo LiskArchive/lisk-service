@@ -15,7 +15,7 @@
  */
 const SchemasSource = require('../../../sources/version3/schemas');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { getSwaggerDescription } = require('../../../shared/utils');
+const { getSwaggerDescription, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -39,10 +39,8 @@ module.exports = {
 					$ref: '#/definitions/schemaWithEnvelope',
 				},
 			},
-			404: {
-				$ref: '#/responses/notFound',
-			},
 		};
+		Object.assign(schemas[this.swaggerApiPath].get.responses, response);
 		return schemas;
 	},
 	source: SchemasSource,

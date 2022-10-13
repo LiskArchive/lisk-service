@@ -57,10 +57,7 @@ const getAllSchemas = async () => {
 		});
 
 		allSchemas = {};
-		Object.keys(schemas.schemas).forEach(schema => {
-			allSchemas[schema] = {};
-			allSchemas[schema].schema = schemas.schemas[schema];
-		});
+		Object.entries(schemas.schemas).forEach(([entity, schema]) => allSchemas[entity] = { schema });
 
 		Object.assign(allSchemas, {
 			assets: assetsSchemas,

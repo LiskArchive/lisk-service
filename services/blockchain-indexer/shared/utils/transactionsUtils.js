@@ -35,7 +35,7 @@ const getTxnParamsSchema = async (trx) => {
 	const moduleCommand = `${trx.module}:${trx.command}`;
 	const schemas = await getSchemas();
 	const [schema = {}] = schemas.data.commands
-		.ilter(command => command.moduleCommand === moduleCommand);
+		.filter(command => command.moduleCommand === moduleCommand);
 	return schema;
 };
 

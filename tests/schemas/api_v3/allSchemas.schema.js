@@ -21,8 +21,9 @@ const schema = {
 	$id: Joi.string().required(),
 	title: Joi.string().optional(),
 	type: Joi.string().required(),
-	required: Joi.array().required(),
-	properties: Joi.object().required(),
+	required: Joi.array().items(Joi.string().pattern(regex.MODULE).required()).required(),
+	properties: Joi.object().optional(),
+	items: Joi.array().items(Joi.object().required()).optional(),
 };
 
 const commandsParamsSchemasSchema = {
