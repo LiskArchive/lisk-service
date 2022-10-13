@@ -294,6 +294,19 @@ const dryRunTransaction = async (transaction) => {
 	}
 };
 
+const validateBLSKey = async ({ blsKey, proofOfPossession }) => {
+	try {
+		const apiClient = await getApiClient();
+		const response = await apiClient._channel.invoke('validators_validateBLSKey', { blsKey, proofOfPossession });
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'validators_validateBLSKey' with \nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`);
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	invokeEndpoint,
 	invokeEndpointProxy,
@@ -320,4 +333,5 @@ module.exports = {
 	postTransaction,
 	getGenerators,
 	dryRunTransaction,
+	validateBLSKey,
 };

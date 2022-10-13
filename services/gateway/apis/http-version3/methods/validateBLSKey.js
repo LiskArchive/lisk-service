@@ -25,8 +25,8 @@ module.exports = {
 	rpcMethod: 'post.validator.validateBLSKey',
 	tags: ['Validator'],
 	params: {
-		proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
 		blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
+		proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
 	},
 	get schema() {
 		const validateBLSKeySchema = {};

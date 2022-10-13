@@ -18,6 +18,8 @@ const {
 	validateBLSKey,
 } = require('./controllers/validator');
 
+const regex = require('../../shared/regex');
+
 module.exports = [
 	{
 		name: 'validator',
@@ -30,8 +32,8 @@ module.exports = [
 		name: 'validateBLSKey',
 		controller: validateBLSKey,
 		params: {
-			blsKey: { optional: false, type: 'string' },
-			proofOfPossession: { optional: false, type: 'string' },
+			blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
+			proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
 		},
 	},
 ];

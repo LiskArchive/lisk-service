@@ -3,7 +3,8 @@
         "name": "body",
         "in": "body",
         "required": true,
-        "description": "The request body must contain two properties:\n- blsKey (required): The BLS key.\n- proofOfPossession (required): The Proof of Possession corresponding to the BLS key.",        "schema": {
+        "description": "The request body must contain two properties:\n- blsKey (required): The BLS key.\n- proofOfPossession (required): The Proof of Possession corresponding to the BLS key.",
+        "schema": {
             "$ref": "#/definitions/blsKeyValidationParamEnvelope"
         }
     }
