@@ -33,11 +33,9 @@ const decodeTransaction = (transaction) => {
 	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
 	const transactionSize = transactionBuffer.length;
 
-	// TODO: Fix after SDK fixes the schema for token transfer transaction
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const transactionParams = transaction.module !== 'token' && transaction.command !== 'transfer'
-		? codec.decode(txParamsSchema, transaction.params)
-		: transaction.params;
+	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	// TODO: Verify if 'computeMinFee' returns correct value
 	const transactionMinFee = computeMinFee(schemaCompliantTransaction, txParamsSchema);
 
 	const decodedTransaction = {
