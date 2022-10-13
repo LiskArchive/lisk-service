@@ -41,8 +41,13 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 const getTokenMetadataByID = async (tokenID) => {
 	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
 
-	const chainID = tokenID.slice(0, 8);
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, tokenID });
+	const { chainID } = await requestConnector('getNetworkStatus');
+	const [{ name: network } = ''] = config.networks.filter(item => item.chainID === chainID);
+	
+	const params = { chainID, tokenID };
+	if(network) params.network = network;
+
+	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', params);
 	return tokenMetadata;
 };
 
@@ -133,43 +138,57 @@ const getTopLiskAddresses = async (params) => {
 	return topLiskAddresses;
 };
 
-const getSupportedTokens = async (params) => {
-	const supportedTokensList = {
-		data: {
-			supportedTokens: [],
-		},
-		meta: {},
-	};
-
-	const response = await requestConnector('token_getSupportedTokens');
-
-	supportedTokensList.data.supportedTokens = await BluebirdPromise.map(
-		response.tokenIDs,
-		async (tokenID) => {
+const populateInfo = async (items) => {
+	const response = await BluebirdPromise.map(
+		items,
+		async (item) => {
+			const { tokenID } = item;
 			const tokenMetadataResponse = await getTokenMetadataByID(tokenID);
 			const [tokenMetadata = {}] = tokenMetadataResponse.data || [];
 
 			return {
-				tokenID,
-				symbol: tokenMetadata.symbol,
+				...item,
 				name: tokenMetadata.tokenName,
+				symbol: tokenMetadata.symbol,
 			};
 		},
-		{ concurrency: response.tokenIDs.length },
+		{ concurrency: items.length },
 	);
 
-	const total = supportedTokensList.data.supportedTokens.length;
-	supportedTokensList.data.supportedTokens = supportedTokensList.data.supportedTokens
-		.slice(params.offset, params.offset + params.limit);
+	return response;
+};
 
-	supportedTokensList.meta = {
-		count: supportedTokensList.data.supportedTokens.length,
-		offset: params.offset,
-		total,
+const fetchInfoFromConnector = async (endpoint, offset, limit) => {
+	const response = await requestConnector(endpoint);
+	const [ arrayName ] = Object.keys(response);
+
+	return response[arrayName].slice(offset, offset + limit);
+}
+
+const getSupportedTokens = async (params) => {
+	const summary = {
+		data: {
+		},
+		meta: {},
 	};
 
-	return supportedTokensList;
-};
+	const escrowedAmount = await fetchInfoFromConnector('token_getEscrowedAmounts', params.offset, params.limit);
+	const supportedTokens = await fetchInfoFromConnector('token_getSupportedTokens', params.offset, params.limit);
+	const totalSupply = await fetchInfoFromConnector('token_getTotalSupply', params.offset, params.limit);  
+
+	const escrowedAmountResponse = await populateInfo(escrowedAmount);
+	const supportedTokensResponse = await populateInfo(supportedTokens);
+	const totalSupplyResponse = await populateInfo(totalSupply);
+
+	summary.data = {
+		...summary.data,
+		escrowedAmount: escrowedAmountResponse,
+		supportedTokens: supportedTokensResponse,
+		totalSupply: totalSupplyResponse,
+	}
+
+	return summary;
+}
 
 module.exports = {
 	getTokens,
