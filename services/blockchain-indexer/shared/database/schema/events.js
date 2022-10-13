@@ -22,7 +22,7 @@ module.exports = {
 		module: { type: 'string' },
 		height: { type: 'integer' },
 		index: { type: 'integer' },
-		event: { type: 'text' },
+		eventStr: { type: 'text' },
 	},
 	indexes: {},
 	purge: {},

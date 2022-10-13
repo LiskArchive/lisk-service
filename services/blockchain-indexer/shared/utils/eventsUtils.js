@@ -13,78 +13,38 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-const { codec } = require('@liskhq/lisk-codec');
-
-const { requestConnector } = require('./request');
-
-let eventSchema;
-
-const decodeEvent = async (event) => {
-	if (!eventSchema) {
-		const schemas = await requestConnector('getSchema');
-		eventSchema = schemas.event;
-	}
-	const decodedEvent = codec.decode(eventSchema, Buffer.from(event, 'hex'));
-	return decodedEvent;
-};
-
-const encodeEvent = async (event) => {
-	if (!eventSchema) {
-		const schemas = await requestConnector('getSchema');
-		eventSchema = schemas.event;
-	}
-
-	const schemaCompliantEvent = {
-		...event,
-		data: Buffer.from(event.data, 'utf8'),
-		topics: event.topics.map(t => Buffer.from(t, 'utf8')),
-	};
-
-	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);
-	return encodedEvent;
-};
-
 const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
 		eventsInfo: [],
 		eventTopicsInfo: [],
 	};
 
-	await BluebirdPromise.map(
-		events,
-		async (event) => {
-			const encodedEvent = (await encodeEvent(event)).toString('hex');
+	events.forEach((event) => {
+		const eventInfo = {
+			id: event.id,
+			name: event.name,
+			module: event.module,
+			height: block.height,
+			index: event.index,
+			eventStr: JSON.stringify(event),
+		};
+		eventsInfoToIndex.eventsInfo.push(eventInfo);
 
-			const eventInfo = {
+		event.topics.forEach(topic => {
+			const eventTopicInfo = {
+				tempID: event.id.concat(topic),
 				id: event.id,
-				name: event.name,
-				module: event.module,
 				height: block.height,
-				index: event.index,
-				event: encodedEvent,
+				timestamp: block.timestamp,
+				topic,
 			};
-
-			eventsInfoToIndex.eventsInfo.push(eventInfo);
-
-			event.topics.forEach(topic => {
-				eventsInfoToIndex.eventTopicsInfo.push({
-					tempID: event.id.concat(topic),
-					id: event.id,
-					height: block.height,
-					timestamp: block.timestamp,
-					topic,
-				});
-			});
-		},
-		{ concurrency: events.length },
-	);
+			eventsInfoToIndex.eventTopicsInfo.push(eventTopicInfo);
+		});
+	});
 
 	return eventsInfoToIndex;
 };
 
 module.exports = {
-	decodeEvent,
-	encodeEvent,
 	getEventsInfoToIndex,
 };

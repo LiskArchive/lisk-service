@@ -28,7 +28,6 @@ const blocksIndexSchema = require('../../database/schema/blocks');
 const eventsIndexSchema = require('../../database/schema/events');
 const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
 
-const { decodeEvent } = require('../../utils/eventsUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -51,20 +50,9 @@ const getEventTopicsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-let registeredModules;
-
 const getEventsByHeight = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
-};
-
-const getModuleNameByID = async (moduleID) => {
-	if (!registeredModules) {
-		const response = await requestConnector('getSystemMetadata');
-		registeredModules = response.modules;
-	}
-	const filteredModule = registeredModules.map(module => module.id === moduleID);
-	return filteredModule.name;
 };
 
 const getEvents = async (params) => {
@@ -131,27 +119,18 @@ const getEvents = async (params) => {
 	const eventIDs = response.map(entry => entry.id);
 	const eventsInfo = await eventsDB.find(
 		{ whereIn: { property: 'id', values: eventIDs } },
-		['event', 'height'],
+		['eventStr', 'height'],
 	);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
-		async (eventInfo) => {
-			const decodedEvent = await decodeEvent(eventInfo.event);
-			decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
-
-			const [blockInfo] = await blocksTable.find(
-				{ height: eventInfo.height },
-				['id', 'timestamp'],
-			);
+		async ({ eventStr, height }) => {
+			const event = JSON.parse(eventStr);
+			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
 
 			return parseToJSONCompatObj({
-				...decodedEvent,
-				block: {
-					id: blockInfo.id,
-					height: eventInfo.height,
-					timestamp: blockInfo.timestamp,
-				},
+				...event,
+				block: { id, height, timestamp },
 			});
 		},
 		{ concurrency: eventsInfo.length },

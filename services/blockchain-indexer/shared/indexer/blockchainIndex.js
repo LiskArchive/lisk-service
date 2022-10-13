@@ -128,6 +128,15 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
+const getTransactionExecutionStatus = (tx, events) => {
+	// TODO: Update implementation with next SDK release and return with constants from SDK
+	// const expectedEventName = `${transaction.module}commandExecutionResult`;
+	const expectedEventName = `${tx.module}:transaction`;
+	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
+	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
+	return txExecResultEvent.data === '0801' ? 'success' : 'fail';
+};
+
 const indexBlock = async job => {
 	let blockReward = BigInt('0');
 
@@ -156,6 +165,7 @@ const indexBlock = async job => {
 					tx.height = block.height;
 					tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
+					tx.executionStatus = getTransactionExecutionStatus(tx, events);
 
 					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
 
