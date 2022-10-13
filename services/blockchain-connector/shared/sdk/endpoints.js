@@ -300,8 +300,10 @@ const validateBLSKey = async ({ blsKey, proofOfPossession }) => {
 		const response = await apiClient._channel.invoke('validators_validateBLSKey', { blsKey, proofOfPossession });
 		return response;
 	} catch (err) {
+		logger.warn(`Request timed out when calling 'validators_validateBLSKey' with \nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`);
+
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'validators_validateBLSKey' with \nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`);
+			throw new TimeoutException('Request timed out when calling \'validateBLSKey\'.');
 		}
 		throw err;
 	}
