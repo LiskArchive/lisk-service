@@ -38,6 +38,12 @@ const getTransactionParamsSchema = (transaction) => {
 
 const setMetadata = (_metadata) => metadata = _metadata;
 
+const getBlockAssetDataSchemaByModule = (module) => {
+	const moduleMetadata = metadata.modules.find(m => m.name === module);
+	const [{ data: schema } = {}] = moduleMetadata.assets;
+	return schema;
+};
+
 const getDataSchemaByEventName = (eventName) => {
 	// TODO: Optimize
 	for (let i = 0; i < metadata.modules.length; i++) {
@@ -60,6 +66,7 @@ module.exports = {
 	getBlockSchema,
 	getBlockHeaderSchema,
 	getBlockAssetSchema,
+	getBlockAssetDataSchemaByModule,
 	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,

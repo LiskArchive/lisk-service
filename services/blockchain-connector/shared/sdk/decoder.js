@@ -19,9 +19,7 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const {
-	getBlockSchema,
-	getBlockHeaderSchema,
-	getBlockAssetSchema,
+	getBlockAssetDataSchemaByModule,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 	getDataSchemaByEventName,
@@ -34,7 +32,6 @@ const decodeTransaction = (transaction) => {
 	const txSchema = getTransactionSchema();
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
 	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
-	const transactionID = hash(transactionBuffer);
 	const transactionSize = transactionBuffer.length;
 
 	// TODO: Fix after SDK fixes the schema for token transfer transaction
@@ -47,28 +44,30 @@ const decodeTransaction = (transaction) => {
 		...transaction,
 		params: transactionParams,
 		size: transactionSize,
-		id: transactionID,
 	};
 
 	return parseToJSONCompatObj(decodedTransaction);
 };
 
-const decodeBlock = (encodedBlock) => {
-	const blockSchema = getBlockSchema();
-	const blockBuffer = Buffer.isBuffer(encodedBlock)
-		? encodedBlock
-		: Buffer.from(encodedBlock, 'hex');
-	const block = codec.decode(blockSchema, blockBuffer);
+const decodeBlock = (block) => {
+	const blockHeader = block.header;
 
-	const blockHeaderSchema = getBlockHeaderSchema();
-	const blockHeader = codec.decode(blockHeaderSchema, block.header);
-	blockHeader.id = hash(block.header);
+	const blockAssets = block.assets.map(asset => {
+		const assetModule = asset.module;
+		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
+		// TODO: Can be made schema compliant dynamically
+		const decodedAssetData = blockAssetDataSchema
+			? codec.decode(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+			: asset.data;
 
-	const blockAssetSchema = getBlockAssetSchema();
-	// TODO: Decode 'asset.data' once schema for data is available
-	const blockAssets = block.assets.map(asset => codec.decode(blockAssetSchema, asset));
+		const decodedBlockAsset = {
+			module: assetModule,
+			data: decodedAssetData,
+		};
+		return decodedBlockAsset;
+	});
 
-	const blockTransactions = block.transactions.map(tx => decodeTransaction(tx));
+	const blockTransactions = block.transactions.map(t => decodeTransaction(t));
 
 	const decodedBlock = {
 		header: blockHeader,
