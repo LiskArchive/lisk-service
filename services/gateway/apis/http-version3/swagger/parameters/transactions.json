@@ -22,5 +22,29 @@
         "type": "string",
         "minLength": 3,
         "maxLength": 41
+    },
+    "senderAddress": {
+        "name": "senderAddress",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 41
+    },
+    "transactionID": {
+        "name": "transactionID",
+        "in": "query",
+        "description": "Transaction ID to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 64
+    },
+    "nonce": {
+        "name": "nonce",
+        "in": "query",
+        "description": "Query by nonce",
+        "type": "string",
+        "minLength": 1
     }
 }

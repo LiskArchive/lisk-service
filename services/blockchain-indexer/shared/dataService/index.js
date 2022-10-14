@@ -84,7 +84,6 @@ const {
 	getPendingTransactions,
 	reloadAllPendingTransactions,
 	postTransactions,
-	getCommandsParamsSchemas,
 	getTransactionsByBlockID,
 	dryRunTransactions,
 } = require('./transactions');
@@ -108,6 +107,7 @@ const {
 const { getEvents } = require('./events');
 const { getAuthAccountInfo } = require('./auth');
 const { getValidator, validateBLSKey } = require('./validator');
+const { getSchemas } = require('./schemas');
 
 module.exports = {
 	getMultisignatureGroups,
@@ -158,7 +158,7 @@ module.exports = {
 	getPendingTransactions,
 	reloadAllPendingTransactions,
 	postTransactions,
-	getCommandsParamsSchemas,
+	getSchemas,
 	getTransactionsByBlockID,
 	dryRunTransactions,
 	getVotesReceived,
