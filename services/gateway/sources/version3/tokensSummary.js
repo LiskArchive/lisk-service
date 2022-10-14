@@ -15,20 +15,18 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.tokens.supported',
+	method: 'indexer.tokens.summary',
 	params: {
 		offset: '=,number',
 		limit: '=,number',
 	},
 	definition: {
 		data: {
+			escrowedAmount: '=',
 			supportedTokens: '=',
+			totalSupply: '=',
 		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
+		meta: {},
 		links: {},
 	},
 };

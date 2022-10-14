@@ -165,7 +165,7 @@ const fetchInfoFromConnector = async (endpoint, offset, limit) => {
 	return response[arrayName].slice(offset, offset + limit);
 }
 
-const getSupportedTokens = async (params) => {
+const getTokensSummary = async (params) => {
 	const summary = {
 		data: {
 		},
@@ -193,5 +193,5 @@ const getSupportedTokens = async (params) => {
 module.exports = {
 	getTokens,
 	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 };

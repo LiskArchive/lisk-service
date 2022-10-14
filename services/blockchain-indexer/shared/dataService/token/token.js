@@ -19,10 +19,10 @@ const getTokens = async (params) => dataService.getTokens(params);
 
 const getTopLiskAddresses = async (params) => dataService.getTopLiskAddresses(params);
 
-const getSupportedTokens = async (params) => dataService.getSupportedTokens(params);
+const getTokensSummary = async (params) => dataService.getTokensSummary(params);
 
 module.exports = {
 	getTokens,
 	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 };
