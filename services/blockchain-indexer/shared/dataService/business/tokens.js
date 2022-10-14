@@ -43,9 +43,9 @@ const getTokenMetadataByID = async (tokenID) => {
 
 	const { chainID } = await requestConnector('getNetworkStatus');
 	const [{ name: network } = ''] = config.networks.filter(item => item.chainID === chainID);
-	
+
 	const params = { chainID, tokenID };
-	if(network) params.network = network;
+	if (network) params.network = network;
 
 	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', params);
 	return tokenMetadata;
@@ -160,10 +160,10 @@ const populateInfo = async (items) => {
 
 const fetchInfoFromConnector = async (endpoint, offset, limit) => {
 	const response = await requestConnector(endpoint);
-	const [ arrayName ] = Object.keys(response);
+	const [arrayName] = Object.keys(response);
 
 	return response[arrayName].slice(offset, offset + limit);
-}
+};
 
 const getTokensSummary = async (params) => {
 	const summary = {
@@ -174,7 +174,7 @@ const getTokensSummary = async (params) => {
 
 	const escrowedAmount = await fetchInfoFromConnector('token_getEscrowedAmounts', params.offset, params.limit);
 	const supportedTokens = await fetchInfoFromConnector('token_getSupportedTokens', params.offset, params.limit);
-	const totalSupply = await fetchInfoFromConnector('token_getTotalSupply', params.offset, params.limit);  
+	const totalSupply = await fetchInfoFromConnector('token_getTotalSupply', params.offset, params.limit);
 
 	const escrowedAmountResponse = await populateInfo(escrowedAmount);
 	const supportedTokensResponse = await populateInfo(supportedTokens);
@@ -182,13 +182,13 @@ const getTokensSummary = async (params) => {
 
 	summary.data = {
 		...summary.data,
-		escrowedAmount: escrowedAmountResponse,
+		escrowedAmounts: escrowedAmountResponse,
 		supportedTokens: supportedTokensResponse,
 		totalSupply: totalSupplyResponse,
-	}
+	};
 
 	return summary;
-}
+};
 
 module.exports = {
 	getTokens,

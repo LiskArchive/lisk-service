@@ -13,19 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenSummary = require('./mappings/tokenSummary');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.tokens.summary',
-	params: {
-		offset: '=,number',
-		limit: '=,number',
-	},
-	definition: {
-		data: 'data',
-		tokenSummary,
-		meta: {},
-		links: {},
-	},
+	escrowedAmounts: ['escrowedAmounts', {
+		escrowChainID: '=,string',
+		tokenID: '=,string',
+		amount: '=,string',
+		name: '=,string',
+		symbol: '=,string',
+	}],
+	supportedTokens: ['supportedTokens', {
+		tokenID: '=,string',
+		name: '=,string',
+		symbol: '=,string',
+	}],
+	totalSupply: ['totalSupply', {
+		tokenID: '=,string',
+		amount: '=,string',
+		name: '=,string',
+		symbol: '=,string',
+
+	}],
 };
