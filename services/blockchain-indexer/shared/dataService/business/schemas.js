@@ -33,25 +33,28 @@ const getAllSchemas = async () => {
 
 		schemas.systemMetadata.modules.forEach(module => {
 			module.events.forEach(event => {
-				const formattedEvents = {};
-				formattedEvents.module = module.name;
-				formattedEvents.name = event.name;
-				formattedEvents.schema = event.data;
+				const formattedEvents = {
+					module: module.name,
+					name: event.name,
+					schema: event.data,
+				};
 				eventsSchemas.push(formattedEvents);
 			});
 
 			module.assets.forEach(asset => {
-				const formattedAssets = {};
-				formattedAssets.module = module.name;
-				formattedAssets.version = asset.version;
-				formattedAssets.schema = asset.data;
+				const formattedAssets = {
+					module: module.name,
+					version: asset.version,
+					schema: asset.data,
+				};
 				assetsSchemas.push(formattedAssets);
 			});
 
 			module.commands.forEach(command => {
-				const formattedTxParams = {};
-				formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
-				formattedTxParams.schema = command.params;
+				const formattedTxParams = {
+					moduleCommand: String(module.name).concat(':').concat(command.name),
+					schema: command.params,
+				};
 				commandsParamsSchemas.push(formattedTxParams);
 			});
 		});

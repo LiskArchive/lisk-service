@@ -26,8 +26,8 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV2}/schemas`;
+const baseUrlV3 = `${baseUrl}/api/v3`;
+const endpoint = `${baseUrlV3}/schemas`;
 
 describe('Schemas API', () => {
 	it('returns list of all available schemas', async () => {

@@ -123,19 +123,6 @@ const postTransactions = async params => {
 	}
 };
 
-const getSchemas = async () => {
-	const schemas = {
-		data: {},
-		meta: {},
-	};
-
-	const response = await dataService.getSchemas();
-	if (response.data) schemas.data = response.data;
-	if (response.meta) schemas.meta = response.meta;
-
-	return schemas;
-};
-
 const initPendingTransactionsList = () => dataService.loadAllPendingTransactions();
 
 const reload = () => dataService.loadAllPendingTransactions();
@@ -151,7 +138,6 @@ module.exports = {
 	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
 	postTransactions,
-	getSchemas,
 	getTransactionsByBlockID: dataService.getTransactionsByBlockID,
 	dryRunTransactions,
 };
