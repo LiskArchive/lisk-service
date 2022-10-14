@@ -35,7 +35,7 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
 				logger.info('File downloaded and extracted successfully.');
-				setTimeout(resolve, 1); // Since the promise resolves earlier than expected
+				setTimeout(resolve, 100); // Since the promise resolves earlier than expected
 			});
 		} else {
 			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage}).`;
