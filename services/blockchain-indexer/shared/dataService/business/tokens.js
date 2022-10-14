@@ -42,7 +42,7 @@ const getTokenMetadataByID = async (tokenID) => {
 	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
 
 	const { chainID } = await requestConnector('getNetworkStatus');
-	const [{ name: network } = ''] = config.networks.filter(item => item.chainID === chainID);
+	const [{ name: network } = {}] = config.networks.filter(item => item.chainID === chainID);
 
 	const params = { chainID, tokenID };
 	if (network) params.network = network;
