@@ -33,17 +33,17 @@ const logger = Logger();
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
-	logger.info(`Downloading and extracting file from ${url} to ${directoryPath}`);
+	logger.info(`Downloading and extracting file from ${url} to ${directoryPath}.`);
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
 			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
-				logger.info('File downloaded successfully');
+				logger.info('File downloaded successfully.');
 				resolve();
 			});
 		} else {
-			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
+			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage}).`;
 			logger.error(errMessage);
 			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
 			reject(new Error(errMessage));
