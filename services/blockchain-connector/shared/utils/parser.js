@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
+
 const parseToJSONCompatObj = obj => {
 	if (typeof obj === 'boolean' || !obj) return obj;
 
@@ -38,7 +40,10 @@ const parseInputBySchema = (input, schema) => {
 	if (typeof input !== 'object') {
 		if (schemaDataType === 'string') return String(input);
 		if (schemaDataType === 'boolean') return Boolean(input);
-		if (schemaDataType === 'bytes') return Buffer.from(input, 'hex');
+		if (schemaDataType === 'bytes') {
+			if (schema.format === 'lisk32') { return getAddressFromLisk32Address(input); }
+			return Buffer.from(input, 'hex');
+		}
 		if (schemaDataType === 'uint32' || schemaDataType === 'sint32') return Number(input);
 		if (schemaDataType === 'uint64' || schemaDataType === 'sint64') return BigInt(input);
 		return input;

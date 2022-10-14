@@ -14,63 +14,85 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
-const {
-	utils: { hash },
-} = require('@liskhq/lisk-cryptography');
+const { utils: { hash } } = require('@liskhq/lisk-cryptography');
+const { computeMinFee } = require('@liskhq/lisk-transactions');
 
 const {
-	getBlockSchema,
-	getBlockHeaderSchema,
-	getBlockAssetSchema,
+	getBlockAssetDataSchemaByModule,
 	getTransactionSchema,
 	getTransactionParamsSchema,
+	getDataSchemaByEventName,
+	getEventSchema,
 } = require('./schema');
 
-const { parseToJSONCompatObj } = require('../utils/parser');
+const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 
-const decodeTransaction = (encodedTransaction) => {
+const decodeTransaction = (transaction) => {
 	const txSchema = getTransactionSchema();
-	const transactionBuffer = Buffer.isBuffer(encodedTransaction)
-		? encodedTransaction
-		: Buffer.from(encodedTransaction, 'hex');
-	const transaction = codec.decode(txSchema, transactionBuffer);
-	transaction.id = hash(transactionBuffer);
-	transaction.size = transactionBuffer.length;
+	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
+	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
+	const transactionSize = transactionBuffer.length;
 
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const transactionParams = codec.decode(txParamsSchema, transaction.params);
+	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	// TODO: Verify if 'computeMinFee' returns correct value
+	const transactionMinFee = computeMinFee(schemaCompliantTransaction, txParamsSchema);
 
 	const decodedTransaction = {
 		...transaction,
 		params: transactionParams,
+		size: transactionSize,
+		minFee: transactionMinFee,
 	};
 
-	return decodedTransaction;
+	return parseToJSONCompatObj(decodedTransaction);
 };
 
-const decodeBlock = (encodedBlock) => {
-	const blockSchema = getBlockSchema();
-	const blockBuffer = Buffer.isBuffer(encodedBlock)
-		? encodedBlock
-		: Buffer.from(encodedBlock, 'hex');
-	const block = codec.decode(blockSchema, blockBuffer);
+const decodeBlock = (block) => {
+	const blockHeader = block.header;
 
-	const blockHeaderSchema = getBlockHeaderSchema();
-	const blockHeader = codec.decode(blockHeaderSchema, block.header);
-	blockHeader.id = hash(block.header);
+	const blockAssets = block.assets.map(asset => {
+		const assetModule = asset.module;
+		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
+		// TODO: Can be made schema compliant dynamically
+		const decodedAssetData = blockAssetDataSchema
+			? codec.decode(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+			: asset.data;
 
-	const blockAssetSchema = getBlockAssetSchema();
-	// TODO: Decode 'asset.data' once schema for data is available
-	const blockAssets = block.assets.map(asset => codec.decode(blockAssetSchema, asset));
+		const decodedBlockAsset = {
+			module: assetModule,
+			data: decodedAssetData,
+		};
+		return decodedBlockAsset;
+	});
 
-	const blockTransactions = block.transactions.map(tx => decodeTransaction(tx));
+	const blockTransactions = block.transactions.map(t => decodeTransaction(t));
 
 	const decodedBlock = {
 		header: blockHeader,
 		assets: blockAssets,
 		transactions: blockTransactions,
 	};
-	return decodedBlock;
+	return parseToJSONCompatObj(decodedBlock);
+};
+
+const decodeEvent = (event) => {
+	const eventSchema = getEventSchema();
+	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
+	const eventBuffer = codec.encode(eventSchema, schemaCompliantEvent);
+	const eventID = hash(eventBuffer);
+
+	const eventDataSchema = getDataSchemaByEventName(event.name);
+	const eventData = eventDataSchema
+		? codec.decode(eventDataSchema, Buffer.from(event.data, 'hex'))
+		: event.data;
+
+	const decodedEvent = {
+		...event,
+		data: eventData,
+		id: eventID,
+	};
+	return parseToJSONCompatObj(decodedEvent);
 };
 
 const decodeResponse = (endpoint, response) => {
@@ -114,16 +136,10 @@ const decodeAPIClientEventPayload = (eventName, payload) => {
 	return payload;
 };
 
-const decodeEvent = async (encodedEvent, schema) => {
-	const decodedEvent = await codec.decode(schema, Buffer.from(encodedEvent, 'hex'));
-
-	return parseToJSONCompatObj(decodedEvent);
-};
-
 module.exports = {
 	decodeBlock,
 	decodeTransaction,
+	decodeEvent,
 	decodeResponse,
 	decodeAPIClientEventPayload,
-	decodeEvent,
 };

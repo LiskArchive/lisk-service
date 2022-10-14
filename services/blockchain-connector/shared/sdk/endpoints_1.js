@@ -21,6 +21,7 @@ const timeoutMessage = 'Response not received in';
 
 // Caching for constants from SDK application
 let metadata;
+let nodeInfo;
 let schema;
 let registeredActions;
 let registeredEvents;
@@ -82,9 +83,11 @@ const getRegisteredModules = async () => {
 	}
 };
 
-const getNodeInfo = async () => {
+const getNodeInfo = async (isForceUpdate = false) => {
 	try {
-		const nodeInfo = await invokeEndpoint('system_getNodeInfo');
+		if (isForceUpdate || !nodeInfo) {
+			nodeInfo = await invokeEndpoint('system_getNodeInfo');
+		}
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

@@ -19,7 +19,7 @@ const {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-} = require('../shared/sdk/endpoints');
+} = require('../shared/sdk');
 
 module.exports = [
 	{

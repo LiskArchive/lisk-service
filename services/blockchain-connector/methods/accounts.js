@@ -13,24 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/endpoints');
 const { getNumberOfGenesisAccounts, getGenesisAccounts } = require('../shared/sdk/genesisBlock');
 
 module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'string' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'array', items: 'string' },
-		},
-	},
 	{
 		name: 'getNumberOfGenesisAccounts',
 		controller: getNumberOfGenesisAccounts,

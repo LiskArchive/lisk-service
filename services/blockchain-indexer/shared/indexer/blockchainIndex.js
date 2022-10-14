@@ -34,7 +34,7 @@ const {
 	getBlockByHeight,
 	getTransactionIDsByBlockID,
 	getTransactions,
-	// getEventsByHeight,
+	getEventsByHeight,
 } = require('../dataService');
 
 const {
@@ -44,7 +44,7 @@ const {
 const { getLisk32AddressFromPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
 
-// const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
 const { updateAddressBalanceQueue } = require('./tokenIndex');
 
@@ -60,9 +60,10 @@ const keyValueDB = require('../database/mysqlKVStore');
 
 const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
-// const eventsIndexSchema = require('../database/schema/events');
-// const eventTopicsIndexSchema = require('../database/schema/eventTopics');
+const eventsIndexSchema = require('../database/schema/events');
+const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
+const validatorsIndexSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -79,19 +80,28 @@ const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema,
 	MYSQL_ENDPOINT,
 );
-// const getEventsIndex = () => getTableInstance(
-// 	eventsIndexSchema.tableName,
-// 	eventsIndexSchema,
-// 	MYSQL_ENDPOINT,
-// );
-// const getEventTopicsIndex = () => getTableInstance(
-// 	eventTopicsIndexSchema.tableName,
-// 	eventTopicsIndexSchema,
-// 	MYSQL_ENDPOINT,
-// );
+
+const getEventsIndex = () => getTableInstance(
+	eventsIndexSchema.tableName,
+	eventsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getEventTopicsIndex = () => getTableInstance(
+	eventTopicsIndexSchema.tableName,
+	eventTopicsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getValidatorsIndex = () => getTableInstance(
+	validatorsIndexSchema.tableName,
+	validatorsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -118,10 +128,21 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
+const getTransactionExecutionStatus = (tx, events) => {
+	// TODO: Update implementation with next SDK release and return with constants from SDK
+	// const expectedEventName = `${tx.module}:commandExecutionResult`;
+	const expectedEventName = `${tx.module}:transaction`;
+	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
+	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
+	return txExecResultEvent.data === '0801' ? 'success' : 'fail';
+};
+
 const indexBlock = async job => {
+	let blockReward = BigInt('0');
+
 	const { block } = job.data;
 	const blocksTable = await getBlocksIndex();
-	// const events = await getEventsByHeight(height);
+	const events = await getEventsByHeight(block.height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block ${block.id} at height ${block.height} }`);
 
@@ -144,6 +165,7 @@ const indexBlock = async job => {
 					tx.height = block.height;
 					tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
+					tx.executionStatus = getTransactionExecutionStatus(tx, events);
 
 					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
 
@@ -160,27 +182,48 @@ const indexBlock = async job => {
 			);
 		}
 
-		// TODO: Enable events indexing logic when chain_getEvents is available
-		// if (events.length) {
-		// 	const eventsDB = await getEventsIndex();
-		// 	const eventTopicsDB = await getEventTopicsIndex();
+		// Update producedBlocks count for the block generator
+		const validatorsTable = await getValidatorsIndex();
+		const numRowsAffected = await validatorsTable.increment({
+			increment: { producedBlocks: 1 },
+			where: { address: block.generatorAddress },
+		}, dbTrx);
+		if (numRowsAffected === 0) {
+			await validatorsTable.upsert({
+				address: block.generatorAddress,
+				producedBlocks: 1,
+			}, dbTrx);
+		}
 
-		// 	const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
-		// 	await eventsDB.upsert(eventsInfo, dbTrx);
-		// 	await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
-		// }
+		if (events.length) {
+			const eventsDB = await getEventsIndex();
+			const eventTopicsDB = await getEventTopicsIndex();
+
+			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
+			await eventsDB.upsert(eventsInfo, dbTrx);
+			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
+
+			// Update the generator's rewards
+			// TODO: Create constants
+			const blockRewardEvent = events.find(e => e.module === 'reward' && e.name === 'Reward Minted Data');
+			if (blockRewardEvent) {
+				blockReward = BigInt(blockRewardEvent.data.amount || '0');
+				await validatorsTable.increment({
+					increment: { rewards: blockReward },
+					where: { address: block.generatorAddress },
+				}, dbTrx);
+			}
+		}
 
 		if (block.generatorAddress) {
 			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
 		}
 
-		// TODO: Fetch reward from events
 		const blockToIndex = {
 			...block,
 			assetsModules: block.assets.map(asset => asset.module),
-			numberOfEvents: 1,
-			reward: BigInt('0'),
-			// numberOfEvents: events.length,
+			numberOfEvents: events.length,
+			reward: blockReward,
 		};
 
 		await blocksTable.upsert(blockToIndex, dbTrx);

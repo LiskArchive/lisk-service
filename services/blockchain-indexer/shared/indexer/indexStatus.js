@@ -25,6 +25,7 @@ const logger = Logger();
 const {
 	getCurrentHeight,
 	getGenesisHeight,
+	updateFinalizedHeight,
 } = require('../constants');
 
 const blocksIndexSchema = require('../database/schema/blocks');
@@ -118,7 +119,10 @@ const initializeSearchIndex = async () => {
 const init = async () => {
 	await initializeSearchIndex();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+
+	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
+	Signals.get('chainNewBlock').add(updateFinalizedHeight);
 };
 
 module.exports = {

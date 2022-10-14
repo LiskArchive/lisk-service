@@ -18,7 +18,7 @@ const {
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getPeersStatistics,
-} = require('../shared/sdk/peers');
+} = require('../shared/sdk');
 
 module.exports = [
 	{

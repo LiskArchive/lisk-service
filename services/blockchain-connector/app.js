@@ -23,11 +23,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 const nodeStatus = require('./shared/nodeStatus');
-
-const { getGenesisBlock } = require('./shared/sdk/genesisBlock');
-const { getSchemas } = require('./shared/sdk/endpoints_1');
 const { init } = require('./shared/sdk');
-const { setSchemas } = require('./shared/sdk/schema');
 
 const loggerConf = {
 	...config.log,
@@ -68,12 +64,6 @@ nodeStatus.waitForNode().then(async () => {
 	app.run()
 		.then(async () => {
 			await init();
-
-			const schemas = await getSchemas();
-			setSchemas(schemas);
-
-			// Download the genesis block, if applicable
-			await getGenesisBlock();
 		})
 		.catch(err => {
 			logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);

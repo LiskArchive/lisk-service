@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { validateBLSKey } = require('../shared/sdk/endpoints');
+const { validateBLSKey } = require('../shared/sdk');
 const regex = require('../shared/utils/regex');
 
 module.exports = [

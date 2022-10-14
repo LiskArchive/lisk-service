@@ -14,29 +14,29 @@
  *
  */
 const {
-	Exceptions: { NotFoundException },
 	HTTP: { StatusCodes: { NOT_FOUND } },
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const dataService = require('../../../shared/dataService');
 
 const getEvents = async (params) => {
-	try {
-		const events = {
-			data: {},
-			meta: {},
-		};
+	const events = {
+		data: {},
+		meta: {},
+	};
 
+	try {
 		const response = await dataService.getEvents(params);
 		if (response.data) events.data = response.data;
 		if (response.meta) events.meta = response.meta;
 
 		return events;
-	} catch (error) {
+	} catch (err) {
 		let status;
-		if (error instanceof NotFoundException) status = NOT_FOUND;
-		if (status) return { status, data: { error: error.message } };
-		throw error;
+		if (err instanceof NotFoundException) status = NOT_FOUND;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
 	}
 };
 
