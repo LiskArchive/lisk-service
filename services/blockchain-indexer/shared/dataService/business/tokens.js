@@ -19,13 +19,12 @@ const {
 	MySQL: { getTableInstance },
 	Exceptions: {
 		InvalidParamsException,
-		ValidationException,
 	},
 } = require('lisk-service-framework');
 
 const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
-const { requestConnector, requestAppRegistry } = require('../../utils/request');
-const regex = require('../../utils/regex');
+const { requestConnector } = require('../../utils/request');
+const { fetchInfoFromConnector, populateInfo } = require('../../utils/tokens');
 const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
@@ -37,19 +36,6 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 	topLSKAddressesIndexSchema,
 	MYSQL_ENDPOINT,
 );
-
-const getTokenMetadataByID = async (tokenID) => {
-	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
-
-	const { chainID } = await requestConnector('getNetworkStatus');
-	const [{ name: network } = {}] = config.networks.filter(item => item.chainID === chainID);
-
-	const params = { chainID, tokenID };
-	if (network) params.network = network;
-
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', params);
-	return tokenMetadata;
-};
 
 const getTokens = async (params) => {
 	let tokensInfo;
@@ -136,33 +122,6 @@ const getTopLiskAddresses = async (params) => {
 	};
 
 	return topLiskAddresses;
-};
-
-const populateInfo = async (items) => {
-	const response = await BluebirdPromise.map(
-		items,
-		async (item) => {
-			const { tokenID } = item;
-			const tokenMetadataResponse = await getTokenMetadataByID(tokenID);
-			const [tokenMetadata = {}] = tokenMetadataResponse.data || [];
-
-			return {
-				...item,
-				name: tokenMetadata.tokenName,
-				symbol: tokenMetadata.symbol,
-			};
-		},
-		{ concurrency: items.length },
-	);
-
-	return response;
-};
-
-const fetchInfoFromConnector = async (endpoint, offset, limit) => {
-	const response = await requestConnector(endpoint);
-	const [arrayName] = Object.keys(response);
-
-	return response[arrayName].slice(offset, offset + limit);
 };
 
 const getTokensSummary = async (params) => {
