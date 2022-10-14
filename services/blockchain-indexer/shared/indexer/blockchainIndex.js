@@ -130,7 +130,7 @@ const validateBlock = (block) => !!block && block.height >= 0;
 
 const getTransactionExecutionStatus = (tx, events) => {
 	// TODO: Update implementation with next SDK release and return with constants from SDK
-	// const expectedEventName = `${transaction.module}commandExecutionResult`;
+	// const expectedEventName = `${tx.module}:commandExecutionResult`;
 	const expectedEventName = `${tx.module}:transaction`;
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
