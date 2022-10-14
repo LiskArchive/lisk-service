@@ -49,15 +49,10 @@ const getVotesReceived = async params => {
 		params.receivedAddress = accountInfo.address;
 	}
 
-	const numVotesReceived = params.aggregate
-		? await votesDB.count({
-			receivedAddress: params.receivedAddress,
-			propBetweens: [{
-				property: 'amount',
-				greaterThan: '0',
-			}],
-		})
-		: await votesDB.count({ receivedAddress: params.receivedAddress });
+	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
+	const [{ numVotesReceived }] = params.aggregate
+		? await votesDB.rawQuery(`SELECT COUNT(*) as numVotesReceived from ${votesIndexSchema.tableName} WHERE receivedAddress='${params.receivedAddress}' AND amount>0`)
+		: await votesDB.rawQuery(`SELECT COUNT(*) as numVotesReceived from ${votesIndexSchema.tableName} WHERE receivedAddress='${params.receivedAddress}'`);
 
 	const resultSet = params.aggregate
 		? await votesDB.find(

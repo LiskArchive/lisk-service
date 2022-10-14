@@ -78,8 +78,8 @@ const {
 } = require('./transactions');
 
 const {
-	getCommandsParamsSchemas,
-} = require('./commandsParamsSchemas');
+	getSchemas,
+} = require('./schemas');
 
 const {
 	getVotesByTransactionIDs,
@@ -120,7 +120,7 @@ module.exports = {
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
-	getCommandsParamsSchemas,
+	getSchemas,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
 	getVotesReceived,
