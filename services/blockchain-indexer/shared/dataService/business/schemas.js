@@ -52,7 +52,7 @@ const getAllSchemas = async () => {
 
 			module.commands.forEach(command => {
 				const formattedTxParams = {
-					moduleCommand: String(module.name).concat(':').concat(command.name),
+					moduleCommand: String(module.name).concat(':', command.name),
 					schema: command.params,
 				};
 				commandsParamsSchemas.push(formattedTxParams);
