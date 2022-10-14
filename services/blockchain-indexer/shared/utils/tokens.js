@@ -46,7 +46,7 @@ const getTokenMetadataByID = async (tokenID) => {
 	return tokenMetadata;
 };
 
-const populateInfo = async (items) => {
+const populateTokenMetaInfo = async (items) => {
 	const response = await BluebirdPromise.map(
 		items,
 		async (item) => {
@@ -68,5 +68,5 @@ const populateInfo = async (items) => {
 
 module.exports = {
 	fetchInfoFromConnector,
-	populateInfo,
+	populateTokenMetaInfo,
 };

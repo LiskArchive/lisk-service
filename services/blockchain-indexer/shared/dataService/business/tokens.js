@@ -24,7 +24,7 @@ const {
 
 const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
 const { requestConnector } = require('../../utils/request');
-const { fetchInfoFromConnector, populateInfo } = require('../../utils/tokens');
+const { fetchInfoFromConnector, populateTokenMetaInfo } = require('../../utils/tokens');
 const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
@@ -135,9 +135,9 @@ const getTokensSummary = async (params) => {
 	const supportedTokens = await fetchInfoFromConnector('token_getSupportedTokens', params.offset, params.limit);
 	const totalSupply = await fetchInfoFromConnector('token_getTotalSupply', params.offset, params.limit);
 
-	const escrowedAmountResponse = await populateInfo(escrowedAmount);
-	const supportedTokensResponse = await populateInfo(supportedTokens);
-	const totalSupplyResponse = await populateInfo(totalSupply);
+	const escrowedAmountResponse = await populateTokenMetaInfo(escrowedAmount);
+	const supportedTokensResponse = await populateTokenMetaInfo(supportedTokens);
+	const totalSupplyResponse = await populateTokenMetaInfo(totalSupply);
 
 	summary.data = {
 		...summary.data,
