@@ -28,7 +28,7 @@ module.exports = {
 		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.CHAIN_ID },
 		tokenName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		tokenID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.TOKEN_ID },
-		network: { optional: false, type: 'string', min: 1, default: 'mainnet', enum: ['mainnet', 'testnet', 'betanet'] },
+		network: { optional: false, type: 'string', min: 1, default: 'mainnet', enum: ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'] },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
