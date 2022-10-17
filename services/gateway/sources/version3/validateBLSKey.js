@@ -14,17 +14,17 @@
  *
  */
 module.exports = {
-	tableName: 'event_topics',
-	primaryKey: 'tempID',
-	schema: {
-		tempID: { type: 'string' },
-		id: { type: 'string' }, // Unique event identifier
-		topic: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
+	type: 'moleculer',
+	method: 'indexer.validateBLSKey',
+	params: {
+		blsKey: '=,string',
+		proofOfPossession: '=,string',
 	},
-	indexes: {
-		topic: { type: 'key' },
+	definition: {
+		data: {
+			isValid: '=,boolean',
+		},
+		meta: {},
+		links: {},
 	},
-	purge: {},
 };

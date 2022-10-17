@@ -14,17 +14,33 @@
  *
  */
 module.exports = {
-	tableName: 'event_topics',
-	primaryKey: 'tempID',
-	schema: {
-		tempID: { type: 'string' },
-		id: { type: 'string' }, // Unique event identifier
-		topic: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
+	block: {
+		schema: '=',
 	},
-	indexes: {
-		topic: { type: 'key' },
+	header: {
+		schema: '=',
 	},
-	purge: {},
+	asset: {
+		schema: '=',
+	},
+	transaction: {
+		schema: '=',
+	},
+	event: {
+		schema: '=',
+	},
+	events: ['data.events', {
+		module: '=,string',
+		name: '=,string',
+		schema: '=',
+	}],
+	assets: ['data.assets', {
+		module: '=,string',
+		version: '=,string',
+		schema: '=',
+	}],
+	commands: ['data.commands', {
+		moduleCommand: '=,string',
+		schema: '=',
+	}],
 };

@@ -21,7 +21,7 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
-} = require('../shared/sdk/endpoints');
+} = require('../shared/sdk');
 
 module.exports = [
 	{

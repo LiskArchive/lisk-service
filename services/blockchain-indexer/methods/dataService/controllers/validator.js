@@ -27,6 +27,19 @@ const getValidator = async params => {
 	return validator;
 };
 
+const validateBLSKey = async params => {
+	const result = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.validateBLSKey(params);
+	if (response.data) result.data = response.data;
+	if (response.meta) result.meta = response.meta;
+
+	return result;
+};
+
 module.exports = {
 	getValidator,
+	validateBLSKey,
 };

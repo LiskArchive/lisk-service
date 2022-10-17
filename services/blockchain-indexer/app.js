@@ -18,6 +18,7 @@ const {
 	Microservice,
 	Logger,
 	LoggerConfig,
+	Signals,
 } = require('lisk-service-framework');
 
 const config = require('./config');
@@ -39,6 +40,12 @@ const app = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+	events: {
+		chainNewBlock: async () => {
+			logger.debug('Received a \'chainNewBlock\' event from connecter.');
+			Signals.get('chainNewBlock').dispatch();
+		},
+	},
 	dependencies: [
 		'connector',
 	],

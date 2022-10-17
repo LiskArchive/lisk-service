@@ -56,7 +56,7 @@ module.exports = [
 			encodedEvent: { optional: false, type: 'string' },
 			schema: { optional: false, type: 'object' },
 		},
-		controller: ({ encodedEvent, schema }) => decodeEvent(encodedEvent, schema),
+		controller: ({ encodedEvent }) => decodeEvent(encodedEvent),
 	},
 	{
 		name: 'decodeResponse',

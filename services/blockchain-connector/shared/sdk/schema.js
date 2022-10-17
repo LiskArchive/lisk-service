@@ -14,6 +14,7 @@
 *
 */
 let schemas;
+let metadata;
 
 const setSchemas = (_schemas) => schemas = _schemas;
 
@@ -25,22 +26,49 @@ const getBlockHeaderSchema = () => schemas.header;
 
 const getBlockAssetSchema = () => schemas.asset;
 
+const getEventSchema = () => schemas.event;
+
 const getTransactionSchema = () => schemas.transaction;
 
 const getTransactionParamsSchema = (transaction) => {
-	const { schema } = schemas.commands
-		.find(paramsSchema => paramsSchema.moduleID === transaction.moduleID
-			&& paramsSchema.commandID === transaction.commandID);
+	const moduleMetadata = metadata.modules.find(m => m.name === transaction.module);
+	const { params: schema } = moduleMetadata.commands.find(c => c.name === transaction.command);
 	return schema;
+};
+
+const setMetadata = (_metadata) => metadata = _metadata;
+
+const getBlockAssetDataSchemaByModule = (module) => {
+	const moduleMetadata = metadata.modules.find(m => m.name === module);
+	const [{ data: schema } = {}] = moduleMetadata.assets;
+	return schema;
+};
+
+const getDataSchemaByEventName = (eventName) => {
+	// TODO: Optimize
+	for (let i = 0; i < metadata.modules.length; i++) {
+		const module = metadata.modules[i];
+
+		for (let eventIndex = 0; eventIndex < module.events.length; eventIndex++) {
+			const moduleEvent = module.events[eventIndex];
+			if (moduleEvent.name === eventName) return module.events[eventIndex].data;
+		}
+	}
+
+	return null;
 };
 
 module.exports = {
 	setSchemas,
+	setMetadata,
 
 	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
 	getBlockAssetSchema,
+	getBlockAssetDataSchemaByModule,
+	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
+	getDataSchemaByEventName,
 };

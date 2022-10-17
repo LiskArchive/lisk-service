@@ -13,18 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
+const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
+
 module.exports = {
-	tableName: 'event_topics',
-	primaryKey: 'tempID',
-	schema: {
-		tempID: { type: 'string' },
-		id: { type: 'string' }, // Unique event identifier
-		topic: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-	},
-	indexes: {
-		topic: { type: 'key' },
-	},
-	purge: {},
+	BLS_KEY,
+	PROOF_OF_POSSESSION,
 };

@@ -13,18 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const dataService = require('./business');
+
+const getSchemas = async () => {
+	const schemas = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getSchemas();
+	if (response.data) schemas.data = response.data;
+	if (response.meta) schemas.meta = response.meta;
+
+	return schemas;
+};
+
 module.exports = {
-	tableName: 'event_topics',
-	primaryKey: 'tempID',
-	schema: {
-		tempID: { type: 'string' },
-		id: { type: 'string' }, // Unique event identifier
-		topic: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-	},
-	indexes: {
-		topic: { type: 'key' },
-	},
-	purge: {},
+	getSchemas,
 };

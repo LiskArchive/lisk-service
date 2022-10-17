@@ -13,14 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const {
+	Exceptions: { TimeoutException },
 	Logger,
-	Exceptions: {
-		NotFoundException,
-		TimeoutException,
-	},
 } = require('lisk-service-framework');
 
 const {
@@ -32,8 +27,6 @@ const {
 	getSystemMetadata,
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
-const { decodeAccount } = require('./decoder');
-const { parseToJSONCompatObj } = require('../utils/parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
 const logger = Logger();
@@ -82,42 +75,6 @@ const updateForgingStatus = async (config) => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'updateForgingStatus\'');
-		}
-		throw err;
-	}
-};
-
-const getAccount = async (address) => {
-	try {
-		const encodedAccount = await invokeEndpoint('app_getAccount', { address });
-		const account = await decodeAccount(encodedAccount);
-		return { ...parseToJSONCompatObj(account), _raw: encodedAccount };
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAccount' for address: ${address}`);
-		} else if (err.message === `Specified key accounts:address:${address} does not exist`) {
-			throw new NotFoundException(`Account ${address} does not exist on the blockchain`);
-		}
-		logger.warn(`Unable to currently fetch account information for address: ${address}. The network synchronization process might still be in progress for the Lisk Core node or the requested account has not been migrated yet.`);
-		throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
-	}
-};
-
-const getAccounts = async (addresses) => {
-	try {
-		const encodedAccounts = await invokeEndpoint('app_getAccounts', { address: addresses });
-		const accounts = await BluebirdPromise.map(
-			encodedAccounts,
-			async (account) => ({
-				...(await decodeAccount(account)),
-				_raw: account,
-			}),
-			{ concurrency: encodedAccounts.length },
-		);
-		return parseToJSONCompatObj(accounts);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAccounts' for addresses: ${addresses}`);
 		}
 		throw err;
 	}
@@ -220,6 +177,18 @@ const getBlocksByIDs = async (ids) => {
 	}
 };
 
+const getEventsByHeight = async (height) => {
+	try {
+		const events = await invokeEndpoint('chain_getEvents', { height });
+		return events;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getEvents\'');
+		}
+		throw err;
+	}
+};
+
 const getTransactionByID = async (id) => {
 	try {
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
@@ -234,8 +203,8 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const transaction = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
-		return transaction;
+		const transactions = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
+		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}`);
@@ -269,6 +238,19 @@ const postTransaction = async (transaction) => {
 	}
 };
 
+const dryRunTransaction = async (transaction) => {
+	try {
+		const apiClient = await getApiClient();
+		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction });
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'dryRunTransaction' with transaction: ${transaction}`);
+		}
+		throw err;
+	}
+};
+
 const getGenerators = async () => {
 	try {
 		const generators = await invokeEndpoint('chain_getGeneratorList');
@@ -281,14 +263,15 @@ const getGenerators = async () => {
 	}
 };
 
-const dryRunTransaction = async (transaction) => {
+const validateBLSKey = async ({ blsKey, proofOfPossession }) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction });
+		const response = await apiClient._channel.invoke('validators_validateBLSKey', { blsKey, proofOfPossession });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'dryRunTransaction' with transaction: ${transaction}`);
+			logger.warn(`Request timed out when calling 'validateBLSKey' with:\nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`);
+			throw new TimeoutException('Request timed out when calling \'validateBLSKey\'');
 		}
 		throw err;
 	}
@@ -307,17 +290,17 @@ module.exports = {
 	getDisconnectedPeers,
 	getForgingStatus,
 	updateForgingStatus,
-	getAccount,
-	getAccounts,
 	getLastBlock,
 	getBlockByID,
 	getBlocksByIDs,
 	getBlockByHeight,
 	getBlocksByHeightBetween,
+	getEventsByHeight,
 	getTransactionByID,
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
-	getGenerators,
 	dryRunTransaction,
+	getGenerators,
+	validateBLSKey,
 };

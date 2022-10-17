@@ -78,8 +78,8 @@ const {
 } = require('./transactions');
 
 const {
-	getCommandsParamsSchemas,
-} = require('./commandsParamsSchemas');
+	getSchemas,
+} = require('./schemas');
 
 const {
 	getVotesByTransactionIDs,
@@ -90,8 +90,8 @@ const {
 } = require('./dpos');
 
 const { getAuthAccountInfo } = require('./auth');
-const { getValidator } = require('./validator');
 const { getEvents, getEventsByHeight } = require('./events');
+const { getValidator, validateBLSKey } = require('./validator');
 
 module.exports = {
 	getBlocks,
@@ -120,7 +120,7 @@ module.exports = {
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
-	getCommandsParamsSchemas,
+	getSchemas,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
 	getVotesReceived,
@@ -128,7 +128,10 @@ module.exports = {
 	getUnlocks,
 	getDPoSConstants,
 	getAuthAccountInfo,
+
 	getValidator,
+	validateBLSKey,
+
 	getEvents,
 	getEventsByHeight,
 	getLegacyAccountInfo,

@@ -180,11 +180,13 @@
             "id",
             "moduleCommand",
             "fee",
+            "minFee",
             "size",
             "nonce",
             "block",
             "sender",
-            "params"
+            "params",
+            "executionStatus"
         ],
         "properties": {
             "id": {
@@ -193,12 +195,12 @@
                 "example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
                 "minLength": 1,
                 "maxLength": 64,
-                "description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
+                "description": "Unique identifier of the transaction.\nDerived from the transaction signature."
             },
             "moduleCommand": {
                 "type": "string",
                 "example": "token:transfer",
-                "description": "Combination of transaction moduleName:commandName.\n"
+                "description": "Combination of transaction moduleName:commandName."
             },
             "nonce": {
                 "type": "string",
@@ -207,7 +209,12 @@
             "fee": {
                 "type": "string",
                 "example": "1000000",
-                "description": "Transaction fee associated with the transaction."
+                "description": "Transaction fee."
+            },
+            "minFee": {
+                "type": "string",
+                "example": "75000",
+                "description": "Minimum fee for the transaction."
             },
             "size": {
                 "type": "integer",
@@ -224,13 +231,13 @@
                         "minLength": 1,
                         "maxLength": 64,
                         "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "Unique identifier of the block.\nDerived from the block signature.\n"
+                        "description": "Unique identifier of the block.\nDerived from the block signature."
                     },
                     "height": {
                         "type": "integer",
                         "minimum": 1,
                         "example": 8350681,
-                        "description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+                        "description": "The height of the network, at the moment where this transaction was included in the blockchain."
                     },
                     "timestamp": {
                         "type": "integer",
@@ -250,13 +257,13 @@
                         "type": "string",
                         "format": "address",
                         "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
                     },
                     "publicKey": {
                         "type": "string",
                         "format": "publicKey",
                         "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key."
                     },
                     "name": {
                         "type": "string",
@@ -271,7 +278,7 @@
                     "amount": {
                         "type": "string",
                         "example": "100003490",
-                        "description": "Amount of Lisk (in Beddows) to be transferred in this transaction.\n"
+                        "description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
                     },
                     "recipient": {
                         "type": "object",
@@ -280,7 +287,7 @@
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
                             },
                             "name": {
                                 "type": "string",
@@ -291,7 +298,7 @@
                                 "type": "string",
                                 "format": "publicKey",
                                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key."
                             }
                         }
                     },
@@ -303,7 +310,7 @@
             },
             "executionStatus": {
                 "type": "string",
-                "example": "pending"
+                "example": "success"
             }
         }
     },
@@ -397,7 +404,7 @@
                                         "senderAddress": {
                                             "type": "string",
                                             "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`.\n"
+                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
                                         },
                                         "tokenID": {
                                             "type": "string",
@@ -412,7 +419,7 @@
                                         "recipientAddress": {
                                             "type": "string",
                                             "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`.\n"
+                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
                                         }
                                     }
                                 },

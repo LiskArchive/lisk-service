@@ -13,18 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { requestConnector } = require('../../../utils/request');
+
+const validateBLSKey = async params => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	const { blsKey, proofOfPossession } = params;
+	const { valid } = await requestConnector('validateBLSKey', {
+		blsKey,
+		proofOfPossession,
+	});
+
+	response.data.isValid = valid;
+
+	return response;
+};
+
 module.exports = {
-	tableName: 'event_topics',
-	primaryKey: 'tempID',
-	schema: {
-		tempID: { type: 'string' },
-		id: { type: 'string' }, // Unique event identifier
-		topic: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-	},
-	indexes: {
-		topic: { type: 'key' },
-	},
-	purge: {},
+	validateBLSKey,
 };

@@ -134,8 +134,6 @@ const getTransactions = async params => {
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
-			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id);
-
 			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 			const senderAccount = await getIndexedAccountInfo(
 				{ address: senderAddress, limit: 1 },
@@ -163,6 +161,7 @@ const getTransactions = async params => {
 				};
 			}
 
+			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id) || {};
 			transaction.block = {
 				id: indexedTxInfo.blockID,
 				height: indexedTxInfo.height,

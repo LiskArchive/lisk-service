@@ -189,10 +189,13 @@ const getDelegates = async params => {
 	delegates.data = await BluebirdPromise.map(
 		allDelegates,
 		async delegate => {
-			const [validatorInfo = {}] = await validatorsTable.find({ name: delegate.name });
+			const [validatorInfo = {}] = await validatorsTable.find(
+				{ address: delegate.address },
+				['producedBlocks', 'rewards'],
+			);
 			return {
 				...delegate,
-				forgedBlocks: validatorInfo.forgedBlocks || 0,
+				forgedBlocks: validatorInfo.producedBlocks || 0,
 				rewards: validatorInfo.rewards || BigInt('0'),
 			};
 		}, { concurrency: allDelegates.length },

@@ -20,9 +20,17 @@ let genesisHeight;
 let moduleCommands;
 let registeredModules;
 let systemMetadata;
+let finalizedHeight;
+
+const updateFinalizedHeight = async () => {
+	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
+	finalizedHeight = latestFinalizedHeight;
+};
 
 const getFinalizedHeight = async () => {
-	const { finalizedHeight } = await requestConnector('getNetworkStatus');
+	if (typeof finalizedHeight !== 'number') {
+		await updateFinalizedHeight();
+	}
 	return finalizedHeight;
 };
 
@@ -86,6 +94,7 @@ const COMMAND = {
 };
 
 module.exports = {
+	updateFinalizedHeight,
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisConfig,

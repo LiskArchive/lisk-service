@@ -17,7 +17,7 @@ const {
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-} = require('../shared/sdk/endpoints');
+} = require('../shared/sdk');
 
 module.exports = [
 	{
