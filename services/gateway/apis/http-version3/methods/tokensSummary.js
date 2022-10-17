@@ -30,15 +30,15 @@ module.exports = {
 		const tokenSummarySchema = {};
 		tokenSummarySchema[this.swaggerApiPath] = { get: {} };
 		tokenSummarySchema[this.swaggerApiPath].get.tags = this.tags;
-		tokenSummarySchema[this.swaggerApiPath].get.summary = 'Requests supported tokens information';
+		tokenSummarySchema[this.swaggerApiPath].get.summary = 'Requests the tokens summary for the current blockchain application.';
 		tokenSummarySchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns token summary information. The \'supportedTokens\' is an empty list when all the tokens are supported on the blockchain application.',
+			description: 'Returns the token summary. The \'supportedTokens\' is an empty list when all the tokens are supported on the blockchain application.',
 		});
 		tokenSummarySchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
 		tokenSummarySchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns token summary information. The \'supportedTokens\' is an empty list when all the tokens are supported on the blockchain application.',
+				description: 'Returns the token summary. The \'supportedTokens\' is an empty list when all the tokens are supported on the blockchain application.',
 				schema: {
 					$ref: '#/definitions/tokenSummaryWithEnvelope',
 				},

@@ -126,8 +126,7 @@ const getTopLiskAddresses = async (params) => {
 
 const getTokensSummary = async (params) => {
 	const summary = {
-		data: {
-		},
+		data: {},
 		meta: {},
 	};
 
@@ -140,7 +139,6 @@ const getTokensSummary = async (params) => {
 	const totalSupplyResponse = await populateTokenMetaInfo(totalSupply);
 
 	summary.data = {
-		...summary.data,
 		escrowedAmounts: escrowedAmountResponse,
 		supportedTokens: supportedTokensResponse,
 		totalSupply: totalSupplyResponse,
