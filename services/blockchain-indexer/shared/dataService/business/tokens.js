@@ -130,11 +130,12 @@ const getTokensSummary = async () => {
 		meta: {},
 	};
 
-	const escrowedAmount = await requestConnector('token_getEscrowedAmounts');
-	const supportedTokens = await requestConnector('token_getSupportedTokens');
-	const totalSupply = await requestConnector('token_getTotalSupply');
+	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
+	const { tokenIDs } = await requestConnector('getSupportedTokens');
+	const { totalSupply } = await requestConnector('getTotalSupply');
+	const supportedTokens = tokenIDs.map(tokenID => ({ tokenID }));
 
-	const escrowedAmountResponse = await populateTokenMetaInfo(escrowedAmount);
+	const escrowedAmountResponse = await populateTokenMetaInfo(escrowedAmounts);
 	const supportedTokensResponse = await populateTokenMetaInfo(supportedTokens);
 	const totalSupplyResponse = await populateTokenMetaInfo(totalSupply);
 

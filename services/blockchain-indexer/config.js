@@ -95,6 +95,14 @@ config.networks = [
 	},
 ];
 
+config.networkChainIDMap = {
+	mainnet: '00',
+	testnet: '01',
+	betanet: '02',
+	alphanet: '03',
+	devnet: '04',
+};
+
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 

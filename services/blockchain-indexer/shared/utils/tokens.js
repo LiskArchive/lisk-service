@@ -26,15 +26,26 @@ const regex = require('./regex');
 
 const config = require('../../config');
 
+const resolveNetworkByChainID = (chainID) => {
+	const { networkChainIDMap } = config;
+
+	const chainIDPrefix = chainID.slice(0, 2);
+	const networkType = Object.keys(networkChainIDMap)
+		.find(network => chainIDPrefix === networkChainIDMap[network]);
+
+	return networkType;
+};
+
 const getTokenMetadataByID = async (tokenID) => {
 	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
 
 	const { chainID } = await requestConnector('getNetworkStatus');
-	const [{ name: network } = {}] = config.networks.filter(item => item.chainID === chainID);
 
-	const params = { chainID, tokenID };
-	if (network) params.network = network;
-
+	const params = {
+		chainID,
+		tokenID,
+		network: resolveNetworkByChainID(chainID),
+	};
 	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', params);
 	return tokenMetadata;
 };

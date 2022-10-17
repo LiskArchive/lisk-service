@@ -59,6 +59,12 @@ const {
 	getPeersStatistics,
 } = require('./peers');
 
+const {
+	getEscrowedAmounts,
+	getSupportedTokens,
+	getTotalSupply,
+} = require('./tokens');
+
 const { getEventsByHeight } = require('./events');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
@@ -120,4 +126,8 @@ module.exports = {
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getPeersStatistics,
+
+	getEscrowedAmounts,
+	getSupportedTokens,
+	getTotalSupply,
 };
