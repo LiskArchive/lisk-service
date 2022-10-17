@@ -24,21 +24,19 @@ const { requestConnector, requestAppRegistry } = require('./request');
 const config = require('../../config');
 
 const resolveNetworkByChainID = (chainID) => {
-	const { networkChainIDMap } = config;
-
 	const chainIDPrefix = chainID.slice(0, 2);
-	const networkType = Object.keys(networkChainIDMap)
-		.find(network => chainIDPrefix === networkChainIDMap[network]);
-
-	return networkType;
+	const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainIDPrefix];
+	return network;
 };
 
 const getTokenMetadataByID = async (tokenID) => {
 	let tokenMetadata;
+	// TODO: Resolve network directly from tokenID when SDK returns correct information
 	const { chainID } = await requestConnector('getNetworkStatus');
 
 	const params = {
 		tokenID,
+		chainID,
 		network: resolveNetworkByChainID(chainID),
 	};
 
@@ -52,21 +50,22 @@ const getTokenMetadataByID = async (tokenID) => {
 	return tokenMetadata;
 };
 
-const populateTokenMetaInfo = async (items) => {
+const populateTokenMetaInfo = async (tokenInfoList) => {
 	const response = await BluebirdPromise.map(
-		items,
-		async (item) => {
-			const { tokenID } = item;
+		tokenInfoList,
+		async (tokenInfo) => {
+			const { tokenID } = tokenInfo;
+			// TODO: Optimize
 			const tokenMetadataResponse = await getTokenMetadataByID(tokenID);
 			const [tokenMetadata = {}] = tokenMetadataResponse.data || [];
 
 			return {
-				...item,
+				...tokenInfo,
 				name: tokenMetadata.tokenName,
 				symbol: tokenMetadata.symbol,
 			};
 		},
-		{ concurrency: items.length },
+		{ concurrency: tokenInfoList.length },
 	);
 
 	return response;

@@ -76,7 +76,7 @@ config.operations = {
 	isIndexingModeEnabled: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
-config.networks = {
+config.networks = Object.freeze({
 	LISK: [
 		{
 			name: 'mainnet',
@@ -91,18 +91,23 @@ config.networks = {
 		},
 		{
 			name: 'betanet',
-			chainID: '',
+			chainID: '02000000',
 			serviceURL: 'https://betanet-service.lisk.com',
 		},
+		{
+			name: 'alphanet',
+			chainID: '03000000',
+			serviceURL: 'https://alphanet-service.lisk.com',
+		},
 	],
-};
+});
 
-config.networkChainIDMap = {
-	mainnet: '00',
-	testnet: '01',
-	betanet: '02',
-	alphanet: '03',
-	devnet: '04',
+config.CHAIN_ID_PREFIX_NETWORK_MAP = {
+	'00': 'mainnet',
+	'01': 'testnet',
+	'02': 'betanet',
+	'03': 'alphanet',
+	'04': 'devnet',
 };
 
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
