@@ -66,7 +66,7 @@ const {
 const {
 	getTokens,
 	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 } = require('./tokens');
 
 const {
@@ -113,7 +113,7 @@ module.exports = {
 	postTransactions,
 	getTokens,
 	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 	getPendingTransactions,
 	loadAllPendingTransactions,
 	getTransactions,

@@ -14,13 +14,26 @@
  *
  */
 const {
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
-} = require('./token');
+	getEscrowedAmounts,
+	getSupportedTokens,
+	getTotalSupply,
+} = require('../shared/sdk');
 
-module.exports = {
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
-};
+module.exports = [
+	{
+		name: 'getEscrowedAmounts',
+		controller: async () => getEscrowedAmounts(),
+		params: {},
+	},
+	{
+		name: 'getSupportedTokens',
+		controller: async () => getSupportedTokens(),
+		params: {},
+	},
+	{
+		name: 'getTotalSupply',
+		controller: async () => getTotalSupply(),
+		params: {},
+	},
+
+];

@@ -19,13 +19,12 @@ const {
 	MySQL: { getTableInstance },
 	Exceptions: {
 		InvalidParamsException,
-		ValidationException,
 	},
 } = require('lisk-service-framework');
 
 const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
-const { requestConnector, requestAppRegistry } = require('../../utils/request');
-const regex = require('../../utils/regex');
+const { requestConnector } = require('../../utils/request');
+const { populateTokenMetaInfo } = require('../../utils/tokens');
 const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
@@ -37,14 +36,6 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 	topLSKAddressesIndexSchema,
 	MYSQL_ENDPOINT,
 );
-
-const getTokenMetadataByID = async (tokenID) => {
-	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
-
-	const chainID = tokenID.slice(0, 8);
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, tokenID });
-	return tokenMetadata;
-};
 
 const getTokens = async (params) => {
 	let tokensInfo;
@@ -133,46 +124,32 @@ const getTopLiskAddresses = async (params) => {
 	return topLiskAddresses;
 };
 
-const getSupportedTokens = async (params) => {
-	const supportedTokensList = {
-		data: {
-			supportedTokens: [],
-		},
+const getTokensSummary = async () => {
+	const summary = {
+		data: {},
 		meta: {},
 	};
 
-	const response = await requestConnector('token_getSupportedTokens');
+	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
+	const { totalSupply } = await requestConnector('getTotalSupply');
+	const { tokenIDs } = await requestConnector('getSupportedTokens');
+	const supportedTokens = tokenIDs.map(tokenID => ({ tokenID }));
 
-	supportedTokensList.data.supportedTokens = await BluebirdPromise.map(
-		response.tokenIDs,
-		async (tokenID) => {
-			const tokenMetadataResponse = await getTokenMetadataByID(tokenID);
-			const [tokenMetadata = {}] = tokenMetadataResponse.data || [];
+	const escrowedAmountResponse = await populateTokenMetaInfo(escrowedAmounts);
+	const supportedTokensResponse = await populateTokenMetaInfo(supportedTokens);
+	const totalSupplyResponse = await populateTokenMetaInfo(totalSupply);
 
-			return {
-				tokenID,
-				symbol: tokenMetadata.symbol,
-				name: tokenMetadata.tokenName,
-			};
-		},
-		{ concurrency: response.tokenIDs.length },
-	);
-
-	const total = supportedTokensList.data.supportedTokens.length;
-	supportedTokensList.data.supportedTokens = supportedTokensList.data.supportedTokens
-		.slice(params.offset, params.offset + params.limit);
-
-	supportedTokensList.meta = {
-		count: supportedTokensList.data.supportedTokens.length,
-		offset: params.offset,
-		total,
+	summary.data = {
+		escrowedAmounts: escrowedAmountResponse,
+		supportedTokens: supportedTokensResponse,
+		totalSupply: totalSupplyResponse,
 	};
 
-	return supportedTokensList;
+	return summary;
 };
 
 module.exports = {
 	getTokens,
 	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 };

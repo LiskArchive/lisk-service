@@ -52,7 +52,7 @@ module.exports = [
 			chainID: { optional: true, type: 'string' },
 			tokenName: { optional: true, type: 'string' },
 			tokenID: { optional: true, type: 'string' },
-			network: { optional: false, type: 'string' },
+			network: { optional: false, type: 'string', min: 1, default: 'mainnet', enum: ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'] },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

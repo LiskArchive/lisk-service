@@ -76,24 +76,39 @@ config.operations = {
 	isIndexingModeEnabled: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
-config.networks = [
-	{
-		name: 'mainnet',
-		chainID: '00000000',
-		serviceURL: 'https://service.lisk.com',
-	},
-	{
-		name: 'testnet',
-		chainID: '01000000',
-		serviceURL: 'https://testnet-service.lisk.com',
+config.networks = Object.freeze({
+	LISK: [
+		{
+			name: 'mainnet',
+			chainID: '00000000',
+			serviceURL: 'https://service.lisk.com',
+		},
+		{
+			name: 'testnet',
+			chainID: '01000000',
+			serviceURL: 'https://testnet-service.lisk.com',
 
-	},
-	{
-		name: 'betanet',
-		chainID: '',
-		serviceURL: 'https://betanet-service.lisk.com',
-	},
-];
+		},
+		{
+			name: 'betanet',
+			chainID: '02000000',
+			serviceURL: 'https://betanet-service.lisk.com',
+		},
+		{
+			name: 'alphanet',
+			chainID: '03000000',
+			serviceURL: 'https://alphanet-service.lisk.com',
+		},
+	],
+});
+
+config.CHAIN_ID_PREFIX_NETWORK_MAP = {
+	'00': 'mainnet',
+	'01': 'testnet',
+	'02': 'betanet',
+	'03': 'alphanet',
+	'04': 'devnet',
+};
 
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');

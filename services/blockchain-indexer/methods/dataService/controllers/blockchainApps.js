@@ -25,7 +25,7 @@ const isMainchain = async () => {
 
 const resolveMainchainServiceURL = async () => {
 	const { chainID } = await dataService.getNetworkStatus();
-	const [{ serviceURL } = {}] = config.networks
+	const [{ serviceURL } = {}] = config.networks.LISK
 		.filter(networkInfo => networkInfo.chainID === chainID);
 	return serviceURL;
 };

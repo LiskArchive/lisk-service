@@ -14,13 +14,25 @@
  *
  */
 const {
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
-} = require('./token');
+	escrowedAmount,
+	supportedToken,
+	totalSupplyByToken,
+} = require('./mappings/tokenSummary');
 
 module.exports = {
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
+	type: 'moleculer',
+	method: 'indexer.tokens.summary',
+	params: {
+		offset: '=,number',
+		limit: '=,number',
+	},
+	definition: {
+		data: {
+			escrowedAmounts: ['data.escrowedAmounts', escrowedAmount],
+			supportedTokens: ['data.supportedTokens', supportedToken],
+			totalSupply: ['data.totalSupply', totalSupplyByToken],
+		},
+		meta: {},
+		links: {},
+	},
 };

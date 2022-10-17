@@ -13,22 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+const escrowedAmount = {
+	escrowChainID: '=,string',
+	tokenID: '=,string',
+	amount: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+};
+
+const supportedToken = {
+	tokenID: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+};
+
+const totalSupplyByToken = {
+	tokenID: '=,string',
+	amount: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+
+};
+
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.tokens.supported',
-	params: {
-		offset: '=,number',
-		limit: '=,number',
-	},
-	definition: {
-		data: {
-			supportedTokens: '=',
-		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	escrowedAmount,
+	supportedToken,
+	totalSupplyByToken,
 };

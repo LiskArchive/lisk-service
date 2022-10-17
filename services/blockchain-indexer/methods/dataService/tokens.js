@@ -16,7 +16,7 @@
 const {
 	getTokens,
 	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 } = require('./controllers/tokens');
 
 module.exports = [
@@ -40,8 +40,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'tokens.supported',
-		controller: getSupportedTokens,
+		name: 'tokens.summary',
+		controller: getTokensSummary,
 		params: {
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
