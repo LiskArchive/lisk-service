@@ -76,24 +76,26 @@ config.operations = {
 	isIndexingModeEnabled: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
-config.networks = [
-	{
-		name: 'mainnet',
-		chainID: '00000000',
-		serviceURL: 'https://service.lisk.com',
-	},
-	{
-		name: 'testnet',
-		chainID: '01000000',
-		serviceURL: 'https://testnet-service.lisk.com',
+config.networks = {
+	LISK: [
+		{
+			name: 'mainnet',
+			chainID: '00000000',
+			serviceURL: 'https://service.lisk.com',
+		},
+		{
+			name: 'testnet',
+			chainID: '01000000',
+			serviceURL: 'https://testnet-service.lisk.com',
 
-	},
-	{
-		name: 'betanet',
-		chainID: '',
-		serviceURL: 'https://betanet-service.lisk.com',
-	},
-];
+		},
+		{
+			name: 'betanet',
+			chainID: '',
+			serviceURL: 'https://betanet-service.lisk.com',
+		},
+	],
+};
 
 config.networkChainIDMap = {
 	mainnet: '00',

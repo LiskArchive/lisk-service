@@ -16,13 +16,10 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	Exceptions: {
-		ValidationException,
-	},
+	HTTP: { request },
 } = require('lisk-service-framework');
 
 const { requestConnector, requestAppRegistry } = require('./request');
-const regex = require('./regex');
 
 const config = require('../../config');
 
@@ -37,16 +34,21 @@ const resolveNetworkByChainID = (chainID) => {
 };
 
 const getTokenMetadataByID = async (tokenID) => {
-	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
-
+	let tokenMetadata;
 	const { chainID } = await requestConnector('getNetworkStatus');
 
 	const params = {
-		chainID,
 		tokenID,
 		network: resolveNetworkByChainID(chainID),
 	};
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', params);
+
+	try {
+		tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', params);
+	} catch (err) {
+		const { serviceURL } = config.networks.LISK.find(c => c.name === 'mainnet');
+		tokenMetadata = await request(`${serviceURL}/api/v3/blockchain/apps/meta/tokens`, params);
+	}
+
 	return tokenMetadata;
 };
 
