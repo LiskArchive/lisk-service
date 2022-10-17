@@ -26,13 +26,6 @@ const regex = require('./regex');
 
 const config = require('../../config');
 
-const fetchInfoFromConnector = async (endpoint, offset, limit) => {
-	const response = await requestConnector(endpoint);
-	const [arrayName] = Object.keys(response);
-
-	return response[arrayName].slice(offset, offset + limit);
-};
-
 const getTokenMetadataByID = async (tokenID) => {
 	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
 
@@ -67,6 +60,5 @@ const populateTokenMetaInfo = async (items) => {
 };
 
 module.exports = {
-	fetchInfoFromConnector,
 	populateTokenMetaInfo,
 };

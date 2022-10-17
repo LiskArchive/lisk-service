@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenSummary = require('./mappings/tokenSummary');
+const {
+	escrowedAmount,
+	supportedToken,
+	totalSupplyByToken,
+} = require('./mappings/tokenSummary');
 
 module.exports = {
 	type: 'moleculer',
@@ -23,8 +27,11 @@ module.exports = {
 		limit: '=,number',
 	},
 	definition: {
-		data: 'data',
-		tokenSummary,
+		data: {
+			escrowedAmounts: ['data.escrowedAmounts', escrowedAmount],
+			supportedTokens: ['data.supportedTokens', supportedToken],
+			totalSupply: ['data.totalSupply', totalSupplyByToken],
+		},
 		meta: {},
 		links: {},
 	},

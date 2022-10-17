@@ -13,24 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	escrowedAmounts: ['escrowedAmounts', {
-		escrowChainID: '=,string',
-		tokenID: '=,string',
-		amount: '=,string',
-		name: '=,string',
-		symbol: '=,string',
-	}],
-	supportedTokens: ['supportedTokens', {
-		tokenID: '=,string',
-		name: '=,string',
-		symbol: '=,string',
-	}],
-	totalSupply: ['totalSupply', {
-		tokenID: '=,string',
-		amount: '=,string',
-		name: '=,string',
-		symbol: '=,string',
 
-	}],
+const escrowedAmount = {
+	escrowChainID: '=,string',
+	tokenID: '=,string',
+	amount: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+};
+
+const supportedToken = {
+	tokenID: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+};
+
+const totalSupplyByToken = {
+	tokenID: '=,string',
+	amount: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+
+};
+
+module.exports = {
+	escrowedAmount,
+	supportedToken,
+	totalSupplyByToken,
 };
