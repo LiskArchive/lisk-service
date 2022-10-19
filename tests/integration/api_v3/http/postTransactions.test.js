@@ -26,8 +26,8 @@ const {
 } = require('../../../schemas/api_v3/transaction.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV2}/transactions`;
+const baseUrlV3 = `${baseUrl}/api/v3`;
+const endpoint = `${baseUrlV3}/transactions`;
 
 // TODO: Enable test cases once given issue is resolved https://github.com/LiskHQ/lisk-sdk/issues/7172
 xdescribe('Post transactions API', () => {

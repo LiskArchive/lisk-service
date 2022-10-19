@@ -19,8 +19,8 @@ const { api } = require('../../../helpers/api');
 const { validateBLSKeySchema } = require('../../../schemas/api_v3/validatorSchema.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV2}/validator/validateBLSKey`;
+const baseUrlV3 = `${baseUrl}/api/v3`;
+const endpoint = `${baseUrlV3}/validator/validateBLSKey`;
 
 describe('validate BLS Key API', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
