@@ -15,6 +15,7 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
+const { VALID_BLS_KEY_PROOF_OF_POSSESSION } = require('../../../constants');
 
 const { validateBLSKeySchema } = require('../../../schemas/api_v3/validatorSchema.schema');
 
@@ -24,8 +25,7 @@ const endpoint = `${baseUrlV3}/validator/validateBLSKey`;
 
 describe('validate BLS Key API', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
-		const blsKey = 'b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81';
-		const proofOfPossession = '88bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26';
+		const { blsKey, proofOfPossession } = VALID_BLS_KEY_PROOF_OF_POSSESSION;
 		const response = await api.post(
 			`${endpoint}?blsKey=${blsKey}&proofOfPossession=${proofOfPossession}`,
 		);
@@ -45,7 +45,7 @@ describe('validate BLS Key API', () => {
 		expect(response.data.isValid).toEqual(false);
 	});
 
-	it('Returns true for wrong proofOfPossession message', async () => {
+	it('Returns false for wrong proofOfPossession message', async () => {
 		const blsKey = 'b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81';
 		const proofOfPossession = '18bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26';
 		const response = await api.post(
