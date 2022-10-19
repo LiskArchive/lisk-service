@@ -33,8 +33,13 @@ const validatorInfoSchema = {
 	proofOfPosession: Joi.string().required(),
 };
 
+const validateBLSKeySchema = {
+	isValid: Joi.boolean().required(),
+};
+
 module.exports = {
 	validatorInfoSchema: Joi.object(validatorInfoSchema).required(),
 	validatorMetaSchema: Joi.object(validatorMetaSchema).required(),
 	goodRequestSchemaForValidator: Joi.object(goodRequestSchemaForValidator).required(),
+	validateBLSKeySchema: Joi.object(validateBLSKeySchema).required(),
 };
