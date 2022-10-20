@@ -31,6 +31,7 @@ const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
 const DIGITS = /^\d+$/;
+const HEX = /^\b[0-9a-fA-F]+\b$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -51,4 +52,5 @@ module.exports = {
 	CHAIN_ID,
 	DURATION,
 	DIGITS,
+	HEX,
 };
