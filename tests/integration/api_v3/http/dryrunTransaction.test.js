@@ -44,14 +44,18 @@ describe('Post dryrun transactions API', () => {
 
 	it('throws error when posting invalid binary transaction', async () => {
 		const dryrunTransaction = await api.post(
-			`${endpoint}?transaction=0802100018002080c2d72f2a2027f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a322e0880a0cebdf3ef171214aebd99f07218109162a905d0e0c91e58bedc83c51a0e746f6b656e207472616e736665723a40a30998db4e96911a3d784b0a01b817baf64ec9745d7c0407255967506cb01764220e2e6ce66183d07`,
+			endpoint,
+			{ transaction: '0802100018002080c2d72f2a2027f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a322e0880a0cebdf3ef171214aebd99f07218109162a905d0e0c91e58bedc83c51a0e746f6b656e207472616e736665723a40a30998db4e96911a3d784b0a01b817baf64ec9745d7c0407255967506cb01764220e2e6ce66183d07' },
+			500,
 		);
 		expect(dryrunTransaction).toMap(badRequestSchema);
 	});
 
 	it('throws error in case of invalid query params', async () => {
 		const dryrunTransaction = await api.post(
-			`${endpoint}?transactions=0802100018002080c2d72f2a2027f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a322e0880a0cebdf3ef171214aebd99f07218109162a905d0e0c91e58bedc83c51a0e746f6b656e207472616e736665723a40a30998db4e96911a3d784b0a01b817baf64ec9745d7c0407255967506cb01764220e2e6ce66183d07`,
+			endpoint,
+			{ transactions: '0802100018002080c2d72f2a2027f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a322e0880a0cebdf3ef171214aebd99f07218109162a905d0e0c91e58bedc83c51a0e746f6b656e207472616e736665723a40a30998db4e96911a3d784b0a01b817baf64ec9745d7c0407255967506cb01764220e2e6ce66183d07' },
+			400,
 		);
 		expect(dryrunTransaction).toMap(wrongInputParamSchema);
 	});
