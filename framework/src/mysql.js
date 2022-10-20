@@ -243,9 +243,9 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, val0);
+				this.whereJsonSupersetOf(property, [val0]);
 				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, value);
+					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
 		}
@@ -383,9 +383,9 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, val0);
+				this.whereJsonSupersetOf(property, [val0]);
 				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, value);
+					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
 		}
