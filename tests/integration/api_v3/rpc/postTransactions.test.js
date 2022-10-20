@@ -15,6 +15,8 @@
  */
 const config = require('../../../config');
 
+const constants = require('../../../constants');
+
 const {
 	request,
 } = require('../../../helpers/socketIoRpcRequest');
@@ -45,15 +47,13 @@ describe('Method post.transactions', () => {
 		expect(result).toMap(postTransactionSchema);
 	});
 
-	it.only('invalid binary transaction -> empty response', async () => {
-		const response = await postTransaction({ transaction: 'a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32250880c2d72f1214b49074a2eb04e7611908985f02c12fb7cd488d451a0874657374207478733a4065faed7b49d1ee63730cbb545ea25e5036' }).catch(e => e);
-		expect(response).toMap(emptyResponseSchema);
-		const { result } = response;
-		expect(result).toMap(emptyResultEnvelopeSchema);
+	it('invalid binary transaction -> empty response', async () => {
+		const response = await postTransaction({ transaction: constants.INVALID_TRANSACTION }).catch(e => e);
+		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('invalid query parameter -> -32602', async () => {
-		const response = await postTransaction({ transactions: '0802100018002080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32250880c2d72f1214b49074a2eb04e7611908985f02c12fb7cd488d451a0874657374207478733a4065faed7b49d1ee63730cbb545ea25e50361581e35412eeffac3b35746afd1176d2ee1e270e8b072b1ccfad2d64f72918063c383003971600d56b168d6e429f05' }).catch(e => e);
+		const response = await postTransaction({ transactions: constants.INVALID_TRANSACTION }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
 });
