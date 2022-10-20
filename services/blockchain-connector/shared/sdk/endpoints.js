@@ -164,7 +164,8 @@ const getBlocksByIDs = async (ids) => {
 			if (remainingIDs.length === 0) return [genesisBlock];
 
 			const remainingBlocks = await getBlocksByIDs(remainingIDs);
-			return remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
+			remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
+			return remainingBlocks;
 		}
 
 		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
