@@ -17,7 +17,7 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 const { VALID_BLS_KEY_PROOF_OF_POSSESSION } = require('../../../constants');
 
-const { validateBLSKeySchema } = require('../../../schemas/api_v3/validatorSchema.schema');
+const { validateBLSKeySchema, validateBLSKeyGoodRequestSchema } = require('../../../schemas/api_v3/validatorSchema.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -30,6 +30,7 @@ describe('validate BLS Key API', () => {
 			`${endpoint}?blsKey=${blsKey}&proofOfPossession=${proofOfPossession}`,
 		);
 
+		expect(response).toMap(validateBLSKeyGoodRequestSchema);
 		expect(response.data).toMap(validateBLSKeySchema);
 		expect(response.data.isValid).toEqual(true);
 	});

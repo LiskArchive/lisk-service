@@ -19,7 +19,7 @@ const { VALID_BLS_KEY_PROOF_OF_POSSESSION } = require('../../../constants');
 
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const { invalidParamsSchema } = require('../../../schemas/rpcGenerics.schema');
+const { jsonRpcEnvelopeSchema, invalidParamsSchema } = require('../../../schemas/rpcGenerics.schema');
 
 const { validateBLSKeySchema } = require('../../../schemas/api_v3/validatorSchema.schema');
 
@@ -30,8 +30,9 @@ describe('Method post.validator.validateBLSKey', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
 		const { blsKey, proofOfPossession } = VALID_BLS_KEY_PROOF_OF_POSSESSION;
 		const response = await validateBLSKey({ blsKey, proofOfPossession });
-		const { result } = response;
+		expect(response).toMap(jsonRpcEnvelopeSchema);
 
+		const { result } = response;
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(validateBLSKeySchema);
 		expect(result.data.isValid).toEqual(true);

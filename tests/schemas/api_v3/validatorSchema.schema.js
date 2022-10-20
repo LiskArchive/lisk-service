@@ -37,9 +37,15 @@ const validateBLSKeySchema = {
 	isValid: Joi.boolean().required(),
 };
 
+const validateBLSKeyGoodRequestSchema = {
+	data: Joi.object().required(),
+	meta: Joi.object().required(),
+};
+
 module.exports = {
 	validatorInfoSchema: Joi.object(validatorInfoSchema).required(),
 	validatorMetaSchema: Joi.object(validatorMetaSchema).required(),
 	goodRequestSchemaForValidator: Joi.object(goodRequestSchemaForValidator).required(),
 	validateBLSKeySchema: Joi.object(validateBLSKeySchema).required(),
+	validateBLSKeyGoodRequestSchema: Joi.object(validateBLSKeyGoodRequestSchema).required(),
 };
