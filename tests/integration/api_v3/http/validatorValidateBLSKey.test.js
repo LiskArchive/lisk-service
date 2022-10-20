@@ -15,9 +15,10 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { VALID_BLS_KEY_PROOF_OF_POSSESSION } = require('../../../constants');
+const { BLS_KEY, PROOF_OF_POSSESSION, EXTRA_PARAM } = require('../constants/validatorValidateBLSKey');
 
 const { validateBLSKeySchema, validateBLSKeyGoodRequestSchema } = require('../../../schemas/api_v3/validatorSchema.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -25,9 +26,12 @@ const endpoint = `${baseUrlV3}/validator/validateBLSKey`;
 
 describe('validate BLS Key API', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
-		const { blsKey, proofOfPossession } = VALID_BLS_KEY_PROOF_OF_POSSESSION;
 		const response = await api.post(
-			`${endpoint}?blsKey=${blsKey}&proofOfPossession=${proofOfPossession}`,
+			endpoint,
+			{
+				blsKey: BLS_KEY.valid,
+				proofOfPossession: PROOF_OF_POSSESSION.valid,
+			},
 		);
 
 		expect(response).toMap(validateBLSKeyGoodRequestSchema);
@@ -36,10 +40,12 @@ describe('validate BLS Key API', () => {
 	});
 
 	it('Returns false for wrong blsKey', async () => {
-		const blsKey = '1301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81';
-		const proofOfPossession = '88bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26';
 		const response = await api.post(
-			`${endpoint}?blsKey=${blsKey}&proofOfPossession=${proofOfPossession}`,
+			endpoint,
+			{
+				blsKey: BLS_KEY.invalid,
+				proofOfPossession: PROOF_OF_POSSESSION.valid,
+			},
 		);
 
 		expect(response.data).toMap(validateBLSKeySchema);
@@ -47,13 +53,32 @@ describe('validate BLS Key API', () => {
 	});
 
 	it('Returns false for wrong proofOfPossession message', async () => {
-		const blsKey = 'b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81';
-		const proofOfPossession = '18bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26';
 		const response = await api.post(
-			`${endpoint}?blsKey=${blsKey}&proofOfPossession=${proofOfPossession}`,
+			endpoint,
+			{
+				blsKey: BLS_KEY.valid,
+				proofOfPossession: PROOF_OF_POSSESSION.invalid,
+			},
 		);
 
 		expect(response.data).toMap(validateBLSKeySchema);
 		expect(response.data.isValid).toEqual(false);
+	});
+
+	it('No param -> bad request', async () => {
+		const response = await api.post(endpoint, {}, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('extra param -> bad request', async () => {
+		const response = await api.post(endpoint,
+			{
+				blsKey: BLS_KEY.valid,
+				proofOfPossession: PROOF_OF_POSSESSION.valid,
+				extra_param: EXTRA_PARAM,
+			},
+			400,
+		);
+		expect(response).toMap(badRequestSchema);
 	});
 });

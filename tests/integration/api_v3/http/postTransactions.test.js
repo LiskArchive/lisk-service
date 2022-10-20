@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const constants = require('../../../constants');
+const { INVALID_TRANSACTION } = require('../constants/postTransactions');
 const { api } = require('../../../helpers/api');
 
 const {
@@ -42,7 +42,7 @@ describe('Post transactions API', () => {
 	it('throws error when posting invalid binary transaction', async () => {
 		const postTransaction = await api.post(
 			endpoint,
-			{ transaction: constants.INVALID_TRANSACTION },
+			{ transaction: INVALID_TRANSACTION },
 			400,
 		);
 		expect(postTransaction).toMap(badRequestSchema);
@@ -51,7 +51,7 @@ describe('Post transactions API', () => {
 	it('throws error in case of invalid query params', async () => {
 		const postTransaction = await api.post(
 			endpoint,
-			{ transactions: constants.INVALID_TRANSACTION },
+			{ transactions: INVALID_TRANSACTION },
 			400,
 		);
 		expect(postTransaction).toMap(wrongInputParamSchema);

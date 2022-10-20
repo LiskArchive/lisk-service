@@ -15,7 +15,7 @@
  */
 const config = require('../../../config');
 
-const { VALID_BLS_KEY_PROOF_OF_POSSESSION } = require('../../../constants');
+const { BLS_KEY, PROOF_OF_POSSESSION, EXTRA_PARAM } = require('../constants/validatorValidateBLSKey');
 
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
@@ -28,8 +28,10 @@ const validateBLSKey = async params => request(wsRpcUrl, 'post.validator.validat
 
 describe('Method post.validator.validateBLSKey', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
-		const { blsKey, proofOfPossession } = VALID_BLS_KEY_PROOF_OF_POSSESSION;
-		const response = await validateBLSKey({ blsKey, proofOfPossession });
+		const response = await validateBLSKey({
+			blsKey: BLS_KEY.valid,
+			proofOfPossession: PROOF_OF_POSSESSION.valid,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -39,9 +41,10 @@ describe('Method post.validator.validateBLSKey', () => {
 	});
 
 	it('Returns false for invalid blsKey', async () => {
-		const blsKey = '1301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81';
-		const proofOfPossession = '88bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26';
-		const response = await validateBLSKey({ blsKey, proofOfPossession });
+		const response = await validateBLSKey({
+			blsKey: BLS_KEY.invalid,
+			proofOfPossession: PROOF_OF_POSSESSION.valid,
+		});
 		const { result } = response;
 
 		expect(result.data).toBeInstanceOf(Object);
@@ -50,9 +53,10 @@ describe('Method post.validator.validateBLSKey', () => {
 	});
 
 	it('Returns true for invalid proofOfPossession message', async () => {
-		const blsKey = 'b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81';
-		const proofOfPossession = '18bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26';
-		const response = await validateBLSKey({ blsKey, proofOfPossession });
+		const response = await validateBLSKey({
+			blsKey: BLS_KEY.valid,
+			proofOfPossession: PROOF_OF_POSSESSION.invalid,
+		});
 		const { result } = response;
 
 		expect(result.data).toBeInstanceOf(Object);
@@ -60,8 +64,17 @@ describe('Method post.validator.validateBLSKey', () => {
 		expect(result.data.isValid).toEqual(false);
 	});
 
-	it('invalid query parameter -> -32602', async () => {
-		const response = await validateBLSKey({ transactions: '0802100018002080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32250880c2d72f1214b49074a2eb04e7611908985f02c12fb7cd488d451a0874657374207478733a4065faed7b49d1ee63730cbb545ea25e50361581e35412eeffac3b35746afd1176d2ee1e270e8b072b1ccfad2d64f72918063c383003971600d56b168d6e429f05' }).catch(e => e);
+	it('No param -> invalid param', async () => {
+		const response = await validateBLSKey({});
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('extra param -> invalid param', async () => {
+		const response = await validateBLSKey({
+			blsKey: BLS_KEY.valid,
+			proofOfPossession: PROOF_OF_POSSESSION.valid,
+			extra_param: EXTRA_PARAM,
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

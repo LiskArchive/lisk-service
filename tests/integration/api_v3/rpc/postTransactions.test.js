@@ -15,7 +15,7 @@
  */
 const config = require('../../../config');
 
-const constants = require('../../../constants');
+const { INVALID_TRANSACTION } = require('../constants/postTransactions');
 
 const {
 	request,
@@ -23,8 +23,7 @@ const {
 
 const {
 	invalidParamsSchema,
-	emptyResultEnvelopeSchema,
-	emptyResponseSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -38,7 +37,7 @@ describe('Method post.transactions', () => {
 	it('Post transaction succesfully', async () => {
 		const response = await postTransaction(
 			{
-				transaction: '0a05746f6b656e12087472616e7366657218032080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a406049978f45e5664507a7a2a6a2fd0b76f98144fec26d54a0b73eac05c94cf23d4c794c25a82738c415640b28cddeeda1e9ea0d0a6e2268ab32666da2a49b3d06',
+				transaction: '0a05746f6b656e12087472616e7366657218012080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a403881faa16364f5d6a08fb50736ec4809f4d50bba90a3e00c3b10d4f96b85fe50268bf545e95632d582d4ccac750953a09faa5da9d6d49f441baea7f888e5c007',
 			},
 		);
 		const { result } = response;
@@ -48,12 +47,12 @@ describe('Method post.transactions', () => {
 	});
 
 	it('invalid binary transaction -> empty response', async () => {
-		const response = await postTransaction({ transaction: constants.INVALID_TRANSACTION }).catch(e => e);
-		expect(response).toMap(invalidParamsSchema);
+		const response = await postTransaction({ transaction: INVALID_TRANSACTION }).catch(e => e);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
 	});
 
 	it('invalid query parameter -> -32602', async () => {
-		const response = await postTransaction({ transactions: constants.INVALID_TRANSACTION }).catch(e => e);
+		const response = await postTransaction({ transactions: INVALID_TRANSACTION }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
 });
