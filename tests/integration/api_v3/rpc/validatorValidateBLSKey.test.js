@@ -35,6 +35,7 @@ describe('Method post.validator.validateBLSKey', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
+		expect(result).toMap(validateBLSKeyGoodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(validateBLSKeySchema);
 		expect(result.data.isValid).toEqual(true);
@@ -46,7 +47,7 @@ describe('Method post.validator.validateBLSKey', () => {
 			proofOfPossession: PROOF_OF_POSSESSION.VALID,
 		});
 		const { result } = response;
-
+		expect(result).toMap(validateBLSKeyGoodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(validateBLSKeySchema);
 		expect(result.data.isValid).toEqual(false);
@@ -58,7 +59,7 @@ describe('Method post.validator.validateBLSKey', () => {
 			proofOfPossession: PROOF_OF_POSSESSION.INVALID,
 		});
 		const { result } = response;
-
+		expect(result).toMap(validateBLSKeyGoodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(validateBLSKeySchema);
 		expect(result.data.isValid).toEqual(false);

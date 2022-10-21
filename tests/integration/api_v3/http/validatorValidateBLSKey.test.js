@@ -48,6 +48,7 @@ describe('validate BLS Key API', () => {
 			},
 		);
 
+		expect(response).toMap(validateBLSKeyGoodRequestSchema);
 		expect(response.data).toMap(validateBLSKeySchema);
 		expect(response.data.isValid).toEqual(false);
 	});
@@ -61,6 +62,7 @@ describe('validate BLS Key API', () => {
 			},
 		);
 
+		expect(response).toMap(validateBLSKeyGoodRequestSchema);
 		expect(response.data).toMap(validateBLSKeySchema);
 		expect(response.data.isValid).toEqual(false);
 	});

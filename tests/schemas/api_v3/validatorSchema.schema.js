@@ -38,8 +38,8 @@ const validateBLSKeySchema = {
 };
 
 const validateBLSKeyGoodRequestSchema = {
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
+	data: Joi.object(validateBLSKeySchema).required(),
+	meta: Joi.object({}).required(),
 };
 
 module.exports = {
