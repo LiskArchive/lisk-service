@@ -18,13 +18,12 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const event = {
-	data: Joi.string().pattern(regex.HEX).required(),
-	index: Joi.number().integer().positive().allow(0)
-		.required(),
-	module: Joi.string().min(1).required(),
-	name: Joi.string().min(1).required(),
-	topics: Joi.array().items(Joi.string().pattern(regex.HEX).required()).required(),
-	height: Joi.number().required(),
+	data: Joi.string().object().required(),
+	index: Joi.number().integer().min(0).required(),
+	module: Joi.string().pattern(regex.MODULE).required(),
+	name: Joi.string().pattern(regex.NAME).required(),
+	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
+	height: Joi.number().positive().required(),
 };
 
 const dryrunTransactionResponseSchema = {

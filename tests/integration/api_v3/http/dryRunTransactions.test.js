@@ -65,7 +65,7 @@ describe('Post dryrun transactions API', () => {
 		expect(firstResponse.data.success).toBe(true);
 		expect(firstResponse.meta).toMap(metaSchema);
 
-		// Send transaction and wait to be minted
+		// Send transaction and wait for it to be included in the next block
 		await api.post(
 			postTransactionEndpoint,
 			{ transaction },

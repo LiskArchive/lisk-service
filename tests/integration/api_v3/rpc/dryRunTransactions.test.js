@@ -56,7 +56,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result.data.events.length).toBeGreaterThan(0);
 	});
 
-	it.only('Returns proper response for duplicate transaction', async () => {
+	it('Returns proper response for duplicate transaction', async () => {
 		const transaction = '0a05746f6b656e12087472616e7366657218082080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a404d84fa6e2d39ddf0898b9df5c783e01b760b627db72f4d89a3610b42a1a17ab8861d480cfd0b297f4a16b70078c3e1ea4cd6c0e7aca41296d668dfc019a31f05';
 		// Check dryrun passes
 		const firstResponse = await postDryrunTransaction({ transaction });
@@ -69,7 +69,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(firstResult.meta).toMap(metaSchema);
 		expect(firstResult.data.events.length).toBeGreaterThan(0);
 
-		// Send transaction and wait to be minted
+		// Send transaction and wait for it to be included in the next block
 		await postTransaction({ transaction });
 		await waitMs(15000);
 
