@@ -18,6 +18,7 @@ const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
+const EVENT_NAME = /^[\w!@$&. ]{1,20}$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const NONCE = /^[0-9]+$/;
@@ -42,6 +43,7 @@ module.exports = {
 	MODULE_COMMAND,
 	PUBLIC_KEY,
 	SEMVER,
+	EVENT_NAME,
 	NAME,
 	NEWSFEED_SOURCE,
 	NONCE,

@@ -30,7 +30,7 @@ const block = {
 const eventSchema = {
 	id: Joi.string().required(),
 	module: Joi.string().pattern(regex.MODULE).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	index: Joi.number().integer().min(0).required(),
 	data: Joi.object().required(),
 	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
