@@ -20,7 +20,7 @@ const regex = require('./regex');
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
 const block = {
-	id: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
+	id: Joi.string().pattern(regex.HASH_SHA256)
 		.required(),
 	height: Joi.number().integer().min(1).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
@@ -29,12 +29,12 @@ const block = {
 
 const eventSchema = {
 	id: Joi.string().required(),
-	moduleID: Joi.string().required(),
-	moduleName: Joi.string().required(),
-	typeID: Joi.string().required(),
-	data: Joi.string().required(),
-	topics: Joi.array().required(),
-	block: Joi.object(block).optional(),
+	module: Joi.string().pattern(regex.MODULE).required(),
+	name: Joi.string().required(),
+	index: Joi.number().positive().required(),
+	data: Joi.object().required(),
+	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
+	block: Joi.object(block).required(),
 };
 
 module.exports = {

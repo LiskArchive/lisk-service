@@ -17,7 +17,7 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
-const eventItem = {
+const event = {
 	data: Joi.string().pattern(regex.HEX).required(),
 	index: Joi.number().integer().positive().allow(0)
 		.required(),
@@ -27,9 +27,9 @@ const eventItem = {
 	height: Joi.number().required(),
 };
 
-const dryrunTransactionSchema = {
-	success: Joi.boolean().valid(true).required(),
-	events: Joi.array().items(Joi.object(eventItem).required()).required(),
+const dryrunTransactionResponseSchema = {
+	success: Joi.boolean().required(),
+	events: Joi.array().items(Joi.object(event).optional()).required(),
 };
 
 const metaParams = {
@@ -41,12 +41,12 @@ const metaSchema = {
 };
 
 const goodRequestSchema = {
-	data: Joi.object(dryrunTransactionSchema).required(),
+	data: Joi.object(dryrunTransactionResponseSchema).required(),
 	meta: Joi.object(metaSchema).required(),
 };
 
 module.exports = {
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
-	dryrunTransactionSchema: Joi.object(dryrunTransactionSchema).required(),
+	dryrunTransactionResponseSchema: Joi.object(dryrunTransactionResponseSchema).required(),
 	metaSchema: Joi.object(metaSchema).required(),
 };
