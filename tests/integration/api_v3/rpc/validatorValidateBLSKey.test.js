@@ -15,7 +15,7 @@
  */
 const config = require('../../../config');
 
-const { BLS_KEY, PROOF_OF_POSSESSION, EXTRA_PARAM } = require('../constants/validatorValidateBLSKey');
+const { BLS_KEY, PROOF_OF_POSSESSION } = require('../constants/validatorValidateBLSKey');
 
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
@@ -29,8 +29,8 @@ const validateBLSKey = async params => request(wsRpcUrl, 'post.validator.validat
 describe('Method post.validator.validateBLSKey', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
 		const response = await validateBLSKey({
-			blsKey: BLS_KEY.valid,
-			proofOfPossession: PROOF_OF_POSSESSION.valid,
+			blsKey: BLS_KEY.VALID,
+			proofOfPossession: PROOF_OF_POSSESSION.VALID,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -42,8 +42,8 @@ describe('Method post.validator.validateBLSKey', () => {
 
 	it('Returns false for invalid blsKey', async () => {
 		const response = await validateBLSKey({
-			blsKey: BLS_KEY.invalid,
-			proofOfPossession: PROOF_OF_POSSESSION.valid,
+			blsKey: BLS_KEY.INVALID,
+			proofOfPossession: PROOF_OF_POSSESSION.VALID,
 		});
 		const { result } = response;
 
@@ -54,8 +54,8 @@ describe('Method post.validator.validateBLSKey', () => {
 
 	it('Returns true for invalid proofOfPossession message', async () => {
 		const response = await validateBLSKey({
-			blsKey: BLS_KEY.valid,
-			proofOfPossession: PROOF_OF_POSSESSION.invalid,
+			blsKey: BLS_KEY.VALID,
+			proofOfPossession: PROOF_OF_POSSESSION.INVALID,
 		});
 		const { result } = response;
 
@@ -69,11 +69,11 @@ describe('Method post.validator.validateBLSKey', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('extra param -> invalid param', async () => {
+	it('Invalid param -> invalid param', async () => {
 		const response = await validateBLSKey({
-			blsKey: BLS_KEY.valid,
-			proofOfPossession: PROOF_OF_POSSESSION.valid,
-			extra_param: EXTRA_PARAM,
+			blsKey: BLS_KEY.VALID,
+			proofOfPossession: PROOF_OF_POSSESSION.VALID,
+			invalidParam: 'value',
 		});
 		expect(response).toMap(invalidParamsSchema);
 	});

@@ -15,8 +15,6 @@
  */
 const config = require('../../../config');
 
-const { INVALID_TRANSACTION } = require('../constants/postTransactions');
-
 const {
 	request,
 } = require('../../../helpers/socketIoRpcRequest');
@@ -33,6 +31,8 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postTransaction = async params => request(wsRpcUrl, 'post.transactions', params);
 
+const INVALID_TRANSACTION = '0802100018002080c2d72f2a2027f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a322e0880a0cebdf3ef171214aebd99f07218109162a905d0e0c91e58bedc83c51a0e746f6b656e207472616e736665723a40a30998db4e96911a3d784b0a01b817baf64ec9745d7c0407255967506cb01764220e2e6ce66183d07';
+
 describe('Method post.transactions', () => {
 	it('Post transaction succesfully', async () => {
 		const response = await postTransaction(
@@ -46,12 +46,12 @@ describe('Method post.transactions', () => {
 		expect(result).toMap(postTransactionSchema);
 	});
 
-	it('invalid binary transaction -> empty response', async () => {
+	it('Invalid binary transaction -> empty response', async () => {
 		const response = await postTransaction({ transaction: INVALID_TRANSACTION }).catch(e => e);
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 	});
 
-	it('invalid query parameter -> -32602', async () => {
+	it('Invalid query parameter -> -32602', async () => {
 		const response = await postTransaction({ transactions: INVALID_TRANSACTION }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});

@@ -15,7 +15,7 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { BLS_KEY, PROOF_OF_POSSESSION, EXTRA_PARAM } = require('../constants/validatorValidateBLSKey');
+const { BLS_KEY, PROOF_OF_POSSESSION } = require('../constants/validatorValidateBLSKey');
 
 const { validateBLSKeySchema, validateBLSKeyGoodRequestSchema } = require('../../../schemas/api_v3/validatorSchema.schema');
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
@@ -29,8 +29,8 @@ describe('validate BLS Key API', () => {
 		const response = await api.post(
 			endpoint,
 			{
-				blsKey: BLS_KEY.valid,
-				proofOfPossession: PROOF_OF_POSSESSION.valid,
+				blsKey: BLS_KEY.VALID,
+				proofOfPossession: PROOF_OF_POSSESSION.VALID,
 			},
 		);
 
@@ -43,8 +43,8 @@ describe('validate BLS Key API', () => {
 		const response = await api.post(
 			endpoint,
 			{
-				blsKey: BLS_KEY.invalid,
-				proofOfPossession: PROOF_OF_POSSESSION.valid,
+				blsKey: BLS_KEY.INVALID,
+				proofOfPossession: PROOF_OF_POSSESSION.VALID,
 			},
 		);
 
@@ -56,8 +56,8 @@ describe('validate BLS Key API', () => {
 		const response = await api.post(
 			endpoint,
 			{
-				blsKey: BLS_KEY.valid,
-				proofOfPossession: PROOF_OF_POSSESSION.invalid,
+				blsKey: BLS_KEY.VALID,
+				proofOfPossession: PROOF_OF_POSSESSION.INVALID,
 			},
 		);
 
@@ -70,12 +70,12 @@ describe('validate BLS Key API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('extra param -> bad request', async () => {
+	it('Invalid param -> bad request', async () => {
 		const response = await api.post(endpoint,
 			{
-				blsKey: BLS_KEY.valid,
-				proofOfPossession: PROOF_OF_POSSESSION.valid,
-				extra_param: EXTRA_PARAM,
+				blsKey: BLS_KEY.VALID,
+				proofOfPossession: PROOF_OF_POSSESSION.VALID,
+				invalidParam: 'value',
 			},
 			400,
 		);
