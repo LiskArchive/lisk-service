@@ -41,8 +41,8 @@ const metaSchema = {
 };
 
 const goodRequestSchema = {
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
+	data: Joi.object(dryrunTransactionSchema).required(),
+	meta: Joi.object(metaSchema).required(),
 };
 
 module.exports = {

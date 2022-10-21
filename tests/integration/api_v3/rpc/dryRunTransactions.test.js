@@ -28,6 +28,7 @@ const {
 
 const {
 	dryrunTransactionSchema,
+	goodRequestSchema,
 	metaSchema,
 } = require('../../../schemas/api_v3/dryrunTransaction.schema');
 
@@ -44,6 +45,7 @@ describe('Method post.transactions', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -61,7 +63,7 @@ describe('Method post.transactions', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('invalid query parameter -> -32602', async () => {
+	it('Invalid query parameter -> -32602', async () => {
 		const response = await postDryrunTransaction({
 			transaction: VALID_TRANSACTION,
 			transactions: INVALID_TRANSACTION,
