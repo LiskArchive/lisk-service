@@ -30,8 +30,8 @@ const {
 } = require('../../../schemas/api_v3/peer.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV2}/peers`;
+const baseUrlV3 = `${baseUrl}/api/v3`;
+const endpoint = `${baseUrlV3}/peers`;
 
 // TODO: Enable when peers endpoint is available from sdk
 xdescribe('Peers API', () => {

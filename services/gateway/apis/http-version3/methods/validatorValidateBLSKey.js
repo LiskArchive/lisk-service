@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const validateBLSKeySources = require('../../../sources/version3/validateBLSKey');
+const validateBLSKeySources = require('../../../sources/version3/validatorValidateBLSKey');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
 const { response, getSwaggerDescription } = require('../../../shared/utils');
