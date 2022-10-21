@@ -21,7 +21,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const { jsonRpcEnvelopeSchema, invalidParamsSchema } = require('../../../schemas/rpcGenerics.schema');
 
-const { validateBLSKeySchema } = require('../../../schemas/api_v3/validatorSchema.schema');
+const { validateBLSKeySchema, validateBLSKeyGoodRequestSchema } = require('../../../schemas/api_v3/validatorSchema.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const validateBLSKey = async params => request(wsRpcUrl, 'post.validator.validateBLSKey', params);
@@ -46,6 +46,8 @@ describe('Method post.validator.validateBLSKey', () => {
 			blsKey: BLS_KEY.INVALID,
 			proofOfPossession: PROOF_OF_POSSESSION.VALID,
 		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
 		const { result } = response;
 		expect(result).toMap(validateBLSKeyGoodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
@@ -53,11 +55,13 @@ describe('Method post.validator.validateBLSKey', () => {
 		expect(result.data.isValid).toEqual(false);
 	});
 
-	it('Returns true for invalid proofOfPossession message', async () => {
+	it('Returns false for invalid proofOfPossession message', async () => {
 		const response = await validateBLSKey({
 			blsKey: BLS_KEY.VALID,
 			proofOfPossession: PROOF_OF_POSSESSION.INVALID,
 		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
 		const { result } = response;
 		expect(result).toMap(validateBLSKeyGoodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
