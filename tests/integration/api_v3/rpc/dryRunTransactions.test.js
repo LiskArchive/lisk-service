@@ -35,8 +35,8 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactions.dryrun', params);
 
-describe('Method post.transactions', () => {
-	it('Post transaction succesfully', async () => {
+describe('Method post.transactions.dryrun', () => {
+	it('Post dryrun transaction succesfully', async () => {
 		const response = await postDryrunTransaction(
 			{
 				transaction: VALID_TRANSACTION,
