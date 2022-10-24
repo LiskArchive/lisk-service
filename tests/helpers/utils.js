@@ -33,7 +33,14 @@ const isStringCsvParseable = (string, params) => parse(
 	(err) => !err,
 );
 
+const waitMs = (n) => new Promise((resolve) => {
+	setTimeout(() => {
+		resolve();
+	}, n);
+});
+
 module.exports = {
 	waitForSuccess,
 	isStringCsvParseable,
+	waitMs,
 };
