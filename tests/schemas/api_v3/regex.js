@@ -18,6 +18,7 @@ const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
+const EVENT_NAME = /^[\w!@$&. ]{1,20}$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const NONCE = /^[0-9]+$/;
@@ -32,6 +33,8 @@ const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
 const DIGITS = /^\d+$/;
 const VOTE_WEIGHT = /^\b[1-9]\d*000000000\b$/;
+const HEX = /^\b[0-9a-fA-F]+\b$/;
+const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -41,6 +44,7 @@ module.exports = {
 	MODULE_COMMAND,
 	PUBLIC_KEY,
 	SEMVER,
+	EVENT_NAME,
 	NAME,
 	NEWSFEED_SOURCE,
 	NONCE,
@@ -53,4 +57,6 @@ module.exports = {
 	DURATION,
 	DIGITS,
 	VOTE_WEIGHT,
+	HEX,
+	TOPIC,
 };
