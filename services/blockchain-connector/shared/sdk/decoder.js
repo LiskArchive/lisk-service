@@ -26,6 +26,7 @@ const {
 } = require('./schema');
 
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
+const { getLisk32Address } = require('../utils/accountUtils');
 
 const decodeTransaction = (transaction) => {
 	const txSchema = getTransactionSchema();
@@ -85,7 +86,16 @@ const decodeEvent = (event) => {
 	const eventDataSchema = getDataSchemaByEventName(event.name);
 	const eventData = eventDataSchema
 		? codec.decode(eventDataSchema, Buffer.from(event.data, 'hex'))
-		: event.data;
+		: { data: event.data };
+
+	// TODO: Remove after SDK fixes the address format
+	if (eventDataSchema) {
+		Object.entries(eventDataSchema.properties).forEach(([prop]) => {
+			if (prop.endsWith('Address')) {
+				eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
+			}
+		});
+	}
 
 	const decodedEvent = {
 		...event,

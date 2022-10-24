@@ -17,12 +17,14 @@ const BluebirdPromise = require('bluebird');
 
 const dataService = require('../business');
 const { getDelegates } = require('./delegates');
+const { getLisk32Address } = require('../../utils/accountUtils');
 
 const getVotesReceived = async params => {
 	const response = await dataService.getVotesReceived(params);
 	response.data.votes = await BluebirdPromise.map(
 		response.data.votes,
 		async vote => {
+			vote.delegateAddress = getLisk32Address(vote.delegateAddress);
 			const [delegate] = (await getDelegates({
 				address: vote.delegateAddress,
 			})).data;
