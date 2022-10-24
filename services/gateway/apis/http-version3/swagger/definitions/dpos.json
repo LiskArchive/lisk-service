@@ -205,6 +205,16 @@
                 "format": "username",
                 "example": "liskhq",
                 "description": "Name of the delegate the queried account voted for."
+            },
+            "voteWeight": {
+                "type": "string",
+                "example": "109000000000",
+                "description": "vote weight"
+            },
+            "rank": {
+                "type": "integer",
+                "example": 93,
+                "description": "Delegate rank."
             }
         }
     },

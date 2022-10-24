@@ -26,6 +26,8 @@ const votes = {
 	delegateAddress: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 	amount: Joi.string().required(),
+	rank: Joi.number().integer().min(1).required(),
+	voteWeight: Joi.string().min(10).required(),
 };
 
 const voterSchema = {
