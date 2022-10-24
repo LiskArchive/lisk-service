@@ -13,10 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const dataService = require('../business');
+const { getDelegates } = require('./delegates');
 
 const getVotesSent = async params => {
 	const response = await dataService.getVotesSent(params);
+	response.data.votes = await BluebirdPromise(
+		response.data.votes,
+		async vote => {
+			const [delegateInfo = {}] = (await getDelegates({
+				address: response.data.account.address,
+			})).data;
+
+			return {
+				...vote,
+				rank: delegateInfo.rank,
+				voteWeight: delegateInfo.delegateWeight,
+			};
+		},
+		{ concurrency: response.data.account.votes.length },
+	);
+
 	return response;
 };
 
