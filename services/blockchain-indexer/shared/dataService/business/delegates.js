@@ -55,15 +55,13 @@ const getAllDelegates = async () => {
 		async delegate => {
 			delegate.address = getLisk32Address(delegate.address);
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
-				delegate.delegateWeight = BigInt('0');
+				delegate.voteWeight = BigInt('0');
 			} else {
 				const cap = BigInt(delegate.selfVotes) * BigInt(10);
 				delegate.totalVotesReceived = BigInt(delegate.totalVotesReceived);
-				const voteWeight = BigInt(delegate.totalVotesReceived) > cap
+				delegate.voteWeight = BigInt(delegate.totalVotesReceived) > cap
 					? cap
 					: delegate.totalVotesReceived;
-
-				delegate.delegateWeight = voteWeight;
 			}
 			return delegate;
 		},

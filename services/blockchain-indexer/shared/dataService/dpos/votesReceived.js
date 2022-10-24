@@ -20,7 +20,7 @@ const { getDelegates } = require('./delegates');
 
 const getVotesReceived = async params => {
 	const response = await dataService.getVotesReceived(params);
-	response.data.votes = await BluebirdPromise(
+	response.data.votes = await BluebirdPromise.map(
 		response.data.votes,
 		async vote => {
 			const [delegate] = (await getDelegates({
@@ -30,7 +30,7 @@ const getVotesReceived = async params => {
 			return {
 				...vote,
 				rank: delegate.rank,
-				voteWeight: delegate.delegateWeight,
+				voteWeight: delegate.voteWeight,
 			};
 		},
 		{ concurrency: response.data.votes.length },

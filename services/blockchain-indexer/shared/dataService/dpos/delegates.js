@@ -55,7 +55,7 @@ const DELEGATE_STATUS = {
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
-	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
+	const diff = BigInt(b.voteWeight) - BigInt(a.voteWeight);
 	if (diff !== BigInt('0')) return Number(diff);
 	return a.address.localeCompare(b.address, 'en');
 };
@@ -96,7 +96,7 @@ const computeDelegateStatus = async () => {
 			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = DELEGATE_STATUS.ACTIVE;
-		} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
+		} else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = DELEGATE_STATUS.STANDBY;
 		}
 		return delegate;
