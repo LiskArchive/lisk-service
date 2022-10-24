@@ -28,7 +28,7 @@ const votes = {
 	name: Joi.string().pattern(regex.NAME).optional(),
 	amount: Joi.string().required(),
 	rank: Joi.number().integer().min(1).required(),
-	voteWeight: Joi.string().min(10).required(),
+	voteWeight: Joi.string().pattern(regex.VOTE_WEIGHT).required(),
 };
 
 const voteSchema = {

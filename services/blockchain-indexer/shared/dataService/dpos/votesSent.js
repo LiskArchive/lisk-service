@@ -33,7 +33,7 @@ const getVotesSent = async params => {
 				voteWeight: delegateInfo.delegateWeight,
 			};
 		},
-		{ concurrency: response.data.account.votes.length },
+		{ concurrency: response.data.votes.length },
 	);
 
 	return response;

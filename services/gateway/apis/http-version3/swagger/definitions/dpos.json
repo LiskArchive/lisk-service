@@ -209,7 +209,7 @@
             "voteWeight": {
                 "type": "string",
                 "example": "109000000000",
-                "description": "vote weight"
+                "description": "Vote weight."
             },
             "rank": {
                 "type": "integer",
