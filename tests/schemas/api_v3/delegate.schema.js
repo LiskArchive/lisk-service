@@ -38,8 +38,7 @@ const delegateSchema = {
 	selfVotes: Joi.string().min(10).required(),
 	voteWeight: Joi.string().pattern(regex.VOTE_WEIGHT).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	lastGeneratedHeight: Joi.number().integer().positive().min(1)
-		.required(),
+	lastGeneratedHeight: Joi.number().integer().positive().required(),
 	status: Joi.string().valid(...DELEGATE_STATUSES).required(),
 	isBanned: Joi.boolean().required(),
 	pomHeights: Joi.array().items(pomHeightsSchema).required(),

@@ -209,12 +209,12 @@
             "voteWeight": {
                 "type": "string",
                 "example": "109000000000",
-                "description": "Vote weight."
+                "description": "Current delegate's vote weight."
             },
             "rank": {
                 "type": "integer",
                 "example": 93,
-                "description": "Delegate rank."
+                "description": "Current delegate's rank."
             }
         }
     },

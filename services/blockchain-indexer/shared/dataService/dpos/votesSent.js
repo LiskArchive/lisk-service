@@ -23,14 +23,14 @@ const getVotesSent = async params => {
 	response.data.votes = await BluebirdPromise(
 		response.data.votes,
 		async vote => {
-			const [delegateInfo = {}] = (await getDelegates({
-				address: response.data.account.address,
+			const [delegate] = (await getDelegates({
+				address: vote.delegateAddress,
 			})).data;
 
 			return {
 				...vote,
-				rank: delegateInfo.rank,
-				voteWeight: delegateInfo.delegateWeight,
+				rank: delegate.rank,
+				voteWeight: delegate.delegateWeight,
 			};
 		},
 		{ concurrency: response.data.votes.length },
