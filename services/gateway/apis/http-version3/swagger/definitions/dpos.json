@@ -187,7 +187,9 @@
         "required": [
             "delegateAddress",
             "amount",
-            "name"
+            "name",
+            "voteWeight",
+            "rank"
         ],
         "properties": {
             "delegateAddress": {
