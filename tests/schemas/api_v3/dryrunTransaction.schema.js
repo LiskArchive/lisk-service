@@ -18,7 +18,7 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const event = {
-	data: Joi.string().object().required(),
+	data: Joi.object().required(),
 	index: Joi.number().integer().min(0).required(),
 	module: Joi.string().pattern(regex.MODULE).required(),
 	name: Joi.string().pattern(regex.NAME).required(),
