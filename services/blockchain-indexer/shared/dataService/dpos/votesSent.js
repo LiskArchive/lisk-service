@@ -13,31 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const dataService = require('../business');
-const { getDelegates } = require('./delegates');
-const { getLisk32Address } = require('../../utils/accountUtils');
+const { getDelegateRankAndWeight } = require('./constants');
 
 const getVotesSent = async params => {
 	const response = await dataService.getVotesSent(params);
-	response.data.votes = await BluebirdPromise.map(
-		response.data.votes,
-		async vote => {
-			vote.delegateAddress = getLisk32Address(vote.delegateAddress);
-			const [delegate] = (await getDelegates({
-				address: vote.delegateAddress,
-			})).data;
-
-			return {
-				...vote,
-				rank: delegate.rank,
-				voteWeight: delegate.voteWeight,
-			};
-		},
-		{ concurrency: response.data.votes.length },
-	);
-
+	response.data.votes = await getDelegateRankAndWeight(response.data.votes);
 	return response;
 };
 
