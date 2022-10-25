@@ -29,7 +29,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/tokens/summary`;
 
 describe('Tokens API', () => {
-	it('Retrieves tokens Summary -> ok', async () => {
+	it('Retrieves tokens summary -> ok', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data).toBeInstanceOf(Object);

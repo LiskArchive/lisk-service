@@ -34,7 +34,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensSummaryInfo = async (params) => request(wsRpcUrl, 'get.tokens.summary', params);
 
 describe('get.tokens.summary', () => {
-	it('Returns tokens info when call with address', async () => {
+	it('Retrieves tokens summary', async () => {
 		const response = await getTokensSummaryInfo({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
