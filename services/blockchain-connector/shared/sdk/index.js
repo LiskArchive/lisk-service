@@ -50,8 +50,6 @@ const {
 	getNodeInfo,
 	getSystemMetadata,
 	validateBLSKey,
-	getDelegate,
-	getAllDelegates,
 } = require('./endpoints');
 
 const {
@@ -67,6 +65,7 @@ const {
 	getTotalSupply,
 } = require('./tokens');
 
+const { getDelegate, getAllDelegates } = require('./dpos');
 const { getEventsByHeight } = require('./events');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
@@ -123,8 +122,6 @@ module.exports = {
 	getNodeInfo,
 	getSystemMetadata,
 	validateBLSKey,
-	getDelegate,
-	getAllDelegates,
 
 	getPeers,
 	getConnectedPeers,
@@ -134,4 +131,7 @@ module.exports = {
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+
+	getDelegate,
+	getAllDelegates,
 };

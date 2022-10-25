@@ -254,7 +254,7 @@
                             "votesReceived": {
                                 "type": "integer",
                                 "example": 1,
-                                "description": "Total number of votes received"
+                                "description": "Total number of votes received."
                             }
                         }
                     },
@@ -305,7 +305,7 @@
                             "votesUsed": {
                                 "type": "integer",
                                 "example": 10,
-                                "description": "Total number of votes used"
+                                "description": "Total number of votes used."
                             }
                         }
                     },

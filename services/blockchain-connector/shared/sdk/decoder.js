@@ -151,7 +151,7 @@ const decodeEvent = (event) => {
 
 	// TODO: Remove after SDK fixes the address format
 	if (eventDataSchema) {
-		Object.entries(eventDataSchema.properties).forEach(([prop]) => {
+		Object.keys(eventDataSchema.properties).forEach((prop) => {
 			if (prop.endsWith('Address')) {
 				eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
 			}
