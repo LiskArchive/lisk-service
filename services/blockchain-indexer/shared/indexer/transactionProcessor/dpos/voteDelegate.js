@@ -20,7 +20,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getLisk32AddressFromPublicKey, getLisk32Address } = require('../../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
 const config = require('../../../../config');
 
 const logger = Logger();
@@ -40,7 +40,7 @@ const getVoteIndexingInfo = async (tx) => {
 			const voteEntry = {};
 
 			voteEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
-			voteEntry.receivedAddress = getLisk32Address(vote.delegateAddress);
+			voteEntry.receivedAddress = vote.delegateAddress;
 			voteEntry.amount = vote.amount;
 			return voteEntry;
 		},

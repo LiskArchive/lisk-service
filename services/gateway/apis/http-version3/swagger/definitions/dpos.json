@@ -250,6 +250,11 @@
                                 "format": "publicKey",
                                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
                                 "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                            },
+                            "votesReceived": {
+                                "type": "integer",
+                                "example": 1,
+                                "description": "Total number of votes received"
                             }
                         }
                     },
@@ -300,7 +305,7 @@
                             "votesUsed": {
                                 "type": "integer",
                                 "example": 10,
-                                "description": ""
+                                "description": "Total number of votes used"
                             }
                         }
                     },

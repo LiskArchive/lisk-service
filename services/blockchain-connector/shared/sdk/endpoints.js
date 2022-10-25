@@ -278,6 +278,30 @@ const validateBLSKey = async ({ blsKey, proofOfPossession }) => {
 	}
 };
 
+const getDelegate = async (address) => {
+	try {
+		const delegate = await invokeEndpoint('dpos_getDelegate', { address });
+		return delegate;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getDelegate\'');
+		}
+		throw err;
+	}
+};
+
+const getAllDelegates = async () => {
+	try {
+		const delegates = await invokeEndpoint('dpos_getAllDelegates');
+		return delegates;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getAllDelegates\'');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	invokeEndpoint,
 	invokeEndpointProxy,
@@ -304,4 +328,6 @@ module.exports = {
 	dryRunTransaction,
 	getGenerators,
 	validateBLSKey,
+	getDelegate,
+	getAllDelegates,
 };

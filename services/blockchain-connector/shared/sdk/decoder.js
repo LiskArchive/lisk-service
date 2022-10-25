@@ -42,9 +42,31 @@ const decodeTransaction = (transaction) => {
 		txParamsSchema,
 	);
 
+	// TODO: Remove once SDK fixes the address format
+	const formattedtransactionParams = {};
+	Object.entries(transactionParams).forEach(([key, value]) => {
+		if (Array.isArray(value)) {
+			formattedtransactionParams[key] = value.map(entry => {
+				const formattedEntry = {};
+				Object.entries(entry).forEach(([innerKey, innerValue]) => {
+					if (innerKey.toLowerCase().endsWith('address') && !innerKey.includes('legacy')) {
+						formattedEntry[innerKey] = getLisk32Address(innerValue.toString('hex'));
+					} else {
+						formattedEntry[innerKey] = innerValue;
+					}
+				});
+				return formattedEntry;
+			});
+		} else if (key.toLowerCase().endsWith('address') && !key.includes('legacy')) {
+			formattedtransactionParams[key] = getLisk32Address(value.toString('hex'));
+		} else {
+			formattedtransactionParams[key] = value;
+		}
+	});
+
 	const decodedTransaction = {
 		...transaction,
-		params: transactionParams,
+		params: formattedtransactionParams,
 		size: transactionSize,
 		minFee: transactionMinFee,
 	};

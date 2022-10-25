@@ -48,7 +48,7 @@ const verifyIfPunished = async delegate => {
 };
 
 const getAllDelegates = async () => {
-	const { delegates: rawDelegates } = await requestConnector('dpos_getAllDelegates');
+	const { delegates: rawDelegates } = await requestConnector('getAllDelegates');
 	const delegates = await BluebirdPromise.map(
 		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
@@ -72,16 +72,16 @@ const getAllDelegates = async () => {
 };
 
 const getDelegates = async (params) => {
-	const addresses = params.address ? [params.address] : params.addresses;
+	const { address, addresses, ...remParams } = params;
+	params = remParams;
+	params.addresses = address ? [address] : addresses;
 
 	const delegates = await BluebirdPromise.map(
-		addresses,
-		async address => {
-			const delegate = await requestConnector(
-				'dpos_getDelegate',
-				{ address },
-			);
+		params.addresses,
+		async delegateAddress => {
+			const delegate = await requestConnector('getDelegate', { address: delegateAddress });
 			delegate.address = getLisk32Address(delegate.address);
+			// TODO: Check if it is possible to move this logic to the connector
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.voteWeight = BigInt('0');
 			} else {
@@ -93,7 +93,7 @@ const getDelegates = async (params) => {
 			}
 			return delegate;
 		},
-		{ concurrency: addresses.length },
+		{ concurrency: params.addresses.length },
 	);
 	return delegates;
 };

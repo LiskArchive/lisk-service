@@ -50,6 +50,8 @@ const {
 	getNodeInfo,
 	getSystemMetadata,
 	validateBLSKey,
+	getDelegate,
+	getAllDelegates,
 } = require('./endpoints');
 
 const {
@@ -121,6 +123,8 @@ module.exports = {
 	getNodeInfo,
 	getSystemMetadata,
 	validateBLSKey,
+	getDelegate,
+	getAllDelegates,
 
 	getPeers,
 	getConnectedPeers,

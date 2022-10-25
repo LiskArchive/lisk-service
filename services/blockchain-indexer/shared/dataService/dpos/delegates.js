@@ -26,7 +26,7 @@ const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
-const { getLisk32AddressFromPublicKey, getLisk32Address } = require('../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey, getLisk32Address, getHexAddress } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
@@ -57,12 +57,14 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.voteWeight) - BigInt(a.voteWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.address.localeCompare(b.address, 'en');
+	return a.hexAddress.localeCompare(b.hexAddress, 'en');
 };
 
 // TODO: Remove code after SDK returns rank
 const computeDelegateRank = async () => {
-	delegateList.sort(delegateComparator);
+	delegateList
+		.map(delegate => ({ ...delegate, hexAddress: getHexAddress(delegate.address) }))
+		.sort(delegateComparator);
 	delegateList.map((delegate, index) => {
 		delegate.rank = index + 1;
 		return delegate;

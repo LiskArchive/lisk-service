@@ -20,6 +20,7 @@ const account = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
+	votesReceived: Joi.number().required(),
 };
 
 const votes = {

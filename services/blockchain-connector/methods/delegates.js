@@ -13,13 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const {
+	getDelegate,
+	getAllDelegates,
+} = require('../shared/sdk');
 
-const getDPoSConstants = async () => {
-	const response = await dataService.getDPoSConstants();
-	return response;
-};
-
-module.exports = {
-	getDPoSConstants,
-};
+module.exports = [
+	{
+		name: 'getDelegate',
+		controller: async ({ address }) => getDelegate(address),
+		params: {
+			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getAllDelegates',
+		controller: async () => getAllDelegates(),
+		params: {},
+	},
+];
