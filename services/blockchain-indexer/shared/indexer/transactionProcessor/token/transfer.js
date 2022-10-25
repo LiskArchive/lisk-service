@@ -26,6 +26,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const { updateAddressBalanceQueue } = require('../../tokenIndex');
 const accountsIndexSchema = require('../../../database/schema/accounts');
 const transactionsIndexSchema = require('../../../database/schema/transactions');
+const { getLisk32Address } = require('../../../utils/accountUtils');
 
 const getAccountsIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,
@@ -49,7 +50,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 	tx.amount = tx.params.amount;
 	tx.data = tx.params.data;
-	tx.recipientAddress = tx.params.recipientAddress;
+	tx.recipientAddress = getLisk32Address(tx.params.recipientAddress);
 
 	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
 

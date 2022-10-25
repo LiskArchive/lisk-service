@@ -34,14 +34,19 @@ const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_EN
 const commandName = 'voteDelegate';
 
 const getVoteIndexingInfo = async (tx) => {
-	const votes = tx.params.votes.map(async vote => {
-		const voteEntry = {};
+	const votes = await BluebirdPromise.map(
+		tx.params.votes,
+		async vote => {
+			const voteEntry = {};
 
-		voteEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
-		voteEntry.receivedAddress = getLisk32Address(vote.delegateAddress);
-		voteEntry.amount = vote.amount;
-		return voteEntry;
-	});
+			voteEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
+			voteEntry.receivedAddress = getLisk32Address(vote.delegateAddress);
+			voteEntry.amount = vote.amount;
+			return voteEntry;
+		},
+		{ concurrency: tx.params.votes.length },
+	);
+
 	return votes;
 };
 

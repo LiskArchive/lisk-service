@@ -71,7 +71,9 @@ const getAllDelegates = async () => {
 	return delegates;
 };
 
-const getDelegates = async (addresses) => {
+const getDelegates = async (params) => {
+	const addresses = params.address ? [params.address] : params.addresses;
+
 	const delegates = await BluebirdPromise.map(
 		addresses,
 		async address => {
@@ -79,6 +81,16 @@ const getDelegates = async (addresses) => {
 				'dpos_getDelegate',
 				{ address },
 			);
+			delegate.address = getLisk32Address(delegate.address);
+			if (delegate.isBanned || await verifyIfPunished(delegate)) {
+				delegate.voteWeight = BigInt('0');
+			} else {
+				const cap = BigInt(delegate.selfVotes) * BigInt(10);
+				delegate.totalVotesReceived = BigInt(delegate.totalVotesReceived);
+				delegate.voteWeight = BigInt(delegate.totalVotesReceived) > cap
+					? cap
+					: delegate.totalVotesReceived;
+			}
 			return delegate;
 		},
 		{ concurrency: addresses.length },

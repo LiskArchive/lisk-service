@@ -26,7 +26,7 @@ const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
-const { getLisk32AddressFromPublicKey } = require('../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey, getLisk32Address } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
@@ -239,8 +239,8 @@ const updateDelegateListEveryBlock = () => {
 						updatedDelegateAddresses
 							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
-						tx.params.votes
-							.forEach(vote => updatedDelegateAddresses.push(vote.delegateAddress));
+						tx.params.votes.forEach(vote => updatedDelegateAddresses
+							.push(getLisk32Address(vote.delegateAddress)));
 					}
 				}
 			});
