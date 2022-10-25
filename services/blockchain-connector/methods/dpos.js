@@ -13,10 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	delegateAddress: '=,string',
-	amount: '=,string',
-	name: '=,string',
-	rank: '=,number',
-	voteWeight: '=,string',
-};
+const {
+	getDelegate,
+	getAllDelegates,
+} = require('../shared/sdk');
+
+module.exports = [
+	{
+		name: 'getDelegate',
+		controller: async ({ address }) => getDelegate(address),
+		params: {
+			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getAllDelegates',
+		controller: async () => getAllDelegates(),
+		params: {},
+	},
+];

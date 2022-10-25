@@ -26,7 +26,7 @@ const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
-const { getLisk32AddressFromPublicKey } = require('../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey, getLisk32Address, getHexAddress } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
@@ -55,14 +55,16 @@ const DELEGATE_STATUS = {
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
-	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
+	const diff = BigInt(b.voteWeight) - BigInt(a.voteWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.address.localeCompare(b.address, 'en');
+	return a.hexAddress.localeCompare(b.hexAddress, 'en');
 };
 
 // TODO: Remove code after SDK returns rank
 const computeDelegateRank = async () => {
-	delegateList.sort(delegateComparator);
+	delegateList
+		.map(delegate => ({ ...delegate, hexAddress: getHexAddress(delegate.address) }))
+		.sort(delegateComparator);
 	delegateList.map((delegate, index) => {
 		delegate.rank = index + 1;
 		return delegate;
@@ -96,7 +98,7 @@ const computeDelegateStatus = async () => {
 			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = DELEGATE_STATUS.ACTIVE;
-		} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
+		} else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = DELEGATE_STATUS.STANDBY;
 		}
 		return delegate;
@@ -239,8 +241,8 @@ const updateDelegateListEveryBlock = () => {
 						updatedDelegateAddresses
 							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
-						tx.params.votes
-							.forEach(vote => updatedDelegateAddresses.push(vote.delegateAddress));
+						tx.params.votes.forEach(vote => updatedDelegateAddresses
+							.push(getLisk32Address(vote.delegateAddress)));
 					}
 				}
 			});

@@ -48,22 +48,20 @@ const verifyIfPunished = async delegate => {
 };
 
 const getAllDelegates = async () => {
-	const { delegates: rawDelegates } = await requestConnector('dpos_getAllDelegates');
+	const { delegates: rawDelegates } = await requestConnector('getAllDelegates');
 	const delegates = await BluebirdPromise.map(
 		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
 			delegate.address = getLisk32Address(delegate.address);
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
-				delegate.delegateWeight = BigInt('0');
+				delegate.voteWeight = BigInt('0');
 			} else {
 				const cap = BigInt(delegate.selfVotes) * BigInt(10);
 				delegate.totalVotesReceived = BigInt(delegate.totalVotesReceived);
-				const voteWeight = BigInt(delegate.totalVotesReceived) > cap
+				delegate.voteWeight = BigInt(delegate.totalVotesReceived) > cap
 					? cap
 					: delegate.totalVotesReceived;
-
-				delegate.delegateWeight = voteWeight;
 			}
 			return delegate;
 		},
@@ -73,17 +71,29 @@ const getAllDelegates = async () => {
 	return delegates;
 };
 
-const getDelegates = async (addresses) => {
+const getDelegates = async (params) => {
+	const { address, addresses, ...remParams } = params;
+	params = remParams;
+	params.addresses = address ? [address] : addresses;
+
 	const delegates = await BluebirdPromise.map(
-		addresses,
-		async address => {
-			const delegate = await requestConnector(
-				'dpos_getDelegate',
-				{ address },
-			);
+		params.addresses,
+		async delegateAddress => {
+			const delegate = await requestConnector('getDelegate', { address: delegateAddress });
+			delegate.address = getLisk32Address(delegate.address);
+			// TODO: Check if it is possible to move this logic to the connector
+			if (delegate.isBanned || await verifyIfPunished(delegate)) {
+				delegate.voteWeight = BigInt('0');
+			} else {
+				const cap = BigInt(delegate.selfVotes) * BigInt(10);
+				delegate.totalVotesReceived = BigInt(delegate.totalVotesReceived);
+				delegate.voteWeight = BigInt(delegate.totalVotesReceived) > cap
+					? cap
+					: delegate.totalVotesReceived;
+			}
 			return delegate;
 		},
-		{ concurrency: addresses.length },
+		{ concurrency: params.addresses.length },
 	);
 	return delegates;
 };

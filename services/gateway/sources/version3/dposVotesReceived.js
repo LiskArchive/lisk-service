@@ -30,6 +30,7 @@ module.exports = {
 				address: '=,string',
 				name: '=,string',
 				publicKey: '=,string',
+				votesReceived: '=,number',
 			},
 			votes: ['data.votes', dposVote],
 		},
