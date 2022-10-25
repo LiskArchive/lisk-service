@@ -37,7 +37,10 @@ const decodeTransaction = (transaction) => {
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
 	// TODO: Verify if 'computeMinFee' returns correct value
-	const transactionMinFee = computeMinFee(schemaCompliantTransaction, txParamsSchema);
+	const transactionMinFee = computeMinFee(
+		{ ...schemaCompliantTransaction, params: transactionParams },
+		txParamsSchema,
+	);
 
 	const decodedTransaction = {
 		...transaction,
