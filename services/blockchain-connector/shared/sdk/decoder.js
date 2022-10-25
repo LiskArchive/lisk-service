@@ -28,6 +28,42 @@ const {
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 const { getLisk32Address } = require('../utils/accountUtils');
 
+// TODO: Remove when SDK exposes topics information in metadata
+const EVENT_TOPICS = {
+	rewardMinted: ['defaultTopic', 'generatorAddress'],
+	'Reward Minted Data': ['defaultTopic', 'generatorAddress'],
+	feeProcessed: ['senderAddress', 'generatorAddress'],
+	ccmProcessed: ['sendingChainID', 'receivingChainID'],
+	chainAccountUpdated: ['sendingChainID'],
+	accountReclaimed: ['legacyAddress', 'newAddress'],
+	keysRegistered: ['validatorAddress', 'generatorKey', 'blsKey'],
+	transfer: ['defaultTopic', 'senderAddress', 'recipientAddress'],
+	transferCrossChain: ['senderAddress', 'recipientAddress', 'receivingChainID'],
+	ccmTransfer: ['senderAddress', 'recipientAddress', 'ownChainID'],
+	mint: ['address'],
+	burn: ['address'],
+	lock: ['address'],
+	unlock: ['address'],
+	EVENT_NAME_INITIALIZE_TOKEN: ['tokenID'],
+	EVENT_NAME_INITIALIZE_USER_ACCOUNT: ['address'],
+	EVENT_NAME_INITIALIZE_ESCROW_ACCOUNT: ['chainID'],
+	recover: ['address'],
+	beforeCCCExecution: ['relayerAddress', 'messageFeeTokenID'],
+	beforeCCMForwarding: ['sendingChainID', 'receivingChainID'],
+	EVENT_NAME_ALL_TOKENS_SUPPORTED: [],
+	EVENT_NAME_ALL_TOKENS_SUPPORT_REMOVED: [],
+	EVENT_NAME_ALL_TOKENS_FROM_CHAIN_SUPPORTED: ['chainID'],
+	EVENT_NAME_ALL_TOKENS_FROM_CHAIN_SUPPORT_REMOVED: ['chainID'],
+	EVENT_NAME_TOKEN_ID_SUPPORTED: ['tokenID'],
+	EVENT_NAME_TOKEN_ID_SUPPORT_REMOVED: ['tokenID'],
+	registerDelegate: ['delegateAddress'],
+	voteDelegate: ['senderAddress', 'delegateAddress'],
+	delegatePunished: ['delegateAddress'],
+	delegateBanned: ['delegateAddress'],
+	generatorKeyRegistrationEvent: ['address'],
+	blsKeyRegistration: ['address'],
+};
+
 const decodeTransaction = (transaction) => {
 	const txSchema = getTransactionSchema();
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
@@ -122,9 +158,18 @@ const decodeEvent = (event) => {
 		});
 	}
 
+	const topics = EVENT_TOPICS[event.name];
+	const eventTopics = event.topics.map((topic, index) => {
+		if (topics[index].toLowerCase().endsWith('address') && !topics[index].includes('legacy')) {
+			return getLisk32Address(topic);
+		}
+		return topic;
+	});
+
 	const decodedEvent = {
 		...event,
 		data: eventData,
+		topics: eventTopics,
 		id: eventID,
 	};
 	return parseToJSONCompatObj(decodedEvent);
