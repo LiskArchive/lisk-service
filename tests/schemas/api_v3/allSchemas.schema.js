@@ -50,12 +50,112 @@ const genericSchema = {
 	schema: Joi.object(schema).required(),
 };
 
+const fieldNumberSchema = Joi.number().integer().positive().required();
+const typeSchema = Joi.string().required();
+
+const simpleArraySchema = {
+	type: typeSchema,
+	items: Joi.object({
+		dataType: Joi.string().required(),
+	}).required(),
+	fieldNumber: fieldNumberSchema,
+};
+
+const simplePropertySchema = {
+	dataType: Joi.string().required(),
+	fieldNumber: fieldNumberSchema,
+};
+
+const propertyWithLengthSchema = {
+	...simplePropertySchema,
+	minLength: Joi.number().min(0).required(),
+	maxLength: Joi.number().min(0).required(),
+};
+
+const blockPropertiseScheama = {
+	header: Joi.object(simplePropertySchema).required(),
+	transactions: Joi.object(simpleArraySchema).required(),
+	assets: Joi.object(simpleArraySchema).required(),
+};
+
+const blockSchema = {
+	schema: Joi.object({
+		...schema,
+		properties: Joi.object(blockPropertiseScheama).required(),
+	}).required(),
+};
+
+const headerPropertiesSchema = {
+	version: Joi.object(simplePropertySchema).required(),
+	timestamp: Joi.object(simplePropertySchema).required(),
+	height: Joi.object(simplePropertySchema).required(),
+	previousBlockID: Joi.object(simplePropertySchema).required(),
+	generatorAddress: Joi.object({
+		...simplePropertySchema,
+		format: Joi.string().required(),
+	}).required(),
+	transactionRoot: Joi.object(simplePropertySchema).required(),
+	assetRoot: Joi.object(simplePropertySchema).required(),
+	eventRoot: Joi.object(simplePropertySchema).required(),
+	stateRoot: Joi.object(simplePropertySchema).required(),
+	maxHeightPrevoted: Joi.object(simplePropertySchema).required(),
+	maxHeightGenerated: Joi.object(simplePropertySchema).required(),
+	validatorsHash: Joi.object(simplePropertySchema).required(),
+	aggregateCommit: Joi.object({
+		type: Joi.string().required(),
+		fieldNumber: fieldNumberSchema,
+		required: Joi.array().items(Joi.string().required()).required(),
+		properties: {
+			height: Joi.object(simplePropertySchema).required(),
+			aggregationBits: Joi.object(simplePropertySchema).required(),
+			certificateSignature: Joi.object(simplePropertySchema).required(),
+		},
+	}).required(),
+	signature: Joi.object(simplePropertySchema).required(),
+};
+
+const headerSchema = {
+	schema: Joi.object({
+		...schema,
+		properties: Joi.object(headerPropertiesSchema).required(),
+	}).required(),
+};
+
+const assetPropertiesSchema = {
+	module: Joi.object(simplePropertySchema).required(),
+	data: Joi.object(simplePropertySchema).required(),
+};
+
+const assetSchema = {
+	schema: Joi.object({
+		...schema,
+		properties: Joi.object(assetPropertiesSchema).required(),
+	}).required(),
+};
+
+const transactionPropertiesSchema = {
+	module: Joi.object(propertyWithLengthSchema).required(),
+	command: Joi.object(propertyWithLengthSchema).required(),
+	nonce: Joi.object(simplePropertySchema).required(),
+	fee: Joi.object(simplePropertySchema).required(),
+	senderPublicKey: Joi.object(propertyWithLengthSchema).required(),
+	params: Joi.object(simplePropertySchema).required(),
+	signatures: Joi.object(simpleArraySchema).optional(),
+};
+
+const transactionSchema = {
+	schema: Joi.object({
+		...schema,
+		properties: Joi.object(transactionPropertiesSchema).required(),
+	}).required(),
+};
+
 const allSchemasSchema = {
-	block: Joi.object(genericSchema).required(),
-	header: Joi.object(genericSchema).required(),
-	asset: Joi.object(genericSchema).required(),
-	transaction: Joi.object(genericSchema).required(),
-	event: Joi.object(genericSchema).required(),
+	block: Joi.object(blockSchema).required(), //
+	header: Joi.object(headerSchema).required(), //
+	asset: Joi.object(assetSchema).required(), //
+	transaction: Joi.object(transactionSchema).required(), //
+	event: Joi.object(genericSchema).required(), //
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),
