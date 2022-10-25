@@ -131,14 +131,9 @@ const getTokensSummary = async () => {
 	};
 
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
-	let { totalSupply } = await requestConnector('getTotalSupply');
+	const { totalSupply } = await requestConnector('getTotalSupply');
 	const { tokenIDs } = await requestConnector('getSupportedTokens');
 	const supportedTokens = tokenIDs.map(tokenID => ({ tokenID }));
-
-	totalSupply = totalSupply.map(item => ({
-		tokenID: item.tokenID,
-		amount: item.totalSupply,
-	}));
 
 	const escrowedAmountResponse = await populateTokenMetaInfo(escrowedAmounts);
 	const supportedTokensResponse = await populateTokenMetaInfo(supportedTokens);

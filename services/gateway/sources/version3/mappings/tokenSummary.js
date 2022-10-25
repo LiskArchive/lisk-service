@@ -30,7 +30,7 @@ const supportedToken = {
 
 const totalSupplyByToken = {
 	tokenID: '=,string',
-	amount: '=,string',
+	amount: 'totalSupply,string',
 	name: '=,string',
 	symbol: '=,string',
 
