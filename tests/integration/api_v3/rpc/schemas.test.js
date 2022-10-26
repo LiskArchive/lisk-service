@@ -26,6 +26,8 @@ const {
 	goodRequestSchema,
 } = require('../../../schemas/api_v3/allSchemas.schema');
 
+const schemas = require('../../../schemas/api_v3/constants/schemas');
+
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestSchemas = async params => request(wsRpcUrl, 'get.schemas', params);
 
@@ -36,6 +38,11 @@ describe('Method get.schemas', () => {
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toMap(allSchemasSchema);
+		expect(result.data.block.schema).toStrictEqual(schemas.blockSchema);
+		expect(result.data.header.schema).toStrictEqual(schemas.headerSchema);
+		expect(result.data.asset.schema).toStrictEqual(schemas.assetSchema);
+		expect(result.data.transaction.schema).toStrictEqual(schemas.transactionSchema);
+		expect(result.data.event.schema).toStrictEqual(schemas.eventSchema);
 	});
 
 	it('returns invalid response for invalid param', async () => {

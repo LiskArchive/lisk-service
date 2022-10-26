@@ -15,44 +15,47 @@
  */
 import Joi from 'joi';
 
-const schemas = require('./constants/schemas');
-
 const regex = require('./regex');
 
-const genericSchema = {
+const schema = {
 	$id: Joi.string().required(),
 	title: Joi.string().optional(),
 	type: Joi.string().required(),
 	required: Joi.array().items(Joi.string().pattern(regex.MODULE).required()).required(),
-	properties: Joi.object().required(),
+	properties: Joi.object().optional(),
+	items: Joi.array().items(Joi.object().required()).optional(),
 };
 
 const commandsParamsSchemasSchema = {
 	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	// TODO: Update schema to required when all schemas are avalable from sdk
-	schema: Joi.object(genericSchema).optional(),
+	schema: Joi.object(schema).optional(),
 };
 
 const eventsSchema = {
 	module: Joi.string().pattern(regex.MODULE).required(),
 	name: Joi.string().pattern(regex.NAME).required(),
 	// TODO: Update schema to required when all schemas are avalable from sdk
-	schema: Joi.object(genericSchema).optional(),
+	schema: Joi.object(schema).optional(),
 };
 
 const assetsSchema = {
 	module: Joi.string().pattern(regex.MODULE).required(),
 	version: Joi.string().required(),
 	// TODO: Update schema to required when all schemas are avalable from sdk
-	schema: Joi.object(genericSchema).optional(),
+	schema: Joi.object(schema).optional(),
+};
+
+const genericSchema = {
+	schema: Joi.object(schema).required(),
 };
 
 const allSchemasSchema = {
-	block: Joi.object(schemas.blockSchema).required(),
-	header: Joi.object(schemas.headerSchema).required(),
-	asset: Joi.object(schemas.assetSchema).required(),
-	transaction: Joi.object(schemas.transactionSchema).required(),
-	event: Joi.object(schemas.eventSchema).required(),
+	block: Joi.object(genericSchema).required(),
+	header: Joi.object(genericSchema).required(),
+	asset: Joi.object(genericSchema).required(),
+	transaction: Joi.object(genericSchema).required(),
+	event: Joi.object(genericSchema).required(),
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),
