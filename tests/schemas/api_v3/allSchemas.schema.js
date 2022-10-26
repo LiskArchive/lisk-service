@@ -46,10 +46,6 @@ const assetsSchema = {
 	schema: Joi.object(schema).optional(),
 };
 
-const genericSchema = {
-	schema: Joi.object(schema).required(),
-};
-
 const fieldNumberSchema = Joi.number().integer().positive().required();
 const typeSchema = Joi.string().required();
 
@@ -150,12 +146,28 @@ const transactionSchema = {
 	}).required(),
 };
 
+const eventPropertiesSchema = {
+	module: propertyWithLengthSchema,
+	name: propertyWithLengthSchema,
+	data: simplePropertySchema,
+	topics: simpleArraySchema,
+	height: simplePropertySchema,
+	index: simplePropertySchema,
+};
+
+const eventSchema = {
+	schema: Joi.object({
+		...schema,
+		properties: Joi.object(eventPropertiesSchema).required(),
+	}).required(),
+};
+
 const allSchemasSchema = {
-	block: Joi.object(blockSchema).required(), //
-	header: Joi.object(headerSchema).required(), //
-	asset: Joi.object(assetSchema).required(), //
-	transaction: Joi.object(transactionSchema).required(), //
-	event: Joi.object(genericSchema).required(), //
+	block: Joi.object(blockSchema).required(),
+	header: Joi.object(headerSchema).required(),
+	asset: Joi.object(assetSchema).required(),
+	transaction: Joi.object(transactionSchema).required(),
+	event: Joi.object(eventSchema).required(),
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),
