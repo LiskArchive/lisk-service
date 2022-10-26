@@ -15,6 +15,8 @@
  */
 import Joi from 'joi';
 
+const schemas = require('./constants/schemas');
+
 const regex = require('./regex');
 
 const genericSchema = {
@@ -44,161 +46,13 @@ const assetsSchema = {
 	// TODO: Update schema to required when all schemas are avalable from sdk
 	schema: Joi.object(genericSchema).optional(),
 };
-const getGenericArraySchema = (params) => Joi.object({
-	type: Joi.string().valid('array').required(),
-	items: Joi.object({
-		dataType: Joi.string().valid(params.dataType).required(),
-	}).required(),
-	fieldNumber: Joi.number().integer().valid(params.fieldNumber).required(),
-});
-
-const getArrayOfBytesSchema = (params) => getGenericArraySchema({ ...params, dataType: 'bytes' });
-
-const getGenericPropertySchema = (params) => Joi.object({
-	dataType: Joi.string().valid(params.dataType).required(),
-	fieldNumber: Joi.number().integer().valid(params.fieldNumber).required(),
-}).required();
-
-const getBytesPropertySchema = (params) => getGenericPropertySchema({ ...params, dataType: 'bytes' });
-
-const getUInt32PropertySchema = (params) => getGenericPropertySchema({ ...params, dataType: 'uint32' });
-
-const getGenericPropertyWithLengthSchema = (params) => Joi.object({
-	dataType: Joi.string().valid(params.dataType).required(),
-	fieldNumber: Joi.number().integer().valid(params.fieldNumber).required(),
-	minLength: Joi.number().integer().valid(params.minLength).required(),
-	maxLength: Joi.number().integer().valid(params.maxLength).required(),
-}).required();
-
-const blockPropertiesSchema = {
-	header: getBytesPropertySchema({ fieldNumber: 1 }),
-	transactions: getArrayOfBytesSchema({ fieldNumber: 2 }),
-	assets: getArrayOfBytesSchema({ fieldNumber: 3 }),
-};
-
-const blockSchema = {
-	schema: Joi.object({
-		...genericSchema,
-		properties: Joi.object(blockPropertiesSchema).required(),
-	}).required(),
-};
-
-const headerPropertiesSchema = {
-	version: getUInt32PropertySchema({ fieldNumber: 1 }),
-	timestamp: getUInt32PropertySchema({ fieldNumber: 2 }),
-	height: getUInt32PropertySchema({ fieldNumber: 3 }),
-	previousBlockID: getBytesPropertySchema({ fieldNumber: 4 }),
-	generatorAddress: Joi.object({
-		fieldNumber: Joi.number().integer().valid(5).required(),
-		dataType: Joi.string().valid('bytes').required(),
-		format: Joi.string().valid('lisk32').required(),
-	}).required(),
-	transactionRoot: getBytesPropertySchema({ fieldNumber: 6 }),
-	assetRoot: getBytesPropertySchema({ fieldNumber: 7 }),
-	eventRoot: getBytesPropertySchema({ fieldNumber: 8 }),
-	stateRoot: getBytesPropertySchema({ fieldNumber: 9 }),
-	maxHeightPrevoted: getUInt32PropertySchema({ fieldNumber: 10 }),
-	maxHeightGenerated: getUInt32PropertySchema({ fieldNumber: 11 }),
-	validatorsHash: getBytesPropertySchema({ fieldNumber: 12 }),
-	aggregateCommit: Joi.object({
-		type: Joi.string().required(),
-		fieldNumber: Joi.number().integer().valid(13).required(),
-		required: Joi.array().items(Joi.string().valid(
-			'height',
-			'aggregationBits',
-			'certificateSignature').required()).required(),
-		properties: {
-			height: getUInt32PropertySchema({ fieldNumber: 1 }),
-			aggregationBits: getBytesPropertySchema({ fieldNumber: 2 }),
-			certificateSignature: getBytesPropertySchema({ fieldNumber: 3 }),
-		},
-	}).required(),
-	signature: getBytesPropertySchema({ fieldNumber: 14 }),
-};
-
-const headerSchema = {
-	schema: Joi.object({
-		...genericSchema,
-		properties: Joi.object(headerPropertiesSchema).required(),
-	}).required(),
-};
-
-const assetPropertiesSchema = {
-	module: getGenericPropertySchema({ dataType: 'string', fieldNumber: 1 }),
-	data: getBytesPropertySchema({ fieldNumber: 2 }),
-};
-
-const assetSchema = {
-	schema: Joi.object({
-		...genericSchema,
-		properties: Joi.object(assetPropertiesSchema).required(),
-	}).required(),
-};
-
-const transactionPropertiesSchema = {
-	module: getGenericPropertyWithLengthSchema({
-		dataType: 'string',
-		fieldNumber: 1,
-		minLength: 1,
-		maxLength: 32,
-	}),
-	command: getGenericPropertyWithLengthSchema({
-		dataType: 'string',
-		fieldNumber: 2,
-		minLength: 1,
-		maxLength: 32,
-	}),
-	nonce: getGenericPropertySchema({ dataType: 'uint64', fieldNumber: 3 }),
-	fee: getGenericPropertySchema({ dataType: 'uint64', fieldNumber: 4 }),
-	senderPublicKey: getGenericPropertyWithLengthSchema({
-		dataType: 'bytes',
-		fieldNumber: 5,
-		minLength: 32,
-		maxLength: 32,
-	}),
-	params: getBytesPropertySchema({ fieldNumber: 6 }),
-	signatures: getArrayOfBytesSchema({ fieldNumber: 7 }),
-};
-
-const transactionSchema = {
-	schema: Joi.object({
-		...genericSchema,
-		properties: Joi.object(transactionPropertiesSchema).required(),
-	}).required(),
-};
-
-const eventPropertiesSchema = {
-	module: getGenericPropertyWithLengthSchema({
-		dataType: 'string',
-		fieldNumber: 1,
-		minLength: 1,
-		maxLength: 32,
-	}),
-	name: getGenericPropertyWithLengthSchema({
-		dataType: 'string',
-		fieldNumber: 2,
-		minLength: 1,
-		maxLength: 32,
-	}),
-	data: getBytesPropertySchema({ fieldNumber: 3 }),
-	topics: getArrayOfBytesSchema({ fieldNumber: 4 }),
-	height: getUInt32PropertySchema({ fieldNumber: 5 }),
-	index: getUInt32PropertySchema({ fieldNumber: 6 }),
-};
-
-const eventSchema = {
-	schema: Joi.object({
-		...genericSchema,
-		properties: Joi.object(eventPropertiesSchema).required(),
-	}).required(),
-};
 
 const allSchemasSchema = {
-	block: Joi.object(blockSchema).required(),
-	header: Joi.object(headerSchema).required(),
-	asset: Joi.object(assetSchema).required(),
-	transaction: Joi.object(transactionSchema).required(),
-	event: Joi.object(eventSchema).required(),
+	block: Joi.object(schemas.blockSchema).required(),
+	header: Joi.object(schemas.headerSchema).required(),
+	asset: Joi.object(schemas.assetSchema).required(),
+	transaction: Joi.object(schemas.transactionSchema).required(),
+	event: Joi.object(schemas.eventSchema).required(),
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),
