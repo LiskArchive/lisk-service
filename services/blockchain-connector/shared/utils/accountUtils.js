@@ -17,31 +17,12 @@ const {
 	address: {
 		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
 		getLisk32AddressFromAddress,
-		getAddressFromLisk32Address,
 	},
 	legacyAddress: {
 		getLegacyAddressFromPublicKey,
 
 	},
 } = require('@liskhq/lisk-cryptography');
-
-const {
-	MySQL: { getTableInstance },
-} = require('lisk-service-framework');
-
-const accountsIndexSchema = require('../database/schema/accounts');
-const config = require('../../config');
-
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
-
-const getIndexedAccountInfo = async (params, columns) => {
-	if (!('publicKey' in params) || params.publicKey) {
-		const accountsDB = await getAccountsIndex();
-		const [account = {}] = await accountsDB.find(params, columns);
-		return account;
-	}
-	return {};
-};
 
 const getLegacyFormatAddressFromPublicKey = publicKey => {
 	const legacyAddress = getLegacyAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
@@ -55,24 +36,9 @@ const getLisk32AddressFromHexAddress = address => getLisk32AddressFromAddress(Bu
 // TODO: Remove once SDK returns address in Lisk32 format
 const getLisk32Address = address => address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
 
-const getHexAddress = address => address.startsWith('lsk')
-	? getAddressFromLisk32Address(address).toString('hex')
-	: address;
-
-const updateAccountPublicKey = async (publicKey) => {
-	const accountsDB = await getAccountsIndex();
-	await accountsDB.upsert({
-		address: getLisk32AddressFromPublicKey(publicKey),
-		publicKey,
-	});
-};
-
 module.exports = {
-	getIndexedAccountInfo,
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
 	getLisk32AddressFromPublicKey,
 	getLisk32AddressFromHexAddress,
 	getLisk32Address,
-	updateAccountPublicKey,
-	getHexAddress,
 };

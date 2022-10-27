@@ -65,6 +65,7 @@ const {
 	getTotalSupply,
 } = require('./tokens');
 
+const { getDelegate, getAllDelegates } = require('./dpos');
 const { getEventsByHeight } = require('./events');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
@@ -130,4 +131,7 @@ module.exports = {
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+
+	getDelegate,
+	getAllDelegates,
 };

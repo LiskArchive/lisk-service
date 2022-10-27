@@ -13,31 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	getDelegate,
+	getAllDelegates,
+} = require('../shared/sdk');
 
-const escrowedAmount = {
-	escrowChainID: '=,string',
-	tokenID: '=,string',
-	amount: '=,string',
-	name: '=,string',
-	symbol: '=,string',
-};
-
-const supportedToken = {
-	tokenID: '=,string',
-	name: '=,string',
-	symbol: '=,string',
-};
-
-const totalSupplyByToken = {
-	tokenID: '=,string',
-	amount: 'totalSupply,string',
-	name: '=,string',
-	symbol: '=,string',
-
-};
-
-module.exports = {
-	escrowedAmount,
-	supportedToken,
-	totalSupplyByToken,
-};
+module.exports = [
+	{
+		name: 'getDelegate',
+		controller: async ({ address }) => getDelegate(address),
+		params: {
+			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getAllDelegates',
+		controller: async () => getAllDelegates(),
+		params: {},
+	},
+];

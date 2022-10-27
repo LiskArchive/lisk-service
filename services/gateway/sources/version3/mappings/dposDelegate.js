@@ -17,7 +17,7 @@ module.exports = {
 	name: '=,string',
 	totalVotesReceived: '=,string',
 	selfVotes: '=,string',
-	voteWeight: 'delegateWeight,string',
+	voteWeight: '=,string',
 	address: '=,string',
 	lastGeneratedHeight: '=,number',
 	status: '=,string',
