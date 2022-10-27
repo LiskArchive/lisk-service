@@ -33,7 +33,7 @@ const endpoint = `${baseUrlV3}/schemas`;
 
 describe('Schemas API', () => {
 	it('returns list of all available schemas', async () => {
-		const response = await api.get(`${endpoint}`);
+		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(allSchemasSchema);
 		expect(response.data.block.schema).toStrictEqual(schemas.blockSchema);

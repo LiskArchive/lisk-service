@@ -159,12 +159,17 @@ const decodeEvent = (event) => {
 	}
 
 	const topics = EVENT_TOPICS[event.name];
-	const eventTopics = event.topics.map((topic, index) => {
-		if (topics[index].toLowerCase().endsWith('address') && !topics[index].includes('legacy')) {
-			return getLisk32Address(topic);
-		}
-		return topic;
-	});
+	let eventTopics;
+	if (topics) {
+		eventTopics = event.topics.map((topic, index) => {
+			if (topics[index].toLowerCase().endsWith('address') && !topics[index].includes('legacy')) {
+				return getLisk32Address(topic);
+			}
+			return topic;
+		});
+	} else {
+		eventTopics = event.topics;
+	}
 
 	const decodedEvent = {
 		...event,

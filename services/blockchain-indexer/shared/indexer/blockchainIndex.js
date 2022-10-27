@@ -134,7 +134,7 @@ const getTransactionExecutionStatus = (tx, events) => {
 	const expectedEventName = `${tx.module}:transaction`;
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
-	return txExecResultEvent.data === '0801' ? 'success' : 'fail';
+	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
 };
 
 const indexBlock = async job => {
