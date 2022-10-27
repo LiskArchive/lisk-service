@@ -72,7 +72,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=00000001`);
+		const response = await api.get(`${endpoint}?chainID=04000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -80,8 +80,17 @@ describe('Blockchain applications metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
+	it('retrieves blockchain application off-chain metadata by chainID as CSV', async () => {
+		const response = await api.get(`${endpoint}?chainID=03000000,04000000`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(2);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
 	it('retrieves blockchain application off-chain metadata by network', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet`);
+		const response = await api.get(`${endpoint}?network=devnet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -90,7 +99,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain applications off-chain metadata by network as CSV', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet,testnet`);
+		const response = await api.get(`${endpoint}?network=mainnet,testnet,devnet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -102,7 +111,7 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?chainName=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toEqual(3);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});

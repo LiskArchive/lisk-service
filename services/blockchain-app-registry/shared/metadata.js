@@ -111,6 +111,15 @@ const getBlockchainAppsMetadata = async (params) => {
 		};
 	}
 
+	if (params.chainID) {
+		const { chainID, ...remParams } = params;
+		params = remParams;
+		params.whereIn = {
+			property: 'chainID',
+			values: chainID.split(','),
+		};
+	}
+
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
@@ -176,10 +185,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			property: 'chainName',
 			pattern: search,
 		};
-	}
-
-	if (params.chainID === CHAIN_ID_LOCAL) {
-		throw new InvalidParamsException(`Expected a global chainID, instead received: '${params.chainID}'.`);
 	}
 
 	if (params.tokenID) {
