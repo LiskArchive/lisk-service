@@ -78,7 +78,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('returns blockchain application off-chain metadata by chainID', async () => {
-		const response = await getBlockchainAppsMetadata({ chainID: '00000001' });
+		const response = await getBlockchainAppsMetadata({ chainID: '04000000' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -92,13 +92,13 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toEqual(3);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('returns blockchain application off-chain metadata by network', async () => {
-		const response = await getBlockchainAppsMetadata({ network: 'mainnet' });
+		const response = await getBlockchainAppsMetadata({ network: 'devnet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -108,7 +108,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('returns blockchain applications off-chain metadata by network as CSV', async () => {
-		const response = await getBlockchainAppsMetadata({ network: 'mainnet,testnet' });
+		const response = await getBlockchainAppsMetadata({ network: 'mainnet,testnet,devnet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -122,7 +122,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toEqual(3);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -132,7 +132,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toEqual(3);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -142,7 +142,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toEqual(3);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -152,7 +152,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toEqual(3);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});

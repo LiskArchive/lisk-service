@@ -19,6 +19,7 @@ const NONCE = /^[0-9]+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
+const NAME_CSV = /^[\w!@$&.,]{1,}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
 const DPOS_DELEGATE_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
@@ -30,7 +31,9 @@ const NETWORK = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const CHAINID_CSV = /^\b[a-fA-F0-9,]{8,}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
+const TOKENID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
@@ -42,6 +45,7 @@ module.exports = {
 	ADDRESS_LISK32,
 	NONCE,
 	NAME,
+	NAME_CSV,
 	TRANSACTION_EXECUTION_STATUS,
 	DPOS_DELEGATE_STATUS,
 	NEWSFEED_SOURCE,
@@ -55,7 +59,9 @@ module.exports = {
 	APPLICATION_STATE,
 	MODULE_COMMAND,
 	CHAIN_ID,
+	CHAINID_CSV,
 	TOKEN_ID,
+	TOKENID_CSV,
 	BLS_KEY,
 	PROOF_OF_POSSESSION,
 	TRANSACTION,

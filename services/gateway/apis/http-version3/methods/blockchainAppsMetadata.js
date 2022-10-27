@@ -25,7 +25,7 @@ module.exports = {
 	tags: ['Interoperability'],
 	params: {
 		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		chainID: { optional: true, type: 'string', min: 1, max: 21 },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAINID_CSV },
 		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
