@@ -21,6 +21,8 @@ const {
 	goodRequestSchema,
 } = require('../../../schemas/api_v3/allSchemas.schema');
 
+const schemas = require('../../../schemas/api_v3/constants/schemas');
+
 const {
 	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
@@ -31,9 +33,14 @@ const endpoint = `${baseUrlV3}/schemas`;
 
 describe('Schemas API', () => {
 	it('returns list of all available schemas', async () => {
-		const response = await api.get(`${endpoint}`);
+		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(allSchemasSchema);
+		expect(response.data.block.schema).toStrictEqual(schemas.blockSchema);
+		expect(response.data.header.schema).toStrictEqual(schemas.headerSchema);
+		expect(response.data.asset.schema).toStrictEqual(schemas.assetSchema);
+		expect(response.data.transaction.schema).toStrictEqual(schemas.transactionSchema);
+		expect(response.data.event.schema).toStrictEqual(schemas.eventSchema);
 	});
 
 	it('invalid param -> 400', async () => {
