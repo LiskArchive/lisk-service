@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	Exceptions: { InvalidParamsException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
@@ -204,6 +205,10 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	if (params.tokenName) {
 		const { tokenName, ...remParams } = params;
 		params = remParams;
+
+		if (typeof params.chainID === 'undefined' && typeof params.chainName === 'undefined') {
+			throw new InvalidParamsException('Either `chainID` or `chainName` is required for `tokenName`.');
+		}
 
 		(params.whereIns = params.whereIns || []).push({
 			property: 'tokenName',
