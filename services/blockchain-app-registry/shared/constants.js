@@ -13,10 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CHAIN_ID_LOCAL = '00000000';
 const LENGTH_CHAIN_ID = 8;
 
 module.exports = {
-	CHAIN_ID_LOCAL,
 	LENGTH_CHAIN_ID,
 };

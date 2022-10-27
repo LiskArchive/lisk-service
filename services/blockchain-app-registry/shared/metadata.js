@@ -16,12 +16,10 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	Exceptions: { InvalidParamsException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const {
-	CHAIN_ID_LOCAL,
 	LENGTH_CHAIN_ID,
 } = require('./constants');
 const { read } = require('./utils/fsUtils');
@@ -191,21 +189,26 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
 
-		const chainID = tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
-		const localID = tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
-		const isGlobalTokenID = chainID !== CHAIN_ID_LOCAL;
+		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
+			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
+			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
+			return [chainID, localID];
+		});
 
-		if (isGlobalTokenID) {
-			// chainID should match global tokenID when supplied
-			if ('chainID' in params && chainID !== params.chainID) {
-				throw new InvalidParamsException('Invalid tokenID and chainID combination specified.');
-			}
+		(params.whereIns = params.whereIns || []).push({
+			property: ['chainID', 'localID'],
+			values: chainIDlocalIDPairs,
+		});
+	}
 
-			params.chainID = chainID;
-			params.localID = localID;
-		} else if (!('chainID' in params)) {
-			throw new InvalidParamsException('\'chainID\' is required when specifying local tokenID.');
-		}
+	if (params.tokenName) {
+		const { tokenName, ...remParams } = params;
+		params = remParams;
+
+		(params.whereIns = params.whereIns || []).push({
+			property: 'tokenName',
+			values: tokenName.split(','),
+		});
 	}
 
 	const tokensResultSet = await tokenMetadataTable.find(params, ['network', 'chainID', 'chainName']);

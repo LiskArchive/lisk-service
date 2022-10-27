@@ -93,7 +93,7 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'offset',
-		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf',
+		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf', 'whereIns',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -239,6 +239,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			query.whereIn(property, values);
 		}
 
+		if (params.whereIns) {
+			const { whereIns } = params;
+
+			whereIns.forEach(param => {
+				const { property, values } = param;
+				query.whereIn(property, values);
+			});
+		}
+
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
@@ -377,6 +386,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
+		}
+
+		if (params.whereIns) {
+			const { whereIns } = params;
+
+			whereIns.forEach(param => {
+				const { property, values } = param;
+				query.whereIn(property, values);
+			});
 		}
 
 		if (params.whereJsonSupersetOf) {
