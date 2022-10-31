@@ -102,13 +102,13 @@ config.networks = Object.freeze({
 	],
 });
 
-config.CHAIN_ID_PREFIX_NETWORK_MAP = {
+config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'00': 'mainnet',
 	'01': 'testnet',
 	'02': 'betanet',
 	'03': 'alphanet',
 	'04': 'devnet',
-};
+});
 
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');

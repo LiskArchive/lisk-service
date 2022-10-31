@@ -101,22 +101,36 @@ const getBlockchainAppsMetadata = async (params) => {
 		meta: {},
 	};
 
-	if (params.network) {
-		const { network, ...remParams } = params;
-		params = remParams;
-		params.whereIn = {
-			property: 'network',
-			values: network.split(','),
-		};
-	}
+	// Intialize db variables
+	params.whereIns = [];
 
 	if (params.chainID) {
 		const { chainID, ...remParams } = params;
 		params = remParams;
-		params.whereIn = {
+		const chainIDs = chainID.split(',');
+
+		params.whereIns.push({
 			property: 'chainID',
-			values: chainID.split(','),
-		};
+			values: chainIDs,
+		});
+
+		if (typeof params.network === 'undefined') {
+			const networks = {};
+			chainIDs.forEach(_chainID => {
+				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[_chainID.substring(0, 2)];
+				networks[network] = 1;
+			});
+			params.network = Object.keys(networks).join(',');
+		}
+	}
+
+	if (params.network) {
+		const { network, ...remParams } = params;
+		params = remParams;
+		params.whereIns.push({
+			property: 'network',
+			values: network.split(','),
+		});
 	}
 
 	if (params.search) {
@@ -177,6 +191,9 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
+	// Initilize db params
+	params.whereIns = [];
+
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
@@ -186,33 +203,62 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
-	if (params.tokenID) {
-		const { tokenID, ...remParams } = params;
-		params = remParams;
-
-		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
-			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
-			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
-			return [chainID, localID];
-		});
-
-		(params.whereIns = params.whereIns || []).push({
-			property: ['chainID', 'localID'],
-			values: chainIDlocalIDPairs,
-		});
-	}
-
 	if (params.tokenName) {
 		const { tokenName, ...remParams } = params;
 		params = remParams;
 
-		if (typeof params.chainID === 'undefined' && typeof params.chainName === 'undefined') {
-			throw new InvalidParamsException('Either `chainID` or `chainName` is required for `tokenName`.');
+		// Either chainID or chainName with network must be passed.
+		// Skip if tokenID is passed as it already contains chainID
+		if (typeof params.tokenID === 'undefined' && typeof params.chainID === 'undefined'
+			&& (typeof params.chainName === 'undefined' || typeof params.network === 'undefined')) {
+			throw new InvalidParamsException('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
 		}
-
-		(params.whereIns = params.whereIns || []).push({
+		params.whereIns.push({
 			property: 'tokenName',
 			values: tokenName.split(','),
+		});
+	}
+
+	if (params.tokenID) {
+		const { tokenID, ...remParams } = params;
+		params = remParams;
+		const networks = {};
+
+		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
+			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
+			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
+
+			if (typeof params.network === 'undefined') {
+				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
+				networks[network] = 1;
+			}
+
+			return [chainID, localID];
+		});
+
+		params.whereIns.push({
+			property: ['chainID', 'localID'],
+			values: chainIDlocalIDPairs,
+		});
+
+		// Resolve network if not passed yet
+		if (typeof params.network === 'undefined') {
+			params.network = Object.keys(networks).join(',');
+		}
+	}
+
+	// Resolve network from chainID if present
+	if (typeof params.network === 'undefined' && params.chainID) {
+		params.network = config.CHAIN_ID_PREFIX_NETWORK_MAP[params.chainID.substring(0, 2)];
+	}
+
+	if (params.network) {
+		const { network, ...remParams } = params;
+		params = remParams;
+
+		params.whereIns.push({
+			property: 'network',
+			values: network.split(','),
 		});
 	}
 

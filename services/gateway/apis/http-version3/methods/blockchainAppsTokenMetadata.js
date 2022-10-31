@@ -28,7 +28,7 @@ module.exports = {
 		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID },
 		tokenName: { optional: true, type: 'string', pattern: regex.NAME_CSV },
 		tokenID: { optional: true, type: 'string', pattern: regex.TOKENID_CSV },
-		network: { optional: false, type: 'string', min: 1, default: 'mainnet', enum: ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'] },
+		network: { optional: true, type: 'string', pattern: regex.NETWORK },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
