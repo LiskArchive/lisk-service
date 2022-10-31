@@ -35,7 +35,7 @@ def echoBanner(msg) {
 
 properties([
 	parameters([
-		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'development' ),
+		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'release/4.0.0' ),
 	])
 ])
 
@@ -52,7 +52,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
 				}
 			}
 			steps {
@@ -70,7 +70,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
 				}
 			}
 			parallel {
@@ -118,7 +118,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
 				}
 			}
 			parallel {
@@ -128,8 +128,10 @@ pipeline {
 						dir('lisk-core') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
-									./bin/run start --network devnet --api-ipc &
-									echo $! > lisk-core.pid
+								./bin/run blockchain:import --force jenkins/lisk-core/snapshots/blockchain.db.tar.gz
+								./bin/run forger-info:import --force jenkins/lisk-core/snapshots/forger.db.tar.gz
+								./bin/run start --network devnet --api-ipc &
+								echo $! > lisk-core.pid
 								'''
 							}
 						}
@@ -151,7 +153,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
 				}
 			}
 			steps {
@@ -169,7 +171,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
 				}
 			}
 			parallel {
