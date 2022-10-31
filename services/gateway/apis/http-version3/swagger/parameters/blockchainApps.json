@@ -14,7 +14,25 @@
         "description": "Chain ID to query (can be expressed as an interval from:to)",
         "type": "string",
         "format": "id",
-        "minLength": 1
+        "minLength": 8,
+        "maxLength": 8
+    },
+    "chainIDWithoutInterval": {
+        "name": "chainID",
+        "in": "query",
+        "description": "Chain ID to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 8,
+        "maxLength": 8
+    },
+    "chainIDCSV": {
+        "name": "chainID",
+        "in": "query",
+        "description": "Chain ID to query (can be expressed as CSV)",
+        "type": "string",
+        "format": "id",
+        "minLength": 8
     },
     "state": {
         "name": "state",
@@ -35,8 +53,7 @@
         "in": "query",
         "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAvailable values: mainnet, testnet, betanet, alphanet, devnet",
         "type": "string",
-        "minLength": 1,
-        "default": "mainnet"
+        "minLength": 1
     },
     "chainName": {
         "name": "chainName",

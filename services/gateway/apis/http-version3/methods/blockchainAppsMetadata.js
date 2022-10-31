@@ -46,7 +46,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns a list of blockchain applications off-chain metadata',
 		});
-		blockchainAppsMetadataSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsMetaList', this.params);
+		blockchainAppsMetadataSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsMeta', this.params);
 		blockchainAppsMetadataSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of blockchain applications off-chain metadata',

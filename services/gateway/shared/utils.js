@@ -49,6 +49,12 @@ const transformParams = (type, params) => {
 				minLength: 1,
 				maxLength: 20,
 			};
+		} else if (type === 'blockchainAppsMeta') {
+			if (paramKey === 'chainID') value = { $ref: '#/parameters/chainIDCSV' };
+		} else if (type === 'blockchainAppsTokensMeta') {
+			if (paramKey === 'chainID') value = { $ref: '#/parameters/chainIDWithoutInterval' };
+			else if (paramKey === 'tokenID') value = { $ref: '#/parameters/tokenIDCSV' };
+			else if (paramKey === 'tokenName') value = { $ref: '#/parameters/tokenNameCSV' };
 		}
 		data.push(value);
 	});
