@@ -86,10 +86,10 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 		});
 
-		it('Fetch rows using whereIns', async () => {
+		it('Fetch rows using whereIn', async () => {
 			await testTable.upsert([emptyBlock, nonEmptyBlock]);
 			const params = {
-				whereIns: [{
+				whereIn: [{
 					property: 'height',
 					values: [ emptyBlock.height, nonEmptyBlock.height ],
 				},
@@ -119,10 +119,10 @@ describe('Test MySQL', () => {
 			expect(count).toBe(2);
 		});
 
-		it('Row count using whereIns', async () => {
+		it('Row count using whereIn', async () => {
 			await testTable.upsert([emptyBlock, nonEmptyBlock]);
 			const params = {
-				whereIns: [{
+				whereIn: [{
 					property: 'height',
 					values: [ emptyBlock.height, nonEmptyBlock.height ],
 				},
@@ -220,14 +220,14 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 		});
 
-		it('Fetch rows using whereIns', async () => {
+		it('Fetch rows using whereIn', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
 			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
 			await commitDbTransaction(trx);
 
 			const params = {
-				whereIns: [{
+				whereIn: [{
 					property: 'height',
 					values: [ emptyBlock.height, nonEmptyBlock.height ],
 				},
@@ -259,14 +259,14 @@ describe('Test MySQL', () => {
 			expect(count).toBe(2);
 		});
 
-		it('Row count using whereIns', async () => {
+		it('Row count using whereIn', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
 			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
 			await commitDbTransaction(trx);
 
 			const params = {
-				whereIns: [{
+				whereIn: [{
 					property: 'height',
 					values: [ emptyBlock.height, nonEmptyBlock.height ],
 				},

@@ -92,8 +92,8 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
-		'sort', 'limit', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'offset',
-		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf', 'whereIns',
+		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -235,12 +235,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.whereIn) {
-			const { property, values } = params.whereIn;
-			query.whereIn(property, values);
-		}
-
-		if (params.whereIns) {
-			const { whereIns } = params;
+			const { whereIn } = params;
+			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
 
 			whereIns.forEach(param => {
 				const { property, values } = param;
@@ -384,12 +380,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.whereIn) {
-			const { property, values } = params.whereIn;
-			query.whereIn(property, values);
-		}
-
-		if (params.whereIns) {
-			const { whereIns } = params;
+			const { whereIn } = params;
+			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
 
 			whereIns.forEach(param => {
 				const { property, values } = param;
