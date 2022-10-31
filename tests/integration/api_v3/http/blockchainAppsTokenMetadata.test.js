@@ -30,6 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/tokens`;
 
+// TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('Blockchain application tokens metadata API', () => {
 	it('retrieves blockchain applications off-chain metadata for tokens', async () => {
 		const response = await api.get(endpoint);
@@ -79,8 +80,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by global chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=00000001`);
+	it('retrieves blockchain application off-chain metadata for tokens chainID', async () => {
+		const response = await api.get(`${endpoint}?chainID=04000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -90,17 +91,11 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('fails validation error when only local chainID specified', async () => {
-		const response = await api.get(`${endpoint}?chainID=00000000`, 400);
-		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Expected a global chainID, instead received:');
-	});
-
 	it('retrieves blockchain application off-chain metadata for tokens by chainName', async () => {
 		const response = await api.get(`${endpoint}?chainName=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toEqual(3);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -108,7 +103,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by tokenID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000100000000`);
+		const response = await api.get(`${endpoint}?tokenID=0400000000000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -119,10 +114,10 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by csv tokenID', async () => {
-		const response = await api.get(`${endpoint}?network=devnet&tokenID=0400000000000000,0300000000000000`);
+		const response = await api.get(`${endpoint}?tokenID=0400000000000000,0300000000000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toEqual(2);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -130,7 +125,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000100000000&chainID=00000001`);
+		const response = await api.get(`${endpoint}?tokenID=0400000000000000&chainID=04000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -140,8 +135,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by local tokenID and global chainID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000001`);
+	it('retrieves blockchain application off-chain metadata for tokens by tokenName and chainID', async () => {
+		const response = await api.get(`${endpoint}?tokenName=Lisk&chainID=04000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -151,20 +146,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('fails validation when local tokenID and local chainID specified', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000000000000&chainID=00000000`, 400);
-		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Expected a global chainID, instead received:');
-	});
-
-	it('fails validation error when only local tokenID specified', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0000000000000000`, 400);
-		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('\'chainID\' is required when specifying local tokenID.');
-	});
-
-	it('retrieves blockchain application off-chain metadata for tokens by tokenName', async () => {
-		const response = await api.get(`${endpoint}?tokenName=Lisk`);
+	it('retrieves blockchain application off-chain metadata for tokens by tokenName and tokenID', async () => {
+		const response = await api.get(`${endpoint}?tokenName=Lisk&tokenID=0400000000000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -174,7 +157,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by csv tokenID', async () => {
+	it('retrieves blockchain application off-chain metadata for tokens by chainID and csv tokenName', async () => {
 		const response = await api.get(`${endpoint}?network=devnet&tokenName=Lik,Lisk&chainID=04000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -185,11 +168,34 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
+	it('fails validation error when only tokenName specified', async () => {
+		const response = await api.get(`${endpoint}?tokenName=Lisk`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
+	});
+
+	it('fails validation error when only tokenName and chainName specified', async () => {
+		const response = await api.get(`${endpoint}?tokenName=Lisk&chainName=devnet`, 400);
+		expect(response).toMap(badRequestSchema);
+		expect(response.message).toInclude('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
+	});
+
 	it('retrieves blockchain application off-chain metadata for tokens by network', async () => {
-		const response = await api.get(`${endpoint}?network=testnet`);
+		const response = await api.get(`${endpoint}?network=devnet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
+		response.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application off-chain metadata for tokens by csv network', async () => {
+		const response = await api.get(`${endpoint}?network=devnet,alphanet`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(2);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
