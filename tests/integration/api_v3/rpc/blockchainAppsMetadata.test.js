@@ -87,6 +87,29 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
+	it('retrieves blockchain application off-chain metadata by chainID as CSV', async () => {
+		const response = await getBlockchainAppsMetadata({ chainID: '03000000,04000000' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(2);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application off-chain metadata by CSV of chainID and network', async () => {
+		const response = await getBlockchainAppsMetadata({
+			chainID: '02000000,03000000,04000000',
+			network: 'alphanet,devnet',
+		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(2);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
 	it('returns blockchain application off-chain metadata by chainName', async () => {
 		const response = await getBlockchainAppsMetadata({ chainName: 'Lisk' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);

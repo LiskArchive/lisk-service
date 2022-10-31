@@ -89,6 +89,15 @@ describe('Blockchain applications metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
+	it('retrieves blockchain application off-chain metadata by CSV of chainID and network', async () => {
+		const response = await api.get(`${endpoint}?chainID=02000000,03000000,04000000&network=alphanet,devnet`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(2);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
 	it('retrieves blockchain application off-chain metadata by network', async () => {
 		const response = await api.get(`${endpoint}?network=devnet`);
 		expect(response).toMap(goodRequestSchema);
