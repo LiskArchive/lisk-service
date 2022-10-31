@@ -102,14 +102,14 @@ const getBlockchainAppsMetadata = async (params) => {
 	};
 
 	// Intialize db variables
-	params.whereIns = [];
+	params.whereIn = [];
 
 	if (params.chainID) {
 		const { chainID, ...remParams } = params;
 		params = remParams;
 		const chainIDs = chainID.split(',');
 
-		params.whereIns.push({
+		params.whereIn.push({
 			property: 'chainID',
 			values: chainIDs,
 		});
@@ -127,7 +127,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.network) {
 		const { network, ...remParams } = params;
 		params = remParams;
-		params.whereIns.push({
+		params.whereIn.push({
 			property: 'network',
 			values: network.split(','),
 		});
@@ -192,7 +192,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	};
 
 	// Initilize db params
-	params.whereIns = [];
+	params.whereIn = [];
 
 	if (params.search) {
 		const { search, ...remParams } = params;
@@ -213,7 +213,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			&& (typeof params.chainName === 'undefined' || typeof params.network === 'undefined')) {
 			throw new InvalidParamsException('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
 		}
-		params.whereIns.push({
+		params.whereIn.push({
 			property: 'tokenName',
 			values: tokenName.split(','),
 		});
@@ -236,7 +236,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			return [chainID, localID];
 		});
 
-		params.whereIns.push({
+		params.whereIn.push({
 			property: ['chainID', 'localID'],
 			values: chainIDlocalIDPairs,
 		});
@@ -256,7 +256,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		const { network, ...remParams } = params;
 		params = remParams;
 
-		params.whereIns.push({
+		params.whereIn.push({
 			property: 'network',
 			values: network.split(','),
 		});

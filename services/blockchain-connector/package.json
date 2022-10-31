@@ -36,7 +36,7 @@
     "@liskhq/lisk-transactions": "6.0.0-alpha.3",
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/8cada103c4c5db501d7d8db082d9a01012903cd3/framework/dist/lisk-service-framework-1.4.6.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/56e510422f755316715955754cae88a972514060/framework/dist/lisk-service-framework-1.4.6.tgz",
     "signals": "^1.0.0",
     "tar": "^6.1.11"
   },
