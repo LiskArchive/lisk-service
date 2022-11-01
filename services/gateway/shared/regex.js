@@ -27,7 +27,7 @@ const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,)+\b$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
 const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
-const NETWORK = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
+const NETWORK_CSV = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
@@ -55,7 +55,7 @@ module.exports = {
 	CCM_STATUS,
 	INTERVAL,
 	CHAINID_RANGE,
-	NETWORK,
+	NETWORK_CSV,
 	APPLICATION_STATE,
 	MODULE_COMMAND,
 	CHAIN_ID,
