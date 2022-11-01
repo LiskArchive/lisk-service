@@ -227,15 +227,6 @@ const registerApi = (apiNames, config) => {
 				}
 			}
 
-			if (Utils.Data.isEmptyArray(data.data) || Utils.Data.isEmptyObject(data.data)) {
-				[ctx.meta.$statusCode] = NOT_FOUND;
-				const message = 'Data not found';
-				return {
-					error: true,
-					message,
-				};
-			}
-
 			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);
 		},
 	};

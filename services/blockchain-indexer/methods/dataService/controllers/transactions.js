@@ -54,9 +54,6 @@ const getTransactions = async (params) => {
 			...params,
 		});
 
-		if (isEmptyObject(result) || isEmptyArray(result.data)) {
-			return NOT_FOUND_RESPONSE;
-		}
 
 		const meta = {
 			count: result.data.length,
