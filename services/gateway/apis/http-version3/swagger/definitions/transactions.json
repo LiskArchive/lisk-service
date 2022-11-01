@@ -61,41 +61,6 @@
                         "description": "Date/month representing the ending of the aggregation interval."
                     }
                 }
-            },
-            "info": {
-                "type": "object",
-                "properties": {
-                    "0000000100000000": {
-                        "type": "object",
-                        "properties": {
-                            "tokenName": {
-                                "type": "string",
-                                "example": "Lisk",
-                                "description": "Name of the blockchain application."
-                            },
-                            "symbol": {
-                                "type": "string",
-                                "example": "LSK",
-                                "description": "The symbol for the token. Example: LSK."
-                            },
-                            "logo": {
-                                "type": "object",
-                                "properties": {
-                                    "png": {
-                                        "type": "string",
-                                        "example": "https://downloads.lisk.com/lisk/images/logo.png",
-                                        "description": "URI to the PNG format of the application logo."
-                                    },
-                                    "svg": {
-                                        "type": "string",
-                                        "example": "https://downloads.lisk.com/lisk/images/logo.svg",
-                                        "description": "URI to the SVG format of the application logo."
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     },

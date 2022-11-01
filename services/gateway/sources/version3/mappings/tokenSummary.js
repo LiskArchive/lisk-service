@@ -18,22 +18,15 @@ const escrowedAmount = {
 	escrowChainID: '=,string',
 	tokenID: '=,string',
 	amount: '=,string',
-	name: '=,string',
-	symbol: '=,string',
 };
 
 const supportedToken = {
 	tokenID: '=,string',
-	name: '=,string',
-	symbol: '=,string',
 };
 
 const totalSupplyByToken = {
 	tokenID: '=,string',
 	amount: 'totalSupply,string',
-	name: '=,string',
-	symbol: '=,string',
-
 };
 
 module.exports = {
