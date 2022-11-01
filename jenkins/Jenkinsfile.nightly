@@ -129,7 +129,6 @@ pipeline {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
 								./bin/run blockchain:import --force jenkins/lisk-core/snapshots/blockchain.db.tar.gz
-								./bin/run forger-info:import --force jenkins/lisk-core/snapshots/forger.db.tar.gz
 								./bin/run start --network devnet --api-ipc &
 								echo $! > lisk-core.pid
 								'''
