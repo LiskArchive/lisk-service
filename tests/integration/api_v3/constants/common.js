@@ -22,5 +22,5 @@ const CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 });
 
 module.exports = {
-    CHAIN_ID_PREFIX_NETWORK_MAP,
+	CHAIN_ID_PREFIX_NETWORK_MAP,
 };

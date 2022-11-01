@@ -32,7 +32,8 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta`;
 const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
-let curChainID, curNetwork;
+let curChainID;
+let curNetwork;
 
 describe('Blockchain applications metadata API', () => {
 	beforeAll(async () => {

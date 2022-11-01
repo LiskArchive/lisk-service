@@ -32,7 +32,8 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/tokens`;
 const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
-let curChainID, curNetwork;
+let curChainID;
+let curNetwork;
 
 // TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('Blockchain application tokens metadata API', () => {

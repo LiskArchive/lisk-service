@@ -35,7 +35,8 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsTokenMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.tokens', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
-let curChainID, curNetwork;
+let curChainID;
+let curNetwork;
 
 // TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('get.blockchain.apps.meta.tokens', () => {

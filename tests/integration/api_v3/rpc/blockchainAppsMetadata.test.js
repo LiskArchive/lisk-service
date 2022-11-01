@@ -29,13 +29,13 @@ const {
 const {
 	blockchainAppMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetadataSchema.schema');
-const { chainID } = require('../../../../services/gateway/sources/version3/mappings/blockchainAppMetadata');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
-let curChainID, curNetwork;
+let curChainID;
+let curNetwork;
 
 describe('get.blockchain.apps.meta', () => {
 	beforeAll(async () => {
