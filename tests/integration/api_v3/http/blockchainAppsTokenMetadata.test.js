@@ -15,6 +15,7 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
+const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../constants/common');
 
 const {
 	badRequestSchema,
@@ -29,9 +30,18 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/tokens`;
+const networkStatusEndpoint = `${baseUrlV3}/network/status`;
+
+let curChainID, curNetwork;
 
 // TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('Blockchain application tokens metadata API', () => {
+	beforeAll(async () => {
+		const response = await api.get(networkStatusEndpoint);
+		curChainID = response.data.chainID;
+		curNetwork = CHAIN_ID_PREFIX_NETWORK_MAP[curChainID.substring(0, 2)];
+	});
+
 	it('retrieves blockchain applications off-chain metadata for tokens', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
@@ -81,7 +91,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=04000000`);
+		const response = await api.get(`${endpoint}?chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -125,7 +135,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=0400000000000000&chainID=04000000`);
+		const response = await api.get(`${endpoint}?tokenID=0400000000000000&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -136,7 +146,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenName and chainID', async () => {
-		const response = await api.get(`${endpoint}?tokenName=Lisk&chainID=04000000`);
+		const response = await api.get(`${endpoint}?tokenName=Lisk&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -158,7 +168,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by chainID and csv tokenName', async () => {
-		const response = await api.get(`${endpoint}?network=devnet&tokenName=Lik,Lisk&chainID=04000000`);
+		const response = await api.get(`${endpoint}?network=${curNetwork}&tokenName=Lik,Lisk&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -175,13 +185,13 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('fails validation error when only tokenName and chainName specified', async () => {
-		const response = await api.get(`${endpoint}?tokenName=Lisk&chainName=devnet`, 400);
+		const response = await api.get(`${endpoint}?tokenName=Lisk&chainName=${curNetwork}`, 400);
 		expect(response).toMap(badRequestSchema);
 		expect(response.message).toInclude('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by network', async () => {
-		const response = await api.get(`${endpoint}?network=devnet`);
+		const response = await api.get(`${endpoint}?network=${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -192,7 +202,7 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by csv network', async () => {
-		const response = await api.get(`${endpoint}?network=devnet,alphanet`);
+		const response = await api.get(`${endpoint}?network=${curNetwork},alphanet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(2);

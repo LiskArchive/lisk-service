@@ -14,6 +14,7 @@
  *
  */
 const config = require('../../../config');
+const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../constants/common');
 
 const {
 	request,
@@ -32,9 +33,18 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsTokenMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.tokens', params);
+const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
+
+let curChainID, curNetwork;
 
 // TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('get.blockchain.apps.meta.tokens', () => {
+	beforeAll(async () => {
+		const response = await getNetworkStatus();
+		curChainID = response.result.data.chainID;
+		curNetwork = CHAIN_ID_PREFIX_NETWORK_MAP[curChainID.substring(0, 2)];
+	});
+
 	it('returns blockchain applications off-chain metadata for tokens', async () => {
 		const response = await getBlockchainAppsTokenMetadata();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -88,7 +98,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ chainID: '04000000' });
+		const response = await getBlockchainAppsTokenMetadata({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -136,7 +146,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000', chainID: '04000000' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000', chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -148,7 +158,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000', chainID: '04000000' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000', chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -160,7 +170,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by tokenName and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk', chainID: '04000000' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk', chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -189,12 +199,12 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('fails validation when only tokenName and chainName specified', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk', chainName: 'devnet' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk', chainName: curNetwork });
 		expect(response).toMap(emptyResponseSchema);
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by network', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ network: 'devnet' });
+		const response = await getBlockchainAppsTokenMetadata({ network: curNetwork });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -206,7 +216,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by csv network', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ network: 'devnet,alphanet' });
+		const response = await getBlockchainAppsTokenMetadata({ network: `${curNetwork},alphanet` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

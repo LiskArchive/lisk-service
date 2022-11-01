@@ -15,6 +15,7 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
+const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../constants/common');
 
 const {
 	badRequestSchema,
@@ -29,8 +30,17 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta`;
+const networkStatusEndpoint = `${baseUrlV3}/network/status`;
+
+let curChainID, curNetwork;
 
 describe('Blockchain applications metadata API', () => {
+	beforeAll(async () => {
+		const response = await api.get(networkStatusEndpoint);
+		curChainID = response.data.chainID;
+		curNetwork = CHAIN_ID_PREFIX_NETWORK_MAP[curChainID.substring(0, 2)];
+	});
+
 	it('retrieves blockchain applications off-chain metadata', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
@@ -72,7 +82,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=04000000`);
+		const response = await api.get(`${endpoint}?chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -81,7 +91,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainID as CSV', async () => {
-		const response = await api.get(`${endpoint}?chainID=03000000,04000000`);
+		const response = await api.get(`${endpoint}?chainID=03000000,${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(2);
@@ -90,7 +100,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by CSV of chainID and network', async () => {
-		const response = await api.get(`${endpoint}?chainID=02000000,03000000,04000000&network=alphanet,devnet`);
+		const response = await api.get(`${endpoint}?chainID=02000000,03000000,${curChainID}&network=alphanet,${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(2);
@@ -99,7 +109,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by network', async () => {
-		const response = await api.get(`${endpoint}?network=devnet`);
+		const response = await api.get(`${endpoint}?network=${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -108,7 +118,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain applications off-chain metadata by network as CSV', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet,testnet,devnet`);
+		const response = await api.get(`${endpoint}?network=mainnet,testnet,${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);

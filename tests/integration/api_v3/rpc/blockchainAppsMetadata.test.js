@@ -14,6 +14,7 @@
  *
  */
 const config = require('../../../config');
+const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../constants/common');
 
 const {
 	request,
@@ -28,11 +29,21 @@ const {
 const {
 	blockchainAppMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetadataSchema.schema');
+const { chainID } = require('../../../../services/gateway/sources/version3/mappings/blockchainAppMetadata');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta', params);
+const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
+
+let curChainID, curNetwork;
 
 describe('get.blockchain.apps.meta', () => {
+	beforeAll(async () => {
+		const response = await getNetworkStatus();
+		curChainID = response.result.data.chainID;
+		curNetwork = CHAIN_ID_PREFIX_NETWORK_MAP[curChainID.substring(0, 2)];
+	});
+
 	it('returns blockchain applications off-chain metadata', async () => {
 		const response = await getBlockchainAppsMetadata();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -78,7 +89,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('returns blockchain application off-chain metadata by chainID', async () => {
-		const response = await getBlockchainAppsMetadata({ chainID: '04000000' });
+		const response = await getBlockchainAppsMetadata({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -88,7 +99,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainID as CSV', async () => {
-		const response = await getBlockchainAppsMetadata({ chainID: '03000000,04000000' });
+		const response = await getBlockchainAppsMetadata({ chainID: `03000000,${curChainID}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -99,8 +110,8 @@ describe('get.blockchain.apps.meta', () => {
 
 	it('retrieves blockchain application off-chain metadata by CSV of chainID and network', async () => {
 		const response = await getBlockchainAppsMetadata({
-			chainID: '02000000,03000000,04000000',
-			network: 'alphanet,devnet',
+			chainID: `02000000,03000000,${curChainID}`,
+			network: `alphanet,${curNetwork}`,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -121,7 +132,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('returns blockchain application off-chain metadata by network', async () => {
-		const response = await getBlockchainAppsMetadata({ network: 'devnet' });
+		const response = await getBlockchainAppsMetadata({ network: curNetwork });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -131,7 +142,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('returns blockchain applications off-chain metadata by network as CSV', async () => {
-		const response = await getBlockchainAppsMetadata({ network: 'mainnet,testnet,devnet' });
+		const response = await getBlockchainAppsMetadata({ network: `mainnet,testnet,${curNetwork}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
