@@ -31,9 +31,9 @@ const NETWORK = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
-const CHAINID_CSV = /^\b[a-fA-F0-9,]{8,}\b$/;
+const CHAIN_ID_CSV = /^\b[a-fA-F0-9,]{8,}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
-const TOKENID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
+const TOKEN_ID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
@@ -59,9 +59,9 @@ module.exports = {
 	APPLICATION_STATE,
 	MODULE_COMMAND,
 	CHAIN_ID,
-	CHAINID_CSV,
+	CHAIN_ID_CSV,
 	TOKEN_ID,
-	TOKENID_CSV,
+	TOKEN_ID_CSV,
 	BLS_KEY,
 	PROOF_OF_POSSESSION,
 	TRANSACTION,
