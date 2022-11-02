@@ -13,24 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	getAuthAccount,
+} = require('../shared/sdk');
 
-const escrowedAmount = {
-	escrowChainID: '=,string',
-	tokenID: '=,string',
-	amount: '=,string',
-};
-
-const supportedToken = {
-	tokenID: '=,string',
-};
-
-const totalSupplyByToken = {
-	tokenID: '=,string',
-	amount: 'totalSupply,string',
-};
-
-module.exports = {
-	escrowedAmount,
-	supportedToken,
-	totalSupplyByToken,
-};
+module.exports = [
+	{
+		name: 'getAuthAccount',
+		controller: async ({ address }) => getAuthAccount(address),
+		params: {
+			address: { optional: false, type: 'string' },
+		},
+	},
+];

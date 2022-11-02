@@ -24,7 +24,6 @@ const {
 
 const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
 const { requestConnector } = require('../../utils/request');
-const { populateTokenMetaInfo } = require('../../utils/tokens');
 const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
@@ -45,37 +44,22 @@ const getTokens = async (params) => {
 	};
 
 	if (params.tokenID && !params.address) {
-		throw new InvalidParamsException('tokenID based retrieval is only possible along with address');
+		throw new InvalidParamsException('tokenID based retrieval is only possible along with address.');
 	}
 
-	// TODO: Add logic to retrieve symbol and name from the SDK once endpoint is available
 	if (params.tokenID && params.address) {
 		const response = await requestConnector(
-			'token_getBalance',
+			'getTokenBalance',
 			{ address: params.address, tokenID: params.tokenID });
 
 		tokensInfo = [{ ...response, tokenID: params.tokenID }];
 	} else {
 		const response = await requestConnector(
-			'token_getBalances',
+			'getTokenBalances',
 			{ address: params.address });
 
 		tokensInfo = response.balances;
 	}
-
-	// TODO: Enable the code once token metadata is available
-	// tokens.data = await BluebirdPromise.map(
-	// 	tokensInfo,
-	// 	async tokenInfo => {
-	// 		const [tokenMetadata] = (await getTokenMetadataByID(tokenInfo.tokenID)).data;
-	// 		return {
-	// 			...tokenInfo,
-	// 			symbol: tokenMetadata.symbol,
-	// 			name: tokenMetadata.tableName,
-	// 		};
-	// 	},
-	// 	{ concurrency: tokensInfo.length },
-	// );
 
 	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);
 
@@ -135,14 +119,10 @@ const getTokensSummary = async () => {
 	const { tokenIDs } = await requestConnector('getSupportedTokens');
 	const supportedTokens = tokenIDs.map(tokenID => ({ tokenID }));
 
-	const escrowedAmountResponse = await populateTokenMetaInfo(escrowedAmounts);
-	const supportedTokensResponse = await populateTokenMetaInfo(supportedTokens);
-	const totalSupplyResponse = await populateTokenMetaInfo(totalSupply);
-
 	summary.data = {
-		escrowedAmounts: escrowedAmountResponse,
-		supportedTokens: supportedTokensResponse,
-		totalSupply: totalSupplyResponse,
+		escrowedAmounts,
+		supportedTokens,
+		totalSupply,
 	};
 
 	return summary;
