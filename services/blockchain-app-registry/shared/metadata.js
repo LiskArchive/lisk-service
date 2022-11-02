@@ -101,7 +101,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		meta: {},
 	};
 
-	// Intialize db variables
+	// Initialize DB variables
 	params.whereIn = [];
 
 	if (params.chainID) {
@@ -191,7 +191,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
-	// Initilize db params
+	// Initialize DB params
 	params.whereIn = [];
 
 	if (params.search) {
