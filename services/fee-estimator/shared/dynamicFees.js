@@ -15,17 +15,9 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { codec } = require('@liskhq/lisk-codec');
-
-const {
-	utils: { hash },
-} = require('@liskhq/lisk-cryptography');
-
 const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const { calcAvgFeeByteModes, EMAcalc } = require('./utils/dynamicFees');
-const { parseInputBySchema } = require('./utils/parser');
-const { getTxnMinFee } = require('./utils/transactionsUtils');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
@@ -104,37 +96,11 @@ const calculateFeePerByte = async block => {
 	const feePerByte = {};
 	const transactionDetails = await BluebirdPromise.map(
 		block.transactions,
-		async tx => {
-			// Calculate minFee from JSON parsed transaction
-			const metadata = await requestConnector('getSystemMetadata');
-			const filteredModule = metadata.modules.find(module => module.name === tx.module);
-			const filteredCommand = filteredModule.commands.find(s => s.name === tx.command);
-
-			const { params } = tx;
-			const decodedParams = codec.decode(filteredCommand.params, Buffer.from(params, 'hex'));
-			const parsedTxParams = parseInputBySchema(decodedParams, filteredCommand.params);
-
-			const schema = await requestConnector('getSchema');
-			const parsedTx = parseInputBySchema(tx, schema.transaction);
-			const parsedTxWithParams = { ...parsedTx, params: parsedTxParams };
-
-			const txBuffer = codec.encode(
-				schema.transaction,
-				{ ...parsedTx, params: Buffer.from(params, 'hex') },
-			);
-
-			// TODO: Remove when transaction ID is available from SDK
-			tx.id = hash(txBuffer).toString('hex');
-			tx.minFee = await getTxnMinFee(parsedTxWithParams);
-			tx.size = txBuffer.length;
-			tx.params = decodedParams;
-
-			return {
-				id: tx.id,
-				size: tx.size,
-				feePriority: Number(tx.fee) - Number(tx.minFee) / tx.size,
-			};
-		},
+		async tx => ({
+			id: tx.id,
+			size: tx.size,
+			feePriority: Number(tx.fee) - Number(tx.minFee) / tx.size,
+		}),
 		{ concurrency: block.transactions.length },
 	);
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
