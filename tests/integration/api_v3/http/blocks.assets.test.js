@@ -25,7 +25,6 @@ const endpoint = `${baseUrlV3}/blocks/assets`;
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	wrongInputParamSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
@@ -148,9 +147,11 @@ describe('Blocks Assets API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('non-existent height -> 404', async () => {
-			const response = await api.get(`${endpoint}?height=2000000000`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('non-existent height -> 200', async () => {
+			const response = await api.get(`${endpoint}?height=2000000000`, 200);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid query parameter -> 400', async () => {

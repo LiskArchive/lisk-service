@@ -17,7 +17,6 @@ const {
 	Exceptions: {
 		InvalidParamsException,
 		ValidationException,
-		NotFoundException,
 	},
 	HTTP: { StatusCodes: { NOT_FOUND, BAD_REQUEST } },
 } = require('lisk-service-framework');

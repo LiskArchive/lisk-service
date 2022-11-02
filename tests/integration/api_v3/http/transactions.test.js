@@ -21,7 +21,6 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -158,9 +157,11 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid blockID -> 404', async () => {
-			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid blockID -> 200 OK', async () => {
+			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 200);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
@@ -195,9 +196,11 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> 404', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid height -> 200', async () => {
+			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 200);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
@@ -536,10 +539,12 @@ xdescribe('Transactions API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with transactionID and non-zero offset', async () => {
-			const expectedStatusCode = 404;
+		it('returns 200 OK when queried with transactionID and non-zero offset', async () => {
+			const expectedStatusCode = 200;
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`, expectedStatusCode);
-			expect(response).toMap(notFoundSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns transaction when queried with transactionID and blockID', async () => {
@@ -585,9 +590,11 @@ xdescribe('Transactions API', () => {
 				});
 				expect(response.meta).toMap(metaSchema);
 			} catch (_) {
-				const expectedStatusCode = 404;
+				const expectedStatusCode = 200;
 				const response = await api.get(`${endpoint}?limit=5&offset=1`, expectedStatusCode);
-				expect(response).toMap(notFoundSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
 			}
 		});
 	});

@@ -14,17 +14,22 @@
  *
  */
 import Joi from 'joi';
+import regex from './regex';
+
+const generator = {
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+};
 
 const blockSchema = {
-	id: Joi.string().required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	height: Joi.number().integer().min(0).required(),
 	version: Joi.number().required(),
 	timestamp: Joi.number().integer().min(1).required(),
-	generatorAddress: Joi.string().allow('').required(),
-	assetsRoot: Joi.string().required(),
-	stateRoot: Joi.string().required(),
-	transactionRoot: Joi.string().required(),
-	previousBlockID: Joi.string().required(),
+	generator: Joi.object(generator).required(),
+	assetRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
 	signature: Joi.string().allow('').required(),
 	aggregateCommit: Joi.object().required(),
 	isFinal: Joi.boolean().required(),
@@ -34,7 +39,10 @@ const blockSchema = {
 	totalBurnt: Joi.string().required(),
 	maxHeightGenerated: Joi.number().required(),
 	maxHeightPrevoted: Joi.number().required(),
-	validatorsHash: Joi.string().required(),
+	validatorsHash: Joi.string().pattern(regex.HASH_SHA256).required(),
+	numberOfTransactions: Joi.number().integer().min(0).required(),
+	numberOfAssets: Joi.number().integer().min(1).required(),
+	numberOfEvents: Joi.number().integer().min(1).required(),
 };
 
 const block = {
@@ -45,7 +53,7 @@ const block = {
 
 const asset = {
 	module: Joi.string().required(),
-	data: Joi.string().required(), // TODO: Update data schema once confirmed from sdk
+	data: Joi.object().required(),
 };
 
 const blockAssetSchema = {
