@@ -31,9 +31,17 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainApps = async (params) => request(wsRpcUrl, 'get.blockchain.apps', params);
+const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
+
+let curChainID;
 
 // TODO: Update test when data is available in blockchain_apps table
 describe('get.blockchain.apps', () => {
+	beforeAll(async () => {
+		const response = await getNetworkStatus();
+		curChainID = response.result.data.chainID;
+	});
+
 	it('returns list of all blockchain applications', async () => {
 		const response = await getBlockchainApps();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -92,7 +100,7 @@ describe('get.blockchain.apps', () => {
 	});
 
 	it('returns list of all blockchain applications by chainID', async () => {
-		const response = await getBlockchainApps({ chainID: '00000000' });
+		const response = await getBlockchainApps({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -102,7 +110,7 @@ describe('get.blockchain.apps', () => {
 	});
 
 	it('returns list of all blockchain applications by CSV chainID', async () => {
-		const response = await getBlockchainApps({ chainID: '00000000,04000000' });
+		const response = await getBlockchainApps({ chainID: `00000000,${curChainID}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

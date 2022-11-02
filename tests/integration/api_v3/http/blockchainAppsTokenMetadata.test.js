@@ -190,13 +190,13 @@ describe('Blockchain application tokens metadata API', () => {
 	it('fails validation error when only tokenName specified', async () => {
 		const response = await api.get(`${endpoint}?tokenName=Lisk`, 400);
 		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
+		expect(response.message).toInclude('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
 	});
 
 	it('fails validation error when only tokenName and chainName specified', async () => {
 		const response = await api.get(`${endpoint}?tokenName=Lisk&chainName=${curNetwork}`, 400);
 		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
+		expect(response.message).toInclude('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by network', async () => {

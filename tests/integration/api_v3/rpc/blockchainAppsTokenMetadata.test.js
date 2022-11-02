@@ -116,7 +116,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(3);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -128,7 +129,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -140,7 +142,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(2);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(2);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -155,22 +158,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
-		result.data.forEach(blockchainAppsTokenMetadata => {
-			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
-		});
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({
-			tokenID: defaultToken,
-			chainID: curChainID,
-		});
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(1);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -182,7 +171,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(1);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -194,7 +184,21 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(1);
+		result.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain application off-chain metadata for tokens by chainID and csv tokenName', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ chainID: curChainID, tokenName: 'Lik,Lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(1);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -216,7 +220,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -228,7 +233,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(2);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -240,7 +246,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(3);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -252,7 +259,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(3);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -264,7 +272,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(3);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -276,7 +285,8 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(3);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});

@@ -114,7 +114,7 @@ const getBlockchainAppsMetadata = async (params) => {
 			values: chainIDs,
 		});
 
-		if (!'network' in params) {
+		if (!('network' in params)) {
 			const networks = {};
 			chainIDs.forEach(_chainID => {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[_chainID.substring(0, 2)];
@@ -147,6 +147,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		{ ...params, limit, isDefault: true },
 		['network', 'appDirName'],
 	);
+	blockchainAppsMetadata.data = defaultApps;
 
 	if (defaultApps.length < params.limit) {
 		const nonDefaultApps = await applicationMetadataTable.find(
@@ -154,7 +155,7 @@ const getBlockchainAppsMetadata = async (params) => {
 			['network', 'appDirName'],
 		);
 
-		blockchainAppsMetadata.data = defaultApps.concat(nonDefaultApps);
+		blockchainAppsMetadata.data.push(...nonDefaultApps);
 	}
 
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
@@ -209,7 +210,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 		// chainID or chainName must be specified with the network
 		// Skip when tokenID is specified, network can be resolved automatically
-		if (!'tokenID' in params && !'chainID' in params && (!'chainName' in params || !'network' in params)) {
+		if (!('tokenID' in params) && !('chainID' in params) && ((!('chainName' in params)) || (!('network' in params)))) {
 			throw new InvalidParamsException('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
 		}
 		params.whereIn.push({
@@ -241,13 +242,13 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		});
 
 		// Resolve network if not passed yet
-		if (!'network' in params) {
+		if (!('network' in params)) {
 			params.network = Object.keys(networks).join(',');
 		}
 	}
 
 	// Resolve network from chainID if present
-	if (params.chainID && !'network' in params) {
+	if (params.chainID && !('network' in params)) {
 		params.network = config.CHAIN_ID_PREFIX_NETWORK_MAP[params.chainID.substring(0, 2)];
 	}
 
