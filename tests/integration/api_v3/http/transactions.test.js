@@ -158,7 +158,7 @@ xdescribe('Transactions API', () => {
 		});
 
 		it('invalid blockID -> 200 OK', async () => {
-			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 200);
+			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -197,7 +197,7 @@ xdescribe('Transactions API', () => {
 		});
 
 		it('invalid height -> 200', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 200);
+			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);

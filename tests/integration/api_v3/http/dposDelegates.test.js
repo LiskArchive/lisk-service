@@ -239,7 +239,7 @@ describe('DPOS Delegates API', () => {
 		});
 
 		it('returns 200 OK when queried with known address and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`, 200);
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -257,7 +257,7 @@ describe('DPOS Delegates API', () => {
 		});
 
 		it('returns 200 OK when queried with known name and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?name=${refDelegate.name}&offset=1`, 200);
+			const response = await api.get(`${endpoint}?name=${refDelegate.name}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);

@@ -80,7 +80,7 @@ xdescribe('Peers API', () => {
 		});
 
 		it('non-existent networkVersion -> 200 OK', async () => {
-			const response = await api.get(`${endpoint}?networkVersion=9.99.0`, 200);
+			const response = await api.get(`${endpoint}?networkVersion=9.99.0`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -152,7 +152,7 @@ xdescribe('Peers API', () => {
 		});
 
 		it('non-existent height -> 200 Ok', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000`, 200);
+			const response = await api.get(`${endpoint}?height=1000000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -194,7 +194,7 @@ xdescribe('Peers API', () => {
 		});
 
 		it('too big offset -> 200 OK', async () => {
-			const response = await api.get(`${endpoint}?offset=1000000`, 200);
+			const response = await api.get(`${endpoint}?offset=1000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -221,7 +221,7 @@ xdescribe('Peers API', () => {
 		});
 
 		it('wrong url -> 200 OK', async () => {
-			const response = await api.get(`${endpoint}/112`, 200);
+			const response = await api.get(`${endpoint}/112`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);

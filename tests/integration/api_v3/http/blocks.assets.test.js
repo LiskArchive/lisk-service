@@ -148,7 +148,7 @@ describe('Blocks Assets API', () => {
 		});
 
 		it('non-existent height -> 200', async () => {
-			const response = await api.get(`${endpoint}?height=2000000000`, 200);
+			const response = await api.get(`${endpoint}?height=2000000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);

@@ -37,7 +37,7 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 );
 
 const getTokens = async (params) => {
-	let tokensInfo;
+	const tokensInfo = [];
 	const tokens = {
 		data: [],
 		meta: {},
@@ -52,13 +52,13 @@ const getTokens = async (params) => {
 			'getTokenBalance',
 			{ address: params.address, tokenID: params.tokenID });
 
-		tokensInfo = [{ ...response, tokenID: params.tokenID }];
+		tokensInfo.push({ ...response, tokenID: params.tokenID });
 	} else {
 		const response = await requestConnector(
 			'getTokenBalances',
 			{ address: params.address });
 
-		tokensInfo = response.balances || [];
+		if (response.balances) tokensInfo.push(...response.balances);
 	}
 
 	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);

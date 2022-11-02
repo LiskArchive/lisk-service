@@ -36,7 +36,7 @@ const delegateSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
 	totalVotesReceived: Joi.string().min(0).required(),
 	selfVotes: Joi.string().min(0).required(),
-	voteWeight: Joi.string().min(0).required(),
+	voteWeight: Joi.string().pattern(regex.VOTE_WEIGHT).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	lastGeneratedHeight: Joi.number().integer().min(0).required(),
 	status: Joi.string().valid(...DELEGATE_STATUSES).required(),

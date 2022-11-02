@@ -127,7 +127,7 @@ describe('Blocks API', () => {
 		});
 
 		it('non-existent height -> 200', async () => {
-			const response = await api.get(`${endpoint}?height=2000000000`, 200);
+			const response = await api.get(`${endpoint}?height=2000000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -365,42 +365,37 @@ describe('Blocks API', () => {
 		});
 
 		it('returns 200 OK when queried with invalid combination: blockID and wrong height', async () => {
-			const expectedStatus = 200;
 			const height = refBlock.height - 10;
-			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&height=${height}`, expectedStatus);
+			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&height=${height}`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns 200 OK when queried with invalid combination: blockID and wrong timestamp', async () => {
-			const expectedStatus = 200;
 			const timestamp = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
-			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&timestamp=${timestamp}`, expectedStatus);
+			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&timestamp=${timestamp}`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns 200 OK when queried with blockID and non-zero offset', async () => {
-			const expectedStatus = 200;
-			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&offset=1`, expectedStatus);
+			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns 200 OK when queried with block height and non-zero offset', async () => {
-			const expectedStatus = 200;
-			const response = await api.get(`${endpoint}?height=${refBlock.height}&offset=1`, expectedStatus);
+			const response = await api.get(`${endpoint}?height=${refBlock.height}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns 200 OK when queried with block timestamp and non-zero offset', async () => {
-			const expectedStatus = 200;
-			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}&offset=1`, expectedStatus);
+			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
