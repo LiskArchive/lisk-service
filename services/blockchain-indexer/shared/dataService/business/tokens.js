@@ -58,7 +58,7 @@ const getTokens = async (params) => {
 			'getTokenBalances',
 			{ address: params.address });
 
-		tokensInfo = response.balances;
+		tokensInfo = response.balances || [];
 	}
 
 	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);
