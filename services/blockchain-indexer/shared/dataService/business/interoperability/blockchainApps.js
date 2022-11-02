@@ -21,7 +21,6 @@ const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { normalizeRangeParam } = require('../../../utils/paramUtils');
 const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
 
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
@@ -35,8 +34,18 @@ const getBlockchainApps = async (params) => {
 		meta: {},
 	};
 
-	if (params.chainID && params.chainID.includes(':')) {
-		params = normalizeRangeParam(params, 'chainID');
+	// Initialize DB params
+	params.whereIn = [];
+
+	if (params.chainID) {
+		const { chainID, ...remParams } = params;
+		params = remParams;
+		const chainIDs = chainID.split(',');
+
+		params.whereIn.push({
+			property: 'chainID',
+			values: chainIDs,
+		});
 	}
 
 	if (params.search) {
@@ -52,10 +61,10 @@ const getBlockchainApps = async (params) => {
 	if (params.state) {
 		const { state, ...remParams } = params;
 		params = remParams;
-		params.whereIn = {
+		params.whereIn.push({
 			property: 'state',
 			values: state.split(','),
-		};
+		});
 	}
 
 	const total = await blockchainAppsDB.count(params);

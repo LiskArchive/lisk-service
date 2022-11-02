@@ -32,6 +32,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainApps = async (params) => request(wsRpcUrl, 'get.blockchain.apps', params);
 
+// TODO: Update test when data is available in blockchain_apps table
 describe('get.blockchain.apps', () => {
 	it('returns list of all blockchain applications', async () => {
 		const response = await getBlockchainApps();
@@ -91,7 +92,17 @@ describe('get.blockchain.apps', () => {
 	});
 
 	it('returns list of all blockchain applications by chainID', async () => {
-		const response = await getBlockchainApps({ chainID: '' });
+		const response = await getBlockchainApps({ chainID: '00000000' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns list of all blockchain applications by CSV chainID', async () => {
+		const response = await getBlockchainApps({ chainID: '00000000,04000000' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

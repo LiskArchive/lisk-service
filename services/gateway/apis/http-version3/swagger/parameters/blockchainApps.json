@@ -2,7 +2,7 @@
     "name": {
         "name": "name",
         "in": "query",
-        "description": "Blockchain application name",
+        "description": "Blockchain application name.",
         "type": "string",
         "format": "name",
         "minLength": 1,
@@ -11,16 +11,7 @@
     "chainID": {
         "name": "chainID",
         "in": "query",
-        "description": "Chain ID to query (can be expressed as an interval from:to)",
-        "type": "string",
-        "format": "id",
-        "minLength": 8,
-        "maxLength": 8
-    },
-    "chainIDWithoutInterval": {
-        "name": "chainID",
-        "in": "query",
-        "description": "Chain ID to query",
+        "description": "Chain ID to query.",
         "type": "string",
         "format": "id",
         "minLength": 8,
@@ -29,7 +20,7 @@
     "chainIDCSV": {
         "name": "chainID",
         "in": "query",
-        "description": "Chain ID to query (can be expressed as CSV)",
+        "description": "Chain ID to query (can be expressed as CSV).",
         "type": "string",
         "format": "id",
         "minLength": 8
@@ -37,28 +28,28 @@
     "state": {
         "name": "state",
         "in": "query",
-        "description": "State of Blockchain application",
+        "description": "State of Blockchain application.",
         "type": "string",
         "minLength": 1
     },
     "isDefault": {
         "name": "isDefault",
         "in": "query",
-        "description": "Filter default blockchain application",
+        "description": "Filter default blockchain application.",
         "type": "string",
         "minLength": 1
     },
     "network": {
         "name": "network",
         "in": "query",
-        "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAvailable values: mainnet, testnet, betanet, alphanet, devnet",
+        "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAvailable values: mainnet, testnet, betanet, alphanet, devnet.",
         "type": "string",
         "minLength": 1
     },
     "chainName": {
         "name": "chainName",
         "in": "query",
-        "description": "Chain Name to query",
+        "description": "Chain Name to query.",
         "type": "string",
         "minLength": 1
     }
