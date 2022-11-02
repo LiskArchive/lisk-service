@@ -25,7 +25,7 @@ const getAuthAccountInfo = async params => {
 		meta: {},
 	};
 
-	const response = await requestConnector('auth_getAuthAccount', { address: params.address });
+	const response = await requestConnector('getAuthAccount', { address: params.address });
 	authInfo.data = parseToJSONCompatObj(response);
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);

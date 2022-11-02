@@ -21,7 +21,6 @@ const {
 } = require('lisk-service-framework');
 
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
-const { getTokensMetaInfo } = require('./utils/metadata');
 const { requestIndexer } = require('./utils/request');
 
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
@@ -211,7 +210,6 @@ const getTransactionsStatistics = async params => {
 			from: dateFrom.format(dateFormat),
 			to: dateTo.format(dateFormat),
 		},
-		info: { ...await getTokensMetaInfo(tokenIDs) },
 	};
 
 	return transactionsStatistics;

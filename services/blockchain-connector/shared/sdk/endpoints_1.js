@@ -35,7 +35,7 @@ const getSchemas = async () => {
 		return schema;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSchema\'');
+			throw new TimeoutException('Request timed out when calling \'getSchema\'.');
 		}
 		throw err;
 	}
@@ -49,7 +49,7 @@ const getRegisteredActions = async () => {
 		return registeredActions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredActions\'');
+			throw new TimeoutException('Request timed out when calling \'getRegisteredActions\'.');
 		}
 		throw err;
 	}
@@ -63,7 +63,7 @@ const getRegisteredEvents = async () => {
 		return registeredEvents;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredEvents\'');
+			throw new TimeoutException('Request timed out when calling \'getRegisteredEvents\'.');
 		}
 		throw err;
 	}
@@ -77,7 +77,7 @@ const getRegisteredModules = async () => {
 		return registeredModules;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredModules\'');
+			throw new TimeoutException('Request timed out when calling \'getRegisteredModules\'.');
 		}
 		throw err;
 	}
@@ -91,7 +91,7 @@ const getNodeInfo = async (isForceUpdate = false) => {
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'');
+			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'.');
 		}
 		throw err;
 	}
@@ -105,7 +105,7 @@ const getSystemMetadata = async () => {
 		return metadata;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSystemMetadata\'');
+			throw new TimeoutException('Request timed out when calling \'getSystemMetadata\'.');
 		}
 		throw err;
 	}

@@ -68,7 +68,7 @@ const getUnlocks = async params => {
 		params.address = await getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('dpos_getVoter', { address: params.address });
+	const response = await requestConnector('getVoter', { address: params.address });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	let normalizedUnlocks;

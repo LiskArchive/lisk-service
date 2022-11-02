@@ -30,8 +30,6 @@ const tokensMetaSchema = {
 
 const tokensSchema = {
 	tokenID: Joi.string().required(),
-	name: Joi.string().optional(),
-	symbol: Joi.string().optional(),
 	availableBalance: Joi.string().required(),
 	lockedAmount: Joi.array().items(lockedAmount).required(),
 };

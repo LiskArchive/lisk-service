@@ -68,7 +68,7 @@ const getGenesisBlock = async (includeAccounts = false) => {
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'');
+			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'.');
 		}
 		throw err;
 	}
@@ -103,7 +103,7 @@ const getGenesisConfig = async () => {
 		return genesisConfig;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'');
+			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'.');
 		}
 		throw err;
 	}

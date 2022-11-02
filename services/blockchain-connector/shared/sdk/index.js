@@ -49,7 +49,6 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
-	validateBLSKey,
 } = require('./endpoints');
 
 const {
@@ -60,12 +59,22 @@ const {
 } = require('./peers');
 
 const {
+	getTokenBalance,
+	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
 } = require('./tokens');
 
-const { getDelegate, getAllDelegates } = require('./dpos');
+const {
+	getDelegate,
+	getAllDelegates,
+	getDPoSConstants,
+	getVoter,
+} = require('./dpos');
+const { getAuthAccount } = require('./auth');
+const { getValidator, validateBLSKey } = require('./validators');
+const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
@@ -121,17 +130,27 @@ module.exports = {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
-	validateBLSKey,
 
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getPeersStatistics,
 
+	getTokenBalance,
+	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
 
 	getDelegate,
 	getAllDelegates,
+	getDPoSConstants,
+	getVoter,
+
+	getAuthAccount,
+
+	getValidator,
+	validateBLSKey,
+
+	getLegacyAccount,
 };
