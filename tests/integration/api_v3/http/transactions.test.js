@@ -540,8 +540,7 @@ xdescribe('Transactions API', () => {
 		});
 
 		it('returns 200 OK when queried with transactionID and non-zero offset', async () => {
-			const expectedStatusCode = 200;
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`, expectedStatusCode);
+			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
@@ -590,8 +589,7 @@ xdescribe('Transactions API', () => {
 				});
 				expect(response.meta).toMap(metaSchema);
 			} catch (_) {
-				const expectedStatusCode = 200;
-				const response = await api.get(`${endpoint}?limit=5&offset=1`, expectedStatusCode);
+				const response = await api.get(`${endpoint}?limit=5&offset=1`);
 				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBe(0);
 				expect(response.meta).toMap(metaSchema);
