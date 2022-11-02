@@ -36,7 +36,6 @@ let curChainID;
 let curNetwork;
 let defaultToken;
 
-// TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('Blockchain application tokens metadata API', () => {
 	beforeAll(async () => {
 		const response = await api.get(networkStatusEndpoint);

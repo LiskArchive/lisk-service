@@ -207,7 +207,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		const { tokenName, ...remParams } = params;
 		params = remParams;
 
-		// Either chainID or chainName with network must be passed.
+		// Either chainID or chainName with network must be passed
 		// Skip if tokenID is passed as it already contains chainID
 		if (typeof params.tokenID === 'undefined' && typeof params.chainID === 'undefined'
 			&& (typeof params.chainName === 'undefined' || typeof params.network === 'undefined')) {

@@ -39,7 +39,6 @@ let curChainID;
 let curNetwork;
 let defaultToken;
 
-// TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('get.blockchain.apps.meta.tokens', () => {
 	beforeAll(async () => {
 		const response = await getNetworkStatus();
