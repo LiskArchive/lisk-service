@@ -115,12 +115,12 @@ const getBlockchainAppsMetadata = async (params) => {
 		});
 
 		if (!('network' in params)) {
-			const networks = {};
+			const networkSet = new Set();
 			chainIDs.forEach(_chainID => {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[_chainID.substring(0, 2)];
-				networks[network] = 1;
+				networkSet.add(network);
 			});
-			params.network = Object.keys(networks).join(',');
+			params.network = Array.from(networkSet).join(',');
 		}
 	}
 
@@ -222,7 +222,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	if (params.tokenID) {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
-		const networks = {};
+		const networkSet = new Set();
 
 		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
 			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
@@ -230,7 +230,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 			if (typeof params.network === 'undefined') {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
-				networks[network] = 1;
+				networkSet.push(network);
 			}
 
 			return [chainID, localID];
@@ -243,7 +243,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 		// Resolve network if not passed yet
 		if (!('network' in params)) {
-			params.network = Object.keys(networks).join(',');
+			params.network = Array.from(networkSet).join(',');
 		}
 	}
 

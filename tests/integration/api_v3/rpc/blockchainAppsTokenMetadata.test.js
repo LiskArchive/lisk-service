@@ -117,7 +117,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});

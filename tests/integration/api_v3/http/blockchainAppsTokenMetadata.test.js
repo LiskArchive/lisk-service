@@ -108,7 +108,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
