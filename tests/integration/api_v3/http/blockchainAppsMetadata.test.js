@@ -15,7 +15,7 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../constants/common');
+const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../../../../services/blockchain-app-registry/config');
 
 const {
 	badRequestSchema,

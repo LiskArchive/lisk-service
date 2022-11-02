@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../constants/common');
+const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../../../../services/blockchain-app-registry/config');
 
 const {
 	request,
