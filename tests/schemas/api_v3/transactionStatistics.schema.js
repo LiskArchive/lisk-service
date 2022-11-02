@@ -46,26 +46,11 @@ const durationSchema = {
 	to: Joi.string().pattern(regex.DURATION).required(),
 };
 
-const logo = {
-	png: Joi.string().optional(),
-	svg: Joi.string().optional(),
-};
-
-const info = {
-	tokenName: Joi.string().pattern(regex.NAME).required(),
-	symbol: Joi.string().required(),
-	logo: Joi.object(logo).required(),
-};
-
-const infoKey = Joi.string().pattern(regex.TOKEN_ID).required();
-const infoEntry = Joi.object(info).required();
-
 const metaSchema = {
 	limit: Joi.number().required(),
 	offset: Joi.number().required(),
 	total: Joi.number().required(),
 	duration: Joi.object(durationSchema).required(),
-	info: Joi.object().pattern(infoKey, infoEntry).optional(),
 };
 
 module.exports = {

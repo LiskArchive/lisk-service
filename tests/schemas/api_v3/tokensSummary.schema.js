@@ -19,8 +19,6 @@ const regex = require('./regex');
 
 const commonProperties = {
 	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
-	symbol: Joi.string().pattern(regex.NAME).required(),
 };
 
 const escrowedAmounts = {

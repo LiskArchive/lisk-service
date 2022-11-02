@@ -23,7 +23,7 @@ const PUNISH_TIME_SELF_VOTE = 780000;
 let moduleConstants;
 
 const getDPoSConstants = async () => {
-	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('dpos_getConstants', {});
+	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getDPoSConstants');
 
 	return {
 		data: moduleConstants,

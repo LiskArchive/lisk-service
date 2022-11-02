@@ -36,7 +36,7 @@ const getLiskBalanceByAddress = async (address) => {
 	const LISK_TOKEN_ID = config.tokens.lisk.id;
 
 	const response = await requestConnector(
-		'token_getBalance',
+		'getTokenBalance',
 		{
 			address,
 			tokenID: LISK_TOKEN_ID,

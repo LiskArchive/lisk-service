@@ -16,6 +16,8 @@
 const {
 	getDelegate,
 	getAllDelegates,
+	getDPoSConstants,
+	getVoter,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -30,5 +32,17 @@ module.exports = [
 		name: 'getAllDelegates',
 		controller: async () => getAllDelegates(),
 		params: {},
+	},
+	{
+		name: 'getDPoSConstants',
+		controller: async () => getDPoSConstants(),
+		params: {},
+	},
+	{
+		name: 'getVoter',
+		controller: async ({ address }) => getVoter(address),
+		params: {
+			address: { optional: false, type: 'string' },
+		},
 	},
 ];

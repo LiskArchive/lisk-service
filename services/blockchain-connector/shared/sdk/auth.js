@@ -13,24 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Exceptions: { TimeoutException },
+} = require('lisk-service-framework');
 
-const escrowedAmount = {
-	escrowChainID: '=,string',
-	tokenID: '=,string',
-	amount: '=,string',
-};
+const { timeoutMessage, invokeEndpoint } = require('./client');
 
-const supportedToken = {
-	tokenID: '=,string',
-};
-
-const totalSupplyByToken = {
-	tokenID: '=,string',
-	amount: 'totalSupply,string',
+const getAuthAccount = async (address) => {
+	try {
+		const authAccountInfo = await invokeEndpoint('auth_getAuthAccount', { address });
+		return authAccountInfo;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getAuthAccount\'.');
+		}
+		throw err;
+	}
 };
 
 module.exports = {
-	escrowedAmount,
-	supportedToken,
-	totalSupplyByToken,
+	getAuthAccount,
 };
