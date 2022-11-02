@@ -37,6 +37,7 @@ const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status',
 
 let curChainID;
 let curNetwork;
+let defaultToken;
 
 // TODO: Update to use mainnet tokenID/chainID/network when avialble
 describe('get.blockchain.apps.meta.tokens', () => {
@@ -44,6 +45,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 		const response = await getNetworkStatus();
 		curChainID = response.result.data.chainID;
 		curNetwork = CHAIN_ID_PREFIX_NETWORK_MAP[curChainID.substring(0, 2)];
+		defaultToken = `${curChainID}00000000`;
 	});
 
 	it('returns blockchain applications off-chain metadata for tokens', async () => {
@@ -123,7 +125,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by tokenID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: defaultToken });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -135,7 +137,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by csv tokenID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000,0300000000000000' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: `${defaultToken},0300000000000000` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -147,7 +149,10 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000', chainID: curChainID });
+		const response = await getBlockchainAppsTokenMetadata({
+			tokenID: defaultToken,
+			chainID: curChainID,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -159,7 +164,10 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: '0400000000000000', chainID: curChainID });
+		const response = await getBlockchainAppsTokenMetadata({
+			tokenID: defaultToken,
+			chainID: curChainID,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -183,7 +191,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by tokenName and tokenID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk', tokenID: '0400000000000000' });
+		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk', tokenID: defaultToken });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
