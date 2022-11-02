@@ -95,7 +95,8 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?chainID=03000000,${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(2);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(2);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
@@ -104,7 +105,8 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?chainID=02000000,03000000,${curChainID}&network=alphanet,${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(2);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(2);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
@@ -122,7 +124,8 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?network=mainnet,testnet,${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(3);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
@@ -131,7 +134,8 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?chainName=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(3);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(5);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});

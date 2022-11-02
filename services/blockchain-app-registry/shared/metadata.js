@@ -114,7 +114,7 @@ const getBlockchainAppsMetadata = async (params) => {
 			values: chainIDs,
 		});
 
-		if (typeof params.network === 'undefined') {
+		if (!'network' in params) {
 			const networks = {};
 			chainIDs.forEach(_chainID => {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[_chainID.substring(0, 2)];
@@ -207,11 +207,10 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		const { tokenName, ...remParams } = params;
 		params = remParams;
 
-		// Either chainID or chainName with network must be passed
-		// Skip if tokenID is passed as it already contains chainID
-		if (typeof params.tokenID === 'undefined' && typeof params.chainID === 'undefined'
-			&& (typeof params.chainName === 'undefined' || typeof params.network === 'undefined')) {
-			throw new InvalidParamsException('Either `chainID` or `chainName` with `network` is required for `tokenName`.');
+		// chainID or chainName must be specified with the network
+		// Skip when tokenID is specified, network can be resolved automatically
+		if (!'tokenID' in params && !'chainID' in params && (!'chainName' in params || !'network' in params)) {
+			throw new InvalidParamsException('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
 		}
 		params.whereIn.push({
 			property: 'tokenName',
@@ -242,13 +241,13 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		});
 
 		// Resolve network if not passed yet
-		if (typeof params.network === 'undefined') {
+		if (!'network' in params) {
 			params.network = Object.keys(networks).join(',');
 		}
 	}
 
 	// Resolve network from chainID if present
-	if (typeof params.network === 'undefined' && params.chainID) {
+	if (params.chainID && !'network' in params) {
 		params.network = config.CHAIN_ID_PREFIX_NETWORK_MAP[params.chainID.substring(0, 2)];
 	}
 

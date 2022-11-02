@@ -4,7 +4,6 @@
         "in": "query",
         "description": "Blockchain application name.",
         "type": "string",
-        "format": "name",
         "minLength": 1,
         "maxLength": 20
     },
@@ -28,7 +27,7 @@
     "state": {
         "name": "state",
         "in": "query",
-        "description": "State of Blockchain application.",
+        "description": "State of the blockchain application.",
         "type": "string",
         "minLength": 1
     },
@@ -49,7 +48,7 @@
     "chainName": {
         "name": "chainName",
         "in": "query",
-        "description": "Chain Name to query.",
+        "description": "Chain name to query.",
         "type": "string",
         "minLength": 1
     }

@@ -107,7 +107,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?chainName=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(3);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(5);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -118,7 +119,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?tokenID=${defaultToken}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -129,7 +131,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?tokenID=${defaultToken},0300000000000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(2);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(2);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -140,7 +143,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?tokenID=${defaultToken}&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(1);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -151,7 +155,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?tokenName=Lisk&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(1);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -162,7 +167,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?tokenName=Lisk&tokenID=${defaultToken}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(1);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -173,7 +179,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?network=${curNetwork}&tokenName=Lik,Lisk&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(1);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -196,7 +203,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?network=${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
@@ -207,7 +215,8 @@ describe('Blockchain application tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?network=${curNetwork},alphanet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(2);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
 		});
