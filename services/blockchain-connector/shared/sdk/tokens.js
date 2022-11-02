@@ -16,6 +16,30 @@
 const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
 const { timeoutMessage, invokeEndpoint } = require('./client');
 
+const getTokenBalances = async (address) => {
+	try {
+		const balances = await invokeEndpoint('token_getBalances', { address });
+		return balances;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getTokenBalances\'.');
+		}
+		throw err;
+	}
+};
+
+const getTokenBalance = async ({ address, tokenID }) => {
+	try {
+		const balance = await invokeEndpoint('token_getBalance', { address, tokenID });
+		return balance;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getTokenBalance\'.');
+		}
+		throw err;
+	}
+};
+
 const getEscrowedAmounts = async () => {
 	try {
 		return invokeEndpoint('token_getEscrowedAmounts');
@@ -50,6 +74,8 @@ const getTotalSupply = async () => {
 };
 
 module.exports = {
+	getTokenBalance,
+	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,

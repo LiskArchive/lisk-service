@@ -13,24 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { validateBLSKey, getValidator } = require('../shared/sdk');
-const regex = require('../shared/utils/regex');
+const {
+	getAuthAccount,
+} = require('../shared/sdk');
 
 module.exports = [
 	{
-		name: 'validateBLSKey',
-		controller: async ({ blsKey, proofOfPossession }) => validateBLSKey({
-			blsKey,
-			proofOfPossession,
-		}),
-		params: {
-			blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
-			proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
-		},
-	},
-	{
-		name: 'getValidator',
-		controller: async ({ address }) => getValidator(address),
+		name: 'getAuthAccount',
+		controller: async ({ address }) => getAuthAccount(address),
 		params: {
 			address: { optional: false, type: 'string' },
 		},

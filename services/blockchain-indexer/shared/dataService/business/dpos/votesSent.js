@@ -35,7 +35,7 @@ const getVotesSent = async params => {
 		params.address = await getAddressByName(params.name);
 	}
 
-	const response = await requestConnector('dpos_getVoter', { address: params.address });
+	const response = await requestConnector('getVoter', { address: params.address });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	if (!response.error) response.sentVotes

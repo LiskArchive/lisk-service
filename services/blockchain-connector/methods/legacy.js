@@ -14,35 +14,15 @@
  *
  */
 const {
-	getDelegate,
-	getAllDelegates,
-	getDPoSConstants,
-	getVoter,
+	getLegacyAccount,
 } = require('../shared/sdk');
 
 module.exports = [
 	{
-		name: 'getDelegate',
-		controller: async ({ address }) => getDelegate(address),
+		name: 'getLegacyAccount',
+		controller: async ({ publicKey }) => getLegacyAccount(publicKey),
 		params: {
-			address: { optional: false, type: 'string' },
-		},
-	},
-	{
-		name: 'getAllDelegates',
-		controller: async () => getAllDelegates(),
-		params: {},
-	},
-	{
-		name: 'getDPoSConstants',
-		controller: async () => getDPoSConstants(),
-		params: {},
-	},
-	{
-		name: 'getVoter',
-		controller: async ({ address }) => getVoter(address),
-		params: {
-			address: { optional: false, type: 'string' },
+			publicKey: { optional: false, type: 'string' },
 		},
 	},
 ];

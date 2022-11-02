@@ -26,7 +26,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		meta: {},
 	};
 
-	const response = await requestConnector('legacy_getLegacyAccount', { publicKey });
+	const response = await requestConnector('getLegacyAccount', { publicKey });
 	legacyAccountInfo.data = {
 		legacyAddress: getLegacyAddressFromPublicKey(publicKey),
 		balance: response.balance,

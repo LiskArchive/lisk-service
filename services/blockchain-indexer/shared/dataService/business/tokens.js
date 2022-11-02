@@ -44,18 +44,18 @@ const getTokens = async (params) => {
 	};
 
 	if (params.tokenID && !params.address) {
-		throw new InvalidParamsException('tokenID based retrieval is only possible along with address');
+		throw new InvalidParamsException('tokenID based retrieval is only possible along with address.');
 	}
 
 	if (params.tokenID && params.address) {
 		const response = await requestConnector(
-			'token_getBalance',
+			'getTokenBalance',
 			{ address: params.address, tokenID: params.tokenID });
 
 		tokensInfo = [{ ...response, tokenID: params.tokenID }];
 	} else {
 		const response = await requestConnector(
-			'token_getBalances',
+			'getTokenBalances',
 			{ address: params.address });
 
 		tokensInfo = response.balances;

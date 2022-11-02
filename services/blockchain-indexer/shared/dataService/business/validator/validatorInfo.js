@@ -24,7 +24,7 @@ const getValidator = async params => {
 		meta: {},
 	};
 
-	validator.data = await requestConnector('validators_getValidator', { address: params.address });
+	validator.data = await requestConnector('getValidator', { address: params.address });
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);
 	validator.meta = {

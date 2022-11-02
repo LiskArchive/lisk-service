@@ -25,7 +25,7 @@ const getDelegate = async (address) => {
 		return delegate;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getDelegate\'');
+			throw new TimeoutException('Request timed out when calling \'getDelegate\'.');
 		}
 		throw err;
 	}
@@ -37,7 +37,31 @@ const getAllDelegates = async () => {
 		return delegates;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getAllDelegates\'');
+			throw new TimeoutException('Request timed out when calling \'getAllDelegates\'.');
+		}
+		throw err;
+	}
+};
+
+const getDPoSConstants = async () => {
+	try {
+		const constants = await invokeEndpoint('dpos_getConstants');
+		return constants;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getDPoSConstants\'.');
+		}
+		throw err;
+	}
+};
+
+const getVoter = async (address) => {
+	try {
+		const voter = await invokeEndpoint('dpos_getVoter', { address });
+		return voter;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getVoter\'.');
 		}
 		throw err;
 	}
@@ -46,4 +70,6 @@ const getAllDelegates = async () => {
 module.exports = {
 	getDelegate,
 	getAllDelegates,
+	getDPoSConstants,
+	getVoter,
 };
