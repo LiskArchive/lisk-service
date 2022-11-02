@@ -20,7 +20,6 @@ const {
 		NotFoundException,
 	},
 	HTTP: { StatusCodes: { NOT_FOUND, BAD_REQUEST } },
-	Utils: { isEmptyArray, isEmptyObject },
 } = require('lisk-service-framework');
 
 const { confirmAddress } = require('../../../shared/accountUtils');
@@ -53,7 +52,6 @@ const getTransactions = async (params) => {
 			sort: 'timestamp:desc',
 			...params,
 		});
-
 
 		const meta = {
 			count: result.data.length,

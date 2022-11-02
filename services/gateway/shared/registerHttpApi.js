@@ -16,7 +16,7 @@
 const {
 	Utils,
 	HTTP: { StatusCodes },
-	Constants: { HTTP: { INVALID_REQUEST, NOT_FOUND } },
+	Constants: { HTTP: { INVALID_REQUEST } },
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
