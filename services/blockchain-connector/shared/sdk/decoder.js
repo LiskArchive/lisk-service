@@ -84,7 +84,9 @@ const decodeTransaction = (transaction) => {
 		if (Array.isArray(value)) {
 			formattedtransactionParams[key] = value.map(entry => {
 				let formattedEntry = {};
-				if (!Buffer.isBuffer(entry)) {
+				if (Buffer.isBuffer(entry)) {
+					formattedEntry = entry;
+				} else {
 					Object.entries(entry).forEach(([innerKey, innerValue]) => {
 						if (innerKey.toLowerCase().endsWith('address') && !innerKey.includes('legacy')) {
 							formattedEntry[innerKey] = getLisk32Address(innerValue.toString('hex'));
@@ -92,8 +94,6 @@ const decodeTransaction = (transaction) => {
 							formattedEntry[innerKey] = innerValue;
 						}
 					});
-				} else {
-					formattedEntry = entry;
 				}
 				return formattedEntry;
 			});
