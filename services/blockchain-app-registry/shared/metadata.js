@@ -21,7 +21,6 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	CHAIN_ID_LOCAL,
 	LENGTH_CHAIN_ID,
 } = require('./constants');
 const { read } = require('./utils/fsUtils');
@@ -102,13 +101,36 @@ const getBlockchainAppsMetadata = async (params) => {
 		meta: {},
 	};
 
+	// Initialize DB variables
+	params.whereIn = [];
+
+	if (params.chainID) {
+		const { chainID, ...remParams } = params;
+		params = remParams;
+		const chainIDs = chainID.split(',');
+
+		params.whereIn.push({
+			property: 'chainID',
+			values: chainIDs,
+		});
+
+		if (!('network' in params)) {
+			const networkSet = new Set();
+			chainIDs.forEach(_chainID => {
+				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[_chainID.substring(0, 2)];
+				networkSet.add(network);
+			});
+			params.network = Array.from(networkSet).join(',');
+		}
+	}
+
 	if (params.network) {
 		const { network, ...remParams } = params;
 		params = remParams;
-		params.whereIn = {
+		params.whereIn.push({
 			property: 'network',
 			values: network.split(','),
-		};
+		});
 	}
 
 	if (params.search) {
@@ -125,6 +147,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		{ ...params, limit, isDefault: true },
 		['network', 'appDirName'],
 	);
+	blockchainAppsMetadata.data = defaultApps;
 
 	if (defaultApps.length < params.limit) {
 		const nonDefaultApps = await applicationMetadataTable.find(
@@ -132,7 +155,7 @@ const getBlockchainAppsMetadata = async (params) => {
 			['network', 'appDirName'],
 		);
 
-		blockchainAppsMetadata.data = defaultApps.concat(nonDefaultApps);
+		blockchainAppsMetadata.data.push(...nonDefaultApps);
 	}
 
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
@@ -169,6 +192,9 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
+	// Initialize DB params
+	params.whereIn = [];
+
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
@@ -178,29 +204,62 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
-	if (params.chainID === CHAIN_ID_LOCAL) {
-		throw new InvalidParamsException(`Expected a global chainID, instead received: '${params.chainID}'.`);
+	if (params.tokenName) {
+		const { tokenName, ...remParams } = params;
+		params = remParams;
+
+		// chainID or chainName must be specified with the network
+		// Skip when tokenID is specified, network can be resolved automatically
+		if (!('tokenID' in params) && !('chainID' in params) && ((!('chainName' in params)) || (!('network' in params)))) {
+			throw new InvalidParamsException('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
+		}
+		params.whereIn.push({
+			property: 'tokenName',
+			values: tokenName.split(','),
+		});
 	}
 
 	if (params.tokenID) {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
+		const networkSet = new Set();
 
-		const chainID = tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
-		const localID = tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
-		const isGlobalTokenID = chainID !== CHAIN_ID_LOCAL;
+		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
+			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
+			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
 
-		if (isGlobalTokenID) {
-			// chainID should match global tokenID when supplied
-			if ('chainID' in params && chainID !== params.chainID) {
-				throw new InvalidParamsException('Invalid tokenID and chainID combination specified.');
+			if (!('network' in params)) {
+				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
+				networkSet.push(network);
 			}
 
-			params.chainID = chainID;
-			params.localID = localID;
-		} else if (!('chainID' in params)) {
-			throw new InvalidParamsException('\'chainID\' is required when specifying local tokenID.');
+			return [chainID, localID];
+		});
+
+		params.whereIn.push({
+			property: ['chainID', 'localID'],
+			values: chainIDlocalIDPairs,
+		});
+
+		// Set network if not already specified in the request params
+		if (!('network' in params)) {
+			params.network = Array.from(networkSet).join(',');
 		}
+	}
+
+	// Resolve network from chainID if present
+	if (params.chainID && !('network' in params)) {
+		params.network = config.CHAIN_ID_PREFIX_NETWORK_MAP[params.chainID.substring(0, 2)];
+	}
+
+	if (params.network) {
+		const { network, ...remParams } = params;
+		params = remParams;
+
+		params.whereIn.push({
+			property: 'network',
+			values: network.split(','),
+		});
 	}
 
 	const tokensResultSet = await tokenMetadataTable.find(params, ['network', 'chainID', 'chainName']);

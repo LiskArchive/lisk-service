@@ -19,6 +19,7 @@ const NONCE = /^[0-9]+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
+const NAME_CSV = /^[\w!@$&.,]{1,}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
 const DPOS_DELEGATE_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
@@ -26,11 +27,13 @@ const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,)+\b$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
 const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
-const NETWORK = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
+const NETWORK_CSV = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const CHAIN_ID_CSV = /^\b[a-fA-F0-9,]{8,}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
+const TOKEN_ID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
@@ -42,6 +45,7 @@ module.exports = {
 	ADDRESS_LISK32,
 	NONCE,
 	NAME,
+	NAME_CSV,
 	TRANSACTION_EXECUTION_STATUS,
 	DPOS_DELEGATE_STATUS,
 	NEWSFEED_SOURCE,
@@ -51,11 +55,13 @@ module.exports = {
 	CCM_STATUS,
 	INTERVAL,
 	CHAINID_RANGE,
-	NETWORK,
+	NETWORK_CSV,
 	APPLICATION_STATE,
 	MODULE_COMMAND,
 	CHAIN_ID,
+	CHAIN_ID_CSV,
 	TOKEN_ID,
+	TOKEN_ID_CSV,
 	BLS_KEY,
 	PROOF_OF_POSSESSION,
 	TRANSACTION,

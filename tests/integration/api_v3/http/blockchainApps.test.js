@@ -29,8 +29,17 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps`;
+const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
+let curChainID;
+
+// TODO: Update test when data is available in blockchain_apps table
 describe('Blockchain apps API', () => {
+	beforeAll(async () => {
+		const response = await api.get(networkStatusEndpoint);
+		curChainID = response.data.chainID;
+	});
+
 	it('retrieves list of all blockchain applications', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
@@ -84,7 +93,16 @@ describe('Blockchain apps API', () => {
 	});
 
 	it('retrieves blockchain application by chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=`);
+		const response = await api.get(`${endpoint}?chainID=${curChainID}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(1);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application by chainID as CSV', async () => {
+		const response = await api.get(`${endpoint}?chainID=00000000,${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
