@@ -24,8 +24,8 @@ const topLSKAddressMetaSchema = {
 const topLSKAddressSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	balance: Joi.string().required(),
-	owner: Joi.string().allow('').required(),
-	description: Joi.string().allow('').required(),
+	owner: Joi.string().allow(regex.EMPTY_STRING).required(),
+	description: Joi.string().allow(regex.EMPTY_STRING).required(),
 };
 
 module.exports = {

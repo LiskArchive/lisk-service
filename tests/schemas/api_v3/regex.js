@@ -36,11 +36,13 @@ const DIGITS = /^\d+$/;
 const VOTE_WEIGHT = /^\b[1-9]\d*000000000\b$/;
 const HEX = /^\b[0-9a-fA-F]+\b$/;
 const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
+const EMPTY_STRING = /^$/;
 
 module.exports = {
 	ADDRESS_LISK32,
 	IP,
 	HASH_SHA256,
+	HASH_SHA512,
 	MODULE,
 	MODULE_COMMAND,
 	PUBLIC_KEY,
@@ -60,5 +62,5 @@ module.exports = {
 	VOTE_WEIGHT,
 	HEX,
 	TOPIC,
-	HASH_SHA512,
+	EMPTY_STRING,
 };

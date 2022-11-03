@@ -45,7 +45,7 @@ const delegateSchema = {
 	consecutiveMissedBlocks: Joi.number().integer().min(0).required(),
 	forgedBlocks: Joi.number().integer().min(0).required(),
 	rank: Joi.number().integer().min(1).required(),
-	rewards: Joi.string().pattern(regex.DIGITS).allow('').required(),
+	rewards: Joi.string().pattern(regex.DIGITS).allow(regex.EMPTY_STRING).required(),
 };
 
 module.exports = {

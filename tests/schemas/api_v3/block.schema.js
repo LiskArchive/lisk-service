@@ -24,8 +24,8 @@ const generator = {
 
 const aggregateCommit = {
 	height: Joi.number().integer().min(0).required(),
-	aggregationBits: Joi.string().allow('').required(),
-	certificateSignature: Joi.string().allow('').required(),
+	aggregationBits: Joi.string().allow(regex.EMPTY_STRING).required(),
+	certificateSignature: Joi.string().allow(regex.EMPTY_STRING).required(),
 };
 
 const blockSchema = {
@@ -38,7 +38,7 @@ const blockSchema = {
 	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
-	signature: Joi.string().allow('').pattern(regex.HASH_SHA512).required(),
+	signature: Joi.string().allow(regex.EMPTY_STRING).pattern(regex.HASH_SHA512).required(),
 	aggregateCommit: Joi.object(aggregateCommit).required(),
 	isFinal: Joi.boolean().required(),
 	reward: Joi.string().required(),
