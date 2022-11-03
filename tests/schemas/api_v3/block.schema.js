@@ -18,6 +18,14 @@ import regex from './regex';
 
 const generator = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	name: Joi.string().pattern(regex.NAME).optional(),
+};
+
+const aggregateCommit = {
+	height: Joi.number().integer().min(0).required(),
+	aggregationBits: Joi.string().allow('').required(),
+	certificateSignature: Joi.string().allow('').required(),
 };
 
 const blockSchema = {
@@ -30,8 +38,8 @@ const blockSchema = {
 	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
-	signature: Joi.string().allow('').required(),
-	aggregateCommit: Joi.object().required(),
+	signature: Joi.string().allow('').pattern(regex.SIGNATURE).required(),
+	aggregateCommit: Joi.object(aggregateCommit).required(),
 	isFinal: Joi.boolean().required(),
 	reward: Joi.string().required(),
 	networkFee: Joi.string().required(),

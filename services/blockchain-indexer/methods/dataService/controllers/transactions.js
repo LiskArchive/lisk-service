@@ -67,7 +67,6 @@ const getTransactions = async (params) => {
 		let status;
 		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
 		if (err instanceof ValidationException) status = BAD_REQUEST;
-		if (err.message.includes('does not exist')) status = NOT_FOUND;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}

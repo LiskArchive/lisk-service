@@ -35,6 +35,7 @@ const DIGITS = /^\d+$/;
 const VOTE_WEIGHT = /^\b[1-9]\d*000000000\b$/;
 const HEX = /^\b[0-9a-fA-F]+\b$/;
 const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
+const SIGNATURE = /^\b([A-Fa-f0-9]){128}\b$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -59,4 +60,5 @@ module.exports = {
 	VOTE_WEIGHT,
 	HEX,
 	TOPIC,
+	SIGNATURE,
 };

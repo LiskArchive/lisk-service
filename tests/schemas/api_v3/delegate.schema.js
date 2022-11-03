@@ -42,8 +42,7 @@ const delegateSchema = {
 	status: Joi.string().valid(...DELEGATE_STATUSES).required(),
 	isBanned: Joi.boolean().required(),
 	pomHeights: Joi.array().items(pomHeightsSchema).required(),
-	consecutiveMissedBlocks: Joi.number().integer().min(0)
-		.required(),
+	consecutiveMissedBlocks: Joi.number().integer().min(0).required(),
 	forgedBlocks: Joi.number().integer().min(0).required(),
 	rank: Joi.number().integer().min(1).required(),
 	rewards: Joi.string().pattern(regex.DIGITS).allow('').required(),

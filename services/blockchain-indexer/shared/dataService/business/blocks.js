@@ -196,11 +196,9 @@ const getBlocks = async params => {
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
 			blocks.data.push(await getBlockByID(params.id));
-			if (Array.isArray(blocks.data) && !blocks.data.length) return blocks;
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.height) {
 			blocks.data.push(await getBlockByHeight(Number(params.height)));
-			if (Array.isArray(blocks.data) && !blocks.data.length) return blocks;
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.heightBetween) {
 			const { from, to } = params.heightBetween;
@@ -215,11 +213,7 @@ const getBlocks = async params => {
 			blocks.data.push(await getLastBlock());
 		}
 	} catch (err) {
-		// Block does not exist
-		if (err.message.includes('does not exist')) {
-			return blocks;
-		}
-		throw err;
+		if (!err.message.includes('does not exist')) throw err;
 	}
 
 	blocks.meta = {
