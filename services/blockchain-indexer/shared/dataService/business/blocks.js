@@ -126,11 +126,6 @@ const getBlocksByIDs = async ids => {
 	return normalizeBlocks(response);
 };
 
-const getBlocksByHeightBetween = async (from, to) => {
-	const response = await requestConnector('getBlocksByHeightBetween', { from, to });
-	return normalizeBlocks(response);
-};
-
 const getLastBlock = async () => {
 	const response = await requestConnector('getLastBlock');
 	latestBlock = await normalizeBlock(response);
@@ -200,15 +195,6 @@ const getBlocks = async params => {
 		} else if (params.height) {
 			blocks.data.push(await getBlockByHeight(Number(params.height)));
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.heightBetween) {
-			const { from, to } = params.heightBetween;
-			blocks.data = await getBlocksByHeightBetween(from, to);
-			if (params.sort) {
-				const [sortProp, sortOrder] = params.sort.split(':');
-				blocks.data = blocks.data.sort(
-					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-				);
-			}
 		} else {
 			blocks.data.push(await getLastBlock());
 		}

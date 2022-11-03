@@ -38,7 +38,7 @@ const blockSchema = {
 	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
-	signature: Joi.string().allow('').pattern(regex.SIGNATURE).required(),
+	signature: Joi.string().allow('').pattern(regex.HASH_SHA512).required(),
 	aggregateCommit: Joi.object(aggregateCommit).required(),
 	isFinal: Joi.boolean().required(),
 	reward: Joi.string().required(),
@@ -50,7 +50,7 @@ const blockSchema = {
 	validatorsHash: Joi.string().pattern(regex.HASH_SHA256).required(),
 	numberOfTransactions: Joi.number().integer().min(0).required(),
 	numberOfAssets: Joi.number().integer().min(1).required(),
-	numberOfEvents: Joi.number().integer().min(1).required(),
+	numberOfEvents: Joi.number().integer().min(0).required(),
 };
 
 const block = {
