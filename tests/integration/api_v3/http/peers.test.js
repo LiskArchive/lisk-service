@@ -21,8 +21,6 @@ const {
 	goodRequestSchema,
 	metaSchema,
 	badRequestSchema,
-	urlNotFoundSchema,
-	notFoundSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
@@ -81,9 +79,11 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('non-existent networkVersion -> not found', async () => {
-			const response = await api.get(`${endpoint}?networkVersion=9.99.0`, 404);
-			expect(response).toMap(urlNotFoundSchema);
+		it('non-existent networkVersion -> 200 OK', async () => {
+			const response = await api.get(`${endpoint}?networkVersion=9.99.0`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid networkVersion -> bad request', async () => {
@@ -151,9 +151,11 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('non-existent height -> not found error', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('non-existent height -> 200 Ok', async () => {
+			const response = await api.get(`${endpoint}?height=1000000000`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid height -> bad request', async () => {
@@ -191,9 +193,11 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('too big offset -> not found error', async () => {
-			const response = await api.get(`${endpoint}?offset=1000000`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('too big offset -> 200 OK', async () => {
+			const response = await api.get(`${endpoint}?offset=1000000`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		xit('empty sort -> ok', async () => {
@@ -216,9 +220,11 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('wrong url -> not found', async () => {
-			const response = await api.get(`${endpoint}/112`, 404);
-			expect(response).toMap(urlNotFoundSchema);
+		it('wrong url -> 200 OK', async () => {
+			const response = await api.get(`${endpoint}/112`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 

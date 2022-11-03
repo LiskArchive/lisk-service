@@ -19,7 +19,6 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -239,9 +238,11 @@ describe('DPOS Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with known address and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('returns 200 OK when queried with known address and non-zero offset', async () => {
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns delegate when queried with known name and zero offset', async () => {
@@ -255,9 +256,11 @@ describe('DPOS Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with known name and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?name=${refDelegate.name}&offset=1`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('returns 200 OK when queried with known name and non-zero offset', async () => {
+			const response = await api.get(`${endpoint}?name=${refDelegate.name}&offset=1`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns delegate when queried with known status and non-zero offset', async () => {

@@ -34,19 +34,18 @@ const pomHeightsSchema = {
 
 const delegateSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
-	totalVotesReceived: Joi.string().min(10).required(),
-	selfVotes: Joi.string().min(10).required(),
+	totalVotesReceived: Joi.string().min(0).required(),
+	selfVotes: Joi.string().min(0).required(),
 	voteWeight: Joi.string().pattern(regex.VOTE_WEIGHT).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	lastGeneratedHeight: Joi.number().integer().positive().required(),
+	lastGeneratedHeight: Joi.number().integer().min(0).required(),
 	status: Joi.string().valid(...DELEGATE_STATUSES).required(),
 	isBanned: Joi.boolean().required(),
 	pomHeights: Joi.array().items(pomHeightsSchema).required(),
-	consecutiveMissedBlocks: Joi.number().integer().positive().min(0)
-		.required(),
+	consecutiveMissedBlocks: Joi.number().integer().min(0).required(),
 	forgedBlocks: Joi.number().integer().min(0).required(),
 	rank: Joi.number().integer().min(1).required(),
-	rewards: Joi.string().pattern(regex.DIGITS).allow('').required(),
+	rewards: Joi.string().pattern(regex.DIGITS).allow(regex.EMPTY_STRING).required(),
 };
 
 module.exports = {

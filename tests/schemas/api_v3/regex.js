@@ -16,6 +16,7 @@
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
+const HASH_SHA512 = /^\b([A-Fa-f0-9]){128}\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const EVENT_NAME = /^[\w!@$&. ]{1,20}$/;
@@ -35,11 +36,13 @@ const DIGITS = /^\d+$/;
 const VOTE_WEIGHT = /^\b[1-9]\d*000000000\b$/;
 const HEX = /^\b[0-9a-fA-F]+\b$/;
 const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
+const EMPTY_STRING = /^$/;
 
 module.exports = {
 	ADDRESS_LISK32,
 	IP,
 	HASH_SHA256,
+	HASH_SHA512,
 	MODULE,
 	MODULE_COMMAND,
 	PUBLIC_KEY,
@@ -59,4 +62,5 @@ module.exports = {
 	VOTE_WEIGHT,
 	HEX,
 	TOPIC,
+	EMPTY_STRING,
 };

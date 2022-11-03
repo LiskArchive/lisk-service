@@ -16,7 +16,7 @@
 const {
 	Utils,
 	HTTP: { StatusCodes },
-	Constants: { HTTP: { INVALID_REQUEST, NOT_FOUND } },
+	Constants: { HTTP: { INVALID_REQUEST } },
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
@@ -225,15 +225,6 @@ const registerApi = (apiNames, config) => {
 						message,
 					};
 				}
-			}
-
-			if (Utils.Data.isEmptyArray(data.data) || Utils.Data.isEmptyObject(data.data)) {
-				[ctx.meta.$statusCode] = NOT_FOUND;
-				const message = 'Data not found';
-				return {
-					error: true,
-					message,
-				};
 			}
 
 			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);

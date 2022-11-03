@@ -20,7 +20,6 @@ const util = require('util');
 const {
 	CacheRedis,
 	Logger,
-	Exceptions: { NotFoundException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
@@ -127,11 +126,6 @@ const getBlocksByIDs = async ids => {
 	return normalizeBlocks(response);
 };
 
-const getBlocksByHeightBetween = async (from, to) => {
-	const response = await requestConnector('getBlocksByHeightBetween', { from, to });
-	return normalizeBlocks(response);
-};
-
 const getLastBlock = async () => {
 	const response = await requestConnector('getLastBlock');
 	latestBlock = await normalizeBlock(response);
@@ -193,37 +187,19 @@ const getBlocks = async params => {
 
 	try {
 		if (params.ids) {
-			if (Array.isArray(params.ids) && !params.ids.length) throw new NotFoundException(`Block with IDs: ${params.ids.join(', ')} not found.`);
+			if (Array.isArray(params.ids) && !params.ids.length) return blocks;
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
 			blocks.data.push(await getBlockByID(params.id));
-			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Block ID ${params.id} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.height) {
 			blocks.data.push(await getBlockByHeight(Number(params.height)));
-			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Height ${params.height} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.heightBetween) {
-			const { from, to } = params.heightBetween;
-			blocks.data = await getBlocksByHeightBetween(from, to);
-			if (params.sort) {
-				const [sortProp, sortOrder] = params.sort.split(':');
-				blocks.data = blocks.data.sort(
-					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-				);
-			}
 		} else {
 			blocks.data.push(await getLastBlock());
 		}
 	} catch (err) {
-		// Block does not exist
-		if (err.message.includes('does not exist')) {
-			let errMessage;
-			if ('id' in params && err.message.includes(params.id)) errMessage = `Block with ID ${params.id} does not exist`;
-			if ('height' in params) errMessage = `Block at height ${params.height} does not exist (${err.message})`;
-			throw new NotFoundException(errMessage || err.message);
-		}
-		throw err;
+		if (!err.message.includes('does not exist')) throw err;
 	}
 
 	blocks.meta = {
