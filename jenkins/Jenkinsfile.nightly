@@ -52,7 +52,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -70,7 +70,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -118,7 +118,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -152,7 +152,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -170,7 +170,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/1157-prepare-lisk-service-v070-for-beta'
+					branch 'feature/**'
 				}
 			}
 			parallel {
