@@ -22,6 +22,10 @@ const {
 const util = require('util');
 
 const {
+	getNetworkFeeConstants,
+} = require('./networkConstants');
+
+const {
 	getEstimateFeeByteForBatch,
 } = require('./dynamicFees');
 
@@ -108,11 +112,17 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 
 	const cachedFeeEstPerByteNormal = await getEstimateFeeByteFull();
 	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
-	if (validate(cachedFeeEstPerByteNormal, 15)) return cachedFeeEstPerByteNormal;
+	if (validate(cachedFeeEstPerByteNormal, 15)) return {
+		...cachedFeeEstPerByteNormal,
+		...getNetworkFeeConstants(),
+	};
 
 	const cachedFeeEstPerByteQuick = await getEstimateFeeByteQuick();
 	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
-	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
+	if (validate(cachedFeeEstPerByteQuick, 5)) return {
+		...cachedFeeEstPerByteQuick,
+		...getNetworkFeeConstants(),
+	};
 
 	return {
 		data: { error: 'The estimates are currently under processing. Please retry in 30 seconds.' },
