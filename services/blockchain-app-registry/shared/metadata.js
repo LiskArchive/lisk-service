@@ -228,7 +228,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
 			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
 
-			if (typeof params.network === 'undefined') {
+			if (!('network' in params)) {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
 				networkSet.push(network);
 			}
@@ -241,7 +241,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 			values: chainIDlocalIDPairs,
 		});
 
-		// Resolve network if not passed yet
+		// Set network if not already specified in the request params
 		if (!('network' in params)) {
 			params.network = Array.from(networkSet).join(',');
 		}
