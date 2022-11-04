@@ -28,7 +28,9 @@ const escrowedAmounts = {
 };
 
 const supportedTokens = {
-	...commonProperties,
+	isSupportAllToken: Joi.boolean().required(),
+	exactTokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).required(),
+	patternTokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID_PATTERN)).required(),
 };
 
 const totalSupply = {
@@ -38,7 +40,7 @@ const totalSupply = {
 
 const tokensSummaryResponseSchema = {
 	escrowedAmounts: Joi.array().items(escrowedAmounts).required(),
-	supportedTokens: Joi.array().items(supportedTokens).required(),
+	supportedTokens: Joi.object(supportedTokens).required(),
 	totalSupply: Joi.array().items(totalSupply).required(),
 };
 

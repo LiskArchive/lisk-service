@@ -29,7 +29,7 @@ module.exports = {
 	definition: {
 		data: {
 			escrowedAmounts: ['data.escrowedAmounts', escrowedAmount],
-			supportedTokens: ['data.supportedTokens', supportedToken],
+			supportedTokens: supportedToken,
 			totalSupply: ['data.totalSupply', totalSupplyByToken],
 		},
 		meta: {},

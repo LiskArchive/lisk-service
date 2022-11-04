@@ -93,6 +93,8 @@ const COMMAND = {
 	VOTE_DELEGATE: 'voteDelegate',
 };
 
+const LENGTH_CHAIN_ID = 8;
+
 module.exports = {
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -104,6 +106,7 @@ module.exports = {
 	getRegisteredModules,
 	getSystemMetadata,
 
+	LENGTH_CHAIN_ID,
 	MODULE,
 	COMMAND,
 };
