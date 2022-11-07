@@ -21,7 +21,9 @@ const escrowedAmount = {
 };
 
 const supportedToken = {
-	tokenID: '=,string',
+	isSupportAllTokens: 'data.supportedTokens.isSupportAllTokens,boolean',
+	patternTokenIDs: 'data.supportedTokens.patternTokenIDs',
+	exactTokenIDs: 'data.supportedTokens.exactTokenIDs',
 };
 
 const totalSupplyByToken = {

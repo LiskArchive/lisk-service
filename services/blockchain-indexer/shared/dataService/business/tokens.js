@@ -28,6 +28,12 @@ const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
 
+const {
+	LENGTH_CHAIN_ID,
+	PATTERN_ANY_TOKEN_ID,
+	PATTERN_ANY_LOCAL_ID,
+} = require('../../constants');
+
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getTopLSKAddressesIndex = () => getTableInstance(
@@ -117,7 +123,21 @@ const getTokensSummary = async () => {
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 	const { totalSupply } = await requestConnector('getTotalSupply');
 	const { tokenIDs } = await requestConnector('getSupportedTokens');
-	const supportedTokens = tokenIDs.map(tokenID => ({ tokenID }));
+	const supportedTokens = {
+		isSupportAllTokens: false,
+		exactTokenIDs: [],
+		patternTokenIDs: [],
+	};
+
+	tokenIDs.forEach(tokenID => {
+		if (tokenID === PATTERN_ANY_TOKEN_ID) {
+			supportedTokens.isSupportAllToken = true;
+		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_LOCAL_ID) {
+			supportedTokens.patternTokenIDs.push(tokenID);
+		} else {
+			supportedTokens.exactTokenIDs.push(tokenID);
+		}
+	});
 
 	summary.data = {
 		escrowedAmounts,

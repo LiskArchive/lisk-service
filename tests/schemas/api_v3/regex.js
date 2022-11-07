@@ -31,6 +31,7 @@ const MODULE = /^[a-zA-Z][\w]{0,31}$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
+const TOKEN_ID_PATTERN = /^[a-fA-F0-9]{8}[*]{8}$/;
 const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
 const DIGITS = /^\d+$/;
 const VOTE_WEIGHT = /^\b[1-9]\d*000000000\b$/;
@@ -56,6 +57,7 @@ module.exports = {
 	FILE_URL,
 	NETWORK,
 	TOKEN_ID,
+	TOKEN_ID_PATTERN,
 	CHAIN_ID,
 	DURATION,
 	DIGITS,
