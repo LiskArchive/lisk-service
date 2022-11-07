@@ -30,8 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/fees`;
 
-// TODO: Enable test once SDK returns minFeePerByte
-xdescribe('Fee estimates API', () => {
+describe('Fee estimates API', () => {
 	it('estimate fees true -> 200 OK', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);
