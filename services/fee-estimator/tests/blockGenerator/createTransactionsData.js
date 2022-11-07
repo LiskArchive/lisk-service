@@ -65,7 +65,7 @@ const transactionData = {
 		data: { faker: 'name.firstName' },
 		amount: { function: () => String(Math.floor(Math.random() * 10)) },
 		recipientAddress: { function: () => generateHex(40) },
-		tokenID: { function: () => getTokenID(40) },
+		tokenID: { function: () => getTokenID() },
 
 		mandatoryKeys: { function: () => [`+${generateHex(64)}`] },
 		optionalKeys: { function: () => [`+${generateHex(64)}`] },
