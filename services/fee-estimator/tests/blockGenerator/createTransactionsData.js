@@ -15,6 +15,15 @@
  */
 const mocker = require('mocker-data-generator').default;
 
+const {
+	MODULE_TOKEN,
+	COMMAND_TOKEN_TRANSFER,
+	MODULE_DPOS,
+	COMMAND_DPOS_VOTE_DELEGATE,
+	MODULE_AUTH,
+	COMMAND_AUTH_REGISTER_MULTISIGNATURE,
+} = require('./constants');
+
 let command;
 const TOKEN_ID = '0000000000000000';
 
@@ -41,8 +50,12 @@ const transactionData = {
 	},
 	module: {
 		function: () => {
-			const validModuleTypes = ['token', 'auth', 'dpos'];
-			const validCommandTypes = ['transfer', 'registerMultisignature', 'voteDelegate'];
+			const validModuleTypes = [MODULE_TOKEN, MODULE_AUTH, MODULE_DPOS];
+			const validCommandTypes = [
+				COMMAND_TOKEN_TRANSFER,
+				COMMAND_AUTH_REGISTER_MULTISIGNATURE,
+				COMMAND_DPOS_VOTE_DELEGATE,
+			];
 			let index = Math.floor(Math.random() * 10) % validModuleTypes.length;
 			if (index > 0 && Math.floor(Math.random() * 100) % 9) index = 0;
 			command = validCommandTypes[index];
@@ -99,8 +112,8 @@ const txMocker = (batchSize) => mocker()
 			let containAssets = paramsTransactionTypeTransfer;
 			const nameFee = 0;
 			let avgTxSize = 130;
-			if (transaction.module === 'auth') {
-				transaction.command = 'registerMultisignature';
+			if (transaction.module === MODULE_AUTH) {
+				transaction.command = COMMAND_AUTH_REGISTER_MULTISIGNATURE;
 				containAssets = paramsTransactionTypeRegisterMultisignature;
 				avgTxSize = 117;
 
@@ -109,8 +122,8 @@ const txMocker = (batchSize) => mocker()
 				transaction.params.numberOfSignatures = n + (m > 2 ? m % 2 : 0);
 				while (--n > 0) transaction.params.mandatoryKeys.push(generateHex(128));
 				while (--m > 0) transaction.params.optionalKeys.push(generateHex(128));
-			} else if (transaction.module === 'dpos') {
-				transaction.command = 'voteDelegate';
+			} else if (transaction.module === MODULE_DPOS) {
+				transaction.command = COMMAND_DPOS_VOTE_DELEGATE;
 				containAssets = paramsTransactionTypeVoteDelegate;
 				avgTxSize = 130;
 			}
