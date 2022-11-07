@@ -28,31 +28,7 @@ const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
 const moderateTrafficMockup = require('../blockGenerator/moderateTraffic.json');
 const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
-const transformTransactions = (block) => {
-	const { transactions } = block;
-
-	block.transactions = transactions.map(transaction => {
-		transaction.fee = BigInt(transaction.fee);
-		transaction.minFee = BigInt(transaction.size * 1000);
-		return transaction;
-	});
-};
-
-const transformBlocks = (traffic) => {
-	traffic.blocks.map(block => transformTransactions(block));
-};
-
 describe('Fee estimation tests', () => {
-	beforeAll(() => {
-		transformTransactions(emptyBlock);
-		transformTransactions(nonEmptyBlock);
-
-		transformBlocks(noTrafficMockup);
-		transformBlocks(lowTrafficMockup);
-		transformBlocks(moderateTrafficMockup);
-		transformBlocks(highTrafficMockup);
-	});
-
 	describe('calculateFeePerByte for Blocks', () => {
 		it('Empty block', async () => {
 			const feePerByte = await calculateFeePerByte(emptyBlock);

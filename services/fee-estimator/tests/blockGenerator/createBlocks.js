@@ -38,10 +38,11 @@ const blockMocker = (blockData, batchSize, payloadLength) => mocker()
 					const transaction = block.transactions[transactionIndex];
 
 					let txPayloadLength;
-					if (transaction.moduleID === 2 && transaction.assetID === 0) txPayloadLength = 130;
-					else if (transaction.moduleID === 4 && transaction.assetID === 0) txPayloadLength = 117;
-					else if (transaction.moduleID === 5 && transaction.assetID === 1) txPayloadLength = 130;
+					if (transaction.module === 'token' && transaction.command === 'transfer') txPayloadLength = 130;
+					else if (transaction.module === 'auth' && transaction.command === 'registerMultisignature') txPayloadLength = 117;
+					else if (transaction.module === 'dpos' && transaction.command === 'voteDelegate') txPayloadLength = 130;
 					transaction.size += txPayloadLength;
+					transaction.minFee = transaction.size * 1000;
 				} while (--transactionIndex >= 0);
 			}
 			if (blockIndex > 0) {
