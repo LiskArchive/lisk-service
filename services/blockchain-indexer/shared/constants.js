@@ -93,7 +93,10 @@ const COMMAND = {
 	VOTE_DELEGATE: 'voteDelegate',
 };
 
-const LENGTH_CHAIN_ID = 8;
+const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const LENGTH_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const PATTERN_ANY_TOKEN_ID = '*';
+const PATTERN_ANY_LOCAL_ID = '*'.repeat(LENGTH_LOCAL_ID);
 
 module.exports = {
 	updateFinalizedHeight,
@@ -107,6 +110,9 @@ module.exports = {
 	getSystemMetadata,
 
 	LENGTH_CHAIN_ID,
+	LENGTH_LOCAL_ID,
+	PATTERN_ANY_TOKEN_ID,
+	PATTERN_ANY_LOCAL_ID,
 	MODULE,
 	COMMAND,
 };

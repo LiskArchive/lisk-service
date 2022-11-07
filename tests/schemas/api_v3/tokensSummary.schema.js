@@ -29,8 +29,8 @@ const escrowedAmounts = {
 
 const supportedTokens = {
 	isSupportAllToken: Joi.boolean().required(),
-	exactTokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).required(),
 	patternTokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID_PATTERN)).required(),
+	exactTokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).required(),
 };
 
 const totalSupply = {

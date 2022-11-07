@@ -28,7 +28,11 @@ const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
 
-const { LENGTH_CHAIN_ID } = require('../../constants');
+const {
+	LENGTH_CHAIN_ID,
+	PATTERN_ANY_TOKEN_ID,
+	PATTERN_ANY_LOCAL_ID,
+} = require('../../constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -120,15 +124,19 @@ const getTokensSummary = async () => {
 	const { totalSupply } = await requestConnector('getTotalSupply');
 	const { tokenIDs } = await requestConnector('getSupportedTokens');
 	const supportedTokens = {
-		isSupportAllToken: false,
+		isSupportAllTokens: false,
 		exactTokenIDs: [],
 		patternTokenIDs: [],
 	};
 
 	tokenIDs.forEach(tokenID => {
-		if (tokenID === '*') supportedTokens.isSupportAllToken = true;
-		else if (tokenID.substring(LENGTH_CHAIN_ID) === '********') supportedTokens.patternTokenIDs.push(tokenID);
-		else supportedTokens.exactTokenIDs.push(tokenID);
+		if (tokenID === PATTERN_ANY_TOKEN_ID) {
+			supportedTokens.isSupportAllToken = true;
+		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_LOCAL_ID) {
+			supportedTokens.patternTokenIDs.push(tokenID);
+		} else {
+			supportedTokens.exactTokenIDs.push(tokenID);
+		}
 	});
 
 	summary.data = {
