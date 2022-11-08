@@ -20,9 +20,9 @@ const dryRunTransactions = async params => {
 		data: [],
 		meta: {},
 	};
-	const { transaction } = params;
+	const { transaction, isSkipVerify } = params;
 
-	dryRunTransactionsRes.data = await requestConnector('dryRunTransaction', { transaction });
+	dryRunTransactionsRes.data = await requestConnector('dryRunTransaction', { transaction, isSkipVerify });
 	dryRunTransactionsRes.meta = { params };
 
 	return dryRunTransactionsRes;

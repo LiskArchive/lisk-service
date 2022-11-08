@@ -15,7 +15,6 @@
  */
 const dryRunTransactionsSource = require('../../../sources/version3/dryRunTransactions');
 const { getSwaggerDescription } = require('../../../shared/utils');
-const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -24,7 +23,8 @@ module.exports = {
 	rpcMethod: 'post.transactions.dryrun',
 	tags: ['Transactions'],
 	params: {
-		transaction: { optional: false, type: 'string', min: 1, pattern: regex.TRANSACTION },
+		transaction: { optional: false, type: 'object' },
+		isSkipVerify: { optional: true, type: 'boolean', default: false },
 	},
 	get schema() {
 		const dryRunTransactionSchema = {};

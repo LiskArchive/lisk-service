@@ -14,6 +14,7 @@
  *
  */
 const { decodeTransaction } = require('./decoder');
+const { encodeTransaction } = require('./encoder');
 const {
 	getTransactionByID,
 	getTransactionsByIDs,
@@ -40,10 +41,18 @@ const getTransactionsFromPoolDecoded = async () => {
 	return decodedTransactions;
 };
 
+const dryRunTransactionWrapper = async (params) => {
+	const { transaction, isSkipVerify } = params;
+
+	const encodedTransaction = encodeTransaction(transaction);
+
+	return dryRunTransaction({ transaction: encodedTransaction, skipVerify: isSkipVerify });
+};
+
 module.exports = {
 	getTransactionByID: getTransactionByIDDecoded,
 	getTransactionsByIDs: getTransactionsByIDsDecoded,
 	getTransactionsFromPool: getTransactionsFromPoolDecoded,
 	postTransaction,
-	dryRunTransaction,
+	dryRunTransaction: dryRunTransactionWrapper,
 };
