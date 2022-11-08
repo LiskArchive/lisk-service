@@ -15,6 +15,18 @@
  */
 const mocker = require('mocker-data-generator').default;
 
+const {
+	MODULE_TOKEN,
+	COMMAND_TOKEN_TRANSFER,
+	MODULE_DPOS,
+	COMMAND_DPOS_VOTE_DELEGATE,
+	MODULE_AUTH,
+	COMMAND_AUTH_REGISTER_MULTISIGNATURE,
+} = require('./constants');
+
+let command;
+const TOKEN_ID = '0000000000000000';
+
 const generateHex = (size) => {
 	let resultHex = '';
 	const hexCharacters = 'abcdef0123456789';
@@ -28,20 +40,29 @@ const generateHex = (size) => {
 	return resultHex;
 };
 
+const getTokenID = () => TOKEN_ID;
+
+const getCommand = () => command;
+
 const transactionData = {
 	id: {
 		function: () => generateHex(64),
 	},
-	moduleID: {
+	module: {
 		function: () => {
-			const validTypes = [2, 4, 5];
-			let index = Math.floor(Math.random() * 10) % validTypes.length;
-			if (index > 0 && Math.floor(Math.random() * 100) % 9) index = 0;
-			return validTypes[index];
+			const validModuleTypes = [MODULE_TOKEN, MODULE_AUTH, MODULE_DPOS];
+			const validCommandTypes = [
+				COMMAND_TOKEN_TRANSFER,
+				COMMAND_AUTH_REGISTER_MULTISIGNATURE,
+				COMMAND_DPOS_VOTE_DELEGATE,
+			];
+			const index = Math.floor(Math.random() * (validModuleTypes.length + 1));
+			command = validCommandTypes[index];
+			return validModuleTypes[index];
 		},
 	},
-	assetID: {
-		function: () => 0,
+	command: {
+		function: () => getCommand(),
 	},
 	fee: {
 		function: () => Math.floor(Math.random() * 10 ** ((Math.random() * 10) % 4)),
@@ -52,10 +73,11 @@ const transactionData = {
 	nonce: {
 		function: () => String(Math.floor(Math.random() * 10 ** 3)),
 	},
-	asset: {
+	params: {
 		data: { faker: 'name.firstName' },
 		amount: { function: () => String(Math.floor(Math.random() * 10)) },
 		recipientAddress: { function: () => generateHex(40) },
+		tokenID: { function: () => getTokenID() },
 
 		mandatoryKeys: { function: () => [`+${generateHex(64)}`] },
 		optionalKeys: { function: () => [`+${generateHex(64)}`] },
@@ -74,11 +96,14 @@ const transactionData = {
 	size: {
 		function: () => 0,
 	},
+	minFee: {
+		function: () => 0,
+	},
 };
 
-const assetsTransactionType20 = ['amount', 'recipientAddress', 'data'];
-const assetsTransactionType40 = ['mandatoryKeys', 'optionalKeys', 'numberOfSignatures'];
-const assetsTransactionType51 = ['votes'];
+const paramsTransactionTypeTransfer = ['amount', 'recipientAddress', 'data', 'tokenID'];
+const paramsTransactionTypeRegisterMultisignature = ['mandatoryKeys', 'optionalKeys', 'numberOfSignatures'];
+const paramsTransactionTypeVoteDelegate = ['votes'];
 
 const txMocker = (batchSize) => mocker()
 	.schema('transactions', transactionData, batchSize)
@@ -86,29 +111,34 @@ const txMocker = (batchSize) => mocker()
 		if (err) throw err;
 
 		data.transactions.forEach((transaction) => {
-			let containAssets = assetsTransactionType20;
+			let containAssets = paramsTransactionTypeTransfer;
 			const nameFee = 0;
 			let avgTxSize = 130;
-			if (transaction.moduleID === 4) {
-				transaction.assetID = 0;
-				containAssets = assetsTransactionType40;
+			if (transaction.module === MODULE_AUTH) {
+				transaction.command = COMMAND_AUTH_REGISTER_MULTISIGNATURE;
+				containAssets = paramsTransactionTypeRegisterMultisignature;
 				avgTxSize = 117;
 
 				let n = Math.floor(Math.random() * 10) % 5;
 				let m = Math.floor(Math.random() * 10) % 5;
-				transaction.asset.numberOfSignatures = n + (m > 2 ? m % 2 : 0);
-				while (--n > 0) transaction.asset.mandatoryKeys.push(generateHex(128));
-				while (--m > 0) transaction.asset.optionalKeys.push(generateHex(128));
-			} else if (transaction.moduleID === 5) {
-				transaction.assetID = 1;
-				containAssets = assetsTransactionType51;
+				transaction.params.numberOfSignatures = n + (m > 2 ? m % 2 : 0);
+				while (--n > 0) transaction.params.mandatoryKeys.push(generateHex(128));
+				while (--m > 0) transaction.params.optionalKeys.push(generateHex(128));
+			} else if (transaction.module === MODULE_DPOS) {
+				transaction.command = COMMAND_DPOS_VOTE_DELEGATE;
+				containAssets = paramsTransactionTypeVoteDelegate;
+				avgTxSize = 130;
+			} else if (transaction.module === MODULE_TOKEN
+				&& transaction.command === COMMAND_TOKEN_TRANSFER) {
 				avgTxSize = 130;
 			}
 
-			const minFee = nameFee + avgTxSize * 10 ** 3;
-			transaction.fee = String(minFee + avgTxSize * transaction.fee);
-			Object.keys(transaction.asset).forEach(key => {
-				if (!containAssets.includes(key)) delete transaction.asset[key];
+			transaction.size = avgTxSize;
+			transaction.minFee = nameFee + avgTxSize * 10 ** 3;
+			transaction.fee = String(transaction.minFee
+				+ Math.round(Math.random() * transaction.minFee * 5));
+			Object.keys(transaction.params).forEach(key => {
+				if (!containAssets.includes(key)) delete transaction.params[key];
 			});
 		});
 

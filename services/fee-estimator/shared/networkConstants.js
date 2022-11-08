@@ -18,6 +18,7 @@ const { requestConnector } = require('./utils/request');
 let networkFees;
 let genesisConfig;
 
+// TODO: Resolve networkFeeConstants once SDK exposes relevant information
 const networkFeeConstants = {
 	minFeePerByte: undefined,
 	baseFeeByModuleCommandName: {},

@@ -1,344 +1,363 @@
 {
 	"blocks": [
 		{
-			"id": "4aebe89bf153dc04843ca479226343061a8734ed2cf1ddcd9779e65b6f667234",
-			"height": 46894,
+			"id": "627d2f14fccadd3d5281a767854be1467895981fae3bd864cbb3b0d9ea9b5c19",
+			"height": 79499,
 			"version": 2,
-			"timestamp": 1653649635,
-			"generatorPublicKey": "e55e27db5d45a23e0eb867c1e2ff757fe09e008efc71313a66c8d2e607d14473",
-			"transactionRoot": "c583137fcf2a3f61780b35dce022c99fdfebf620ad3059be1576a3debb7e4378",
-			"signature": "d9fc711f7334f0f22035dbd960e9eb6c5f8778ffa115d23cb0296e25378c1e0ff847cb1058f4b5c9191368f7528ee15d976322907339e541d0bc812ac5b4b3b7",
-			"previousBlockId": 489025869755352900,
+			"timestamp": 1667900943,
+			"generatorPublicKey": "3dfa9a8bf1fea0e4679afbce5e9244943a2f5a056f2f5b242789edad118d9213",
+			"transactionRoot": "b6619ba090c7ff942ef447d2875fbbe7ee3fa2ccfdff50eec63768301a46f812",
+			"signature": "c44ee6cef464097274a32595baf38705efc75a25432faf925b6762e0f0e668b7d37d4cc4669b00186855c996b43f82d1233a7a55dde67d97ac9bf60c46954370",
+			"previousBlockID": 1523724580879530800,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 7854,
-				"maxHeightPrevoted": 89104,
-				"seedReveal": "0cee65513aa99c6934836af590fe976c"
+				"maxHeightPreviouslyForged": 12011,
+				"maxHeightPrevoted": 94807,
+				"seedReveal": "1963c2d6314d40ae4aec0376d5f28a37"
 			}
 		},
 		{
-			"id": "6b47a47dd1a706e4eca48f15ba649caab8414d916622c4614e77fbbfa9d2bb35",
-			"height": 41022,
+			"id": "01b5357dab8ecd0c4aac48452aabeda021dae4d00a244f778337130617394176",
+			"height": 91290,
 			"version": 2,
-			"timestamp": 1653649645,
-			"generatorPublicKey": "569e424a6536b6d7486a342c5cff312e5b0c717b849e5108596a4b507a92944c",
-			"transactionRoot": "3ed928454303be86555efb38156227c9d8cef571b11336dac0c934d7d72d85db",
-			"signature": "9eb5fe22cb0d7f7394cd24c1f1699dc53a9938ba6b2065a76fe0ec55a9c5fb1f795b0261cf248ab558a4f9c2689c0be840552e15c35e6d841525731fbc6a5aed",
-			"previousBlockId": "4aebe89bf153dc04843ca479226343061a8734ed2cf1ddcd9779e65b6f667234",
+			"timestamp": 1667900953,
+			"generatorPublicKey": "4a591a28ee529d20773eca688e19d31f016539b08e91323ad093cffc9cb876bc",
+			"transactionRoot": "acc6e2bb82ea3c2707d6704f246f30d94b459aa2935d13831b23099990167cde",
+			"signature": "cdb5451294dd1d083c6056a279a2b5150bce4f63a103dc4f76bd6c5fa15809957dda561305ae7b4af38a9e63cebb8b993d59aea905e5f9d90aeae53af9289375",
+			"previousBlockID": 8084301568191686000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 18492,
-				"maxHeightPrevoted": 91571,
-				"seedReveal": "3514f6fcfcd3aad5ce8d6cbf8fbe5430"
-			}
+				"maxHeightPreviouslyForged": 77522,
+				"maxHeightPrevoted": 46257,
+				"seedReveal": "c251ad50975bca9986c1d990e3a0babb"
+			},
+			"previousBlockId": "627d2f14fccadd3d5281a767854be1467895981fae3bd864cbb3b0d9ea9b5c19"
 		},
 		{
-			"id": "fef41e42a233246ba4f3d097d4b7e4acf531a66cf4ef118cf4fb7e2fa3a66a0b",
-			"height": 24491,
+			"id": "04fb9e45445d02e05df7b6d1aec1bd1c68a1d0c1b868af4b587dbb77a6c8524a",
+			"height": 6691,
 			"version": 2,
-			"timestamp": 1653649655,
-			"generatorPublicKey": "786f735d394333727c7f8c3e79a8626338e7d5119c72fb02d39a590893191af8",
-			"transactionRoot": "d23722a0cbd8e9ded2a1629d77da66135ba29fc962260e524d44954bee71a9f8",
-			"signature": "3ca8ebb1172acd47ef937458e0a0935f78e201877838b39f81895b4b259dde8f3759dbee9c2b82100e9f102137954b4419fb872d07f6a4513cb5121408510451",
-			"previousBlockId": "6b47a47dd1a706e4eca48f15ba649caab8414d916622c4614e77fbbfa9d2bb35",
+			"timestamp": 1667900963,
+			"generatorPublicKey": "8b20edcebb2fccb4e10c825c077f8528747a4ad485a90a9639d1a79f0eb36c79",
+			"transactionRoot": "a0cdcf8d39bd3730fd2427ce2831468c388c60f8e3ce1180c08ad9fd5ca6d27a",
+			"signature": "e165b1c13bf39963cdfb9b776d88cad4bf858995e46698ac858d42fd1eff9ef8164f180dd45c20ac30999225247724781515bc378be450f809e1bec01fffe565",
+			"previousBlockID": 111992942006502450,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 41023,
-				"maxHeightPrevoted": 57337,
-				"seedReveal": "f915fb188823a6ef36b9190c0606406a"
-			}
+				"maxHeightPreviouslyForged": 49704,
+				"maxHeightPrevoted": 70788,
+				"seedReveal": "a52263cfc808a6ae029d1d27a6e7b259"
+			},
+			"previousBlockId": "01b5357dab8ecd0c4aac48452aabeda021dae4d00a244f778337130617394176"
 		},
 		{
-			"id": "9182b8b731c7856f0bcc91283dfe8633217af5312326e7d456b297d1fa0d9595",
-			"height": 98101,
+			"id": "05fcfd985195d7d00cb655f7c54edb58fcbb7c8205165ba65faa9a6b600c6945",
+			"height": 8317,
 			"version": 2,
-			"timestamp": 1653649665,
-			"generatorPublicKey": "68677aa4733c20866f4b408eff5fb5a05ac11a0cfd7cba50b6365da0648417bf",
-			"transactionRoot": "336cd6b8ac723e5d667fd594b91d72ffb88443a3e4da8dae4a7e8fd959d810ce",
-			"signature": "a0efd38935301935fa12864878be0ad829a3f9d5b7ca18f5febf2cc2d85f5d22bf37c85802d8b28bc25069e5b73e6d8e8a143a45b142ed450e72a6a7b41730f7",
-			"previousBlockId": "fef41e42a233246ba4f3d097d4b7e4acf531a66cf4ef118cf4fb7e2fa3a66a0b",
+			"timestamp": 1667900973,
+			"generatorPublicKey": "6722a2dbfa9bf54edfc5835810776e7fd60c7849b33534c8348062e24359606d",
+			"transactionRoot": "bdd5df843a44f9afefc2e17ad442d5aec668ed568b707cca608424fcd8def605",
+			"signature": "d50f875814562acdb9822462bfb0a21c1fc080f6a301c5e9d8bd1e44e020292ff691e87d66b0a497b64e7cf8a5196a0b74df0760452bd039514179ad9febb7bd",
+			"previousBlockID": 4331932425838674000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 67207,
-				"maxHeightPrevoted": 34442,
-				"seedReveal": "02948018dae861efb1214b5eb6acc565"
-			}
+				"maxHeightPreviouslyForged": 68353,
+				"maxHeightPrevoted": 77862,
+				"seedReveal": "4acb15d576fc13f969053eb47c4dcd00"
+			},
+			"previousBlockId": "04fb9e45445d02e05df7b6d1aec1bd1c68a1d0c1b868af4b587dbb77a6c8524a"
 		},
 		{
-			"id": "65b45cab697b7f1decfe741f05da8fec8c2f75668954783fb51a76580cf21e0d",
-			"height": 76824,
+			"id": "e89806c49216b3ca66e9c0e1ae21cd5ebf0abddebf2e4b17573818c91da7f01d",
+			"height": 75408,
 			"version": 2,
-			"timestamp": 1653649675,
-			"generatorPublicKey": "50d43e2c49794143141921642b36f785b50a7c00f17241955568a9185c5059ec",
-			"transactionRoot": "dba2dc92448464252d97f1d79f0d1e8684bbc14b1ecfd9ee6e06fb2bd8101ad1",
-			"signature": "66f48f18fa8b99ccceb07709e8b44443ec6a5b588d37d41c393a2765e11ff106bc1f37309a8457ff645c7b0a8bcd34c314661440840b84cea15800b3aa9db961",
-			"previousBlockId": "9182b8b731c7856f0bcc91283dfe8633217af5312326e7d456b297d1fa0d9595",
+			"timestamp": 1667900983,
+			"generatorPublicKey": "a47960c8cbd9c97ddbbc5469ad3681aee143547112e5b09df6a074afe47ec850",
+			"transactionRoot": "4c8b4d8248237e75acab2525f8a1f3991a67d2d18b31fa203e913936bcc0af35",
+			"signature": "21443f4a4f33d52d157a3d6e5268b3f719e2ba57656ae45094d2655a7da58e05fdc94c02873364b39425c37a0c202801002a60294d309852409106370165f0a1",
+			"previousBlockID": 7142482764654227000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 78909,
-				"maxHeightPrevoted": 54183,
-				"seedReveal": "0bd9f68f111f1ac90ac462c029bc4a4d"
-			}
+				"maxHeightPreviouslyForged": 53285,
+				"maxHeightPrevoted": 32806,
+				"seedReveal": "e4036114852d8b42ed2df735264e1039"
+			},
+			"previousBlockId": "05fcfd985195d7d00cb655f7c54edb58fcbb7c8205165ba65faa9a6b600c6945"
 		},
 		{
-			"id": "87230bee1a9106c94e1b8bd8a0dbbd6764327ea54785a02d6c23dcef22e9ff29",
-			"height": 15131,
+			"id": "372ac08563680ce22676a8364ab0b293e000cd3fae455a05be0510e7848b68ee",
+			"height": 46111,
 			"version": 2,
-			"timestamp": 1653649685,
-			"generatorPublicKey": "f95b4ee7f83bff494ba0d39c7081a06628ff445d445c78adca36980dc27af6d6",
-			"transactionRoot": "584f01a0a9aaafa9bc9733370343f931efb1ab297c07507e61c753b77fdfb249",
-			"signature": "87cedc0c1ee34151fbc1f2a45f961f68077d9b3ea2a47dbdd375c5e5be85904cd70225e1ab94488bf228984e12ee6ebd6ad0d13f2995d8ec20a213af0641ce7c",
-			"previousBlockId": "65b45cab697b7f1decfe741f05da8fec8c2f75668954783fb51a76580cf21e0d",
+			"timestamp": 1667900993,
+			"generatorPublicKey": "80c882f34abec02acc2fed5778e3d2b71413ed08d091d3e5920a55844adf2cdf",
+			"transactionRoot": "1289a74aa980f7b8d53c43c1d5c0202afde42401f305e668eee993e4fbdefd67",
+			"signature": "cfa4638978afb441399105f64f3508ae9b41cb970da5bedef66cec8b1d2ae922c0ec124a991ed42b2718bb0264d1b46d30ba69cede2e5e1624108223c39e2a81",
+			"previousBlockID": 1571929118374513200,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 90727,
-				"maxHeightPrevoted": 50562,
-				"seedReveal": "b680a9422365bfa8d8ffe87ef8d2d225"
-			}
+				"maxHeightPreviouslyForged": 50593,
+				"maxHeightPrevoted": 68416,
+				"seedReveal": "bce55a2bf5421d5d577ba7f75cf15e5a"
+			},
+			"previousBlockId": "e89806c49216b3ca66e9c0e1ae21cd5ebf0abddebf2e4b17573818c91da7f01d"
 		},
 		{
-			"id": "e09ec3e056d94c59e3bb8d7d73896e3625e1de785cb13ee4341164da0715a82a",
-			"height": 5699,
+			"id": "da26a1ebc4fedabfb68328b8baa3fdf19b2140bba4c69b950ac6b948f9413c8a",
+			"height": 71470,
 			"version": 2,
-			"timestamp": 1653649695,
-			"generatorPublicKey": "ad1b57ac2cd76f69fd38558c30ca6ad052efc2545a048f2767f627d9ce115f4e",
-			"transactionRoot": "61dc2bc842fb61d34f84cb7369309508f43905ca8223e9da0acdb6e7b951b870",
-			"signature": "0e73b1a52c71cf9d0020230baca5fce03ee2a7cccdb1047a81dd07e4403c53ec71a7438c62751b4bcd7d31637914583f63deb4145e00ecdde932ea342431e9a4",
-			"previousBlockId": "87230bee1a9106c94e1b8bd8a0dbbd6764327ea54785a02d6c23dcef22e9ff29",
+			"timestamp": 1667901003,
+			"generatorPublicKey": "dd5cd339f654c2a5367ae36368051671a29584e9c5aecde0845208f9dd548657",
+			"transactionRoot": "32565014cda57681666c5b8fc41a3ca328c5cef3d1624b889125ca969998e624",
+			"signature": "05470cd83e399b75379a9afaf1f0ed949ab12b0271635d7aea8e60db6ec3047d8d154bfed15b5f88b0fa4ca6544db2820c85bf37a8075d50586de4dec98bfe28",
+			"previousBlockID": 2434196861486060000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 88047,
-				"maxHeightPrevoted": 91647,
-				"seedReveal": "fcff4d093b8cc2230700eba668c640a9"
-			}
+				"maxHeightPreviouslyForged": 9003,
+				"maxHeightPrevoted": 85481,
+				"seedReveal": "087535b52fda3747abe8d42c05eb63a9"
+			},
+			"previousBlockId": "372ac08563680ce22676a8364ab0b293e000cd3fae455a05be0510e7848b68ee"
 		},
 		{
-			"id": "977c1d9d3b938a1cdbf134951bb10e6df905081517a7f811f95ddf65f13579c4",
-			"height": 22546,
+			"id": "69576ef5055076ddab6dd6b584d97ea094d846fb6e0262efef7919c2002aea4c",
+			"height": 13344,
 			"version": 2,
-			"timestamp": 1653649705,
-			"generatorPublicKey": "de79b15262c15ae398b162f9cb31be06c567c387e6a6373ff14a961f4c8fa80a",
-			"transactionRoot": "c5f9036907742db59d80d4a686aa3e27edee1a61041223f1b437d0541d2df14e",
-			"signature": "a30fb3c421e311f983069240e8eb9fbbf22a4c008f5353787623bf0ef1a5a8de7222654137b3dae11c8dbc8244865803b1c1d2c14efbd2ce46ab614a9df9b99a",
-			"previousBlockId": "e09ec3e056d94c59e3bb8d7d73896e3625e1de785cb13ee4341164da0715a82a",
+			"timestamp": 1667901013,
+			"generatorPublicKey": "675ac1a5097390b3104729c6d43d1d3f3975ec8da7359eebbdc43a6a5117fa02",
+			"transactionRoot": "2c1252d57e7a30cffcd2073d97f7b2bd8ff5f23fc1bf2e921a4289863af2a29e",
+			"signature": "81ecdbc22cacb7831b9a901d2b142ad3099cda2df641896badd5c2d20779919afc5d1e3c6f9c163a5900338d81e10dbf4b63ba917f1d55da0f6ff9bf20f9ba30",
+			"previousBlockID": 7356262520987249000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 53565,
-				"maxHeightPrevoted": 97668,
-				"seedReveal": "593614ae8b342d40a589c0c8e0f07fd2"
-			}
+				"maxHeightPreviouslyForged": 23203,
+				"maxHeightPrevoted": 38516,
+				"seedReveal": "e3b28a1ca76a13870cc39238ef9be54d"
+			},
+			"previousBlockId": "da26a1ebc4fedabfb68328b8baa3fdf19b2140bba4c69b950ac6b948f9413c8a"
 		},
 		{
-			"id": "357d15b155b4be4d66d8bf84f2239a8961b3fdb8063118d8191cf10421f925e5",
-			"height": 37388,
+			"id": "c9e0a2a5ca3bc3df43b5ca7b0ed757518df018451930ffe7a827810647f46f62",
+			"height": 1104,
 			"version": 2,
-			"timestamp": 1653649715,
-			"generatorPublicKey": "9431f3ae36fe5d71557819374e33bc81e098c1171bc8568e49ec45c4288c28d5",
-			"transactionRoot": "8d01787cf9881b9ed683b14fa390ce95f36edb3b0e98fba894de185553956599",
-			"signature": "475964152ab507dc7c7a6c07ea8b5219d5edc38e0fc4269a75316a8ac73aaa492843315f857a2ca52d6cd1156075642c952b281bc2ae36b77a2b469654c76a7b",
-			"previousBlockId": "977c1d9d3b938a1cdbf134951bb10e6df905081517a7f811f95ddf65f13579c4",
+			"timestamp": 1667901023,
+			"generatorPublicKey": "c0cf0353b5c35870beee52866f8a82ab65cf69125dfea204d2f2ee2aaa58d86f",
+			"transactionRoot": "644c0654ad0da5aac69e23d3834907088a0a5399d13c0859ee126bdcc9d06d67",
+			"signature": "574c51647259a2bc0ffc149dcbaa35ac642748add4acb0c414edb79520fa2124459523baebad52db2c6fa2645fce1d4f830acb3397923b0289ea360cfefd6037",
+			"previousBlockID": 4829761029874822000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 85041,
-				"maxHeightPrevoted": 96603,
-				"seedReveal": "5f7fba8948680eb32dd93ba3c7982ed9"
-			}
+				"maxHeightPreviouslyForged": 74283,
+				"maxHeightPrevoted": 95495,
+				"seedReveal": "9fea85f87223d34ea178bf239f4c014e"
+			},
+			"previousBlockId": "69576ef5055076ddab6dd6b584d97ea094d846fb6e0262efef7919c2002aea4c"
 		},
 		{
-			"id": "73156ac772b3032f4597b19fb4e492150eb2c6bd11d0ae23a5fa028f5535e1c9",
-			"height": 19127,
+			"id": "18c5e110277bb910ee2b242ba78ce61a40cb353284a36e88b27210fbe8fd30cc",
+			"height": 41654,
 			"version": 2,
-			"timestamp": 1653649725,
-			"generatorPublicKey": "63d04ed43e1f8cc683d7a153e74d86a6618bbfce29295965f54ab515f3eeab7b",
-			"transactionRoot": "4d7101b1d2cb1bd741d4eb7a49e3c55d85f8bb26e4edbf828c99790ad695f740",
-			"signature": "8a831024f983be5120d03feab283164bc0927495478ff51d8cceaccd13fa426c1c020174f957cacb5d8cf554177f952b4465e0681d37cf6db7b2830300c4fb68",
-			"previousBlockId": "357d15b155b4be4d66d8bf84f2239a8961b3fdb8063118d8191cf10421f925e5",
+			"timestamp": 1667901033,
+			"generatorPublicKey": "6c491629854782b5ce6dfe255b5171aee00a660738e604ec96f91c7da4fc8c74",
+			"transactionRoot": "24d78b20fcc9233e0d8007631dbdab67d8a97fec5aa16f74edb14383691c6df2",
+			"signature": "745df4bb8f195fa86e37679b0af90261a4db07d9f6667e01854cfd428cff87932bc701a72ca0f6b78363ea53c95658484225e98aaed62c5f0fa26f16c8ca8bc2",
+			"previousBlockID": 1523661085002972000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 84876,
-				"maxHeightPrevoted": 46238,
-				"seedReveal": "80a3f3b85be8185a9b1a0073a91dd088"
-			}
+				"maxHeightPreviouslyForged": 37194,
+				"maxHeightPrevoted": 68407,
+				"seedReveal": "c9022a867edaf27bfd2da24fe5e54b0e"
+			},
+			"previousBlockId": "c9e0a2a5ca3bc3df43b5ca7b0ed757518df018451930ffe7a827810647f46f62"
 		},
 		{
-			"id": "1b1ee2b998f7672f008bd7e173bfa0d8e781564e3a82ba432d6dff11fecf170f",
-			"height": 19718,
+			"id": "205a9145b6b6510273bce4400ffe4fbf82556fdc927ba9ba18d3e7c6928ed045",
+			"height": 76188,
 			"version": 2,
-			"timestamp": 1653649735,
-			"generatorPublicKey": "a3042a6a249824a011f690129a36fdbda6fd77641f70cb553628b73af80a03a7",
-			"transactionRoot": "136cff174eca9644e4d0e8a392ea9aa3327049218bd9a37fd015d5ae390ecb0d",
-			"signature": "a2e9859da600c2abb2d8ea844ae2e8a70a2a2ba41ad121e65122ba63cdd10eb170f0a68ef90070f388765edf3d91b47654fd4bafcca7bfd6f5c13bf0beb394af",
-			"previousBlockId": "73156ac772b3032f4597b19fb4e492150eb2c6bd11d0ae23a5fa028f5535e1c9",
+			"timestamp": 1667901043,
+			"generatorPublicKey": "c9b04a46f0c99aa7642728c36648288bf5fe9659649b4d39340578c5268a5a8b",
+			"transactionRoot": "0a3076e019cddf65bd6d450fb5e8c687e45fdce2dfd5f5f2f17e0477906408aa",
+			"signature": "7673a2ec09076ac92424f39d31b501e58db09b4dc51083bd2ba9f24719dd66370d069169355b864e665f4bd477cf65b37865e3adc74663887dcf14928a52ff46",
+			"previousBlockID": 3524283441123930000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 2567,
-				"maxHeightPrevoted": 44082,
-				"seedReveal": "7f46c71a0b8bab71ef020e9d63dddcf1"
-			}
+				"maxHeightPreviouslyForged": 93713,
+				"maxHeightPrevoted": 47291,
+				"seedReveal": "102da4aa45eee3f78fbd395c2194ccab"
+			},
+			"previousBlockId": "18c5e110277bb910ee2b242ba78ce61a40cb353284a36e88b27210fbe8fd30cc"
 		},
 		{
-			"id": "dbb6c5718818299331be89073fd55594199c0f0e5c4da21741a65e9e96f57651",
-			"height": 8345,
+			"id": "312b0891d8c0c43dad7010e1ba5db7cf7072311a3ed5d39fb52e9994043627ba",
+			"height": 64236,
 			"version": 2,
-			"timestamp": 1653649745,
-			"generatorPublicKey": "25fe17e5dda7c44a4f838c4aacf333b7bffd0c4d051323eda38d2ff177653e30",
-			"transactionRoot": "3dba7047eb7eac4dde0bbabca6fc21c733ba1ad671444bc7353bd2d613843a6e",
-			"signature": "96418bc1330de3ed77797834890fd963d10b20f83a691dd8e97c05922903ec20f3b5de185ecc2014964c11fb576ee4f4318074fe8b03da36bbca269532bb54db",
-			"previousBlockId": "1b1ee2b998f7672f008bd7e173bfa0d8e781564e3a82ba432d6dff11fecf170f",
+			"timestamp": 1667901053,
+			"generatorPublicKey": "f4db27d894d74064ae8acf5193352fc186f10ec2ff3850ddafc297dc39dec676",
+			"transactionRoot": "742b48c1ad82c9d4149c1cdc5f680208250ca51b2d88453152ed8e18e5d0acd9",
+			"signature": "b727e2263a01dc9bb46453c81f2bc581a64e153748d8fbf720f481a4289aa5f6749197acb886028e2c71bfc2887e7d5e5b48a776e2f2d79e9edd55ed8d366b8c",
+			"previousBlockID": 2583190844281884000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 79997,
-				"maxHeightPrevoted": 68938,
-				"seedReveal": "05a5606ee64273d53471e6f039971f59"
-			}
+				"maxHeightPreviouslyForged": 24843,
+				"maxHeightPrevoted": 45014,
+				"seedReveal": "4cf63b3be36dd671602f35e016f49762"
+			},
+			"previousBlockId": "205a9145b6b6510273bce4400ffe4fbf82556fdc927ba9ba18d3e7c6928ed045"
 		},
 		{
-			"id": "92a0211f1be2f56bd2429a6288bdd3c9d2ebf8620ea0b3a3f905dbb102056d9f",
-			"height": 32341,
+			"id": "458e9407f297d83092425e9d8445a65ef7dba971017e7aa000ea591ea13578fb",
+			"height": 55602,
 			"version": 2,
-			"timestamp": 1653649755,
-			"generatorPublicKey": "7cb0ec36b8f7ae28920765178e8d49b7b535c4f4dd699dcea175b038870a1dcd",
-			"transactionRoot": "eaea4c59101b40bbc50ab6dc4ea9bc6554c474a884ec89ba053a89f437ec21f8",
-			"signature": "50dccfaf15abce65d8bea47670f8ba4a966ad77ef473d5daf71bdfe66c095ff87c71dfc52be4a1da78e7fdd5b5536c45db653fb7f1e2849014d6cb6fced3c201",
-			"previousBlockId": "dbb6c5718818299331be89073fd55594199c0f0e5c4da21741a65e9e96f57651",
+			"timestamp": 1667901063,
+			"generatorPublicKey": "73ff0a1ad80de57dcee5821514c653c22a1c0d6e2bc86b7a1414f0d81867a1e0",
+			"transactionRoot": "dbf23467b752cf5eda4f7c8e134ac3ffbaf1b32565d799363d789e4e4b7a79da",
+			"signature": "f38069ea59d45faf2de09a722adb4797a8dec939fa316d64f02d86544e190e47d4a9acecc30199cdf89f7559581f70dea9df771321c0e17f3e09dc1ab0923740",
+			"previousBlockID": 6904451190706806000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 16339,
-				"maxHeightPrevoted": 54295,
-				"seedReveal": "13edbd73eeed5ea618da1c79f816c82a"
-			}
+				"maxHeightPreviouslyForged": 22946,
+				"maxHeightPrevoted": 72985,
+				"seedReveal": "a66d23b1fd0e3c2d0c3385904969db50"
+			},
+			"previousBlockId": "312b0891d8c0c43dad7010e1ba5db7cf7072311a3ed5d39fb52e9994043627ba"
 		},
 		{
-			"id": "28fb813de52367060f40d6b40baba1bc7df3d34be1b0c8f05a556e78c4a3ceb4",
-			"height": 30153,
+			"id": "b1d510cbf96e58f77d59deba13f34213ab0734c207d8bcd20d8162eae42c1128",
+			"height": 58179,
 			"version": 2,
-			"timestamp": 1653649765,
-			"generatorPublicKey": "b32ed348111dc5969cd255f455784b58cc08e9ab1d50919a55d3c8fda73f3aa6",
-			"transactionRoot": "4f7745c75b56f20bf283086fc1340a96a376b5aa5b6589e4ad267ce791e5d6a3",
-			"signature": "0e4bb5d63c36f33d8a4cf8a91e9811b8940edb7426d36f0bff45c5ebab0b818d89cf1581c5252c211ae22a5be0d4b1f9d080f5340e682c441257d9306357844b",
-			"previousBlockId": "92a0211f1be2f56bd2429a6288bdd3c9d2ebf8620ea0b3a3f905dbb102056d9f",
+			"timestamp": 1667901073,
+			"generatorPublicKey": "6c4e2fe7ad9a29ddba3b8884fec11522f84cca73b94eac73ab8108d7829570a3",
+			"transactionRoot": "1077917c67ac3b2f142899e71f625af13835207470be875ed38456d4e4534590",
+			"signature": "7841d971840b604c1cba1cb056eb6cbf21f6263fcd6f50e05bb93e366d6c6da1ad6e05782fbd44f68adf9e1c8725c396337a444de9c428555798834e85a8e73a",
+			"previousBlockID": 1056041165761085700,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 58360,
-				"maxHeightPrevoted": 20875,
-				"seedReveal": "2bc8379cb577de1af6d5073ab7291eca"
-			}
+				"maxHeightPreviouslyForged": 63392,
+				"maxHeightPrevoted": 38564,
+				"seedReveal": "6a807188ba6533546b44620bd4f17696"
+			},
+			"previousBlockId": "458e9407f297d83092425e9d8445a65ef7dba971017e7aa000ea591ea13578fb"
 		},
 		{
-			"id": "d88a60688ca5fab4ab0beb38725f3e010d7eaa2361b06014db0fabd35a18a6ef",
-			"height": 50663,
+			"id": "87368e0277c7a840912fb189fdca071747679cdfe40daff835581086530442ba",
+			"height": 72512,
 			"version": 2,
-			"timestamp": 1653649775,
-			"generatorPublicKey": "cb1fb101bba8ec4808cca5874f44e1a673108ac1d8dae83e38c47441700657a6",
-			"transactionRoot": "9f90301f942b6d167e8fdc56da15039c3f2bef0a9fa0f58c351424a189445fe4",
-			"signature": "f6d70341bbfc2f318bd54a4152c15b4f89b48a6fa16b2d14e5047c79f2971afb4aad2740166774fea91c3a3cb373d08e1964a758073a8e7e32d1b8f96840136a",
-			"previousBlockId": "28fb813de52367060f40d6b40baba1bc7df3d34be1b0c8f05a556e78c4a3ceb4",
+			"timestamp": 1667901083,
+			"generatorPublicKey": "e684082be3d9fe780fcc7c9e9a81f0eb478cc40ecb9de000ede3b4096a6b0230",
+			"transactionRoot": "5c71020a76fcb568d646f13f976c2f379c00ebcc6038f3ceab127c6319de3dff",
+			"signature": "1ebfec048382c60716d9cbbf520bc56797128a237e1d4f1dd108cfa7dccf152fb19a5e03e43c2e09b74f31b1e85b22c0e0f5a4bd83e9364d2139d318c7793151",
+			"previousBlockID": 2737192511591917000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 85136,
-				"maxHeightPrevoted": 64514,
-				"seedReveal": "bf6e7b1431ddd501adccc1bc131d1a16"
-			}
+				"maxHeightPreviouslyForged": 55325,
+				"maxHeightPrevoted": 25025,
+				"seedReveal": "b60ddd1b0a57d60aafb1f94ed58dfbc5"
+			},
+			"previousBlockId": "b1d510cbf96e58f77d59deba13f34213ab0734c207d8bcd20d8162eae42c1128"
 		},
 		{
-			"id": "f74053b6b73c6a0d74e44368102a33ec82262b3e4cc7d3e1cf40b1e1c718b812",
-			"height": 23575,
+			"id": "98f6588e939c5909e85a37cc0418072215c63e5499b5cf200febaa8827e84bf6",
+			"height": 79914,
 			"version": 2,
-			"timestamp": 1653649785,
-			"generatorPublicKey": "aaae0197e1a3652887d54129d5ebe71b2849f07cc98a5e725a6b6c739de78f2a",
-			"transactionRoot": "889a460788d6ef4830c00eef31a4e8ca8b7981bbbc820a5411385c57be22603c",
-			"signature": "92026fd832b8c45061af5250460c347e7460e63d6ffccab0986dd6bb900dac31bdd7fd3fa2111cb4ff4368ad20a80079f4ff4d5041cb603a79f53c09037ecd96",
-			"previousBlockId": "d88a60688ca5fab4ab0beb38725f3e010d7eaa2361b06014db0fabd35a18a6ef",
+			"timestamp": 1667901093,
+			"generatorPublicKey": "2c99c905149236085b43b8923a38057d8074ef2500a337fbfea2f62d8eefa117",
+			"transactionRoot": "d5744a715378df29d7164b5866220ec3b97149af0a76180f0c3e1d9a3072207f",
+			"signature": "7623374d01bc71dcb83195263160d59532b2d2363a46d0f81dd477e4c8485a180395b1ac1f12322630e6c562abda205e6a1ad3a2bca87007f56d852874dfcb7e",
+			"previousBlockID": 5249667252567092000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 21061,
-				"maxHeightPrevoted": 45776,
-				"seedReveal": "b8fd06898fe8e3c3782ff6871be3e523"
-			}
+				"maxHeightPreviouslyForged": 41895,
+				"maxHeightPrevoted": 29496,
+				"seedReveal": "26a5b2b0e82304488de5015130a5a484"
+			},
+			"previousBlockId": "87368e0277c7a840912fb189fdca071747679cdfe40daff835581086530442ba"
 		},
 		{
-			"id": "3b1003daaf170f0901515d1b768c4f0d60cbd72bc936dc2b5713ee3c06519e1f",
-			"height": 75285,
+			"id": "59b8b47ad1d8202afa1054ef64641cf08c194a6358f2b8cad657c6d2a7fdc9e5",
+			"height": 4086,
 			"version": 2,
-			"timestamp": 1653649795,
-			"generatorPublicKey": "4d5e53ddae31d96a8ad65c908ac3f7ffb223c95c6bda168f20e14b833c7a7ebe",
-			"transactionRoot": "c6e3d89253b50887d6f8ba068461fe4350de6017d7936e7fb4035c331573a1f4",
-			"signature": "08b5be12953e515e19e8b8837403c514993903806001743ec5706f4783a245d24d3f848e2385a114916d8c12723f3c8634de2ad7d158495cdf3ff9ce3c530fda",
-			"previousBlockId": "f74053b6b73c6a0d74e44368102a33ec82262b3e4cc7d3e1cf40b1e1c718b812",
+			"timestamp": 1667901103,
+			"generatorPublicKey": "3df8805ab56b5f0f351af1413d25140146df811b116b5352c3fcd3785330a239",
+			"transactionRoot": "7b0a01e4ae7452a21a32cc7a0b7e4b76fb0c33e64bf0c648257c608ca595abad",
+			"signature": "d22e0c5e9e41eda24a6185737df6a91fdd02dbde70804060690143248d238528736dd196c951cf685bff7f823e342924e84a21aa978f4471f92f9f0561f512b1",
+			"previousBlockID": 8570357253574643000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 96369,
-				"maxHeightPrevoted": 53521,
-				"seedReveal": "04ee83191d0ba5f0861d9a923d8a81a2"
-			}
+				"maxHeightPreviouslyForged": 21742,
+				"maxHeightPrevoted": 11391,
+				"seedReveal": "be0c4cb272d1ab237d8badd9f51d8615"
+			},
+			"previousBlockId": "98f6588e939c5909e85a37cc0418072215c63e5499b5cf200febaa8827e84bf6"
 		},
 		{
-			"id": "dd1ec3cd06e1204ff4300f30ba71ba0056b7ab97853107b86688dd046d1d91fc",
-			"height": 96957,
+			"id": "49c344e187501141416fb060f74b95276496361f7c6ed9fdfb1999eb2f7f8dba",
+			"height": 37478,
 			"version": 2,
-			"timestamp": 1653649805,
-			"generatorPublicKey": "de0fea739f8c71ed99de96a6ce002e270222dc9a6e59acc1c9a65918c5184d23",
-			"transactionRoot": "b906e386b0ed94a4590f419682fa1438606e3f119f310ad5a7a6e3babaaf1015",
-			"signature": "375f0857f23b2186bbe64f25aee1156378c51c6891483018b4aea772ebc7dac6506fdeee4db8d2c2022c734ba7ca78fced0541c5e1e4d2c803fcf3eebddff633",
-			"previousBlockId": "3b1003daaf170f0901515d1b768c4f0d60cbd72bc936dc2b5713ee3c06519e1f",
+			"timestamp": 1667901113,
+			"generatorPublicKey": "1bf0f1ea6efbdf98dc462fd2f2297138372e0c1e3632ae659ee3cce509075948",
+			"transactionRoot": "7a87e1917f9c2d6e4e766cbf7053ddbe84236a78990dfac127fcbefa468c3858",
+			"signature": "1d338525492e1f6922d651e69cafe849311e7b816e3cfade48fea1f569a015b8678e750beee41e260a68c2f72ed2673cc8fbc5457a6389428e31cee09c93ae91",
+			"previousBlockID": 83921552587391540,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 65781,
-				"maxHeightPrevoted": 47514,
-				"seedReveal": "e694f2e9f566c5a9a36a25e778d77bd6"
-			}
+				"maxHeightPreviouslyForged": 40068,
+				"maxHeightPrevoted": 33697,
+				"seedReveal": "800ba63aa8db1f5819d1e74ac0b1246b"
+			},
+			"previousBlockId": "59b8b47ad1d8202afa1054ef64641cf08c194a6358f2b8cad657c6d2a7fdc9e5"
 		},
 		{
-			"id": "ed19a56bd28f6b2618884d63cc18c711557c86006347cf6ae899451bd2d6361b",
-			"height": 85799,
+			"id": "cca1389d366aeb322b0b6c105388d5d4c23b7f0b9e89342b0ea8e3983577ea28",
+			"height": 98046,
 			"version": 2,
-			"timestamp": 1653649815,
-			"generatorPublicKey": "3a0f3eace0342ad9aa75498959d9ad81b68de8a612498b0fa4c58b639c90ce33",
-			"transactionRoot": "bc5ee757586875087515ccaac2da3371cedafa3175634ed6b415a908639f1973",
-			"signature": "97009c22ab77430e0db35f7986e9b221af755fbd8ea101d48af1c40be62f7ec28ee53c6a8b8042d0f70b94613225a06dfaf81fc78b320da9a900c53d269fd188",
-			"previousBlockId": "dd1ec3cd06e1204ff4300f30ba71ba0056b7ab97853107b86688dd046d1d91fc",
+			"timestamp": 1667901123,
+			"generatorPublicKey": "745db7e8cf098f349dfc1cdfb67e5cdb297157086fcc894887b2fa872529a529",
+			"transactionRoot": "28b4f3bac383d3543915178ae4376fc5a21a56bab313995602bcfe7df71a6d15",
+			"signature": "6e3e3acb3f1efb8b9a9d1614b5499add71f0a505835cf05324f39e7123ace99243199d8eb7c9fcf0c9e8f2a98280c44a99a329266271f4f342d323e1bc358ef9",
+			"previousBlockID": 2857538313019836400,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 73200,
-				"maxHeightPrevoted": 34231,
-				"seedReveal": "e2dcd9db56097a61c5c7fd630c51285c"
-			}
+				"maxHeightPreviouslyForged": 59489,
+				"maxHeightPrevoted": 88575,
+				"seedReveal": "f48d0df02da79396e335d938cad98646"
+			},
+			"previousBlockId": "49c344e187501141416fb060f74b95276496361f7c6ed9fdfb1999eb2f7f8dba"
 		},
 		{
-			"id": "5a74cd1bd1f6e7f5b56e420c091174c687e1419e233e64f6d807b18005b43b37",
-			"height": 12044,
+			"id": "9a5d2556b13c0c155859f0c8db95a230ee66139b798bad351fd16782e01c023e",
+			"height": 79088,
 			"version": 2,
-			"timestamp": 1653649825,
-			"generatorPublicKey": "137d21d6f264fa2fa6c246560f7655f7650b3b89ac1dae3f0196f413809b5fc8",
-			"transactionRoot": "aa16f552f5a0bcbf1f8fd01e2487b02129951710c57304278c150b59a3bd4bb7",
-			"signature": "31b601632cd3acbb914580a93d541256103b245e395b390510259ac5ef4038275cc954cbec11c24a6b448bad9b8a2fa8c3edfe13c7ee0bf6d1e683ccfe806394",
-			"previousBlockId": "ed19a56bd28f6b2618884d63cc18c711557c86006347cf6ae899451bd2d6361b",
+			"timestamp": 1667901133,
+			"generatorPublicKey": "c97148da6db11cd3f0424795831775a692a618b6a4024f37d3396bd473f70621",
+			"transactionRoot": "f17db361ac552d13ddf820212c22ea4ef37636f0983d4b848448884eacf05dd8",
+			"signature": "21310d3d8337cf54bf5800c8332611292bf609c3205529e9bb16c92f6f34887ee0188180857d81221677c00400346e7a9bd672cfb0c40b0c72184d7e37e02365",
+			"previousBlockID": 6334602645187402000,
 			"reward": "200000000",
 			"transactions": [],
 			"asset": {
-				"maxHeightPreviouslyForged": 75345,
-				"maxHeightPrevoted": 10803,
-				"seedReveal": "c55ed1ff7eed89a65465ae7957c972b2"
-			}
+				"maxHeightPreviouslyForged": 2538,
+				"maxHeightPrevoted": 13350,
+				"seedReveal": "83623ba24fdc2af9e1eec0ce5d57c58b"
+			},
+			"previousBlockId": "cca1389d366aeb322b0b6c105388d5d4c23b7f0b9e89342b0ea8e3983577ea28"
 		}
 	]
 }
