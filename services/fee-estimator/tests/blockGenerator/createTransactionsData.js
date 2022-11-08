@@ -56,8 +56,7 @@ const transactionData = {
 				COMMAND_AUTH_REGISTER_MULTISIGNATURE,
 				COMMAND_DPOS_VOTE_DELEGATE,
 			];
-			let index = Math.floor(Math.random() * 10) % validModuleTypes.length;
-			if (index > 0 && Math.floor(Math.random() * 100) % 9) index = 0;
+			const index = Math.floor(Math.random() * (validModuleTypes.length + 1));
 			command = validCommandTypes[index];
 			return validModuleTypes[index];
 		},
@@ -97,6 +96,9 @@ const transactionData = {
 	size: {
 		function: () => 0,
 	},
+	minFee: {
+		function: () => 0,
+	},
 };
 
 const paramsTransactionTypeTransfer = ['amount', 'recipientAddress', 'data', 'tokenID'];
@@ -126,10 +128,15 @@ const txMocker = (batchSize) => mocker()
 				transaction.command = COMMAND_DPOS_VOTE_DELEGATE;
 				containAssets = paramsTransactionTypeVoteDelegate;
 				avgTxSize = 130;
+			} else if (transaction.module === MODULE_TOKEN
+				&& transaction.command === COMMAND_TOKEN_TRANSFER) {
+				avgTxSize = 130;
 			}
 
-			const minFee = nameFee + avgTxSize * 10 ** 3;
-			transaction.fee = String(minFee + avgTxSize * transaction.fee);
+			transaction.size = avgTxSize;
+			transaction.minFee = nameFee + avgTxSize * 10 ** 3;
+			transaction.fee = String(transaction.minFee
+				+ Math.round(Math.random() * transaction.minFee * 5));
 			Object.keys(transaction.params).forEach(key => {
 				if (!containAssets.includes(key)) delete transaction.params[key];
 			});

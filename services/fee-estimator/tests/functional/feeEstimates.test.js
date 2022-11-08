@@ -44,20 +44,15 @@ describe('Fee estimation tests', () => {
 
 		it('Non-empty block', async () => {
 			const block = nonEmptyBlock;
-			block.transactions = block.transactions.map(transaction => {
-				transaction.fee = BigInt(transaction.fee);
-				transaction.minFee = BigInt(transaction.size * 1000);
-				return transaction;
-			});
 
 			const feePerByte = await calculateFeePerByte(block);
-			expect(feePerByte.low).toBeCloseTo(118574);
-			expect(feePerByte.med).toBeCloseTo(133569.62114308032);
-			expect(feePerByte.high).toBeCloseTo(356178.44126260985);
+			expect(feePerByte.low).toBeCloseTo(900);
+			expect(feePerByte.med).toBeCloseTo(935.2805624267673);
+			expect(feePerByte.high).toBeCloseTo(2651.617312072893);
 			expect(feePerByte).toEqual({
-				low: 118574,
-				med: 133569.62114308032,
-				high: 356178.44126260985,
+				low: 900,
+				med: 935.2805624267673,
+				high: 2651.617312072893,
 			});
 		});
 	});
@@ -122,9 +117,9 @@ describe('Fee estimation tests', () => {
 
 				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
-				expect(feeEstPerByte.low).toBe(3974.87012);
-				expect(feeEstPerByte.med).toBeCloseTo(4426.299870069001);
-				expect(feeEstPerByte.high).toBeCloseTo(5754.223891089702);
+				expect(feeEstPerByte.low).toBe(0.545484);
+				expect(feeEstPerByte.med).toBeCloseTo(71.6996341526711);
+				expect(feeEstPerByte.high).toBeCloseTo(118.10034687276278);
 				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
 				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
 				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
@@ -186,9 +181,9 @@ describe('Fee estimation tests', () => {
 
 				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
-				expect(feeEstPerByte.low).toBe(3974.87012);
-				expect(feeEstPerByte.med).toBeCloseTo(5392.239870069001);
-				expect(feeEstPerByte.high).toBeCloseTo(7686.103891089702);
+				expect(feeEstPerByte.low).toBe(0.545484);
+				expect(feeEstPerByte.med).toBeCloseTo(1037.639634152671);
+				expect(feeEstPerByte.high).toBeCloseTo(2049.9803468727628);
 				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
 				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
 				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
