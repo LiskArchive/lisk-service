@@ -348,6 +348,83 @@
             }
         }
     },
+    "dryrunTransactionParamEnvelope": {
+        "type": "object",
+        "properties": {
+            "isSkipVerify": {
+                "type": "boolean",
+                "description": "A boolean indicator to skip transaction verification",
+                "example": "false"
+            },
+            "transaction": {
+                "type": "object",
+                "properties": {
+                    "module": {
+                        "type": "string",
+                        "example": "token",
+                        "description": "Blockchain module name related to the transaction."
+                    },
+                    "command": {
+                        "type": "string",
+                        "example": "transfer",
+                        "description": "Specific command name in the module to be executed."
+                    },
+                    "fee": {
+                        "type": "string",
+                        "example": "100000000",
+                        "description": "Transaction fee."
+                    },
+                    "nonce": {
+                        "type": "string",
+                        "example": "0"
+                    },
+                    "senderPublicKey": {
+                        "type": "string",
+                        "format": "senderPublicKey",
+                        "example": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
+                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                    },
+                    "signatures": {
+                        "type": "string",
+                        "example": [
+                            "48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
+                        ],
+                        "description": "An array representing singature(s) of the transaction sender."
+                    },
+                    "params": {
+                        "type":"object",
+                        "properties": {
+                            "recipientAddress": {
+                                "type": "string",
+                                "example": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
+                            },
+                            "amount": {
+                                "type": "string",
+                                "example": "10000000000",
+                                "description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
+                            },
+                            "tokenID": {
+                                "type": "string",
+                                "example": "0000000000000000",
+                                "description": "Unique token identifier."
+                            },
+                            "data": {
+                                "type": "string",
+                                "example": "Token transfer tx",
+                                "description": "Transaction data."
+                            },
+                            "accountInitializationFee":{
+                                "type": "string",
+                                "example": "5000000",
+                                "description": "Account initialization fee."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "dryTransactionWithEnvelope": {
         "type": "object",
         "properties": {

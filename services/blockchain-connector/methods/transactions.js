@@ -50,7 +50,9 @@ module.exports = [
 	},
 	{
 		name: 'dryRunTransaction',
-		controller: async ({ transaction, isSkipVerify }) => dryRunTransaction({ transaction, isSkipVerify }),
+		controller: async ({
+			transaction,
+			isSkipVerify }) => dryRunTransaction({ transaction, isSkipVerify }),
 		params: {
 			transaction: { optional: false, type: 'object' },
 			isSkipVerify: { optional: true, type: 'boolean', default: false },

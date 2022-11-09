@@ -35,7 +35,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Dry run transactions.',
 		});
-		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transaction' }];
+		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/dryrunTransaction' }];
 		dryRunTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Dry run transactions',
