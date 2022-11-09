@@ -17,7 +17,7 @@ jest.setTimeout(30000);
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { VALID_TRANSACTION, INVALID_TRANSACTION } = require('../constants/dryRunTransactions');
+const { VALID_TRANSACTION, INVALID_TRANSACTION, ENCODED_VALID_TRANSACTION } = require('../constants/dryRunTransactions');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -37,7 +37,7 @@ const endpoint = `${baseUrlV3}/transactions/dryrun`;
 const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
-	it('Post dryrun transaction succesfully', async () => {
+	it('Post dryrun transaction succesfully with only transaction', async () => {
 		const response = await api.post(
 			endpoint,
 			{ transaction: VALID_TRANSACTION },
@@ -50,9 +50,20 @@ describe('Post dryrun transactions API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('Returns proper response for duplicate transaction', async () => {
-		const transaction = '0a05746f6b656e12087472616e7366657218062080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a40a79a869fa68e6a407f218c82ccac2b0d92dbe12fb5eafbb0e21e4fcffc7e19d8d9f0db86826e881ab6b39931e0e933dcdaa119cb7cc174f77c5529745159ec05';
+	it('Post dryrun transaction succesfully with only transaction skipping verification', async () => {
+		const response = await api.post(
+			endpoint,
+			{ transaction: VALID_TRANSACTION, isSkipVerify: true },
+		);
 
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data.events.length).toBeGreaterThan(0);
+		expect(response.data.success).toBe(true);
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('Returns proper response for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await api.post(
 			endpoint,
@@ -68,14 +79,14 @@ describe('Post dryrun transactions API', () => {
 		// Send transaction and wait for it to be included in the next block
 		await api.post(
 			postTransactionEndpoint,
-			{ transaction },
+			{ ENCODED_VALID_TRANSACTION },
 		);
 		await waitMs(15000);
 
 		// Check dry run fails for duplicate transaction
 		const secondResponse = await api.post(
 			endpoint,
-			{ transaction },
+			{ VALID_TRANSACTION },
 		);
 
 		expect(secondResponse).toMap(goodRequestSchema);

@@ -32,7 +32,8 @@ const dryrunTransactionResponseSchema = {
 };
 
 const metaParams = {
-	transaction: Joi.string().pattern(regex.HEX).required(),
+	isSkipVerify: Joi.boolean().required(),
+	transaction: Joi.object().required(),
 };
 
 const metaSchema = {
