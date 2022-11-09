@@ -15,6 +15,7 @@
  */
 const { codec } = require('@liskhq/lisk-codec');
 
+const { validator } = require('@liskhq/lisk-validator');
 const { parseInputBySchema } = require('../utils/parser');
 const {
 	getBlockSchema,
@@ -28,11 +29,20 @@ const {
 const encodeTransaction = (transaction) => {
 	// Handle the transaction params
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
-	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
-
 	const txSchema = getTransactionSchema();
+
+	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
 	const parsedTx = parseInputBySchema(transaction, txSchema);
+
+	try {
+		if (!validator.validate(txParamsSchema, parsedTxParams)
+		) { // || !validator.validate(txSchema, { ...parsedTx, params: txParamsBuffer })) {
+			return null;
+		}
+	} catch (err) {
+		// console.log(err);
+	}
+	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
 	const txBuffer = codec.encode(
 		txSchema,
 		{ ...parsedTx, params: txParamsBuffer },
