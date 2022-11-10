@@ -35,14 +35,19 @@ const encodeTransaction = (transaction) => {
 	const parsedTx = parseInputBySchema(transaction, txSchema);
 
 	try {
-		if (!validator.validate(txParamsSchema, parsedTxParams)
-		) { // || !validator.validate(txSchema, { ...parsedTx, params: txParamsBuffer })) {
-			return null;
-		}
+		validator.validate(txParamsSchema, parsedTxParams);
 	} catch (err) {
-		// console.log(err);
+		console.log(err);
 	}
 	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
+
+
+	try {
+		validator.validate(txSchema, { ...parsedTx, params: txParamsBuffer });
+	} catch (err) {
+		console.log(err);
+	}
+
 	const txBuffer = codec.encode(
 		txSchema,
 		{ ...parsedTx, params: txParamsBuffer },

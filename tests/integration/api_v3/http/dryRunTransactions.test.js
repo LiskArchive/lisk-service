@@ -37,10 +37,23 @@ const endpoint = `${baseUrlV3}/transactions/dryrun`;
 const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
-	it('Post dryrun transaction succesfully with only transaction', async () => {
+	it('Post dryrun transaction succesfully with only transaction object', async () => {
 		const response = await api.post(
 			endpoint,
 			{ transaction: VALID_TRANSACTION },
+		);
+
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data.events.length).toBeGreaterThan(0);
+		expect(response.data.success).toBe(true);
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('Post dryrun transaction succesfully with only transaction string', async () => {
+		const response = await api.post(
+			endpoint,
+			{ transaction: ENCODED_VALID_TRANSACTION },
 		);
 
 		expect(response).toMap(goodRequestSchema);

@@ -40,10 +40,26 @@ const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactio
 const postTransaction = async params => request(wsRpcUrl, 'post.transactions', params);
 
 describe('Method post.transactions.dryrun', () => {
-	it('Post dryrun transaction succesfully with only transaction', async () => {
+	it('Post dryrun transaction succesfully with only transaction object', async () => {
 		const response = await postDryrunTransaction(
 			{
 				transaction: VALID_TRANSACTION,
+			},
+		);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
+		expect(result.data).toBeInstanceOf(Object);
+		expect(result.data).toMap(dryrunTransactionResponseSchema);
+		expect(result.meta).toMap(metaSchema);
+		expect(result.data.events.length).toBeGreaterThan(0);
+	});
+
+	it('Post dryrun transaction succesfully with only transaction string', async () => {
+		const response = await postDryrunTransaction(
+			{
+				transaction: ENCODED_VALID_TRANSACTION,
 			},
 		);
 		expect(response).toMap(jsonRpcEnvelopeSchema);

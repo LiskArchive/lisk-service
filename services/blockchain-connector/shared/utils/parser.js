@@ -41,8 +41,9 @@ const parseInputBySchema = (input, schema) => {
 		if (schemaDataType === 'string') return String(input);
 		if (schemaDataType === 'boolean') return Boolean(input);
 		if (schemaDataType === 'bytes') {
-			if (schema.format === 'lisk32') {
-				return getAddressFromLisk32Address(input);
+			// TODO: Resolve this
+			if (schema.format === 'lisk32' && input.startsWith('lsk')) {
+				getAddressFromLisk32Address(input);
 			}
 			return Buffer.from(input, 'hex');
 		}
