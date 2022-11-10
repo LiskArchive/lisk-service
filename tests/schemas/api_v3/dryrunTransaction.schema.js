@@ -31,22 +31,13 @@ const dryrunTransactionResponseSchema = {
 	events: Joi.array().items(Joi.object(event).optional()).required(),
 };
 
-const metaParams = {
-	isSkipVerify: Joi.boolean().required(),
-	transaction: Joi.object().required(),
-};
-
-const metaSchema = {
-	params: Joi.object(metaParams).required(),
-};
-
 const goodRequestSchema = {
 	data: Joi.object(dryrunTransactionResponseSchema).required(),
-	meta: Joi.object(metaSchema).required(),
+	meta: Joi.object().required(),
 };
 
 module.exports = {
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 	dryrunTransactionResponseSchema: Joi.object(dryrunTransactionResponseSchema).required(),
-	metaSchema: Joi.object(metaSchema).required(),
+	metaSchema: Joi.object().required(),
 };

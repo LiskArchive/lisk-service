@@ -23,7 +23,7 @@ module.exports = {
 	rpcMethod: 'post.transactions.dryrun',
 	tags: ['Transactions'],
 	params: {
-		transaction: { optional: false, type: 'object' },
+		transaction: { optional: false, type: 'any' },
 		isSkipVerify: { optional: true, type: 'boolean', default: false },
 	},
 	get schema() {
