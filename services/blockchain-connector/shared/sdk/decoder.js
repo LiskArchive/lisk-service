@@ -41,7 +41,7 @@ const EVENT_TOPICS = {
 	transferCrossChain: ['senderAddress', 'recipientAddress', 'receivingChainID'],
 	ccmTransfer: ['senderAddress', 'recipientAddress', 'ownChainID'],
 	mint: ['address'],
-	burn: ['address'],
+	burn: ['defaultTopic', 'address'],
 	lock: ['address'],
 	unlock: ['address'],
 	EVENT_NAME_INITIALIZE_TOKEN: ['tokenID'],
