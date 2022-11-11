@@ -41,7 +41,7 @@ const EVENT_TOPICS = {
 	transferCrossChain: ['senderAddress', 'recipientAddress', 'receivingChainID'],
 	ccmTransfer: ['senderAddress', 'recipientAddress', 'ownChainID'],
 	mint: ['address'],
-	burn: ['address'],
+	burn: ['defaultTopic', 'address'],
 	lock: ['address'],
 	unlock: ['address'],
 	EVENT_NAME_INITIALIZE_TOKEN: ['tokenID'],
@@ -60,7 +60,7 @@ const EVENT_TOPICS = {
 	voteDelegate: ['senderAddress', 'delegateAddress'],
 	delegatePunished: ['delegateAddress'],
 	delegateBanned: ['delegateAddress'],
-	generatorKeyRegistrationEvent: ['address'],
+	generatorKeyRegistrationEvent: ['defaultTopic', 'address'],
 	blsKeyRegistration: ['address'],
 };
 
@@ -83,14 +83,18 @@ const decodeTransaction = (transaction) => {
 	Object.entries(transactionParams).forEach(([key, value]) => {
 		if (Array.isArray(value)) {
 			formattedtransactionParams[key] = value.map(entry => {
-				const formattedEntry = {};
-				Object.entries(entry).forEach(([innerKey, innerValue]) => {
-					if (innerKey.toLowerCase().endsWith('address') && !innerKey.includes('legacy')) {
-						formattedEntry[innerKey] = getLisk32Address(innerValue.toString('hex'));
-					} else {
-						formattedEntry[innerKey] = innerValue;
-					}
-				});
+				let formattedEntry = {};
+				if (Buffer.isBuffer(entry)) {
+					formattedEntry = entry;
+				} else {
+					Object.entries(entry).forEach(([innerKey, innerValue]) => {
+						if (innerKey.toLowerCase().endsWith('address') && !innerKey.includes('legacy')) {
+							formattedEntry[innerKey] = getLisk32Address(innerValue.toString('hex'));
+						} else {
+							formattedEntry[innerKey] = innerValue;
+						}
+					});
+				}
 				return formattedEntry;
 			});
 		} else if (key.toLowerCase().endsWith('address') && !key.includes('legacy')) {

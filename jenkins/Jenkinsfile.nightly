@@ -35,7 +35,7 @@ def echoBanner(msg) {
 
 properties([
 	parameters([
-		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'development' ),
+		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'release/4.0.0' ),
 	])
 ])
 
@@ -52,7 +52,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -70,7 +70,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -118,7 +118,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -128,6 +128,7 @@ pipeline {
 						dir('lisk-core') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
+									./bin/run blockchain:import --force lisk-core/snapshots/blockchain.tar.gz
 									./bin/run start --network devnet --api-ipc &
 									echo $! > lisk-core.pid
 								'''
@@ -151,7 +152,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -169,7 +170,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			parallel {
