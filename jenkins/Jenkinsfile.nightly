@@ -128,9 +128,9 @@ pipeline {
 						dir('lisk-core') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
-								./bin/run blockchain:import --force lisk-core/snapshots/blockchain.tar.gz
-								./bin/run start --network devnet --api-ipc &
-								echo $! > lisk-core.pid
+									./bin/run blockchain:import --force lisk-core/snapshots/blockchain.tar.gz
+									./bin/run start --network devnet --api-ipc &
+									echo $! > lisk-core.pid
 								'''
 							}
 						}
