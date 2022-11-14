@@ -43,7 +43,7 @@ module.exports = {
 				'timestamp:asc',
 				'timestamp:desc',
 			],
-			default: 'timestamp:desc',
+			default: 'index:asc',
 		},
 	},
 	get schema() {
