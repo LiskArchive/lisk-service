@@ -212,13 +212,25 @@ pipeline {
 	post {
 		failure {
 			emailext(
-                    to: 'service-dev@lisk.com',
-                    subject: "[JENKINS] ${currentBuild.fullDisplayName} - ${currentBuild.result}",
-                    body: """<p>Job <b>${currentBuild.fullDisplayName}</b> finished work with the result - <b>${currentBuild.result}</b></p>
-						<p>Check console output at: <a href='${currentBuild.absoluteUrl}'>${currentBuild.fullDisplayName}</a></p>
-						<p>Current time of the task: ${currentBuild.durationString}</p>""",
-                    mimeType: 'text/html'
-                )
+				to: 'service-dev@lisk.com',
+				subject: "[JENKINS] ${currentBuild.fullDisplayName} - ${currentBuild.result}",
+				body: """
+					Hello Team,<br><br>
+					
+					Build <b>${currentBuild.fullDisplayName}</b> for <b>Lisk Service</b> needs your attention. Please find all the necessary details below:
+					
+					<p>
+						<ul>
+							<li>Job <b>${currentBuild.fullDisplayName}</b> finished with result - <b>${currentBuild.result}</b></li>
+							<li>Total time taken: ${currentBuild.durationString}</li>
+							<li>The job logs are available at: <a href='${currentBuild.absoluteUrl}'>${currentBuild.fullDisplayName}</a></li>
+						</ul>
+					</p>
+
+					- Lisk Service Team!
+				""",
+				mimeType: 'text/html'
+			)
 			script { 
 				echoBanner('Failed to run the pipeline') 
 			}
