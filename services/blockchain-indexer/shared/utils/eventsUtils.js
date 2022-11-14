@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('../../config');
+
 const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
 		eventsInfo: [],
@@ -26,8 +28,12 @@ const getEventsInfoToIndex = async (block, events) => {
 			module: event.module,
 			height: block.height,
 			index: event.index,
-			eventStr: JSON.stringify(event),
 		};
+
+		if (config.db.isPersistEvents) {
+			eventInfo.eventStr = JSON.stringify(event);
+		}
+
 		eventsInfoToIndex.eventsInfo.push(eventInfo);
 
 		event.topics.forEach(topic => {
@@ -35,6 +41,7 @@ const getEventsInfoToIndex = async (block, events) => {
 				tempID: event.id.concat(topic),
 				id: event.id,
 				height: block.height,
+				index: event.index,
 				timestamp: block.timestamp,
 				topic,
 			};

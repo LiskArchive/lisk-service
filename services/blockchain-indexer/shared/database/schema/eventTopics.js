@@ -21,6 +21,7 @@ module.exports = {
 		id: { type: 'string' }, // Unique event identifier
 		topic: { type: 'string' },
 		height: { type: 'integer' },
+		index: { type: 'integer' },
 		timestamp: { type: 'integer' },
 	},
 	indexes: {

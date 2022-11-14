@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	CacheLRU,
 	Exceptions: { NotFoundException },
 	MySQL: {
 		getTableInstance,
@@ -50,9 +51,21 @@ const getEventTopicsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const eventCache = CacheLRU('events', config.endpoints.cache);
+
 const getEventsByHeight = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
+};
+
+const getEventFromCache = async (height) => {
+	const event = await eventCache.get(height);
+	if (!event) {
+		const eventFromNode = await getEventsByHeight(height);
+		await eventCache.set(height, JSON.stringify(eventFromNode));
+		return eventFromNode;
+	}
+	return JSON.parse(event);
 };
 
 const getEvents = async (params) => {
@@ -119,13 +132,20 @@ const getEvents = async (params) => {
 	const eventIDs = response.map(entry => entry.id);
 	const eventsInfo = await eventsDB.find(
 		{ whereIn: { property: 'id', values: eventIDs } },
-		['eventStr', 'height'],
+		['eventStr', 'height', 'index'],
 	);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
-		async ({ eventStr, height }) => {
-			const event = JSON.parse(eventStr);
+		async ({ eventStr, height, index }) => {
+			let event;
+			if (config.db.isPersistEvents) {
+				event = JSON.parse(eventStr);
+			} else {
+				const eventFromCache = await getEventFromCache(height);
+				event = eventFromCache.find(entry => entry.index === index);
+			}
+
 			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
 
 			return parseToJSONCompatObj({

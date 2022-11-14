@@ -158,15 +158,15 @@ const indexBlock = async job => {
 			const transactionsDB = await getTransactionsIndex();
 			await BluebirdPromise.map(
 				block.transactions,
-				async (tx) => {
+				async (tx, index) => {
 					// Apply default transformations and index with minimal information by default
+					tx.index = index;
 					tx.moduleCommand = `${tx.module}:${tx.command}`;
 					tx.blockID = block.id;
 					tx.height = block.height;
 					tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
 					tx.executionStatus = getTransactionExecutionStatus(tx, events);
-
 					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
 
 					// Store address -> publicKey mapping
