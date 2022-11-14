@@ -181,8 +181,11 @@ const getTransactionsStatistics = async params => {
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
 
-	// TODO: Update code once MySQL supports distinct query
-	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
+	const tokens = await db.find(
+		{ distinct: { column: 'tokenID' } },
+		['tokenID'],
+	);
+
 	const tokenIDs = tokens.map(e => e.tokenID);
 
 	const statsParams = {
