@@ -125,9 +125,12 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsDB.count(params);
-	// TODO: Returns duplicate `ids`
-	const response = await eventTopicsDB.find(params, ['id']);
+	const total = await eventTopicsDB.count({ ...params, distinct: { column: 'id' } });
+
+	const response = await eventTopicsDB.find(
+		{ ...params, distinct: { column: 'id' } },
+		['id'],
+	);
 
 	const eventIDs = response.map(entry => entry.id);
 	const eventsInfo = await eventsDB.find(
