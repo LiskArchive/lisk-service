@@ -39,6 +39,7 @@ const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
 const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
+const BOOLEAN = /^(true|false)$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -67,4 +68,5 @@ module.exports = {
 	TRANSACTION,
 	MODULE,
 	TOPIC,
+	BOOLEAN,
 };
