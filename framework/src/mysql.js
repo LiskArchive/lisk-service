@@ -229,9 +229,12 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			query.orderBy(sortProp, sortOrder);
-			query.whereNotNull(sortProp);
+			const sortList = params.sort.split(',');
+			sortList.forEach(sort => {
+				const [sortProp, sortOrder] = sort.split(':');
+				query.orderBy(sortProp, sortOrder);
+				query.whereNotNull(sortProp);
+			});
 		}
 
 		if (params.distinct) {
@@ -380,13 +383,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.sort) {
-			const [sortProp] = params.sort.split(':');
-			query.whereNotNull(sortProp);
-		}
-
-		if (params.distinct) {
-			const { column } = params.distinct;
-			query.distinct(column);
+			const sortList = params.sort.split(',');
+			sortList.forEach(sort => {
+				const [sortProp] = sort.split(':');
+				query.whereNotNull(sortProp);
+			});
 		}
 
 		if (params.whereIn) {
