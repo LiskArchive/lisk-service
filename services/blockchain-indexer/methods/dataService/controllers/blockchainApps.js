@@ -15,13 +15,8 @@
  */
 const { HTTP } = require('lisk-service-framework');
 const dataService = require('../../../shared/dataService');
+const { isMainchain } = require('../../../shared/common');
 const config = require('../../../config');
-const regex = require('../../../shared/utils/regex');
-
-const isMainchain = async () => {
-	const { chainID } = (await dataService.getNetworkStatus()).data;
-	return chainID.match(regex.MAINCHAIN);
-};
 
 const resolveMainchainServiceURL = async () => {
 	const { chainID } = await dataService.getNetworkStatus();
