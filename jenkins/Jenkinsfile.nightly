@@ -211,6 +211,14 @@ pipeline {
 	}
 	post {
 		failure {
+			emailext(
+                    to: 'service-dev@lisk.com',
+                    subject: "[JENKINS] ${currentBuild.fullDisplayName} - ${currentBuild.result}",
+                    body: """<p>Job <b>${currentBuild.fullDisplayName}</b> finished work with the result - <b>${currentBuild.result}</b></p>
+						<p>Check console output at: <a href='${currentBuild.absoluteUrl}'>${currentBuild.fullDisplayName}</a></p>
+						<p>Current time of the task: ${currentBuild.durationString}</p>""",
+                    mimeType: 'text/html'
+                )
 			script { 
 				echoBanner('Failed to run the pipeline') 
 			}
