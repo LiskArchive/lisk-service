@@ -129,9 +129,7 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 const validateBlock = (block) => !!block && block.height >= 0;
 
 const getTransactionExecutionStatus = (tx, events) => {
-	// TODO: Update implementation with next SDK release and return with constants from SDK
-	// const expectedEventName = `${tx.module}:commandExecutionResult`;
-	const expectedEventName = `${tx.module}:transaction`;
+	const expectedEventName = `${tx.module}:commandExecutionResult`;
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
 	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
