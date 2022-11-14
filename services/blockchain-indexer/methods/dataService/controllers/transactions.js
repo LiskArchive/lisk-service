@@ -27,6 +27,8 @@ const dataService = require('../../../shared/dataService');
 
 const getTransactions = async (params) => {
 	try {
+		params.sort = params.sort.concat(',', 'index:asc');
+
 		const addressParam = [
 			'senderAddress',
 			'recipientAddress',
