@@ -108,14 +108,6 @@ const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
 
-// Global tokenIDs
-// TODO:Fix
-config.tokens = {
-	lisk: {
-		id: '0000000100000000',
-	},
-};
-
 config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true');
 
 module.exports = config;

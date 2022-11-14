@@ -26,6 +26,9 @@ const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses')
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+let CHAIN_ID;
+const LOCAL_ID = '00000000';
+
 const getTopLSKAddressesIndex = () => getTableInstance(
 	topLSKAddressesIndexSchema.tableName,
 	topLSKAddressesIndexSchema,
@@ -33,7 +36,12 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 );
 
 const getLiskBalanceByAddress = async (address) => {
-	const LISK_TOKEN_ID = config.tokens.lisk.id;
+	if (!CHAIN_ID) {
+		const status = await requestConnector('getNetworkStatus');
+		CHAIN_ID = status.chainID;
+	}
+
+	const LISK_TOKEN_ID = CHAIN_ID.concat(LOCAL_ID);
 
 	const response = await requestConnector(
 		'getTokenBalance',
