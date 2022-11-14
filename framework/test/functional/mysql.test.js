@@ -91,11 +91,11 @@ describe('Test MySQL', () => {
 			const params = {
 				whereIn: [{
 					property: 'height',
-					values: [ emptyBlock.height, nonEmptyBlock.height ],
+					values: [emptyBlock.height, nonEmptyBlock.height],
 				},
 				{
 					property: 'id',
-					values: [ emptyBlock.id ],
+					values: [emptyBlock.id],
 				}]
 			};
 			const result = await testTable.find(params, ['id']);
@@ -124,11 +124,11 @@ describe('Test MySQL', () => {
 			const params = {
 				whereIn: [{
 					property: 'height',
-					values: [ emptyBlock.height, nonEmptyBlock.height ],
+					values: [emptyBlock.height, nonEmptyBlock.height],
 				},
 				{
 					property: 'id',
-					values: [ emptyBlock.id ],
+					values: [emptyBlock.id],
 				}]
 			};
 			const result = await testTable.count(params);
@@ -196,6 +196,12 @@ describe('Test MySQL', () => {
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(2);
 		});
+
+		it('Distinct query', async () => {
+			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: '5683515590859200000' }]);
+			const result = await testTable.find({ distinct: { column: 'id' } }, 'id');
+			expect(result.length).toEqual(1);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
@@ -229,11 +235,11 @@ describe('Test MySQL', () => {
 			const params = {
 				whereIn: [{
 					property: 'height',
-					values: [ emptyBlock.height, nonEmptyBlock.height ],
+					values: [emptyBlock.height, nonEmptyBlock.height],
 				},
 				{
 					property: 'id',
-					values: [ emptyBlock.id ],
+					values: [emptyBlock.id],
 				}]
 			};
 			const result = await testTable.find(params, ['id']);
@@ -268,11 +274,11 @@ describe('Test MySQL', () => {
 			const params = {
 				whereIn: [{
 					property: 'height',
-					values: [ emptyBlock.height, nonEmptyBlock.height ],
+					values: [emptyBlock.height, nonEmptyBlock.height],
 				},
 				{
 					property: 'id',
-					values: [ emptyBlock.id ],
+					values: [emptyBlock.id],
 				}]
 			};
 			const result = await testTable.count(params);
@@ -358,6 +364,16 @@ describe('Test MySQL', () => {
 			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(2);
+		});
+
+		it('Distinct query', async () => {
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: '5683515590859200000' }], trx);
+			await commitDbTransaction(trx);
+			const result = await testTable.find({ distinct: { column: 'id' } }, 'id');
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
 		});
 	});
 
