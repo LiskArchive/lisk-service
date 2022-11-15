@@ -91,7 +91,7 @@ const getEvents = async (params) => {
 		params = remParams;
 		params.sort = params.sort
 			? params.sort.concat(',', order)
-			: 'index:asc';
+			: order;
 	}
 
 	if (params.topic) {
