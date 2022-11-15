@@ -575,4 +575,44 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Events ordered by index', () => {
+		it('returns events ordered by index descending', async () => {
+			const response = await api.get(`${endpoint}?order=index:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i];
+					if (event && prevEvent) {
+						const prevEventIndex = prevEvent.index;
+						expect(prevEventIndex).toBeGreaterThanOrEqual(event.index);
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns events ordered by index ascending', async () => {
+			const response = await api.get(`${endpoint}?order=index:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i];
+					if (event && prevEvent) {
+						const prevEventTimestamp = prevEvent.index;
+						expect(prevEventTimestamp).toBeLessThanOrEqual(event.index);
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
 });
