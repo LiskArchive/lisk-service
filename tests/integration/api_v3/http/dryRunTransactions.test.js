@@ -17,7 +17,7 @@ jest.setTimeout(30000);
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { VALID_TRANSACTION, INVALID_TRANSACTION, ENCODED_VALID_TRANSACTION } = require('../constants/dryRunTransactions');
+const { TRANSACTION_OBJECT_VALID, TRANSACTION_OBJECT_INVALID, TRANSACTION_ENCODED_VALID } = require('../constants/dryRunTransactions');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -40,7 +40,7 @@ describe('Post dryrun transactions API', () => {
 	it('Post dryrun transaction succesfully with only transaction object', async () => {
 		const response = await api.post(
 			endpoint,
-			{ transaction: VALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_VALID },
 		);
 
 		expect(response).toMap(goodRequestSchema);
@@ -53,7 +53,7 @@ describe('Post dryrun transactions API', () => {
 	it('Post dryrun transaction succesfully with only transaction string', async () => {
 		const response = await api.post(
 			endpoint,
-			{ transaction: ENCODED_VALID_TRANSACTION },
+			{ transaction: TRANSACTION_ENCODED_VALID },
 		);
 
 		expect(response).toMap(goodRequestSchema);
@@ -66,7 +66,7 @@ describe('Post dryrun transactions API', () => {
 	it('Post dryrun transaction succesfully with only transaction skipping verification', async () => {
 		const response = await api.post(
 			endpoint,
-			{ transaction: VALID_TRANSACTION, isSkipVerify: true },
+			{ transaction: TRANSACTION_OBJECT_VALID, isSkipVerify: true },
 		);
 
 		expect(response).toMap(goodRequestSchema);
@@ -80,7 +80,7 @@ describe('Post dryrun transactions API', () => {
 		// Check dryrun passes
 		const firstResponse = await api.post(
 			endpoint,
-			{ transaction: VALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_VALID },
 		);
 
 		expect(firstResponse).toMap(goodRequestSchema);
@@ -90,16 +90,16 @@ describe('Post dryrun transactions API', () => {
 		expect(firstResponse.meta).toMap(metaSchema);
 
 		// Send transaction and wait for it to be included in the next block
-		await api.post(
+		const responsez = await api.post(
 			postTransactionEndpoint,
-			{ ENCODED_VALID_TRANSACTION },
+			{ transaction: TRANSACTION_ENCODED_VALID },
 		);
 		await waitMs(15000);
 
 		// Check dry run fails for duplicate transaction
 		const secondResponse = await api.post(
 			endpoint,
-			{ VALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_VALID },
 		);
 
 		expect(secondResponse).toMap(goodRequestSchema);
@@ -112,7 +112,7 @@ describe('Post dryrun transactions API', () => {
 	it('Throws error when posting invalid binary transaction', async () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
-			{ transaction: INVALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_INVALID },
 			500,
 		);
 		expect(dryrunTransaction).toMap(badRequestSchema);
@@ -127,8 +127,8 @@ describe('Post dryrun transactions API', () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
 			{
-				transaction: VALID_TRANSACTION,
-				transactions: INVALID_TRANSACTION,
+				transaction: TRANSACTION_OBJECT_VALID,
+				transactions: TRANSACTION_OBJECT_INVALID,
 			},
 			400,
 		);

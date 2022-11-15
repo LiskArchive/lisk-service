@@ -16,7 +16,7 @@
 jest.setTimeout(30000);
 
 const config = require('../../../config');
-const { VALID_TRANSACTION, INVALID_TRANSACTION, ENCODED_VALID_TRANSACTION } = require('../constants/dryRunTransactions');
+const { TRANSACTION_OBJECT_VALID, TRANSACTION_OBJECT_INVALID, TRANSACTION_ENCODED_VALID } = require('../constants/dryRunTransactions');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -43,7 +43,7 @@ describe('Method post.transactions.dryrun', () => {
 	it('Post dryrun transaction succesfully with only transaction object', async () => {
 		const response = await postDryrunTransaction(
 			{
-				transaction: VALID_TRANSACTION,
+				transaction: TRANSACTION_OBJECT_VALID,
 			},
 		);
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -59,7 +59,7 @@ describe('Method post.transactions.dryrun', () => {
 	it('Post dryrun transaction succesfully with only transaction string', async () => {
 		const response = await postDryrunTransaction(
 			{
-				transaction: ENCODED_VALID_TRANSACTION,
+				transaction: TRANSACTION_ENCODED_VALID,
 			},
 		);
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -75,7 +75,7 @@ describe('Method post.transactions.dryrun', () => {
 	it('Post dryrun transaction succesfully skipping verification', async () => {
 		const response = await postDryrunTransaction(
 			{
-				transaction: VALID_TRANSACTION,
+				transaction: TRANSACTION_OBJECT_VALID,
 				isSkipVerify: true,
 			},
 		);
@@ -91,7 +91,7 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('Returns proper response for duplicate transaction', async () => {
 		// Check dryrun passes
-		const firstResponse = await postDryrunTransaction({ VALID_TRANSACTION });
+		const firstResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(jsonRpcEnvelopeSchema);
 
 		const { result: firstResult } = firstResponse;
@@ -102,11 +102,11 @@ describe('Method post.transactions.dryrun', () => {
 		expect(firstResult.data.events.length).toBeGreaterThan(0);
 
 		// Send transaction and wait for it to be included in the next block
-		await postTransaction({ ENCODED_VALID_TRANSACTION });
+		await postTransaction({ transaction: TRANSACTION_ENCODED_VALID });
 		await waitMs(15000);
 
 		// Check dry run fails for duplicate transaction
-		const secondResponse = await postDryrunTransaction({ VALID_TRANSACTION });
+		const secondResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(secondResponse).toMap(jsonRpcEnvelopeSchema);
 
 		const { result: secondResult } = secondResponse;
@@ -120,7 +120,7 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('invalid binary transaction -> empty response', async () => {
 		const response = await postDryrunTransaction({
-			transaction: INVALID_TRANSACTION,
+			transaction: TRANSACTION_OBJECT_INVALID,
 		}).catch(e => e);
 		expect(response).toMap(serverErrorSchema);
 	});
@@ -132,8 +132,8 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('Invalid query parameter -> -32602', async () => {
 		const response = await postDryrunTransaction({
-			transaction: VALID_TRANSACTION,
-			transactions: INVALID_TRANSACTION,
+			transaction: TRANSACTION_OBJECT_VALID,
+			transactions: TRANSACTION_OBJECT_INVALID,
 		}).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});

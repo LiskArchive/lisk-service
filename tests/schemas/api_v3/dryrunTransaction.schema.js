@@ -21,9 +21,9 @@ const event = {
 	data: Joi.object().required(),
 	index: Joi.number().integer().min(0).required(),
 	module: Joi.string().pattern(regex.MODULE).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
-	height: Joi.number().positive().required(),
+	height: Joi.number().integer().min(0).required(),
 };
 
 const dryrunTransactionResponseSchema = {

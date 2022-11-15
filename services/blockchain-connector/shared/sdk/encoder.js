@@ -15,7 +15,10 @@
  */
 const { codec } = require('@liskhq/lisk-codec');
 const { validator } = require('@liskhq/lisk-validator');
-const logger = require('lisk-service-framework').Logger();
+const {
+	Logger,
+	Exceptions: { InvalidParamsException },
+} = require('lisk-service-framework');
 
 const { parseInputBySchema } = require('../utils/parser');
 const {
@@ -26,6 +29,8 @@ const {
 	getTransactionSchema,
 	getTransactionParamsSchema,
 } = require('./schema');
+
+const logger = Logger();
 
 const encodeTransaction = (transaction) => {
 	// Handle the transaction params
