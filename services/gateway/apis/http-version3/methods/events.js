@@ -38,13 +38,12 @@ module.exports = {
 			enum: [
 				'height:asc',
 				'height:desc',
-				'index:asc',
-				'index:desc',
 				'timestamp:asc',
 				'timestamp:desc',
 			],
-			default: 'index:asc',
+			default: 'timestamp:desc',
 		},
+		order: { optional: true, type: 'string', enum: ['index:asc', 'index:desc'], default: 'index:asc' },
 	},
 	get schema() {
 		const eventsSchema = {};

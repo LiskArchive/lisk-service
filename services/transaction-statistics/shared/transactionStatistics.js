@@ -181,10 +181,7 @@ const getTransactionsStatistics = async params => {
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
 
-	const tokens = await db.find(
-		{ distinct: { column: 'tokenID' } },
-		['tokenID'],
-	);
+	const tokens = await db.find({ distinct: 'tokenID' }, ['tokenID']);
 
 	const tokenIDs = tokens.map(e => e.tokenID);
 

@@ -15,7 +15,7 @@
  */
 const { HTTP } = require('lisk-service-framework');
 const dataService = require('../../../shared/dataService');
-const { isMainchain } = require('../../../shared/common');
+const { isMainchain } = require('../../../shared/chain');
 const config = require('../../../config');
 
 const resolveMainchainServiceURL = async () => {

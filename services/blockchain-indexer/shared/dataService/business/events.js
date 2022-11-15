@@ -51,7 +51,7 @@ const getEventTopicsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const eventCache = CacheLRU('events', config.endpoints.cache);
+const eventCache = CacheLRU('events');
 
 const getEventsByHeight = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
@@ -84,6 +84,14 @@ const getEvents = async (params) => {
 
 	if (params.timestamp && params.timestamp.includes(':')) {
 		params = normalizeRangeParam(params, 'timestamp');
+	}
+
+	if (params.order) {
+		const { order, ...remParams } = params;
+		params = remParams;
+		params.sort = params.sort
+			? params.sort.concat(',', order)
+			: 'index:asc';
 	}
 
 	if (params.topic) {
@@ -125,10 +133,10 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsDB.count({ ...params, distinct: { column: 'id' } });
+	const total = await eventTopicsDB.count({ ...params, distinct: 'id' });
 
 	const response = await eventTopicsDB.find(
-		{ ...params, distinct: { column: 'id' } },
+		{ ...params, distinct: 'id' },
 		['id'],
 	);
 
@@ -143,8 +151,9 @@ const getEvents = async (params) => {
 		async ({ eventStr, height, index }) => {
 			let event;
 			if (config.db.isPersistEvents) {
-				event = JSON.parse(eventStr);
-			} else {
+				if (eventStr) event = JSON.parse(eventStr);
+			}
+			if (!event) {
 				const eventFromCache = await getEventFromCache(height);
 				event = eventFromCache.find(entry => entry.index === index);
 			}

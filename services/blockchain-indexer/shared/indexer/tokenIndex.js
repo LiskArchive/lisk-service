@@ -20,7 +20,7 @@ const {
 
 const { requestConnector } = require('../utils/request');
 
-const { isMainchain } = require('../common');
+const { isMainchain } = require('../chain');
 
 const config = require('../../config');
 
@@ -29,6 +29,7 @@ const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses')
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 let CHAIN_ID;
+let LISK_TOKEN_ID;
 const LOCAL_ID_LSK = '00000000';
 
 const getTopLSKAddressesIndex = () => getTableInstance(
@@ -38,12 +39,14 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 );
 
 const getLiskBalanceByAddress = async (address) => {
-	if (!CHAIN_ID) {
-		const status = await requestConnector('getNetworkStatus');
-		CHAIN_ID = status.chainID;
-	}
+	if (!LISK_TOKEN_ID) {
+		if (!CHAIN_ID) {
+			const status = await requestConnector('getNetworkStatus');
+			CHAIN_ID = status.chainID;
+		}
 
-	const LISK_TOKEN_ID = CHAIN_ID.concat(LOCAL_ID_LSK);
+		LISK_TOKEN_ID = CHAIN_ID.concat(LOCAL_ID_LSK);
+	}
 
 	const response = await requestConnector(
 		'getTokenBalance',

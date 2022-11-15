@@ -16,8 +16,13 @@
 const dataService = require('./dataService');
 const regex = require('./regex');
 
+let chainID;
+
 const isMainchain = async () => {
-	const { chainID } = (await dataService.getNetworkStatus()).data;
+	if (!chainID) {
+		const networkStatus = (await dataService.getNetworkStatus()).data;
+		chainID = networkStatus.chainID;
+	}
 	return chainID.match(regex.MAINCHAIN);
 };
 
