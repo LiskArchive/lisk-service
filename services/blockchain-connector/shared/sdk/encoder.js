@@ -14,8 +14,9 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
-
 const { validator } = require('@liskhq/lisk-validator');
+const logger = require('lisk-service-framework').Logger();
+
 const { parseInputBySchema } = require('../utils/parser');
 const {
 	getBlockSchema,
@@ -37,15 +38,16 @@ const encodeTransaction = (transaction) => {
 	try {
 		validator.validate(txParamsSchema, parsedTxParams);
 	} catch (err) {
-		console.log(err);
+		logger.error(`Transaction parameter schema validation failed.\nError:${err}`);
+		return null;
 	}
 	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
-
 
 	try {
 		validator.validate(txSchema, { ...parsedTx, params: txParamsBuffer });
 	} catch (err) {
-		console.log(err);
+		logger.error(`Transaction schema validation failed.\nError:${err}`);
+		return null;
 	}
 
 	const txBuffer = codec.encode(

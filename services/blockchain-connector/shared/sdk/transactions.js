@@ -13,6 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Exceptions: { InvalidParamsException },
+} = require('lisk-service-framework');
+
 const { decodeTransaction } = require('./decoder');
 const { encodeTransaction } = require('./encoder');
 const {
@@ -45,6 +49,10 @@ const dryRunTransactionWrapper = async (params) => {
 	const { transaction, isSkipVerify } = params;
 
 	const encodedTransaction = typeof transaction === 'object' ? encodeTransaction(transaction) : transaction;
+
+	if (!encodedTransaction) {
+		throw new InvalidParamsException('Invalid transaction parameter');
+	}
 
 	return dryRunTransaction({ transaction: encodedTransaction, skipVerify: isSkipVerify });
 };
