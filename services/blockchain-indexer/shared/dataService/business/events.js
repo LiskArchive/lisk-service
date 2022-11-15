@@ -86,14 +86,6 @@ const getEvents = async (params) => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	if (params.order) {
-		const { order, ...remParams } = params;
-		params = remParams;
-		params.sort = params.sort
-			? params.sort.concat(',', order)
-			: order;
-	}
-
 	if (params.topic) {
 		const { topic, ...remParams } = params;
 		params = remParams;
@@ -142,7 +134,7 @@ const getEvents = async (params) => {
 
 	const eventIDs = response.map(entry => entry.id);
 	const eventsInfo = await eventsDB.find(
-		{ whereIn: { property: 'id', values: eventIDs } },
+		{ whereIn: { property: 'id', values: eventIDs }, order: params.order },
 		['eventStr', 'height', 'index'],
 	);
 

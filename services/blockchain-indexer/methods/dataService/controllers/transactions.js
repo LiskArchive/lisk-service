@@ -27,11 +27,6 @@ const dataService = require('../../../shared/dataService');
 
 const getTransactions = async (params) => {
 	try {
-		// Always sort transactions by index to always ensure unique entries in the response
-		params.sort = params.sort
-			? params.sort.concat(',', 'index:asc')
-			: 'index:asc';
-
 		const addressParam = [
 			'senderAddress',
 			'recipientAddress',
@@ -54,6 +49,7 @@ const getTransactions = async (params) => {
 
 		const result = await dataService.getTransactions({
 			sort: 'timestamp:desc',
+			order: 'index:asc',
 			...params,
 		});
 
