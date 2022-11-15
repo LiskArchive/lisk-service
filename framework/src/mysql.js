@@ -238,8 +238,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.distinct) {
-			const { column } = params.distinct;
-			query.distinct(column);
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
 		}
 
 		if (params.whereIn) {
@@ -382,12 +382,9 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 				});
 		}
 
-		if (params.sort) {
-			const sortList = params.sort.split(',');
-			sortList.forEach(sort => {
-				const [sortProp] = sort.split(':');
-				query.whereNotNull(sortProp);
-			});
+		if (params.distinct) {
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
 		}
 
 		if (params.whereIn) {
