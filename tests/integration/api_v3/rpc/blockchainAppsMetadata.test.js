@@ -199,6 +199,30 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
+	it('returns list of all default blockchain applications metadata', async () => {
+		const response = await getBlockchainAppsMetadata({ isDefault: true });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+		result.data.forEach(blockchainAppMetadata => expect(blockchainAppMetadata)
+			.toMap(blockchainAppMetadataSchema, { isDefault: true }));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns list of all non-default blockchain applications metadata', async () => {
+		const response = await getBlockchainAppsMetadata({ isDefault: false });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+		result.data.forEach(blockchainAppMetadata => expect(blockchainAppMetadata)
+			.toMap(blockchainAppMetadataSchema, { isDefault: false }));
+		expect(result.meta).toMap(metaSchema);
+	});
+
 	it('invalid request param -> invalid param', async () => {
 		const response = await getBlockchainAppsMetadata({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
