@@ -41,7 +41,6 @@ const parseInputBySchema = (input, schema) => {
 		if (schemaDataType === 'string') return String(input);
 		if (schemaDataType === 'boolean') return Boolean(input);
 		if (schemaDataType === 'bytes') {
-			// TODO: Resolve this
 			if (schema.format === 'lisk32' && input.startsWith('lsk')) {
 				return getAddressFromLisk32Address(input);
 			}

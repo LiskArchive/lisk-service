@@ -353,7 +353,7 @@
         "properties": {
             "isSkipVerify": {
                 "type": "boolean",
-                "description": "A boolean indicator to skip transaction verification",
+                "description": "A boolean indicator to skip transaction verification. False by default",
                 "example": "false"
             },
             "transaction": {
