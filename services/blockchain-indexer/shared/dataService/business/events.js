@@ -58,7 +58,7 @@ const getEventsByHeight = async (height) => {
 	return parseToJSONCompatObj(events);
 };
 
-const getEventFromCache = async (height) => {
+const getEventsFromCache = async (height) => {
 	const event = await eventCache.get(height);
 	if (!event) {
 		const eventFromNode = await getEventsByHeight(height);
@@ -146,8 +146,8 @@ const getEvents = async (params) => {
 				if (eventStr) event = JSON.parse(eventStr);
 			}
 			if (!event) {
-				const eventFromCache = await getEventFromCache(height);
-				event = eventFromCache.find(entry => entry.index === index);
+				const eventsFromCache = await getEventsFromCache(height);
+				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
 			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
