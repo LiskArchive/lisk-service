@@ -198,7 +198,7 @@ describe('Test MySQL', () => {
 		});
 
 		it('Distinct query', async () => {
-			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: '5683515590859200000' }]);
+			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: emptyBlock.id }]);
 			const result = await testTable.find();
 			const distinctResult = await testTable.find({ distinct: 'id' }, 'id');
 			expect(result.length).toBeGreaterThan(distinctResult.length);
@@ -370,7 +370,7 @@ describe('Test MySQL', () => {
 		it('Distinct query', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: '5683515590859200000' }], trx);
+			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: emptyBlock.id }], trx);
 			await commitDbTransaction(trx);
 			const result = await testTable.find();
 			const distinctResult = await testTable.find({ distinct: 'id' }, 'id');
