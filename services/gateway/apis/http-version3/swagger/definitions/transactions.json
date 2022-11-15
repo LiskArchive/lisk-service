@@ -353,12 +353,13 @@
         "properties": {
             "isSkipVerify": {
                 "type": "boolean",
-                "description": "A boolean indicator to skip transaction verification. False by default",
-                "example": "false"
+                "description": "A boolean indicator to skip transaction verification.",
+                "example": "false",
+                "default": false
             },
             "transaction": {
                 "type": "object",
-                "description": "An object containing transaction information or a binary payload",
+                "description": "Binary payload or the transaction object.",
                 "properties": {
                     "module": {
                         "type": "string",

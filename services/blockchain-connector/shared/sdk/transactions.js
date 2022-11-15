@@ -47,12 +47,9 @@ const getTransactionsFromPoolDecoded = async () => {
 
 const dryRunTransactionWrapper = async (params) => {
 	const { transaction, isSkipVerify } = params;
-
-	const encodedTransaction = typeof transaction === 'object' ? encodeTransaction(transaction) : transaction;
-
-	if (!encodedTransaction) {
-		throw new InvalidParamsException('Invalid transaction parameter');
-	}
+	const encodedTransaction = typeof transaction === 'object' 
+		? encodeTransaction(transaction)
+		: transaction;
 
 	return dryRunTransaction({ transaction: encodedTransaction, skipVerify: isSkipVerify });
 };

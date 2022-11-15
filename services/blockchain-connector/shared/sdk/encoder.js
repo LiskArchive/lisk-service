@@ -38,16 +38,16 @@ const encodeTransaction = (transaction) => {
 	try {
 		validator.validate(txParamsSchema, parsedTxParams);
 	} catch (err) {
-		logger.error(`Transaction parameter schema validation failed.\nError:${err}`);
-		return null;
+		logger.warn(`Transaction params schema validation failed.\nError:${err}`);
+		throw new InvalidParamsException(err);
 	}
 	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
 
 	try {
 		validator.validate(txSchema, { ...parsedTx, params: txParamsBuffer });
 	} catch (err) {
-		logger.error(`Transaction schema validation failed.\nError:${err}`);
-		return null;
+		logger.warn(`Transaction schema validation failed.\nError:${err}`);
+		throw new InvalidParamsException(err);
 	}
 
 	const txBuffer = codec.encode(

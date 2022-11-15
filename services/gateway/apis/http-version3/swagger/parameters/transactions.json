@@ -19,7 +19,7 @@
         "name": "body",
         "in": "body",
         "required": true,
-        "description": "The request body can contain two property:\n- transaction (required): An object containing transaction information or a binary payload\n- isSkipVerify (optional): A boolean indicator to skip tranaction verification",
+        "description": "The request body can contain two properties:\n- transaction (required): Binary payload or a transaction object\n- isSkipVerify (optional, default: false): A boolean indicator to skip the transaction verification",
         "schema": {
             "$ref": "#/definitions/dryrunTransactionParamEnvelope"
         }
