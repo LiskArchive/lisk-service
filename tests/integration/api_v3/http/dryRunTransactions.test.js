@@ -17,7 +17,10 @@ jest.setTimeout(30000);
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { TRANSACTION_OBJECT_VALID, TRANSACTION_OBJECT_INVALID, TRANSACTION_ENCODED_VALID } = require('../constants/dryRunTransactions');
+const {
+	TRANSACTION_OBJECT_VALID,
+	TRANSACTION_OBJECT_INVALID,
+	TRANSACTION_ENCODED_VALID } = require('../constants/dryRunTransactions');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -90,7 +93,7 @@ describe('Post dryrun transactions API', () => {
 		expect(firstResponse.meta).toMap(metaSchema);
 
 		// Send transaction and wait for it to be included in the next block
-		const responsez = await api.post(
+		await api.post(
 			postTransactionEndpoint,
 			{ transaction: TRANSACTION_ENCODED_VALID },
 		);

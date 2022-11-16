@@ -228,7 +228,7 @@
                         "type": "string",
                         "format": "publicKey",
                         "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key."
+                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
                     },
                     "name": {
                         "type": "string",
@@ -263,7 +263,7 @@
                                 "type": "string",
                                 "format": "publicKey",
                                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key."
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
                             }
                         }
                     },
@@ -384,17 +384,17 @@
                         "type": "string",
                         "format": "senderPublicKey",
                         "example": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
-                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
                     },
                     "signatures": {
                         "type": "string",
                         "example": [
                             "48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
                         ],
-                        "description": "An array representing singature(s) of the transaction sender."
+                        "description": "An array representing signature(s) of the transaction sender."
                     },
                     "params": {
-                        "type":"object",
+                        "type": "object",
                         "properties": {
                             "recipientAddress": {
                                 "type": "string",
@@ -416,7 +416,7 @@
                                 "example": "Token transfer tx",
                                 "description": "Transaction data."
                             },
-                            "accountInitializationFee":{
+                            "accountInitializationFee": {
                                 "type": "string",
                                 "example": "5000000",
                                 "description": "Account initialization fee."

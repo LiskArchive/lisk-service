@@ -16,7 +16,11 @@
 jest.setTimeout(30000);
 
 const config = require('../../../config');
-const { TRANSACTION_OBJECT_VALID, TRANSACTION_OBJECT_INVALID, TRANSACTION_ENCODED_VALID } = require('../constants/dryRunTransactions');
+const {
+	TRANSACTION_OBJECT_VALID,
+	TRANSACTION_OBJECT_INVALID,
+	TRANSACTION_ENCODED_VALID,
+} = require('../constants/dryRunTransactions');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
