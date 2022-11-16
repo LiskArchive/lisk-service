@@ -20,7 +20,8 @@ const { api } = require('../../../helpers/api');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_INVALID,
-	TRANSACTION_ENCODED_VALID } = require('../constants/transactionsDryRun');
+	TRANSACTION_ENCODED_VALID,
+} = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
 const {

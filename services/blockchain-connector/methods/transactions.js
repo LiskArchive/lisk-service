@@ -52,10 +52,10 @@ module.exports = [
 		name: 'dryRunTransaction',
 		controller: async ({
 			transaction,
-			isSkipVerify }) => dryRunTransaction({ transaction, isSkipVerify }),
+			skipVerify }) => dryRunTransaction({ transaction, skipVerify }),
 		params: {
 			transaction: { optional: false, type: 'any' },
-			isSkipVerify: { optional: true, type: 'boolean', default: false },
+			skipVerify: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];
