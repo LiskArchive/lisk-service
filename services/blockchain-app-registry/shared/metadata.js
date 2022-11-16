@@ -143,7 +143,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	}
 
 	const limit = params.limit * config.supportedNetworks.length;
-	if (!('isDefault' in params) || params.isDefault) {
+	if (params.isDefault !== false) {
 		const defaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: true },
 			['network', 'appDirName'],
@@ -151,7 +151,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		blockchainAppsMetadata.data = defaultApps;
 	}
 
-	if (!params.isDefault && blockchainAppsMetadata.data.length < params.limit) {
+	if (params.isDefault !== true && blockchainAppsMetadata.data.length < params.limit) {
 		const nonDefaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: false },
 			['network', 'appDirName'],
