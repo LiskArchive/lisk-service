@@ -40,4 +40,5 @@ module.exports = {
 		},
 	},
 	executionStatus: '=,string',
+	index: '=,number',
 };

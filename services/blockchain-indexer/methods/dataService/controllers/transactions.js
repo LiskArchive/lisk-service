@@ -49,7 +49,6 @@ const getTransactions = async (params) => {
 
 		const result = await dataService.getTransactions({
 			sort: 'timestamp:desc',
-			order: 'index:asc',
 			...params,
 		});
 

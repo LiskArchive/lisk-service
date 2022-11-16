@@ -112,7 +112,7 @@ const getTransactions = async params => {
 	const total = await transactionsTable.count(params);
 	const resultSet = await transactionsTable.find(
 		{ ...params, limit: params.limit || total },
-		['id', 'timestamp', 'height', 'blockID', 'executionStatus'],
+		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index'],
 	);
 	params.ids = resultSet.map(row => row.id);
 
@@ -170,6 +170,7 @@ const getTransactions = async params => {
 			};
 
 			transaction.executionStatus = indexedTxInfo.executionStatus;
+			transaction.index = indexedTxInfo.index;
 
 			return transaction;
 		},

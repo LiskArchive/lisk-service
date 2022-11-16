@@ -276,6 +276,10 @@
             "executionStatus": {
                 "type": "string",
                 "example": "success"
+            },
+            "index": {
+                "type": "integer",
+                "example": 0
             }
         }
     },
