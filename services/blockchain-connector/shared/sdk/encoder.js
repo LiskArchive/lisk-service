@@ -14,6 +14,11 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
+const { validator } = require('@liskhq/lisk-validator');
+const {
+	Logger,
+	Exceptions: { InvalidParamsException },
+} = require('lisk-service-framework');
 
 const { parseInputBySchema } = require('../utils/parser');
 const {
@@ -25,14 +30,31 @@ const {
 	getTransactionParamsSchema,
 } = require('./schema');
 
+const logger = Logger();
+
 const encodeTransaction = (transaction) => {
 	// Handle the transaction params
 	const txParamsSchema = getTransactionParamsSchema(transaction);
+	const txSchema = getTransactionSchema();
+
 	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
+	const parsedTx = parseInputBySchema(transaction, txSchema);
+
+	try {
+		validator.validate(txParamsSchema, parsedTxParams);
+	} catch (err) {
+		logger.warn(`Transaction params schema validation failed.\nError:${err}`);
+		throw new InvalidParamsException(err);
+	}
 	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
 
-	const txSchema = getTransactionSchema();
-	const parsedTx = parseInputBySchema(transaction, txSchema);
+	try {
+		validator.validate(txSchema, { ...parsedTx, params: txParamsBuffer });
+	} catch (err) {
+		logger.warn(`Transaction schema validation failed.\nError:${err}`);
+		throw new InvalidParamsException(err);
+	}
+
 	const txBuffer = codec.encode(
 		txSchema,
 		{ ...parsedTx, params: txParamsBuffer },

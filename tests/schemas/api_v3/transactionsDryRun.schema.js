@@ -21,9 +21,9 @@ const event = {
 	data: Joi.object().required(),
 	index: Joi.number().integer().min(0).required(),
 	module: Joi.string().pattern(regex.MODULE).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
-	height: Joi.number().positive().required(),
+	height: Joi.number().integer().min(0).required(),
 };
 
 const dryrunTransactionResponseSchema = {
@@ -31,21 +31,13 @@ const dryrunTransactionResponseSchema = {
 	events: Joi.array().items(Joi.object(event).optional()).required(),
 };
 
-const metaParams = {
-	transaction: Joi.string().pattern(regex.HEX).required(),
-};
-
-const metaSchema = {
-	params: Joi.object(metaParams).required(),
-};
-
 const goodRequestSchema = {
 	data: Joi.object(dryrunTransactionResponseSchema).required(),
-	meta: Joi.object(metaSchema).required(),
+	meta: Joi.object().required(),
 };
 
 module.exports = {
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 	dryrunTransactionResponseSchema: Joi.object(dryrunTransactionResponseSchema).required(),
-	metaSchema: Joi.object(metaSchema).required(),
+	metaSchema: Joi.object().required(),
 };

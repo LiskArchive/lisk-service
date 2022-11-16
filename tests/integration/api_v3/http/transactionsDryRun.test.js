@@ -17,7 +17,11 @@ jest.setTimeout(30000);
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { VALID_TRANSACTION, INVALID_TRANSACTION } = require('../constants/dryRunTransactions');
+const {
+	TRANSACTION_OBJECT_VALID,
+	TRANSACTION_OBJECT_INVALID,
+	TRANSACTION_ENCODED_VALID,
+} = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -29,7 +33,7 @@ const {
 	goodRequestSchema,
 	dryrunTransactionResponseSchema,
 	metaSchema,
-} = require('../../../schemas/api_v3/dryrunTransaction.schema');
+} = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -37,10 +41,36 @@ const endpoint = `${baseUrlV3}/transactions/dryrun`;
 const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
-	it('Post dryrun transaction succesfully', async () => {
+	it('Post dryrun transaction succesfully with only transaction object', async () => {
 		const response = await api.post(
 			endpoint,
-			{ transaction: VALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_VALID },
+		);
+
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data.events.length).toBeGreaterThan(0);
+		expect(response.data.success).toBe(true);
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('Post dryrun transaction succesfully with only transaction string', async () => {
+		const response = await api.post(
+			endpoint,
+			{ transaction: TRANSACTION_ENCODED_VALID },
+		);
+
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data.events.length).toBeGreaterThan(0);
+		expect(response.data.success).toBe(true);
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('Post dryrun transaction succesfully with only transaction skipping verification', async () => {
+		const response = await api.post(
+			endpoint,
+			{ transaction: TRANSACTION_OBJECT_VALID, isSkipVerify: true },
 		);
 
 		expect(response).toMap(goodRequestSchema);
@@ -51,12 +81,10 @@ describe('Post dryrun transactions API', () => {
 	});
 
 	it('Returns proper response for duplicate transaction', async () => {
-		const transaction = '0a05746f6b656e12087472616e7366657218062080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a40a79a869fa68e6a407f218c82ccac2b0d92dbe12fb5eafbb0e21e4fcffc7e19d8d9f0db86826e881ab6b39931e0e933dcdaa119cb7cc174f77c5529745159ec05';
-
 		// Check dryrun passes
 		const firstResponse = await api.post(
 			endpoint,
-			{ transaction: VALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_VALID },
 		);
 
 		expect(firstResponse).toMap(goodRequestSchema);
@@ -68,14 +96,14 @@ describe('Post dryrun transactions API', () => {
 		// Send transaction and wait for it to be included in the next block
 		await api.post(
 			postTransactionEndpoint,
-			{ transaction },
+			{ transaction: TRANSACTION_ENCODED_VALID },
 		);
 		await waitMs(15000);
 
 		// Check dry run fails for duplicate transaction
 		const secondResponse = await api.post(
 			endpoint,
-			{ transaction },
+			{ transaction: TRANSACTION_OBJECT_VALID },
 		);
 
 		expect(secondResponse).toMap(goodRequestSchema);
@@ -88,7 +116,7 @@ describe('Post dryrun transactions API', () => {
 	it('Throws error when posting invalid binary transaction', async () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
-			{ transaction: INVALID_TRANSACTION },
+			{ transaction: TRANSACTION_OBJECT_INVALID },
 			500,
 		);
 		expect(dryrunTransaction).toMap(badRequestSchema);
@@ -103,8 +131,8 @@ describe('Post dryrun transactions API', () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
 			{
-				transaction: VALID_TRANSACTION,
-				transactions: INVALID_TRANSACTION,
+				transaction: TRANSACTION_OBJECT_VALID,
+				transactions: TRANSACTION_OBJECT_INVALID,
 			},
 			400,
 		);

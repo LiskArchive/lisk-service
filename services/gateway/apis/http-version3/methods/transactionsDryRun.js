@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dryRunTransactionsSource = require('../../../sources/version3/dryRunTransactions');
+const dryRunTransactionsSource = require('../../../sources/version3/transactionsDryRun');
 const { getSwaggerDescription } = require('../../../shared/utils');
-const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -24,7 +23,24 @@ module.exports = {
 	rpcMethod: 'post.transactions.dryrun',
 	tags: ['Transactions'],
 	params: {
-		transaction: { optional: false, type: 'string', min: 1, pattern: regex.TRANSACTION },
+		transaction: [
+			{ optional: false, type: 'string' },
+			{
+				optional: false,
+				type: 'object',
+				props: {
+					id: { type: 'string' },
+					module: { type: 'string' },
+					command: { type: 'string' },
+					fee: { type: 'string' },
+					nonce: { type: 'string' },
+					senderPublicKey: { type: 'string' },
+					signatures: { type: 'array', items: 'string' },
+					params: { type: 'object' },
+				},
+			},
+		],
+		isSkipVerify: { optional: true, type: 'boolean', default: false },
 	},
 	get schema() {
 		const dryRunTransactionSchema = {};
@@ -35,7 +51,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Dry run transactions.',
 		});
-		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transaction' }];
+		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/dryrunTransaction' }];
 		dryRunTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Dry run transactions',

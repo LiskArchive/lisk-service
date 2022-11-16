@@ -15,6 +15,15 @@
             "$ref": "#/definitions/transactionParamEnvelope"
         }
     },
+    "dryrunTransaction": {
+        "name": "dryrunTransaction",
+        "in": "body",
+        "required": true,
+        "description": "The request body can contain two properties:\n- transaction (required): Binary payload or a transaction object\n- isSkipVerify (optional, default: false): A boolean indicator to skip the transaction verification",
+        "schema": {
+            "$ref": "#/definitions/dryrunTransactionParamEnvelope"
+        }
+    },
     "recipientAddress": {
         "name": "recipientAddress",
         "in": "query",

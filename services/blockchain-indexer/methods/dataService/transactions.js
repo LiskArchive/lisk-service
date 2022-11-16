@@ -64,7 +64,8 @@ module.exports = [
 		name: 'transactions.dryrun',
 		controller: dryRunTransactions,
 		params: {
-			transaction: { optional: false, type: 'string' },
+			transaction: { optional: false, type: 'any' },
+			isSkipVerify: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];

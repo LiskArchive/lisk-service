@@ -17,7 +17,8 @@ module.exports = {
 	type: 'moleculer',
 	method: 'indexer.transactions.dryrun',
 	params: {
-		transaction: '=,string',
+		transaction: '=',
+		isSkipVerify: '=,boolean',
 	},
 	definition: {
 		data: '=',
