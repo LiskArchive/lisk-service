@@ -26,7 +26,7 @@ module.exports = {
 	params: {
 		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV },
-		isDefault: { optional: true, type: 'boolean', convert: false },
+		isDefault: { optional: true, type: 'boolean' },
 		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK_CSV },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
