@@ -23,7 +23,23 @@ module.exports = {
 	rpcMethod: 'post.transactions.dryrun',
 	tags: ['Transactions'],
 	params: {
-		transaction: { optional: false, type: 'any' },
+		transaction: [
+			{ optional: false, type: 'string' },
+			{
+				optional: false,
+				type: 'object',
+				props: {
+					id: { type: 'string' },
+					module: { type: 'string' },
+					command: { type: 'string' },
+					fee: { type: 'string' },
+					nonce: { type: 'string' },
+					senderPublicKey: { type: 'string' },
+					signatures: { type: 'array', items: 'string' },
+					params: { type: 'object' },
+				},
+			},
+		],
 		isSkipVerify: { optional: true, type: 'boolean', default: false },
 	},
 	get schema() {
