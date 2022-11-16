@@ -59,13 +59,13 @@ const getEventsByHeight = async (height) => {
 };
 
 const getEventsFromCache = async (height) => {
-	const event = await eventCache.get(height);
-	if (!event) {
+	const events = await eventCache.get(height);
+	if (!events) {
 		const eventFromNode = await getEventsByHeight(height);
 		await eventCache.set(height, JSON.stringify(eventFromNode));
 		return eventFromNode;
 	}
-	return JSON.parse(event);
+	return JSON.parse(events);
 };
 
 const getEvents = async (params) => {
