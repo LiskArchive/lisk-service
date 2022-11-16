@@ -34,7 +34,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-xdescribe('Method get.transactions', () => {
+describe('Method get.transactions', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
@@ -592,6 +592,46 @@ xdescribe('Method get.transactions', () => {
 				expect(transaction).toMap(transactionSchema);
 				expect(transaction.id).toBe(refTransaction.id);
 				expect(transaction.height).toBe(refTransaction.block.height);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Transactions ordered by index', () => {
+		it('returns 10 transactions ordered by index descending', async () => {
+			const response = await getTransactions({ order: 'index:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = result.data[i];
+					const prevTxIndex = prevTx.index;
+					expect(prevTxIndex).toBeGreaterThanOrEqual(transaction.index);
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions ordered by index ascending', async () => {
+			const response = await getTransactions({ order: 'index:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = result.data[i];
+					const prevTxIndex = prevTx.index;
+					expect(prevTxIndex).toBeLessThanOrEqual(transaction.index);
+				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
