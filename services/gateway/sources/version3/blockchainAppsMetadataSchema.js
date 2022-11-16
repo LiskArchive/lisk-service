@@ -21,6 +21,7 @@ module.exports = {
 	params: {
 		chainName: '=,string',
 		chainID: '=,string',
+		isDefault: '=,boolean',
 		network: '=,string',
 		search: '=,string',
 		offset: '=,number',
