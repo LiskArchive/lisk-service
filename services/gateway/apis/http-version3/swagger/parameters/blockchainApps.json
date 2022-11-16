@@ -35,7 +35,7 @@
         "name": "isDefault",
         "in": "query",
         "description": "Filter default blockchain application.",
-        "type": "string",
+        "type": "boolean",
         "minLength": 1
     },
     "network": {
