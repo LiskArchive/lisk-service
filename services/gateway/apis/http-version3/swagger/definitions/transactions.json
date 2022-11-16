@@ -275,7 +275,13 @@
             },
             "executionStatus": {
                 "type": "string",
-                "example": "success"
+                "example": "success",
+                "description": "Execution status of the transaction."
+            },
+            "index": {
+                "type": "integer",
+                "example": 0,
+                "description": "Transaction index (zero-based) within the block payload."
             }
         }
     },

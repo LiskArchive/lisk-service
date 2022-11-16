@@ -41,6 +41,7 @@ module.exports = [
 			offset: { optional: true, type: 'number' },
 			executionStatus: { optional: true, type: 'string' },
 			sort: { optional: true, type: 'string' },
+			order: { optional: true, type: 'string' },
 		},
 	},
 	{

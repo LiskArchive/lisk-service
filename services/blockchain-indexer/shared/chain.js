@@ -13,32 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const dataService = require('./dataService');
+const regex = require('./regex');
+
+let chainID;
+
+const isMainchain = async () => {
+	if (!chainID) {
+		const networkStatus = (await dataService.getNetworkStatus()).data;
+		chainID = networkStatus.chainID;
+	}
+	return chainID.match(regex.MAINCHAIN);
+};
+
 module.exports = {
-	id: '=,string',
-	moduleCommand: '=,string',
-	nonce: '=,string',
-	fee: '=,string',
-	minFee: '=,string',
-	size: '=,number',
-	sender: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-	},
-	params: '=',
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-		isFinal: '=,boolean',
-	},
-	meta: {
-		recipient: {
-			address: '=,string',
-			publicKey: '=,string',
-			name: '=,string',
-		},
-	},
-	executionStatus: '=,string',
-	index: '=,number',
+	isMainchain,
 };

@@ -60,6 +60,8 @@ const transactionSchema = {
 	block: Joi.object(block).required(),
 	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
 	meta: Joi.object(transactionMetaSchema).optional(),
+	index: Joi.number().integer().min(0).required(),
+	minFee: Joi.string().required(),
 };
 
 const postTransactionSchema = {
