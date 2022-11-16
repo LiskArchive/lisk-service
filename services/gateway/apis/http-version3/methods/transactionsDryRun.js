@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dryRunTransactionsSource = require('../../../sources/version3/dryRunTransactions');
+const dryRunTransactionsSource = require('../../../sources/version3/transactionsDryRun');
 const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {

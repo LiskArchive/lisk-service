@@ -20,7 +20,7 @@ const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_INVALID,
 	TRANSACTION_ENCODED_VALID,
-} = require('../constants/dryRunTransactions');
+} = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -37,7 +37,7 @@ const {
 	dryrunTransactionResponseSchema,
 	goodRequestSchema,
 	metaSchema,
-} = require('../../../schemas/api_v3/dryrunTransaction.schema');
+} = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactions.dryrun', params);

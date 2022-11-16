@@ -364,7 +364,7 @@
                     "module": {
                         "type": "string",
                         "example": "token",
-                        "description": "Blockchain module name related to the transaction."
+                        "description": "Name of the blockchain module associated with the transaction."
                     },
                     "command": {
                         "type": "string",

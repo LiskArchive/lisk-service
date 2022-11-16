@@ -20,7 +20,7 @@ const { api } = require('../../../helpers/api');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_INVALID,
-	TRANSACTION_ENCODED_VALID } = require('../constants/dryRunTransactions');
+	TRANSACTION_ENCODED_VALID } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
 const {
@@ -32,7 +32,7 @@ const {
 	goodRequestSchema,
 	dryrunTransactionResponseSchema,
 	metaSchema,
-} = require('../../../schemas/api_v3/dryrunTransaction.schema');
+} = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

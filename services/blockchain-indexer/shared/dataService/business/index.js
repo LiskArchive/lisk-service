@@ -61,7 +61,7 @@ const {
 
 const {
 	dryRunTransactions,
-} = require('./dryRunTransactions');
+} = require('./transactionsDryRun');
 
 const {
 	getTokens,
