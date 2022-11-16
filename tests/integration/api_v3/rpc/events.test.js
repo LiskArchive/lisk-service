@@ -507,7 +507,8 @@ describe('Method get.events', () => {
 
 	describe('Events ordered by index', () => {
 		it('returns events ordered by index descending', async () => {
-			const response = await getEvents({ order: 'index:desc' });
+			const order = 'index:desc';
+			const response = await getEvents({ order });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -517,10 +518,13 @@ describe('Method get.events', () => {
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
-					const prevEvent = result.data[i];
-					if (event && prevEvent) {
-						const prevEventIndex = prevEvent.index;
-						expect(prevEventIndex).toBeGreaterThanOrEqual(event.index);
+					const prevEvent = result.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
 					}
 				}
 			});
@@ -528,6 +532,7 @@ describe('Method get.events', () => {
 		});
 
 		it('returns eventss ordered by index ascending', async () => {
+			const order = 'index:asc';
 			const response = await getEvents({ order: 'index:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -538,10 +543,13 @@ describe('Method get.events', () => {
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
-					const prevEvent = result.data[i];
-					if (event && prevEvent) {
-						const prevEventIndex = prevEvent.index;
-						expect(prevEventIndex).toBeLessThanOrEqual(event.index);
+					const prevEvent = result.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
 					}
 				}
 			});

@@ -21,8 +21,6 @@ const {
 const dataService = require('../dataService');
 const { requestConnector } = require('../utils/request');
 
-const { isMainchain } = require('../chain');
-
 const config = require('../../config');
 
 const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses');
@@ -30,7 +28,7 @@ const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses')
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 let liskTokenID;
-const LOCAL_ID_LSK = '00000000';
+const TOKEN_ID_LSK_MAINCHAIN = '0000000000000000';
 
 const getTopLSKAddressesIndex = () => getTableInstance(
 	topLSKAddressesIndexSchema.tableName,
@@ -41,7 +39,8 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 const getLiskBalanceByAddress = async (address) => {
 	if (!liskTokenID) {
 		const { chainID } = (await dataService.getNetworkStatus()).data;
-		liskTokenID = chainID.concat(LOCAL_ID_LSK);
+		const chainIDPrefix = chainID.substring(0, 2); // Determine network
+		liskTokenID = chainIDPrefix.concat(TOKEN_ID_LSK_MAINCHAIN.slice(chainIDPrefix.length));
 	}
 
 	const response = await requestConnector(
@@ -56,12 +55,10 @@ const getLiskBalanceByAddress = async (address) => {
 };
 
 const updateLiskBalance = async (job) => {
-	if (await isMainchain()) {
-		const { address } = job.data;
-		const balance = await getLiskBalanceByAddress(address);
-		const topLSKAddressesDB = await getTopLSKAddressesIndex();
-		await topLSKAddressesDB.upsert({ address, balance });
-	}
+	const { address } = job.data;
+	const balance = await getLiskBalanceByAddress(address);
+	const topLSKAddressesDB = await getTopLSKAddressesIndex();
+	await topLSKAddressesDB.upsert({ address, balance });
 };
 
 const updateAddressBalanceQueue = Queue(config.endpoints.cache, 'updateAddressBalanceQueue', updateLiskBalance, 10);

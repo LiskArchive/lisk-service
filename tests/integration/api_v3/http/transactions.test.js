@@ -598,7 +598,8 @@ describe('Transactions API', () => {
 
 	describe('Transactions ordered by index', () => {
 		it('returns 10 transactions ordered by index descending', async () => {
-			const response = await api.get(`${endpoint}?order=index:desc`);
+			const order = 'index:desc';
+			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -606,16 +607,22 @@ describe('Transactions API', () => {
 			response.data.forEach((transaction, i) => {
 				expect(transaction).toMap(transactionSchema);
 				if (i > 0) {
-					const prevTx = response.data[i];
-					const prevTxIndex = prevTx.index;
-					expect(prevTxIndex).toBeGreaterThanOrEqual(transaction.index);
+					const prevTx = response.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns 10 transactions ordered by index ascending', async () => {
-			const response = await api.get(`${endpoint}?order=index:asc`);
+			const order = 'index:asc';
+			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -623,9 +630,14 @@ describe('Transactions API', () => {
 			response.data.forEach((transaction, i) => {
 				expect(transaction).toMap(transactionSchema);
 				if (i > 0) {
-					const prevTx = response.data[i];
-					const prevTxIndex = prevTx.index;
-					expect(prevTxIndex).toBeLessThanOrEqual(transaction.index);
+					const prevTx = response.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
 				}
 			});
 			expect(response.meta).toMap(metaSchema);

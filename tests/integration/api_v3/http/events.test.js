@@ -36,7 +36,7 @@ const endpoint = `${baseUrl}/events`;
 describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
+		const response = await api.get(`${baseUrl}/transactions?limit=1&moduleCommand=token:transfer`);
 		[refTransaction] = response.data;
 	});
 
@@ -578,7 +578,8 @@ describe('Events API', () => {
 
 	describe('Events ordered by index', () => {
 		it('returns events ordered by index descending', async () => {
-			const response = await api.get(`${endpoint}?order=index:desc`);
+			const order = 'index:desc';
+			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -586,10 +587,13 @@ describe('Events API', () => {
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
-					const prevEvent = response.data[i];
-					if (event && prevEvent) {
-						const prevEventIndex = prevEvent.index;
-						expect(prevEventIndex).toBeGreaterThanOrEqual(event.index);
+					const prevEvent = response.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
 					}
 				}
 			});
@@ -597,7 +601,8 @@ describe('Events API', () => {
 		});
 
 		it('returns events ordered by index ascending', async () => {
-			const response = await api.get(`${endpoint}?order=index:asc`);
+			const order = 'index:asc';
+			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -605,10 +610,13 @@ describe('Events API', () => {
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
-					const prevEvent = response.data[i];
-					if (event && prevEvent) {
-						const prevEventTimestamp = prevEvent.index;
-						expect(prevEventTimestamp).toBeLessThanOrEqual(event.index);
+					const prevEvent = response.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
 					}
 				}
 			});
