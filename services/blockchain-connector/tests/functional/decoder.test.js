@@ -16,12 +16,10 @@
 const { ServiceBroker } = require('moleculer');
 
 const {
-	block,
 	blockWithTransaction,
 	decodedBlockWithTransaction,
 	blockWithoutTransaction,
 	decodedBlockWithoutTransaction,
-	encodedBlock,
 	invalidEncodedBlock,
 	invalidEncodedTransaction,
 } = require('../constants/blocks');
@@ -32,8 +30,7 @@ const {
 } = require('../constants/transactions');
 
 const {
-	decodedTransferEventData,
-	transferEventSchema,
+	decodedTransferEvent,
 	transferEventInput,
 } = require('../constants/events');
 
@@ -51,13 +48,13 @@ describe('Functional tests for decoder', () => {
 	afterAll(() => broker.stop());
 
 	it('decode Transaction', async () => {
-		const result = await broker.call('connector.decodeTransactionSerialized', { transaction });
+		const result = await broker.call('connector.decodeTransaction', { transaction });
 		expect(Object.keys(result)).toEqual(Object.keys(decodedTransaction));
 		expect(result).toMatchObject(decodedTransaction);
 	});
 
 	it('decode block with transaction', async () => {
-		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock: blockWithTransaction });
+		const result = await broker.call('connector.decodeBlock', { block: blockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
@@ -74,7 +71,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode block without transactions', async () => {
-		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock: blockWithoutTransaction });
+		const result = await broker.call('connector.decodeBlock', { block: blockWithoutTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
@@ -97,25 +94,24 @@ describe('Functional tests for decoder', () => {
 
 	it('decode event payload for token:transferEvent', async () => {
 		const result = await broker.call('connector.decodeEvent', {
-			encodedEvent: transferEventInput.data,
-			schema: transferEventSchema,
+			event: transferEventInput,
 		});
-		expect(result).toMatchObject(decodedTransferEventData);
+		expect(result).toMatchObject(decodedTransferEvent);
 	});
 
 	it('decode response', async () => {
 		const result = await broker.call('connector.decodeResponse', {
 			endpoint: 'app_getBlockByHeight',
-			response: encodedBlock,
+			response: blockWithTransaction,
 		});
-		expect(result).toMatchObject(block);
+		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
 	it('throws error when decoding invalid encoded transaction', async () => {
-		expect(broker.call('connector.decodeTransactionSerialized', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
+		expect(broker.call('connector.decodeTransaction', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
 	});
 
 	it('throws error when decoding invalid encoded block', async () => {
-		expect(broker.call('connector.decodeBlockSerialized', { encodedBlock: invalidEncodedBlock })).rejects.toThrow();
+		expect(broker.call('connector.decodeBlock', { block: invalidEncodedBlock })).rejects.toThrow();
 	});
 });

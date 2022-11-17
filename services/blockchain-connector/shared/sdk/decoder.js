@@ -66,15 +66,16 @@ const EVENT_TOPICS = {
 };
 
 const decodeTransaction = (transaction) => {
+	// Calculate transaction size
 	const txSchema = getTransactionSchema();
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
 	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
 	const transactionSize = transactionBuffer.length;
 
+	// Calculate transaction min fee
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
 	const nonEmptySignaturesCount = transaction.signatures.filter(s => s).length;
-	// TODO: Verify if 'computeMinFee' returns correct value
 	const transactionMinFee = computeMinFee(
 		{ ...schemaCompliantTransaction, params: transactionParams },
 		txParamsSchema,
@@ -85,6 +86,7 @@ const decodeTransaction = (transaction) => {
 		},
 	);
 
+	// Convert Base32 address to Lisk32 address
 	// TODO: Remove once SDK fixes the address format
 	const formattedtransactionParams = {};
 	Object.entries(transactionParams).forEach(([key, value]) => {
@@ -150,6 +152,7 @@ const decodeBlock = (block) => {
 };
 
 const decodeEvent = (event) => {
+	// Calculate event ID
 	const eventSchema = getEventSchema();
 	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
 	const eventBuffer = codec.encode(eventSchema, schemaCompliantEvent);

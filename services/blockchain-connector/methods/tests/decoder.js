@@ -25,16 +25,16 @@ const { parseToJSONCompatObj } = require('../../shared/utils/parser');
 
 module.exports = [
 	{
-		name: 'decodeBlockSerialized',
+		name: 'decodeBlock',
 		params: {
-			encodedBlock: { optional: false, type: 'object' },
+			block: { optional: false, type: 'object' },
 		},
-		controller: ({ encodedBlock }) => parseToJSONCompatObj(
-			decodeBlock(encodedBlock),
+		controller: ({ block }) => parseToJSONCompatObj(
+			decodeBlock(block),
 		),
 	},
 	{
-		name: 'decodeTransactionSerialized',
+		name: 'decodeTransaction',
 		params: {
 			transaction: { optional: false, type: 'object' },
 		},
@@ -53,16 +53,15 @@ module.exports = [
 	{
 		name: 'decodeEvent',
 		params: {
-			encodedEvent: { optional: false, type: 'string' },
-			schema: { optional: false, type: 'object' },
+			event: { optional: false, type: 'object' },
 		},
-		controller: ({ encodedEvent }) => decodeEvent(encodedEvent),
+		controller: ({ event }) => decodeEvent(event),
 	},
 	{
 		name: 'decodeResponse',
 		params: {
 			endpoint: { optional: false, type: 'string' },
-			response: { optional: false, type: 'string' },
+			response: { optional: false, type: 'object' },
 		},
 		controller: ({ endpoint, response }) => decodeResponse(endpoint, response),
 	},

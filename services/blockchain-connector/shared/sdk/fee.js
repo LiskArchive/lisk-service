@@ -13,12 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-const { getFeeConstants } = require('./endpoints');
+const {
+	Logger,
+	Exceptions: { TimeoutException },
+} = require('lisk-service-framework');
+
+const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
 let minFeePerByte;
+
+const getFeeConstants = async () => {
+	try {
+		// TODO: Update endpoint when available from SDK
+		const response = await invokeEndpoint('');
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getFeeConstants\'.');
+		}
+		throw err;
+	}
+};
 
 const refreshMinFeePerByte = async () => {
 	try {
