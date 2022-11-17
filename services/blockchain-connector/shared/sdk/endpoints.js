@@ -249,6 +249,20 @@ const dryRunTransaction = async (transaction) => {
 	}
 };
 
+// TODO: Update endpoint when available from SDK
+const getFeeConstants = async () => {
+	try {
+		const apiClient = await getApiClient();
+		const response = {} || apiClient._channel.invoke('');
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getGenerators\'.');
+		}
+		throw err;
+	}
+};
+
 const getGenerators = async () => {
 	try {
 		const generators = await invokeEndpoint('chain_getGeneratorList');
@@ -285,5 +299,6 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
+	getFeeConstants,
 	getGenerators,
 };

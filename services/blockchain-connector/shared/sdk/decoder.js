@@ -27,6 +27,7 @@ const {
 
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 const { getLisk32Address } = require('../utils/accountUtils');
+const { getMinFeePerByte } = require('./fee');
 
 // TODO: Remove when SDK exposes topics information in metadata
 const EVENT_TOPICS = {
@@ -72,10 +73,16 @@ const decodeTransaction = (transaction) => {
 
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	const nonEmptySignaturesCount = transaction.signatures.filter(s => s).length;
 	// TODO: Verify if 'computeMinFee' returns correct value
 	const transactionMinFee = computeMinFee(
 		{ ...schemaCompliantTransaction, params: transactionParams },
 		txParamsSchema,
+		{
+			minFeePerByte: getMinFeePerByte() || null,
+			numberOfSignatures: nonEmptySignaturesCount,
+			numberOfEmptySignatures: transaction.signatures.length - nonEmptySignaturesCount,
+		},
 	);
 
 	// TODO: Remove once SDK fixes the address format
