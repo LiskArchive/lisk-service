@@ -27,7 +27,7 @@ module.exports = [
 	{
 		name: 'decodeBlockSerialized',
 		params: {
-			encodedBlock: { optional: false, type: 'string' },
+			encodedBlock: { optional: false, type: 'object' },
 		},
 		controller: ({ encodedBlock }) => parseToJSONCompatObj(
 			decodeBlock(encodedBlock),
@@ -36,10 +36,10 @@ module.exports = [
 	{
 		name: 'decodeTransactionSerialized',
 		params: {
-			encodedTransaction: { optional: false, type: 'string' },
+			transaction: { optional: false, type: 'object' },
 		},
-		controller: ({ encodedTransaction }) => parseToJSONCompatObj(
-			decodeTransaction(encodedTransaction),
+		controller: ({ transaction }) => parseToJSONCompatObj(
+			decodeTransaction(transaction),
 		),
 	},
 	{

@@ -18,15 +18,17 @@ const { ServiceBroker } = require('moleculer');
 const {
 	block,
 	blockWithTransaction,
+	decodedBlockWithTransaction,
+	blockWithoutTransaction,
+	decodedBlockWithoutTransaction,
 	encodedBlock,
 	invalidEncodedBlock,
 	invalidEncodedTransaction,
-	encodedBlockWithTransaction,
 } = require('../constants/blocks');
 
 const {
 	transaction,
-	encodedTransaction,
+	decodedTransaction,
 } = require('../constants/transactions');
 
 const {
@@ -49,13 +51,13 @@ describe('Functional tests for decoder', () => {
 	afterAll(() => broker.stop());
 
 	it('decode Transaction', async () => {
-		const result = await broker.call('connector.decodeTransactionSerialized', { encodedTransaction });
-		expect(Object.keys(result)).toEqual(Object.keys(transaction));
-		expect(result).toMatchObject(transaction);
+		const result = await broker.call('connector.decodeTransactionSerialized', { transaction });
+		expect(Object.keys(result)).toEqual(Object.keys(decodedTransaction));
+		expect(result).toMatchObject(decodedTransaction);
 	});
 
 	it('decode block with transaction', async () => {
-		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock: encodedBlockWithTransaction });
+		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock: blockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
@@ -63,32 +65,34 @@ describe('Functional tests for decoder', () => {
 		});
 
 		expect(result.transactions.length).toBe(1);
-		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
-		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
+		expect(Object.keys(result.header)).toEqual(Object.keys(decodedBlockWithTransaction.header));
+		expect(Object.keys(result.assets[0]))
+			.toEqual(Object.keys(decodedBlockWithTransaction.assets[0]));
 		expect(Object.keys(result.transactions[0]))
-			.toEqual(Object.keys(blockWithTransaction.transactions[0]));
-		expect(result).toMatchObject(blockWithTransaction);
+			.toEqual(Object.keys(decodedBlockWithTransaction.transactions[0]));
+		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
 	it('decode block without transactions', async () => {
-		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock });
+		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock: blockWithoutTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
 			transactions: expect.any(Object),
 		});
-		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
-		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
+		expect(Object.keys(result.header)).toEqual(Object.keys(decodedBlockWithoutTransaction.header));
+		expect(Object.keys(result.assets[0]))
+			.toEqual(Object.keys(decodedBlockWithoutTransaction.assets[0]));
 		expect(result.transactions.length).toBe(0);
-		expect(result).toMatchObject(block);
+		expect(result).toMatchObject(decodedBlockWithoutTransaction);
 	});
 
 	it('decode subscription event payload', async () => {
 		const result = await broker.call('connector.decodeAPIClientEventPayload', {
 			eventName: 'app_newBlock',
-			payload: { block: encodedBlock },
+			payload: { block: blockWithTransaction },
 		});
-		expect(result).toMatchObject(block);
+		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
 	it('decode event payload for token:transferEvent', async () => {
