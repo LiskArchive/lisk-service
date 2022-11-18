@@ -14,7 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const Transactions = require('@liskhq/lisk-transactions');
+// const Transactions = require('@liskhq/lisk-transactions');
 
 const {
 	CacheRedis,
@@ -22,6 +22,7 @@ const {
 	Signals,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+const { getDPoSConstants } = require('./constants');
 const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
@@ -72,11 +73,21 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
+	const { numberActiveDelegates, numberStandbyDelegates } = (await getDPoSConstants()).data;
+	// const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
 	const generatorsList = await getAllGenerators();
-	const activeGeneratorsList = generatorsList.map(generator => generator.address);
+
+	const generatorInfo = (delegateList
+		.filter(o1 => generatorsList.some(o2 => o1.address === o2.address)))
+		.sort((a, b) => Number(b) - Number(a),
+		);
+
+	const activeGeneratorsList = (generatorInfo.slice(0, numberActiveDelegates))
+		.map(acc => acc.address);
+	const standbyGeneratorsList = (generatorInfo.slice(generatorInfo.length - numberStandbyDelegates))
+		.map(acc => acc.address);
 
 	const verifyIfPunished = (delegate) => {
 		const isPunished = delegate.pomHeights
@@ -98,7 +109,8 @@ const computeDelegateStatus = async () => {
 			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = DELEGATE_STATUS.ACTIVE;
-		} else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
+		} else if (standbyGeneratorsList.includes(delegate.address)) {
+			// } else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = DELEGATE_STATUS.STANDBY;
 		}
 		return delegate;
