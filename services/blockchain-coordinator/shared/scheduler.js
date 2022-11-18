@@ -26,7 +26,7 @@ const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
 	// isGenesisAccountsIndexed,
-	// getDelegateAccounts,
+	getDelegateAccounts,
 	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
@@ -47,11 +47,11 @@ const blockIndexQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-// const accountIndexQueue = new MessageQueue(
-// 	config.queue.accounts.name,
-// 	config.endpoints.messageQueue,
-// 	{ defaultJobOptions: config.queue.defaultJobOptions },
-// );
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
@@ -77,12 +77,17 @@ const scheduleBlocksIndexing = async (heights) => {
 	);
 };
 
-// const scheduleDelegateAccountsIndexing = async (addresses) => {
-// 	await Promise.all(addresses
-// 		.map(async (address) => accountIndexQueue.add({ address })),
-// 	);
-// 	logger.info('Finished scheduling of delegate accounts indexing');
-// };
+const scheduleDelegateAccountsIndexing = async (delegates) => {
+	await Promise.all(delegates
+		.map(async (delegate) => accountIndexQueue.add({
+			account: {
+				...delegate,
+				isValidator: true,
+			},
+		})),
+	);
+	logger.info('Finished scheduling of delegate accounts indexing');
+};
 
 // const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 // 	await Promise.all(accountAddressesToIndex
@@ -96,10 +101,10 @@ const initIndexingScheduler = async () => {
 	registeredLiskModules = await getRegisteredModules();
 
 	// Get all delegates and schedule indexing
-	// const delegates = await getDelegateAccounts();
-	// if (Array.isArray(delegates) && delegates.length) {
-	// 	await scheduleDelegateAccountsIndexing(delegates);
-	// }
+	const { delegates } = await getDelegateAccounts();
+	if (Array.isArray(delegates) && delegates.length) {
+		await scheduleDelegateAccountsIndexing(delegates);
+	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
 	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();

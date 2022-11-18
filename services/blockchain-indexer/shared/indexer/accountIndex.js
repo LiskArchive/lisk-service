@@ -160,11 +160,7 @@ const isGenesisAccountsIndexed = async () => {
 	return true;
 };
 
-const getDelegateAccounts = async () => {
-	const allDelegatesInfo = await requestConnector('invokeEndpoint', { endpoint: 'dpos_getAllDelegates' });
-	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
-	return allDelegateAddresses;
-};
+const getDelegateAccounts = async () => requestConnector('getAllDelegates');
 
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
 const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
