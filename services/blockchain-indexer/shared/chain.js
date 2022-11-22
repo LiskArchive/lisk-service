@@ -13,14 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const dataService = require('./dataService');
+const regex = require('./regex');
+
+let chainID;
+
+const isMainchain = async () => {
+	if (!chainID) {
+		const networkStatus = (await dataService.getNetworkStatus()).data;
+		chainID = networkStatus.chainID;
+	}
+	return chainID.match(regex.MAINCHAIN);
+};
+
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.transactions.dryrun',
-	params: {
-		transaction: '=,string',
-	},
-	definition: {
-		data: '=',
-		meta: '=',
-	},
+	isMainchain,
 };

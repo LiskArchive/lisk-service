@@ -93,7 +93,7 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -229,9 +229,20 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			query.orderBy(sortProp, sortOrder);
-			query.whereNotNull(sortProp);
+			const [sortColumn, sortDirection] = params.sort.split(':');
+			query.whereNotNull(sortColumn);
+			query.orderBy(sortColumn, sortDirection);
+		}
+
+		if (params.order) {
+			const [orderColumn, orderDirection] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+			query.groupBy(primaryKey).orderBy(orderColumn, orderDirection);
+		}
+
+		if (params.distinct) {
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
 		}
 
 		if (params.whereIn) {
@@ -377,6 +388,16 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.sort) {
 			const [sortProp] = params.sort.split(':');
 			query.whereNotNull(sortProp);
+		}
+
+		if (params.order) {
+			const [orderColumn] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+		}
+
+		if (params.distinct) {
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
 		}
 
 		if (params.whereIn) {

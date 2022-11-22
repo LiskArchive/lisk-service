@@ -32,8 +32,7 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/transactions`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Transactions API', () => {
+describe('Transactions API', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
@@ -594,6 +593,54 @@ xdescribe('Transactions API', () => {
 				expect(response.data.length).toBe(0);
 				expect(response.meta).toMap(metaSchema);
 			}
+		});
+	});
+
+	describe('Transactions ordered by index', () => {
+		it('returns 10 transactions ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = response.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = response.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });

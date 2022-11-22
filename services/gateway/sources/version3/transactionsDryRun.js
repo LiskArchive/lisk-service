@@ -14,31 +14,14 @@
  *
  */
 module.exports = {
-	id: '=,string',
-	moduleCommand: '=,string',
-	nonce: '=,string',
-	fee: '=,string',
-	minFee: '=,string',
-	size: '=,number',
-	sender: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
+	type: 'moleculer',
+	method: 'indexer.transactions.dryrun',
+	params: {
+		transaction: '=',
+		isSkipVerify: '=,boolean',
 	},
-	params: '=',
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-		isFinal: '=,boolean',
+	definition: {
+		data: '=',
+		meta: '=',
 	},
-	meta: {
-		recipient: {
-			address: '=,string',
-			publicKey: '=,string',
-			name: '=,string',
-		},
-	},
-	executionStatus: '=,string',
-	index: '=,number',
 };

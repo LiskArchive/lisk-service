@@ -27,6 +27,7 @@ module.exports = [
 		params: {
 			chainID: { optional: true, type: 'string' },
 			chainName: { optional: true, type: 'string' },
+			isDefault: { optional: true, type: 'boolean' },
 			network: { optional: true, type: 'string', pattern: regex.NETWORK },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },

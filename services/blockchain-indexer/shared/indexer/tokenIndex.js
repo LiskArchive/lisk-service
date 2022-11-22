@@ -18,6 +18,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
+const dataService = require('../dataService');
 const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
@@ -26,6 +27,9 @@ const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses')
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+let liskTokenID;
+const TOKEN_ID_LSK_MAINNET = '0000000000000000';
+
 const getTopLSKAddressesIndex = () => getTableInstance(
 	topLSKAddressesIndexSchema.tableName,
 	topLSKAddressesIndexSchema,
@@ -33,13 +37,17 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 );
 
 const getLiskBalanceByAddress = async (address) => {
-	const LISK_TOKEN_ID = config.tokens.lisk.id;
+	if (!liskTokenID) {
+		const { chainID } = (await dataService.getNetworkStatus()).data;
+		const chainIDPrefix = chainID.substring(0, 2); // Determine network
+		liskTokenID = chainIDPrefix.concat(TOKEN_ID_LSK_MAINNET.slice(chainIDPrefix.length));
+	}
 
 	const response = await requestConnector(
 		'getTokenBalance',
 		{
 			address,
-			tokenID: LISK_TOKEN_ID,
+			tokenID: liskTokenID,
 		},
 	);
 

@@ -504,4 +504,56 @@ describe('Method get.events', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
+
+	describe('Events ordered by index', () => {
+		it('returns events ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await getEvents({ order });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = result.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
+					}
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns eventss ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await getEvents({ order: 'index:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = result.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
+					}
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
 });

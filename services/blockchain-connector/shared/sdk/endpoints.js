@@ -236,10 +236,10 @@ const postTransaction = async (transaction) => {
 	}
 };
 
-const dryRunTransaction = async (transaction) => {
+const dryRunTransaction = async ({ transaction, skipVerify }) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction });
+		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction, skipVerify });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

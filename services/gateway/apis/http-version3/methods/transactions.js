@@ -46,6 +46,7 @@ module.exports = {
 			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'timestamp:desc',
 		},
+		order: { optional: true, type: 'string', enum: ['index:asc', 'index:desc'], default: 'index:asc' },
 	},
 	get schema() {
 		const transactionSchema = {};

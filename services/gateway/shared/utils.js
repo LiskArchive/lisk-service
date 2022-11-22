@@ -53,6 +53,16 @@ const transformParams = (type, params) => {
 			value = { $ref: '#/parameters/chainIDCSV' };
 		} else if (type === 'blockchainAppsTokensMeta' && paramKey === 'tokenID') {
 			value = { $ref: '#/parameters/tokenIDCSV' };
+		} else if (paramKey === 'order') {
+			value = {
+				name: 'order',
+				in: 'query',
+				description: 'Fields to order results by. The ordering is applied whenever the entries share the same block height',
+				required: false,
+				type: params[paramKey].type,
+				enum: params[paramKey].enum,
+				default: params[paramKey].default,
+			};
 		}
 		data.push(value);
 	});

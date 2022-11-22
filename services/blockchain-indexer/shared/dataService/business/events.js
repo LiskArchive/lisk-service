@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	CacheLRU,
 	Exceptions: { NotFoundException },
 	MySQL: {
 		getTableInstance,
@@ -50,9 +51,21 @@ const getEventTopicsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const eventCache = CacheLRU('events');
+
 const getEventsByHeight = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
+};
+
+const getEventsFromCache = async (height) => {
+	const events = await eventCache.get(height);
+	if (!events) {
+		const eventFromNode = await getEventsByHeight(height);
+		await eventCache.set(height, JSON.stringify(eventFromNode));
+		return eventFromNode;
+	}
+	return JSON.parse(events);
 };
 
 const getEvents = async (params) => {
@@ -112,20 +125,31 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsDB.count(params);
-	// TODO: Returns duplicate `ids`
-	const response = await eventTopicsDB.find(params, ['id']);
+	const total = await eventTopicsDB.count({ ...params, distinct: 'id' });
+
+	const response = await eventTopicsDB.find(
+		{ ...params, distinct: 'id' },
+		['id'],
+	);
 
 	const eventIDs = response.map(entry => entry.id);
 	const eventsInfo = await eventsDB.find(
-		{ whereIn: { property: 'id', values: eventIDs } },
-		['eventStr', 'height'],
+		{ whereIn: { property: 'id', values: eventIDs }, order: params.order },
+		['eventStr', 'height', 'index'],
 	);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
-		async ({ eventStr, height }) => {
-			const event = JSON.parse(eventStr);
+		async ({ eventStr, height, index }) => {
+			let event;
+			if (config.db.isPersistEvents) {
+				if (eventStr) event = JSON.parse(eventStr);
+			}
+			if (!event) {
+				const eventsFromCache = await getEventsFromCache(height);
+				event = eventsFromCache.find(entry => entry.index === index);
+			}
+
 			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
 
 			return parseToJSONCompatObj({
