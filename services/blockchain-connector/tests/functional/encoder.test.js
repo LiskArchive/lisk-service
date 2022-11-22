@@ -16,10 +16,10 @@
 const { ServiceBroker } = require('moleculer');
 
 const {
-	block,
+	blockWithoutTransaction,
 	invalidBlock,
 	blockWithTransaction,
-	encodedBlock,
+	encodedBlockWithoutTransaction,
 	encodedBlockWithTransaction,
 } = require('../constants/blocks');
 
@@ -60,9 +60,9 @@ describe('Functional tests for encoder', () => {
 	});
 
 	it('encode block without transactions', async () => {
-		const result = await broker.call('connector.encodeBlock', { block });
+		const result = await broker.call('connector.encodeBlock', { block: blockWithoutTransaction });
 		expect(typeof result).toBe('string');
-		expect(result).toEqual(encodedBlock);
+		expect(result).toEqual(encodedBlockWithoutTransaction);
 	});
 
 	it('encode event', async () => {
