@@ -85,7 +85,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode subscription event payload', async () => {
-		const result = await broker.call('connector.decodeAPIClientEventPayload', {
+		const result = await broker.call('connector.formatAPIClientEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: blockWithTransaction },
 		});
@@ -100,7 +100,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode response', async () => {
-		const result = await broker.call('connector.decodeResponse', {
+		const result = await broker.call('connector.formatResponse', {
 			endpoint: 'app_getBlockByHeight',
 			response: blockWithTransaction,
 		});

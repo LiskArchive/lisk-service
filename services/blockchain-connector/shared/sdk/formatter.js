@@ -194,7 +194,7 @@ const formatEvent = (event) => {
 	return parseToJSONCompatObj(decodedEvent);
 };
 
-const decodeResponse = (endpoint, response) => {
+const formatResponse = (endpoint, response) => {
 	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(endpoint)) {
 		const decodedBlock = formatBlock(response);
 		return parseToJSONCompatObj(decodedBlock);
@@ -221,7 +221,7 @@ const decodeResponse = (endpoint, response) => {
 	return response;
 };
 
-const decodeAPIClientEventPayload = (eventName, payload) => {
+const formatAPIClientEventPayload = (eventName, payload) => {
 	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
 		const decodedBlock = formatBlock(payload.block);
 		return parseToJSONCompatObj(decodedBlock);
@@ -239,6 +239,6 @@ module.exports = {
 	formatBlock,
 	formatTransaction,
 	formatEvent,
-	decodeResponse,
-	decodeAPIClientEventPayload,
+	formatResponse,
+	formatAPIClientEventPayload,
 };

@@ -18,7 +18,7 @@ const util = require('util');
 const { Logger, Signals } = require('lisk-service-framework');
 
 const { getApiClient } = require('./client');
-const { formatEvent } = require('./decoder');
+const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight } = require('./endpoints');
 
 const logger = Logger();

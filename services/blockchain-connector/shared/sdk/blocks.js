@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { formatBlock } = require('./decoder');
+const { formatBlock } = require('./formatter');
 const {
 	getLastBlock,
 	getBlockByHeight,

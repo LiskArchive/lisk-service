@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { formatTransaction } = require('./decoder');
+const { formatTransaction } = require('./formatter');
 const { encodeTransaction } = require('./encoder');
 const {
 	getTransactionByID,
