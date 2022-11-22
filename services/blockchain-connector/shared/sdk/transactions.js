@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { decodeTransaction } = require('./decoder');
+const { formatTransaction } = require('./decoder');
 const { encodeTransaction } = require('./encoder');
 const {
 	getTransactionByID,
@@ -25,19 +25,19 @@ const {
 
 const getTransactionByIDDecoded = async (id) => {
 	const transaction = await getTransactionByID(id);
-	const decodedTransaction = decodeTransaction(transaction);
+	const decodedTransaction = formatTransaction(transaction);
 	return decodedTransaction;
 };
 
 const getTransactionsByIDsDecoded = async (ids) => {
 	const transactions = await getTransactionsByIDs(ids);
-	const decodedTransactions = transactions.map((t) => decodeTransaction(t));
+	const decodedTransactions = transactions.map((t) => formatTransaction(t));
 	return decodedTransactions;
 };
 
 const getTransactionsFromPoolDecoded = async () => {
 	const transactions = await getTransactionsFromPool();
-	const decodedTransactions = transactions.map((t) => decodeTransaction(t));
+	const decodedTransactions = transactions.map((t) => formatTransaction(t));
 	return decodedTransactions;
 };
 

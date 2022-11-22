@@ -65,7 +65,7 @@ const EVENT_TOPICS = {
 	blsKeyRegistration: ['address'],
 };
 
-const decodeTransaction = (transaction) => {
+const formatTransaction = (transaction) => {
 	// Calculate transaction size
 	const txSchema = getTransactionSchema();
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
@@ -123,7 +123,7 @@ const decodeTransaction = (transaction) => {
 	return parseToJSONCompatObj(decodedTransaction);
 };
 
-const decodeBlock = (block) => {
+const formatBlock = (block) => {
 	const blockHeader = block.header;
 
 	const blockAssets = block.assets.map(asset => {
@@ -141,7 +141,7 @@ const decodeBlock = (block) => {
 		return decodedBlockAsset;
 	});
 
-	const blockTransactions = block.transactions.map(t => decodeTransaction(t));
+	const blockTransactions = block.transactions.map(t => formatTransaction(t));
 
 	const decodedBlock = {
 		header: blockHeader,
@@ -151,7 +151,7 @@ const decodeBlock = (block) => {
 	return parseToJSONCompatObj(decodedBlock);
 };
 
-const decodeEvent = (event) => {
+const formatEvent = (event) => {
 	// Calculate event ID
 	const eventSchema = getEventSchema();
 	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
@@ -196,25 +196,25 @@ const decodeEvent = (event) => {
 
 const decodeResponse = (endpoint, response) => {
 	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(endpoint)) {
-		const decodedBlock = decodeBlock(response);
+		const decodedBlock = formatBlock(response);
 		return parseToJSONCompatObj(decodedBlock);
 	}
 
 	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(endpoint)) {
 		return response.map(block => {
-			const decodedBlock = decodeBlock(block);
+			const decodedBlock = formatBlock(block);
 			return parseToJSONCompatObj(decodedBlock);
 		});
 	}
 
 	if (['app_getTransactionByID'].includes(endpoint)) {
-		const decodedTransaction = decodeTransaction(response);
+		const decodedTransaction = formatTransaction(response);
 		return parseToJSONCompatObj(decodedTransaction);
 	}
 
 	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(endpoint)) {
 		return response.map(transaction => {
-			const decodedTransaction = decodeTransaction(transaction);
+			const decodedTransaction = formatTransaction(transaction);
 			return parseToJSONCompatObj(decodedTransaction);
 		});
 	}
@@ -223,12 +223,12 @@ const decodeResponse = (endpoint, response) => {
 
 const decodeAPIClientEventPayload = (eventName, payload) => {
 	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
-		const decodedBlock = decodeBlock(payload.block);
+		const decodedBlock = formatBlock(payload.block);
 		return parseToJSONCompatObj(decodedBlock);
 	}
 
 	if (eventName === 'app_newTransaction') {
-		const decodedTransaction = decodeTransaction(payload.transaction);
+		const decodedTransaction = formatTransaction(payload.transaction);
 		return parseToJSONCompatObj(decodedTransaction);
 	}
 
@@ -236,9 +236,9 @@ const decodeAPIClientEventPayload = (eventName, payload) => {
 };
 
 module.exports = {
-	decodeBlock,
-	decodeTransaction,
-	decodeEvent,
+	formatBlock,
+	formatTransaction,
+	formatEvent,
 	decodeResponse,
 	decodeAPIClientEventPayload,
 };

@@ -18,7 +18,7 @@ const util = require('util');
 const { Logger, Signals } = require('lisk-service-framework');
 
 const { getApiClient } = require('./client');
-const { decodeEvent } = require('./decoder');
+const { formatEvent } = require('./decoder');
 const { getRegisteredEvents, getEventsByHeight } = require('./endpoints');
 
 const logger = Logger();
@@ -55,7 +55,7 @@ const subscribeToAllRegisteredEvents = async () => {
 
 const getEventsByHeightDecoded = async (height) => {
 	const chainEvents = await getEventsByHeight(height);
-	const decodedEvents = chainEvents.map((event) => decodeEvent(event));
+	const decodedEvents = chainEvents.map((event) => formatEvent(event));
 	return decodedEvents;
 };
 

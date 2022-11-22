@@ -14,32 +14,32 @@
  *
  */
 const {
-	decodeBlock,
-	decodeTransaction,
+	formatBlock,
+	formatTransaction,
 	decodeAPIClientEventPayload,
 	decodeResponse,
-	decodeEvent,
+	formatEvent,
 } = require('../../shared/sdk/decoder');
 
 const { parseToJSONCompatObj } = require('../../shared/utils/parser');
 
 module.exports = [
 	{
-		name: 'decodeBlock',
+		name: 'formatBlock',
 		params: {
 			block: { optional: false, type: 'object' },
 		},
 		controller: ({ block }) => parseToJSONCompatObj(
-			decodeBlock(block),
+			formatBlock(block),
 		),
 	},
 	{
-		name: 'decodeTransaction',
+		name: 'formatTransaction',
 		params: {
 			transaction: { optional: false, type: 'object' },
 		},
 		controller: ({ transaction }) => parseToJSONCompatObj(
-			decodeTransaction(transaction),
+			formatTransaction(transaction),
 		),
 	},
 	{
@@ -51,11 +51,11 @@ module.exports = [
 		controller: ({ eventName, payload }) => decodeAPIClientEventPayload(eventName, payload),
 	},
 	{
-		name: 'decodeEvent',
+		name: 'formatEvent',
 		params: {
 			event: { optional: false, type: 'object' },
 		},
-		controller: ({ event }) => decodeEvent(event),
+		controller: ({ event }) => formatEvent(event),
 	},
 	{
 		name: 'decodeResponse',

@@ -48,13 +48,13 @@ describe('Functional tests for decoder', () => {
 	afterAll(() => broker.stop());
 
 	it('decode Transaction', async () => {
-		const result = await broker.call('connector.decodeTransaction', { transaction });
+		const result = await broker.call('connector.formatTransaction', { transaction });
 		expect(Object.keys(result)).toEqual(Object.keys(decodedTransaction));
 		expect(result).toMatchObject(decodedTransaction);
 	});
 
 	it('decode block with transaction', async () => {
-		const result = await broker.call('connector.decodeBlock', { block: blockWithTransaction });
+		const result = await broker.call('connector.formatBlock', { block: blockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
@@ -71,7 +71,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode block without transactions', async () => {
-		const result = await broker.call('connector.decodeBlock', { block: blockWithoutTransaction });
+		const result = await broker.call('connector.formatBlock', { block: blockWithoutTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
@@ -93,7 +93,7 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode event payload for token:transferEvent', async () => {
-		const result = await broker.call('connector.decodeEvent', {
+		const result = await broker.call('connector.formatEvent', {
 			event: transferEventInput,
 		});
 		expect(result).toMatchObject(decodedTransferEvent);
@@ -108,10 +108,10 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('throws error when decoding invalid encoded transaction', async () => {
-		expect(broker.call('connector.decodeTransaction', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
+		expect(broker.call('connector.formatTransaction', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
 	});
 
 	it('throws error when decoding invalid encoded block', async () => {
-		expect(broker.call('connector.decodeBlock', { block: invalidEncodedBlock })).rejects.toThrow();
+		expect(broker.call('connector.formatBlock', { block: invalidEncodedBlock })).rejects.toThrow();
 	});
 });

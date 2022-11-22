@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { decodeBlock } = require('./decoder');
+const { formatBlock } = require('./decoder');
 const {
 	getLastBlock,
 	getBlockByHeight,
@@ -24,31 +24,31 @@ const {
 
 const getLastBlockDecoded = async () => {
 	const block = await getLastBlock();
-	const decodedBlock = decodeBlock(block);
+	const decodedBlock = formatBlock(block);
 	return decodedBlock;
 };
 
 const getBlockByHeightDecoded = async (height) => {
 	const block = await getBlockByHeight(height);
-	const decodedBlock = decodeBlock(block);
+	const decodedBlock = formatBlock(block);
 	return decodedBlock;
 };
 
 const getBlocksByHeightBetweenDecoded = async ({ from, to }) => {
 	const blocks = await getBlocksByHeightBetween({ from, to });
-	const decodedBlocks = blocks.map(b => decodeBlock(b));
+	const decodedBlocks = blocks.map(b => formatBlock(b));
 	return decodedBlocks;
 };
 
 const getBlockByIDDecoded = async (id) => {
 	const block = await getBlockByID(id);
-	const decodedBlock = decodeBlock(block);
+	const decodedBlock = formatBlock(block);
 	return decodedBlock;
 };
 
 const getBlocksByIDsDecoded = async (ids) => {
 	const blocks = await getBlocksByIDs(ids);
-	const decodedBlocks = blocks.map(b => decodeBlock(b));
+	const decodedBlocks = blocks.map(b => formatBlock(b));
 	return decodedBlocks;
 };
 
