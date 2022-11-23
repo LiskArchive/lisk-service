@@ -35,9 +35,8 @@ const blockchainAppSchema = {
 	chainID: Joi.number().integer().min(1).required(),
 	state: Joi.string().valid(...validStatuses).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	isDefault: Joi.boolean().required(),
-	lastCertificateHeight: Joi.string().required(),
-	lastUpdated: Joi.string().required(),
+	lastCertificateHeight: Joi.number().integer().min(0).required(),
+	lastUpdated: Joi.number().integer().positive().required(),
 };
 
 module.exports = {
