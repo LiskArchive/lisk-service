@@ -29,7 +29,7 @@
                 "format": "id",
                 "minLength": 8,
                 "maxLength": 8,
-                "example": "10000000",
+                "example": "00000000",
                 "description": "Chain ID of the blockchain application"
             },
             "state": {

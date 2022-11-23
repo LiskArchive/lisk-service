@@ -24,7 +24,7 @@
                     },
                     "chainID": {
                         "type": "string",
-                        "example": "10000000",
+                        "example": "00000000",
                         "description": "Chain ID of the blockchain application"
                     },
                     "lastBlockID": {

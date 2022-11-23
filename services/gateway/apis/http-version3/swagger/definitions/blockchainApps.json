@@ -5,8 +5,7 @@
             "name",
             "chainID",
             "state",
-            "address",
-            "isDefault"
+            "address"
         ],
         "properties": {
             "name": {
@@ -18,7 +17,7 @@
                 "type": "string",
                 "format": "id",
                 "minLength": 1,
-                "example": "10000000",
+                "example": "00000000",
                 "description": "Chain ID of the blockchain application"
             },
             "state": {
@@ -31,10 +30,6 @@
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
                 "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
-            },
-            "isDefault": {
-                "type": "boolean",
-                "example": "true"
             },
             "lastCertificateHeight": {
                 "type": "integer",
@@ -128,8 +123,8 @@
             },
             "chainID": {
                 "type": "string",
-                "example": "00000001",
-                "description": "Chain ID as registered on the network"
+                "example": "00000000",
+                "description": "Chain ID of the blockchain application"
             },
             "networkType": {
                 "type": "string",
@@ -178,8 +173,8 @@
             },
             "chainID": {
                 "type": "string",
-                "example": "00000001",
-                "description": "Chain ID as registered on the network"
+                "example": "00000000",
+                "description": "Chain ID of the blockchain application"
             },
             "title": {
                 "type": "string",
@@ -323,8 +318,8 @@
         "properties": {
             "chainID": {
                 "type": "string",
-                "example": "00000001",
-                "description": "Chain ID as registered on the network"
+                "example": "00000000",
+                "description": "Chain ID of the blockchain application"
             },
             "chainName": {
                 "type": "string",
