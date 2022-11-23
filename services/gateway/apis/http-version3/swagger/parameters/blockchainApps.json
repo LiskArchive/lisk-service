@@ -24,12 +24,13 @@
         "format": "id",
         "minLength": 8
     },
-    "state": {
+    "blockchainAppState": {
         "name": "state",
         "in": "query",
         "description": "State of the blockchain application.",
         "type": "string",
-        "minLength": 1
+        "enum": ["registered", "active", "terminated"],
+        "default": "active"
     },
     "isDefault": {
         "name": "isDefault",
