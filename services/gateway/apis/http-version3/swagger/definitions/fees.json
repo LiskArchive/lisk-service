@@ -38,7 +38,7 @@
                     },
                     "minFeePerByte": {
                         "type": "integer",
-                        "example": 1000000000
+                        "example": 1000
                     }
                 }
             },
