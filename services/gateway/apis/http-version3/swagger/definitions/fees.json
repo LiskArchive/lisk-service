@@ -12,34 +12,29 @@
                 "properties": {
                     "feeEstimatePerByte": {
                         "type": "object",
-                        "description": "Estimated fees per byte based on priority",
+                        "description": "Estimated fees per byte based on priority.",
                         "properties": {
                             "low": {
                                 "type": "integer",
-                                "description": "low estimated fees",
+                                "description": "low estimated fees.",
                                 "example": 0
                             },
                             "medium": {
                                 "type": "integer",
-                                "description": "medium estimated fees",
+                                "description": "medium estimated fees.",
                                 "example": 1000
                             },
                             "high": {
                                 "type": "integer",
-                                "description": "high estimated fees",
+                                "description": "high estimated fees.",
                                 "example": 2000
                             }
                         }
                     },
-                    "baseFeeByName": {
-                        "type": "object",
-                        "properties": {
-                            "5:0": {
-                                "type": "string",
-                                "description": "Base fees for specified moduleCommandName",
-                                "example": 1000000000
-                            }
-                        }
+                    "feeTokenID": {
+                        "type": "string",
+                        "description": "ID of the token used to pay transaction fee.",
+                        "example": "0000000000000000"
                     },
                     "minFeePerByte": {
                         "type": "integer",
@@ -58,17 +53,17 @@
                     "lastUpdate": {
                         "type": "string",
                         "example": "1616008148",
-                        "description": "Timestamp of the block for which the estimates were last calculated"
+                        "description": "Timestamp of the block for which the estimates were last calculated."
                     },
                     "lastBlockHeight": {
                         "type": "integer",
                         "example": 25,
-                        "description": "Height of the block for which the estimates were last calculated"
+                        "description": "Height of the block for which the estimates were last calculated."
                     },
                     "lastBlockID": {
                         "type": "string",
                         "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "ID of the block for which the estimates were last calculated"
+                        "description": "ID of the block for which the estimates were last calculated."
                     }
                 }
             }
