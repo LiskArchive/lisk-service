@@ -113,7 +113,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 	return result;
 };
 
-const isFeeCalculationRunning = async (cacheKey) => executionStatus[cacheKey];
+const isFeeCalculationRunning = (cacheKey) => executionStatus[cacheKey];
 
 module.exports = {
 	checkAndProcessExecution,
