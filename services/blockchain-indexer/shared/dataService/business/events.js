@@ -125,8 +125,6 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsTable.count({ ...params, distinct: 'eventID' });
-
 	const response = await eventTopicsTable.find(
 		{ ...params, distinct: 'eventID' },
 		['eventID'],
@@ -162,6 +160,8 @@ const getEvents = async (params) => {
 		},
 		{ concurrency: eventsInfo.length },
 	);
+
+	const total = await eventTopicsTable.count({ ...params, distinct: 'eventID' });
 
 	events.meta = {
 		count: events.data.length,
