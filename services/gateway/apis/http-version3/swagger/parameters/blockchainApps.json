@@ -32,13 +32,6 @@
         "enum": ["registered", "active", "terminated"],
         "default": "active"
     },
-    "isDefault": {
-        "name": "isDefault",
-        "in": "query",
-        "description": "Filter default blockchain application.",
-        "type": "boolean",
-        "minLength": 1
-    },
     "network": {
         "name": "network",
         "in": "query",
