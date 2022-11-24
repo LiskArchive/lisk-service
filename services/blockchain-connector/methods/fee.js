@@ -13,23 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('./utils/request');
+const {
+	getFeeConstants,
+} = require('../shared/sdk');
 
-let networkFees;
-
-const setNetworkFeeConstants = async () => {
-	if (!networkFees) {
-		networkFees = await requestConnector('getFeeConstants');
-	}
-};
-
-const getNetworkFeeConstants = () => networkFees;
-
-const init = async () => {
-	await setNetworkFeeConstants();
-};
-
-module.exports = {
-	init,
-	getNetworkFeeConstants,
-};
+module.exports = [
+	{
+		name: 'getFeeConstants',
+		controller: async () => getFeeConstants(),
+		params: {},
+	},
+];

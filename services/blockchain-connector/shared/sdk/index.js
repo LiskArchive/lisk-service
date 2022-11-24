@@ -79,6 +79,11 @@ const { getEventsByHeight } = require('./events');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
 
+const {
+	getFeeConstants,
+	refreshFeeConstants,
+} = require('./fee');
+
 const init = async () => {
 	await refreshNetworkStatus();
 
@@ -88,6 +93,8 @@ const init = async () => {
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
+
+	await refreshFeeConstants();
 
 	// Register listener to update the nodeInfo cache only when it updates
 	const updateNodeInfoCacheListener = getNodeInfo.bind(null, true);
@@ -111,6 +118,8 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
+
+	getFeeConstants,
 
 	getGenesisHeight,
 	getGenesisBlockID,
