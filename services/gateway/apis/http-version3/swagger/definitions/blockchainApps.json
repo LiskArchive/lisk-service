@@ -18,7 +18,7 @@
                 "format": "id",
                 "minLength": 1,
                 "example": "00000000",
-                "description": "Chain ID of the blockchain application"
+                "description": "Chain ID of the blockchain application."
             },
             "state": {
                 "type": "string",
@@ -124,7 +124,7 @@
             "chainID": {
                 "type": "string",
                 "example": "00000000",
-                "description": "Chain ID of the blockchain application"
+                "description": "Chain ID of the blockchain application."
             },
             "networkType": {
                 "type": "string",
@@ -174,7 +174,7 @@
             "chainID": {
                 "type": "string",
                 "example": "00000000",
-                "description": "Chain ID of the blockchain application"
+                "description": "Chain ID of the blockchain application."
             },
             "title": {
                 "type": "string",
@@ -319,7 +319,7 @@
             "chainID": {
                 "type": "string",
                 "example": "00000000",
-                "description": "Chain ID of the blockchain application"
+                "description": "Chain ID of the blockchain application."
             },
             "chainName": {
                 "type": "string",
