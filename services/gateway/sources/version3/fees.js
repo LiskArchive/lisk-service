@@ -25,7 +25,8 @@ module.exports = {
 				high: '=,number',
 			},
 			baseFeeByName: 'baseFeeByModuleCommandName',
-			minFeePerByte: '=',
+			minFeePerByte: '=,number',
+			feeTokenID: '=,string',
 		},
 		meta: {
 			lastUpdate: 'updated,number',

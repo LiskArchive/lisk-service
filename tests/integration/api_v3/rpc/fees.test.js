@@ -22,9 +22,7 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	feeEstimateSchema,
 	goodRequestSchema,
-	metaSchema,
 } = require('../../../schemas/api_v3/fees.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -36,8 +34,6 @@ describe('get.fees', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data).toMap(feeEstimateSchema);
-		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('params not supported -> INVALID_PARAMS (-32602)', async () => {

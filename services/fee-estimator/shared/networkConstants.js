@@ -19,7 +19,8 @@ let networkFees;
 
 const setNetworkFeeConstants = async () => {
 	if (!networkFees) {
-		networkFees = await requestConnector('getFeeConstants');
+		const response = await requestConnector('getFeeConstants');
+		networkFees = response;
 	}
 };
 

@@ -21,9 +21,7 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	feeEstimateSchema,
 	goodRequestSchema,
-	metaSchema,
 } = require('../../../schemas/api_v3/fees.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -34,8 +32,6 @@ describe('Fee estimates API', () => {
 	it('estimate fees true -> 200 OK', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(feeEstimateSchema);
-		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('params not supported -> 400 BAD_REQUEST', async () => {
