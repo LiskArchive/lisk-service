@@ -27,10 +27,8 @@
     "blockchainAppState": {
         "name": "state",
         "in": "query",
-        "description": "State of the blockchain application.",
-        "type": "string",
-        "enum": ["registered", "active", "terminated"],
-        "default": "active"
+        "description": "State of the blockchain application (can be expressed as CSV. Accepted values: registered,active,terminated).",
+        "type": "string"
     },
     "network": {
         "name": "network",

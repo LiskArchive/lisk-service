@@ -30,7 +30,7 @@
                 "minLength": 8,
                 "maxLength": 8,
                 "example": "00000000",
-                "description": "Chain ID of the blockchain application"
+                "description": "Chain ID of the blockchain application."
             },
             "state": {
                 "type": "integer",
@@ -38,13 +38,13 @@
                 "format": "int32",
                 "minimum": 0,
                 "maximum": 2,
-                "description": "The state of the Peer.\nAvailable values: Connected, Disconnected\n"
+                "description": "The state of the Peer.\nAvailable values: Connected, Disconnected."
             },
             "height": {
                 "type": "integer",
                 "minimum": 1,
                 "example": 8350681,
-                "description": "Network height on the peer node.\nRepresents the current number of blocks in the chain on the peer node.\n"
+                "description": "Network height on the peer node.\nRepresents the current number of blocks in the chain on the peer node."
             },
             "location": {
                 "$ref": "#/definitions/Location"
@@ -59,7 +59,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of peers",
+                "description": "List of peers.",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/Peer"
