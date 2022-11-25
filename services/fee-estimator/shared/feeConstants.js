@@ -15,22 +15,28 @@
  */
 const { requestConnector } = require('./utils/request');
 
-let networkFees;
+let feeTokenID;
+let minFeePerByte;
 
-const setNetworkFeeConstants = async () => {
-	if (!networkFees) {
-		const response = await requestConnector('getFeeConstants');
-		networkFees = response;
+const getFeeTokenID = async () => {
+	if (!feeTokenID) {
+		feeTokenID = await requestConnector('getFeeTokenID');
 	}
+	return feeTokenID;
 };
 
-const getNetworkFeeConstants = () => networkFees;
-
-const init = async () => {
-	await setNetworkFeeConstants();
+const getMinFeePerByte = async () => {
+	if (!minFeePerByte) {
+		minFeePerByte = await requestConnector('getMinFeePerByte');
+	}
+	return minFeePerByte;
 };
+
+const getFeeConstants = async () => ({
+	feeTokenID: await getFeeTokenID(),
+	minFeePerByte: await getMinFeePerByte(),
+});
 
 module.exports = {
-	init,
-	getNetworkFeeConstants,
+	getFeeConstants,
 };

@@ -25,8 +25,8 @@ const { requestConnector } = require('./utils/request');
 const config = require('../config');
 
 const {
-	getNetworkFeeConstants,
-} = require('./networkConstants');
+	getFeeConstants,
+} = require('./feeConstants');
 
 const {
 	checkAndProcessExecution,
@@ -89,14 +89,14 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
 	if (validate(cachedFeeEstPerByteNormal, 15)) return {
 		...cachedFeeEstPerByteNormal,
-		...getNetworkFeeConstants(),
+		...await getFeeConstants(),
 	};
 
 	const cachedFeeEstPerByteQuick = await getEstimateFeeByteQuick();
 	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return {
 		...cachedFeeEstPerByteQuick,
-		...getNetworkFeeConstants(),
+		...await getFeeConstants(),
 	};
 
 	return {

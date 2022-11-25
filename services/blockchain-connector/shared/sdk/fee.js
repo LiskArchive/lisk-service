@@ -22,26 +22,10 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
-let minFeePerByte;
 let feeTokenID;
+let minFeePerByte;
 
-const refreshMinFeePerByte = async () => {
-	try {
-		logger.trace('Attemping to update minFeePerByte.');
-		const response = await invokeEndpoint('fee_getMinFeePerByte');
-		if (response.error) throw response.error;
-
-		minFeePerByte = response;
-		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getMinFeePerByte\'.');
-		}
-		throw err;
-	}
-};
-
-const refreshFeeTokenID = async () => {
+const cacheFeeTokenID = async () => {
 	try {
 		logger.trace('Attemping to update feeTokenID.');
 		const response = await invokeEndpoint('fee_getFeeTokenID');
@@ -51,30 +35,44 @@ const refreshFeeTokenID = async () => {
 		logger.info(`Updated feeTokenID to ${feeTokenID}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getFeeTokenID\'.');
+			throw new TimeoutException('Request timed out when calling \'cacheFeeTokenID\'.');
 		}
 		throw err;
 	}
 };
 
-const refreshFeeConstants = async () => {
+const cacheMinFeePerByte = async () => {
 	try {
-		if (typeof minFeePerByte === 'undefined') await refreshMinFeePerByte();
-		if (typeof feeTokenID === 'undefined') await refreshFeeTokenID();
+		logger.trace('Attemping to update minFeePerByte.');
+		const response = await invokeEndpoint('fee_getMinFeePerByte');
+		if (response.error) throw response.error;
+
+		minFeePerByte = response;
+		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
 	} catch (err) {
-		logger.warn(`Error occurred while refreshing refreshMinFeePerByte:\n${err.stack}`);
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'cacheMinFeePerByte\'.');
+		}
+		throw err;
 	}
 };
 
+const cacheFeeConstants = async () => {
+	try {
+		if (minFeePerByte === undefined) await cacheMinFeePerByte();
+		if (feeTokenID === undefined) await cacheFeeTokenID();
+	} catch (err) {
+		logger.warn(`Error occurred when calling 'cacheFeeConstants':\n${err.stack}`);
+	}
+};
+
+const getFeeTokenID = () => feeTokenID;
+
 const getMinFeePerByte = () => minFeePerByte;
-const getFeeTokenID = () => minFeePerByte;
-const getFeeConstants = () => ({
-	feeTokenID: getFeeTokenID(),
-	minFeePerByte: getMinFeePerByte(),
-});
 
 module.exports = {
-	getFeeConstants,
+	cacheFeeConstants,
+
+	getFeeTokenID,
 	getMinFeePerByte,
-	refreshFeeConstants,
 };

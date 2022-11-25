@@ -70,20 +70,24 @@ const {
 	getDPoSConstants,
 	getVoter,
 } = require('./dpos');
-const { getAuthAccount } = require('./auth');
-const { getValidator, validateBLSKey } = require('./validators');
-const { getLegacyAccount } = require('./legacy');
-const { getEventsByHeight } = require('./events');
-const { refreshNetworkStatus, getNetworkStatus } = require('./network');
-const { setSchemas, setMetadata } = require('./schema');
 
 const {
-	getFeeConstants,
-	refreshFeeConstants,
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
 } = require('./fee');
 
+const { getAuthAccount } = require('./auth');
+const { getLegacyAccount } = require('./legacy');
+const { getEventsByHeight } = require('./events');
+const { setSchemas, setMetadata } = require('./schema');
+const { getValidator, validateBLSKey } = require('./validators');
+const { refreshNetworkStatus, getNetworkStatus } = require('./network');
+
 const init = async () => {
+	// Initialize the local cache
 	await refreshNetworkStatus();
+	await cacheFeeConstants();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
@@ -91,7 +95,6 @@ const init = async () => {
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
-	await refreshFeeConstants();
 };
 
 module.exports = {
@@ -111,7 +114,8 @@ module.exports = {
 	postTransaction,
 	dryRunTransaction,
 
-	getFeeConstants,
+	getFeeTokenID,
+	getMinFeePerByte,
 
 	getGenesisHeight,
 	getGenesisBlockID,

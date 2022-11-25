@@ -41,8 +41,11 @@ const metaSchema = {
 const goodRequestSchema = {
 	data: Joi.object(feeEstimateSchema).required(),
 	meta: Joi.object(metaSchema).required(),
+	links: Joi.object().optional(),
 };
 
 module.exports = {
+	feeEstimateSchema: Joi.object(feeEstimateSchema).required(),
+	metaSchema: Joi.object(metaSchema).required(),
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 };

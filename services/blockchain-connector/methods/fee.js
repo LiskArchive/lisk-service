@@ -14,13 +14,19 @@
  *
  */
 const {
-	getFeeConstants,
+	getFeeTokenID,
+	getMinFeePerByte,
 } = require('../shared/sdk');
 
 module.exports = [
 	{
-		name: 'getFeeConstants',
-		controller: async () => getFeeConstants(),
+		name: 'getFeeTokenID',
+		controller: getFeeTokenID,
+		params: {},
+	},
+	{
+		name: 'getMinFeePerByte',
+		controller: getMinFeePerByte,
 		params: {},
 	},
 ];
