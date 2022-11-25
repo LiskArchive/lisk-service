@@ -18,7 +18,7 @@ module.exports = {
 	primaryKey: 'tempID',
 	schema: {
 		tempID: { type: 'string' },
-		id: { type: 'string' }, // Unique event identifier
+		eventID: { type: 'string' },
 		topic: { type: 'string' },
 		height: { type: 'integer' },
 		index: { type: 'integer' },

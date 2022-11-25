@@ -122,14 +122,15 @@ const getTokensSummary = async () => {
 
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 	const { totalSupply } = await requestConnector('getTotalSupply');
-	const { tokenIDs } = await requestConnector('getSupportedTokens');
+	const { supportedTokens: supportedTokenIDs } = await requestConnector('getSupportedTokens');
+
 	const supportedTokens = {
 		isSupportAllTokens: false,
 		exactTokenIDs: [],
 		patternTokenIDs: [],
 	};
 
-	tokenIDs.forEach(tokenID => {
+	supportedTokenIDs.forEach(tokenID => {
 		if (tokenID === PATTERN_ANY_TOKEN_ID) {
 			supportedTokens.isSupportAllToken = true;
 		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_LOCAL_ID) {
@@ -141,7 +142,11 @@ const getTokensSummary = async () => {
 
 	summary.data = {
 		escrowedAmounts,
-		supportedTokens,
+		supportedTokens: {
+			...supportedTokens,
+			exactTokenIDs: [...new Set(supportedTokens.exactTokenIDs)],
+			patternTokenIDs: [...new Set(supportedTokens.patternTokenIDs)],
+		},
 		totalSupply,
 	};
 
