@@ -75,30 +75,6 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all default blockchain applications', async () => {
-		const response = await getBlockchainApps({ isDefault: true });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(blockchainApp => expect(blockchainApp)
-			.toMap(blockchainAppSchema, { isDefault: true }));
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	it('returns list of all non-default blockchain applications', async () => {
-		const response = await getBlockchainApps({ isDefault: false });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(blockchainApp => expect(blockchainApp)
-			.toMap(blockchainAppSchema, { isDefault: false }));
-		expect(result.meta).toMap(metaSchema);
-	});
-
 	it('returns list of all blockchain applications by chainID', async () => {
 		const response = await getBlockchainApps({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
