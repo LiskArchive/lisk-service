@@ -86,8 +86,8 @@ const formatTransaction = (transaction) => {
 		},
 	);
 
-	// Convert Hex format address to Lisk32 address
 	// TODO: Remove once SDK fixes the address format
+	// Convert hex addresses to Lisk32 addresses
 	const formattedtransactionParams = {};
 	Object.entries(transactionParams).forEach(([key, value]) => {
 		if (Array.isArray(value)) {
@@ -113,14 +113,14 @@ const formatTransaction = (transaction) => {
 		}
 	});
 
-	const decodedTransaction = {
+	const formattedTransaction = {
 		...transaction,
 		params: formattedtransactionParams,
 		size: transactionSize,
 		minFee: transactionMinFee,
 	};
 
-	return parseToJSONCompatObj(decodedTransaction);
+	return parseToJSONCompatObj(formattedTransaction);
 };
 
 const formatBlock = (block) => {
@@ -130,25 +130,25 @@ const formatBlock = (block) => {
 		const assetModule = asset.module;
 		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
 		// TODO: Can be made schema compliant dynamically
-		const decodedAssetData = blockAssetDataSchema
+		const formattedAssetData = blockAssetDataSchema
 			? codec.decode(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
 			: asset.data;
 
-		const decodedBlockAsset = {
+		const formattedBlockAsset = {
 			module: assetModule,
-			data: decodedAssetData,
+			data: formattedAssetData,
 		};
-		return decodedBlockAsset;
+		return formattedBlockAsset;
 	});
 
 	const blockTransactions = block.transactions.map(t => formatTransaction(t));
 
-	const decodedBlock = {
+	const formattedBlock = {
 		header: blockHeader,
 		assets: blockAssets,
 		transactions: blockTransactions,
 	};
-	return parseToJSONCompatObj(decodedBlock);
+	return parseToJSONCompatObj(formattedBlock);
 };
 
 const formatEvent = (event) => {
@@ -185,13 +185,13 @@ const formatEvent = (event) => {
 		eventTopics = event.topics;
 	}
 
-	const decodedEvent = {
+	const formattedEvent = {
 		...event,
 		data: eventData,
 		topics: eventTopics,
 		id: eventID,
 	};
-	return parseToJSONCompatObj(decodedEvent);
+	return parseToJSONCompatObj(formattedEvent);
 };
 
 const formatResponse = (endpoint, response) => {

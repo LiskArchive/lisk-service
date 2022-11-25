@@ -23,19 +23,19 @@ const {
 	dryRunTransaction,
 } = require('./endpoints');
 
-const getTransactionByIDDecoded = async (id) => {
+const getTransactionByIDFormatted = async (id) => {
 	const transaction = await getTransactionByID(id);
 	const formattedTransaction = formatTransaction(transaction);
 	return formattedTransaction;
 };
 
-const getTransactionsByIDsDecoded = async (ids) => {
+const getTransactionsByIDsFormatted = async (ids) => {
 	const transactions = await getTransactionsByIDs(ids);
 	const formattedTransactions = transactions.map((t) => formatTransaction(t));
 	return formattedTransactions;
 };
 
-const getTransactionsFromPoolDecoded = async () => {
+const getTransactionsFromPoolFormatted = async () => {
 	const transactions = await getTransactionsFromPool();
 	const formattedTransactions = transactions.map((t) => formatTransaction(t));
 	return formattedTransactions;
@@ -51,9 +51,9 @@ const dryRunTransactionWrapper = async (params) => {
 };
 
 module.exports = {
-	getTransactionByID: getTransactionByIDDecoded,
-	getTransactionsByIDs: getTransactionsByIDsDecoded,
-	getTransactionsFromPool: getTransactionsFromPoolDecoded,
+	getTransactionByID: getTransactionByIDFormatted,
+	getTransactionsByIDs: getTransactionsByIDsFormatted,
+	getTransactionsFromPool: getTransactionsFromPoolFormatted,
 	postTransaction,
 	dryRunTransaction: dryRunTransactionWrapper,
 };

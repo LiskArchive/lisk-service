@@ -56,7 +56,7 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
-const getEventsByHeightDecoded = async (height) => {
+const getEventsByHeightFormatted = async (height) => {
 	const chainEvents = await getEventsByHeight(height);
 	const formattedEvents = chainEvents.map((event) => formatEvent(event));
 	return formattedEvents;
@@ -66,5 +66,5 @@ module.exports = {
 	events,
 
 	subscribeToAllRegisteredEvents,
-	getEventsByHeight: getEventsByHeightDecoded,
+	getEventsByHeight: getEventsByHeightFormatted,
 };
