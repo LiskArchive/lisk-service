@@ -1,0 +1,9 @@
+{
+    "isDefault": {
+        "name": "isDefault",
+        "in": "query",
+        "description": "Filter default blockchain application.",
+        "type": "boolean",
+        "minLength": 1
+    }
+}

@@ -217,6 +217,23 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (columns) query.select(columns);
 		query.where(queryParams);
 
+		if (params.distinct) {
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
+		}
+
+		if (params.sort) {
+			const [sortColumn, sortDirection] = params.sort.split(':');
+			query.whereNotNull(sortColumn);
+			query.select(sortColumn).orderBy(sortColumn, sortDirection);
+		}
+
+		if (params.order) {
+			const [orderColumn, orderDirection] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+			query.select(orderColumn).orderBy(orderColumn, orderDirection);
+		}
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -226,23 +243,6 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
 					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
-		}
-
-		if (params.sort) {
-			const [sortColumn, sortDirection] = params.sort.split(':');
-			query.whereNotNull(sortColumn);
-			query.orderBy(sortColumn, sortDirection);
-		}
-
-		if (params.order) {
-			const [orderColumn, orderDirection] = params.order.split(':');
-			query.whereNotNull(orderColumn);
-			query.groupBy(primaryKey).orderBy(orderColumn, orderDirection);
-		}
-
-		if (params.distinct) {
-			const distinctParams = params.distinct.split(',');
-			query.distinct(distinctParams);
 		}
 
 		if (params.whereIn) {
@@ -369,20 +369,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 	const count = async (params = {}) => {
 		const trx = await createDefaultTransaction(knex);
-		const query = knex(tableName).transacting(trx).count(`${tableConfig.primaryKey} as count`);
+		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
 
-		if (params.propBetweens) {
-			const { propBetweens } = params;
-			propBetweens.forEach(
-				propBetween => {
-					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
-					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
-					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
-				});
+		if (params.distinct) {
+			query.countDistinct(`${params.distinct} as count`);
+		} else {
+			query.count(`${tableConfig.primaryKey} as count`);
 		}
 
 		if (params.sort) {
@@ -395,9 +390,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			query.whereNotNull(orderColumn);
 		}
 
-		if (params.distinct) {
-			const distinctParams = params.distinct.split(',');
-			query.distinct(distinctParams);
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(
+				propBetween => {
+					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
+				});
 		}
 
 		if (params.whereIn) {

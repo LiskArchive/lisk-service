@@ -14,18 +14,18 @@
                         "type": "string",
                         "format": "App version",
                         "example": "4.0.0",
-                        "description": "Current application version"
+                        "description": "Current application version."
                     },
                     "networkVersion": {
                         "type": "string",
                         "format": "networkVersion",
                         "example": "3.0",
-                        "description": "Current network version"
+                        "description": "Current network version."
                     },
                     "chainID": {
                         "type": "string",
-                        "example": "10000000",
-                        "description": "Chain ID of the blockchain application"
+                        "example": "00000000",
+                        "description": "Chain ID of the blockchain application."
                     },
                     "lastBlockID": {
                         "type": "string",
@@ -39,13 +39,13 @@
                         "type": "integer",
                         "example": 16550779,
                         "minimum": 0,
-                        "description": "Current block height"
+                        "description": "Current block height."
                     },
                     "finalizedHeight": {
                         "type": "integer",
                         "example": 16550609,
                         "minimum": 0,
-                        "description": "Last finalized block height"
+                        "description": "Last finalized block height."
                     },
                     "syncing": {
                         "type": "boolean",
@@ -54,7 +54,7 @@
                     "unconfirmedTransactions": {
                         "type": "integer",
                         "example": 0,
-                        "description": "Unconfirmed transactions count"
+                        "description": "Unconfirmed transactions count."
                     },
                     "genesis": {
                         "type": "object",
@@ -173,17 +173,17 @@
                     "lastUpdate": {
                         "type": "string",
                         "example": "1632471013",
-                        "description": "Current timestamp"
+                        "description": "Current timestamp."
                     },
                     "lastBlockHeight": {
                         "type": "integer",
                         "example": 16550779,
-                        "description": "Height of the current block"
+                        "description": "Height of the current block."
                     },
                     "lastBlockID": {
                         "type": "string",
                         "example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
-                        "description": "ID of the current block"
+                        "description": "ID of the current block."
                     }
                 }
             }

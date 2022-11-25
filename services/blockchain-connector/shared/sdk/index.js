@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
-
 const {
 	getLastBlock,
 	getBlockByID,
@@ -93,13 +91,7 @@ const init = async () => {
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
-
 	await refreshFeeConstants();
-
-	// Register listener to update the nodeInfo cache only when it updates
-	const updateNodeInfoCacheListener = getNodeInfo.bind(null, true);
-	Signals.get('chainNewBlock').add(updateNodeInfoCacheListener);
-	Signals.get('chainDeleteBlock').add(updateNodeInfoCacheListener);
 };
 
 module.exports = {
