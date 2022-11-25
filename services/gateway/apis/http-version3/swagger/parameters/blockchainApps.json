@@ -24,19 +24,11 @@
         "format": "id",
         "minLength": 8
     },
-    "state": {
+    "blockchainAppState": {
         "name": "state",
         "in": "query",
-        "description": "State of the blockchain application.",
-        "type": "string",
-        "minLength": 1
-    },
-    "isDefault": {
-        "name": "isDefault",
-        "in": "query",
-        "description": "Filter default blockchain application.",
-        "type": "boolean",
-        "minLength": 1
+        "description": "State of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'active', 'terminated'.",
+        "type": "string"
     },
     "network": {
         "name": "network",

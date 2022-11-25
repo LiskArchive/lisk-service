@@ -70,8 +70,8 @@ const getEventsFromCache = async (height) => {
 
 const getEvents = async (params) => {
 	const blocksTable = await getBlocksIndex();
-	const eventsDB = await getEventsIndex();
-	const eventTopicsDB = await getEventTopicsIndex();
+	const eventsTable = await getEventsIndex();
+	const eventTopicsTable = await getEventTopicsIndex();
 
 	const events = {
 		data: [],
@@ -125,16 +125,17 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsDB.count({ ...params, distinct: 'id' });
-
-	const response = await eventTopicsDB.find(
-		{ ...params, distinct: 'id' },
-		['id'],
+	const response = await eventTopicsTable.find(
+		{ ...params, distinct: 'eventID' },
+		['eventID'],
 	);
 
-	const eventIDs = response.map(entry => entry.id);
-	const eventsInfo = await eventsDB.find(
-		{ whereIn: { property: 'id', values: eventIDs }, order: params.order },
+	const eventIDs = response.map(entry => entry.eventID);
+	const eventsInfo = await eventsTable.find(
+		{
+			whereIn: { property: 'id', values: eventIDs },
+			order: params.order,
+		},
 		['eventStr', 'height', 'index'],
 	);
 
@@ -159,6 +160,8 @@ const getEvents = async (params) => {
 		},
 		{ concurrency: eventsInfo.length },
 	);
+
+	const total = await eventTopicsTable.count({ ...params, distinct: 'eventID' });
 
 	events.meta = {
 		count: events.data.length,
