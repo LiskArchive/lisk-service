@@ -24,32 +24,32 @@ const {
 
 const getLastBlockDecoded = async () => {
 	const block = await getLastBlock();
-	const decodedBlock = formatBlock(block);
-	return decodedBlock;
+	const formattedBlock = formatBlock(block);
+	return formattedBlock;
 };
 
 const getBlockByHeightDecoded = async (height) => {
 	const block = await getBlockByHeight(height);
-	const decodedBlock = formatBlock(block);
-	return decodedBlock;
+	const formattedBlock = formatBlock(block);
+	return formattedBlock;
 };
 
 const getBlocksByHeightBetweenDecoded = async ({ from, to }) => {
 	const blocks = await getBlocksByHeightBetween({ from, to });
-	const decodedBlocks = blocks.map(b => formatBlock(b));
-	return decodedBlocks;
+	const formattedBlocks = blocks.map(b => formatBlock(b));
+	return formattedBlocks;
 };
 
 const getBlockByIDDecoded = async (id) => {
 	const block = await getBlockByID(id);
-	const decodedBlock = formatBlock(block);
-	return decodedBlock;
+	const formattedBlock = formatBlock(block);
+	return formattedBlock;
 };
 
 const getBlocksByIDsDecoded = async (ids) => {
 	const blocks = await getBlocksByIDs(ids);
-	const decodedBlocks = blocks.map(b => formatBlock(b));
-	return decodedBlocks;
+	const formattedBlocks = blocks.map(b => formatBlock(b));
+	return formattedBlocks;
 };
 
 module.exports = {

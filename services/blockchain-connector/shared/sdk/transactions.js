@@ -25,20 +25,20 @@ const {
 
 const getTransactionByIDDecoded = async (id) => {
 	const transaction = await getTransactionByID(id);
-	const decodedTransaction = formatTransaction(transaction);
-	return decodedTransaction;
+	const formattedTransaction = formatTransaction(transaction);
+	return formattedTransaction;
 };
 
 const getTransactionsByIDsDecoded = async (ids) => {
 	const transactions = await getTransactionsByIDs(ids);
-	const decodedTransactions = transactions.map((t) => formatTransaction(t));
-	return decodedTransactions;
+	const formattedTransactions = transactions.map((t) => formatTransaction(t));
+	return formattedTransactions;
 };
 
 const getTransactionsFromPoolDecoded = async () => {
 	const transactions = await getTransactionsFromPool();
-	const decodedTransactions = transactions.map((t) => formatTransaction(t));
-	return decodedTransactions;
+	const formattedTransactions = transactions.map((t) => formatTransaction(t));
+	return formattedTransactions;
 };
 
 const dryRunTransactionWrapper = async (params) => {

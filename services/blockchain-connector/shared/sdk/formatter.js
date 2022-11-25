@@ -86,7 +86,7 @@ const formatTransaction = (transaction) => {
 		},
 	);
 
-	// Convert Base32 address to Lisk32 address
+	// Convert Hex format address to Lisk32 address
 	// TODO: Remove once SDK fixes the address format
 	const formattedtransactionParams = {};
 	Object.entries(transactionParams).forEach(([key, value]) => {
@@ -196,26 +196,26 @@ const formatEvent = (event) => {
 
 const formatResponse = (endpoint, response) => {
 	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(endpoint)) {
-		const decodedBlock = formatBlock(response);
-		return parseToJSONCompatObj(decodedBlock);
+		const formattedBlock = formatBlock(response);
+		return parseToJSONCompatObj(formattedBlock);
 	}
 
 	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(endpoint)) {
 		return response.map(block => {
-			const decodedBlock = formatBlock(block);
-			return parseToJSONCompatObj(decodedBlock);
+			const formattedBlock = formatBlock(block);
+			return parseToJSONCompatObj(formattedBlock);
 		});
 	}
 
 	if (['app_getTransactionByID'].includes(endpoint)) {
-		const decodedTransaction = formatTransaction(response);
-		return parseToJSONCompatObj(decodedTransaction);
+		const formattedTransaction = formatTransaction(response);
+		return parseToJSONCompatObj(formattedTransaction);
 	}
 
 	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(endpoint)) {
 		return response.map(transaction => {
-			const decodedTransaction = formatTransaction(transaction);
-			return parseToJSONCompatObj(decodedTransaction);
+			const formattedTransaction = formatTransaction(transaction);
+			return parseToJSONCompatObj(formattedTransaction);
 		});
 	}
 	return response;
@@ -223,13 +223,13 @@ const formatResponse = (endpoint, response) => {
 
 const formatAPIClientEventPayload = (eventName, payload) => {
 	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
-		const decodedBlock = formatBlock(payload.block);
-		return parseToJSONCompatObj(decodedBlock);
+		const formattedBlock = formatBlock(payload.block);
+		return parseToJSONCompatObj(formattedBlock);
 	}
 
 	if (eventName === 'app_newTransaction') {
-		const decodedTransaction = formatTransaction(payload.transaction);
-		return parseToJSONCompatObj(decodedTransaction);
+		const formattedTransaction = formatTransaction(payload.transaction);
+		return parseToJSONCompatObj(formattedTransaction);
 	}
 
 	return payload;
