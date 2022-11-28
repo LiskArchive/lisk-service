@@ -404,5 +404,56 @@
                 "type": "object"
             }
         }
+    },
+    "PoSRewardsLockedWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "PoS Locked Rewards.",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "reward": {
+                            "type": "string",
+                            "example": "109000000000",
+                            "description": "Reward locked by the delegate for forging blocks in terms of the current chain's native token, e.g.: LSK on the mainchain."
+                        },
+                        "tokenID": {
+                            "type": "string",
+                            "example": "0000000000000000",
+                            "description": "The universal identifier for the token within the Lisk ecosystem for DPoS module. It is defined as the concatenated value of the chainID and localID. Example: tokenID for LSK would be '0000000100000000' (chainID: '00000001', localID: '00000000')."
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "properties":{
+                    "count": {
+                        "type": "integer",
+                        "example": 10,
+                        "minimum": 0,
+                        "description": "Number of items returned in the request."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "example": 10,
+                        "minimum": 0,
+                        "description": "Number of items skipped in the response."
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 100,
+                        "minimum": 0,
+                        "description": "Total number of items matching the request query."
+                    }
+                }
+            }
+        }
     }
 }
