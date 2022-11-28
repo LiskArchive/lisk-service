@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blockWithTransaction = {
+const blockWithTransaction = Object.freeze({
 	header: {
 		version: 2,
 		timestamp: 1668685948,
@@ -56,9 +56,9 @@ const blockWithTransaction = {
 			data: '0a1070a75d7aa0f69bde310829add0a5930f',
 		},
 	],
-};
+});
 
-const decodedBlockWithTransaction = {
+const decodedBlockWithTransaction = Object.freeze({
 	header: {
 		version: 2,
 		timestamp: 1668685948,
@@ -111,9 +111,9 @@ const decodedBlockWithTransaction = {
 			minFee: '177000',
 		},
 	],
-};
+});
 
-const blockWithoutTransaction = {
+const blockWithoutTransaction = Object.freeze({
 	header: {
 		version: 2,
 		timestamp: 1668688464,
@@ -145,9 +145,9 @@ const blockWithoutTransaction = {
 			data: '0a10ff107946ad4dbbf462f9f69732a28098',
 		},
 	],
-};
+});
 
-const decodedBlockWithoutTransaction = {
+const decodedBlockWithoutTransaction = Object.freeze({
 	header: {
 		version: 2,
 		timestamp: 1668688464,
@@ -181,9 +181,9 @@ const decodedBlockWithoutTransaction = {
 	transactions: [
 
 	],
-};
+});
 
-const invalidBlock = {
+const invalidBlock = Object.freeze({
 	header: {
 		version: 2,
 		timestamp: 1649855393,
@@ -209,7 +209,7 @@ const invalidBlock = {
 		},
 	],
 	transactions: [],
-};
+});
 
 const invalidEncodedBlock = '80210a197db9206180122202d7c1de74a7353a8bea6f1af1620e5bbb9f6170fa4b5376267f8fb3d0e314d322a141348bdced232cf3c74742d8f3d96f436de3220e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b8553a20e626f31527f88edd955c3ce5b6eea63f8c1d2fb6ddd329eac0b81d9ab0919b77422041e6b1c0cd1eb398e64a0af03f1b6547096fb005669b35985776d8f1c2564107480050005a20f89987de86e18d8391339c3b92c796ae7d0f7a75f8d57b2392539cc3c39e5ffe6206080012001a006a40efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e74041a16080f12120a10a21eee43f81c4bc447ee5f';
 

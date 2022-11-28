@@ -47,13 +47,13 @@ describe('Functional tests for decoder', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
-	it('decode Transaction', async () => {
+	it('format Transaction', async () => {
 		const result = await broker.call('connector.formatTransaction', { transaction });
 		expect(Object.keys(result)).toEqual(Object.keys(decodedTransaction));
 		expect(result).toMatchObject(decodedTransaction);
 	});
 
-	it('decode block with transaction', async () => {
+	it('format block with transaction', async () => {
 		const result = await broker.call('connector.formatBlock', { block: blockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
@@ -70,7 +70,7 @@ describe('Functional tests for decoder', () => {
 		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
-	it('decode block without transactions', async () => {
+	it('format block without transactions', async () => {
 		const result = await broker.call('connector.formatBlock', { block: blockWithoutTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
@@ -84,7 +84,7 @@ describe('Functional tests for decoder', () => {
 		expect(result).toMatchObject(decodedBlockWithoutTransaction);
 	});
 
-	it('decode subscription event payload', async () => {
+	it('format subscription event payload', async () => {
 		const result = await broker.call('connector.formatAPIClientEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: blockWithTransaction },
@@ -92,14 +92,14 @@ describe('Functional tests for decoder', () => {
 		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
-	it('decode event payload for token:transferEvent', async () => {
+	it('format event payload for token:transferEvent', async () => {
 		const result = await broker.call('connector.formatEvent', {
 			event: transferEventInput,
 		});
 		expect(result).toMatchObject(decodedTransferEvent);
 	});
 
-	it('decode response', async () => {
+	it('format response', async () => {
 		const result = await broker.call('connector.formatResponse', {
 			endpoint: 'app_getBlockByHeight',
 			response: blockWithTransaction,
