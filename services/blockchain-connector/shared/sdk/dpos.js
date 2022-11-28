@@ -67,9 +67,22 @@ const getVoter = async (address) => {
 	}
 };
 
+const getLockedRewards = async ({ address, tokenID }) => {
+	try {
+		const lockedRewards = await invokeEndpoint('pos_getLockedRewards', { address, tokenID });
+		return lockedRewards;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getVoter\'.');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	getDelegate,
 	getAllDelegates,
 	getDPoSConstants,
+	getLockedRewards,
 	getVoter,
 };

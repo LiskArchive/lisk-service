@@ -57,6 +57,7 @@ const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDPoSConstants,
+	getRewardsLocked,
 } = require('./dpos');
 
 const {
@@ -165,6 +166,7 @@ module.exports = {
 	getVotesSent,
 	getUnlocks,
 	getDPoSConstants,
+	getRewardsLocked,
 	getEvents,
 	getEventsByHeight,
 	getAuthAccountInfo,

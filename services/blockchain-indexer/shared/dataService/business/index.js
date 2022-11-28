@@ -87,6 +87,7 @@ const {
 	getVotesSent,
 	getUnlocks,
 	getDPoSConstants,
+	getRewardsLocked,
 } = require('./dpos');
 
 const { getAuthAccountInfo } = require('./auth');
@@ -128,6 +129,7 @@ module.exports = {
 	getUnlocks,
 	getDPoSConstants,
 	getAuthAccountInfo,
+	getRewardsLocked,
 
 	getValidator,
 	validateBLSKey,

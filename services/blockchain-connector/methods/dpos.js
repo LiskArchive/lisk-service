@@ -18,6 +18,7 @@ const {
 	getAllDelegates,
 	getDPoSConstants,
 	getVoter,
+	getLockedRewards,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -43,6 +44,14 @@ module.exports = [
 		controller: async ({ address }) => getVoter(address),
 		params: {
 			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getLockedRewards',
+		controller: async ({ address, tokenID }) => getLockedRewards({ address, tokenID }),
+		params: {
+			address: { optional: false, type: 'string' },
+			tokenID: { optional: false, type: 'string' },
 		},
 	},
 ];

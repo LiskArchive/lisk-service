@@ -36,6 +36,8 @@ const {
 	getUnlocks,
 } = require('./unlock');
 
+const { getRewardsLocked } = require('./rewardsLocked');
+
 module.exports = {
 	getVotesSent,
 
@@ -54,4 +56,5 @@ module.exports = {
 	standardizeUnlockHeight,
 	getUnlocks,
 	getDPoSConstants,
+	getRewardsLocked,
 };
