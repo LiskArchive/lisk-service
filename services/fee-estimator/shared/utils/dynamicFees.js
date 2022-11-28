@@ -29,7 +29,7 @@ const config = require('../../config');
 
 const executionStatus = {
 	// false: not running, true: running
-	[config.cacheKeys.cacheKeyFeeEstNormal]: false,
+	[config.cacheKeys.cacheKeyFeeEstFull]: false,
 	[config.cacheKeys.cacheKeyFeeEstQuick]: false,
 };
 
@@ -100,7 +100,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 	let result = await cacheRedisFees.get(cacheKey);
 	if (!executionStatus[cacheKey]) {
 		try {
-			// If the process (normal / quick) is already running,
+			// If the process (full / quick) is already running,
 			// do not allow it to run again until the prior execution finishes
 			executionStatus[cacheKey] = true;
 			result = await getEstimateFeeByteForBatch(fromHeight, toHeight, cacheKey);

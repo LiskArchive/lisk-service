@@ -37,20 +37,20 @@ const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
 
 const logger = Logger();
 
-const calculateEstimateFeeByteNormal = async () => {
+const calculateEstimateFeeByteFull = async () => {
 	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
 
-	if (!isFeeCalculationRunning(config.cacheKeys.cacheKeyFeeEstNormal)) {
-		logger.debug(`Computing normal fee estimate for block ${latestBlock.id} at height ${latestBlock.height}`);
+	if (!isFeeCalculationRunning(config.cacheKeys.cacheKeyFeeEstFull)) {
+		logger.debug(`Computing full fee estimate for block ${latestBlock.id} at height ${latestBlock.height}.`);
 	} else {
-		logger.debug('Compute normal fee estimate is already running. Won\'t start again until the current execution finishes');
+		logger.debug('Compute full fee estimate is already running. Won\'t start again until the current execution finishes.');
 	}
-	const cachedFeeEstPerByteNormal = await checkAndProcessExecution(
-		fromHeight, toHeight, config.cacheKeys.cacheKeyFeeEstNormal,
+	const cachedFeeEstPerByteFull = await checkAndProcessExecution(
+		fromHeight, toHeight, config.cacheKeys.cacheKeyFeeEstFull,
 	);
-	return cachedFeeEstPerByteNormal;
+	return cachedFeeEstPerByteFull;
 };
 
 const calculateEstimateFeeByteQuick = async () => {
@@ -68,7 +68,7 @@ const calculateEstimateFeeByteQuick = async () => {
 	return cachedFeeEstPerByteQuick;
 };
 
-const getEstimateFeeByteQuick = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstNormal);
+const getEstimateFeeByteQuick = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstFull);
 const getEstimateFeeByteFull = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstQuick);
 
 const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
@@ -85,10 +85,10 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 			.every(key => Object.keys(feeEstPerByte).includes(key))
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
-	const cachedFeeEstPerByteNormal = await getEstimateFeeByteFull();
-	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
-	if (validate(cachedFeeEstPerByteNormal, 15)) return {
-		...cachedFeeEstPerByteNormal,
+	const cachedFeeEstPerByteFull = await getEstimateFeeByteFull();
+	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteFull)}`);
+	if (validate(cachedFeeEstPerByteFull, 15)) return {
+		...cachedFeeEstPerByteFull,
 		...await getFeeConstants(),
 	};
 
@@ -109,7 +109,7 @@ const newBlockListener = async () => {
 	try {
 		if (config.feeEstimates.fullAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (full computation)');
-			calculateEstimateFeeByteNormal();
+			calculateEstimateFeeByteFull();
 		}
 		if (config.feeEstimates.quickAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
@@ -128,6 +128,4 @@ module.exports = {
 	getEstimateFeeByte,
 	getEstimateFeeByteQuick,
 	getEstimateFeeByteFull,
-	calculateEstimateFeeByteNormal,
-	calculateEstimateFeeByteQuick,
 };

@@ -44,7 +44,7 @@ config.feeEstimates = {
 };
 
 config.cacheKeys = {
-	cacheKeyFeeEstNormal: 'lastFeeEstimate',
+	cacheKeyFeeEstFull: 'lastFeeEstimateFull',
 	cacheKeyFeeEstQuick: 'lastFeeEstimateQuick',
 };
 
