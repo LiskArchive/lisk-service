@@ -21,22 +21,22 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	dposConstantsSchema,
-	dposConstantsMetaSchema,
-} = require('../../../schemas/api_v3/dposConstants.schema');
+	posConstantsSchema,
+	posConstantsMetaSchema,
+} = require('../../../schemas/api_v3/posConstants.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/dpos/constants`;
+const endpoint = `${baseUrlV3}/pos/constants`;
 
-describe('DPoS Constants API', () => {
-	it('returns DPoS module constants when called correctly', async () => {
+describe('PoS Constants API', () => {
+	it('returns PoS module constants', async () => {
 		const response = await api.get(`${endpoint}`);
-		expect(response.data).toMap(dposConstantsSchema);
-		expect(response.meta).toMap(dposConstantsMetaSchema);
+		expect(response.data).toMap(posConstantsSchema);
+		expect(response.meta).toMap(posConstantsMetaSchema);
 
 		expect(response.data.roundLength)
-			.toEqual(response.data.numberActiveDelegates + response.data.numberStandbyDelegates);
+			.toEqual(response.data.numberActiveValidators + response.data.numberStandbyValidators);
 	});
 
 	it('params not supported -> 400 BAD_REQUEST', async () => {

@@ -13,26 +13,45 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
 const { getVotesReceived } = require('./votesReceived');
 const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
-const { getDPoSConstants } = require('./constants');
+
+const {
+	WAIT_TIME_VOTER,
+	WAIT_TIME_SELF_VOTE,
+	PUNISH_TIME_VOTER,
+	PUNISH_TIME_SELF_VOTE,
+	getPoSConstants,
+} = require('./constants');
+
+const {
+	calculatePomEndHeight,
+	standardizePomHeight,
+	findPomHeightForUnlock,
+} = require('./pom');
+
+const {
+	calculateUnlockEndHeight,
+	standardizeUnlockHeight,
+	getUnlocks,
+} = require('./unlock');
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
 	getVotesSent,
+
 	getVotesReceived,
 
-	getUnlocks,
+	WAIT_TIME_VOTER,
+	WAIT_TIME_SELF_VOTE,
+	PUNISH_TIME_VOTER,
+	PUNISH_TIME_SELF_VOTE,
 
-	getDPoSConstants,
+	calculatePomEndHeight,
+	standardizePomHeight,
+
+	findPomHeightForUnlock,
+	calculateUnlockEndHeight,
+	standardizeUnlockHeight,
+	getUnlocks,
+	getPoSConstants,
 };

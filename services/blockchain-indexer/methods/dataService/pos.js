@@ -15,11 +15,11 @@
  */
 const {
 	getDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getUnlocks,
 	getVotesReceived,
 	getVotesSent,
-} = require('./controllers/dpos');
+} = require('./controllers/pos');
 
 module.exports = [
 	{
@@ -34,8 +34,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'dpos.constants',
-		controller: getDPoSConstants,
+		name: 'pos.constants',
+		controller: getPoSConstants,
 		params: {},
 	},
 	{

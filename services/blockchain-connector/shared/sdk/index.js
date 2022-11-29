@@ -67,9 +67,9 @@ const {
 const {
 	getDelegate,
 	getAllDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getVoter,
-} = require('./dpos');
+} = require('./pos');
 
 const {
 	getFeeTokenID,
@@ -149,7 +149,7 @@ module.exports = {
 
 	getDelegate,
 	getAllDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getVoter,
 
 	getAuthAccount,
