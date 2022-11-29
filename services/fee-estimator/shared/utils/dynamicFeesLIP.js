@@ -135,7 +135,7 @@ const calculateFeePerByte = async block => {
 	return feePerByte;
 };
 
-const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) => {
+const getEstimateFeePerByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) => {
 	const wavgBlockBatch = await calculateWeightedAvg(blockBatch.data);
 	const sizeLastBlock = await calculateBlockSize(blockBatch.data[0]);
 	const feePerByte = await calculateFeePerByte(blockBatch.data[0]);
@@ -161,7 +161,7 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 };
 
 module.exports = {
-	getEstimateFeeByteForBlock,
+	getEstimateFeePerByteForBlock,
 
 	// for unit test
 	calcAvgFeeByteModes,

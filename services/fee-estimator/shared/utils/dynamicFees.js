@@ -21,7 +21,7 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getEstimateFeeByteForBlock,
+	getEstimateFeePerByteForBlock,
 } = require('./dynamicFeesLIP');
 const { requestConnector } = require('./request');
 
@@ -81,7 +81,7 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 		);
 
 		Object.assign(prevFeeEstPerByte,
-			await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte));
+			await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte));
 
 		// Store intermediate values, in case of a long running loop
 		if (prevFeeEstPerByte.blockHeight < toHeight) {

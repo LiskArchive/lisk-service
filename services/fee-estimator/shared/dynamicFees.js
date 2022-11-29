@@ -37,7 +37,7 @@ const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
 
 const logger = Logger();
 
-const calculateEstimateFeeByteFull = async () => {
+const calculateEstimateFeePerByteFull = async () => {
 	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
@@ -53,7 +53,7 @@ const calculateEstimateFeeByteFull = async () => {
 	return cachedFeeEstPerByteFull;
 };
 
-const calculateEstimateFeeByteQuick = async () => {
+const calculateEstimateFeePerByteQuick = async () => {
 	// For the cold start scenario
 	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const batchSize = config.feeEstimates.coldStartBatchSize;
@@ -68,10 +68,10 @@ const calculateEstimateFeeByteQuick = async () => {
 	return cachedFeeEstPerByteQuick;
 };
 
-const getEstimateFeeByteQuick = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstFull);
-const getEstimateFeeByteFull = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstQuick);
+const getEstimateFeePerByteQuick = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstFull);
+const getEstimateFeePerByteFull = () => cacheRedisFees.get(config.cacheKeys.cacheKeyFeeEstQuick);
 
-const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
+const getEstimateFeePerByte = async () => { // aka getBestEstimateAvailable
 	if (!config.feeEstimates.quickAlgorithmEnabled && !config.feeEstimates.fullAlgorithmEnabled) {
 		return {
 			data: { error: 'The dynamic fees algorithm has not been enabled.' },
@@ -85,14 +85,14 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 			.every(key => Object.keys(feeEstPerByte).includes(key))
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
-	const cachedFeeEstPerByteFull = await getEstimateFeeByteFull();
+	const cachedFeeEstPerByteFull = await getEstimateFeePerByteFull();
 	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteFull)}.`);
 	if (validate(cachedFeeEstPerByteFull, 15)) return {
 		...cachedFeeEstPerByteFull,
 		...await getFeeConstants(),
 	};
 
-	const cachedFeeEstPerByteQuick = await getEstimateFeeByteQuick();
+	const cachedFeeEstPerByteQuick = await getEstimateFeePerByteQuick();
 	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}.`);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return {
 		...cachedFeeEstPerByteQuick,
@@ -109,11 +109,11 @@ const newBlockListener = async () => {
 	try {
 		if (config.feeEstimates.fullAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (full computation).');
-			calculateEstimateFeeByteFull();
+			calculateEstimateFeePerByteFull();
 		}
 		if (config.feeEstimates.quickAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (quick algorithm).');
-			const feeEstimate = await calculateEstimateFeeByteQuick();
+			const feeEstimate = await calculateEstimateFeePerByteQuick();
 			logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============.`);
 			Signals.get('newFeeEstimate').dispatch(feeEstimate);
 		}
@@ -125,7 +125,5 @@ const newBlockListener = async () => {
 Signals.get('newBlock').add(newBlockListener);
 
 module.exports = {
-	getEstimateFeeByte,
-	getEstimateFeeByteQuick,
-	getEstimateFeeByteFull,
+	getEstimateFeePerByte,
 };

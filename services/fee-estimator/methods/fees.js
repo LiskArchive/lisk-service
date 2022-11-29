@@ -13,26 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getEstimateFeeByte,
-	getEstimateFeeByteQuick,
-	getEstimateFeeByteFull,
-} = require('../shared/dynamicFees');
+const { getEstimateFeePerByte } = require('../shared/dynamicFees');
 
 module.exports = [
 	{
 		name: 'estimates',
-		controller: getEstimateFeeByte,
-		params: {},
-	},
-	{
-		name: 'estimates.quick',
-		controller: getEstimateFeeByteQuick,
-		params: {},
-	},
-	{
-		name: 'estimates.full',
-		controller: getEstimateFeeByteFull,
+		controller: getEstimateFeePerByte,
 		params: {},
 	},
 ];
