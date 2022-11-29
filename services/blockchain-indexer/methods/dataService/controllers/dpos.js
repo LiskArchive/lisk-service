@@ -94,16 +94,23 @@ const getVotesSent = async params => {
 };
 
 const getRewardsLocked = async (params) => {
-	const rewardsLocked = {
-		data: [],
-		meta: {},
-	};
+	try {
+		const rewardsLocked = {
+			data: [],
+			meta: {},
+		};
 
-	const response = await dataService.getRewardsLocked(params);
-	if (response.data) rewardsLocked.data = response.data;
-	if (response.meta) rewardsLocked.meta = response.meta;
+		const response = await dataService.getRewardsLocked(params);
+		if (response.data) rewardsLocked.data = response.data;
+		if (response.meta) rewardsLocked.meta = response.meta;
 
-	return rewardsLocked;
+		return rewardsLocked;
+	} catch (err) {
+		let status;
+		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 module.exports = {

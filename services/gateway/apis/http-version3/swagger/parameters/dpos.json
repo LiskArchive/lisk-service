@@ -5,5 +5,12 @@
         "description": "Query delegates by status",
         "type": "string",
         "minLength": 1
+    },
+    "validatorName": {
+        "name": "name",
+        "in": "query",
+        "description": "Registered name of the validator",
+        "type": "string",
+        "minLength": 1
     }
 }

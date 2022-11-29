@@ -15,6 +15,7 @@
  */
 const {
 	MySQL: { getTableInstance },
+	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
 const {
@@ -38,7 +39,7 @@ const getValidatorsTable = () => getTableInstance(
 const getRewardsLocked = async params => {
 	// Params must contain either address or name or publicKey
 	if (!Object.keys(params).some(param => ['address', 'name', 'publicKey'].includes(param))) {
-		throw new Error('One of params (address, name or publicKey) is required.');
+		throw new InvalidParamsException('One of params (address, name or publicKey) is required.');
 	}
 
 	const tokenID = '0400000000000000';
@@ -53,18 +54,23 @@ const getRewardsLocked = async params => {
 			limit: 1,
 		};
 
-		[{ address }] = await validatorsTable.find(queryParams, ['address']);
+		const dataRows = await validatorsTable.find(queryParams, ['address']);
+
+		if (dataRows.length) [{ address }] = dataRows;
 	}
 	if (typeof address === 'undefined' && params.publicKey) {
 		address = getLisk32AddressFromPublicKey(Buffer.from(params.publicKey, 'hex'));
 	}
 
-	const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
+	let responseData = [];
 
-	let responseData = [{
-		reward,
-		tokenID,
-	}];
+	if (address && tokenID) {
+		const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
+		responseData.push({
+			reward,
+			tokenID,
+		});
+	}
 
 	const totalResponseCount = responseData.length;
 
