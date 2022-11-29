@@ -22,31 +22,33 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	dposConstantsSchema,
-	dposConstantsMetaSchema,
-} = require('../../../schemas/api_v3/dposConstants.schema');
+	posConstantsSchema,
+	posConstantsMetaSchema,
+} = require('../../../schemas/api_v3/posConstants.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getDPoSConstants = async (params) => request(wsRpcUrl, 'get.dpos.constants', params);
+const getPoSConstants = async (params) => request(wsRpcUrl, 'get.pos.constants', params);
 
-describe('get.dpos.constants', () => {
-	it('returns constants from sdk dpos module when requested', async () => {
-		const response = await getDPoSConstants();
+describe('get.pos.constants', () => {
+	it('returns PoS module constants', async () => {
+		const response = await getPoSConstants();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result.data).toMap(dposConstantsSchema);
-		expect(result.meta).toMap(dposConstantsMetaSchema);
+		expect(result.data).toMap(posConstantsSchema);
+		expect(result.meta).toMap(posConstantsMetaSchema);
 
 		expect(result.data.roundLength)
-			.toEqual(result.data.numberActiveDelegates + result.data.numberStandbyDelegates);
+			.toEqual(result.data.numberActiveValidators + result.data.numberStandbyValidators);
 	});
 
 	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
-		const response = await request(wsRpcUrl, 'get.dpos.constants', {
-			someparam: 'not_supported',
-		}).catch(e => e);
+		const response = await request(
+			wsRpcUrl,
+			'get.pos.constants',
+			{ someparam: 'not_supported' },
+		).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

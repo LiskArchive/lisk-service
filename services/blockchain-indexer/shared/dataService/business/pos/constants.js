@@ -22,8 +22,8 @@ const PUNISH_TIME_SELF_VOTE = 780000;
 
 let moduleConstants;
 
-const getDPoSConstants = async () => {
-	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getDPoSConstants');
+const getPoSConstants = async () => {
+	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPoSConstants');
 
 	return {
 		data: moduleConstants,
@@ -36,5 +36,6 @@ module.exports = {
 	WAIT_TIME_SELF_VOTE,
 	PUNISH_TIME_VOTER,
 	PUNISH_TIME_SELF_VOTE,
-	getDPoSConstants,
+
+	getPoSConstants,
 };

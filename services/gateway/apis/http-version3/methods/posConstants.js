@@ -14,35 +14,35 @@
  *
  */
 
-const dposConstantsSource = require('../../../sources/version3/dposConstants');
+const posConstantsSource = require('../../../sources/version3/posConstants');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/dpos/constants',
-	rpcMethod: 'get.dpos.constants',
-	tags: ['DPoS'],
+	swaggerApiPath: '/pos/constants',
+	rpcMethod: 'get.pos.constants',
+	tags: ['PoS'],
 	get schema() {
 		const constantsSchema = {};
 		constantsSchema[this.swaggerApiPath] = { get: {} };
 		constantsSchema[this.swaggerApiPath].get.tags = this.tags;
-		constantsSchema[this.swaggerApiPath].get.summary = 'Requests DPoS Module Constants';
+		constantsSchema[this.swaggerApiPath].get.summary = 'Requests PoS Module Constants.';
 		constantsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Requests all the configured constants for the DPoS module',
+			description: 'Requests all the configured constants for the PoS module.',
 		});
 		constantsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns all the configured constants for the DPoS module',
+				description: 'Returns all the configured constants for the PoS module.',
 				schema: {
-					$ref: '#/definitions/DPoSConstantsWithEnvelope',
+					$ref: '#/definitions/PoSConstantsWithEnvelope',
 				},
 			},
 		};
 		Object.assign(constantsSchema[this.swaggerApiPath].get.responses, response);
 		return constantsSchema;
 	},
-	source: dposConstantsSource,
+	source: posConstantsSource,
 	envelope,
 };

@@ -13,18 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const posConstants = require('./mappings/posConstants');
+
 module.exports = {
-	factorSelfVotes: '=,number',
-	maxLengthName: '=,number',
-	maxNumberSentVotes: '=,number',
-	maxNumberPendingUnlocks: '=,number',
-	failSafeMissedBlocks: '=,number',
-	failSafeInactiveWindow: '=,number',
-	punishmentWindow: '=,number',
-	roundLength: '=,number',
-	bftThreshold: '=,number',
-	minWeightStandby: '=,string',
-	numberActiveDelegates: '=,number',
-	numberStandbyDelegates: '=,number',
-	tokenIDDPoS: '=,string',
+	type: 'moleculer',
+	method: 'indexer.pos.constants',
+	params: {},
+	definition: {
+		data: posConstants,
+		meta: {},
+		links: {},
+	},
 };
