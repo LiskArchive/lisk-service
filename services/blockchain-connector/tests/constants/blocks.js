@@ -136,9 +136,7 @@ const blockWithoutTransaction = Object.freeze({
 		signature: '274585e5e93fefa239766d7ca2720fed9118c6c53e95d3ec8d47bbe6c3194d7fe86d6e2d3e8d440e5637da0d1212d6d58985cbc21eb3536e7e67f56bd0582e06',
 		id: '1363799498535e4e565673855e1a740da99bf910fcaf7b9b9fdf3de7e14a836b',
 	},
-	transactions: [
-
-	],
+	transactions: [],
 	assets: [
 		{
 			module: 'random',
@@ -178,9 +176,7 @@ const decodedBlockWithoutTransaction = Object.freeze({
 			},
 		},
 	],
-	transactions: [
-
-	],
+	transactions: [],
 });
 
 const invalidBlock = Object.freeze({
