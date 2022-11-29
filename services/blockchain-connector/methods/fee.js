@@ -13,12 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getEstimateFeePerByte } = require('../shared/dynamicFees');
+const {
+	getFeeTokenID,
+	getMinFeePerByte,
+} = require('../shared/sdk');
 
 module.exports = [
 	{
-		name: 'estimates',
-		controller: getEstimateFeePerByte,
+		name: 'getFeeTokenID',
+		controller: getFeeTokenID,
+		params: {},
+	},
+	{
+		name: 'getMinFeePerByte',
+		controller: getMinFeePerByte,
 		params: {},
 	},
 ];
