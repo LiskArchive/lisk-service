@@ -20,8 +20,8 @@ const {
 
 const {
 	calculateFeePerByte,
-	getEstimateFeeByteForBlock,
-} = require('../../shared/dynamicFees');
+	getEstimateFeePerByteForBlock,
+} = require('../../shared/utils/dynamicFeesLIP');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
@@ -57,7 +57,7 @@ describe('Fee estimation tests', () => {
 		});
 	});
 
-	describe('getEstimateFeeByteForBlock', () => {
+	describe('getEstimateFeePerByteForBlock', () => {
 		const feeEstPerByteKeys = [
 			'low',
 			'med',
@@ -73,7 +73,7 @@ describe('Fee estimation tests', () => {
 			it('No network traffic', async () => {
 				const blockBatch = { data: noTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0);
 				expect(feeEstPerByte.med).toBe(0);
@@ -87,7 +87,7 @@ describe('Fee estimation tests', () => {
 			it('Low network traffic', async () => {
 				const blockBatch = { data: lowTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0);
 				expect(feeEstPerByte.med).toBe(0);
@@ -101,7 +101,7 @@ describe('Fee estimation tests', () => {
 			it('Moderate network traffic', async () => {
 				const blockBatch = { data: moderateTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0);
 				expect(feeEstPerByte.med).toBeCloseTo(0);
@@ -115,7 +115,7 @@ describe('Fee estimation tests', () => {
 			it('High network traffic', async () => {
 				const blockBatch = { data: highTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0.545484);
 				expect(feeEstPerByte.med).toBeCloseTo(71.6996341526711);
@@ -137,7 +137,7 @@ describe('Fee estimation tests', () => {
 			it('No network traffic', async () => {
 				const blockBatch = { data: noTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0);
 				expect(feeEstPerByte.med).toBe(0);
@@ -151,7 +151,7 @@ describe('Fee estimation tests', () => {
 			it('Low network traffic', async () => {
 				const blockBatch = { data: lowTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0);
 				expect(feeEstPerByte.med).toBe(0);
@@ -165,7 +165,7 @@ describe('Fee estimation tests', () => {
 			it('Moderate network traffic', async () => {
 				const blockBatch = { data: moderateTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0);
 				expect(feeEstPerByte.med).toBeCloseTo(0);
@@ -179,7 +179,7 @@ describe('Fee estimation tests', () => {
 			it('High network traffic', async () => {
 				const blockBatch = { data: highTrafficMockup.blocks };
 
-				const feeEstPerByte = await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte);
+				const feeEstPerByte = await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte);
 				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
 				expect(feeEstPerByte.low).toBe(0.545484);
 				expect(feeEstPerByte.med).toBeCloseTo(1037.639634152671);

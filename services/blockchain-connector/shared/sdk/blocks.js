@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { decodeBlock } = require('./decoder');
+const { formatBlock } = require('./formatter');
 const {
 	getLastBlock,
 	getBlockByHeight,
@@ -22,40 +22,40 @@ const {
 	getBlocksByIDs,
 } = require('./endpoints');
 
-const getLastBlockDecoded = async () => {
+const getLastBlockFormatted = async () => {
 	const block = await getLastBlock();
-	const decodedBlock = decodeBlock(block);
-	return decodedBlock;
+	const formattedBlock = formatBlock(block);
+	return formattedBlock;
 };
 
-const getBlockByHeightDecoded = async (height) => {
+const getBlockByHeightFormatted = async (height) => {
 	const block = await getBlockByHeight(height);
-	const decodedBlock = decodeBlock(block);
-	return decodedBlock;
+	const formattedBlock = formatBlock(block);
+	return formattedBlock;
 };
 
-const getBlocksByHeightBetweenDecoded = async ({ from, to }) => {
+const getBlocksByHeightBetweenFormatted = async ({ from, to }) => {
 	const blocks = await getBlocksByHeightBetween({ from, to });
-	const decodedBlocks = blocks.map(b => decodeBlock(b));
-	return decodedBlocks;
+	const formattedBlocks = blocks.map(b => formatBlock(b));
+	return formattedBlocks;
 };
 
-const getBlockByIDDecoded = async (id) => {
+const getBlockByIDFormatted = async (id) => {
 	const block = await getBlockByID(id);
-	const decodedBlock = decodeBlock(block);
-	return decodedBlock;
+	const formattedBlock = formatBlock(block);
+	return formattedBlock;
 };
 
-const getBlocksByIDsDecoded = async (ids) => {
+const getBlocksByIDsFormatted = async (ids) => {
 	const blocks = await getBlocksByIDs(ids);
-	const decodedBlocks = blocks.map(b => decodeBlock(b));
-	return decodedBlocks;
+	const formattedBlocks = blocks.map(b => formatBlock(b));
+	return formattedBlocks;
 };
 
 module.exports = {
-	getLastBlock: getLastBlockDecoded,
-	getBlockByHeight: getBlockByHeightDecoded,
-	getBlocksByHeightBetween: getBlocksByHeightBetweenDecoded,
-	getBlockByID: getBlockByIDDecoded,
-	getBlocksByIDs: getBlocksByIDsDecoded,
+	getLastBlock: getLastBlockFormatted,
+	getBlockByHeight: getBlockByHeightFormatted,
+	getBlocksByHeightBetween: getBlocksByHeightBetweenFormatted,
+	getBlockByID: getBlockByIDFormatted,
+	getBlocksByIDs: getBlocksByIDsFormatted,
 };

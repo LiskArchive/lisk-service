@@ -22,10 +22,6 @@ const {
 
 const { parseInputBySchema } = require('../utils/parser');
 const {
-	getBlockSchema,
-	getBlockHeaderSchema,
-	getBlockAssetSchema,
-	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 } = require('./schema');
@@ -63,42 +59,6 @@ const encodeTransaction = (transaction) => {
 	return txBuffer.toString('hex');
 };
 
-const encodeBlock = (block) => {
-	const { header, assets, transactions } = block;
-
-	// Handle the block transactions
-	const blockTransactionsBuffer = transactions.map(tx => encodeTransaction(tx));
-
-	// Handle the block assets
-	const blockAssetSchema = getBlockAssetSchema();
-	const parsedAssets = assets.map(asset => parseInputBySchema(asset, blockAssetSchema));
-	const blockAssetBuffer = parsedAssets.map(asset => codec.encode(blockAssetSchema, asset));
-
-	// Handle the block header
-	const blockHeaderSchema = getBlockHeaderSchema();
-	const parsedBlockHeader = parseInputBySchema(header, blockHeaderSchema);
-	const blockHeaderBuffer = codec.encode(blockHeaderSchema, parsedBlockHeader);
-
-	const blockSchema = getBlockSchema();
-	const parsedBlock = parseInputBySchema({
-		header: blockHeaderBuffer,
-		assets: blockAssetBuffer,
-		transactions: blockTransactionsBuffer,
-	}, blockSchema);
-
-	const blockBuffer = codec.encode(blockSchema, parsedBlock);
-	return blockBuffer.toString('hex');
-};
-
-const encodeEvent = (event) => {
-	const eventSchema = getEventSchema();
-	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
-	const encodedEvent = codec.encode(eventSchema, schemaCompliantEvent);
-	return encodedEvent.toString('hex');
-};
-
 module.exports = {
-	encodeBlock,
 	encodeTransaction,
-	encodeEvent,
 };

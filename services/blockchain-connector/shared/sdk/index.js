@@ -71,15 +71,24 @@ const {
 	getVoter,
 	getLockedRewards,
 } = require('./dpos');
+
+const {
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
+} = require('./fee');
+
 const { getAuthAccount } = require('./auth');
-const { getValidator, validateBLSKey } = require('./validators');
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
-const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
+const { getValidator, validateBLSKey } = require('./validators');
+const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 
 const init = async () => {
+	// Initialize the local cache
 	await refreshNetworkStatus();
+	await cacheFeeConstants();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
@@ -105,6 +114,9 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
+
+	getFeeTokenID,
+	getMinFeePerByte,
 
 	getGenesisHeight,
 	getGenesisBlockID,
