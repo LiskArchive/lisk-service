@@ -27,16 +27,18 @@ const { requestConnector } = require('./request');
 
 const config = require('../../config');
 
-const executionStatus = {
+const executionStatus = Object.freeze({
 	// false: not running, true: running
 	[config.cacheKeys.cacheKeyFeeEstFull]: false,
 	[config.cacheKeys.cacheKeyFeeEstQuick]: false,
-};
+});
+
+const isFeeCalculationRunningInMode = (execMode) => executionStatus[execMode];
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
 const logger = Logger();
 
-const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
+const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	const genesisHeight = await requestConnector('getGenesisHeight');
 	const { defaultStartBlockHeight } = config.feeEstimates;
 
@@ -51,7 +53,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
 
 	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
-		? { blockHeight: fromHeight - 1, low: 0, med: 0, high: 0 } : cachedFeeEstimate;
+		? { blockHeight: fromHeight - 1, low: 0, med: 0, high: 0 }
+		: cachedFeeEstimate;
 
 	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};
@@ -103,7 +106,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 			// If the process (full / quick) is already running,
 			// do not allow it to run again until the prior execution finishes
 			executionStatus[cacheKey] = true;
-			result = await getEstimateFeeByteForBatch(fromHeight, toHeight, cacheKey);
+			result = await getEstimateFeePerByteForBatch(fromHeight, toHeight, cacheKey);
 		} catch (err) {
 			logger.error(err.stack || err.message);
 		} finally {
@@ -113,10 +116,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 	return result;
 };
 
-const isFeeCalculationRunning = (cacheKey) => executionStatus[cacheKey];
-
 module.exports = {
 	checkAndProcessExecution,
-	getEstimateFeeByteForBatch,
-	isFeeCalculationRunning,
+	isFeeCalculationRunningInMode,
 };

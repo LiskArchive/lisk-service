@@ -30,7 +30,7 @@ const {
 
 const {
 	checkAndProcessExecution,
-	isFeeCalculationRunning,
+	isFeeCalculationRunningInMode,
 } = require('./utils/dynamicFees');
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
@@ -42,7 +42,7 @@ const calculateEstimateFeeByteFull = async () => {
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
 
-	if (!isFeeCalculationRunning(config.cacheKeys.cacheKeyFeeEstFull)) {
+	if (!isFeeCalculationRunningInMode(config.cacheKeys.cacheKeyFeeEstFull)) {
 		logger.debug(`Computing full fee estimate for block ${latestBlock.id} at height ${latestBlock.height}.`);
 	} else {
 		logger.debug('Compute full fee estimate is already running. Won\'t start again until the current execution finishes.');
@@ -86,14 +86,14 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
 	const cachedFeeEstPerByteFull = await getEstimateFeeByteFull();
-	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteFull)}`);
+	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteFull)}.`);
 	if (validate(cachedFeeEstPerByteFull, 15)) return {
 		...cachedFeeEstPerByteFull,
 		...await getFeeConstants(),
 	};
 
 	const cachedFeeEstPerByteQuick = await getEstimateFeeByteQuick();
-	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
+	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}.`);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return {
 		...cachedFeeEstPerByteQuick,
 		...await getFeeConstants(),
@@ -108,17 +108,17 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 const newBlockListener = async () => {
 	try {
 		if (config.feeEstimates.fullAlgorithmEnabled) {
-			logger.debug('Initiate the dynamic fee estimates computation (full computation)');
+			logger.debug('Initiate the dynamic fee estimates computation (full computation).');
 			calculateEstimateFeeByteFull();
 		}
 		if (config.feeEstimates.quickAlgorithmEnabled) {
-			logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
+			logger.debug('Initiate the dynamic fee estimates computation (quick algorithm).');
 			const feeEstimate = await calculateEstimateFeeByteQuick();
-			logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============`);
+			logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============.`);
 			Signals.get('newFeeEstimate').dispatch(feeEstimate);
 		}
 	} catch (err) {
-		logger.error(`Error occured when processing 'calculateFeeEstimate' event:\n${err.stack}`);
+		logger.error(`Error occured when processing 'calculateFeeEstimate' event:\n${err.stack}.`);
 	}
 };
 

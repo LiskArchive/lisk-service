@@ -21,10 +21,10 @@ const config = require('../../config');
 
 const logger = Logger();
 
-const calcAvgFeeByteModes = {
+const calcAvgFeeByteModes = Object.freeze({
 	MEDIUM: 'med',
 	HIGH: 'high',
-};
+});
 
 const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 	const calcExpDecay = (emaBatchSize, emaDecayRate) => (

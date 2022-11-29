@@ -43,10 +43,10 @@ config.feeEstimates = {
 	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
 };
 
-config.cacheKeys = {
+config.cacheKeys = Object.freeze({
 	cacheKeyFeeEstFull: 'lastFeeEstimateFull',
 	cacheKeyFeeEstQuick: 'lastFeeEstimateQuick',
-};
+});
 
 /**
  * LOGGING
