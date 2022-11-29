@@ -76,6 +76,7 @@ const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
+const { refreshMinFeePerByte } = require('./fee');
 
 const init = async () => {
 	await refreshNetworkStatus();
@@ -83,6 +84,9 @@ const init = async () => {
 	// Cache all the schemas
 	setSchemas(await getSchemas());
 	setMetadata(await getSystemMetadata());
+
+	// Cache fee related constants
+	await refreshMinFeePerByte();
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
