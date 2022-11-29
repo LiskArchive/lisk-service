@@ -16,23 +16,14 @@
 const { ServiceBroker } = require('moleculer');
 
 const {
-	block,
 	invalidBlock,
-	blockWithTransaction,
-	encodedBlock,
-	encodedBlockWithTransaction,
 } = require('../constants/blocks');
 
 const {
-	transaction,
+	decodedTransaction,
 	invalidTransaction,
 	encodedTransaction,
 } = require('../constants/transactions');
-
-const {
-	transferEventInput,
-	encodedTransferEvent,
-} = require('../constants/events');
 
 const config = require('../../config');
 
@@ -48,27 +39,9 @@ describe('Functional tests for encoder', () => {
 	afterAll(() => broker.stop());
 
 	it('encode transaction', async () => {
-		const result = await broker.call('connector.encodeTransaction', { transaction });
+		const result = await broker.call('connector.encodeTransaction', { transaction: decodedTransaction });
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedTransaction);
-	});
-
-	it('encode block with transaction', async () => {
-		const result = await broker.call('connector.encodeBlock', { block: blockWithTransaction });
-		expect(typeof result).toBe('string');
-		expect(result).toEqual(encodedBlockWithTransaction);
-	});
-
-	it('encode block without transactions', async () => {
-		const result = await broker.call('connector.encodeBlock', { block });
-		expect(typeof result).toBe('string');
-		expect(result).toEqual(encodedBlock);
-	});
-
-	it('encode event', async () => {
-		const result = await broker.call('connector.encodeEvent', { event: transferEventInput });
-		expect(typeof result).toBe('string');
-		expect(result).toEqual(encodedTransferEvent);
 	});
 
 	it('throws error when encoding invalid transaction', async () => {
