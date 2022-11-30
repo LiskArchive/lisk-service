@@ -73,6 +73,10 @@ const {
 } = require('./pos');
 
 const {
+	getRewardTokenID,
+} = require('./reward');
+
+const {
 	getFeeTokenID,
 	getMinFeePerByte,
 	cacheFeeConstants,
@@ -153,6 +157,8 @@ module.exports = {
 	getPoSConstants,
 	getVoter,
 	getLockedRewards,
+
+	getRewardTokenID,
 
 	getAuthAccount,
 

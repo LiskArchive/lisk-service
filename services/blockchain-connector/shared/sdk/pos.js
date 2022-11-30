@@ -73,7 +73,7 @@ const getLockedRewards = async ({ address, tokenID }) => {
 		return lockedRewards;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getVoter\'.');
+			throw new TimeoutException('Request timed out when calling \'getLockedRewards\'.');
 		}
 		throw err;
 	}

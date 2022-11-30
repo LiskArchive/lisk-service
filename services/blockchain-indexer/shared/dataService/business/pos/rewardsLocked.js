@@ -28,21 +28,21 @@ const config = require('../../../../config');
 
 const { requestConnector } = require('../../../utils/request');
 
-const validatorsIndexSchema = require('../../../database/schema/validators');
+const validatorsTableSchema = require('../../../database/schema/validators');
 
 const getValidatorsTable = () => getTableInstance(
-	validatorsIndexSchema.tableName,
-	validatorsIndexSchema,
+	validatorsTableSchema.tableName,
+	validatorsTableSchema,
 	config.endpoints.mysql,
 );
 
 const getRewardsLocked = async params => {
 	// Params must contain either address or name or publicKey
 	if (!Object.keys(params).some(param => ['address', 'name', 'publicKey'].includes(param))) {
-		throw new InvalidParamsException('One of params (address, name or publicKey) is required.');
+		throw new InvalidParamsException('One of the params (address, name or publicKey) is required.');
 	}
 
-	const tokenID = '0400000000000000';
+	const tokenID = await requestConnector('getRewardTokenID');
 
 	// Process address
 	let { address } = params;
