@@ -13,9 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-
 const {
 	WAIT_TIME_VOTER,
 	WAIT_TIME_SELF_VOTE,
@@ -36,22 +33,41 @@ const {
 	getUnlocks,
 } = require('./unlock');
 
+const {
+	getValidators,
+	getAllValidators,
+	isPoSModuleRegistered,
+} = require('./validators');
+
+const { getVotesSent } = require('./votesSent');
+const { getVotesReceived } = require('./votesReceived');
+
 module.exports = {
-	getVotesSent,
-
-	getVotesReceived,
-
+	// Constants
 	WAIT_TIME_VOTER,
 	WAIT_TIME_SELF_VOTE,
 	PUNISH_TIME_VOTER,
 	PUNISH_TIME_SELF_VOTE,
+	getPoSConstants,
 
+	// PoM
 	calculatePomEndHeight,
 	standardizePomHeight,
-
 	findPomHeightForUnlock,
+
+	// Unlock
 	calculateUnlockEndHeight,
 	standardizeUnlockHeight,
 	getUnlocks,
-	getPoSConstants,
+
+	// Validators
+	getValidators,
+	getAllValidators,
+	isPoSModuleRegistered,
+
+	// Votes sent
+	getVotesSent,
+
+	// Votes received
+	getVotesReceived,
 };

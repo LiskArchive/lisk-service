@@ -85,7 +85,7 @@ const getSystemMetadata = async () => {
 };
 
 const MODULE = {
-	DPOS: 'dpos',
+	POS: 'pos',
 };
 
 const COMMAND = {

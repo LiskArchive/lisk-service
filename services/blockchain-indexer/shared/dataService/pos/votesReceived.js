@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const dataService = require('../business');
-const { getDelegates } = require('./delegates');
+const { getDelegates } = require('./validators');
 const { getLisk32Address } = require('../../utils/accountUtils');
 const { getNameByAddress } = require('../../utils/delegateUtils');
 

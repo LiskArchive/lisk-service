@@ -14,10 +14,10 @@
  *
  */
 const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
+	reloadValidatorCache,
+	getTotalNumberOfValidators,
+	getValidators,
+} = require('./validators');
 
 const { getVotesReceived } = require('./votesReceived');
 const { getVotesSent } = require('./votesSent');
@@ -25,9 +25,9 @@ const { getUnlocks } = require('./unlocks');
 const { getPoSConstants } = require('./constants');
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
+	reloadValidatorCache,
+	getTotalNumberOfValidators,
+	getValidators,
 
 	getVotesSent,
 	getVotesReceived,

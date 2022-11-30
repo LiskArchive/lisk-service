@@ -14,7 +14,7 @@
  *
  */
 const {
-	getDelegates,
+	getValidators,
 	getPoSConstants,
 	getUnlocks,
 	getVotesReceived,
@@ -23,8 +23,8 @@ const {
 
 module.exports = [
 	{
-		name: 'dpos.delegates',
-		controller: getDelegates,
+		name: 'pos.validators',
+		controller: getValidators,
 		params: {
 			address: { optional: true, type: 'any' },
 			name: { optional: true, type: 'any' },

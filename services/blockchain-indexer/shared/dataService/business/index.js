@@ -30,44 +30,20 @@ const {
 } = require('./interoperability');
 
 const {
-	getLegacyAccountInfo,
-} = require('./legacy');
-
-const {
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
-} = require('./coreCache');
-
-const {
-	getDelegates,
-	getAllDelegates,
-	isDposModuleRegistered,
-} = require('./delegates');
-
-const {
 	getGenerators,
 	getNumberOfGenerators,
 } = require('./generators');
-
-const {
-	getPendingTransactions,
-	loadAllPendingTransactions,
-} = require('./pendingTransactions');
-
-const {
-	postTransactions,
-} = require('./postTransactions');
-
-const {
-	dryRunTransactions,
-} = require('./transactionsDryRun');
 
 const {
 	getTokens,
 	getTopLiskAddresses,
 	getTokensSummary,
 } = require('./tokens');
+
+const {
+	getPendingTransactions,
+	loadAllPendingTransactions,
+} = require('./pendingTransactions');
 
 const {
 	getTransactions,
@@ -78,10 +54,9 @@ const {
 } = require('./transactions');
 
 const {
-	getSchemas,
-} = require('./schemas');
-
-const {
+	getValidators,
+	getAllValidators,
+	isPoSModuleRegistered,
 	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
@@ -89,11 +64,26 @@ const {
 	getPoSConstants,
 } = require('./pos');
 
+const {
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountByName,
+} = require('./coreCache');
+
+const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
+const { getLegacyAccountInfo } = require('./legacy');
 const { getEvents, getEventsByHeight } = require('./events');
+const { postTransactions } = require('./postTransactions');
+const { dryRunTransactions } = require('./transactionsDryRun');
 const { getValidator, validateBLSKey } = require('./validator');
 
 module.exports = {
+	// Generators
+	getGenerators,
+	getNumberOfGenerators,
+
+	// Blocks
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -101,40 +91,56 @@ module.exports = {
 	getBlockByHeight,
 	getBlockByID,
 	getBlocksAssets,
-	getBlockchainApps,
-	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
-	getDelegates,
-	getAllDelegates,
-	isDposModuleRegistered,
-	getGenerators,
-	getNumberOfGenerators,
-	dryRunTransactions,
-	postTransactions,
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
+
+	// Transactions
 	getPendingTransactions,
 	loadAllPendingTransactions,
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
-	getSchemas,
 	normalizeTransaction,
+	dryRunTransactions,
+	postTransactions,
+
+	// Events
+	getEvents,
+	getEventsByHeight,
+
+	// Interoperability
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+	reloadBlockchainAppsStats,
+
+	// PoS
+	getValidators,
+	getAllValidators,
+	isPoSModuleRegistered,
 	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
 	getPoSConstants,
+
+	// Token
+	getTokens,
+	getTopLiskAddresses,
+	getTokensSummary,
+
+	// Schemas
+	getSchemas,
+
+	// Auth
 	getAuthAccountInfo,
 
+	// Legacy
+	getLegacyAccountInfo,
+
+	// Validator
 	getValidator,
 	validateBLSKey,
 
-	getEvents,
-	getEventsByHeight,
-	getLegacyAccountInfo,
+	// Core cache
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,

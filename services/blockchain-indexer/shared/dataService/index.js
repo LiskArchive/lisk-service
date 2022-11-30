@@ -53,21 +53,14 @@ const {
 } = require('./blocks');
 
 const {
-	getDelegates,
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
+	getValidators,
+	reloadValidatorCache,
+	getTotalNumberOfValidators,
 	getPoSConstants,
 	getVotesSent,
 	getVotesReceived,
 	getUnlocks,
 } = require('./pos');
-
-const {
-	reloadGeneratorsCache,
-	getGenerators,
-} = require('./generators');
-
-const { getNetworkStatus } = require('./network');
 
 const {
 	getPeers,
@@ -97,16 +90,83 @@ const {
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
-const {
-	getLegacyAccountInfo,
-} = require('./legacy');
-
 const { getEvents } = require('./events');
-const { getAuthAccountInfo } = require('./auth');
-const { getValidator, validateBLSKey } = require('./validator');
 const { getSchemas } = require('./schemas');
+const { getAuthAccountInfo } = require('./auth');
+const { getNetworkStatus } = require('./network');
+const { getLegacyAccountInfo } = require('./legacy');
+const { getValidator, validateBLSKey } = require('./validator');
+const { reloadGeneratorsCache, getGenerators } = require('./generators');
 
 module.exports = {
+	// Accounts
+	getAccounts,
+
+	// Blocks
+	getBlocks,
+	getBlocksAssets,
+	setLastBlock,
+	getLastBlock,
+	getTotalNumberOfBlocks,
+	performLastBlockUpdate,
+
+	// PoS
+	getValidators,
+	reloadValidatorCache,
+	getTotalNumberOfValidators,
+	getPoSConstants,
+	getVotesSent,
+	getVotesReceived,
+	getUnlocks,
+
+	// Peers
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
+
+	// Token
+	getTokens,
+	getTopLiskAddresses,
+	getTokensSummary,
+
+	// Transactions
+	getTransactions,
+	getPendingTransactions,
+	reloadAllPendingTransactions,
+	postTransactions,
+	getTransactionsByBlockID,
+	dryRunTransactions,
+
+	// Interoperability
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+	reloadBlockchainAppsStats,
+
+	// Events
+	getEvents,
+
+	// Schemas
+	getSchemas,
+
+	// Auth
+	getAuthAccountInfo,
+
+	// Network
+	getNetworkStatus,
+
+	// Legacy
+	getLegacyAccountInfo,
+
+	// Validator
+	getValidator,
+	validateBLSKey,
+
+	// Generators
+	reloadGeneratorsCache,
+	getGenerators,
+
+	// Others to be arranged
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -121,52 +181,13 @@ module.exports = {
 	normalizeBlocks,
 	getBlockByHeight,
 	getBlockByID,
-	getGenerators,
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
 	loadAllPendingTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
 
-	getAccounts,
-	getLegacyAccountInfo,
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
-	getBlocks,
-	getBlocksAssets,
-	setLastBlock,
-	getLastBlock,
-	getTotalNumberOfBlocks,
-	performLastBlockUpdate,
-	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
-	getBlockchainApps,
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-	reloadGeneratorsCache,
-	getNetworkStatus,
-	getTransactions,
-	getPendingTransactions,
-	reloadAllPendingTransactions,
-	postTransactions,
-	getSchemas,
-	getTransactionsByBlockID,
-	dryRunTransactions,
-	getVotesReceived,
-	getVotesSent,
-	getUnlocks,
-	getPoSConstants,
-	getEvents,
 	getEventsByHeight,
-	getAuthAccountInfo,
-	getValidator,
-	validateBLSKey,
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
