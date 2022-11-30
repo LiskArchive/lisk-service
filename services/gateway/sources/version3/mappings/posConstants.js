@@ -14,17 +14,22 @@
  *
  */
 module.exports = {
-	factorSelfVotes: '=,number',
+	factorSelfStakes: '=,number',
 	maxLengthName: '=,number',
-	maxNumberSentVotes: '=,number',
+	maxNumberSentStakes: '=,number',
 	maxNumberPendingUnlocks: '=,number',
 	failSafeMissedBlocks: '=,number',
 	failSafeInactiveWindow: '=,number',
 	punishmentWindow: '=,number',
 	roundLength: '=,number',
-	bftThreshold: '=,number',
 	minWeightStandby: '=,string',
-	numberActiveDelegates: '=,number',
-	numberStandbyDelegates: '=,number',
-	tokenIDDPoS: '=,string',
+	numberActiveValidators: '=,number',
+	numberStandbyValidators: '=,number',
+	posTokenID: '=,string',
+	maxBFTWeightCap: '=,number',
+	commissionIncreasePeriod: '=,number',
+	maxCommissionIncreaseRate: '=,number',
+	extraCommandFees: {
+		validatorRegistrationFee: 'data.validatorRegistrationFee,string',
+	},
 };

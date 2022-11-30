@@ -41,13 +41,13 @@ const getDelegates = async params => {
 	}
 };
 
-const getDPoSConstants = async () => {
+const getPoSConstants = async () => {
 	const constants = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getDPoSConstants();
+	const response = await dataService.getPoSConstants();
 	if (response.data) constants.data = response.data;
 	if (response.meta) constants.meta = response.meta;
 
@@ -115,7 +115,7 @@ const getRewardsLocked = async (params) => {
 
 module.exports = {
 	getDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getUnlocks,
 	getVotesReceived,
 	getVotesSent,

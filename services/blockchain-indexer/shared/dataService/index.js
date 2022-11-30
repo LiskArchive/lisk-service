@@ -56,9 +56,12 @@ const {
 	getDelegates,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getRewardsLocked,
-} = require('./dpos');
+	getVotesSent,
+	getVotesReceived,
+	getUnlocks,
+} = require('./pos');
 
 const {
 	reloadGeneratorsCache,
@@ -88,12 +91,6 @@ const {
 	getTransactionsByBlockID,
 	dryRunTransactions,
 } = require('./transactions');
-
-const {
-	getVotesSent,
-	getVotesReceived,
-	getUnlocks,
-} = require('./dpos');
 
 const {
 	getBlockchainApps,
@@ -165,7 +162,7 @@ module.exports = {
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
-	getDPoSConstants,
+	getPoSConstants,
 	getRewardsLocked,
 	getEvents,
 	getEventsByHeight,

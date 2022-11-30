@@ -15,12 +15,12 @@
  */
 const {
 	getDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getUnlocks,
 	getVotesReceived,
 	getVotesSent,
 	getRewardsLocked,
-} = require('./controllers/dpos');
+} = require('./controllers/pos');
 
 const regex = require('../../shared/utils/regex');
 
@@ -37,8 +37,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'dpos.constants',
-		controller: getDPoSConstants,
+		name: 'pos.constants',
+		controller: getPoSConstants,
 		params: {},
 	},
 	{

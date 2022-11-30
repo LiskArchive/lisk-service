@@ -322,7 +322,7 @@
             }
         }
     },
-    "DPoSConstantsWithEnvelope": {
+    "PoSConstantsWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -330,10 +330,28 @@
         ],
         "properties": {
             "data": {
-                "description": "DPoS module constants",
+                "description": "PoS module constants.",
                 "type": "object",
+                "required": [
+                    "factorSelfStakes",
+                    "maxLengthName",
+                    "maxNumberSentStakes",
+                    "maxNumberPendingUnlocks",
+                    "failSafeMissedBlocks",
+                    "failSafeInactiveWindow",
+                    "punishmentWindow",
+                    "roundLength",
+                    "minWeightStandby",
+                    "numberActiveValidators",
+                    "numberStandbyValidators",
+                    "posTokenID",
+                    "maxBFTWeightCap",
+                    "commissionIncreasePeriod",
+                    "maxCommissionIncreaseRate",
+                    "extraCommandFees"
+                ],
                 "properties": {
-                    "factorSelfVotes": {
+                    "factorSelfStakes": {
                         "type": "integer",
                         "example": 10,
                         "description": "The factor multiplying the self-votes of a delegate for the delegate weight computation. It is used to set the ceiling for the delegate weight."
@@ -343,15 +361,15 @@
                         "example": 20,
                         "description": "The maximum number of characters allowed for a delegate name."
                     },
-                    "maxNumberSentVotes": {
+                    "maxNumberSentStakes": {
                         "type": "integer",
                         "example": 10,
-                        "description": "The maximum number of delegates any voter can vote for."
+                        "description": "The maximum number of validators any staker can stake for."
                     },
                     "maxNumberPendingUnlocks": {
                         "type": "integer",
                         "example": 20,
-                        "description": "The maximum number of pending unlocks allowed for a voter."
+                        "description": "The maximum number of pending unlocks allowed for a staker."
                     },
                     "failSafeMissedBlocks": {
                         "type": "integer",
@@ -373,30 +391,54 @@
                         "example": 10,
                         "description": "The number of blocks in a round and is the sum total of the active and the standby delegates."
                     },
-                    "bftThreshold": {
-                        "type": "integer",
-                        "example": 68,
-                        "description": "The pre-commit and certificate thresholds used by the BFT module."
-                    },
                     "minWeightStandby": {
                         "type": "string",
                         "example": "100000000000",
                         "description": "The minimum delegate weight required to be eligible as a standby delegate."
                     },
-                    "numberActiveDelegates": {
+                    "numberActiveValidators": {
                         "type": "integer",
                         "example": 101,
-                        "description": "The number of active delegates in a round."
+                        "description": "The number of active validators in a round."
                     },
                     "numberStandbyDelegates": {
                         "type": "integer",
                         "example": 2,
-                        "description": "The number of standby delegates in a round."
+                        "description": "The number of standby validators in a round."
                     },
-                    "tokenIDDPoS": {
+                    "posTokenID": {
                         "type": "string",
                         "example": "0000000000000000",
-                        "description": "The universal identifier for the token within the Lisk ecosystem for DPoS module. It is defined as the concatenated value of the chainID and localID. Example: tokenID for LSK would be '0000000100000000' (chainID: '00000001', localID: '00000000')"
+                        "description": "The universal identifier for the token within the Lisk ecosystem for DPoS module. It is defined as the concatenated value of the chainID and localID. Example: tokenID for LSK would be '0000000100000000' (chainID: '00000001', localID: '00000000')."
+                    },
+                    "maxBFTWeightCap": {
+                        "type": "number",
+                        "example": 500,
+                        "description": ""
+                    },
+                    "commissionIncreasePeriod": {
+                        "type": "number",
+                        "example": 260000,
+                        "description": "Determines how frequently (after how many blocks) a validator can increase their commission.  It is set to 260000 blocks on the Lisk Mainchain."
+                    },
+                    "maxCommissionIncreaseRate": {
+                        "type": "number",
+                        "example": 500,
+                        "description": "Determines the maximum allowed increase on the commission per transaction. It is set to 5% on the Lisk Mainchain."
+                    },
+                    "extraCommandFees": {
+                        "description": "Extra fees associated (beyond the usual transaction fees) for the listed commands.",
+                        "type": "object",
+                        "required": [
+                            "validatorRegistrationFee"
+                        ],
+                        "properties": {
+                            "validatorRegistrationFee": {
+                                "type": "string",
+                                "example": "1000000000",
+                                "description": "The extra fee to be supplied for a validator registration transaction."
+                            }
+                        }
                     }
                 }
             },

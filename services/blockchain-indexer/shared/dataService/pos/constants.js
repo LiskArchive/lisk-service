@@ -13,15 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dposConstants = require('./mappings/dposConstants');
+const dataService = require('../business');
+
+const getPoSConstants = async () => {
+	const response = await dataService.getPoSConstants();
+	return response;
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.dpos.constants',
-	params: {},
-	definition: {
-		data: dposConstants,
-		meta: {},
-		links: {},
-	},
+	getPoSConstants,
 };
