@@ -55,7 +55,6 @@ const getRewardsLocked = async params => {
 		};
 
 		const dataRows = await validatorsTable.find(queryParams, ['address']);
-
 		if (dataRows.length) [{ address }] = dataRows;
 	}
 	if (typeof address === 'undefined' && params.publicKey) {
@@ -63,7 +62,6 @@ const getRewardsLocked = async params => {
 	}
 
 	let responseData = [];
-
 	if (address && tokenID) {
 		const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
 		responseData.push({
@@ -73,7 +71,6 @@ const getRewardsLocked = async params => {
 	}
 
 	const totalResponseCount = responseData.length;
-
 	responseData = responseData.slice(params.offset, params.offset + params.limit);
 
 	const responseMeta = {
