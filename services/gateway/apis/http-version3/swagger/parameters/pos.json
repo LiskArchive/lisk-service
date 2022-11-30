@@ -1,8 +1,8 @@
 {
-    "delegateStatus": {
+    "validatorStatus": {
         "name": "status",
         "in": "query",
-        "description": "Query delegates by status",
+        "description": "Query validators by status.",
         "type": "string",
         "minLength": 1
     }

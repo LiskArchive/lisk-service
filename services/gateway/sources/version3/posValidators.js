@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegate = require('./mappings/dposDelegate');
+const validator = require('./mappings/posValidator');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.dpos.delegates',
+	method: 'indexer.pos.validators',
 	params: {
 		address: '=,string',
 		name: '=,string',
@@ -26,7 +26,7 @@ module.exports = {
 		limit: '=,number',
 	},
 	definition: {
-		data: ['data', delegate],
+		data: ['data', validator],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

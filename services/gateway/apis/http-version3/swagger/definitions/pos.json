@@ -1,55 +1,63 @@
 {
-    "delegate": {
+    "validator": {
         "type": "object",
         "required": [
             "name",
+            "totalStakeReceived",
+            "selfStake",
+            "validatorWeight",
             "address",
-            "totalVotesReceived",
-            "selfVotes",
-            "voteWeight",
+            "lastGeneratedHeight",
             "status",
             "isBanned",
-            "pomHeights"
+            "pomHeights",
+            "consecutiveMissedBlocks",
+            "commission",
+            "lastCommissionIncreaseHeight",
+            "sharingCoefficients",
+            "rank"
         ],
         "properties": {
             "name": {
                 "type": "string",
                 "example": "genesis_84",
-                "description": "Delegate name"
+                "description": "Validator name."
             },
-            "totalVotesReceived": {
+            "totalStakeReceived": {
                 "type": "string",
                 "example": "109000000000",
-                "description": "Total votes received"
+                "description": "Total stakes received in `posTokenID`."
             },
-            "selfVotes": {
+            "selfStake": {
                 "type": "string",
                 "example": "109000000000",
-                "description": "Self votes"
+                "description": "Self stakes in `posTokenID`."
             },
-            "voteWeight": {
+            "validatorWeight": {
                 "type": "string",
                 "example": "109000000000",
-                "description": "vote weight"
+                "description": "Validator weight. Minimum of (10 * selfStake) or totalStakeReceived."
             },
             "address": {
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
             },
             "lastGeneratedHeight": {
                 "type": "integer",
-                "example": 0
+                "example": 0,
+                "description": "Height of the last generated block. Set to `0` by default."
             },
             "status": {
                 "type": "string",
                 "example": "active",
-                "description": "Delegate status"
+                "description": "Validator status. Can be one of: active, standby, banned, punished, ineligible."
             },
             "isBanned": {
                 "type": "boolean",
-                "example": "false"
+                "example": false,
+                "description": "A boolean flag indicating if the validator is banned."
             },
             "pomHeights": {
                 "type": "array",
@@ -58,37 +66,78 @@
                     "properties": {
                         "start": {
                             "type": "integer",
-                            "example": 123
+                            "example": 123,
+                            "description": "PoM starting height."
                         },
                         "end": {
                             "type": "integer",
-                            "example": 567
+                            "example": 260123,
+                            "description": "The corresponding PoM end height."
                         }
                     }
                 }
             },
             "consecutiveMissedBlocks": {
                 "type": "integer",
-                "example": 0
+                "example": 0,
+                "description": "Number of consecutive missed blocks."
             },
-            "forgedBlocks": {
-                "type": "integer",
-                "example": 1000,
-                "description": "Number of blocks forged by the delegate."
+            "commission": {
+                "type": "number",
+                "example": 100000,
+                "description": "The reward commission. The percentage is obtained by dividing this value by 100, i.e., a value of 10000 corresponds to 100%. It is set to 10000 on the Lisk Mainchain during the migration."
+            },
+            "lastCommissionIncreaseHeight": {
+                "type": "number",
+                "example": 0,
+                "description": "The block height at which the validator last modified their commission."
+            },
+            "sharingCoefficients": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "tokenID": {
+                            "type": "string",
+                            "example": "0000000000000000",
+                            "description": "TokenID."
+                        },
+                        "coefficient": {
+                            "type": "string",
+                            "example": "",
+                            "description": "Sharing coefficient for the specified TokenID for all the outgoing stakes."
+                        }
+                    }
+                }
             },
             "rank": {
                 "type": "integer",
                 "example": 93,
-                "description": "Delegate rank."
+                "description": "Validator rank."
             },
-            "rewards": {
+            "generatedBlocks": {
+                "type": "integer",
+                "example": 1000,
+                "description": "Number of blocks generated by the validator."
+            },
+            "totalCommission": {
                 "type": "string",
-                "example": "109000000000",
-                "description": "Rewards earned by the delegate for forging blocks in terms of the current chain's native token, e.g.: LSK on the mainchain."
+                "example": "100000000000",
+                "description": "Total rewards earned by the validator as commission for generating blocks."
+            },
+            "totalSelfStakeRewards": {
+                "type": "string",
+                "example": "0",
+                "description": "Total rewards earned by the validator as a staker based on their self-stake when generating blocks."
+            },
+            "earnedRewards": {
+                "type": "string",
+                "example": "100000000000",
+                "description": "Total rewards earned by the validator."
             }
         }
     },
-    "delegatesWithEnvelope": {
+    "validatorsWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -96,10 +145,10 @@
         ],
         "properties": {
             "data": {
-                "description": "List of delegates",
+                "description": "List of validators.",
                 "type": "array",
                 "items": {
-                    "$ref": "#/definitions/delegate"
+                    "$ref": "#/definitions/validator"
                 }
             },
             "meta": {
@@ -119,7 +168,7 @@
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
             },
             "publicKey": {
                 "type": "string",
@@ -238,7 +287,7 @@
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
                             },
                             "name": {
                                 "type": "string",
@@ -289,7 +338,7 @@
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
                             },
                             "name": {
                                 "type": "string",
@@ -414,12 +463,12 @@
                     "maxBFTWeightCap": {
                         "type": "number",
                         "example": 500,
-                        "description": ""
+                        "description": "The maximum BFT weight percentage for a single validator. The percentage is obtained by dividing this value by 100, i.e., a value of 500 corresponds to 5%. It is set to 500 on the Lisk Mainchain."
                     },
                     "commissionIncreasePeriod": {
                         "type": "number",
                         "example": 260000,
-                        "description": "Determines how frequently (after how many blocks) a validator can increase their commission.  It is set to 260000 blocks on the Lisk Mainchain."
+                        "description": "Determines how frequently (after how many blocks) a validator can increase their commission. It is set to 260000 blocks on the Lisk Mainchain."
                     },
                     "maxCommissionIncreaseRate": {
                         "type": "number",

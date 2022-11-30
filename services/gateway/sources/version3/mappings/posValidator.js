@@ -15,9 +15,9 @@
  */
 module.exports = {
 	name: '=,string',
-	totalVotesReceived: '=,string',
-	selfVotes: '=,string',
-	voteWeight: '=,string',
+	totalStakeReceived: '=,string',
+	selfStake: '=,string',
+	validatorWeight: '=,string',
 	address: '=,string',
 	lastGeneratedHeight: '=,number',
 	status: '=,string',
@@ -26,8 +26,16 @@ module.exports = {
 		start: '=,number',
 		end: '=,number',
 	}],
-	rank: '=,number',
 	consecutiveMissedBlocks: '=,number',
-	forgedBlocks: '=,number',
-	rewards: '=,string',
+	commission: '=,number',
+	lastCommissionIncreaseHeight: '=,number',
+	sharingCoefficients: ['sharingCoefficients', {
+		tokenID: '=,string',
+		coefficient: '=,string',
+	}],
+	rank: '=,number',
+	generatedBlocks: '=,number',
+	totalCommission: '=,string',
+	totalSelfStakeRewards: '=,string',
+	earnedRewards: '=,string',
 };
