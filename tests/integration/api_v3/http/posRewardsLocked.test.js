@@ -51,7 +51,7 @@ describe('Rewards Locked API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('No address -> bad request', async () => {
+	it('No param -> bad request', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
@@ -66,7 +66,7 @@ describe('Rewards Locked API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it.only('invalid request param -> bad request', async () => {
+	it('invalid request param -> bad request', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

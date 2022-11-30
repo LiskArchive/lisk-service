@@ -16,7 +16,7 @@
 const {
 	getDelegate,
 	getAllDelegates,
-	getDPoSConstants,
+	getPoSConstants,
 	getVoter,
 	getLockedRewards,
 } = require('../shared/sdk');
@@ -35,8 +35,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getDPoSConstants',
-		controller: async () => getDPoSConstants(),
+		name: 'getPoSConstants',
+		controller: async () => getPoSConstants(),
 		params: {},
 	},
 	{
