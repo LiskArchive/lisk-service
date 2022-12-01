@@ -182,7 +182,7 @@
             }
         }
     },
-    "Vote": {
+    "Stake": {
         "type": "object",
         "required": [
             "delegateAddress",
@@ -261,7 +261,7 @@
                     "votes": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/Vote"
+                            "$ref": "#/definitions/Stake"
                         }
                     }
                 }
@@ -271,7 +271,7 @@
             }
         }
     },
-    "VotesSentWithEnvelope": {
+    "StakesWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -301,18 +301,13 @@
                                 "format": "publicKey",
                                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
                                 "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
-                            },
-                            "votesUsed": {
-                                "type": "integer",
-                                "example": 10,
-                                "description": "Total number of votes used."
                             }
                         }
                     },
-                    "votes": {
+                    "stakes": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/Vote"
+                            "$ref": "#/definitions/Stake"
                         }
                     }
                 }

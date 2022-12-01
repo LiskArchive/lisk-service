@@ -28,7 +28,7 @@ const {
 	voteSchema,
 } = require('../../../schemas/api_v3/vote.schema');
 
-const endpoint = `${baseUrlV3}/dpos/votes/sent`;
+const endpoint = `${baseUrlV3}/pos/stakes`;
 
 describe('Votes Sent (Votes) API', () => {
 	let refDelegate;

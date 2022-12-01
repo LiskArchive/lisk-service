@@ -57,7 +57,7 @@ const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getPoSConstants,
-	getVotesSent,
+	getStakes,
 	getVotesReceived,
 	getUnlocks,
 } = require('./pos');
@@ -159,7 +159,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	dryRunTransactions,
 	getVotesReceived,
-	getVotesSent,
+	getStakes,
 	getUnlocks,
 	getPoSConstants,
 	getEvents,

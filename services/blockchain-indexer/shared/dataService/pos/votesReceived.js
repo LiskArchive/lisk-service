@@ -18,7 +18,7 @@ const BluebirdPromise = require('bluebird');
 const dataService = require('../business');
 const { getDelegates } = require('./delegates');
 const { getLisk32Address } = require('../../utils/accountUtils');
-const { getNameByAddress } = require('../../utils/delegateUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
 const getVotesReceived = async params => {
 	const response = await dataService.getVotesReceived(params);

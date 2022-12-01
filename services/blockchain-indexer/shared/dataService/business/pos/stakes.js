@@ -16,17 +16,18 @@
 const BluebirdPromise = require('bluebird');
 
 const { getIndexedAccountInfo } = require('../../../utils/accountUtils');
-const { getAddressByName } = require('../../../utils/delegateUtils');
+const { getAddressByName } = require('../../../utils/validatorUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
+const { getNameByAddress } = require('../../../utils/validatorUtils');
 
-const normalizeVote = vote => parseToJSONCompatObj(vote);
+const normalizeStake = stake => parseToJSONCompatObj(stake);
 
-const getVotesSent = async params => {
-	const voter = {
+const getStakes = async params => {
+	const staker = {
 		data: {
 			account: {},
-			votes: [],
+			stakes: [],
 		},
 		meta: {},
 	};
@@ -35,42 +36,42 @@ const getVotesSent = async params => {
 		params.address = await getAddressByName(params.name);
 	}
 
-	const response = await requestConnector('getVoter', { address: params.address });
+	const response = await requestConnector('getStaker', { address: params.address });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
-	if (!response.error) response.sentVotes
-		.forEach(sentVote => voter.data.votes = voter.data.votes.concat(normalizeVote(sentVote)));
+	if (!response.error) response.sentStakes
+		.forEach(sentStake => staker.data.stakes.push(normalizeStake(sentStake)));
 
-	voter.data.votes = await BluebirdPromise.map(
-		voter.data.votes,
-		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress, limit: 1 }, ['name']);
-			vote.name = accountInfo && accountInfo.name ? accountInfo.name : null;
-			return vote;
+	staker.data.stakes = await BluebirdPromise.map(
+		staker.data.stakes,
+		async stake => {
+			const accountInfo = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
+			stake.name = accountInfo && accountInfo.name ? accountInfo.name
+				: (await getNameByAddress(stake.validatorAddress));
+			return stake;
 		},
-		{ concurrency: voter.data.votes.length },
+		{ concurrency: staker.data.stakes.length },
 	);
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
-	voter.data.account = {
+	staker.data.account = {
 		address: params.address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,
 		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
-		votesUsed: voter.data.votes.length,
 	};
 
-	const total = voter.data.votes.length;
-	voter.data.votes = voter.data.votes.slice(params.offset, params.offset + params.limit);
+	const total = staker.data.stakes.length;
+	staker.data.stakes = staker.data.stakes.slice(params.offset, params.offset + params.limit);
 
-	voter.meta = {
-		count: voter.data.votes.length,
+	staker.meta = {
+		count: staker.data.stakes.length,
 		offset: params.offset,
 		total,
 	};
 
-	return voter;
+	return staker;
 };
 
 module.exports = {
-	getVotesSent,
+	getStakes,
 };

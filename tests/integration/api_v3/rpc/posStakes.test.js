@@ -28,9 +28,9 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getVotes = async (params) => request(wsRpcUrl, 'get.dpos.votes.sent', params);
+const getVotes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
-describe('get.dpos.votes.sent', () => {
+describe('get.pos.stakes', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		let response;

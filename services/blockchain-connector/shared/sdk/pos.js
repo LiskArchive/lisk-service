@@ -55,13 +55,13 @@ const getPoSConstants = async () => {
 	}
 };
 
-const getVoter = async (address) => {
+const getStaker = async (address) => {
 	try {
-		const voter = await invokeEndpoint('dpos_getVoter', { address });
+		const voter = await invokeEndpoint('pos_getStaker', { address });
 		return voter;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getVoter\'.');
+			throw new TimeoutException('Request timed out when calling \'getStaker\'.');
 		}
 		throw err;
 	}
@@ -71,5 +71,5 @@ module.exports = {
 	getDelegate,
 	getAllDelegates,
 	getPoSConstants,
-	getVoter,
+	getStaker,
 };

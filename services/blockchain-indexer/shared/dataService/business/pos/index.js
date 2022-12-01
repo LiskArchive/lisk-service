@@ -14,7 +14,7 @@
  *
  */
 const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
+const { getStakes } = require('./stakes');
 
 const {
 	WAIT_TIME_VOTER,
@@ -37,7 +37,7 @@ const {
 } = require('./unlock');
 
 module.exports = {
-	getVotesSent,
+	getStakes,
 
 	getVotesReceived,
 

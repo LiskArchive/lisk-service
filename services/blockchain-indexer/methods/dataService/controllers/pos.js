@@ -80,17 +80,17 @@ const getVotesReceived = async params => {
 	return votesReceived;
 };
 
-const getVotesSent = async params => {
-	const votesSent = {
+const getStakes = async params => {
+	const stakes = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getVotesSent(params);
-	if (response.data) votesSent.data = response.data;
-	if (response.meta) votesSent.meta = response.meta;
+	const response = await dataService.getStakes(params);
+	if (response.data) stakes.data = response.data;
+	if (response.meta) stakes.meta = response.meta;
 
-	return votesSent;
+	return stakes;
 };
 
 module.exports = {
@@ -98,6 +98,6 @@ module.exports = {
 	getPoSConstants,
 	getUnlocks,
 	getVotesReceived,
-	getVotesSent,
+	getStakes,
 };
 

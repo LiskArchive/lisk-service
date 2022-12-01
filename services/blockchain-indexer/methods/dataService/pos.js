@@ -18,7 +18,7 @@ const {
 	getPoSConstants,
 	getUnlocks,
 	getVotesReceived,
-	getVotesSent,
+	getStakes,
 } = require('./controllers/pos');
 
 module.exports = [
@@ -60,8 +60,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'dpos.votes.sent',
-		controller: getVotesSent,
+		name: 'pos.stakes',
+		controller: getStakes,
 		params: {
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },

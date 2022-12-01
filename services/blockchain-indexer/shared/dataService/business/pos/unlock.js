@@ -29,7 +29,7 @@ const {
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
 } = require('../../../utils/accountUtils');
-const { getAddressByName } = require('../../../utils/delegateUtils');
+const { getAddressByName } = require('../../../utils/validatorUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
 
@@ -68,7 +68,7 @@ const getUnlocks = async params => {
 		params.address = await getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('getVoter', { address: params.address });
+	const response = await requestConnector('getStaker', { address: params.address });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	let normalizedUnlocks;
