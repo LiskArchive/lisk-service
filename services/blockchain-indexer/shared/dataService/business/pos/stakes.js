@@ -42,6 +42,7 @@ const getStakes = async params => {
 	if (!response.error) response.sentStakes
 		.forEach(sentStake => stakesReponse.data.stakes.push(normalizeStake(sentStake)));
 
+	// Populate name for stakes
 	stakesReponse.data.stakes = await BluebirdPromise.map(
 		stakesReponse.data.stakes,
 		async stake => {
@@ -53,6 +54,7 @@ const getStakes = async params => {
 		{ concurrency: stakesReponse.data.stakes.length },
 	);
 
+	// Populate account name
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
 	stakesReponse.data.account = {
 		address: params.address,
@@ -60,6 +62,7 @@ const getStakes = async params => {
 		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
 	};
 
+	// Prepare response
 	const total = stakesReponse.data.stakes.length;
 	stakesReponse.data.stakes = stakesReponse.data.stakes
 		.slice(params.offset, params.offset + params.limit);

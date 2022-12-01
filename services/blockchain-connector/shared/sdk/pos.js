@@ -57,8 +57,8 @@ const getPoSConstants = async () => {
 
 const getStaker = async (address) => {
 	try {
-		const voter = await invokeEndpoint('pos_getStaker', { address });
-		return voter;
+		const staker = await invokeEndpoint('pos_getStaker', { address });
+		return staker;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getStaker\'.');
