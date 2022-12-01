@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dposVotesReceivedSource = require('../../../sources/version3/posRewardsLocked');
+const posVotesReceivedSource = require('../../../sources/version3/posRewardsLocked');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
@@ -31,26 +31,26 @@ module.exports = {
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
-		const votersSchema = {};
-		votersSchema[this.swaggerApiPath] = { get: {} };
-		votersSchema[this.swaggerApiPath].get.tags = this.tags;
-		votersSchema[this.swaggerApiPath].get.summary = 'Requests locked rewards data';
-		votersSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const lockedRewardsSchema = {};
+		lockedRewardsSchema[this.swaggerApiPath] = { get: {} };
+		lockedRewardsSchema[this.swaggerApiPath].get.tags = this.tags;
+		lockedRewardsSchema[this.swaggerApiPath].get.summary = 'Requests locked rewards data.';
+		lockedRewardsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns locked rewards data',
+			description: 'Returns locked rewards data.',
 		});
-		votersSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
-		votersSchema[this.swaggerApiPath].get.responses = {
+		lockedRewardsSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
+		lockedRewardsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of votes received for a specified delegate address or name',
+				description: 'Returns a list of rewards locked by the PoS module for the specified address, publicKey or validator name.',
 				schema: {
 					$ref: '#/definitions/PoSRewardsLockedWithEnvelope',
 				},
 			},
 		};
-		Object.assign(votersSchema[this.swaggerApiPath].get.responses, response);
-		return votersSchema;
+		Object.assign(lockedRewardsSchema[this.swaggerApiPath].get.responses, response);
+		return lockedRewardsSchema;
 	},
-	source: dposVotesReceivedSource,
+	source: posVotesReceivedSource,
 	envelope,
 };

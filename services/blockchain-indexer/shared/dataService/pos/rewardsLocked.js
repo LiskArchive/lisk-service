@@ -17,7 +17,6 @@ const dataService = require('../business');
 
 const getRewardsLocked = async params => {
 	const response = await dataService.getRewardsLocked(params);
-
 	return response;
 };
 

@@ -56,17 +56,17 @@ describe('Rewards Locked API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid address -> bad request', async () => {
+	it('Invalid address -> bad request', async () => {
 		const response = await api.get(`${endpoint}?address=L`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid name -> bad name', async () => {
+	it('Invalid name -> bad request', async () => {
 		const response = await api.get(`${endpoint}?name=#`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid request param -> bad request', async () => {
+	it('Invalid request param -> bad request', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

@@ -9,7 +9,7 @@
     "validatorName": {
         "name": "name",
         "in": "query",
-        "description": "Registered name of the validator",
+        "description": "Registered name of the validator.",
         "type": "string",
         "minLength": 1
     }
