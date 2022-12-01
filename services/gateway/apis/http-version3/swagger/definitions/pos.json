@@ -185,18 +185,16 @@
     "Stake": {
         "type": "object",
         "required": [
-            "delegateAddress",
+            "validatorAddress",
             "amount",
-            "name",
-            "voteWeight",
-            "rank"
+            "name"
         ],
         "properties": {
-            "delegateAddress": {
+            "validatorAddress": {
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Lisk Address of the delegate the queried account voted for."
+                "description": "Lisk Address of the validator the queried account voted for."
             },
             "amount": {
                 "type": "string",
@@ -207,16 +205,6 @@
                 "format": "username",
                 "example": "liskhq",
                 "description": "Name of the delegate the queried account voted for."
-            },
-            "voteWeight": {
-                "type": "string",
-                "example": "109000000000",
-                "description": "Current delegate's vote weight."
-            },
-            "rank": {
-                "type": "integer",
-                "example": 93,
-                "description": "Current delegate's rank."
             }
         }
     },
@@ -279,7 +267,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of votes",
+                "description": "List of stakes.",
                 "type": "object",
                 "properties": {
                     "account": {
@@ -294,7 +282,7 @@
                             "name": {
                                 "type": "string",
                                 "example": "genesis_84",
-                                "description": "Delegate name"
+                                "description": "Validator name."
                             },
                             "publicKey": {
                                 "type": "string",

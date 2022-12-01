@@ -33,15 +33,15 @@ module.exports = {
 		const stakesSchema = {};
 		stakesSchema[this.swaggerApiPath] = { get: {} };
 		stakesSchema[this.swaggerApiPath].get.tags = this.tags;
-		stakesSchema[this.swaggerApiPath].get.summary = 'Requests stakes data';
+		stakesSchema[this.swaggerApiPath].get.summary = 'Requests stakes data.';
 		stakesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns stakes data',
+			description: 'Returns stakes data.',
 		});
 		stakesSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
 		stakesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of stakes for the specified address or name',
+				description: 'Returns a list of stakes for the specified address or name.',
 				schema: {
 					$ref: '#/definitions/StakesWithEnvelope',
 				},

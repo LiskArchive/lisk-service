@@ -17,7 +17,6 @@ const dataService = require('../business');
 
 const getStakes = async params => {
 	const response = await dataService.getStakes(params);
-
 	return response;
 };
 
