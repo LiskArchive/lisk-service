@@ -13,23 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { TimeoutException },
-} = require('lisk-service-framework');
+const { requestConnector } = require('../../../utils/request');
 
-const { timeoutMessage, invokeEndpoint } = require('./client');
+let rewardTokenID;
 
 const getRewardTokenID = async () => {
-	try {
-		// TODO: Update endpoint once exposed by SDK
-		const tokenID = await invokeEndpoint('reward_getTokenID');
-		return tokenID;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
-		}
-		throw err;
-	}
+	if (typeof rewardTokenID === 'undefined') rewardTokenID = await requestConnector('getRewardTokenID');
+	return rewardTokenID;
 };
 
 module.exports = {

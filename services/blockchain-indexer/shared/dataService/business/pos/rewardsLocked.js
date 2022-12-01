@@ -30,6 +30,8 @@ const { requestConnector } = require('../../../utils/request');
 
 const validatorsTableSchema = require('../../../database/schema/validators');
 
+const { getRewardTokenID } = require('../dynamicRewards/constants');
+
 const getValidatorsTable = () => getTableInstance(
 	validatorsTableSchema.tableName,
 	validatorsTableSchema,
@@ -37,12 +39,17 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const getRewardsLocked = async params => {
+	const response = {
+		data: [],
+		meta: {},
+	};
+
 	// Params must contain either address or name or publicKey
 	if (!Object.keys(params).some(param => ['address', 'name', 'publicKey'].includes(param))) {
 		throw new InvalidParamsException('One of the params (address, name or publicKey) is required.');
 	}
 
-	const tokenID = await requestConnector('getRewardTokenID');
+	const tokenID = await getRewardTokenID();
 
 	// Process address
 	let { address } = params;
@@ -61,27 +68,21 @@ const getRewardsLocked = async params => {
 		address = getLisk32AddressFromPublicKey(Buffer.from(params.publicKey, 'hex'));
 	}
 
-	let responseData = [];
 	if (address && tokenID) {
 		const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
-		responseData.push({
+		response.data.push({
 			reward,
 			tokenID,
 		});
 	}
 
-	const totalResponseCount = responseData.length;
-	responseData = responseData.slice(params.offset, params.offset + params.limit);
+	const totalResponseCount = response.data.length;
+	response.data = response.data.slice(params.offset, params.offset + params.limit);
 
-	const responseMeta = {
-		count: responseData.length,
+	response.meta = {
+		count: response.data.length,
 		offset: params.offset,
 		total: totalResponseCount,
-	};
-
-	const response = {
-		data: responseData,
-		meta: responseMeta,
 	};
 
 	return response;

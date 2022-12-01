@@ -21,7 +21,7 @@ const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 
 module.exports = {
 	ADDRESS_LISK32,
-	MAINCHAIN,
+	MAINCHAIN_ID,
 	NAME,
 	PUBLIC_KEY,
 	TOKEN_ID,

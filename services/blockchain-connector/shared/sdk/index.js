@@ -74,7 +74,8 @@ const {
 
 const {
 	getRewardTokenID,
-} = require('./reward');
+	cacheRewardTokenID,
+} = require('./dynamicRewards');
 
 const {
 	getFeeTokenID,
@@ -97,6 +98,8 @@ const init = async () => {
 	// Cache all the schemas
 	setSchemas(await getSchemas());
 	setMetadata(await getSystemMetadata());
+
+	await cacheRewardTokenID();
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
