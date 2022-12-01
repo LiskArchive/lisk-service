@@ -28,24 +28,38 @@ const {
 } = require('../../../schemas/api_v3/posRewardsLocked.schema');
 
 const endpoint = `${baseUrlV3}/pos/rewards/locked`;
+const stakesEndpoint = `${baseUrlV3}/pos/stakes`;
 
-describe('Rewards Locked API', () => {
+// TODO: Enable test when pos/stakes endpoint is available
+xdescribe('Rewards Locked API', () => {
+	let refAccount;
+	beforeAll(async () => {
+		let refValidatorAddress;
+		const stakeTransactionReponse = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+		const { stakeTx = [] } = stakeTransactionReponse.data;
+		if (stakeTx) {
+			refValidatorAddress = stakeTx.sender.address;
+		}
+		const response2 = await api.get(`${stakesEndpoint}?address=${refValidatorAddress}`);
+		refAccount = response2.data[0].account;
+	});
+
 	it('Returns list locked rewards with name parameter', async () => {
-		const response = await api.get(`${endpoint}?name=test`);
+		const response = await api.get(`${endpoint}?name=${refAccount.name}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list locked rewards with address parameter', async () => {
-		const response = await api.get(`${endpoint}?address=lskaeec6426y8mkoq4oqgf5g4fsau738gb697pj8q`);
+		const response = await api.get(`${endpoint}?address=${refAccount.address}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list locked rewards with name publickKey', async () => {
-		const response = await api.get(`${endpoint}?publicKey=9bae3da048d24db845f02772ced2791e0b269063ac2c3e30010ed6623726dbc4`);
+		const response = await api.get(`${endpoint}?publicKey=${refAccount.publicKey}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);

@@ -30,6 +30,12 @@ module.exports = {
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
+	paramsRequired: true,
+	validParamPairings: [
+		['address'],
+		['name'],
+		['publicKey'],
+	],
 	get schema() {
 		const lockedRewardsSchema = {};
 		lockedRewardsSchema[this.swaggerApiPath] = { get: {} };

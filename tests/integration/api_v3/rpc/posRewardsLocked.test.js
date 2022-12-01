@@ -28,10 +28,24 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getPoSRewardsLocked = async (params) => request(wsRpcUrl, 'get.pos.rewards.locked', params);
+const getStakeTransaction = async params => request(wsRpcUrl, 'get.transactions', params);
+const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
-describe('Rewards Locked API', () => {
+// TODO: Enable test when pos.stakes endpoint is available
+xdescribe('Rewards Locked API', () => {
+	let refAccount;
+	beforeAll(async () => {
+		let refValidatorAddress;
+		const stakeTransactionReponse = await getStakeTransaction({ moduleCommand: 'pos:stake', limit: 1 });
+		const { stakeTx = [] } = stakeTransactionReponse.data;
+		if (stakeTx) {
+			refValidatorAddress = stakeTx.sender.address;
+		}
+		const response2 = await getStakes({ address: refValidatorAddress });
+		refAccount = response2.data[0].account;
+	});
 	it('Returns list locked rewards with name parameter', async () => {
-		const response = await getPoSRewardsLocked({ name: 'test' });
+		const response = await getPoSRewardsLocked({ name: refAccount.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -41,7 +55,7 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('Returns list locked rewards with address parameter', async () => {
-		const response = await getPoSRewardsLocked({ address: 'lskaeec6426y8mkoq4oqgf5g4fsau738gb697pj8q' });
+		const response = await getPoSRewardsLocked({ address: refAccount.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -51,7 +65,7 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('Returns list locked rewards with name publickKey', async () => {
-		const response = await getPoSRewardsLocked({ publicKey: '9bae3da048d24db845f02772ced2791e0b269063ac2c3e30010ed6623726dbc4' });
+		const response = await getPoSRewardsLocked({ publicKey: refAccount.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;

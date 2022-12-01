@@ -468,12 +468,12 @@
 							"type": "string",
 							"example": "0000000000000000",
 							"description": "The universal identifier for the token within the Lisk ecosystem for sharing rewards."
-						}
-                        "reward": {
+						},
+						"reward": {
 							"type": "string",
 							"example": "109000000000",
 							"description": "The amount of rewards currently locked by the PoS module in terms of the specified tokenID."
-						},
+						}
 					}
 				}
 			},
