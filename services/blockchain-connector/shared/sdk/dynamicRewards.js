@@ -18,33 +18,23 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { response } = require('../../../gateway/shared/utils');
-
 const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 let rewardTokenID;
-
-const getRewardTokenIDFromNode = async () => {
-	try {
-		// TODO: Update endpoint once exposed by SDK
-		const tokenID = await invokeEndpoint('reward_getTokenID');
-		return response.error ? null : tokenID;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
-		}
-		throw err;
-	}
-};
 
 const getRewardTokenID = async () => rewardTokenID;
 
 const cacheRewardTokenID = async () => {
 	if (typeof rewardTokenID === 'undefined') {
 		try {
-			rewardTokenID = await getRewardTokenIDFromNode();
+			// TODO: Update endpoint once exposed by SDK
+			const response = await invokeEndpoint('reward_getTokenID');
+			rewardTokenID = response.error ? null : response;
 		} catch (err) {
+			if (err.message.includes(timeoutMessage)) {
+				throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
+			}
 			logger.error('Unable to cache rewardTokenID');
 		}
 	}
