@@ -24,7 +24,7 @@ const { getNameByAddress } = require('../../../utils/validatorUtils');
 const normalizeStake = stake => parseToJSONCompatObj(stake);
 
 const getStakes = async params => {
-	const staker = {
+	const stakesReponse = {
 		data: {
 			account: {},
 			stakes: [],
@@ -40,36 +40,37 @@ const getStakes = async params => {
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	if (!response.error) response.sentStakes
-		.forEach(sentStake => staker.data.stakes.push(normalizeStake(sentStake)));
+		.forEach(sentStake => stakesReponse.data.stakes.push(normalizeStake(sentStake)));
 
-	staker.data.stakes = await BluebirdPromise.map(
-		staker.data.stakes,
+	stakesReponse.data.stakes = await BluebirdPromise.map(
+		stakesReponse.data.stakes,
 		async stake => {
 			const accountInfo = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
 			stake.name = accountInfo && accountInfo.name ? accountInfo.name
 				: (await getNameByAddress(stake.validatorAddress));
 			return stake;
 		},
-		{ concurrency: staker.data.stakes.length },
+		{ concurrency: stakesReponse.data.stakes.length },
 	);
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
-	staker.data.account = {
+	stakesReponse.data.account = {
 		address: params.address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,
 		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
 	};
 
-	const total = staker.data.stakes.length;
-	staker.data.stakes = staker.data.stakes.slice(params.offset, params.offset + params.limit);
+	const total = stakesReponse.data.stakes.length;
+	stakesReponse.data.stakes = stakesReponse.data.stakes
+		.slice(params.offset, params.offset + params.limit);
 
-	staker.meta = {
-		count: staker.data.stakes.length,
+	stakesReponse.meta = {
+		count: stakesReponse.data.stakes.length,
 		offset: params.offset,
 		total,
 	};
 
-	return staker;
+	return stakesReponse;
 };
 
 module.exports = {

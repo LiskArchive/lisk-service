@@ -14,9 +14,7 @@
  *
  */
 module.exports = {
-	delegateAddress: '=,string',
 	amount: '=,string',
 	name: '=,string',
-	rank: '=,number',
-	voteWeight: '=,string',
+	validatorAddress: '=,string',
 };

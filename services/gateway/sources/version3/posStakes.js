@@ -30,9 +30,8 @@ module.exports = {
 				address: '=,string',
 				name: '=,string',
 				publicKey: '=,string',
-				votesUsed: '=,number',
 			},
-			votes: ['data.votes', posStake],
+			stakes: ['data.stakes', posStake],
 		},
 		meta: {
 			count: '=,number',
