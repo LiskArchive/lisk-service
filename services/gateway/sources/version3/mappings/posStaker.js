@@ -12,18 +12,9 @@
  *
  * Removal or modification of this copyright notice is prohibited.
  *
-*/
-const { getPoSConstants } = require('./constants');
-const { getPoSUnlocks } = require('./unlocks');
-const { getVotesSent } = require('./votesSent');
-const { getPoSStakers } = require('./stakers');
-
+ */
 module.exports = {
-	getPoSConstants,
-
-	getPoSUnlocks,
-
-	getVotesSent,
-
-	getPoSStakers,
+	address: '=,string',
+	amount: '=,string',
+	name: '=,string',
 };

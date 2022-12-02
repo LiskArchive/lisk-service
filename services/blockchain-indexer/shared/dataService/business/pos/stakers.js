@@ -26,7 +26,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 
-const getVotesReceived = async params => {
+const getPoSStakers = async params => {
 	const votesDB = await getVotesIndex();
 	const votes = {
 		data: { votes: [] },
@@ -101,5 +101,5 @@ const getVotesReceived = async params => {
 };
 
 module.exports = {
-	getVotesReceived,
+	getPoSStakers,
 };

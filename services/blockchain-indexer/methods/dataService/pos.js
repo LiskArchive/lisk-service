@@ -17,7 +17,7 @@ const {
 	getDelegates,
 	getPoSConstants,
 	getPoSUnlocks,
-	getVotesReceived,
+	getPoSStakers,
 	getVotesSent,
 } = require('./controllers/pos');
 
@@ -51,10 +51,11 @@ module.exports = [
 		},
 	},
 	{
-		name: 'dpos.votes.received',
-		controller: getVotesReceived,
+		name: 'pos.stakers',
+		controller: getPoSStakers,
 		params: {
 			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
