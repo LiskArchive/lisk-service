@@ -112,7 +112,6 @@
         "required": [
             "address",
             "publicKey",
-            "name",
             "pendingUnlocks"
         ],
         "properties": {
