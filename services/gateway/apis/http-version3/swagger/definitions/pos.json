@@ -36,7 +36,7 @@
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
             },
             "lastGeneratedHeight": {
                 "type": "integer",
@@ -107,63 +107,80 @@
             }
         }
     },
-    "unlock": {
+    "posUnlock": {
         "type": "object",
         "required": [
             "address",
             "publicKey",
-            "name"
+            "pendingUnlocks"
         ],
         "properties": {
             "address": {
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                "description": "Address of the staker. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
             },
             "publicKey": {
                 "type": "string",
                 "format": "publicKey",
                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
+                "description": "Public key of the staker. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
             },
             "name": {
                 "type": "string",
                 "example": "genesis_84",
-                "description": "Name of auth account"
+                "description": "Name of the staker."
             },
-            "unlocking": {
+            "pendingUnlocks": {
                 "type": "array",
                 "items": {
                     "type": "object",
+                    "required": [
+                        "validatorAddress",
+                        "amount",
+                        "tokenID",
+                        "unstakeHeight",
+                        "expectedUnlockableHeight",
+                        "unlockable"
+                    ],
                     "properties": {
-                        "delegateAddress": {
+                        "validatorAddress": {
                             "type": "string",
-                            "example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu"
+                            "example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+                            "description": "Address of the validator against whom the stake was made."
                         },
                         "amount": {
                             "type": "string",
-                            "example": "10000"
+                            "example": "1000000000",
+                            "description": "The staked amount of tokens against the validator."
                         },
-                        "unvoteHeight": {
-                            "type": "object",
-                            "properties": {
-                                "start": {
-                                    "type": "integer",
-                                    "example": 30
-                                },
-                                "end": {
-                                    "type": "integer",
-                                    "example": 300
-                                }
-                            }
+                        "tokenID": {
+                            "type": "string",
+                            "example": "0000000000000000",
+                            "description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
+                        },
+                        "unstakeHeight": {
+                            "type": "string",
+                            "example": "10000",
+                            "description": "The block height at which the corresponding amount was unstaked."
+                        },
+                        "expectedUnlockableHeight": {
+                            "type": "string",
+                            "example": "270000",
+                            "description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
+                        },
+                        "unlockable": {
+                            "type": "boolean",
+                            "example": true,
+                            "description": "A boolean flag indicating if the corresponding (locked) staked amount is available to be unlocked."
                         }
                     }
                 }
             }
         }
     },
-    "unlocksWithEnvelope": {
+    "posUnlocksWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -171,10 +188,10 @@
         ],
         "properties": {
             "data": {
-                "description": "Array of delegate unlocks",
+                "description": "Array of PoS unlocks data.",
                 "type": "array",
                 "items": {
-                    "$ref": "#/definitions/unlock"
+                    "$ref": "#/definitions/posUnlock"
                 }
             },
             "meta": {
@@ -238,7 +255,7 @@
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
                             },
                             "name": {
                                 "type": "string",
@@ -249,7 +266,7 @@
                                 "type": "string",
                                 "format": "publicKey",
                                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
                             },
                             "votesReceived": {
                                 "type": "integer",
@@ -289,7 +306,7 @@
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
                             },
                             "name": {
                                 "type": "string",
@@ -300,7 +317,7 @@
                                 "type": "string",
                                 "format": "publicKey",
                                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
                             },
                             "votesUsed": {
                                 "type": "integer",
@@ -322,7 +339,7 @@
             }
         }
     },
-    "PoSConstantsWithEnvelope": {
+    "posConstantsWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -409,7 +426,7 @@
                     "posTokenID": {
                         "type": "string",
                         "example": "0000000000000000",
-                        "description": "The universal identifier for the token within the Lisk ecosystem for DPoS module. It is defined as the concatenated value of the chainID and localID. Example: tokenID for LSK would be '0000000100000000' (chainID: '00000001', localID: '00000000')."
+                        "description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
                     },
                     "maxBFTWeightCap": {
                         "type": "number",
