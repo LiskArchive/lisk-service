@@ -107,7 +107,7 @@
             }
         }
     },
-    "PoSUnlock": {
+    "posUnlock": {
         "type": "object",
         "required": [
             "address",
@@ -180,7 +180,7 @@
             }
         }
     },
-    "PoSUnlocksWithEnvelope": {
+    "posUnlocksWithEnvelope": {
         "type": "object",
         "required": [
             "data",
@@ -191,7 +191,7 @@
                 "description": "Array of PoS unlocks data.",
                 "type": "array",
                 "items": {
-                    "$ref": "#/definitions/PoSUnlock"
+                    "$ref": "#/definitions/posUnlock"
                 }
             },
             "meta": {
@@ -339,7 +339,7 @@
             }
         }
     },
-    "PoSConstantsWithEnvelope": {
+    "posConstantsWithEnvelope": {
         "type": "object",
         "required": [
             "data",

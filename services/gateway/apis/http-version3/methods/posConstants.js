@@ -36,7 +36,7 @@ module.exports = {
 			200: {
 				description: 'Returns all the configured constants for the PoS module.',
 				schema: {
-					$ref: '#/definitions/PoSConstantsWithEnvelope',
+					$ref: '#/definitions/posConstantsWithEnvelope',
 				},
 			},
 		};

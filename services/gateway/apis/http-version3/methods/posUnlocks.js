@@ -54,7 +54,7 @@ module.exports = {
 			200: {
 				description: 'Returns unlocks information for the specified address, name or publicKey.',
 				schema: {
-					$ref: '#/definitions/PoSUnlocksWithEnvelope',
+					$ref: '#/definitions/posUnlocksWithEnvelope',
 				},
 			},
 		};
