@@ -35,6 +35,7 @@ const getRewardTokenID = async () => {
 				throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
 			}
 			logger.error(`Unable to cache rewardTokenID.\n Error:${err.stack}`);
+			throw err;
 		}
 	}
 	return rewardTokenID;

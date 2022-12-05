@@ -18,7 +18,7 @@ const { requestConnector } = require('../../../utils/request');
 let rewardTokenID;
 
 const getRewardTokenID = async () => {
-	if (typeof rewardTokenID === 'undefined') rewardTokenID = await requestConnector('getRewardTokenID');
+	if (!rewardTokenID) rewardTokenID = await requestConnector('getRewardTokenID');
 	return rewardTokenID;
 };
 

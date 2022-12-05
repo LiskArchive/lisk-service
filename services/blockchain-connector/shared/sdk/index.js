@@ -74,7 +74,7 @@ const {
 
 const {
 	getRewardTokenID,
-} = require('./dynamicReward');
+} = require('./reward');
 
 const {
 	getFeeTokenID,
