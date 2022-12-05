@@ -77,7 +77,10 @@ const getPoSStakers = async params => {
 	const resultSet = await stakesTable.find(
 		{
 			validatorAddress: params.validatorAddress,
-			limit: numStakers,
+			limit: params.limit,
+			offset: params.offset,
+			sort: 'amount:desc',
+			order: 'stakerAddress:asc', // Amount sorting tie-breaker
 		},
 		['stakerAddress', 'amount'],
 	);
@@ -95,8 +98,6 @@ const getPoSStakers = async params => {
 		},
 		{ concurrency: stakers.data.stakers.length },
 	);
-
-	stakers.data.stakers = stakers.data.stakers.slice(params.offset, params.offset + params.limit);
 
 	const validatorAccountInfo = await getIndexedAccountInfo(
 		{ address: params.validatorAddress, limit: 1 },
