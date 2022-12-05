@@ -48,7 +48,7 @@ module.exports = {
 		stakersSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
 		stakersSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of stakers for the specified validator address, publicKey or name',
+				description: 'Returns a list of stakers for the specified validator address, publicKey or name.',
 				schema: {
 					$ref: '#/definitions/posStakersWithEnvelope',
 				},

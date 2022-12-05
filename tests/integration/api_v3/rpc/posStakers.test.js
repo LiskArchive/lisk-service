@@ -46,8 +46,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator address and offset=1', async () => {
@@ -55,8 +55,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator address and limit=5', async () => {
@@ -64,8 +64,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested with known validator address, offset=1 and limit=5', async () => {
@@ -75,8 +75,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(0);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested for known validator publicKey', async () => {
@@ -84,8 +84,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator publicKey and offset=1', async () => {
@@ -93,8 +93,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator publicKey and limit=5', async () => {
@@ -102,8 +102,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested with known validator publicKey, offset=1 and limit=5', async () => {
@@ -113,8 +113,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(0);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested for known validator name', async () => {
@@ -122,8 +122,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator name and offset=1', async () => {
@@ -131,8 +131,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator name and limit=5', async () => {
@@ -140,8 +140,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested with known validator name, offset=1 and limit=5', async () => {
@@ -149,8 +149,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(0);
-		expect(result.data.length).toBeLessThanOrEqual(5);
+		expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns empty when requested for known non-validator address', async () => {
@@ -158,7 +158,7 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.length).toBe(0);
+		expect(response.data.stakers.length).toBe(0);
 	});
 
 	it('No address -> invalid param', async () => {

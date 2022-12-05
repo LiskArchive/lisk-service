@@ -45,93 +45,91 @@ describe('Stakers API', () => {
 		it('Returns list of stakers when requested for known validator address', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 		});
 
 		it('Returns list of stakers when requested with known validator address and offset=1', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&offset=1`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 		});
 
 		it('Returns list of stakers when requested with known validator address and limit=5', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(5);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 		});
 
 		it('Returns list of stakers when requested with known validator address, offset=1 and limit=5', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&offset=1&limit=5`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.votes.length).toBeLessThanOrEqual(5);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 		});
 
 		it('Returns list of stakers when requested for known validator publicKey', async () => {
-			if (refValidator.name) {
-				const response = await api.get(`${endpoint}?name=${refValidator.publicKey}`);
-				expect(response).toMap(goodRequestSchema);
-				expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-				expect(response.data.votes.length).toBeLessThanOrEqual(10);
-			}
+			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 		});
 
 		it('Returns list of stakers when requested with known validator publicKey and offset=1', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 		});
 
 		it('Returns list of stakers when requested with known validator publicKey and limit=5', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&limit=5`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(5);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 		});
 
 		it('Returns list of stakers when requested with known validator publicKey, offset=1 and limit=5', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1&limit=5`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.votes.length).toBeLessThanOrEqual(5);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 		});
 
 		it('Returns list of stakers when requested for known validator name', async () => {
 			const response = await api.get(`${endpoint}?name=${refValidator.name}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 		});
 
 		it('Returns list of stakers when requested with known validator name and offset=1', async () => {
 			const response = await api.get(`${endpoint}?name=${refValidator.name}&offset=1`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
 		});
 
 		it('Returns list of stakers when requested with known validator name and limit=5', async () => {
 			const response = await api.get(`${endpoint}?name=${refValidator.name}&limit=5`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(5);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 		});
 
 		it('Returns list of stakers when requested with known validator name, offset=1 and limit=5', async () => {
 			const response = await api.get(`${endpoint}?name=${refValidator.name}&offset=1&limit=5`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.votes.length).toBeLessThanOrEqual(5);
+			expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
 		});
 
 		it('Returns empty when requested for known non-validator address', async () => {
 			const response = await api.get(`${endpoint}?address=lsk99999999999999999999999999999999999999`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.votes.length).toBe(0);
+			expect(response.data.stakers.length).toBe(0);
 		});
 
 		it('No address -> bad request', async () => {
