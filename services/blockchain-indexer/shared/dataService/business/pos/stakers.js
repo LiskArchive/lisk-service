@@ -65,9 +65,11 @@ const getPoSStakers = async params => {
 		params = remParams;
 
 		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
-		if (!address) return new Error(`Account with name: ${name} does not exist.`);
 		params.validatorAddress = address;
 	}
+
+	// If validatorAddress is unavailable, return empty response
+	if (!params.validatorAddress) return stakers;
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(stakerAddress) as numStakers from ${stakesIndexSchema.tableName} WHERE validatorAddress='${params.validatorAddress}'`);
@@ -77,7 +79,7 @@ const getPoSStakers = async params => {
 			validatorAddress: params.validatorAddress,
 			limit: numStakers,
 		},
-		Object.keys(stakesIndexSchema.schema),
+		['stakerAddress', 'amount'],
 	);
 	if (resultSet.length) stakers.data.stakers = resultSet;
 

@@ -153,6 +153,14 @@ describe('get.pos.stakers', () => {
 		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
 
+	it('Returns empty when requested for known non-validator address', async () => {
+		const response = await getStakers({ name: 'lsk99999999999999999999999999999999999999' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
+		expect(result.data.length).toBe(0);
+	});
+
 	it('No address -> invalid param', async () => {
 		const response = await getStakers();
 		expect(response).toMap(invalidParamsSchema);
