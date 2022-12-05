@@ -27,25 +27,25 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const stakesIndexSchema = require('../../../database/schema/stakes');
+const stakesTableSchema = require('../../../database/schema/stakes');
 
-const getVotesIndex = () => getTableInstance(
-	stakesIndexSchema.tableName,
-	stakesIndexSchema,
+const getStakesTable = () => getTableInstance(
+	stakesTableSchema.tableName,
+	stakesTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 // Command specific constants
 const commandName = 'stake';
 
-const getVoteIndexingInfo = async (tx) => {
+const getStakeIndexingInfo = async (tx) => {
 	const stakes = await BluebirdPromise.map(
 		tx.params.stakes,
 		async stake => {
 			const stakeEntry = {};
 
-			stakeEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
-			stakeEntry.receivedAddress = stake.validatorAddress;
+			stakeEntry.stakerAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
+			stakeEntry.validatorAddress = stake.validatorAddress;
 			stakeEntry.amount = stake.amount;
 			return stakeEntry;
 		},
@@ -55,50 +55,50 @@ const getVoteIndexingInfo = async (tx) => {
 	return stakes;
 };
 
-const indexVoteTrx = async (vote, trx) => {
-	const votesDB = await getVotesIndex();
+const upsertStakeTrx = async (stake, trx) => {
+	const stakesTable = await getStakesTable();
 
 	const incrementParam = {
 		increment: {
-			amount: BigInt(vote.amount),
+			amount: BigInt(stake.amount),
 		},
 		where: {
-			sentAddress: vote.staker,
-			receivedAddress: vote.validator,
+			stakerAddress: stake.stakerAddress,
+			validatorAddress: stake.validatorAddress,
 		},
 	};
 
-	const numRowsAffected = await votesDB.increment(incrementParam, trx);
+	const numRowsAffected = await stakesTable.increment(incrementParam, trx);
 	if (numRowsAffected === 0) {
-		await votesDB.upsert(vote, trx);
+		await stakesTable.upsert(stake, trx);
 	}
 };
 
-const removeVoteFromIndex = async (vote, trx) => {
-	const votesDB = await getVotesIndex();
+const removeStakeFromTable = async (stake, trx) => {
+	const stakesTable = await getStakesTable();
 
 	const decrementParam = {
 		decrement: {
-			amount: BigInt(vote.amount),
+			amount: BigInt(stake.amount),
 		},
 		where: {
-			sentAddress: vote.sentAddress,
-			receivedAddress: vote.receivedAddress,
+			stakerAddress: stake.stakerAddress,
+			validatorAddress: stake.validatorAddress,
 		},
 	};
 
-	await votesDB.decrement(decrementParam, trx);
+	await stakesTable.decrement(decrementParam, trx);
 };
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const votes = await getVoteIndexingInfo(tx);
+	const stakes = await getStakeIndexingInfo(tx);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 
 	await BluebirdPromise.map(
-		votes,
-		async (vote) => indexVoteTrx(vote, dbTrx),
+		stakes,
+		async (stake) => upsertStakeTrx(stake, dbTrx),
 		{ concurrency: 1 },
 	);
 
@@ -107,17 +107,17 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	const votes = await getVoteIndexingInfo(tx);
+	const stakes = await getStakeIndexingInfo(tx);
 
-	logger.trace(`Reverting votes in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Reverting stakes in transaction ${tx.id} contained in block at height ${tx.height}`);
 
 	await BluebirdPromise.map(
-		votes,
-		async (vote) => removeVoteFromIndex(vote, dbTrx),
+		stakes,
+		async (stake) => removeStakeFromTable(stake, dbTrx),
 		{ concurrency: 1 },
 	);
 
-	logger.debug(`Reverted votes in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
 module.exports = {

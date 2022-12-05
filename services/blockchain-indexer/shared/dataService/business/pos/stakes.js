@@ -26,10 +26,12 @@ const normalizeStake = stake => parseToJSONCompatObj(stake);
 const getStakes = async params => {
 	const stakesReponse = {
 		data: {
-			account: {},
 			stakes: [],
 		},
-		meta: {},
+		meta: {
+			staker: {},
+			count: 0,
+		},
 	};
 
 	if (!params.address && params.name) {
@@ -42,36 +44,32 @@ const getStakes = async params => {
 	if (!response.error) response.sentStakes
 		.forEach(sentStake => stakesReponse.data.stakes.push(normalizeStake(sentStake)));
 
-	// Populate name for stakes
+	// Prepare stakes array
 	stakesReponse.data.stakes = await BluebirdPromise.map(
 		stakesReponse.data.stakes,
 		async stake => {
 			const accountInfo = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
-			stake.name = accountInfo && accountInfo.name ? accountInfo.name
+			const validatorName = accountInfo && accountInfo.name ? accountInfo.name
 				: (await getNameByAddress(stake.validatorAddress));
-			return stake;
+
+			return {
+				address: stake.validatorAddress,
+				amount: stake.amount,
+				name: validatorName,
+			};
 		},
 		{ concurrency: stakesReponse.data.stakes.length },
 	);
 
-	// Populate account name
+	// Populate staker account name
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
-	stakesReponse.data.account = {
+	stakesReponse.meta.staker = {
 		address: params.address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,
 		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
 	};
 
-	// Prepare response
-	const total = stakesReponse.data.stakes.length;
-	stakesReponse.data.stakes = stakesReponse.data.stakes
-		.slice(params.offset, params.offset + params.limit);
-
-	stakesReponse.meta = {
-		count: stakesReponse.data.stakes.length,
-		offset: params.offset,
-		total,
-	};
+	stakesReponse.meta.count = stakesReponse.data.stakes.length;
 
 	return stakesReponse;
 };
