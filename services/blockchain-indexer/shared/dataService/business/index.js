@@ -83,8 +83,8 @@ const {
 
 const {
 	getVotesByTransactionIDs,
-	getVotesReceived,
 	getStakes,
+	getPoSStakers,
 	getPoSUnlocks,
 	getPoSConstants,
 } = require('./pos');
@@ -124,8 +124,8 @@ module.exports = {
 	normalizeTransaction,
 
 	getVotesByTransactionIDs,
-	getVotesReceived,
 	getStakes,
+	getPoSStakers,
 	getPoSUnlocks,
 	getPoSConstants,
 

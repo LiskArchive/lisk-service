@@ -13,26 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
+const business = require('../business');
 
-const { getStakes } = require('./stakes');
-const { getPoSStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
+const getPoSStakers = async params => {
+	const response = await business.getPoSStakers(params);
+	return response;
+};
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getStakes,
 	getPoSStakers,
-
-	getPoSUnlocks,
-
-	getPoSConstants,
 };

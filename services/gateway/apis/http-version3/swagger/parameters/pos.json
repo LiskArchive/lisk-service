@@ -1,9 +1,15 @@
 {
-    "delegateStatus": {
-        "name": "status",
-        "in": "query",
-        "description": "Query delegates by status",
-        "type": "string",
-        "minLength": 1
-    }
+	"delegateStatus": {
+		"name": "status",
+		"in": "query",
+		"description": "Query delegates by status",
+		"type": "string",
+		"minLength": 1
+	},
+	"isUnlockable": {
+		"name": "isUnlockable",
+		"in": "query",
+		"description": "Query pending unlocks filtered by unlockable.",
+		"type": "boolean"
+	}
 }

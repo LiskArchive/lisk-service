@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVotesReceived } = require('./votesReceived');
 const { getStakes } = require('./stakes');
 const { getPoSConstants } = require('./constants');
 const { getPoSUnlocks } = require('./unlocks');
+const { getPoSStakers } = require('./stakers');
 
 module.exports = {
 	getPoSConstants,
@@ -25,5 +25,5 @@ module.exports = {
 
 	getStakes,
 
-	getVotesReceived,
+	getPoSStakers,
 };

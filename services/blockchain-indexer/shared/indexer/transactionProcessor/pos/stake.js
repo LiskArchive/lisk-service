@@ -26,9 +26,14 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const stakesTableSchema = require('../../../database/schema/votes');
 
-const getVotesIndex = () => getTableInstance('votes', stakesTableSchema, MYSQL_ENDPOINT);
+const stakesIndexSchema = require('../../../database/schema/stakes');
+
+const getVotesIndex = () => getTableInstance(
+	stakesIndexSchema.tableName,
+	stakesIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const commandName = 'stake';

@@ -13,32 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posStake = require('./mappings/posStake');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.dpos.votes.received',
-	params: {
-		address: '=,string',
-		name: '=,string',
-		limit: '=,number',
-		offset: '=,number',
+	tableName: 'stakes',
+	primaryKey: ['validatorAddress', 'stakerAddress'],
+	schema: {
+		stakerAddress: { type: 'string' },
+		validatorAddress: { type: 'string' },
+		amount: { type: 'bigInteger' },
 	},
-	definition: {
-		data: {
-			account: {
-				address: '=,string',
-				name: '=,string',
-				publicKey: '=,string',
-				votesReceived: '=,number',
-			},
-			votes: ['data.votes', posStake],
-		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
+	indexes: {
+		validatorAddress: { type: 'key' },
 	},
+	purge: {},
 };
