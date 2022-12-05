@@ -314,6 +314,62 @@
             }
         }
     },
+    "posStakersMeta": {
+        "type": "object",
+        "required": [
+            "validator",
+            "count",
+            "offset",
+            "total"
+        ],
+        "properties": {
+            "validator": {
+                "type": "object",
+                "required": [
+                    "address",
+                    "publicKey",
+                    "name"
+                ],
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "format": "address",
+                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                        "description": "Address of the queried validator. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+                    },
+                    "publicKey": {
+                        "type": "string",
+                        "format": "publicKey",
+                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+                        "description": "Public key of the queried validator. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "genesis_84",
+                        "description": "Name of the queried validator."
+                    }
+                }
+            },
+            "count": {
+                "type": "integer",
+                "example": 100,
+                "minimum": 0,
+                "description": "Number of items returned in the request."
+            },
+            "offset": {
+                "type": "integer",
+                "example": 25,
+                "minimum": 0,
+                "description": "Defines how many items are skipped."
+            },
+            "total": {
+                "type": "integer",
+                "example": 43749,
+                "minimum": 0,
+                "description": "Total number of items in the database."
+            }
+        }
+    },
     "posStakersWithEnvelope": {
         "type": "object",
         "required": [
@@ -337,39 +393,7 @@
                 }
             },
             "meta": {
-                "$ref": "#/definitions/Pagination",
-                "validator": {
-                    "type": "object",
-                    "required": [
-                        "address",
-                        "publicKey",
-                        "name"
-                    ],
-                    "properties": {
-                        "address": {
-                            "type": "string",
-                            "format": "address",
-                            "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                            "description": "Address of the queried validator. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-                        },
-                        "publicKey": {
-                            "type": "string",
-                            "format": "publicKey",
-                            "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                            "description": "Public key of the queried validator. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-                        },
-                        "name": {
-                            "type": "string",
-                            "example": "genesis_84",
-                            "description": "Name of the queried validator."
-                        }
-                    }
-                },
-                "posTokenID": {
-                    "type": "string",
-                    "example": "0000000000000000",
-                    "description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
-                }
+                "$ref": "#/definitions/posStakersMeta"
             }
         }
     },
