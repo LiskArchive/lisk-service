@@ -14,7 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-// const Transactions = require('@liskhq/lisk-transactions');
+const Transactions = require('@liskhq/lisk-transactions');
 
 const {
 	CacheRedis,
@@ -55,7 +55,7 @@ const DELEGATE_STATUS = {
 
 let delegateList = [];
 
-const delegateComparator = (a, b) => {
+const validatorComparator = (a, b) => {
 	const diff = BigInt(b.voteWeight) - BigInt(a.voteWeight);
 	if (diff !== BigInt('0')) return Number(diff);
 	return a.hexAddress.localeCompare(b.hexAddress, 'en');
@@ -65,7 +65,7 @@ const delegateComparator = (a, b) => {
 const computeDelegateRank = async () => {
 	delegateList
 		.map(delegate => ({ ...delegate, hexAddress: getHexAddress(delegate.address) }))
-		.sort(delegateComparator);
+		.sort(validatorComparator);
 	delegateList.map((delegate, index) => {
 		delegate.rank = index + 1;
 		return delegate;
@@ -73,20 +73,18 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const { numberActiveDelegates, numberStandbyDelegates } = (await getDPoSConstants()).data;
-	// const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
+	const { numberActiveDelegates } = (await getDPoSConstants()).data;
+	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
 	const generatorsList = await getAllGenerators();
 
 	const generatorInfo = (delegateList
 		.filter(o1 => generatorsList.some(o2 => o1.address === o2.address)))
-		.sort((a, b) => Number(b) - Number(a),
-		);
+		.map(entry => ({ ...entry, hexAddress: getHexAddress(entry.address) }))
+		.sort(validatorComparator);
 
 	const activeGeneratorsList = (generatorInfo.slice(0, numberActiveDelegates))
-		.map(acc => acc.address);
-	const standbyGeneratorsList = (generatorInfo.slice(generatorInfo.length - numberStandbyDelegates))
 		.map(acc => acc.address);
 
 	const verifyIfPunished = (delegate) => {
@@ -96,12 +94,8 @@ const computeDelegateStatus = async () => {
 		return isPunished;
 	};
 
+	logger.debug('Determine delegate status.');
 	delegateList.map((delegate) => {
-		logger.debug('Determine delegate status');
-
-		// Default delegate status
-		delegate.status = DELEGATE_STATUS.INELIGIBLE;
-
 		// Update delegate status, if applicable
 		if (delegate.isBanned) {
 			delegate.status = DELEGATE_STATUS.BANNED;
@@ -109,12 +103,15 @@ const computeDelegateStatus = async () => {
 			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = DELEGATE_STATUS.ACTIVE;
-		} else if (standbyGeneratorsList.includes(delegate.address)) {
-			// } else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
+		} else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = DELEGATE_STATUS.STANDBY;
+		} else {
+			// Default delegate status
+			delegate.status = DELEGATE_STATUS.INELIGIBLE;	
 		}
 		return delegate;
 	});
+
 	return delegateList;
 };
 
