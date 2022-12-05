@@ -31,6 +31,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getDelegates = async params => request(wsRpcUrl, 'get.dpos.delegates', params);
+const getDPoSConstants = async () => request(wsRpcUrl, 'get.dpos.constants');
 
 describe('Method get.dpos.delegates', () => {
 	let refDelegate;
@@ -51,7 +52,10 @@ describe('Method get.dpos.delegates', () => {
 			result.data.forEach((delegate) => {
 				expect(delegate).toMap(delegateSchema);
 			});
+
+			const { numberActiveDelegates, numberStandbyDelegates } = (await getDPoSConstants()).data;
 			expect(result.meta).toMap(metaSchema);
+			expect(response.meta.total).toEqual(numberActiveDelegates + numberStandbyDelegates);
 		});
 
 		it('returns list of delegates with limit', async () => {
