@@ -85,8 +85,8 @@ const {
 	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
-	getUnlocks,
 	getRewardsLocked,
+	getPoSUnlocks,
 	getPoSConstants,
 } = require('./pos');
 
@@ -126,7 +126,7 @@ module.exports = {
 	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
-	getUnlocks,
+	getPoSUnlocks,
 	getPoSConstants,
 	getAuthAccountInfo,
 	getRewardsLocked,

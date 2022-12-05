@@ -13,16 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const posUnlock = require('./mappings/posUnlock');
+
 module.exports = {
-	address: '=,string',
-	publicKey: '=,string',
-	name: '=,string',
-	unlocking: ['data.unlocking', {
-		delegateAddress: '=,string',
-		amount: '=,string',
-		unvoteHeight: {
-			start: '=,number',
-			end: '=,number',
+	type: 'moleculer',
+	method: 'indexer.pos.unlocks',
+	params: {
+		address: '=,string',
+		name: '=,string',
+		publicKey: '=,string',
+		isUnlockable: '=,boolean',
+		limit: '=,number',
+		offset: '=,number',
+	},
+	definition: {
+		data: posUnlock,
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
 		},
-	}],
+		links: {},
+	},
 };
