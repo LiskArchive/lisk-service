@@ -59,7 +59,7 @@ const {
 	getPoSConstants,
 	getStakes,
 	getVotesReceived,
-	getUnlocks,
+	getPoSUnlocks,
 } = require('./pos');
 
 const {
@@ -160,7 +160,7 @@ module.exports = {
 	dryRunTransactions,
 	getVotesReceived,
 	getStakes,
-	getUnlocks,
+	getPoSUnlocks,
 	getPoSConstants,
 	getEvents,
 	getEventsByHeight,

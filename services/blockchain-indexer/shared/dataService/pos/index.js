@@ -21,7 +21,7 @@ const {
 
 const { getVotesReceived } = require('./votesReceived');
 const { getStakes } = require('./stakes');
-const { getUnlocks } = require('./unlocks');
+const { getPoSUnlocks } = require('./unlocks');
 const { getPoSConstants } = require('./constants');
 
 module.exports = {
@@ -32,7 +32,7 @@ module.exports = {
 	getStakes,
 	getVotesReceived,
 
-	getUnlocks,
+	getPoSUnlocks,
 
 	getPoSConstants,
 };

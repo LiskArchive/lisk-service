@@ -15,11 +15,6 @@
  */
 const { requestConnector } = require('../../../utils/request');
 
-const WAIT_TIME_VOTER = 2000;
-const WAIT_TIME_SELF_VOTE = 260000;
-const PUNISH_TIME_VOTER = 260000;
-const PUNISH_TIME_SELF_VOTE = 780000;
-
 let moduleConstants;
 
 const getPoSConstants = async () => {
@@ -32,10 +27,5 @@ const getPoSConstants = async () => {
 };
 
 module.exports = {
-	WAIT_TIME_VOTER,
-	WAIT_TIME_SELF_VOTE,
-	PUNISH_TIME_VOTER,
-	PUNISH_TIME_SELF_VOTE,
-
 	getPoSConstants,
 };

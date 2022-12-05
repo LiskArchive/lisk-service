@@ -29,7 +29,7 @@
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
             },
             "lastCertificateHeight": {
                 "type": "integer",
@@ -329,7 +329,7 @@
             "tokenID": {
                 "type": "string",
                 "example": "Lisk",
-                "description": "The universal identifier for the token within the Lisk ecosystem. It is defined as the concatenated value of the chainID and localID. Example: tokenID for LSK would be '0000000100000000' (chainID: '00000001', localID: '00000000')"
+                "description": "The universal identifier for the token within the Lisk ecosystem."
             },
             "tokenName": {
                 "type": "string",
