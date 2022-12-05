@@ -19,9 +19,7 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	address: {
-		getLisk32AddressFromPublicKey,
-	},
+	address: { getLisk32AddressFromPublicKey },
 } = require('@liskhq/lisk-cryptography');
 
 const config = require('../../../../config');
@@ -50,11 +48,9 @@ const getRewardsLocked = async params => {
 		throw new InvalidParamsException('One of the params (address, name or publicKey) is required.');
 	}
 
-	const tokenID = await getRewardTokenID();
-
 	// Process address
 	let { address } = params;
-	if (typeof address === 'undefined' && params.name) {
+	if (!address && params.name) {
 		const validatorsTable = await getValidatorsTable();
 
 		const queryParams = {
@@ -65,9 +61,11 @@ const getRewardsLocked = async params => {
 		const dataRows = await validatorsTable.find(queryParams, ['address']);
 		if (dataRows.length) [{ address }] = dataRows;
 	}
-	if (typeof address === 'undefined' && params.publicKey) {
+	if (!address && params.publicKey) {
 		address = getLisk32AddressFromPublicKey(Buffer.from(params.publicKey, 'hex'));
 	}
+
+	const tokenID = await getRewardTokenID();
 
 	if (!address || !tokenID) {
 		return response;
