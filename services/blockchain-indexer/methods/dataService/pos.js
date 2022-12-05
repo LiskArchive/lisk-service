@@ -67,6 +67,7 @@ module.exports = [
 		params: {
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
 		},
 	},
 ];

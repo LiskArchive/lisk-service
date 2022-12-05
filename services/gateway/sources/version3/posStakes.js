@@ -21,6 +21,7 @@ module.exports = {
 	params: {
 		address: '=,string',
 		name: '=,string',
+		publicKey: '=,string',
 	},
 	definition: {
 		data: {

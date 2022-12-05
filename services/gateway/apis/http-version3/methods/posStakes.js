@@ -26,6 +26,7 @@ module.exports = {
 	params: {
 		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		name: { optional: true, type: 'string', pattern: regex.NAME },
+		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
 	},
 	get schema() {
 		const stakesSchema = {};
