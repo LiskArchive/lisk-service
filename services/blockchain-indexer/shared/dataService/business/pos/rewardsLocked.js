@@ -30,7 +30,7 @@ const { requestConnector } = require('../../../utils/request');
 
 const validatorsTableSchema = require('../../../database/schema/validators');
 
-const { getRewardTokenID } = require('../dynamicRewards/constants');
+const { getRewardTokenID } = require('../dynamicReward/constants');
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsTableSchema.tableName,
@@ -44,6 +44,7 @@ const getRewardsLocked = async params => {
 		meta: {},
 	};
 
+	// TODO: Simplify these checks once validParamPairings related issue is resolved
 	// Params must contain either address or name or publicKey
 	if (!Object.keys(params).some(param => ['address', 'name', 'publicKey'].includes(param))) {
 		throw new InvalidParamsException('One of the params (address, name or publicKey) is required.');
@@ -68,13 +69,14 @@ const getRewardsLocked = async params => {
 		address = getLisk32AddressFromPublicKey(Buffer.from(params.publicKey, 'hex'));
 	}
 
-	if (address && tokenID) {
-		const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
-		response.data.push({
-			reward,
-			tokenID,
-		});
+	if (!address || !tokenID) {
+		return response;
 	}
+	const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
+	response.data.push({
+		reward,
+		tokenID,
+	});
 
 	const totalResponseCount = response.data.length;
 	response.data = response.data.slice(params.offset, params.offset + params.limit);

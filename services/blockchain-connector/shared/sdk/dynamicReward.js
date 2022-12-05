@@ -23,24 +23,23 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 const logger = Logger();
 let rewardTokenID;
 
-const getRewardTokenID = async () => rewardTokenID;
-
-const cacheRewardTokenID = async () => {
-	if (typeof rewardTokenID === 'undefined') {
+const getRewardTokenID = async () => {
+	if (!rewardTokenID) {
 		try {
 			// TODO: Update endpoint once exposed by SDK
-			const response = await invokeEndpoint('reward_getTokenID');
+			// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
+			const response = await invokeEndpoint('reward_getRewardTokenID');
 			rewardTokenID = response.error ? null : response;
 		} catch (err) {
 			if (err.message.includes(timeoutMessage)) {
-				throw new TimeoutException('Request timed out when calling \'cacheRewardTokenID\'.');
+				throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
 			}
 			logger.error(`Unable to cache rewardTokenID.\n Error:${err.stack}`);
 		}
 	}
+	return rewardTokenID;
 };
 
 module.exports = {
 	getRewardTokenID,
-	cacheRewardTokenID,
 };

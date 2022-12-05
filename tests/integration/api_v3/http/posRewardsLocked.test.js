@@ -30,8 +30,7 @@ const {
 const endpoint = `${baseUrlV3}/pos/rewards/locked`;
 const stakesEndpoint = `${baseUrlV3}/pos/stakes`;
 
-// TODO: Enable test when pos/stakes endpoint is available
-xdescribe('Rewards Locked API', () => {
+describe('Rewards Locked API', () => {
 	let refAccount;
 	beforeAll(async () => {
 		let refValidatorAddress;

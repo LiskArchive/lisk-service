@@ -31,8 +31,7 @@ const getPoSRewardsLocked = async (params) => request(wsRpcUrl, 'get.pos.rewards
 const getStakeTransaction = async params => request(wsRpcUrl, 'get.transactions', params);
 const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
-// TODO: Enable test when pos.stakes endpoint is available
-xdescribe('Rewards Locked API', () => {
+describe('Rewards Locked API', () => {
 	let refAccount;
 	beforeAll(async () => {
 		let refValidatorAddress;
