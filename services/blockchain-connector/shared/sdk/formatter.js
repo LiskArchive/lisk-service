@@ -27,6 +27,7 @@ const {
 
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 const { getLisk32Address } = require('../utils/accountUtils');
+const { getMinFeePerByte } = require('./fee');
 
 // TODO: Remove when SDK exposes topics information in metadata
 const EVENT_TOPICS = {
@@ -64,21 +65,29 @@ const EVENT_TOPICS = {
 	blsKeyRegistration: ['address'],
 };
 
-const decodeTransaction = (transaction) => {
+const formatTransaction = (transaction) => {
+	// Calculate transaction size
 	const txSchema = getTransactionSchema();
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
 	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
 	const transactionSize = transactionBuffer.length;
 
+	// Calculate transaction min fee
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
-	// TODO: Verify if 'computeMinFee' returns correct value
+	const nonEmptySignaturesCount = transaction.signatures.filter(s => s).length;
 	const transactionMinFee = computeMinFee(
 		{ ...schemaCompliantTransaction, params: transactionParams },
 		txParamsSchema,
+		{
+			minFeePerByte: getMinFeePerByte() || null,
+			numberOfSignatures: nonEmptySignaturesCount,
+			numberOfEmptySignatures: transaction.signatures.length - nonEmptySignaturesCount,
+		},
 	);
 
 	// TODO: Remove once SDK fixes the address format
+	// Convert hex addresses to Lisk32 addresses
 	const formattedtransactionParams = {};
 	Object.entries(transactionParams).forEach(([key, value]) => {
 		if (Array.isArray(value)) {
@@ -104,45 +113,46 @@ const decodeTransaction = (transaction) => {
 		}
 	});
 
-	const decodedTransaction = {
+	const formattedTransaction = {
 		...transaction,
 		params: formattedtransactionParams,
 		size: transactionSize,
 		minFee: transactionMinFee,
 	};
 
-	return parseToJSONCompatObj(decodedTransaction);
+	return parseToJSONCompatObj(formattedTransaction);
 };
 
-const decodeBlock = (block) => {
+const formatBlock = (block) => {
 	const blockHeader = block.header;
 
 	const blockAssets = block.assets.map(asset => {
 		const assetModule = asset.module;
 		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
 		// TODO: Can be made schema compliant dynamically
-		const decodedAssetData = blockAssetDataSchema
+		const formattedAssetData = blockAssetDataSchema
 			? codec.decode(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
 			: asset.data;
 
-		const decodedBlockAsset = {
+		const formattedBlockAsset = {
 			module: assetModule,
-			data: decodedAssetData,
+			data: formattedAssetData,
 		};
-		return decodedBlockAsset;
+		return formattedBlockAsset;
 	});
 
-	const blockTransactions = block.transactions.map(t => decodeTransaction(t));
+	const blockTransactions = block.transactions.map(t => formatTransaction(t));
 
-	const decodedBlock = {
+	const formattedBlock = {
 		header: blockHeader,
 		assets: blockAssets,
 		transactions: blockTransactions,
 	};
-	return parseToJSONCompatObj(decodedBlock);
+	return parseToJSONCompatObj(formattedBlock);
 };
 
-const decodeEvent = (event) => {
+const formatEvent = (event) => {
+	// Calculate event ID
 	const eventSchema = getEventSchema();
 	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
 	const eventBuffer = codec.encode(eventSchema, schemaCompliantEvent);
@@ -175,60 +185,60 @@ const decodeEvent = (event) => {
 		eventTopics = event.topics;
 	}
 
-	const decodedEvent = {
+	const formattedEvent = {
 		...event,
 		data: eventData,
 		topics: eventTopics,
 		id: eventID,
 	};
-	return parseToJSONCompatObj(decodedEvent);
+	return parseToJSONCompatObj(formattedEvent);
 };
 
-const decodeResponse = (endpoint, response) => {
+const formatResponse = (endpoint, response) => {
 	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(endpoint)) {
-		const decodedBlock = decodeBlock(response);
-		return parseToJSONCompatObj(decodedBlock);
+		const formattedBlock = formatBlock(response);
+		return parseToJSONCompatObj(formattedBlock);
 	}
 
 	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(endpoint)) {
 		return response.map(block => {
-			const decodedBlock = decodeBlock(block);
-			return parseToJSONCompatObj(decodedBlock);
+			const formattedBlock = formatBlock(block);
+			return parseToJSONCompatObj(formattedBlock);
 		});
 	}
 
 	if (['app_getTransactionByID'].includes(endpoint)) {
-		const decodedTransaction = decodeTransaction(response);
-		return parseToJSONCompatObj(decodedTransaction);
+		const formattedTransaction = formatTransaction(response);
+		return parseToJSONCompatObj(formattedTransaction);
 	}
 
 	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(endpoint)) {
 		return response.map(transaction => {
-			const decodedTransaction = decodeTransaction(transaction);
-			return parseToJSONCompatObj(decodedTransaction);
+			const formattedTransaction = formatTransaction(transaction);
+			return parseToJSONCompatObj(formattedTransaction);
 		});
 	}
 	return response;
 };
 
-const decodeAPIClientEventPayload = (eventName, payload) => {
+const formatAPIClientEventPayload = (eventName, payload) => {
 	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
-		const decodedBlock = decodeBlock(payload.block);
-		return parseToJSONCompatObj(decodedBlock);
+		const formattedBlock = formatBlock(payload.block);
+		return parseToJSONCompatObj(formattedBlock);
 	}
 
 	if (eventName === 'app_newTransaction') {
-		const decodedTransaction = decodeTransaction(payload.transaction);
-		return parseToJSONCompatObj(decodedTransaction);
+		const formattedTransaction = formatTransaction(payload.transaction);
+		return parseToJSONCompatObj(formattedTransaction);
 	}
 
 	return payload;
 };
 
 module.exports = {
-	decodeBlock,
-	decodeTransaction,
-	decodeEvent,
-	decodeResponse,
-	decodeAPIClientEventPayload,
+	formatBlock,
+	formatTransaction,
+	formatEvent,
+	formatResponse,
+	formatAPIClientEventPayload,
 };

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { decodeTransaction } = require('./decoder');
+const { formatTransaction } = require('./formatter');
 const { encodeTransaction } = require('./encoder');
 const {
 	getTransactionByID,
@@ -23,22 +23,22 @@ const {
 	dryRunTransaction,
 } = require('./endpoints');
 
-const getTransactionByIDDecoded = async (id) => {
+const getTransactionByIDFormatted = async (id) => {
 	const transaction = await getTransactionByID(id);
-	const decodedTransaction = decodeTransaction(transaction);
-	return decodedTransaction;
+	const formattedTransaction = formatTransaction(transaction);
+	return formattedTransaction;
 };
 
-const getTransactionsByIDsDecoded = async (ids) => {
+const getTransactionsByIDsFormatted = async (ids) => {
 	const transactions = await getTransactionsByIDs(ids);
-	const decodedTransactions = transactions.map((t) => decodeTransaction(t));
-	return decodedTransactions;
+	const formattedTransactions = transactions.map((t) => formatTransaction(t));
+	return formattedTransactions;
 };
 
-const getTransactionsFromPoolDecoded = async () => {
+const getTransactionsFromPoolFormatted = async () => {
 	const transactions = await getTransactionsFromPool();
-	const decodedTransactions = transactions.map((t) => decodeTransaction(t));
-	return decodedTransactions;
+	const formattedTransactions = transactions.map((t) => formatTransaction(t));
+	return formattedTransactions;
 };
 
 const dryRunTransactionWrapper = async (params) => {
@@ -51,9 +51,9 @@ const dryRunTransactionWrapper = async (params) => {
 };
 
 module.exports = {
-	getTransactionByID: getTransactionByIDDecoded,
-	getTransactionsByIDs: getTransactionsByIDsDecoded,
-	getTransactionsFromPool: getTransactionsFromPoolDecoded,
+	getTransactionByID: getTransactionByIDFormatted,
+	getTransactionsByIDs: getTransactionsByIDsFormatted,
+	getTransactionsFromPool: getTransactionsFromPoolFormatted,
 	postTransaction,
 	dryRunTransaction: dryRunTransactionWrapper,
 };
