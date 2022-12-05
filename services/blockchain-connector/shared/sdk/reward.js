@@ -13,14 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { TimeoutException },
-	Logger,
-} = require('lisk-service-framework');
+const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
 
-const logger = Logger();
 let rewardTokenID;
 
 const getRewardTokenID = async () => {
@@ -34,7 +30,6 @@ const getRewardTokenID = async () => {
 			if (err.message.includes(timeoutMessage)) {
 				throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
 			}
-			logger.error(`Unable to cache rewardTokenID.\n Error:${err.stack}`);
 			throw err;
 		}
 	}
