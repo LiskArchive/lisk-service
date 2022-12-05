@@ -26,28 +26,28 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const votesIndexSchema = require('../../../database/schema/votes');
+const stakesTableSchema = require('../../../database/schema/votes');
 
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
+const getVotesIndex = () => getTableInstance('votes', stakesTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandName = 'voteDelegate';
+const commandName = 'stake';
 
 const getVoteIndexingInfo = async (tx) => {
-	const votes = await BluebirdPromise.map(
-		tx.params.votes,
-		async vote => {
-			const voteEntry = {};
+	const stakes = await BluebirdPromise.map(
+		tx.params.stakes,
+		async stake => {
+			const stakeEntry = {};
 
-			voteEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
-			voteEntry.receivedAddress = vote.delegateAddress;
-			voteEntry.amount = vote.amount;
-			return voteEntry;
+			stakeEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
+			stakeEntry.receivedAddress = stake.validatorAddress;
+			stakeEntry.amount = stake.amount;
+			return stakeEntry;
 		},
-		{ concurrency: tx.params.votes.length },
+		{ concurrency: tx.params.stakes.length },
 	);
 
-	return votes;
+	return stakes;
 };
 
 const indexVoteTrx = async (vote, trx) => {
@@ -58,8 +58,8 @@ const indexVoteTrx = async (vote, trx) => {
 			amount: BigInt(vote.amount),
 		},
 		where: {
-			sentAddress: vote.sentAddress,
-			receivedAddress: vote.receivedAddress,
+			sentAddress: vote.staker,
+			receivedAddress: vote.validator,
 		},
 	};
 

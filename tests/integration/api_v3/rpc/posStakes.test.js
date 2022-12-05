@@ -19,68 +19,63 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	voteSchema,
-} = require('../../../schemas/api_v3/vote.schema');
+	stakeResponseSchema,
+} = require('../../../schemas/api_v3/stake.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getVotes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('get.pos.stakes', () => {
-	let refDelegate;
+	let refValidator;
 	beforeAll(async () => {
 		let response;
 		do {
 			// eslint-disable-next-line no-await-in-loop
 			response = await request(wsRpcUrl, 'get.dpos.delegates', { limit: 1 });
 		} while (!response.result);
-		[refDelegate] = response.result.data;
+		[refValidator] = response.result.data;
 	});
 
 	it('Returns list of votes when requested for existing account by address', async () => {
-		const response = await getVotes({ address: refDelegate.address });
+		const response = await getVotes({ address: refValidator.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result.data).toMap(voteSchema);
+		expect(result).toMap(stakeResponseSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('Returns list of votes when requested for existing account by name', async () => {
-		if (refDelegate.name) {
-			const response = await getVotes({ name: refDelegate.name });
+		if (refValidator.name) {
+			const response = await getVotes({ name: refValidator.name });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toMap(voteSchema);
+			expect(result).toMap(stakeResponseSchema);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(result.meta).toMap(metaSchema);
 		}
 	});
 
 	it('Returns list of votes when requested for existing account by address and limit=5', async () => {
-		const response = await getVotes({ address: refDelegate.address, limit: 5 });
+		const response = await getVotes({ address: refValidator.address, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result.data).toMap(voteSchema);
+		expect(result).toMap(stakeResponseSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(5);
-		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('Returns list of votes when requested for existing account by address, limit=5 and offset=1', async () => {
-		const response = await getVotes({ address: refDelegate.address, limit: 5, offset: 1 });
+		const response = await getVotes({ address: refValidator.address, limit: 5, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result.data).toMap(voteSchema);
+		expect(result).toMap(stakeResponseSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(5);
-		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('No address -> invalid param', async () => {

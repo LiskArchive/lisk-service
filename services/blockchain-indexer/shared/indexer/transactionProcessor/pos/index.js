@@ -15,7 +15,7 @@
  */
 
 // Module specific constants
-const moduleName = 'dpos';
+const moduleName = 'pos';
 
 module.exports = {
 	moduleName,

@@ -32,7 +32,7 @@ const getStakes = async params => {
 		meta: {},
 	};
 
-	if (params.name) {
+	if (!params.address && params.name) {
 		params.address = await getAddressByName(params.name);
 	}
 
