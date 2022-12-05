@@ -1,243 +1,231 @@
 {
-    "delegate": {
-        "type": "object",
-        "required": [
-            "name",
-            "address",
-            "totalVotesReceived",
-            "selfVotes",
-            "voteWeight",
-            "status",
-            "isBanned",
-            "pomHeights"
-        ],
-        "properties": {
-            "name": {
-                "type": "string",
-                "example": "genesis_84",
-                "description": "Delegate name"
-            },
-            "totalVotesReceived": {
-                "type": "string",
-                "example": "109000000000",
-                "description": "Total votes received"
-            },
-            "selfVotes": {
-                "type": "string",
-                "example": "109000000000",
-                "description": "Self votes"
-            },
-            "voteWeight": {
-                "type": "string",
-                "example": "109000000000",
-                "description": "vote weight"
-            },
-            "address": {
-                "type": "string",
-                "format": "address",
-                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-            },
-            "lastGeneratedHeight": {
-                "type": "integer",
-                "example": 0
-            },
-            "status": {
-                "type": "string",
-                "example": "active",
-                "description": "Delegate status"
-            },
-            "isBanned": {
-                "type": "boolean",
-                "example": "false"
-            },
-            "pomHeights": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "start": {
-                            "type": "integer",
-                            "example": 123
-                        },
-                        "end": {
-                            "type": "integer",
-                            "example": 567
-                        }
-                    }
-                }
-            },
-            "consecutiveMissedBlocks": {
-                "type": "integer",
-                "example": 0
-            },
-            "forgedBlocks": {
-                "type": "integer",
-                "example": 1000,
-                "description": "Number of blocks forged by the delegate."
-            },
-            "rank": {
-                "type": "integer",
-                "example": 93,
-                "description": "Delegate rank."
-            },
-            "rewards": {
-                "type": "string",
-                "example": "109000000000",
-                "description": "Rewards earned by the delegate for forging blocks in terms of the current chain's native token, e.g.: LSK on the mainchain."
-            }
-        }
-    },
-    "delegatesWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "List of delegates",
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/delegate"
-                }
-            },
-            "meta": {
-                "$ref": "#/definitions/Pagination"
-            }
-        }
-    },
-    "posUnlock": {
-        "type": "object",
-        "required": [
-            "address",
-            "publicKey",
-            "pendingUnlocks"
-        ],
-        "properties": {
-            "address": {
-                "type": "string",
-                "format": "address",
-                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Address of the staker. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-            },
-            "publicKey": {
-                "type": "string",
-                "format": "publicKey",
-                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                "description": "Public key of the staker. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-            },
-            "name": {
-                "type": "string",
-                "example": "genesis_84",
-                "description": "Name of the staker."
-            },
-            "pendingUnlocks": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": [
-                        "validatorAddress",
-                        "amount",
-                        "tokenID",
-                        "unstakeHeight",
-                        "expectedUnlockableHeight",
-                        "unlockable"
-                    ],
-                    "properties": {
-                        "validatorAddress": {
-                            "type": "string",
-                            "example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-                            "description": "Address of the validator against whom the stake was made."
-                        },
-                        "amount": {
-                            "type": "string",
-                            "example": "1000000000",
-                            "description": "The staked amount of tokens against the validator."
-                        },
-                        "tokenID": {
-                            "type": "string",
-                            "example": "0000000000000000",
-                            "description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
-                        },
-                        "unstakeHeight": {
-                            "type": "string",
-                            "example": "10000",
-                            "description": "The block height at which the corresponding amount was unstaked."
-                        },
-                        "expectedUnlockableHeight": {
-                            "type": "string",
-                            "example": "270000",
-                            "description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
-                        },
-                        "unlockable": {
-                            "type": "boolean",
-                            "example": true,
-                            "description": "A boolean flag indicating if the corresponding (locked) staked amount is available to be unlocked."
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "posUnlocksWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "Array of PoS unlocks data.",
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/posUnlock"
-                }
-            },
-            "meta": {
-                "$ref": "#/definitions/Pagination"
-            }
-        }
-    },
-    "Vote": {
-        "type": "object",
-        "required": [
-            "stakerAddress",
-            "amount",
-            "name",
-            "voteWeight",
-            "rank"
-        ],
-        "properties": {
-            "delegateAddress": {
-                "type": "string",
-                "format": "address",
-                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Lisk Address of the delegate the queried account voted for."
-            },
-            "amount": {
-                "type": "string",
-                "example": 1081560729258
-            },
-            "name": {
-                "type": "string",
-                "format": "username",
-                "example": "liskhq",
-                "description": "Name of the delegate the queried account voted for."
-            },
-            "voteWeight": {
-                "type": "string",
-                "example": "109000000000",
-                "description": "Current delegate's vote weight."
-            },
-            "rank": {
-                "type": "integer",
-                "example": 93,
-                "description": "Current delegate's rank."
-            }
-        }
-    },
-    "StakesWithEnvelope": {
+	"delegate": {
+		"type": "object",
+		"required": [
+			"name",
+			"address",
+			"totalVotesReceived",
+			"selfVotes",
+			"voteWeight",
+			"status",
+			"isBanned",
+			"pomHeights"
+		],
+		"properties": {
+			"name": {
+				"type": "string",
+				"example": "genesis_84",
+				"description": "Delegate name"
+			},
+			"totalVotesReceived": {
+				"type": "string",
+				"example": "109000000000",
+				"description": "Total votes received"
+			},
+			"selfVotes": {
+				"type": "string",
+				"example": "109000000000",
+				"description": "Self votes"
+			},
+			"voteWeight": {
+				"type": "string",
+				"example": "109000000000",
+				"description": "vote weight"
+			},
+			"address": {
+				"type": "string",
+				"format": "address",
+				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+			},
+			"lastGeneratedHeight": {
+				"type": "integer",
+				"example": 0
+			},
+			"status": {
+				"type": "string",
+				"example": "active",
+				"description": "Delegate status"
+			},
+			"isBanned": {
+				"type": "boolean",
+				"example": "false"
+			},
+			"pomHeights": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"properties": {
+						"start": {
+							"type": "integer",
+							"example": 123
+						},
+						"end": {
+							"type": "integer",
+							"example": 567
+						}
+					}
+				}
+			},
+			"consecutiveMissedBlocks": {
+				"type": "integer",
+				"example": 0
+			},
+			"forgedBlocks": {
+				"type": "integer",
+				"example": 1000,
+				"description": "Number of blocks forged by the delegate."
+			},
+			"rank": {
+				"type": "integer",
+				"example": 93,
+				"description": "Delegate rank."
+			},
+			"rewards": {
+				"type": "string",
+				"example": "109000000000",
+				"description": "Rewards earned by the delegate for forging blocks in terms of the current chain's native token, e.g.: LSK on the mainchain."
+			}
+		}
+	},
+	"delegatesWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "List of delegates",
+				"type": "array",
+				"items": {
+					"$ref": "#/definitions/delegate"
+				}
+			},
+			"meta": {
+				"$ref": "#/definitions/Pagination"
+			}
+		}
+	},
+	"posUnlock": {
+		"type": "object",
+		"required": [
+			"address",
+			"publicKey",
+			"pendingUnlocks"
+		],
+		"properties": {
+			"address": {
+				"type": "string",
+				"format": "address",
+				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				"description": "Address of the staker. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+			},
+			"publicKey": {
+				"type": "string",
+				"format": "publicKey",
+				"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+				"description": "Public key of the staker. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+			},
+			"name": {
+				"type": "string",
+				"example": "genesis_84",
+				"description": "Name of the staker."
+			},
+			"pendingUnlocks": {
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": [
+						"validatorAddress",
+						"amount",
+						"tokenID",
+						"unstakeHeight",
+						"expectedUnlockableHeight",
+						"unlockable"
+					],
+					"properties": {
+						"validatorAddress": {
+							"type": "string",
+							"example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+							"description": "Address of the validator against whom the stake was made."
+						},
+						"amount": {
+							"type": "string",
+							"example": "1000000000",
+							"description": "The staked amount of tokens against the validator."
+						},
+						"tokenID": {
+							"type": "string",
+							"example": "0000000000000000",
+							"description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
+						},
+						"unstakeHeight": {
+							"type": "string",
+							"example": "10000",
+							"description": "The block height at which the corresponding amount was unstaked."
+						},
+						"expectedUnlockableHeight": {
+							"type": "string",
+							"example": "270000",
+							"description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
+						},
+						"unlockable": {
+							"type": "boolean",
+							"example": true,
+							"description": "A boolean flag indicating if the corresponding (locked) staked amount is available to be unlocked."
+						}
+					}
+				}
+			}
+		}
+	},
+	"posUnlocksWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "Array of PoS unlocks data.",
+				"type": "array",
+				"items": {
+					"$ref": "#/definitions/posUnlock"
+				}
+			},
+			"meta": {
+				"$ref": "#/definitions/Pagination"
+			}
+		}
+	},
+	"Stake": {
+		"type": "object",
+		"required": [
+			"validatorAddress",
+			"amount",
+			"name"
+		],
+		"properties": {
+			"address": {
+				"type": "string",
+				"format": "address",
+				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				"description": "Lisk Address of the validator the queried account voted for."
+			},
+			"amount": {
+				"type": "string",
+				"example": 1081560729258
+			},
+			"name": {
+				"type": "string",
+				"format": "username",
+				"example": "liskhq",
+				"description": "Name of the delegate the queried account voted for."
+			}
+		}
+	},
+	"StakesWithEnvelope": {
 		"type": "object",
 		"required": [
 			"data",
@@ -248,7 +236,18 @@
 				"description": "List of stakes.",
 				"type": "object",
 				"properties": {
-					"account": {
+					"stakes": {
+						"type": "array",
+						"items": {
+							"$ref": "#/definitions/Stake"
+						}
+					}
+				}
+			},
+			"meta": {
+                "type": "object",
+                "properties": {
+					"staker": {
 						"type": "object",
 						"properties": {
 							"address": {
@@ -267,259 +266,251 @@
 								"format": "publicKey",
 								"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
 								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-							},
-							"votesUsed": {
-								"type": "integer",
-								"example": 10,
-								"description": "Total number of votes used."
 							}
 						}
 					},
-					"stakes": {
+					"count": {
+						"type": "integer",
+						"example": 100,
+						"minimum": 0,
+						"description": "Number of items returned in the request."
+					}
+				}
+			}
+		}
+	},
+	"posStaker": {
+		"type": "object",
+		"required": [
+			"address",
+			"amount"
+		],
+		"properties": {
+			"address": {
+				"type": "string",
+				"format": "address",
+				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				"description": "Address of the staker."
+			},
+			"amount": {
+				"type": "string",
+				"example": "1081560729258",
+				"description": "Amount staked."
+			},
+			"name": {
+				"type": "string",
+				"format": "username",
+				"example": "liskhq",
+				"description": "Name of the staker. Available only when registered as a validator."
+			}
+		}
+	},
+	"posStakersMeta": {
+		"type": "object",
+		"required": [
+			"validator",
+			"count",
+			"offset",
+			"total"
+		],
+		"properties": {
+			"validator": {
+				"type": "object",
+				"required": [
+					"address",
+					"publicKey",
+					"name"
+				],
+				"properties": {
+					"address": {
+						"type": "string",
+						"format": "address",
+						"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+						"description": "Address of the queried validator. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+					},
+					"publicKey": {
+						"type": "string",
+						"format": "publicKey",
+						"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+						"description": "Public key of the queried validator. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+					},
+					"name": {
+						"type": "string",
+						"example": "genesis_84",
+						"description": "Name of the queried validator."
+					}
+				}
+			},
+			"count": {
+				"type": "integer",
+				"example": 100,
+				"minimum": 0,
+				"description": "Number of items returned in the request."
+			},
+			"offset": {
+				"type": "integer",
+				"example": 25,
+				"minimum": 0,
+				"description": "Defines how many items are skipped."
+			},
+			"total": {
+				"type": "integer",
+				"example": 43749,
+				"minimum": 0,
+				"description": "Total number of items in the database."
+			}
+		}
+	},
+	"posStakersWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "List of stakers for the queried validator.",
+				"type": "object",
+				"required": [
+					"stakers"
+				],
+				"properties": {
+					"stakers": {
 						"type": "array",
 						"items": {
-							"$ref": "#/definitions/Stake"
+							"$ref": "#/definitions/posStaker"
 						}
 					}
 				}
 			},
 			"meta": {
-				"$ref": "#/definitions/Pagination"
+				"$ref": "#/definitions/posStakersMeta"
 			}
 		}
 	},
-    "posStaker": {
-        "type": "object",
-        "required": [
-            "address",
-            "amount"
-        ],
-        "properties": {
-            "address": {
-                "type": "string",
-                "format": "address",
-                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Address of the staker."
-            },
-            "amount": {
-                "type": "string",
-                "example": "1081560729258",
-                "description": "Amount staked."
-            },
-            "name": {
-                "type": "string",
-                "format": "username",
-                "example": "liskhq",
-                "description": "Name of the staker. Available only when registered as a validator."
-            }
-        }
-    },
-    "posStakersMeta": {
-        "type": "object",
-        "required": [
-            "validator",
-            "count",
-            "offset",
-            "total"
-        ],
-        "properties": {
-            "validator": {
-                "type": "object",
-                "required": [
-                    "address",
-                    "publicKey",
-                    "name"
-                ],
-                "properties": {
-                    "address": {
-                        "type": "string",
-                        "format": "address",
-                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "Address of the queried validator. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-                    },
-                    "publicKey": {
-                        "type": "string",
-                        "format": "publicKey",
-                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                        "description": "Public key of the queried validator. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "genesis_84",
-                        "description": "Name of the queried validator."
-                    }
-                }
-            },
-            "count": {
-                "type": "integer",
-                "example": 100,
-                "minimum": 0,
-                "description": "Number of items returned in the request."
-            },
-            "offset": {
-                "type": "integer",
-                "example": 25,
-                "minimum": 0,
-                "description": "Defines how many items are skipped."
-            },
-            "total": {
-                "type": "integer",
-                "example": 43749,
-                "minimum": 0,
-                "description": "Total number of items in the database."
-            }
-        }
-    },
-    "posStakersWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "List of stakers for the queried validator.",
-                "type": "object",
-                "required": [
-                    "stakers"
-                ],
-                "properties": {
-                    "stakers": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/posStaker"
-                        }
-                    }
-                }
-            },
-            "meta": {
-                "$ref": "#/definitions/posStakersMeta"
-            }
-        }
-    },
-    "posConstantsWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "PoS module constants.",
-                "type": "object",
-                "required": [
-                    "factorSelfStakes",
-                    "maxLengthName",
-                    "maxNumberSentStakes",
-                    "maxNumberPendingUnlocks",
-                    "failSafeMissedBlocks",
-                    "failSafeInactiveWindow",
-                    "punishmentWindow",
-                    "roundLength",
-                    "minWeightStandby",
-                    "numberActiveValidators",
-                    "numberStandbyValidators",
-                    "posTokenID",
-                    "maxBFTWeightCap",
-                    "commissionIncreasePeriod",
-                    "maxCommissionIncreaseRate",
-                    "extraCommandFees"
-                ],
-                "properties": {
-                    "factorSelfStakes": {
-                        "type": "integer",
-                        "example": 10,
-                        "description": "The factor multiplying the self-votes of a delegate for the delegate weight computation. It is used to set the ceiling for the delegate weight."
-                    },
-                    "maxLengthName": {
-                        "type": "integer",
-                        "example": 20,
-                        "description": "The maximum number of characters allowed for a delegate name."
-                    },
-                    "maxNumberSentStakes": {
-                        "type": "integer",
-                        "example": 10,
-                        "description": "The maximum number of validators any staker can stake for."
-                    },
-                    "maxNumberPendingUnlocks": {
-                        "type": "integer",
-                        "example": 20,
-                        "description": "The maximum number of pending unlocks allowed for a staker."
-                    },
-                    "failSafeMissedBlocks": {
-                        "type": "integer",
-                        "example": 50,
-                        "description": "The number of consecutive missed blocks used in the fail-safe banning mechanism."
-                    },
-                    "failSafeInactiveWindow": {
-                        "type": "integer",
-                        "example": 260000,
-                        "description": "The length of the inactivity window used in the fail-safe banning mechanism."
-                    },
-                    "punishmentWindow": {
-                        "type": "integer",
-                        "example": 780000,
-                        "description": "The punishment time for punished delegates."
-                    },
-                    "roundLength": {
-                        "type": "integer",
-                        "example": 10,
-                        "description": "The number of blocks in a round and is the sum total of the active and the standby delegates."
-                    },
-                    "minWeightStandby": {
-                        "type": "string",
-                        "example": "100000000000",
-                        "description": "The minimum delegate weight required to be eligible as a standby delegate."
-                    },
-                    "numberActiveValidators": {
-                        "type": "integer",
-                        "example": 101,
-                        "description": "The number of active validators in a round."
-                    },
-                    "numberStandbyDelegates": {
-                        "type": "integer",
-                        "example": 2,
-                        "description": "The number of standby validators in a round."
-                    },
-                    "posTokenID": {
-                        "type": "string",
-                        "example": "0000000000000000",
-                        "description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
-                    },
-                    "maxBFTWeightCap": {
-                        "type": "number",
-                        "example": 500,
-                        "description": ""
-                    },
-                    "commissionIncreasePeriod": {
-                        "type": "number",
-                        "example": 260000,
-                        "description": "Determines how frequently (after how many blocks) a validator can increase their commission.  It is set to 260000 blocks on the Lisk Mainchain."
-                    },
-                    "maxCommissionIncreaseRate": {
-                        "type": "number",
-                        "example": 500,
-                        "description": "Determines the maximum allowed increase on the commission per transaction. It is set to 5% on the Lisk Mainchain."
-                    },
-                    "extraCommandFees": {
-                        "description": "Extra fees associated (beyond the usual transaction fees) for the listed commands.",
-                        "type": "object",
-                        "required": [
-                            "validatorRegistrationFee"
-                        ],
-                        "properties": {
-                            "validatorRegistrationFee": {
-                                "type": "string",
-                                "example": "1000000000",
-                                "description": "The extra fee to be supplied for a validator registration transaction."
-                            }
-                        }
-                    }
-                }
-            },
-            "meta": {
-                "type": "object"
-            }
-        }
-    }
+	"posConstantsWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "PoS module constants.",
+				"type": "object",
+				"required": [
+					"factorSelfStakes",
+					"maxLengthName",
+					"maxNumberSentStakes",
+					"maxNumberPendingUnlocks",
+					"failSafeMissedBlocks",
+					"failSafeInactiveWindow",
+					"punishmentWindow",
+					"roundLength",
+					"minWeightStandby",
+					"numberActiveValidators",
+					"numberStandbyValidators",
+					"posTokenID",
+					"maxBFTWeightCap",
+					"commissionIncreasePeriod",
+					"maxCommissionIncreaseRate",
+					"extraCommandFees"
+				],
+				"properties": {
+					"factorSelfStakes": {
+						"type": "integer",
+						"example": 10,
+						"description": "The factor multiplying the self-votes of a delegate for the delegate weight computation. It is used to set the ceiling for the delegate weight."
+					},
+					"maxLengthName": {
+						"type": "integer",
+						"example": 20,
+						"description": "The maximum number of characters allowed for a delegate name."
+					},
+					"maxNumberSentStakes": {
+						"type": "integer",
+						"example": 10,
+						"description": "The maximum number of validators any staker can stake for."
+					},
+					"maxNumberPendingUnlocks": {
+						"type": "integer",
+						"example": 20,
+						"description": "The maximum number of pending unlocks allowed for a staker."
+					},
+					"failSafeMissedBlocks": {
+						"type": "integer",
+						"example": 50,
+						"description": "The number of consecutive missed blocks used in the fail-safe banning mechanism."
+					},
+					"failSafeInactiveWindow": {
+						"type": "integer",
+						"example": 260000,
+						"description": "The length of the inactivity window used in the fail-safe banning mechanism."
+					},
+					"punishmentWindow": {
+						"type": "integer",
+						"example": 780000,
+						"description": "The punishment time for punished delegates."
+					},
+					"roundLength": {
+						"type": "integer",
+						"example": 10,
+						"description": "The number of blocks in a round and is the sum total of the active and the standby delegates."
+					},
+					"minWeightStandby": {
+						"type": "string",
+						"example": "100000000000",
+						"description": "The minimum delegate weight required to be eligible as a standby delegate."
+					},
+					"numberActiveValidators": {
+						"type": "integer",
+						"example": 101,
+						"description": "The number of active validators in a round."
+					},
+					"numberStandbyDelegates": {
+						"type": "integer",
+						"example": 2,
+						"description": "The number of standby validators in a round."
+					},
+					"posTokenID": {
+						"type": "string",
+						"example": "0000000000000000",
+						"description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
+					},
+					"maxBFTWeightCap": {
+						"type": "number",
+						"example": 500,
+						"description": ""
+					},
+					"commissionIncreasePeriod": {
+						"type": "number",
+						"example": 260000,
+						"description": "Determines how frequently (after how many blocks) a validator can increase their commission.  It is set to 260000 blocks on the Lisk Mainchain."
+					},
+					"maxCommissionIncreaseRate": {
+						"type": "number",
+						"example": 500,
+						"description": "Determines the maximum allowed increase on the commission per transaction. It is set to 5% on the Lisk Mainchain."
+					},
+					"extraCommandFees": {
+						"description": "Extra fees associated (beyond the usual transaction fees) for the listed commands.",
+						"type": "object",
+						"required": [
+							"validatorRegistrationFee"
+						],
+						"properties": {
+							"validatorRegistrationFee": {
+								"type": "string",
+								"example": "1000000000",
+								"description": "The extra fee to be supplied for a validator registration transaction."
+							}
+						}
+					}
+				}
+			},
+			"meta": {
+				"type": "object"
+			}
+		}
+	}
 }

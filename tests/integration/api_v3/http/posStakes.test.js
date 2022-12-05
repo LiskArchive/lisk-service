@@ -41,35 +41,28 @@ describe('Stakes API', () => {
 	});
 
 	describe(`GET ${endpoint}`, () => {
-		it('Returns list of votes when requested for existing account by known address', async () => {
+		it('Returns list of votes when requested for existing account by address', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(10);
 		});
 
-		it('Returns list of votes when requested for existing account by unknown address', async () => {
-			const response = await api.get(`${endpoint}?address=${refValidator.address}`);
-			expect(response).toMap(stakeResponseSchema);
-			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.votes.length).toBeLessThanOrEqual(10);
-		});
-
-		it('Returns list of votes when requested for existing account by known address and limit=5', async () => {
+		it('Returns list of votes when requested for existing account by address and limit=5', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 		});
 
-		it('Returns list of votes when requested for existing account by known address, limit=5 and offset=1', async () => {
+		it('Returns list of votes when requested for existing account by address, limit=5 and offset=1', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5&offset=1`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 		});
 
-		it('Returns list of votes when requested for existing account by known name', async () => {
+		it('Returns list of votes when requested for existing account by name', async () => {
 			if (refValidator.name) {
 				const response = await api.get(`${endpoint}?name=${refValidator.name}`);
 				expect(response).toMap(stakeResponseSchema);

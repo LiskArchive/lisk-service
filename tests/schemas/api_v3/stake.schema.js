@@ -35,8 +35,6 @@ const data = {
 const meta = {
 	staker: Joi.object(staker).required(),
 	count: Joi.number().integer().min(0).required(),
-	offset: Joi.number().integer().min(0).required(),
-	total: Joi.number().integer().min(0).required(),
 };
 
 const stakeResponseSchema = {
