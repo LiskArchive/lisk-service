@@ -14,15 +14,15 @@
  *
  */
 module.exports = {
-	tableName: 'votes',
-	primaryKey: ['receivedAddress', 'sentAddress'],
+	tableName: 'stakes',
+	primaryKey: ['validatorAddress', 'stakerAddress'],
 	schema: {
-		sentAddress: { type: 'string' },
-		receivedAddress: { type: 'string' },
+		stakerAddress: { type: 'string' },
+		validatorAddress: { type: 'string' },
 		amount: { type: 'bigInteger' },
 	},
 	indexes: {
-		receivedAddress: { type: 'key' },
+		validatorAddress: { type: 'key' },
 	},
 	purge: {},
 };

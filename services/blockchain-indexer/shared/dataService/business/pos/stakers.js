@@ -14,22 +14,32 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { MySQL: { getTableInstance } } = require('lisk-service-framework');
-const votesIndexSchema = require('../../../database/schema/votes');
+
 const {
-	getIndexedAccountInfo,
-} = require('../../../utils/accountUtils');
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
 
 const config = require('../../../../config');
+const stakesIndexSchema = require('../../../database/schema/stakes');
+
+const {
+	updateAccountPublicKey,
+	getIndexedAccountInfo,
+	getLisk32AddressFromPublicKey,
+} = require('../../../utils/accountUtils');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
+const getStakesIndex = () => getTableInstance(
+	stakesIndexSchema.tableName,
+	stakesIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getPoSStakers = async params => {
-	const votesDB = await getVotesIndex();
-	const votes = {
-		data: { votes: [] },
+	const stakesTable = await getStakesIndex();
+	const stakers = {
+		data: { stakers: [] },
 		meta: {},
 	};
 
@@ -37,67 +47,67 @@ const getPoSStakers = async params => {
 		const { address, ...remParams } = params;
 		params = remParams;
 
-		params.receivedAddress = address;
+		params.validatorAddress = address;
+	}
+
+	if (params.publicKey) {
+		const { publicKey, ...remParams } = params;
+		params = remParams;
+
+		params.validatorAddress = getLisk32AddressFromPublicKey(publicKey);
+
+		// Index publicKey
+		await updateAccountPublicKey(publicKey);
 	}
 
 	if (params.name) {
 		const { name, ...remParams } = params;
 		params = remParams;
 
-		const accountInfo = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
-		if (!accountInfo || !accountInfo.address) return new Error(`Account with name: ${name} does not exist`);
-		params.receivedAddress = accountInfo.address;
+		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
+		if (!address) return new Error(`Account with name: ${name} does not exist.`);
+		params.validatorAddress = address;
 	}
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ numVotesReceived }] = params.aggregate
-		? await votesDB.rawQuery(`SELECT COUNT(*) as numVotesReceived from ${votesIndexSchema.tableName} WHERE receivedAddress='${params.receivedAddress}' AND amount>0`)
-		: await votesDB.rawQuery(`SELECT COUNT(*) as numVotesReceived from ${votesIndexSchema.tableName} WHERE receivedAddress='${params.receivedAddress}'`);
+	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(*) as numStakers from ${stakesIndexSchema.tableName} WHERE receivedAddress='${params.receivedAddress}'`);
 
-	const resultSet = params.aggregate
-		? await votesDB.find(
-			{
-				receivedAddress: params.receivedAddress,
-				propBetweens: [{
-					property: 'amount',
-					greaterThan: '0',
-				}],
-				limit: numVotesReceived,
-			},
-			Object.keys(votesIndexSchema.schema),
-		)
-		: await votesDB.find(
-			{
-				receivedAddress: params.receivedAddress,
-				limit: numVotesReceived,
-			},
-			Object.keys(votesIndexSchema.schema),
-		);
-	if (resultSet.length) votes.data.votes = resultSet;
-
-	votes.data.votes = await BluebirdPromise.map(
-		votes.data.votes,
-		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, ['name']);
-			vote.name = accountInfo && accountInfo.name ? accountInfo.name : null;
-			const { amount, sentAddress, name } = vote;
-			return { amount, delegateAddress: sentAddress, name };
+	const resultSet = await stakesTable.find(
+		{
+			validatorAddress: params.validatorAddress,
+			limit: numStakers,
 		},
-		{ concurrency: votes.data.votes.length },
+		Object.keys(stakesIndexSchema.schema),
+	);
+	if (resultSet.length) stakers.data.stakers = resultSet;
+
+	stakers.data.stakers = await BluebirdPromise.map(
+		stakers.data.stakers,
+		async stake => {
+			const { name = null } = await getIndexedAccountInfo({ address: stake.stakerAddress, limit: 1 }, ['name']);
+			return {
+				address: stake.stakerAddress,
+				amount: stake.amount,
+				name,
+			};
+		},
+		{ concurrency: stakers.data.stakers.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, ['name']);
-	votes.data.account = {
-		address: params.receivedAddress,
-		name: accountInfo && accountInfo.name ? accountInfo.name : null,
-		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
-		votesReceived: numVotesReceived,
+	stakers.data.stakers = stakers.data.stakers.slice(params.offset, params.offset + params.limit);
+
+	const validatorAccountInfo = await getIndexedAccountInfo({ address: params.validatorAddress, limit: 1 }, ['name']);
+	stakers.meta.validator = {
+		address: params.validatorAddress,
+		name: validatorAccountInfo.name || null,
+		publicKey: validatorAccountInfo.publicKey || null,
 	};
-	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
-	votes.meta.total = votes.data.account.votesReceived;
-	votes.meta.count = votes.data.votes.length;
-	votes.meta.offset = params.offset;
-	return votes;
+
+	stakers.meta.count = stakers.data.stakers.length;
+	stakers.meta.offset = params.offset;
+	stakers.meta.total = numStakers;
+
+	return stakers;
 };
 
 module.exports = {
