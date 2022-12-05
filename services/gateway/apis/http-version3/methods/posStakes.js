@@ -26,8 +26,6 @@ module.exports = {
 	params: {
 		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		name: { optional: true, type: 'string', pattern: regex.NAME },
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
-		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
 		const stakesSchema = {};

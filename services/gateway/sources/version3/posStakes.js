@@ -21,22 +21,18 @@ module.exports = {
 	params: {
 		address: '=,string',
 		name: '=,string',
-		offset: '=,number',
-		limit: '=,number',
 	},
 	definition: {
 		data: {
-			account: {
+			stakes: ['data.stakes', posStake],
+		},
+		meta: {
+			staker: {
 				address: '=,string',
 				name: '=,string',
 				publicKey: '=,string',
 			},
-			stakes: ['data.stakes', posStake],
-		},
-		meta: {
 			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
 		},
 		links: {},
 	},
