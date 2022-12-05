@@ -70,7 +70,7 @@ const getPoSStakers = async params => {
 	}
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(*) as numStakers from ${stakesIndexSchema.tableName} WHERE receivedAddress='${params.receivedAddress}'`);
+	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(stakerAddress) as numStakers from ${stakesIndexSchema.tableName} WHERE validatorAddress='${params.validatorAddress}'`);
 
 	const resultSet = await stakesTable.find(
 		{
@@ -96,7 +96,10 @@ const getPoSStakers = async params => {
 
 	stakers.data.stakers = stakers.data.stakers.slice(params.offset, params.offset + params.limit);
 
-	const validatorAccountInfo = await getIndexedAccountInfo({ address: params.validatorAddress, limit: 1 }, ['name']);
+	const validatorAccountInfo = await getIndexedAccountInfo(
+		{ address: params.validatorAddress, limit: 1 },
+		['name', 'publicKey'],
+	);
 	stakers.meta.validator = {
 		address: params.validatorAddress,
 		name: validatorAccountInfo.name || null,
