@@ -107,7 +107,7 @@ const computeDelegateStatus = async () => {
 			delegate.status = DELEGATE_STATUS.STANDBY;
 		} else {
 			// Default delegate status
-			delegate.status = DELEGATE_STATUS.INELIGIBLE;	
+			delegate.status = DELEGATE_STATUS.INELIGIBLE;
 		}
 		return delegate;
 	});
