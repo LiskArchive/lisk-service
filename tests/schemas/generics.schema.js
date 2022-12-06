@@ -17,8 +17,8 @@ import Joi from 'joi';
 
 const metaSchema = {
 	count: Joi.number().integer().min(0).required(),
-	offset: Joi.number().integer().min(0).optional(),
-	total: Joi.number().integer().min(0).optional(),
+	offset: Joi.number().integer().min(0).required(),
+	total: Joi.number().integer().min(0).required(),
 };
 
 const resultEnvelopeSchema = {

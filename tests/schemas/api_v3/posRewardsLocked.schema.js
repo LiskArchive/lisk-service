@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
 */
-
 import Joi from 'joi';
 
 const regex = require('./regex');

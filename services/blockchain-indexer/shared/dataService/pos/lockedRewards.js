@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getLockedRewards = async params => {
-	const response = await dataService.getLockedRewards(params);
+	const response = await business.getLockedRewards(params);
 	return response;
 };
 

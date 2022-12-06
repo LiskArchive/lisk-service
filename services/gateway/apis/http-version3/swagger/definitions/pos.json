@@ -522,7 +522,7 @@
 			}
 		}
 	},
-	"PoSRewardsLockedWithEnvelope": {
+	"posRewardsLockedWithEnvelope": {
 		"type": "object",
 		"required": [
 			"data",
