@@ -16,7 +16,7 @@
 const {
 	getDelegates,
 	getPosConstants,
-	getPoSUnlocks,
+	getPosUnlocks,
 	getLockedRewards,
 	getStakes,
 	getStakers,
@@ -43,7 +43,7 @@ module.exports = [
 	},
 	{
 		name: 'pos.unlocks',
-		controller: getPoSUnlocks,
+		controller: getPosUnlocks,
 		params: {
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },

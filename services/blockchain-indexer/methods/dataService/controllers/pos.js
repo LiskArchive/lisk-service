@@ -54,13 +54,13 @@ const getPosConstants = async () => {
 	return constants;
 };
 
-const getPoSUnlocks = async params => {
+const getPosUnlocks = async params => {
 	const unlocks = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getPoSUnlocks(params);
+	const response = await dataService.getPosUnlocks(params);
 	if (response.data) unlocks.data = response.data;
 	if (response.meta) unlocks.meta = response.meta;
 
@@ -116,7 +116,7 @@ const getLockedRewards = async (params) => {
 module.exports = {
 	getDelegates,
 	getPosConstants,
-	getPoSUnlocks,
+	getPosUnlocks,
 	getLockedRewards,
 	getStakes,
 	getStakers,

@@ -27,7 +27,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getPoSRewardsLocked = async (params) => request(wsRpcUrl, 'get.pos.rewards.locked', params);
+const getPosRewardsLocked = async (params) => request(wsRpcUrl, 'get.pos.rewards.locked', params);
 const getStakeTransaction = async params => request(wsRpcUrl, 'get.transactions', params);
 const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
@@ -44,7 +44,7 @@ describe('Rewards Locked API', () => {
 		refAccount = response2.data[0].account;
 	});
 	it('Returns list locked rewards with name parameter', async () => {
-		const response = await getPoSRewardsLocked({ name: refAccount.name });
+		const response = await getPosRewardsLocked({ name: refAccount.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -54,7 +54,7 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('Returns list locked rewards with address parameter', async () => {
-		const response = await getPoSRewardsLocked({ address: refAccount.address });
+		const response = await getPosRewardsLocked({ address: refAccount.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -64,7 +64,7 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('Returns list locked rewards with name publickKey', async () => {
-		const response = await getPoSRewardsLocked({ publicKey: refAccount.publicKey });
+		const response = await getPosRewardsLocked({ publicKey: refAccount.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -74,22 +74,22 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('No param -> bad request', async () => {
-		const response = await getPoSRewardsLocked({});
+		const response = await getPosRewardsLocked({});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('Invalid address -> bad request', async () => {
-		const response = await getPoSRewardsLocked({ address: 'L' });
+		const response = await getPosRewardsLocked({ address: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('Invalid name -> bad request', async () => {
-		const response = await getPoSRewardsLocked({ name: '#' });
+		const response = await getPosRewardsLocked({ name: '#' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('Invalid request param -> bad request', async () => {
-		const response = await getPoSRewardsLocked({ invalidParam: 'invalid' });
+		const response = await getPosRewardsLocked({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

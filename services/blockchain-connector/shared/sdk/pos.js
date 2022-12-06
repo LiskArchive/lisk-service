@@ -60,14 +60,14 @@ const getPosConstants = async () => {
 	}
 };
 
-const getPoSPendingUnlocks = async (address) => {
+const getPosPendingUnlocks = async (address) => {
 	try {
 		const response = await invokeEndpoint('pos_getPendingUnlocks', { address });
 		if (response.error) throw new Error(response.error);
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPoSPendingUnlocks\'.');
+			throw new TimeoutException('Request timed out when calling \'getPosPendingUnlocks\'.');
 		}
 		logger.warn(`Error returned when invoking 'pos_getPendingUnlocks' with param: ${address}.\n${err.stack}`);
 		throw err;
@@ -105,5 +105,5 @@ module.exports = {
 	getLockedRewards,
 	getPosConstants,
 	getStaker,
-	getPoSPendingUnlocks,
+	getPosPendingUnlocks,
 };

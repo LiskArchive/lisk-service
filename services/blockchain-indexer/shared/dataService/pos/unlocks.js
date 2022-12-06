@@ -15,11 +15,11 @@
  */
 const business = require('../business');
 
-const getPoSUnlocks = async params => {
-	const response = await business.getPoSUnlocks(params);
+const getPosUnlocks = async params => {
+	const response = await business.getPosUnlocks(params);
 	return response;
 };
 
 module.exports = {
-	getPoSUnlocks,
+	getPosUnlocks,
 };
