@@ -28,11 +28,11 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getPoSConstants = async (params) => request(wsRpcUrl, 'get.pos.constants', params);
+const getPosConstants = async (params) => request(wsRpcUrl, 'get.pos.constants', params);
 
 describe('get.pos.constants', () => {
 	it('returns PoS module constants', async () => {
-		const response = await getPoSConstants();
+		const response = await getPosConstants();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;

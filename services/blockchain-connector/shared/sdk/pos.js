@@ -46,28 +46,28 @@ const getAllDelegates = async () => {
 	}
 };
 
-const getPoSConstants = async () => {
+const getPosConstants = async () => {
 	try {
 		const response = await invokeEndpoint('pos_getConstants');
 		if (response.error) throw new Error(response.error);
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPoSConstants\'.');
+			throw new TimeoutException('Request timed out when calling \'getPosConstants\'.');
 		}
 		logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
 		throw err;
 	}
 };
 
-const getPoSPendingUnlocks = async (address) => {
+const getPosPendingUnlocks = async (address) => {
 	try {
 		const response = await invokeEndpoint('pos_getPendingUnlocks', { address });
 		if (response.error) throw new Error(response.error);
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPoSPendingUnlocks\'.');
+			throw new TimeoutException('Request timed out when calling \'getPosPendingUnlocks\'.');
 		}
 		logger.warn(`Error returned when invoking 'pos_getPendingUnlocks' with param: ${address}.\n${err.stack}`);
 		throw err;
@@ -87,10 +87,23 @@ const getStaker = async (address) => {
 	}
 };
 
+const getPosLockedRewards = async ({ address, tokenID }) => {
+	try {
+		const lockedRewards = await invokeEndpoint('pos_getLockedRewards', { address, tokenID });
+		return lockedRewards;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getPosLockedRewards\'.');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosLockedRewards,
+	getPosConstants,
 	getStaker,
-	getPoSPendingUnlocks,
+	getPosPendingUnlocks,
 };

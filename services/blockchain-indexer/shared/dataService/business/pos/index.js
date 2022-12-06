@@ -15,15 +15,18 @@
  */
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
+const { getPosUnlocks } = require('./unlocks');
+const { getPosLockedRewards } = require('./lockedRewards');
+const { getPosConstants } = require('./constants');
 
 module.exports = {
 	getStakes,
 
 	getStakers,
 
-	getPoSUnlocks,
+	getPosUnlocks,
 
-	getPoSConstants,
+	getPosLockedRewards,
+
+	getPosConstants,
 };

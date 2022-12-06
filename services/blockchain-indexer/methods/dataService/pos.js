@@ -15,11 +15,14 @@
  */
 const {
 	getDelegates,
-	getPoSConstants,
-	getPoSUnlocks,
+	getPosConstants,
+	getPosUnlocks,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
 } = require('./controllers/pos');
+
+const regex = require('../../shared/utils/regex');
 
 module.exports = [
 	{
@@ -35,12 +38,12 @@ module.exports = [
 	},
 	{
 		name: 'pos.constants',
-		controller: getPoSConstants,
+		controller: getPosConstants,
 		params: {},
 	},
 	{
 		name: 'pos.unlocks',
-		controller: getPoSUnlocks,
+		controller: getPosUnlocks,
 		params: {
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
@@ -68,6 +71,17 @@ module.exports = [
 			name: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'pos.rewards.locked',
+		controller: getPosLockedRewards,
+		params: {
+			address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
+			publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
+			name: { optional: true, type: 'string', pattern: regex.NAME },
+			limit: { optional: true, type: 'number', min: 1, max: 100 },
+			offset: { optional: true, type: 'number', min: 0 },
 		},
 	},
 ];

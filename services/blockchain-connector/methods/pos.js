@@ -16,9 +16,10 @@
 const {
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosConstants,
+	getPosLockedRewards,
 	getStaker,
-	getPoSPendingUnlocks,
+	getPosPendingUnlocks,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -35,13 +36,13 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getPoSConstants',
-		controller: async () => getPoSConstants(),
+		name: 'getPosConstants',
+		controller: async () => getPosConstants(),
 		params: {},
 	},
 	{
-		name: 'getPoSPendingUnlocks',
-		controller: async ({ address }) => getPoSPendingUnlocks(address),
+		name: 'getPosPendingUnlocks',
+		controller: async ({ address }) => getPosPendingUnlocks(address),
 		params: {
 			address: { optional: true, type: 'string' },
 		},
@@ -51,6 +52,14 @@ module.exports = [
 		controller: async ({ address }) => getStaker(address),
 		params: {
 			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getPosLockedRewards',
+		controller: async ({ address, tokenID }) => getPosLockedRewards({ address, tokenID }),
+		params: {
+			address: { optional: false, type: 'string' },
+			tokenID: { optional: false, type: 'string' },
 		},
 	},
 ];

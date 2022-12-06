@@ -56,10 +56,11 @@ const {
 	getDelegates,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
-	getPoSConstants,
+	getPosConstants,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
+	getPosUnlocks,
 } = require('./pos');
 
 const {
@@ -160,8 +161,9 @@ module.exports = {
 	dryRunTransactions,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
-	getPoSConstants,
+	getPosUnlocks,
+	getPosConstants,
+	getPosLockedRewards,
 	getEvents,
 	getEventsByHeight,
 	getAuthAccountInfo,
