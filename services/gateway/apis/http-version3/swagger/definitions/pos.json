@@ -553,32 +553,7 @@
 				}
 			},
 			"meta": {
-				"type": "object",
-				"required": [
-					"count",
-					"offset",
-					"total"
-				],
-				"properties": {
-					"count": {
-						"type": "integer",
-						"example": 10,
-						"minimum": 0,
-						"description": "Number of items returned in the response."
-					},
-					"offset": {
-						"type": "integer",
-						"example": 10,
-						"minimum": 0,
-						"description": "Number of items skipped in the response."
-					},
-					"total": {
-						"type": "integer",
-						"example": 100,
-						"minimum": 0,
-						"description": "Total number of items matching the request query."
-					}
-				}
+				"$ref": "#/definitions/Pagination"
 			}
 		}
 	}
