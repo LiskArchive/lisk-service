@@ -87,13 +87,13 @@ const getStaker = async (address) => {
 	}
 };
 
-const getLockedRewards = async ({ address, tokenID }) => {
+const getPosLockedRewards = async ({ address, tokenID }) => {
 	try {
 		const lockedRewards = await invokeEndpoint('pos_getLockedRewards', { address, tokenID });
 		return lockedRewards;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getLockedRewards\'.');
+			throw new TimeoutException('Request timed out when calling \'getPosLockedRewards\'.');
 		}
 		throw err;
 	}
@@ -102,7 +102,7 @@ const getLockedRewards = async ({ address, tokenID }) => {
 module.exports = {
 	getDelegate,
 	getAllDelegates,
-	getLockedRewards,
+	getPosLockedRewards,
 	getPosConstants,
 	getStaker,
 	getPosPendingUnlocks,

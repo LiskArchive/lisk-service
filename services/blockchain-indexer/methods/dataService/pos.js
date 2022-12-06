@@ -17,7 +17,7 @@ const {
 	getDelegates,
 	getPosConstants,
 	getPosUnlocks,
-	getLockedRewards,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
 } = require('./controllers/pos');
@@ -75,7 +75,7 @@ module.exports = [
 	},
 	{
 		name: 'pos.rewards.locked',
-		controller: getLockedRewards,
+		controller: getPosLockedRewards,
 		params: {
 			address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 			publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },

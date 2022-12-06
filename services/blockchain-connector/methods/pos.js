@@ -17,7 +17,7 @@ const {
 	getDelegate,
 	getAllDelegates,
 	getPosConstants,
-	getLockedRewards,
+	getPosLockedRewards,
 	getStaker,
 	getPosPendingUnlocks,
 } = require('../shared/sdk');
@@ -55,8 +55,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getLockedRewards',
-		controller: async ({ address, tokenID }) => getLockedRewards({ address, tokenID }),
+		name: 'getPosLockedRewards',
+		controller: async ({ address, tokenID }) => getPosLockedRewards({ address, tokenID }),
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: false, type: 'string' },

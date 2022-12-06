@@ -23,7 +23,7 @@ const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
 const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
-const { getLockedRewards } = require('./lockedRewards');
+const { getPosLockedRewards } = require('./lockedRewards');
 
 module.exports = {
 	reloadDelegateCache,
@@ -38,5 +38,5 @@ module.exports = {
 
 	getPosConstants,
 
-	getLockedRewards,
+	getPosLockedRewards,
 };

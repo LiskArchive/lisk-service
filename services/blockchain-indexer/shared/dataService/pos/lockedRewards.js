@@ -15,11 +15,11 @@
  */
 const business = require('../business');
 
-const getLockedRewards = async params => {
-	const response = await business.getLockedRewards(params);
+const getPosLockedRewards = async params => {
+	const response = await business.getPosLockedRewards(params);
 	return response;
 };
 
 module.exports = {
-	getLockedRewards,
+	getPosLockedRewards,
 };

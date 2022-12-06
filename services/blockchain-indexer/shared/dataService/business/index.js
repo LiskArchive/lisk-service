@@ -83,7 +83,7 @@ const {
 
 const {
 	getVotesByTransactionIDs,
-	getLockedRewards,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
 	getPosUnlocks,
@@ -129,7 +129,7 @@ module.exports = {
 	getStakers,
 	getPosUnlocks,
 	getPosConstants,
-	getLockedRewards,
+	getPosLockedRewards,
 
 	getAuthAccountInfo,
 	getValidator,

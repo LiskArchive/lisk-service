@@ -36,7 +36,7 @@ const getValidatorsTable = () => getTableInstance(
 	config.endpoints.mysql,
 );
 
-const getLockedRewards = async params => {
+const getPosLockedRewards = async params => {
 	const response = {
 		data: [],
 		meta: {},
@@ -70,7 +70,7 @@ const getLockedRewards = async params => {
 	if (!address || !tokenID) {
 		return response;
 	}
-	const { reward } = await requestConnector('getLockedRewards', { tokenID, address });
+	const { reward } = await requestConnector('getPosLockedRewards', { tokenID, address });
 	response.data.push({
 		reward,
 		tokenID,
@@ -89,5 +89,5 @@ const getLockedRewards = async params => {
 };
 
 module.exports = {
-	getLockedRewards,
+	getPosLockedRewards,
 };
