@@ -30,9 +30,11 @@ const { getLisk32Address } = require('../utils/accountUtils');
 const { getMinFeePerByte } = require('./fee');
 
 // TODO: Remove when SDK exposes topics information in metadata
+// TODO: Verify event names
 const EVENT_TOPICS = {
+	commandExecutionResult: ['transactionID'],
+	generatorFeeProcessed: ['transactionID', 'senderAddress', 'generatorAddress'],
 	rewardMinted: ['defaultTopic', 'generatorAddress'],
-	'Reward Minted Data': ['defaultTopic', 'generatorAddress'],
 	feeProcessed: ['senderAddress', 'generatorAddress'],
 	ccmProcessed: ['sendingChainID', 'receivingChainID'],
 	chainAccountUpdated: ['sendingChainID'],
@@ -58,7 +60,7 @@ const EVENT_TOPICS = {
 	EVENT_NAME_TOKEN_ID_SUPPORTED: ['tokenID'],
 	EVENT_NAME_TOKEN_ID_SUPPORT_REMOVED: ['tokenID'],
 	registerDelegate: ['delegateAddress'],
-	voteDelegate: ['senderAddress', 'delegateAddress'],
+	validatorStaked: ['senderAddress', 'delegateAddress'],
 	delegatePunished: ['delegateAddress'],
 	delegateBanned: ['delegateAddress'],
 	generatorKeyRegistrationEvent: ['defaultTopic', 'address'],
@@ -173,10 +175,18 @@ const formatEvent = (event) => {
 	}
 
 	const topics = EVENT_TOPICS[event.name];
+
+	// TODO: Remove after all transaction types are tested
+	if (!topics || topics.length === 0) {
+		console.error(`EVENT_TOPICS undefined for event: ${event.name}.`);
+		console.info(require('util').inspect(event));
+	}
+
 	let eventTopics;
 	if (topics) {
 		eventTopics = event.topics.map((topic, index) => {
-			if (topics[index].toLowerCase().endsWith('address') && !topics[index].includes('legacy')) {
+			const topicAtIndex = topics[index] || '';
+			if (topicAtIndex.toLowerCase().endsWith('address') && !topicAtIndex.includes('legacy')) {
 				return getLisk32Address(topic);
 			}
 			return topic;

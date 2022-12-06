@@ -18,10 +18,10 @@ const BluebirdPromise = require('bluebird');
 const dataService = require('../business');
 const { getDelegates } = require('./delegates');
 const { getLisk32Address } = require('../../utils/accountUtils');
-const { getNameByAddress } = require('../../utils/delegateUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
-const getVotesSent = async params => {
-	const response = await dataService.getVotesSent(params);
+const getVotesReceived = async params => {
+	const response = await dataService.getVotesReceived(params);
 	response.data.votes = await BluebirdPromise.map(
 		response.data.votes,
 		async vote => {
@@ -44,5 +44,5 @@ const getVotesSent = async params => {
 };
 
 module.exports = {
-	getVotesSent,
+	getVotesReceived,
 };

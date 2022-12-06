@@ -23,6 +23,7 @@ module.exports = {
 	},
 	indexes: {
 		validatorAddress: { type: 'key' },
+		stakerAddress: { type: 'key' },
 	},
 	purge: {},
 };

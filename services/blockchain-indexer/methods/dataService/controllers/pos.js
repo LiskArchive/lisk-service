@@ -67,6 +67,19 @@ const getPoSUnlocks = async params => {
 	return unlocks;
 };
 
+const getStakes = async params => {
+	const stakes = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getStakes(params);
+	if (response.data) stakes.data = response.data;
+	if (response.meta) stakes.meta = response.meta;
+
+	return stakes;
+};
+
 const getStakers = async params => {
 	const stakers = {
 		data: {},
@@ -80,24 +93,11 @@ const getStakers = async params => {
 	return stakers;
 };
 
-const getVotesSent = async params => {
-	const votesSent = {
-		data: {},
-		meta: {},
-	};
-
-	const response = await dataService.getVotesSent(params);
-	if (response.data) votesSent.data = response.data;
-	if (response.meta) votesSent.meta = response.meta;
-
-	return votesSent;
-};
-
 module.exports = {
 	getDelegates,
 	getPoSConstants,
 	getPoSUnlocks,
+	getStakes,
 	getStakers,
-	getVotesSent,
 };
 

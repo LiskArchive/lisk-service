@@ -68,8 +68,8 @@ const {
 	getDelegate,
 	getAllDelegates,
 	getPoSConstants,
+	getStaker,
 	getPoSPendingUnlocks,
-	getVoter,
 } = require('./pos');
 
 const {
@@ -151,8 +151,9 @@ module.exports = {
 	getDelegate,
 	getAllDelegates,
 	getPoSConstants,
+
+	getStaker,
 	getPoSPendingUnlocks,
-	getVoter,
 
 	getAuthAccount,
 

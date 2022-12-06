@@ -17,8 +17,8 @@ const {
 	getDelegate,
 	getAllDelegates,
 	getPoSConstants,
+	getStaker,
 	getPoSPendingUnlocks,
-	getVoter,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -47,8 +47,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getVoter',
-		controller: async ({ address }) => getVoter(address),
+		name: 'getStaker',
+		controller: async ({ address }) => getStaker(address),
 		params: {
 			address: { optional: false, type: 'string' },
 		},

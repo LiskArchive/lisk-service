@@ -17,8 +17,8 @@ const {
 	getDelegates,
 	getPoSConstants,
 	getPoSUnlocks,
+	getStakes,
 	getStakers,
-	getVotesSent,
 } = require('./controllers/pos');
 
 module.exports = [
@@ -51,21 +51,20 @@ module.exports = [
 		},
 	},
 	{
+		name: 'pos.stakes',
+		controller: getStakes,
+		params: {
+			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+		},
+	},
+	{
 		name: 'pos.stakers',
 		controller: getStakers,
 		params: {
 			address: { optional: true, type: 'string' },
 			publicKey: { optional: true, type: 'string' },
-			name: { optional: true, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
-	},
-	{
-		name: 'dpos.votes.sent',
-		controller: getVotesSent,
-		params: {
-			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

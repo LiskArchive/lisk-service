@@ -14,9 +14,7 @@
  *
  */
 module.exports = {
-	validatorAddress: '=,string',
+	address: '=,string',
 	amount: '=,string',
 	name: '=,string',
-	rank: '=,number',
-	validatorWeight: '=,string',
 };

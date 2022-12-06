@@ -18,7 +18,7 @@ const BluebirdPromise = require('bluebird');
 const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { getGenesisConfig } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
-const { getNameByAddress } = require('../../utils/delegateUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
 const getGenerators = async () => {
 	const { list: generatorsList } = await requestConnector('getGenerators');

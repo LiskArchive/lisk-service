@@ -16,26 +16,32 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const account = {
+const stake = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
-	name: Joi.string().pattern(regex.NAME).optional(),
-	votesUsed: Joi.number().required(),
-};
-
-const votes = {
-	delegateAddress: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	name: Joi.string().pattern(regex.NAME).optional(),
 	amount: Joi.string().required(),
-	rank: Joi.number().integer().min(1).required(),
-	voteWeight: Joi.string().pattern(regex.VOTE_WEIGHT).required(),
+	name: Joi.string().pattern(regex.NAME).required(),
 };
 
-const voteSchema = {
-	account: Joi.object(account).required(),
-	votes: Joi.array().items(votes).optional(),
+const staker = {
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	name: Joi.string().pattern(regex.NAME).optional(),
+};
+
+const data = {
+	stakes: Joi.array().items(stake).required(),
+};
+
+const meta = {
+	staker: Joi.object(staker).required(),
+	count: Joi.number().integer().min(0).required(),
+};
+
+const stakeResponseSchema = {
+	data: Joi.array().items(data).min(0).required(),
+	meta: Joi.object(meta).required(),
 };
 
 module.exports = {
-	voteSchema: Joi.object(voteSchema).required(),
+	stakeResponseSchema: Joi.object(stakeResponseSchema).required(),
 };
