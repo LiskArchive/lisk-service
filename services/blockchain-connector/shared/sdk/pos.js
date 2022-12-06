@@ -46,14 +46,14 @@ const getAllDelegates = async () => {
 	}
 };
 
-const getPoSConstants = async () => {
+const getPosConstants = async () => {
 	try {
 		const response = await invokeEndpoint('pos_getConstants');
 		if (response.error) throw new Error(response.error);
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPoSConstants\'.');
+			throw new TimeoutException('Request timed out when calling \'getPosConstants\'.');
 		}
 		logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
 		throw err;
@@ -103,7 +103,7 @@ module.exports = {
 	getDelegate,
 	getAllDelegates,
 	getLockedRewards,
-	getPoSConstants,
+	getPosConstants,
 	getStaker,
 	getPoSPendingUnlocks,
 };

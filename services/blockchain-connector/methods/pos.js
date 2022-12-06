@@ -16,7 +16,7 @@
 const {
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosConstants,
 	getLockedRewards,
 	getStaker,
 	getPoSPendingUnlocks,
@@ -36,8 +36,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getPoSConstants',
-		controller: async () => getPoSConstants(),
+		name: 'getPosConstants',
+		controller: async () => getPosConstants(),
 		params: {},
 	},
 	{

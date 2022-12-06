@@ -67,7 +67,7 @@ const {
 const {
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosConstants,
 	getStaker,
 	getPoSPendingUnlocks,
 	getLockedRewards,
@@ -155,7 +155,7 @@ module.exports = {
 
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosConstants,
 
 	getStaker,
 	getPoSPendingUnlocks,

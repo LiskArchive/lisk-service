@@ -15,11 +15,11 @@
  */
 const dataService = require('../business');
 
-const getPoSConstants = async () => {
-	const response = await dataService.getPoSConstants();
+const getPosConstants = async () => {
+	const response = await dataService.getPosConstants();
 	return response;
 };
 
 module.exports = {
-	getPoSConstants,
+	getPosConstants,
 };

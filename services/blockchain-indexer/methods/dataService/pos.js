@@ -15,7 +15,7 @@
  */
 const {
 	getDelegates,
-	getPoSConstants,
+	getPosConstants,
 	getPoSUnlocks,
 	getLockedRewards,
 	getStakes,
@@ -38,7 +38,7 @@ module.exports = [
 	},
 	{
 		name: 'pos.constants',
-		controller: getPoSConstants,
+		controller: getPosConstants,
 		params: {},
 	},
 	{
