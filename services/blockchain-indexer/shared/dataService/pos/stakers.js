@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const business = require('../business');
+
+const getStakers = async params => {
+	const response = await business.getStakers(params);
+	return response;
+};
+
 module.exports = {
-	delegateAddress: '=,string',
-	amount: '=,string',
-	name: '=,string',
-	rank: '=,number',
-	voteWeight: '=,string',
+	getStakers,
 };

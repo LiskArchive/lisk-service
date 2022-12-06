@@ -13,32 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dposVote = require('./mappings/dposVote');
+
+// Module specific constants
+const moduleName = 'pos';
 
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.dpos.votes.received',
-	params: {
-		address: '=,string',
-		name: '=,string',
-		limit: '=,number',
-		offset: '=,number',
-	},
-	definition: {
-		data: {
-			account: {
-				address: '=,string',
-				name: '=,string',
-				publicKey: '=,string',
-				votesReceived: '=,number',
-			},
-			votes: ['data.votes', dposVote],
-		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	moduleName,
 };

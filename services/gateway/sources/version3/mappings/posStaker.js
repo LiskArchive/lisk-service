@@ -13,30 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
-const { getLockedRewards } = require('./lockedRewards');
-
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getStakes,
-
-	getStakers,
-
-	getPoSUnlocks,
-
-	getPoSConstants,
-
-	getLockedRewards,
+	address: '=,string',
+	amount: '=,string',
+	name: '=,string',
 };

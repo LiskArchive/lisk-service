@@ -13,30 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
-const { getLockedRewards } = require('./lockedRewards');
+const posStake = require('./mappings/posStake');
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getStakes,
-
-	getStakers,
-
-	getPoSUnlocks,
-
-	getPoSConstants,
-
-	getLockedRewards,
+	type: 'moleculer',
+	method: 'indexer.pos.stakes',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+	},
+	definition: {
+		data: {
+			stakes: ['data.stakes', posStake],
+		},
+		meta: {
+			staker: {
+				address: '=,string',
+				publicKey: '=,string',
+				name: '=,string',
+			},
+			count: '=,number',
+		},
+	},
 };

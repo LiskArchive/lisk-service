@@ -17,9 +17,9 @@ const {
 	getDelegates,
 	getPoSConstants,
 	getPoSUnlocks,
-	getVotesReceived,
-	getVotesSent,
 	getLockedRewards,
+	getStakes,
+	getStakers,
 } = require('./controllers/pos');
 
 const regex = require('../../shared/utils/regex');
@@ -54,20 +54,20 @@ module.exports = [
 		},
 	},
 	{
-		name: 'dpos.votes.received',
-		controller: getVotesReceived,
+		name: 'pos.stakes',
+		controller: getStakes,
 		params: {
 			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
 		},
 	},
 	{
-		name: 'dpos.votes.sent',
-		controller: getVotesSent,
+		name: 'pos.stakers',
+		controller: getStakers,
 		params: {
 			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

@@ -18,7 +18,7 @@ const {
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
 } = require('../../../utils/accountUtils');
-const { getAddressByName } = require('../../../utils/delegateUtils');
+const { getAddressByName } = require('../../../utils/validatorUtils');
 const { requestConnector } = require('../../../utils/request');
 
 const getPoSUnlocks = async params => {

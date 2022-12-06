@@ -12,21 +12,21 @@
  *
  * Removal or modification of this copyright notice is prohibited.
  *
-*/
-const { getPoSConstants } = require('./constants');
+ */
+const { getStakes } = require('./stakes');
+const { getStakers } = require('./stakers');
 const { getPoSUnlocks } = require('./unlocks');
-const { getVotesSent } = require('./votesSent');
-const { getVotesReceived } = require('./votesReceived');
 const { getLockedRewards } = require('./lockedRewards');
+const { getPoSConstants } = require('./constants');
 
 module.exports = {
-	getPoSConstants,
+	getStakes,
+
+	getStakers,
 
 	getPoSUnlocks,
 
 	getLockedRewards,
 
-	getVotesSent,
-
-	getVotesReceived,
+	getPoSConstants,
 };

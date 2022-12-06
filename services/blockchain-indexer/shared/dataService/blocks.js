@@ -20,7 +20,7 @@ const logger = Logger();
 
 const dataService = require('./business');
 const { getGenesisHeight } = require('../constants');
-const { getNameByAddress } = require('../utils/delegateUtils');
+const { getNameByAddress } = require('../utils/validatorUtils');
 
 const config = require('../../config');
 

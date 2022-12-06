@@ -74,14 +74,15 @@ const getPoSPendingUnlocks = async (address) => {
 	}
 };
 
-const getVoter = async (address) => {
+const getStaker = async (address) => {
 	try {
-		const voter = await invokeEndpoint('dpos_getVoter', { address });
-		return voter;
+		const staker = await invokeEndpoint('pos_getStaker', { address });
+		return staker;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getVoter\'.');
+			throw new TimeoutException('Request timed out when calling \'getStaker\'.');
 		}
+		logger.warn(`Error returned when invoking 'pos_getStaker' with param: ${address}.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -103,6 +104,6 @@ module.exports = {
 	getAllDelegates,
 	getLockedRewards,
 	getPoSConstants,
+	getStaker,
 	getPoSPendingUnlocks,
-	getVoter,
 };

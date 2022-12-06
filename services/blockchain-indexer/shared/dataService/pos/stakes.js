@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const business = require('../business');
 
-// Module specific constants
-const moduleName = 'dpos';
+const getStakes = async params => {
+	const response = await business.getStakes(params);
+	return response;
+};
 
 module.exports = {
-	moduleName,
+	getStakes,
 };

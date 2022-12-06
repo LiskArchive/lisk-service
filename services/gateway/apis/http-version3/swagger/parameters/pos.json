@@ -12,5 +12,11 @@
 		"description": "Registered name of the validator.",
 		"type": "string",
 		"minLength": 1
+	},
+	"isUnlockable": {
+		"name": "isUnlockable",
+		"in": "query",
+		"description": "Query pending unlocks filtered by unlockable.",
+		"type": "boolean"
 	}
 }

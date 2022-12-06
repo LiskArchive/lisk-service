@@ -103,14 +103,14 @@ const indexSchemas = {
 	multisignature: require('../database/schema/multisignature'),
 	transactions: require('../database/schema/transactions'),
 	validators: require('../database/schema/validators'),
-	votes: require('../database/schema/votes'),
+	stakes: require('../database/schema/stakes'),
 	key_value_store: require('../database/schema/kvStore'),
 };
 
 const initializeSearchIndex = async () => {
 	await BluebirdPromise.map(
 		Object.keys(indexSchemas),
-		key => getTableInstance(key, indexSchemas[key]),
+		key => getTableInstance(indexSchemas[key].tableName, indexSchemas[key]),
 		{ concurrency: 1 },
 	);
 	Signals.get('searchIndexInitialized').dispatch();
