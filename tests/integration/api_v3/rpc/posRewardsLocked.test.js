@@ -41,7 +41,7 @@ describe('Rewards Locked API', () => {
 			refStakerAddress = stakeTxs[0].sender.address;
 		}
 		const response2 = await getStakes({ address: refStakerAddress });
-		refStaker = response2.meta.account;
+		refStaker = response2.meta.staker;
 	});
 
 	it('Returns list of locked rewards with name parameter', async () => {
