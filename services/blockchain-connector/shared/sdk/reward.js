@@ -36,6 +36,19 @@ const getRewardTokenID = async () => {
 	return rewardTokenID;
 };
 
+const getDefaultRewardAtHeight = async height => {
+	try {
+		const defaultReward = await invokeEndpoint('reward_getDefaultRewardAtHeight', { height });
+		return defaultReward.error ? null : defaultReward;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`);
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	getRewardTokenID,
+	getDefaultRewardAtHeight,
 };

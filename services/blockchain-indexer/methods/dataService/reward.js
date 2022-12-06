@@ -14,19 +14,13 @@
  *
  */
 const {
-	getRewardTokenID,
 	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
+} = require('./controllers/reward');
 
 module.exports = [
 	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getDefaultRewardAtHeight',
-		controller: async ({ height }) => getDefaultRewardAtHeight(height),
+		name: 'reward.default',
+		controller: getDefaultRewardAtHeight,
 		params: {
 			height: { optional: false, type: 'number', min: 0 },
 		},

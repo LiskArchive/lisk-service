@@ -28,7 +28,7 @@ const { requestConnector } = require('../../../utils/request');
 
 const validatorsTableSchema = require('../../../database/schema/validators');
 
-const { getRewardTokenID } = require('../reward/constants');
+const { getRewardTokenID } = require('../reward');
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsTableSchema.tableName,

@@ -90,6 +90,8 @@ const {
 	getPosConstants,
 } = require('./pos');
 
+const { getDefaultRewardAtHeight } = require('./reward');
+
 const { getAuthAccountInfo } = require('./auth');
 const { getEvents, getEventsByHeight } = require('./events');
 const { getValidator, validateBLSKey } = require('./validator');
@@ -141,4 +143,6 @@ module.exports = {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
+
+	getDefaultRewardAtHeight,
 };

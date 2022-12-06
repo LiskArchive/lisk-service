@@ -75,6 +75,7 @@ const {
 
 const {
 	getRewardTokenID,
+	getDefaultRewardAtHeight,
 } = require('./reward');
 
 const {
@@ -162,6 +163,7 @@ module.exports = {
 	getPosLockedRewards,
 
 	getRewardTokenID,
+	getDefaultRewardAtHeight,
 
 	getAuthAccount,
 

@@ -13,22 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
+const { requestConnector } = require('../../../utils/request');
 
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getDefaultRewardAtHeight',
-		controller: async ({ height }) => getDefaultRewardAtHeight(height),
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
-		},
-	},
-];
+const { getRewardTokenID } = require('./constants');
+
+const getDefaultRewardAtHeight = async (params) => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+	const defaultReward = await requestConnector('getDefaultRewardAtHeight', { height: params.height });
+	const rewardTokenID = await getRewardTokenID();
+
+	response.data = {
+		defaultReward,
+		tokenID: rewardTokenID,
+	};
+
+	return response;
+};
+
+module.exports = {
+	getDefaultRewardAtHeight,
+};
