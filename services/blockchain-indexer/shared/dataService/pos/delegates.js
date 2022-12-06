@@ -40,7 +40,7 @@ const getValidatorsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
+const delegateCache = CacheRedis('validator', config.endpoints.cache);
 
 const logger = Logger();
 
@@ -112,8 +112,8 @@ const loadAllDelegates = async () => {
 		await BluebirdPromise.map(
 			delegateList,
 			async delegate => {
-				await delegatesCache.set(delegate.address, delegate.name);
-				await delegatesCache.set(delegate.name, delegate.address);
+				await delegateCache.set(delegate.address, delegate.name);
+				await delegateCache.set(delegate.name, delegate.address);
 				return delegate;
 			},
 			{ concurrency: delegateList.length },

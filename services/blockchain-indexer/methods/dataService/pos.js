@@ -51,6 +51,15 @@ module.exports = [
 		},
 	},
 	{
+		name: 'pos.stakes',
+		controller: getStakes,
+		params: {
+			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+		},
+	},
+	{
 		name: 'pos.stakers',
 		controller: getStakers,
 		params: {
@@ -59,15 +68,6 @@ module.exports = [
 			name: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
-		},
-	},
-	{
-		name: 'pos.stakes',
-		controller: getStakes,
-		params: {
-			address: { optional: true, type: 'string' },
-			name: { optional: true, type: 'string' },
-			publicKey: { optional: true, type: 'string' },
 		},
 	},
 ];

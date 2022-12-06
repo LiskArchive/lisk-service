@@ -40,7 +40,12 @@ const getStakers = async params => {
 	const stakesTable = await getStakesIndex();
 	const stakers = {
 		data: { stakers: [] },
-		meta: {},
+		meta: {
+			validator: {},
+			count: 0,
+			offset: params.offset,
+			total: 0,
+		},
 	};
 
 	if (params.address) {
@@ -48,6 +53,7 @@ const getStakers = async params => {
 		params = remParams;
 
 		params.validatorAddress = address;
+		stakers.meta.validator.address = address;
 	}
 
 	if (params.publicKey) {
@@ -55,6 +61,8 @@ const getStakers = async params => {
 		params = remParams;
 
 		params.validatorAddress = getLisk32AddressFromPublicKey(publicKey);
+		stakers.meta.validator.address = params.validatorAddress;
+		stakers.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
 		await updateAccountPublicKey(publicKey);
@@ -66,6 +74,7 @@ const getStakers = async params => {
 
 		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
 		params.validatorAddress = address;
+		stakers.meta.validator.name = name;
 	}
 
 	// If validatorAddress is unavailable, return empty response

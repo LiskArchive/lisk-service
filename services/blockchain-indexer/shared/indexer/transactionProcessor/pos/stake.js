@@ -94,7 +94,7 @@ const removeStakeFromTable = async (stake, trx) => {
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 
 	await BluebirdPromise.map(
 		stakes,
@@ -102,14 +102,14 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		{ concurrency: 1 },
 	);
 
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 
-	logger.trace(`Reverting stakes in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Reverting stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 
 	await BluebirdPromise.map(
 		stakes,
@@ -117,7 +117,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 		{ concurrency: 1 },
 	);
 
-	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 module.exports = {

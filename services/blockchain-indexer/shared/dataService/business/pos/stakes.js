@@ -22,7 +22,6 @@ const {
 const { getAddressByName } = require('../../../utils/validatorUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
-const { getNameByAddress } = require('../../../utils/validatorUtils');
 
 const normalizeStake = stake => parseToJSONCompatObj(stake);
 
@@ -46,34 +45,26 @@ const getStakes = async params => {
 	}
 
 	const response = await requestConnector('getStaker', { address: params.address });
-
-	// TODO: Remove if condition when proper error handling implemented in SDK
-	if (!response.error) response.sentStakes
-		.forEach(sentStake => stakesReponse.data.stakes.push(normalizeStake(sentStake)));
-
-	// Prepare stakes array
 	stakesReponse.data.stakes = await BluebirdPromise.map(
-		stakesReponse.data.stakes,
-		async stake => {
-			const accountInfo = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
-			const validatorName = accountInfo && accountInfo.name ? accountInfo.name
-				: (await getNameByAddress(stake.validatorAddress));
-
+		response.sentStakes,
+		async sentStake => {
+			const stake = normalizeStake(sentStake);
+			const { name = null } = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
 			return {
 				address: stake.validatorAddress,
 				amount: stake.amount,
-				name: validatorName,
+				name,
 			};
 		},
-		{ concurrency: stakesReponse.data.stakes.length },
+		{ concurrency: response.sentStakes.length },
 	);
 
 	// Populate staker account name
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
 	stakesReponse.meta.staker = {
 		address: params.address,
-		name: accountInfo && accountInfo.name ? accountInfo.name : null,
-		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
+		name: accountInfo.name || null,
+		publicKey: accountInfo.publicKey || null,
 	};
 
 	stakesReponse.meta.count = stakesReponse.data.stakes.length;
