@@ -20,8 +20,8 @@ module.exports = {
 	method: 'indexer.pos.stakes',
 	params: {
 		address: '=,string',
-		name: '=,string',
 		publicKey: '=,string',
+		name: '=,string',
 	},
 	definition: {
 		data: {
@@ -30,11 +30,10 @@ module.exports = {
 		meta: {
 			staker: {
 				address: '=,string',
-				name: '=,string',
 				publicKey: '=,string',
+				name: '=,string',
 			},
 			count: '=,number',
 		},
-		links: {},
 	},
 };

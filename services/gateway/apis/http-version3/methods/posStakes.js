@@ -24,25 +24,31 @@ module.exports = {
 	rpcMethod: 'get.pos.stakes',
 	tags: ['PoS'],
 	params: {
-		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
-		name: { optional: true, type: 'string', pattern: regex.NAME },
+		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
+		name: { optional: true, type: 'string', pattern: regex.NAME },
 	},
+	paramsRequired: true,
+	validParamPairings: [
+		['address'],
+		['publicKey'],
+		['name'],
+	],
 	get schema() {
 		const stakesSchema = {};
 		stakesSchema[this.swaggerApiPath] = { get: {} };
 		stakesSchema[this.swaggerApiPath].get.tags = this.tags;
-		stakesSchema[this.swaggerApiPath].get.summary = 'Requests stakes data.';
+		stakesSchema[this.swaggerApiPath].get.summary = 'Requests the list of sent stakes for the specified staker.';
 		stakesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns stakes data.',
+			description: 'Returns a list of sent stakes for the specified staker.',
 		});
 		stakesSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
 		stakesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of stakes for the specified address or name.',
+				description: 'Returns a list of sent stakes for the specified staker address, publicKey or name.',
 				schema: {
-					$ref: '#/definitions/StakesWithEnvelope',
+					$ref: '#/definitions/posStakesWithEnvelope',
 				},
 			},
 		};

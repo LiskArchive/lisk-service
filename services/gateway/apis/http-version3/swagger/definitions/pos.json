@@ -199,10 +199,10 @@
 			}
 		}
 	},
-	"Stake": {
+	"posStake": {
 		"type": "object",
 		"required": [
-			"validatorAddress",
+			"address",
 			"amount",
 			"name"
 		],
@@ -211,21 +211,60 @@
 				"type": "string",
 				"format": "address",
 				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-				"description": "Lisk Address of the validator the queried account voted for."
+				"description": "Address of the validator."
 			},
 			"amount": {
 				"type": "string",
-				"example": 1081560729258
+				"example": "10815000000000",
+				"description": "Amount staked."
 			},
 			"name": {
 				"type": "string",
 				"format": "username",
 				"example": "liskhq",
-				"description": "Name of the delegate the queried account voted for."
+				"description": "Name of the validator against whom the stake was made."
 			}
 		}
 	},
-	"StakesWithEnvelope": {
+	"posStakesMeta": {
+		"type": "object",
+		"required": [
+			"staker",
+			"count"
+		],
+		"properties": {
+			"staker": {
+				"type": "object",
+				"properties": {
+					"address": {
+						"type": "string",
+						"format": "address",
+						"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+						"description": "Address of the queried staker. The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+					},
+					"publicKey": {
+						"type": "string",
+						"format": "publicKey",
+						"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+						"description": "Public key of the queried staker. The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+					},
+					"name": {
+						"type": "string",
+						"example": "genesis_84",
+						"description": "Name of the queried staker. Available only when registered as a validator."
+					}
+				}
+			},
+			"count": {
+				"type": "integer",
+				"example": 10,
+				"minimum": 0,
+				"maximum": 10,
+				"description": "Number of items returned in the request."
+			}
+		}
+	},
+	"posStakesWithEnvelope": {
 		"type": "object",
 		"required": [
 			"data",
@@ -233,49 +272,19 @@
 		],
 		"properties": {
 			"data": {
-				"description": "List of stakes.",
+				"description": "List of sent stakes for the queried staker.",
 				"type": "object",
 				"properties": {
 					"stakes": {
 						"type": "array",
 						"items": {
-							"$ref": "#/definitions/Stake"
+							"$ref": "#/definitions/posStake"
 						}
 					}
 				}
 			},
 			"meta": {
-                "type": "object",
-                "properties": {
-					"staker": {
-						"type": "object",
-						"properties": {
-							"address": {
-								"type": "string",
-								"format": "address",
-								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-								"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-							},
-							"name": {
-								"type": "string",
-								"example": "genesis_84",
-								"description": "Validator name."
-							},
-							"publicKey": {
-								"type": "string",
-								"format": "publicKey",
-								"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-							}
-						}
-					},
-					"count": {
-						"type": "integer",
-						"example": 100,
-						"minimum": 0,
-						"description": "Number of items returned in the request."
-					}
-				}
+				"$ref": "#/definitions/posStakesMeta"
 			}
 		}
 	},
@@ -294,7 +303,7 @@
 			},
 			"amount": {
 				"type": "string",
-				"example": "1081560729258",
+				"example": "10815000000000",
 				"description": "Amount staked."
 			},
 			"name": {
