@@ -20,10 +20,12 @@ module.exports = {
 	method: 'indexer.pos.validators',
 	params: {
 		address: '=,string',
+		publicKey: '=,string',
 		name: '=,string',
 		status: '=,string',
 		offset: '=,number',
 		limit: '=,number',
+		sort: '=,string',
 	},
 	definition: {
 		data: ['data', validator],
@@ -32,6 +34,5 @@ module.exports = {
 			offset: '=,number',
 			total: '=,number',
 		},
-		links: {},
 	},
 };

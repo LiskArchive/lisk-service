@@ -14,8 +14,8 @@
  *
  */
 const {
-	getValidators,
-	getAllValidators,
+	getPoSValidators,
+	getAllPoSValidators,
 	isPoSModuleRegistered,
 } = require('./validators');
 
@@ -29,8 +29,8 @@ module.exports = {
 	getPoSConstants,
 
 	// Validators
-	getValidators,
-	getAllValidators,
+	getPoSValidators,
+	getAllPoSValidators,
 	isPoSModuleRegistered,
 
 	// Stakes

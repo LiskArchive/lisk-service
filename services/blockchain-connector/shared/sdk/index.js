@@ -101,20 +101,24 @@ const init = async () => {
 module.exports = {
 	init,
 
+	// Blocks
 	getLastBlock,
 	getBlockByID,
 	getBlocksByIDs,
 	getBlockByHeight,
 	getBlocksByHeightBetween,
 
+	// Events
 	getEventsByHeight,
 
+	// Transactions
 	getTransactionByID,
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
 
+	// Fee
 	getFeeTokenID,
 	getMinFeePerByte,
 
@@ -148,6 +152,7 @@ module.exports = {
 	getSupportedTokens,
 	getTotalSupply,
 
+	// PoS
 	getDelegate,
 	getAllDelegates,
 	getPoSConstants,

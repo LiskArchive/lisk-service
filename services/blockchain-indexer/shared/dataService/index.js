@@ -53,7 +53,7 @@ const {
 } = require('./blocks');
 
 const {
-	getValidators,
+	getPoSValidators,
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
 	getPoSConstants,
@@ -111,7 +111,7 @@ module.exports = {
 	performLastBlockUpdate,
 
 	// PoS
-	getValidators,
+	getPoSValidators,
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
 	getPoSConstants,

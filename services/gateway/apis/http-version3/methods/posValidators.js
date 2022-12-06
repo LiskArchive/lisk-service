@@ -24,12 +24,19 @@ module.exports = {
 	rpcMethod: 'get.pos.validators',
 	tags: ['PoS'],
 	params: {
-		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
-		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
+		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
+		publicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
+		name: { optional: true, type: 'string', pattern: regex.NAME },
 		status: { optional: true, type: 'string', pattern: regex.POS_VALIDATOR_STATUS },
 		search: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
+		sort: {
+			optional: true,
+			type: 'string',
+			enum: ['commission:asc', 'commission:desc', 'rank:asc', 'rank:desc'],
+			default: 'commission:asc',
+		},
 	},
 	get schema() {
 		const validatorsSchema = {};

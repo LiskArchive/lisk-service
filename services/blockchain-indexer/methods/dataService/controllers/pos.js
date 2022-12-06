@@ -20,14 +20,14 @@ const {
 
 const dataService = require('../../../shared/dataService');
 
-const getValidators = async params => {
+const getPoSValidators = async params => {
 	const delegates = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await dataService.getValidators(params);
+		const response = await dataService.getPoSValidators(params);
 		if (response.data) delegates.data = response.data;
 		if (response.meta) delegates.meta = response.meta;
 
@@ -94,7 +94,7 @@ const getStakers = async params => {
 };
 
 module.exports = {
-	getValidators,
+	getPoSValidators,
 	getPoSConstants,
 	getPoSUnlocks,
 	getStakes,

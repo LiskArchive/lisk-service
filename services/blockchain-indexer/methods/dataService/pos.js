@@ -14,7 +14,7 @@
  *
  */
 const {
-	getValidators,
+	getPoSValidators,
 	getPoSConstants,
 	getPoSUnlocks,
 	getStakes,
@@ -24,13 +24,15 @@ const {
 module.exports = [
 	{
 		name: 'pos.validators',
-		controller: getValidators,
+		controller: getPoSValidators,
 		params: {
-			address: { optional: true, type: 'any' },
-			name: { optional: true, type: 'any' },
-			status: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
+			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			status: { optional: true, type: 'string' },
+			offset: { optional: true, type: 'number' },
+			limit: { optional: true, type: 'number' },
+			sort: { optional: true, type: 'string' },
 		},
 	},
 	{

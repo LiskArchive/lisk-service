@@ -26,7 +26,26 @@ const range = (start = 0, end, step = 1) => {
 	return new Array(arrSize).fill().map((_, index) => start + index * step);
 };
 
+const sortComparator = (sortParam) => {
+	const [sortProp, sortOrder] = sortParam.split(':');
+
+	const comparator = (a, b) => {
+		try {
+			if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting.');
+			return (sortOrder === 'asc')
+				? a[sortProp] - b[sortProp]
+				: b[sortProp] - a[sortProp];
+		} catch (_) {
+			return (sortOrder === 'asc')
+				? a[sortProp].localeCompare(b[sortProp])
+				: b[sortProp].localeCompare(a[sortProp]);
+		}
+	};
+	return comparator;
+};
+
 module.exports = {
 	dropDuplicates,
 	range,
+	sortComparator,
 };

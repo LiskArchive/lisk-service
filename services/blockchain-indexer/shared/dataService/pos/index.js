@@ -16,7 +16,7 @@
 const {
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
-	getValidators,
+	getPoSValidators,
 } = require('./validators');
 
 const { getStakes } = require('./stakes');
@@ -27,7 +27,7 @@ const { getPoSConstants } = require('./constants');
 module.exports = {
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
-	getValidators,
+	getPoSValidators,
 
 	getStakes,
 

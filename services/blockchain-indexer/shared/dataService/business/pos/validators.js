@@ -44,8 +44,8 @@ const verifyIfPunished = async validator => {
 	return isPunished;
 };
 
-const getAllValidators = async () => {
-	const { validators: rawValidators } = await requestConnector('getAllValidators');
+const getAllPoSValidators = async () => {
+	const { validators: rawValidators } = await requestConnector('getAllPoSValidators');
 	const validators = await BluebirdPromise.map(
 		rawValidators,
 		async validator => {
@@ -67,7 +67,7 @@ const getAllValidators = async () => {
 	return validators;
 };
 
-const getValidators = async (params) => {
+const getPoSValidators = async (params) => {
 	const { address, addresses, ...remParams } = params;
 	params = remParams;
 	params.addresses = address ? [address] : addresses;
@@ -75,7 +75,7 @@ const getValidators = async (params) => {
 	const validators = await BluebirdPromise.map(
 		params.addresses,
 		async validatorAddress => {
-			const validator = await requestConnector('getValidator', { address: validatorAddress });
+			const validator = await requestConnector('getPoSValidator', { address: validatorAddress });
 			// TODO: Verify
 			// TODO: Check if it is possible to move this logic to the connector
 			if (validator.isBanned || await verifyIfPunished(validator)) {
@@ -95,7 +95,7 @@ const getValidators = async (params) => {
 };
 
 module.exports = {
-	getValidators,
-	getAllValidators,
+	getPoSValidators,
+	getAllPoSValidators,
 	isPoSModuleRegistered,
 };

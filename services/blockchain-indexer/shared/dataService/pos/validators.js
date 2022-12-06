@@ -22,25 +22,31 @@ const {
 	Signals,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+
 const dataService = require('../business');
-
-const { getLastBlock } = require('../blocks');
-const { getAllGenerators } = require('../generators');
-const { getLisk32AddressFromPublicKey, getHexAddress } = require('../../utils/accountUtils');
-const { MODULE, COMMAND } = require('../../constants');
-const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
 const validatorsIndexSchema = require('../../database/schema/validators');
 
-const getValidatorsIndex = () => getTableInstance(
+const {
+	getLisk32AddressFromPublicKey,
+	getHexAddress,
+	updateAccountPublicKey,
+} = require('../../utils/accountUtils');
+const { getLastBlock } = require('../blocks');
+const { getAllGenerators } = require('../generators');
+const { MODULE, COMMAND } = require('../../constants');
+const { sortComparator } = require('../../utils/arrayUtils');
+const { parseToJSONCompatObj } = require('../../utils/parser');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getValidatorsTable = () => getTableInstance(
 	validatorsIndexSchema.tableName,
 	validatorsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
-const validatorsCache = CacheRedis('validators', config.endpoints.cache);
+const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const logger = Logger();
 
@@ -79,18 +85,14 @@ const computeValidatorStatus = async () => {
 	const activeGeneratorsList = generatorsList.map(generator => generator.address);
 
 	const verifyIfPunished = (validator) => {
-		const isPunished = validator.pomHeights
-			.some(pomHeight => pomHeight.start <= lastestBlock.height
-				&& lastestBlock.height <= pomHeight.end);
+		const isPunished = validator.pomHeights.some(
+			pomHeight => pomHeight.start <= lastestBlock.height && lastestBlock.height <= pomHeight.end,
+		);
 		return isPunished;
 	};
 
+	logger.debug('Determine validator status.');
 	validatorList.map((validator) => {
-		logger.debug('Determine validator status.');
-
-		// Default validator status
-		validator.status = VALIDATOR_STATUS.INELIGIBLE;
-
 		// Update validator status, if applicable
 		if (validator.isBanned) {
 			validator.status = VALIDATOR_STATUS.BANNED;
@@ -100,9 +102,13 @@ const computeValidatorStatus = async () => {
 			validator.status = VALIDATOR_STATUS.ACTIVE;
 		} else if (BigInt(validator.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			validator.status = VALIDATOR_STATUS.STANDBY;
+		} else {
+			// Default validator status
+			validator.status = VALIDATOR_STATUS.INELIGIBLE;
 		}
 		return validator;
 	});
+
 	return validatorList;
 };
 
@@ -112,8 +118,8 @@ const loadAllValidators = async () => {
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
-				await validatorsCache.set(validator.address, validator.name);
-				await validatorsCache.set(validator.name, validator.address);
+				await validatorCache.set(validator.address, validator.name);
+				await validatorCache.set(validator.name, validator.address);
 				return validator;
 			},
 			{ concurrency: validatorList.length },
@@ -151,36 +157,14 @@ const getTotalNumberOfValidators = async (params = {}) => {
 	return relevantValidators.length;
 };
 
-const getValidators = async params => {
-	const validatorsTable = await getValidatorsIndex();
-
+const getPoSValidators = async params => {
 	const validators = {
 		data: [],
 		meta: {},
 	};
+
+	const validatorsTable = await getValidatorsTable();
 	const allValidators = await getAllValidators();
-
-	const offset = Number(params.offset) || 0;
-	const limit = Number(params.limit) || 10;
-	if (!params.sort) params.sort = 'rank:asc';
-
-	const sortComparator = (sortParam) => {
-		const [sortProp, sortOrder] = sortParam.split(':');
-
-		const comparator = (a, b) => {
-			try {
-				if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting.');
-				return (sortOrder === 'asc')
-					? a[sortProp] - b[sortProp]
-					: b[sortProp] - a[sortProp];
-			} catch (_) {
-				return (sortOrder === 'asc')
-					? a[sortProp].localeCompare(b[sortProp])
-					: b[sortProp].localeCompare(a[sortProp]);
-			}
-		};
-		return comparator;
-	};
 
 	const filterBy = (list, entity) => list.filter((acc) => params[entity].includes(',')
 		? (acc[entity] && params[entity].split(',').includes(acc[entity]))
@@ -203,6 +187,12 @@ const getValidators = async params => {
 		}, { concurrency: allValidators.length },
 	);
 
+	if (params.publicKey) {
+		params.address = getLisk32AddressFromPublicKey(params.publicKey);
+
+		// Index publicKey asynchronously
+		updateAccountPublicKey(params.publicKey);
+	}
 	if (params.address) {
 		validators.data = filterBy(validators.data, 'address');
 	}
@@ -217,7 +207,7 @@ const getValidators = async params => {
 
 	validators.data = validators.data
 		.sort(sortComparator(params.sort))
-		.slice(offset, offset + limit);
+		.slice(params.offset, params.offset + params.limit);
 
 	validators.meta.count = validators.data.length;
 	validators.meta.offset = params.offset;
@@ -328,5 +318,5 @@ updateValidatorListOnAccountsUpdate();
 module.exports = {
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
-	getValidators,
+	getPoSValidators,
 };
