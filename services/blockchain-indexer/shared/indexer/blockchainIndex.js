@@ -132,23 +132,24 @@ const getTransactionExecutionStatus = (tx, events) => {
 	const expectedEventName = `${tx.module}:commandExecutionResult`;
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
+	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
 	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
 };
 
 const indexBlock = async job => {
-	let blockReward = BigInt('0');
-
 	const { block } = job.data;
+	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
+
 	const blocksTable = await getBlocksIndex();
-	const events = await getEventsByHeight(block.height);
-
-	if (!validateBlock(block)) throw new Error(`Error: Invalid block ${block.id} at height ${block.height} }`);
-
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}`);
 
+	let blockReward = BigInt('0');
+
 	try {
+		const events = await getEventsByHeight(block.height);
+
 		if (block.transactions.length) {
 			const { transactions, assets, ...blockHeader } = block;
 
@@ -203,7 +204,7 @@ const indexBlock = async job => {
 
 			// Update the generator's rewards
 			// TODO: Create constants
-			const blockRewardEvent = events.find(e => e.module === 'reward' && e.name === 'Reward Minted Data');
+			const blockRewardEvent = events.find(e => ['reward', 'dynamicReward'].includes(e.module) && e.name === 'rewardMinted');
 			if (blockRewardEvent) {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
 				await validatorsTable.increment({
@@ -238,6 +239,7 @@ const indexBlock = async job => {
 		}
 
 		logger.warn(`Error occured while indexing block ${block.id} at height ${block.height}. Will retry later.`);
+		logger.warn(error.stack);
 		throw error;
 	}
 };
