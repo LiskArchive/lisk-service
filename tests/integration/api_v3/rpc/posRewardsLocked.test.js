@@ -32,19 +32,20 @@ const getStakeTransaction = async params => request(wsRpcUrl, 'get.transactions'
 const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('Rewards Locked API', () => {
-	let refAccount;
+	let refStaker;
 	beforeAll(async () => {
-		let refValidatorAddress;
+		let refStakerAddress;
 		const stakeTransactionReponse = await getStakeTransaction({ moduleCommand: 'pos:stake', limit: 1 });
-		const { stakeTx = [] } = stakeTransactionReponse.data;
-		if (stakeTx) {
-			refValidatorAddress = stakeTx.sender.address;
+		const { stakeTxs = [] } = stakeTransactionReponse.result.data;
+		if (stakeTxs.length) {
+			refStakerAddress = stakeTxs[0].sender.address;
 		}
-		const response2 = await getStakes({ address: refValidatorAddress });
-		refAccount = response2.data[0].account;
+		const response2 = await getStakes({ address: refStakerAddress });
+		refStaker = response2.meta.account;
 	});
+
 	it('Returns list of locked rewards with name parameter', async () => {
-		const response = await getPosRewardsLocked({ name: refAccount.name });
+		const response = await getPosRewardsLocked({ name: refStaker.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -53,8 +54,8 @@ describe('Rewards Locked API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list locked rewards with address parameter', async () => {
-		const response = await getPosRewardsLocked({ address: refAccount.address });
+	it('Returns list of locked rewards with address parameter', async () => {
+		const response = await getPosRewardsLocked({ address: refStaker.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -63,8 +64,8 @@ describe('Rewards Locked API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list locked rewards with publickKey', async () => {
-		const response = await getPosRewardsLocked({ publicKey: refAccount.publicKey });
+	it('Returns list of locked rewards with publickKey', async () => {
+		const response = await getPosRewardsLocked({ publicKey: refStaker.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;

@@ -26,7 +26,7 @@ const lockedReward = {
 
 const goodResponseSchema = {
 	data: Joi.array().items(lockedReward).required(),
-	meta: Joi.object(metaSchema).required(),
+	meta: metaSchema,
 };
 
 module.exports = {

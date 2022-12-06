@@ -31,34 +31,34 @@ const endpoint = `${baseUrlV3}/pos/rewards/locked`;
 const stakesEndpoint = `${baseUrlV3}/pos/stakes`;
 
 describe('Rewards Locked API', () => {
-	let refAccount;
+	let refStaker;
 	beforeAll(async () => {
-		let refValidatorAddress;
+		let refStakerAddress;
 		const stakeTransactionReponse = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
-		const { stakeTx = [] } = stakeTransactionReponse.data;
-		if (stakeTx) {
-			refValidatorAddress = stakeTx.sender.address;
+		const { stakeTxs = [] } = stakeTransactionReponse.data;
+		if (stakeTxs.length) {
+			refStakerAddress = stakeTxs[0].sender.address;
 		}
-		const response2 = await api.get(`${stakesEndpoint}?address=${refValidatorAddress}`);
-		refAccount = response2.data[0].account;
+		const response2 = await api.get(`${stakesEndpoint}?address=${refStakerAddress}`);
+		refStaker = response2.meta.staker;
 	});
 
 	it('Returns list of locked rewards with name parameter', async () => {
-		const response = await api.get(`${endpoint}?name=${refAccount.name}`);
+		const response = await api.get(`${endpoint}?name=${refStaker.name}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list locked rewards with address parameter', async () => {
-		const response = await api.get(`${endpoint}?address=${refAccount.address}`);
+	it('Returns list of locked rewards with address parameter', async () => {
+		const response = await api.get(`${endpoint}?address=${refStaker.address}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list locked rewards with publickKey', async () => {
-		const response = await api.get(`${endpoint}?publicKey=${refAccount.publicKey}`);
+	it('Returns list of locked rewards with publickKey', async () => {
+		const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
