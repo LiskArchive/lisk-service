@@ -37,9 +37,9 @@ describe('Claimable rewards API', () => {
 		do {
 			/* eslint-disable no-await-in-loop */
 			const [generator] = (await getGenerators()).data;
-			const response2 = await getStakes({ address: generator.address });
+			const response = await getStakes({ address: generator.address });
 			/* eslint-enable no-await-in-loop */
-			refValidator = response2.meta.staker;
+			refValidator = response.meta.staker;
 		} while (!refValidator);
 	});
 
