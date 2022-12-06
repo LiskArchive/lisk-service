@@ -60,6 +60,7 @@ const {
 	getStakes,
 	getStakers,
 	getPoSUnlocks,
+	getClaimableRewards,
 } = require('./pos');
 
 const {
@@ -162,6 +163,7 @@ module.exports = {
 	getStakers,
 	getPoSUnlocks,
 	getPoSConstants,
+	getClaimableRewards,
 	getEvents,
 	getEventsByHeight,
 	getAuthAccountInfo,

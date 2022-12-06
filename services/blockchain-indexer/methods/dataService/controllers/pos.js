@@ -93,11 +93,32 @@ const getStakers = async params => {
 	return stakers;
 };
 
+const getClaimableRewards = async (params) => {
+	try {
+		const claimableRewards = {
+			data: [],
+			meta: {},
+		};
+
+		const response = await dataService.getClaimableRewards(params);
+		if (response.data) claimableRewards.data = response.data;
+		if (response.meta) claimableRewards.meta = response.meta;
+
+		return claimableRewards;
+	} catch (err) {
+		let status;
+		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
+};
+
 module.exports = {
 	getDelegates,
 	getPoSConstants,
 	getPoSUnlocks,
 	getStakes,
 	getStakers,
+	getClaimableRewards,
 };
 

@@ -13,20 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
-const { getClaimableRewards } = require('./claimableRewards');
+const business = require('../business');
+
+const getClaimableRewards = async params => {
+	const response = await business.getClaimableRewards(params);
+	return response;
+};
 
 module.exports = {
-	getStakes,
-
-	getStakers,
-
-	getPoSUnlocks,
-
-	getPoSConstants,
-
 	getClaimableRewards,
 };
