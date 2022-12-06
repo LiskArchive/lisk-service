@@ -43,7 +43,7 @@ describe('Rewards Locked API', () => {
 		refAccount = response2.data[0].account;
 	});
 
-	it('Returns list locked rewards with name parameter', async () => {
+	it('Returns list of locked rewards with name parameter', async () => {
 		const response = await api.get(`${endpoint}?name=${refAccount.name}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -57,7 +57,7 @@ describe('Rewards Locked API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list locked rewards with name publickKey', async () => {
+	it('Returns list locked rewards with publickKey', async () => {
 		const response = await api.get(`${endpoint}?publicKey=${refAccount.publicKey}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

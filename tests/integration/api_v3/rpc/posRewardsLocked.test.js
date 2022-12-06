@@ -43,7 +43,7 @@ describe('Rewards Locked API', () => {
 		const response2 = await getStakes({ address: refValidatorAddress });
 		refAccount = response2.data[0].account;
 	});
-	it('Returns list locked rewards with name parameter', async () => {
+	it('Returns list of locked rewards with name parameter', async () => {
 		const response = await getPosRewardsLocked({ name: refAccount.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -63,7 +63,7 @@ describe('Rewards Locked API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list locked rewards with name publickKey', async () => {
+	it('Returns list locked rewards with publickKey', async () => {
 		const response = await getPosRewardsLocked({ publicKey: refAccount.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
