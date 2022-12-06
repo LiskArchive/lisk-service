@@ -19,6 +19,7 @@ const {
 	getPoSConstants,
 	getStaker,
 	getPoSPendingUnlocks,
+	getClaimableRewards,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -49,6 +50,13 @@ module.exports = [
 	{
 		name: 'getStaker',
 		controller: async ({ address }) => getStaker(address),
+		params: {
+			address: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getClaimableRewards',
+		controller: async ({ address }) => getClaimableRewards({ address }),
 		params: {
 			address: { optional: false, type: 'string' },
 		},
