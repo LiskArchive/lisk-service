@@ -50,7 +50,7 @@ module.exports = {
 			200: {
 				description: 'Returns a list of rewards locked by the PoS module for the specified address, publicKey or validator name.',
 				schema: {
-					$ref: '#/definitions/PoSRewardsLockedWithEnvelope',
+					$ref: '#/definitions/posRewardsLockedWithEnvelope',
 				},
 			},
 		};

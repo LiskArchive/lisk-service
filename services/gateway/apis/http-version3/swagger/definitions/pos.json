@@ -542,7 +542,7 @@
 						"tokenID": {
 							"type": "string",
 							"example": "0000000000000000",
-							"description": "The universal identifier for the token within the Lisk ecosystem for sharing rewards."
+							"description": "The universal identifier for the token within the Lisk ecosystem used for rewards."
 						},
 						"reward": {
 							"type": "string",
