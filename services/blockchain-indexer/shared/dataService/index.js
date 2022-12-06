@@ -58,7 +58,7 @@ const {
 	getTotalNumberOfDelegates,
 	getPoSConstants,
 	getVotesSent,
-	getVotesReceived,
+	getStakers,
 	getPoSUnlocks,
 } = require('./pos');
 
@@ -158,7 +158,7 @@ module.exports = {
 	getSchemas,
 	getTransactionsByBlockID,
 	dryRunTransactions,
-	getVotesReceived,
+	getStakers,
 	getVotesSent,
 	getPoSUnlocks,
 	getPoSConstants,

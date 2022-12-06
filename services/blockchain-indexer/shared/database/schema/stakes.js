@@ -14,9 +14,15 @@
  *
  */
 module.exports = {
-	delegateAddress: '=,string',
-	amount: '=,string',
-	name: '=,string',
-	rank: '=,number',
-	voteWeight: '=,string',
+	tableName: 'stakes',
+	primaryKey: ['validatorAddress', 'stakerAddress'],
+	schema: {
+		stakerAddress: { type: 'string' },
+		validatorAddress: { type: 'string' },
+		amount: { type: 'bigInteger' },
+	},
+	indexes: {
+		validatorAddress: { type: 'key' },
+	},
+	purge: {},
 };

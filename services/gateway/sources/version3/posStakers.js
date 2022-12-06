@@ -13,16 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const posStaker = require('./mappings/posStaker');
+
 module.exports = {
-	tableName: 'votes',
-	primaryKey: ['receivedAddress', 'sentAddress'],
-	schema: {
-		sentAddress: { type: 'string' },
-		receivedAddress: { type: 'string' },
-		amount: { type: 'bigInteger' },
+	type: 'moleculer',
+	method: 'indexer.pos.stakers',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+		limit: '=,number',
+		offset: '=,number',
 	},
-	indexes: {
-		receivedAddress: { type: 'key' },
+	definition: {
+		data: {
+			stakers: ['data.stakers', posStaker],
+		},
+		meta: {
+			validator: {
+				address: '=,string',
+				publicKey: '=,string',
+				name: '=,string',
+			},
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
 	},
-	purge: {},
 };
