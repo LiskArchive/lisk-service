@@ -48,7 +48,7 @@ module.exports = {
 		claimableRewardsSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
 		claimableRewardsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of claimable rewards for the specified address, publicKey or validator name.',
+				description: 'Returns a list of claimable rewards by the PoS module for the specified address, publicKey or validator name.',
 				schema: {
 					$ref: '#/definitions/posClaimableRewardsWithEnvelope',
 				},

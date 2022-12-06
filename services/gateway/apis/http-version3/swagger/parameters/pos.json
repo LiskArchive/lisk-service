@@ -2,7 +2,7 @@
 	"delegateStatus": {
 		"name": "status",
 		"in": "query",
-		"description": "Query delegates by status",
+		"description": "Query validators by status.",
 		"type": "string",
 		"minLength": 1
 	},
@@ -11,5 +11,12 @@
 		"in": "query",
 		"description": "Query pending unlocks filtered by unlockable.",
 		"type": "boolean"
+	},
+	"validatorName": {
+		"name": "name",
+		"in": "query",
+		"description": "validator name to query.",
+		"type": "string",
+		"minLength": 1
 	}
 }
