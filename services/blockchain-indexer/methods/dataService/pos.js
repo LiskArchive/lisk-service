@@ -16,9 +16,9 @@
 const {
 	getValidators,
 	getPoSConstants,
-	getUnlocks,
-	getVotesReceived,
-	getVotesSent,
+	getPoSUnlocks,
+	getStakes,
+	getStakers,
 } = require('./controllers/pos');
 
 module.exports = [
@@ -39,31 +39,32 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'dpos.unlocks',
-		controller: getUnlocks,
+		name: 'pos.unlocks',
+		controller: getPoSUnlocks,
 		params: {
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			publicKey: { optional: true, type: 'string' },
+			isUnlockable: { optional: true, type: 'boolean' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
 	},
 	{
-		name: 'dpos.votes.received',
-		controller: getVotesReceived,
+		name: 'pos.stakes',
+		controller: getStakes,
 		params: {
 			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
 		},
 	},
 	{
-		name: 'dpos.votes.sent',
-		controller: getVotesSent,
+		name: 'pos.stakers',
+		controller: getStakers,
 		params: {
 			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

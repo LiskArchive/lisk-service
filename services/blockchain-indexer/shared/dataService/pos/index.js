@@ -19,9 +19,9 @@ const {
 	getValidators,
 } = require('./validators');
 
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
+const { getStakes } = require('./stakes');
+const { getStakers } = require('./stakers');
+const { getPoSUnlocks } = require('./unlocks');
 const { getPoSConstants } = require('./constants');
 
 module.exports = {
@@ -29,10 +29,11 @@ module.exports = {
 	getTotalNumberOfValidators,
 	getValidators,
 
-	getVotesSent,
-	getVotesReceived,
+	getStakes,
 
-	getUnlocks,
+	getStakers,
+
+	getPoSUnlocks,
 
 	getPoSConstants,
 };

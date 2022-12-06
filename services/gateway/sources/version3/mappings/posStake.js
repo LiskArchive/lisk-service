@@ -15,14 +15,6 @@
  */
 module.exports = {
 	address: '=,string',
-	publicKey: '=,string',
+	amount: '=,string',
 	name: '=,string',
-	unlocking: ['data.unlocking', {
-		delegateAddress: '=,string',
-		amount: '=,string',
-		unvoteHeight: {
-			start: '=,number',
-			end: '=,number',
-		},
-	}],
 };

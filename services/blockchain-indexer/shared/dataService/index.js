@@ -57,9 +57,9 @@ const {
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
 	getPoSConstants,
-	getVotesSent,
-	getVotesReceived,
-	getUnlocks,
+	getStakes,
+	getStakers,
+	getPoSUnlocks,
 } = require('./pos');
 
 const {
@@ -115,9 +115,9 @@ module.exports = {
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
 	getPoSConstants,
-	getVotesSent,
-	getVotesReceived,
-	getUnlocks,
+	getPoSUnlocks,
+	getStakes,
+	getStakers,
 
 	// Peers
 	getPeers,

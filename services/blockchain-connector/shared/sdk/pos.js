@@ -14,10 +14,13 @@
  *
  */
 const {
+	Logger,
 	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+
+const logger = Logger();
 
 const getDelegate = async (address) => {
 	try {
@@ -45,24 +48,41 @@ const getAllDelegates = async () => {
 
 const getPoSConstants = async () => {
 	try {
-		const constants = await invokeEndpoint('pos_getConstants');
-		return constants;
+		const response = await invokeEndpoint('pos_getConstants');
+		if (response.error) throw new Error(response.error);
+		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getPoSConstants\'.');
 		}
+		logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
 		throw err;
 	}
 };
 
-const getVoter = async (address) => {
+const getPoSPendingUnlocks = async (address) => {
 	try {
-		const voter = await invokeEndpoint('dpos_getVoter', { address });
-		return voter;
+		const response = await invokeEndpoint('pos_getPendingUnlocks', { address });
+		if (response.error) throw new Error(response.error);
+		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getVoter\'.');
+			throw new TimeoutException('Request timed out when calling \'getPoSPendingUnlocks\'.');
 		}
+		logger.warn(`Error returned when invoking 'pos_getPendingUnlocks' with param: ${address}.\n${err.stack}`);
+		throw err;
+	}
+};
+
+const getStaker = async (address) => {
+	try {
+		const staker = await invokeEndpoint('pos_getStaker', { address });
+		return staker;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getStaker\'.');
+		}
+		logger.warn(`Error returned when invoking 'pos_getStaker' with param: ${address}.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -71,5 +91,6 @@ module.exports = {
 	getDelegate,
 	getAllDelegates,
 	getPoSConstants,
-	getVoter,
+	getStaker,
+	getPoSPendingUnlocks,
 };

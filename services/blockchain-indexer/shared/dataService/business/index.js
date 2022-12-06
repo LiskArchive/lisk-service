@@ -58,9 +58,9 @@ const {
 	getAllValidators,
 	isPoSModuleRegistered,
 	getVotesByTransactionIDs,
-	getVotesReceived,
-	getVotesSent,
-	getUnlocks,
+	getStakes,
+	getStakers,
+	getPoSUnlocks,
 	getPoSConstants,
 } = require('./pos');
 
@@ -116,10 +116,11 @@ module.exports = {
 	getValidators,
 	getAllValidators,
 	isPoSModuleRegistered,
+
 	getVotesByTransactionIDs,
-	getVotesReceived,
-	getVotesSent,
-	getUnlocks,
+	getStakes,
+	getStakers,
+	getPoSUnlocks,
 	getPoSConstants,
 
 	// Token

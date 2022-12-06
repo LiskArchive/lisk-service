@@ -49,7 +49,7 @@ module.exports = {
 						.fromEntries(new Map(Object.entries(req.$params).filter(([, v]) => v)));
 					if (err instanceof ValidationException === false) this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(reqParams)} \nRequest body: ${util.inspect(req.body)}`);
 				}
-				this.sendError(req, res, new Error(err));
+				this.sendError(req, res, err);
 			}
 		},
 

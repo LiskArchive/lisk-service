@@ -13,32 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getValidators,
-	getAllValidators,
-	isPoSModuleRegistered,
-} = require('./validators');
-
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
+const posStake = require('./mappings/posStake');
 
 module.exports = {
-	// Constants
-	getPoSConstants,
-
-	// Validators
-	getValidators,
-	getAllValidators,
-	isPoSModuleRegistered,
-
-	// Stakes
-	getStakes,
-
-	// Stakers
-	getStakers,
-
-	// Unlocks
-	getPoSUnlocks,
+	type: 'moleculer',
+	method: 'indexer.pos.stakes',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+	},
+	definition: {
+		data: {
+			stakes: ['data.stakes', posStake],
+		},
+		meta: {
+			staker: {
+				address: '=,string',
+				publicKey: '=,string',
+				name: '=,string',
+			},
+			count: '=,number',
+		},
+	},
 };

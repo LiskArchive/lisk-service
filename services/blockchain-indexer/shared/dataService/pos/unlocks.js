@@ -13,13 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
-const getUnlocks = async params => {
-	const response = await dataService.getUnlocks(params);
+const getPoSUnlocks = async params => {
+	const response = await business.getPoSUnlocks(params);
 	return response;
 };
 
 module.exports = {
-	getUnlocks,
+	getPoSUnlocks,
 };

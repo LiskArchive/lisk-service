@@ -167,25 +167,25 @@ const registerApi = (apiNames, config) => {
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
 			if (paramReport.missing.length > 0) {
-				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
-				throw new ValidationException('Request param validation error');
+				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join('; ')}`);
+				throw new ValidationException('Request param validation error.');
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
-				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
-				throw new ValidationException('Request param validation error');
+				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join('; ')}`);
+				throw new ValidationException('Request param validation error.');
 			}
 
 			if (paramReport.required.length) {
-				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
-				throw new ValidationException('Request param validation error');
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join('; ')}`);
+				throw new ValidationException('Request param validation error.');
 			}
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
-				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
-				throw new ValidationException('Request param validation error');
+				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join('; ')}`);
+				throw new ValidationException('Request param validation error.');
 			}
 
 			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));

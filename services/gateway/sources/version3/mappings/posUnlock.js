@@ -14,9 +14,15 @@
  *
  */
 module.exports = {
-	delegateAddress: '=,string',
-	amount: '=,string',
+	address: '=,string',
+	publicKey: '=,string',
 	name: '=,string',
-	rank: '=,number',
-	voteWeight: '=,string',
+	pendingUnlocks: ['data.pendingUnlocks', {
+		validatorAddress: '=,string',
+		amount: '=,string',
+		tokenID: '=,string',
+		unstakeHeight: '=,number',
+		expectedUnlockableHeight: '=,number',
+		unlockable: '=,boolean',
+	}],
 };

@@ -13,32 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getValidators,
-	getAllValidators,
-	isPoSModuleRegistered,
-} = require('./validators');
-
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
-
 module.exports = {
-	// Constants
-	getPoSConstants,
-
-	// Validators
-	getValidators,
-	getAllValidators,
-	isPoSModuleRegistered,
-
-	// Stakes
-	getStakes,
-
-	// Stakers
-	getStakers,
-
-	// Unlocks
-	getPoSUnlocks,
+	tableName: 'stakes',
+	primaryKey: ['validatorAddress', 'stakerAddress'],
+	schema: {
+		stakerAddress: { type: 'string' },
+		validatorAddress: { type: 'string' },
+		amount: { type: 'bigInteger' },
+	},
+	indexes: {
+		validatorAddress: { type: 'key' },
+		stakerAddress: { type: 'key' },
+	},
+	purge: {},
 };
