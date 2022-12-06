@@ -16,7 +16,7 @@
 const { getPoSConstants } = require('./constants');
 const { getPoSUnlocks } = require('./unlocks');
 const { getVotesSent } = require('./votesSent');
-const { getPoSStakers } = require('./stakers');
+const { getStakers } = require('./stakers');
 
 module.exports = {
 	getPoSConstants,
@@ -25,5 +25,5 @@ module.exports = {
 
 	getVotesSent,
 
-	getPoSStakers,
+	getStakers,
 };

@@ -83,7 +83,7 @@ const {
 
 const {
 	getVotesByTransactionIDs,
-	getPoSStakers,
+	getStakers,
 	getVotesSent,
 	getPoSUnlocks,
 	getPoSConstants,
@@ -123,7 +123,7 @@ module.exports = {
 	getSchemas,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
-	getPoSStakers,
+	getStakers,
 	getVotesSent,
 	getPoSUnlocks,
 	getPoSConstants,
