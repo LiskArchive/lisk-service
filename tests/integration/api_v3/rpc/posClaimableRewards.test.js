@@ -29,17 +29,16 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getPosClaimableRewards = async (params) => request(wsRpcUrl, 'get.pos.rewards.claimable', params);
 const getGenerators = async () => request(wsRpcUrl, 'get.generators');
-const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('Claimable rewards API', () => {
 	let refValidator;
 	beforeAll(async () => {
 		do {
-			/* eslint-disable no-await-in-loop */
-			const [generator] = (await getGenerators()).data;
-			const response = await getStakes({ address: generator.address });
-			/* eslint-enable no-await-in-loop */
-			refValidator = response.meta.staker;
+			// eslint-disable-next-line no-await-in-loop
+			const generators = await getGenerators();
+			if (generators.data.length) {
+				[refValidator] = generators.data;
+			}
 		} while (!refValidator);
 	});
 

@@ -28,17 +28,16 @@ const {
 } = require('../../../schemas/api_v3/posClaimableRewards.schema');
 
 const endpoint = `${baseUrlV3}/pos/rewards/claimable`;
-const stakesEndpoint = `${baseUrlV3}/pos/stakes`;
 
 describe('Claimable rewards API', () => {
 	let refValidator;
 	beforeAll(async () => {
 		do {
-			/* eslint-disable no-await-in-loop */
-			const [generator] = (await api.get(`${baseUrlV3}/generators`)).data;
-			const response = await api.get(`${stakesEndpoint}?address=${generator.address}`);
-			/* eslint-enable no-await-in-loop */
-			refValidator = response.meta.staker;
+			// eslint-disable-next-line no-await-in-loop
+			const generators = (await api.get(`${baseUrlV3}/generators`));
+			if (generators.data.length) {
+				[refValidator] = generators.data;
+			}
 		} while (!refValidator);
 	});
 
