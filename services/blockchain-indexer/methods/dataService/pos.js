@@ -19,7 +19,7 @@ const {
 	getPoSUnlocks,
 	getVotesReceived,
 	getVotesSent,
-	getRewardsLocked,
+	getLockedRewards,
 } = require('./controllers/pos');
 
 const regex = require('../../shared/utils/regex');
@@ -75,7 +75,7 @@ module.exports = [
 	},
 	{
 		name: 'pos.rewards.locked',
-		controller: getRewardsLocked,
+		controller: getLockedRewards,
 		params: {
 			address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 			publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },

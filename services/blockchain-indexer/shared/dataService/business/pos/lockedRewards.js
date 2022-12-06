@@ -36,7 +36,7 @@ const getValidatorsTable = () => getTableInstance(
 	config.endpoints.mysql,
 );
 
-const getRewardsLocked = async params => {
+const getLockedRewards = async params => {
 	const response = {
 		data: [],
 		meta: {},
@@ -89,5 +89,5 @@ const getRewardsLocked = async params => {
 };
 
 module.exports = {
-	getRewardsLocked,
+	getLockedRewards,
 };

@@ -17,14 +17,14 @@ const { getPoSConstants } = require('./constants');
 const { getPoSUnlocks } = require('./unlocks');
 const { getVotesSent } = require('./votesSent');
 const { getVotesReceived } = require('./votesReceived');
-const { getRewardsLocked } = require('./rewardsLocked');
+const { getLockedRewards } = require('./lockedRewards');
 
 module.exports = {
 	getPoSConstants,
 
 	getPoSUnlocks,
 
-	getRewardsLocked,
+	getLockedRewards,
 
 	getVotesSent,
 

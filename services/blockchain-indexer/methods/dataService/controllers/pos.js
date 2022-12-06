@@ -93,14 +93,14 @@ const getVotesSent = async params => {
 	return votesSent;
 };
 
-const getRewardsLocked = async (params) => {
+const getLockedRewards = async (params) => {
 	try {
 		const rewardsLocked = {
 			data: [],
 			meta: {},
 		};
 
-		const response = await dataService.getRewardsLocked(params);
+		const response = await dataService.getLockedRewards(params);
 		if (response.data) rewardsLocked.data = response.data;
 		if (response.meta) rewardsLocked.meta = response.meta;
 
@@ -119,6 +119,6 @@ module.exports = {
 	getPoSUnlocks,
 	getVotesReceived,
 	getVotesSent,
-	getRewardsLocked,
+	getLockedRewards,
 };
 

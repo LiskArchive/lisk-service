@@ -15,11 +15,11 @@
  */
 const dataService = require('../business');
 
-const getRewardsLocked = async params => {
-	const response = await dataService.getRewardsLocked(params);
+const getLockedRewards = async params => {
+	const response = await dataService.getLockedRewards(params);
 	return response;
 };
 
 module.exports = {
-	getRewardsLocked,
+	getLockedRewards,
 };

@@ -23,7 +23,7 @@ const { getVotesReceived } = require('./votesReceived');
 const { getVotesSent } = require('./votesSent');
 const { getPoSUnlocks } = require('./unlocks');
 const { getPoSConstants } = require('./constants');
-const { getRewardsLocked } = require('./rewardsLocked');
+const { getLockedRewards } = require('./lockedRewards');
 
 module.exports = {
 	reloadDelegateCache,
@@ -37,5 +37,5 @@ module.exports = {
 
 	getPoSConstants,
 
-	getRewardsLocked,
+	getLockedRewards,
 };

@@ -18,15 +18,11 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
+const { metaSchema } = require('../generics.schema');
+
 const lockedReward = {
 	reward: Joi.string().pattern(regex.DIGITS).required(),
 	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
-};
-
-const metaSchema = {
-	count: Joi.number().integer().min(0).required(),
-	offset: Joi.number().integer().min(0).required(),
-	total: Joi.number().integer().min(0).required(),
 };
 
 const goodResponseSchema = {
