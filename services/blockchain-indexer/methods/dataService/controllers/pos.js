@@ -41,26 +41,26 @@ const getDelegates = async params => {
 	}
 };
 
-const getPoSConstants = async () => {
+const getPosConstants = async () => {
 	const constants = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getPoSConstants();
+	const response = await dataService.getPosConstants();
 	if (response.data) constants.data = response.data;
 	if (response.meta) constants.meta = response.meta;
 
 	return constants;
 };
 
-const getPoSUnlocks = async params => {
+const getPosUnlocks = async params => {
 	const unlocks = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getPoSUnlocks(params);
+	const response = await dataService.getPosUnlocks(params);
 	if (response.data) unlocks.data = response.data;
 	if (response.meta) unlocks.meta = response.meta;
 
@@ -106,10 +106,31 @@ const getClaimableRewards = async (params) => {
 	return claimableRewards;
 };
 
+const getPosLockedRewards = async (params) => {
+	try {
+		const rewardsLocked = {
+			data: [],
+			meta: {},
+		};
+
+		const response = await dataService.getPosLockedRewards(params);
+		if (response.data) rewardsLocked.data = response.data;
+		if (response.meta) rewardsLocked.meta = response.meta;
+
+		return rewardsLocked;
+	} catch (err) {
+		let status;
+		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
+};
+
 module.exports = {
 	getDelegates,
-	getPoSConstants,
-	getPoSUnlocks,
+	getPosConstants,
+	getPosUnlocks,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
 	getClaimableRewards,

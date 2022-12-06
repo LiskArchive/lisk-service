@@ -12,14 +12,23 @@
  *
  * Removal or modification of this copyright notice is prohibited.
  *
- */
-const dataService = require('../business');
+*/
+import Joi from 'joi';
 
-const getPosConstants = async () => {
-	const response = await dataService.getPosConstants();
-	return response;
+const regex = require('./regex');
+
+const { metaSchema } = require('../generics.schema');
+
+const lockedReward = {
+	reward: Joi.string().pattern(regex.DIGITS).required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+};
+
+const goodResponseSchema = {
+	data: Joi.array().items(lockedReward).required(),
+	meta: metaSchema,
 };
 
 module.exports = {
-	getPosConstants,
+	goodResponseSchema: Joi.object(goodResponseSchema).required(),
 };

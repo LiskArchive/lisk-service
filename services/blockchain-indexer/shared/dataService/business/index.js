@@ -83,11 +83,12 @@ const {
 
 const {
 	getVotesByTransactionIDs,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
-	getPoSConstants,
 	getClaimableRewards,
+	getPosUnlocks,
+	getPosConstants,
 } = require('./pos');
 
 const { getAuthAccountInfo } = require('./auth');
@@ -127,9 +128,10 @@ module.exports = {
 	getVotesByTransactionIDs,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
-	getPoSConstants,
 	getClaimableRewards,
+	getPosUnlocks,
+	getPosConstants,
+	getPosLockedRewards,
 
 	getAuthAccountInfo,
 	getValidator,

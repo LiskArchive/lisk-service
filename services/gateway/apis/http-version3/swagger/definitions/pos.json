@@ -522,6 +522,41 @@
 			}
 		}
 	},
+	"posRewardsLockedWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "PoS Locked Rewards.",
+				"type": "array",
+				"items": {
+					"type": "object",
+					"required": [
+						"tokenID",
+						"reward"
+					],
+					"properties": {
+						"tokenID": {
+							"type": "string",
+							"example": "0000000000000000",
+							"description": "The universal identifier for the token within the Lisk ecosystem used for rewards."
+						},
+						"reward": {
+							"type": "string",
+							"example": "109000000000",
+							"description": "The amount of rewards currently locked by the PoS module in terms of the specified tokenID."
+						}
+					}
+				}
+			},
+			"meta": {
+				"$ref": "#/definitions/Pagination"
+			}
+		}
+	},
 	"posClaimableRewardsWithEnvelope": {
 		"type": "object",
 		"required": [
