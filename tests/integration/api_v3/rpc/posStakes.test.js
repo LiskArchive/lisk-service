@@ -40,7 +40,8 @@ describe('get.pos.stakes', () => {
 		[refValidator] = response.result.data;
 	});
 
-	it('Returns list of votes when requested for existing account by address', async () => {
+	// TODO: Add missing tests similar to stakers
+	it('Returns list of sent stakes when requested for known staker address', async () => {
 		const response = await getVotes({ address: refValidator.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -49,7 +50,7 @@ describe('get.pos.stakes', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of votes when requested for existing account by name', async () => {
+	it('Returns list of sent stakes when requested for known staker name', async () => {
 		if (refValidator.name) {
 			const response = await getVotes({ name: refValidator.name });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -60,7 +61,8 @@ describe('get.pos.stakes', () => {
 		}
 	});
 
-	it('Returns list of votes when requested for existing account by address and limit=5', async () => {
+	// TODO: Remove
+	it('Returns list of sent stakes when requested for known staker address and limit=5', async () => {
 		const response = await getVotes({ address: refValidator.address, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -69,7 +71,8 @@ describe('get.pos.stakes', () => {
 		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of votes when requested for existing account by address, limit=5 and offset=1', async () => {
+	// TODO: Remove
+	it('Returns list of sent stakes when requested for known staker address, limit=5 and offset=1', async () => {
 		const response = await getVotes({ address: refValidator.address, limit: 5, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -83,12 +86,12 @@ describe('get.pos.stakes', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
+	it('Invalid request param -> invalid param', async () => {
 		const response = await getVotes({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('invalid address -> invalid param', async () => {
+	it('Invalid address -> invalid param', async () => {
 		const response = await getVotes({ address: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});

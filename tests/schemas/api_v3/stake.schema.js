@@ -16,16 +16,16 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const staker = {
+const stake = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	amount: Joi.string().required(),
 	name: Joi.string().pattern(regex.NAME).required(),
 };
 
-const stake = {
+const staker = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
 	name: Joi.string().pattern(regex.NAME).optional(),
-	amount: Joi.string().required(),
 };
 
 const data = {
@@ -38,7 +38,7 @@ const meta = {
 };
 
 const stakeResponseSchema = {
-	data: Joi.array().items(data).required(),
+	data: Joi.array().items(data).min(0).required(),
 	meta: Joi.object(meta).required(),
 };
 

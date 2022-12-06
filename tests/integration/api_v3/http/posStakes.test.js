@@ -40,29 +40,32 @@ describe('Stakes API', () => {
 		[refValidator] = response.data;
 	});
 
+	// TODO: Add missing tests similar to stakers
 	describe(`GET ${endpoint}`, () => {
-		it('Returns list of votes when requested for existing account by address', async () => {
+		it('Returns list of sent stakes when requested for known staker address', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(10);
 		});
 
-		it('Returns list of votes when requested for existing account by address and limit=5', async () => {
+		// TODO: Remove
+		it('Returns list of sent stakes when requested for known staker address and limit=5', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 		});
 
-		it('Returns list of votes when requested for existing account by address, limit=5 and offset=1', async () => {
+		// TODO: Remove
+		it('Returns list of sent stakes when requested for known staker address, limit=5 and offset=1', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5&offset=1`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 		});
 
-		it('Returns list of votes when requested for existing account by name', async () => {
+		it('Returns list of sent stakes when requested for known staker name', async () => {
 			if (refValidator.name) {
 				const response = await api.get(`${endpoint}?name=${refValidator.name}`);
 				expect(response).toMap(stakeResponseSchema);
@@ -76,12 +79,12 @@ describe('Stakes API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid address -> bad request', async () => {
+		it('Invalid address -> bad request', async () => {
 			const response = await api.get(`${endpoint}?address=address=L`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid request param -> bad request', async () => {
+		it('Invalid request param -> bad request', async () => {
 			const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
