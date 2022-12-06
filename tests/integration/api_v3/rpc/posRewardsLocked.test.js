@@ -28,14 +28,14 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getPosRewardsLocked = async (params) => request(wsRpcUrl, 'get.pos.rewards.locked', params);
-const getStakeTransaction = async params => request(wsRpcUrl, 'get.transactions', params);
+const getTransaction = async params => request(wsRpcUrl, 'get.transactions', params);
 const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('Rewards Locked API', () => {
 	let refStaker;
 	beforeAll(async () => {
 		let refStakerAddress;
-		const stakeTransactionReponse = await getStakeTransaction({ moduleCommand: 'pos:stake', limit: 1 });
+		const stakeTransactionReponse = await getTransaction({ moduleCommand: 'pos:stake', limit: 1 });
 		const { stakeTxs = [] } = stakeTransactionReponse.result.data;
 		if (stakeTxs.length) {
 			refStakerAddress = stakeTxs[0].sender.address;
@@ -64,7 +64,7 @@ describe('Rewards Locked API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of locked rewards with publickKey', async () => {
+	it('Returns list of locked rewards with publicKey', async () => {
 		const response = await getPosRewardsLocked({ publicKey: refStaker.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 

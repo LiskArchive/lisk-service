@@ -57,7 +57,7 @@ describe('Rewards Locked API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of locked rewards with publickKey', async () => {
+	it('Returns list of locked rewards with publicKey', async () => {
 		const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}`);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
