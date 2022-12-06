@@ -47,10 +47,7 @@ describe('DPOS Delegates API', () => {
 			response.data.forEach((delegate) => {
 				expect(delegate).toMap(delegateSchema);
 			});
-
-			const { numberActiveDelegates, numberStandbyDelegates } = (await api.get(`${baseUrl}/dpos/constants`)).data;
 			expect(response.meta).toMap(metaSchema);
-			expect(response.meta.total).toEqual(numberActiveDelegates + numberStandbyDelegates);
 		});
 
 		it('returns list of delegates with limit', async () => {
