@@ -14,16 +14,16 @@
  *
  */
 const { getStakes } = require('./stakes');
-const { getPoSConstants } = require('./constants');
+const { getStakers } = require('./stakers');
 const { getPoSUnlocks } = require('./unlocks');
-const { getPoSStakers } = require('./stakers');
+const { getPoSConstants } = require('./constants');
 
 module.exports = {
-	getPoSConstants,
+	getStakes,
+
+	getStakers,
 
 	getPoSUnlocks,
 
-	getStakes,
-
-	getPoSStakers,
+	getPoSConstants,
 };

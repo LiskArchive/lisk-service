@@ -36,7 +36,7 @@ const getStakesIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const getPoSStakers = async params => {
+const getStakers = async params => {
 	const stakesTable = await getStakesIndex();
 	const stakers = {
 		data: { stakers: [] },
@@ -117,5 +117,5 @@ const getPoSStakers = async params => {
 };
 
 module.exports = {
-	getPoSStakers,
+	getStakers,
 };

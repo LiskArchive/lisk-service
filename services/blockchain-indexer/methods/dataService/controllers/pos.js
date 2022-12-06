@@ -67,13 +67,13 @@ const getPoSUnlocks = async params => {
 	return unlocks;
 };
 
-const getPoSStakers = async params => {
+const getStakers = async params => {
 	const stakers = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getPoSStakers(params);
+	const response = await dataService.getStakers(params);
 	if (response.data) stakers.data = response.data;
 	if (response.meta) stakers.meta = response.meta;
 
@@ -98,6 +98,6 @@ module.exports = {
 	getPoSConstants,
 	getPoSUnlocks,
 	getStakes,
-	getPoSStakers,
+	getStakers,
 };
 

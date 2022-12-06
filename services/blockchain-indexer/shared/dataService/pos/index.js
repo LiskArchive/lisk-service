@@ -20,7 +20,7 @@ const {
 } = require('./delegates');
 
 const { getStakes } = require('./stakes');
-const { getPoSStakers } = require('./stakers');
+const { getStakers } = require('./stakers');
 const { getPoSUnlocks } = require('./unlocks');
 const { getPoSConstants } = require('./constants');
 
@@ -30,7 +30,8 @@ module.exports = {
 	getDelegates,
 
 	getStakes,
-	getPoSStakers,
+
+	getStakers,
 
 	getPoSUnlocks,
 

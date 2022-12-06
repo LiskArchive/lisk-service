@@ -18,7 +18,7 @@ const {
 	getPoSConstants,
 	getPoSUnlocks,
 	getStakes,
-	getPoSStakers,
+	getStakers,
 } = require('./controllers/pos');
 
 module.exports = [
@@ -52,7 +52,7 @@ module.exports = [
 	},
 	{
 		name: 'pos.stakers',
-		controller: getPoSStakers,
+		controller: getStakers,
 		params: {
 			address: { optional: true, type: 'string' },
 			publicKey: { optional: true, type: 'string' },

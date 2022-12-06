@@ -18,7 +18,7 @@ import regex from './regex';
 
 const staker = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	amount: Joi.string().required(),
+	amount: Joi.string().pattern(regex.DIGITS).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 };
 
