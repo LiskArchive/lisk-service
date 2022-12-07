@@ -15,11 +15,11 @@
  */
 const business = require('../business');
 
-const getClaimableRewards = async params => {
-	const response = await business.getClaimableRewards(params);
+const getPosClaimableRewards = async params => {
+	const response = await business.getPosClaimableRewards(params);
 	return response;
 };
 
 module.exports = {
-	getClaimableRewards,
+	getPosClaimableRewards,
 };

@@ -20,7 +20,7 @@ const {
 const { requestConnector } = require('../../../utils/request');
 const { getAddressByName } = require('../../../utils/validatorUtils');
 
-const getClaimableRewards = async params => {
+const getPosClaimableRewards = async params => {
 	const claimableRewards = {
 		data: [],
 		meta: {},
@@ -37,7 +37,7 @@ const getClaimableRewards = async params => {
 		updateAccountPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('getClaimableRewards', { address: params.address });
+	const response = await requestConnector('getPosClaimableRewards', { address: params.address });
 	claimableRewards.data = response.rewards;
 	claimableRewards.data = claimableRewards.data.slice(params.offset, params.offset + params.limit);
 
@@ -51,5 +51,5 @@ const getClaimableRewards = async params => {
 };
 
 module.exports = {
-	getClaimableRewards,
+	getPosClaimableRewards,
 };

@@ -20,7 +20,7 @@ const {
 	getPosLockedRewards,
 	getStakes,
 	getStakers,
-	getClaimableRewards,
+	getPosClaimableRewards,
 } = require('./controllers/pos');
 
 const regex = require('../../shared/utils/regex');
@@ -76,7 +76,7 @@ module.exports = [
 	},
 	{
 		name: 'pos.rewards.claimable',
-		controller: getClaimableRewards,
+		controller: getPosClaimableRewards,
 		params: {
 			address: { optional: true, type: 'string' },
 			publicKey: { optional: true, type: 'string' },
