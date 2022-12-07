@@ -14,8 +14,8 @@
  *
  */
 const {
-	Logger, 
-	Exceptions: { TimeoutException }
+	Logger,
+	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
@@ -42,6 +42,7 @@ const getRewardTokenID = async () => {
 
 const getDefaultRewardAtHeight = async height => {
 	try {
+		// TODO: Update endpoint once exposed by sdk
 		const defaultReward = await invokeEndpoint('reward_getDefaultRewardAtHeight', { height });
 		return defaultReward;
 	} catch (err) {

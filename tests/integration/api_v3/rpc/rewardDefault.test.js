@@ -30,7 +30,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getRewardDefault = async (params) => request(wsRpcUrl, 'get.reward.default', params);
 
 describe('get.reward.default', () => {
-	it.only('Returns default reward when requested with block height=1', async () => {
+	it('Returns default reward when requested with block height=1', async () => {
 		const response = await getRewardDefault({ height: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
