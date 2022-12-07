@@ -24,8 +24,8 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	stakeResponseSchema,
-} = require('../../../schemas/api_v3/stake.schema');
+	stakesResponseSchema,
+} = require('../../../schemas/api_v3/stakes.schema');
 
 const endpoint = `${baseUrlV3}/pos/stakes`;
 
@@ -44,7 +44,7 @@ describe('Stakes API', () => {
 	describe(`GET ${endpoint}`, () => {
 		it('Returns list of sent stakes when requested for known staker address', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}`);
-			expect(response).toMap(stakeResponseSchema);
+			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(10);
 		});
@@ -52,7 +52,7 @@ describe('Stakes API', () => {
 		// TODO: Remove
 		it('Returns list of sent stakes when requested for known staker address and limit=5', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5`);
-			expect(response).toMap(stakeResponseSchema);
+			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 		});
@@ -60,7 +60,7 @@ describe('Stakes API', () => {
 		// TODO: Remove
 		it('Returns list of sent stakes when requested for known staker address, limit=5 and offset=1', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=5&offset=1`);
-			expect(response).toMap(stakeResponseSchema);
+			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 		});
@@ -68,7 +68,7 @@ describe('Stakes API', () => {
 		it('Returns list of sent stakes when requested for known staker name', async () => {
 			if (refValidator.name) {
 				const response = await api.get(`${endpoint}?name=${refValidator.name}`);
-				expect(response).toMap(stakeResponseSchema);
+				expect(response).toMap(stakesResponseSchema);
 				expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.votes.length).toBeLessThanOrEqual(10);
 			}

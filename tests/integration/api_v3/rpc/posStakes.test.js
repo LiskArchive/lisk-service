@@ -22,8 +22,8 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	stakeResponseSchema,
-} = require('../../../schemas/api_v3/stake.schema');
+	stakesResponseSchema,
+} = require('../../../schemas/api_v3/stakes.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -45,7 +45,7 @@ describe('get.pos.stakes', () => {
 		const response = await getVotes({ address: refValidator.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(stakeResponseSchema);
+		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
@@ -55,7 +55,7 @@ describe('get.pos.stakes', () => {
 			const response = await getVotes({ name: refValidator.name });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(stakeResponseSchema);
+			expect(result).toMap(stakesResponseSchema);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		}
@@ -66,7 +66,7 @@ describe('get.pos.stakes', () => {
 		const response = await getVotes({ address: refValidator.address, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(stakeResponseSchema);
+		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
@@ -76,7 +76,7 @@ describe('get.pos.stakes', () => {
 		const response = await getVotes({ address: refValidator.address, limit: 5, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(stakeResponseSchema);
+		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(5);
 	});

@@ -37,11 +37,11 @@ const meta = {
 	count: Joi.number().integer().min(0).required(),
 };
 
-const stakeResponseSchema = {
+const stakesResponseSchema = {
 	data: Joi.array().items(data).min(0).required(),
 	meta: Joi.object(meta).required(),
 };
 
 module.exports = {
-	stakeResponseSchema: Joi.object(stakeResponseSchema).required(),
+	stakesResponseSchema: Joi.object(stakesResponseSchema).required(),
 };
