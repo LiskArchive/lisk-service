@@ -25,7 +25,7 @@ module.exports = {
 	tags: ['PoS'],
 	params: {
 		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
-		publicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
+		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
 		name: { optional: true, type: 'string', pattern: regex.NAME },
 		status: { optional: true, type: 'string', pattern: regex.POS_VALIDATOR_STATUS },
 		search: { optional: true, type: 'string', min: 1 },
