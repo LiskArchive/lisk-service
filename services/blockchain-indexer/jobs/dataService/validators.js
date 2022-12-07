@@ -30,9 +30,9 @@ module.exports = [
 				logger.debug('Initializing validators cache...');
 				try {
 					await reloadValidatorCache();
-					logger.info('Successfully initialized validators cache');
+					logger.info('Successfully initialized validators cache.');
 				} catch (err) {
-					logger.warn(`Initializing validators cache failed due to: ${err.message}`);
+					logger.warn(`Initializing validators cache failed due to: ${err.stack}`);
 				}
 			}
 		},

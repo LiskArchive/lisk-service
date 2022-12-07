@@ -61,7 +61,7 @@ const VALIDATOR_STATUS = {
 let validatorList = [];
 
 const validatorComparator = (a, b) => {
-	const diff = BigInt(b.voteWeight) - BigInt(a.voteWeight);
+	const diff = BigInt(b.validatorWeight) - BigInt(a.validatorWeight);
 	if (diff !== BigInt('0')) return Number(diff);
 	return a.hexAddress.localeCompare(b.hexAddress, 'en');
 };
@@ -100,7 +100,7 @@ const computeValidatorStatus = async () => {
 			validator.status = VALIDATOR_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(validator.address)) {
 			validator.status = VALIDATOR_STATUS.ACTIVE;
-		} else if (BigInt(validator.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
+		} else if (BigInt(validator.validatorWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			validator.status = VALIDATOR_STATUS.STANDBY;
 		} else {
 			// Default validator status
@@ -112,9 +112,9 @@ const computeValidatorStatus = async () => {
 	return validatorList;
 };
 
-const loadAllValidators = async () => {
+const loadAllPosValidators = async () => {
 	try {
-		validatorList = await business.getAllValidators();
+		validatorList = await business.getAllPosValidators();
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
@@ -136,7 +136,7 @@ const loadAllValidators = async () => {
 const reloadValidatorCache = async () => {
 	if (!await business.isPosModuleRegistered()) return;
 
-	await loadAllValidators();
+	await loadAllPosValidators();
 	await computeValidatorRank();
 	await computeValidatorStatus();
 };

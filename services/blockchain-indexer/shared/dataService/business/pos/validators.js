@@ -51,13 +51,13 @@ const getAllPosValidators = async () => {
 		async validator => {
 			// TODO: Get validatorWeight from SDK directly when available
 			if (validator.isBanned || await verifyIfPunished(validator)) {
-				validator.voteWeight = BigInt('0');
+				validator.validatorWeight = BigInt('0');
 			} else {
-				const cap = BigInt(validator.selfVotes) * BigInt(10);
-				validator.totalVotesReceived = BigInt(validator.totalVotesReceived);
-				validator.voteWeight = BigInt(validator.totalVotesReceived) > cap
+				const cap = BigInt(validator.selfStake) * BigInt(10);
+				validator.totalStakeReceived = BigInt(validator.totalStakeReceived);
+				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
 					? cap
-					: validator.totalVotesReceived;
+					: validator.totalStakeReceived;
 			}
 			return validator;
 		},
@@ -79,13 +79,13 @@ const getPosValidators = async (params) => {
 			// TODO: Verify
 			// TODO: Check if it is possible to move this logic to the connector
 			if (validator.isBanned || await verifyIfPunished(validator)) {
-				validator.voteWeight = BigInt('0');
+				validator.validatorWeight = BigInt('0');
 			} else {
-				const cap = BigInt(validator.selfVotes) * BigInt(10);
-				validator.totalVotesReceived = BigInt(validator.totalVotesReceived);
-				validator.voteWeight = BigInt(validator.totalVotesReceived) > cap
+				const cap = BigInt(validator.selfStake) * BigInt(10);
+				validator.totalStakeReceived = BigInt(validator.totalStakeReceived);
+				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
 					? cap
-					: validator.totalVotesReceived;
+					: validator.totalStakeReceived;
 			}
 			return validator;
 		},
