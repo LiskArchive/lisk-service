@@ -31,7 +31,11 @@ const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('get.pos.stakes', () => {
 	let refValidator;
+	let maxNumberSentStakes;
 	beforeAll(async () => {
+		const posConstants = (await request(wsRpcUrl, 'get.pos.constants')).result;
+		maxNumberSentStakes = posConstants.data.maxNumberSentStakes;
+
 		do {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'pos:stake', limit: 1 });
@@ -48,7 +52,7 @@ describe('get.pos.stakes', () => {
 		const { result } = response;
 		expect(result).toMap(stakeResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.stakes.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
 
 	it('Returns list of sent stakes when requested for known staker name', async () => {
@@ -57,7 +61,7 @@ describe('get.pos.stakes', () => {
 		const { result } = response;
 		expect(result).toMap(stakeResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.stakes.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
 
 	it('Returns list of sent stakes when requested for known staker publicKey', async () => {
@@ -66,7 +70,7 @@ describe('get.pos.stakes', () => {
 		const { result } = response;
 		expect(result).toMap(stakeResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.stakes.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
 
 	it('No address -> invalid param', async () => {

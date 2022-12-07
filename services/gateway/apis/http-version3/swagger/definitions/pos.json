@@ -582,13 +582,13 @@
 						"reward": {
 							"type": "string",
 							"example": "109000000000",
-							"description": "The amount of claimable rewards currently available by the PoS module for the specified account."
+							"description": "The amount of currently claimable rewards previously locked by the PoS module for the queried address, publicKey or validator name."
 						}
 					}
 				}
 			},
 			"meta": {
-				"$ref": "#/definitions/Pagination"
+				"$ref": "#/definitions/pagination"
 			}
 		}
 	}

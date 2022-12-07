@@ -25,7 +25,7 @@ const claimableRewards = {
 };
 
 const goodResponseSchema = {
-	data: Joi.array().items(claimableRewards).required(),
+	data: Joi.array().items(claimableRewards).min(0).required(),
 	meta: Joi.object(metaSchema).required(),
 };
 

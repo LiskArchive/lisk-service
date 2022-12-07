@@ -31,7 +31,11 @@ const endpoint = `${baseUrlV3}/pos/stakes`;
 
 describe('Stakes API', () => {
 	let refValidator;
+	let maxNumberSentStakes;
 	beforeAll(async () => {
+		const posConstants = await api.get(`${baseUrlV3}/pos/constants`);
+		maxNumberSentStakes = posConstants.data.maxNumberSentStakes;
+
 		do {
 			// eslint-disable-next-line no-await-in-loop
 			const { data: [stakeTx] = [] } = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
@@ -46,21 +50,21 @@ describe('Stakes API', () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.stakes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
 		it('Returns list of sent stakes when requested for known staker name', async () => {
 			const response = await api.get(`${endpoint}?name=${refValidator.name}`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.stakes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
 		it('Returns list of sent stakes when requested for known staker publicKey', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}`);
 			expect(response).toMap(stakeResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.stakes.length).toBeLessThanOrEqual(10);
+			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
 		it('No address -> bad request', async () => {

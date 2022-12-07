@@ -51,7 +51,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator name and offset=1', async () => {
 		const response = await api.get(`${endpoint}?name=${refValidator.name}&offset=1`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -79,7 +79,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator address and offset=1', async () => {
 		const response = await api.get(`${endpoint}?address=${refValidator.address}&offset=1`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -107,7 +107,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator publicKey and offset=1', async () => {
 		const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 

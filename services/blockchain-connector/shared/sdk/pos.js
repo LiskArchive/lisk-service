@@ -95,6 +95,7 @@ const getPosClaimableRewards = async ({ address }) => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getPosClaimableRewards\'.');
 		}
+		logger.warn(`Error returned when invoking 'pos_getClaimableRewards' with param: ${address}.\n${err.stack}`);
 		throw err;
 	}
 };
