@@ -12,23 +12,23 @@
  *
  * Removal or modification of this copyright notice is prohibited.
  *
- */
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPosClaimableRewards } = require('./claimableRewards');
-const { getPosUnlocks } = require('./unlocks');
-const { getPosLockedRewards } = require('./lockedRewards');
-const { getPosConstants } = require('./constants');
+*/
+import Joi from 'joi';
+
+const regex = require('./regex');
+
+const { metaSchema } = require('../generics.schema');
+
+const claimableRewards = {
+	reward: Joi.string().pattern(regex.DIGITS).required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+};
+
+const goodResponseSchema = {
+	data: Joi.array().items(claimableRewards).min(0).required(),
+	meta: metaSchema,
+};
 
 module.exports = {
-	getStakes,
-
-	getStakers,
-
-	getPosUnlocks,
-
-	getPosClaimableRewards,
-	getPosLockedRewards,
-
-	getPosConstants,
+	goodResponseSchema: Joi.object(goodResponseSchema).required(),
 };
