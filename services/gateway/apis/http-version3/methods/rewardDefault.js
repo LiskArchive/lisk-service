@@ -15,7 +15,7 @@
  */
 const rewardDefaultSource = require('../../../sources/version3/rewardDefault');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { getSwaggerDescription } = require('../../../shared/utils');
+const { getSwaggerDescription, transformParams } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -34,6 +34,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns default rewards for a block height.',
 		});
+		rewardDefaultSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
 		rewardDefaultSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns default rewards for a block height.',

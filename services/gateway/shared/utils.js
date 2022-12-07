@@ -68,6 +68,8 @@ const transformParams = (type, params) => {
 			};
 		} else if (type === 'PoS') {
 			if (paramKey === 'name') value = { $ref: '#/parameters/validatorName' };
+		} else if (type === 'reward' && paramKey === 'height') {
+			value = { $ref: '#/parameters/blockHeight' };
 		}
 		data.push(value);
 	});
