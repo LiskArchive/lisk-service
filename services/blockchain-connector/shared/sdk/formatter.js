@@ -63,8 +63,8 @@ const EVENT_TOPICS = {
 	validatorStaked: ['senderAddress', 'delegateAddress'],
 	delegatePunished: ['delegateAddress'],
 	delegateBanned: ['delegateAddress'],
-	generatorKeyRegistrationEvent: ['defaultTopic', 'address'],
-	blsKeyRegistration: ['address'],
+	generatorKeyRegistration: ['defaultTopic', 'address'],
+	bLSKeyRegistration: ['defaultTopic', 'address'],
 };
 
 const formatTransaction = (transaction) => {
