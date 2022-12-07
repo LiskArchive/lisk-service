@@ -27,7 +27,7 @@ const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
 
 const LAST_BLOCK_KEY = 'lastBlock';
 
-const isPoSModuleRegistered = async () => {
+const isPosModuleRegistered = async () => {
 	const response = await requestConnector('getSystemMetadata');
 	const isRegistered = response.modules.some(module => module.name === MODULE.POS);
 	return isRegistered;
@@ -44,8 +44,8 @@ const verifyIfPunished = async validator => {
 	return isPunished;
 };
 
-const getAllPoSValidators = async () => {
-	const { validators: rawValidators } = await requestConnector('getAllPoSValidators');
+const getAllPosValidators = async () => {
+	const { validators: rawValidators } = await requestConnector('getAllPosValidators');
 	const validators = await BluebirdPromise.map(
 		rawValidators,
 		async validator => {
@@ -67,7 +67,7 @@ const getAllPoSValidators = async () => {
 	return validators;
 };
 
-const getPoSValidators = async (params) => {
+const getPosValidators = async (params) => {
 	const { address, addresses, ...remParams } = params;
 	params = remParams;
 	params.addresses = address ? [address] : addresses;
@@ -95,7 +95,7 @@ const getPoSValidators = async (params) => {
 };
 
 module.exports = {
-	getPoSValidators,
-	getAllPoSValidators,
-	isPoSModuleRegistered,
+	getPosValidators,
+	getAllPosValidators,
+	isPosModuleRegistered,
 };

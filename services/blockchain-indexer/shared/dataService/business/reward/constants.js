@@ -13,13 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const { requestConnector } = require('../../../utils/request');
 
-const getPosConstants = async () => {
-	const response = await dataService.getPosConstants();
-	return response;
+let rewardTokenID;
+
+const getRewardTokenID = async () => {
+	if (!rewardTokenID) rewardTokenID = await requestConnector('getRewardTokenID');
+	return rewardTokenID;
 };
 
 module.exports = {
-	getPosConstants,
+	getRewardTokenID,
 };

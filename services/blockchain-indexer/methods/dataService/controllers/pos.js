@@ -20,14 +20,14 @@ const {
 
 const dataService = require('../../../shared/dataService');
 
-const getPoSValidators = async params => {
+const getPosValidators = async params => {
 	const delegates = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await dataService.getPoSValidators(params);
+		const response = await dataService.getPosValidators(params);
 		if (response.data) delegates.data = response.data;
 		if (response.meta) delegates.meta = response.meta;
 
@@ -41,26 +41,26 @@ const getPoSValidators = async params => {
 	}
 };
 
-const getPoSConstants = async () => {
+const getPosConstants = async () => {
 	const constants = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getPoSConstants();
+	const response = await dataService.getPosConstants();
 	if (response.data) constants.data = response.data;
 	if (response.meta) constants.meta = response.meta;
 
 	return constants;
 };
 
-const getPoSUnlocks = async params => {
+const getPosUnlocks = async params => {
 	const unlocks = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getPoSUnlocks(params);
+	const response = await dataService.getPosUnlocks(params);
 	if (response.data) unlocks.data = response.data;
 	if (response.meta) unlocks.meta = response.meta;
 
@@ -93,11 +93,31 @@ const getStakers = async params => {
 	return stakers;
 };
 
+const getPosLockedRewards = async (params) => {
+	try {
+		const rewardsLocked = {
+			data: [],
+			meta: {},
+		};
+
+		const response = await dataService.getPosLockedRewards(params);
+		if (response.data) rewardsLocked.data = response.data;
+		if (response.meta) rewardsLocked.meta = response.meta;
+
+		return rewardsLocked;
+	} catch (err) {
+		let status;
+		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
+};
+
 module.exports = {
-	getPoSValidators,
-	getPoSConstants,
-	getPoSUnlocks,
+	getPosValidators,
+	getPosConstants,
+	getPosUnlocks,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
 };
-

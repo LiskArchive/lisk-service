@@ -21,7 +21,7 @@ const {
 const { getAddressByName } = require('../../../utils/validatorUtils');
 const { requestConnector } = require('../../../utils/request');
 
-const getPoSUnlocks = async params => {
+const getPosUnlocks = async params => {
 	const unlocks = {
 		data: {},
 		meta: {},
@@ -31,7 +31,7 @@ const getPoSUnlocks = async params => {
 	if (params.publicKey) params.address = await getLisk32AddressFromPublicKey(params.publicKey);
 
 	const { pendingUnlocks = [] } = await requestConnector(
-		'getPoSPendingUnlocks',
+		'getPosPendingUnlocks',
 		{ address: params.address },
 	);
 
@@ -69,5 +69,5 @@ const getPoSUnlocks = async params => {
 };
 
 module.exports = {
-	getPoSUnlocks,
+	getPosUnlocks,
 };

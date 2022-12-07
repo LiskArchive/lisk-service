@@ -68,6 +68,8 @@ const transformParams = (type, params) => {
 				enum: params[paramKey].enum,
 				default: params[paramKey].default,
 			};
+		} else if (type === 'PoS') {
+			if (paramKey === 'name') value = { $ref: '#/parameters/validatorName' };
 		}
 		data.push(value);
 	});

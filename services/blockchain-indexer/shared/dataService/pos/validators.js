@@ -23,7 +23,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const dataService = require('../business');
+const business = require('../business');
 const config = require('../../../config');
 const validatorsIndexSchema = require('../../database/schema/validators');
 
@@ -114,7 +114,7 @@ const computeValidatorStatus = async () => {
 
 const loadAllValidators = async () => {
 	try {
-		validatorList = await dataService.getAllValidators();
+		validatorList = await business.getAllValidators();
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
@@ -134,9 +134,7 @@ const loadAllValidators = async () => {
 };
 
 const reloadValidatorCache = async () => {
-	if (!await dataService.isPoSModuleRegistered()) {
-		return;
-	}
+	if (!await business.isPosModuleRegistered()) return;
 
 	await loadAllValidators();
 	await computeValidatorRank();
@@ -157,7 +155,7 @@ const getTotalNumberOfValidators = async (params = {}) => {
 	return relevantValidators.length;
 };
 
-const getPoSValidators = async params => {
+const getPosValidators = async params => {
 	const validators = {
 		data: [],
 		meta: {},
@@ -240,7 +238,7 @@ const updateValidatorListEveryBlock = () => {
 
 			// TODO: Validate the logic if there is need to update validator cache on (un-)stake tx
 			if (updatedValidatorAddresses.length) {
-				const updatedValidatorAccounts = await dataService
+				const updatedValidatorAccounts = await business
 					.getValidators({ addresses: updatedValidatorAddresses });
 
 				updatedValidatorAccounts.forEach(validator => {
@@ -301,7 +299,7 @@ const updateValidatorListOnAccountsUpdate = () => {
 			if (Object.getOwnPropertyNames(validator).length) {
 				const {
 					data: [updatedValidator],
-				} = await dataService.getValidators({ address: validator.address, limit: 1 });
+				} = await business.getValidators({ address: validator.address, limit: 1 });
 
 				// Update the account details of the affected validator
 				Object.assign(validator, parseToJSONCompatObj(updatedValidator));
@@ -318,5 +316,5 @@ updateValidatorListOnAccountsUpdate();
 module.exports = {
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
-	getPoSValidators,
+	getPosValidators,
 };

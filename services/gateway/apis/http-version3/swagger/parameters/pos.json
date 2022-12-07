@@ -6,6 +6,13 @@
 		"type": "string",
 		"minLength": 1
 	},
+	"validatorName": {
+		"name": "name",
+		"in": "query",
+		"description": "Query validators by their registered name.",
+		"type": "string",
+		"minLength": 1
+	},
 	"isUnlockable": {
 		"name": "isUnlockable",
 		"in": "query",

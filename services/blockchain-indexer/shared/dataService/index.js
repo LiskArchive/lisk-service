@@ -22,7 +22,7 @@ const {
 	getIndexedAccountInfo,
 	resolveMultisignatureMemberships,
 	getAllDelegates,
-	isDposModuleRegistered,
+	isPosModuleRegistered,
 	getNumberOfGenerators,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -53,13 +53,14 @@ const {
 } = require('./blocks');
 
 const {
-	getPoSValidators,
+	getPosValidators,
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
-	getPoSConstants,
+	getPosConstants,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
+	getPosUnlocks,
 } = require('./pos');
 
 const {
@@ -111,11 +112,11 @@ module.exports = {
 	performLastBlockUpdate,
 
 	// PoS
-	getPoSValidators,
+	getPosValidators,
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
-	getPoSConstants,
-	getPoSUnlocks,
+	getPosConstants,
+	getPosUnlocks,
 	getStakes,
 	getStakers,
 
@@ -175,7 +176,7 @@ module.exports = {
 	getIndexedAccountInfo,
 	resolveMultisignatureMemberships,
 	getAllDelegates,
-	isDposModuleRegistered,
+	isPosModuleRegistered,
 	getNumberOfGenerators,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -186,7 +187,7 @@ module.exports = {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
-
+	getPosLockedRewards,
 	getEventsByHeight,
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,

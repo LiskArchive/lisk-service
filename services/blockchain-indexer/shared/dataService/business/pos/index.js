@@ -14,24 +14,22 @@
  *
  */
 const {
-	getPoSValidators,
-	getAllPoSValidators,
-	isPoSModuleRegistered,
+	getPosValidators,
+	getAllPosValidators,
+	isPosModuleRegistered,
 } = require('./validators');
 
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
-const { getPoSUnlocks } = require('./unlocks');
-const { getPoSConstants } = require('./constants');
+const { getPosUnlocks } = require('./unlocks');
+const { getPosConstants } = require('./constants');
+const { getPosLockedRewards } = require('./lockedRewards');
 
 module.exports = {
-	// Constants
-	getPoSConstants,
-
 	// Validators
-	getPoSValidators,
-	getAllPoSValidators,
-	isPoSModuleRegistered,
+	getPosValidators,
+	getAllPosValidators,
+	isPosModuleRegistered,
 
 	// Stakes
 	getStakes,
@@ -40,5 +38,11 @@ module.exports = {
 	getStakers,
 
 	// Unlocks
-	getPoSUnlocks,
+	getPosUnlocks,
+
+	// Constants
+	getPosConstants,
+
+	// Locked rewards
+	getPosLockedRewards,
 };

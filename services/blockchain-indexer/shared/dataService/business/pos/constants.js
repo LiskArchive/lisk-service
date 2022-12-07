@@ -17,8 +17,8 @@ const { requestConnector } = require('../../../utils/request');
 
 let moduleConstants;
 
-const getPoSConstants = async () => {
-	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPoSConstants');
+const getPosConstants = async () => {
+	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPosConstants');
 
 	return {
 		data: moduleConstants,
@@ -27,5 +27,5 @@ const getPoSConstants = async () => {
 };
 
 module.exports = {
-	getPoSConstants,
+	getPosConstants,
 };

@@ -67,10 +67,15 @@ const {
 const {
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosConstants,
 	getStaker,
-	getPoSPendingUnlocks,
+	getPosPendingUnlocks,
+	getPosLockedRewards,
 } = require('./pos');
+
+const {
+	getRewardTokenID,
+} = require('./reward');
 
 const {
 	getFeeTokenID,
@@ -155,10 +160,13 @@ module.exports = {
 	// PoS
 	getDelegate,
 	getAllDelegates,
-	getPoSConstants,
+	getPosConstants,
 
 	getStaker,
-	getPoSPendingUnlocks,
+	getPosPendingUnlocks,
+	getPosLockedRewards,
+
+	getRewardTokenID,
 
 	getAuthAccount,
 

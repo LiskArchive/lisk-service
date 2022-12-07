@@ -54,14 +54,15 @@ const {
 } = require('./transactions');
 
 const {
-	getPoSValidators,
-	getAllPoSValidators,
-	isPoSModuleRegistered,
+	getPosValidators,
+	getAllPosValidators,
+	isPosModuleRegistered,
 	getVotesByTransactionIDs,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
-	getPoSConstants,
+	getPosUnlocks,
+	getPosConstants,
 } = require('./pos');
 
 const {
@@ -113,15 +114,16 @@ module.exports = {
 	reloadBlockchainAppsStats,
 
 	// PoS
-	getPoSValidators,
-	getAllPoSValidators,
-	isPoSModuleRegistered,
+	getPosValidators,
+	getAllPosValidators,
+	isPosModuleRegistered,
 
 	getVotesByTransactionIDs,
 	getStakes,
 	getStakers,
-	getPoSUnlocks,
-	getPoSConstants,
+	getPosUnlocks,
+	getPosConstants,
+	getPosLockedRewards,
 
 	// Token
 	getTokens,

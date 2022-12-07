@@ -13,10 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const TOKEN_ID = /[0-9A-Fa-f]{16}/;
-const MAINCHAIN = /^\d{2}0{6}$/;
+const MAINCHAIN_ID = /^\d{2}0{6}$/;
+const NAME = /^[\w!@$&.]{1,20}$/;
+const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 
 module.exports = {
+	ADDRESS_LISK32,
+	MAINCHAIN_ID,
+	NAME,
+	PUBLIC_KEY,
 	TOKEN_ID,
-	MAINCHAIN,
 };

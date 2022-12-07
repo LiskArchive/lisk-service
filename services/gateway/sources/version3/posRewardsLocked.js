@@ -13,13 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getPosConstants = async () => {
-	const response = await dataService.getPosConstants();
-	return response;
-};
+const posRewardLocked = require('./mappings/posRewardsLocked');
 
 module.exports = {
-	getPosConstants,
+	type: 'moleculer',
+	method: 'indexer.pos.rewards.locked',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+		limit: '=,number',
+		offset: '=,number',
+	},
+	definition: {
+		data: ['data', posRewardLocked],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+	},
 };
