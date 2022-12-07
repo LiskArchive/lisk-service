@@ -21,6 +21,7 @@ const {
 
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
+const { getPosClaimableRewards } = require('./claimableRewards');
 const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
@@ -36,6 +37,7 @@ module.exports = {
 
 	getPosUnlocks,
 
+	getPosClaimableRewards,
 	getPosConstants,
 
 	getPosLockedRewards,
