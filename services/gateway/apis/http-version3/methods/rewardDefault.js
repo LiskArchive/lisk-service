@@ -29,15 +29,15 @@ module.exports = {
 		const rewardDefaultSchema = {};
 		rewardDefaultSchema[this.swaggerApiPath] = { get: {} };
 		rewardDefaultSchema[this.swaggerApiPath].get.tags = this.tags;
-		rewardDefaultSchema[this.swaggerApiPath].get.summary = 'Requests default reward for a block height.';
+		rewardDefaultSchema[this.swaggerApiPath].get.summary = 'Requests default block generation reward at a specified height.';
 		rewardDefaultSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns default rewards for a block height.',
+			description: 'Returns default block generation reward at the specified height.',
 		});
 		rewardDefaultSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
 		rewardDefaultSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns default rewards for a block height.',
+				description: 'Returns the default block generation reward at the specified height.',
 				schema: {
 					$ref: '#/definitions/rewardDefaultWithEnvelope',
 				},
