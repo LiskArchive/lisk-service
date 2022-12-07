@@ -14,6 +14,7 @@
  *
  */
 const rewardDefaultSource = require('../../../sources/version3/rewardDefault');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
@@ -44,4 +45,5 @@ module.exports = {
 		return rewardDefaultSchema;
 	},
 	source: rewardDefaultSource,
+	envelope,
 };

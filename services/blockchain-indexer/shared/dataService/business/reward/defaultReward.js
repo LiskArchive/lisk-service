@@ -26,7 +26,7 @@ const getDefaultRewardAtHeight = async (params) => {
 	const rewardTokenID = await getRewardTokenID();
 
 	response.data = {
-		defaultReward,
+		defaultReward: defaultReward.error ? null : defaultReward,
 		tokenID: rewardTokenID,
 	};
 

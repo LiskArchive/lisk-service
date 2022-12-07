@@ -13,10 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const {
+	Logger, 
+	Exceptions: { TimeoutException }
+} = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
 
+const logger = Logger();
 let rewardTokenID;
 
 const getRewardTokenID = async () => {
@@ -39,11 +43,13 @@ const getRewardTokenID = async () => {
 const getDefaultRewardAtHeight = async height => {
 	try {
 		const defaultReward = await invokeEndpoint('reward_getDefaultRewardAtHeight', { height });
-		return defaultReward.error ? null : defaultReward;
+		return defaultReward;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`);
 		}
+		logger.warn(`Error returned when invoking 'reward_getDefaultRewardAtHeight' with height: ${height}.\n${err.stack}`);
+
 		throw err;
 	}
 };

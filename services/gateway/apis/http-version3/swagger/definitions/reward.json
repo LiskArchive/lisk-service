@@ -7,7 +7,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "Default reward for a block.",
+				"description": "Default reward for a block height.",
 				"type": "array",
 				"items": {
 					"type": "object",
@@ -24,7 +24,7 @@
 						"defaultReward": {
 							"type": "string",
 							"example": "109000000000",
-							"description": "The amount of default block reward."
+							"description": "The default block generation reward for the queried block height."
 						}
 					}
 				}
