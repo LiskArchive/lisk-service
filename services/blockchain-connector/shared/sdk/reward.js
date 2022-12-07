@@ -43,7 +43,7 @@ const getRewardTokenID = async () => {
 const getDefaultRewardAtHeight = async height => {
 	try {
 		// TODO: Update endpoint once exposed by sdk
-		const defaultReward = await invokeEndpoint('reward_getDefaultRewardAtHeight', { height });
+		const defaultReward = await invokeEndpoint('dynamicReward_getDefaultRewardAtHeight', { height });
 		return defaultReward;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
