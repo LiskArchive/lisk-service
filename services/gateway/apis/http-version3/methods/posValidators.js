@@ -34,7 +34,11 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: ['commission:asc', 'commission:desc', 'rank:asc', 'rank:desc'],
+			enum: [
+				'commission:asc', 'commission:desc',
+				'validatorWeight:desc', 'validatorWeight:asc',
+				'rank:asc', 'rank:desc',
+			],
 			default: 'commission:asc',
 		},
 	},

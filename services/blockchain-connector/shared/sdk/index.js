@@ -65,12 +65,12 @@ const {
 } = require('./tokens');
 
 const {
-	getDelegate,
-	getAllDelegates,
+	getAllPosValidators,
+	getPosValidator,
 	getPosConstants,
-	getStaker,
 	getPosPendingUnlocks,
 	getPosLockedRewards,
+	getStaker,
 } = require('./pos');
 
 const {
@@ -158,13 +158,12 @@ module.exports = {
 	getTotalSupply,
 
 	// PoS
-	getDelegate,
-	getAllDelegates,
+	getAllPosValidators,
+	getPosValidator,
 	getPosConstants,
-
-	getStaker,
 	getPosPendingUnlocks,
 	getPosLockedRewards,
+	getStaker,
 
 	getRewardTokenID,
 

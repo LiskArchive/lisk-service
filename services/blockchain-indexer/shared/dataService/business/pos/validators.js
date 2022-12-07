@@ -75,7 +75,7 @@ const getPosValidators = async (params) => {
 	const validators = await BluebirdPromise.map(
 		params.addresses,
 		async validatorAddress => {
-			const validator = await requestConnector('getPoSValidator', { address: validatorAddress });
+			const validator = await requestConnector('getPosValidator', { address: validatorAddress });
 			// TODO: Verify
 			// TODO: Check if it is possible to move this logic to the connector
 			if (validator.isBanned || await verifyIfPunished(validator)) {
