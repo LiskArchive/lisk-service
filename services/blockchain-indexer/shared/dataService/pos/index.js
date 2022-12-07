@@ -24,19 +24,29 @@ const { getStakers } = require('./stakers');
 const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
+const { getPosClaimableRewards } = require('./claimableRewards');
 
 module.exports = {
+	// Validators
 	reloadValidatorCache,
 	getTotalNumberOfValidators,
 	getPosValidators,
 
+	// Stakes
 	getStakes,
 
+	// Stakers
 	getStakers,
 
+	// Unlocks
 	getPosUnlocks,
 
+	// Constants
 	getPosConstants,
 
+	// Locked rewards
 	getPosLockedRewards,
+
+	// Claimable rewards
+	getPosClaimableRewards,
 };

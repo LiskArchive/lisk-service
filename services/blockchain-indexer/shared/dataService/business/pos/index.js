@@ -24,6 +24,7 @@ const { getStakers } = require('./stakers');
 const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
+const { getPosClaimableRewards } = require('./claimableRewards');
 
 module.exports = {
 	// Validators
@@ -45,4 +46,7 @@ module.exports = {
 
 	// Locked rewards
 	getPosLockedRewards,
+
+	// Claimable rewards
+	getPosClaimableRewards,
 };

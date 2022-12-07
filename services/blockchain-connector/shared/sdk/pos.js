@@ -88,6 +88,19 @@ const getStaker = async (address) => {
 	}
 };
 
+const getPosClaimableRewards = async ({ address }) => {
+	try {
+		const claimableRewards = await invokeEndpoint('pos_getClaimableRewards', { address });
+		return claimableRewards;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getPosClaimableRewards\'.');
+		}
+		logger.warn(`Error returned when invoking 'pos_getClaimableRewards' with param: ${address}.\n${err.stack}`);
+		throw err;
+	}
+};
+
 const getPosLockedRewards = async ({ address, tokenID }) => {
 	try {
 		const lockedRewards = await invokeEndpoint('pos_getLockedRewards', { address, tokenID });
@@ -107,5 +120,6 @@ module.exports = {
 	getPosLockedRewards,
 	getPosConstants,
 	getStaker,
+	getPosClaimableRewards,
 	getPosPendingUnlocks,
 };
