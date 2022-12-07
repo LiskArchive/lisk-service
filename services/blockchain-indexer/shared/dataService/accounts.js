@@ -57,7 +57,7 @@ const getAccounts = async params => {
 				return delegateAccount;
 			}
 			const {
-				delegate, approval, missedBlocks, producedBlocks, productivity,
+				delegate, approval, missedBlocks, generatedBlocks, productivity,
 				rank, rewards, username, vote, isBanned, status: _status, pomHeights,
 				lastForgedHeight, consecutiveMissedBlocks,
 				...nonDelegateAccount

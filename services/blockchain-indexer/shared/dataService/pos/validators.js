@@ -174,12 +174,12 @@ const getPosValidators = async params => {
 		async delegate => {
 			const [validatorInfo = {}] = await validatorsTable.find(
 				{ address: delegate.address },
-				['producedBlocks', 'rewards'],
+				['generatedBlocks', 'rewards'],
 			);
 			// TODO: Update - generatedBlocks, totalCommission & totalSelfStakeReward
 			return {
 				...delegate,
-				forgedBlocks: validatorInfo.producedBlocks || 0,
+				generatedBlocks: validatorInfo.generatedBlocks || 0,
 				rewards: validatorInfo.rewards || BigInt('0'),
 			};
 		}, { concurrency: allValidators.length },
@@ -262,15 +262,17 @@ const updateValidatorListEveryBlock = () => {
 				await computeValidatorRank();
 			}
 
-			// Update validator cache with producedBlocks and rewards
+			// Update validator cache with generatedBlocks and rewards
 			const validatorIndex = validatorList.findIndex(acc => acc.address === block.generatorAddress);
 			if (validatorList[validatorIndex]
 				&& Object.getOwnPropertyNames(validatorList[validatorIndex]).length) {
 				// TODO: Update
-				if (validatorList[validatorIndex].producedBlocks && validatorList[validatorIndex].rewards) {
-					validatorList[validatorIndex].producedBlocks = eventType === EVENT_NEW_BLOCK
-						? validatorList[validatorIndex].producedBlocks + 1
-						: validatorList[validatorIndex].producedBlocks - 1;
+				if (
+					validatorList[validatorIndex].generatedBlocks && validatorList[validatorIndex].rewards
+				) {
+					validatorList[validatorIndex].generatedBlocks = eventType === EVENT_NEW_BLOCK
+						? validatorList[validatorIndex].generatedBlocks + 1
+						: validatorList[validatorIndex].generatedBlocks - 1;
 
 					validatorList[validatorIndex].rewards = eventType === EVENT_NEW_BLOCK
 						? (BigInt(validatorList[validatorIndex].rewards) + BigInt(block.reward)).toString()

@@ -181,16 +181,16 @@ const indexBlock = async job => {
 			);
 		}
 
-		// Update producedBlocks count for the block generator
+		// Update generatedBlocks count for the block generator
 		const validatorsTable = await getValidatorsIndex();
 		const numRowsAffected = await validatorsTable.increment({
-			increment: { producedBlocks: 1 },
+			increment: { generatedBlocks: 1 },
 			where: { address: block.generatorAddress },
 		}, dbTrx);
 		if (numRowsAffected === 0) {
 			await validatorsTable.upsert({
 				address: block.generatorAddress,
-				producedBlocks: 1,
+				generatedBlocks: 1,
 			}, dbTrx);
 		}
 
