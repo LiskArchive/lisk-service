@@ -28,7 +28,7 @@ const getRewardTokenID = async () => {
 		try {
 			// TODO: Update endpoint once exposed by SDK
 			// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
-			const response = await invokeEndpoint('reward_getRewardTokenID');
+			const response = await invokeEndpoint('dynamicReward_getRewardTokenID');
 			rewardTokenID = response.error ? null : response;
 		} catch (err) {
 			if (err.message.includes(timeoutMessage)) {

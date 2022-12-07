@@ -90,7 +90,7 @@ const {
 	getPosConstants,
 } = require('./pos');
 
-const { getDefaultRewardAtHeight } = require('./reward');
+const { getDefaultRewardAtHeight } = require('./dynamicReward');
 
 const { getAuthAccountInfo } = require('./auth');
 const { getEvents, getEventsByHeight } = require('./events');

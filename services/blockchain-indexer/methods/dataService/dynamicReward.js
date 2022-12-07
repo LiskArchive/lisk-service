@@ -15,7 +15,7 @@
  */
 const {
 	getDefaultRewardAtHeight,
-} = require('./controllers/reward');
+} = require('./controllers/dynamicReward');
 
 module.exports = [
 	{

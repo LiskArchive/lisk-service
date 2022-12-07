@@ -76,7 +76,7 @@ const {
 const {
 	getRewardTokenID,
 	getDefaultRewardAtHeight,
-} = require('./reward');
+} = require('./dynamicReward');
 
 const {
 	getFeeTokenID,

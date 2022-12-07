@@ -65,7 +65,7 @@ const {
 
 const {
 	getDefaultRewardAtHeight,
-} = require('./reward');
+} = require('./dynamicReward');
 
 const {
 	reloadGeneratorsCache,
