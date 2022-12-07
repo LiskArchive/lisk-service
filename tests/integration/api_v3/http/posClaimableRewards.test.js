@@ -34,7 +34,7 @@ describe('Claimable rewards API', () => {
 	beforeAll(async () => {
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			const generators = (await api.get(`${baseUrlV3}/generators`));
+			const generators = await api.get(`${baseUrlV3}/generators`);
 			if (generators.data.length) {
 				[refValidator] = generators.data;
 			}

@@ -51,7 +51,7 @@ describe('Claimable rewards API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of of claimable rewards with known validator name and offset=1', async () => {
+	it('Returns list of claimable rewards with known validator name and offset=1', async () => {
 		const response = await getPosClaimableRewards({ name: refValidator.name, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -78,7 +78,7 @@ describe('Claimable rewards API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of claimable rewards for known validator address', async () => {
+	it('Returns list of claimable rewards with known validator address', async () => {
 		const response = await getPosClaimableRewards({ address: refValidator.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -88,7 +88,7 @@ describe('Claimable rewards API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of of claimable rewards with known validator naaddressme and offset=1', async () => {
+	it('Returns list of of claimable rewards with known validator address and offset=1', async () => {
 		const response = await getPosClaimableRewards({ address: refValidator.address, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -117,7 +117,7 @@ describe('Claimable rewards API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of claimable rewards for known validator publickKey', async () => {
+	it('Returns list of claimable rewards with known validator publicKey', async () => {
 		const response = await getPosClaimableRewards({ publicKey: refValidator.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -127,9 +127,9 @@ describe('Claimable rewards API', () => {
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of of claimable rewards with known validator publickKey and offset=1', async () => {
+	it('Returns list of of claimable rewards with known validator publicKey and offset=1', async () => {
 		const response = await getPosClaimableRewards({
-			publickKey: refValidator.publickKey, offset: 1,
+			publicKey: refValidator.publicKey, offset: 1,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -138,9 +138,9 @@ describe('Claimable rewards API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of claimable rewards with known validator publickKey and limit=5', async () => {
+	it('Returns list of claimable rewards with known validator publicKey and limit=5', async () => {
 		const response = await getPosClaimableRewards({
-			publickKey: refValidator.publickKey, limit: 5,
+			publicKey: refValidator.publicKey, limit: 5,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -149,9 +149,9 @@ describe('Claimable rewards API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of claimable rewards with known validator publickKey, offset=1 and limit=5', async () => {
+	it('Returns list of claimable rewards with known validator publicKey, offset=1 and limit=5', async () => {
 		const response = await getPosClaimableRewards({
-			publickKey: refValidator.publickKey, offset: 1, limit: 5,
+			publicKey: refValidator.publicKey, offset: 1, limit: 5,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
