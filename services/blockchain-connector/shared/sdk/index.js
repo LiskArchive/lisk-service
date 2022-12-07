@@ -75,6 +75,7 @@ const {
 
 const {
 	getRewardTokenID,
+	getInflationRate,
 } = require('./reward');
 
 const {
@@ -162,6 +163,7 @@ module.exports = {
 	getPosLockedRewards,
 
 	getRewardTokenID,
+	getInflationRate,
 
 	getAuthAccount,
 

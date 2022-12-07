@@ -13,9 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const {
+	Logger,
+	Exceptions: { TimeoutException },
+} = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+
+const logger = Logger();
 
 let rewardTokenID;
 
@@ -36,6 +41,23 @@ const getRewardTokenID = async () => {
 	return rewardTokenID;
 };
 
+const getInflationRate = async () => {
+	try {
+		// TODO: Update endpoint once exposed by sdk
+		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7799
+		const inflationRate = await invokeEndpoint('reward_getInflationRate');
+		return inflationRate;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getInflationRate\'.');
+		}
+		logger.warn(`Error returned when invoking 'reward_getInflationRate'.\n${err.stack}`);
+
+		throw err;
+	}
+};
+
 module.exports = {
 	getRewardTokenID,
+	getInflationRate,
 };

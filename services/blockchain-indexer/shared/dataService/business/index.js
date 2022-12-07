@@ -93,6 +93,7 @@ const {
 const { getAuthAccountInfo } = require('./auth');
 const { getEvents, getEventsByHeight } = require('./events');
 const { getValidator, validateBLSKey } = require('./validator');
+const { getInflationRate } = require('./reward');
 
 module.exports = {
 	getBlocks,
@@ -141,4 +142,6 @@ module.exports = {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
+
+	getInflationRate,
 };

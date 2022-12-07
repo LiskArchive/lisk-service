@@ -13,20 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getInflationRate,
-} = require('../shared/sdk');
+const dataService = require('../business');
 
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getInflationRate',
-		controller: async () => getInflationRate(),
-		params: {},
-	},
-];
+const getInflationRate = async () => {
+	const response = await dataService.getInflationRate();
+	return response;
+};
+
+module.exports = {
+	getInflationRate,
+};

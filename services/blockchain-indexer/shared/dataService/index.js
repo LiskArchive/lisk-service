@@ -106,6 +106,7 @@ const { getEvents } = require('./events');
 const { getAuthAccountInfo } = require('./auth');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getSchemas } = require('./schemas');
+const { getInflationRate } = require('./reward');
 
 module.exports = {
 	getMultisignatureGroups,
@@ -172,4 +173,5 @@ module.exports = {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
+	getInflationRate,
 };

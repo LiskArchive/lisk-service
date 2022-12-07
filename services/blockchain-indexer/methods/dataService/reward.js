@@ -14,19 +14,13 @@
  *
  */
 const {
-	getRewardTokenID,
 	getInflationRate,
-} = require('../shared/sdk');
+} = require('./controllers/reward');
 
 module.exports = [
 	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getInflationRate',
-		controller: async () => getInflationRate(),
+		name: 'reward.inflation',
+		controller: getInflationRate,
 		params: {},
 	},
 ];
