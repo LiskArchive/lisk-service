@@ -65,6 +65,7 @@ const {
 
 const {
 	getDefaultRewardAtHeight,
+	getRewardConstants,
 } = require('./dynamicReward');
 
 const {
@@ -178,4 +179,5 @@ module.exports = {
 	getCachedAccountByName,
 
 	getDefaultRewardAtHeight,
+	getRewardConstants,
 };

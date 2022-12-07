@@ -14,9 +14,13 @@
  *
  */
 const { getDefaultRewardAtHeight } = require('./defaultReward');
-const { getRewardTokenID } = require('./constants');
+const {
+	getRewardTokenID,
+	getRewardConstants,
+} = require('./constants');
 
 module.exports = {
 	getDefaultRewardAtHeight,
 	getRewardTokenID,
+	getRewardConstants,
 };

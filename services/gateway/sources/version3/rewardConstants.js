@@ -13,29 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../../utils/request');
-
-let rewardTokenID;
-
-const getRewardTokenID = async () => {
-	if (!rewardTokenID) rewardTokenID = await requestConnector('getRewardTokenID');
-	return rewardTokenID;
-};
-
-const getRewardConstants = async () => {
-	const response = {
-		data: {},
-		meta: {},
-	};
-
-	response.data = {
-		rewardTokenID: await getRewardTokenID(),
-	};
-
-	return response;
-};
-
 module.exports = {
-	getRewardTokenID,
-	getRewardConstants,
+	type: 'moleculer',
+	method: 'indexer.reward.constants',
+	params: {},
+	definition: {
+		data: {
+			rewardTokenID: '=,string',
+		},
+		meta: {},
+	},
 };
