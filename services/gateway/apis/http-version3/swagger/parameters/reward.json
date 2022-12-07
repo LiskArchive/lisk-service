@@ -2,7 +2,7 @@
     "blockHeight": {
         "name": "height",
         "in": "query",
-        "description": "Height of the block",
+        "description": "Block height to query.",
         "type": "number",
         "minimum": 0
     }
