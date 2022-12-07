@@ -12,23 +12,9 @@
  *
  * Removal or modification of this copyright notice is prohibited.
  *
-*/
-import Joi from 'joi';
-
-const regex = require('./regex');
-
-const { metaSchema } = require('../generics.schema');
-
-const claimableRewards = {
-	reward: Joi.string().pattern(regex.DIGITS).required(),
-	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
-};
-
-const goodResponseSchema = {
-	data: Joi.array().items(claimableRewards).min(0).required(),
-	meta: metaSchema,
-};
-
+ */
 module.exports = {
-	goodResponseSchema: Joi.object(goodResponseSchema).required(),
+	count: '=,number',
+	offset: '=,number',
+	total: '=,number',
 };

@@ -14,6 +14,7 @@
  *
  */
 const posClaimableReward = require('./mappings/posClaimableReward');
+const meta = require('./mappings/meta');
 
 module.exports = {
 	type: 'moleculer',
@@ -27,10 +28,6 @@ module.exports = {
 	},
 	definition: {
 		data: ['data', posClaimableReward],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
+		meta,
 	},
 };

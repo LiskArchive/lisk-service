@@ -37,9 +37,12 @@ const getPosClaimableRewards = async params => {
 		updateAccountPublicKey(params.publicKey);
 	}
 
+	if (!params.address) {
+		return claimableRewards;
+	}
+
 	const response = await requestConnector('getPosClaimableRewards', { address: params.address });
-	claimableRewards.data = response.rewards;
-	claimableRewards.data = claimableRewards.data.slice(params.offset, params.offset + params.limit);
+	claimableRewards.data = response.rewards.slice(params.offset, params.offset + params.limit);
 
 	claimableRewards.meta = {
 		count: claimableRewards.data.length,
