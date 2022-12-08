@@ -33,8 +33,8 @@ const sortComparator = (sortParam) => {
 		try {
 			if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting.');
 			return (sortOrder === 'asc')
-				? a[sortProp] - b[sortProp]
-				: b[sortProp] - a[sortProp];
+				? Number(a[sortProp] - b[sortProp])
+				: Number(b[sortProp] - a[sortProp]);
 		} catch (_) {
 			return (sortOrder === 'asc')
 				? a[sortProp].localeCompare(b[sortProp])
