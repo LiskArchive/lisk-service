@@ -13,8 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { getDefaultRewardAtHeight } = require('./defaultReward');
 const { getInflationRate } = require('./rewardInflation');
 
 module.exports = {
+	getDefaultRewardAtHeight,
 	getInflationRate,
 };

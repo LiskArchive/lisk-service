@@ -91,10 +91,11 @@ const {
 	getPosConstants,
 } = require('./pos');
 
+const { getDefaultRewardAtHeight, getInflationRate } = require('./dynamicReward');
+
 const { getAuthAccountInfo } = require('./auth');
 const { getEvents, getEventsByHeight } = require('./events');
 const { getValidator, validateBLSKey } = require('./validator');
-const { getInflationRate } = require('./reward');
 
 module.exports = {
 	getBlocks,
@@ -146,4 +147,5 @@ module.exports = {
 	getCachedAccountByName,
 
 	getInflationRate,
+	getDefaultRewardAtHeight,
 };

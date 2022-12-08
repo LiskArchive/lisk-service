@@ -13,21 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
-
-const getInflationRate = async () => {
-	const InflationReward = {
-		data: {},
-		meta: {},
-	};
-
-	const response = await dataService.getInflationRate();
-	if (response.data) InflationReward.data = response.data;
-	if (response.meta) InflationReward.meta = response.meta;
-
-	return InflationReward;
-};
+const { getDefaultRewardAtHeight } = require('./defaultReward');
+const { getInflationRate } = require('./rewardInflation');
 
 module.exports = {
+	getDefaultRewardAtHeight,
 	getInflationRate,
 };

@@ -29,7 +29,10 @@ const getRewardTokenID = async () => {
 		try {
 			// TODO: Update endpoint once exposed by SDK
 			// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
-			const response = await invokeEndpoint('reward_getRewardTokenID');
+			let response = await invokeEndpoint('dynamicReward_getRewardTokenID');
+			if (response.error) {
+				response = await invokeEndpoint('reward_getRewardTokenID');
+			}
 			rewardTokenID = response.error ? null : response;
 		} catch (err) {
 			if (err.message.includes(timeoutMessage)) {
@@ -57,7 +60,27 @@ const getInflationRate = async () => {
 	}
 };
 
+const getDefaultRewardAtHeight = async height => {
+	try {
+		// TODO: Update endpoint once exposed by sdk
+		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7865
+		let defaultRewardResponse = await invokeEndpoint('dynamicReward_getDefaultRewardAtHeight', { height });
+		if (defaultRewardResponse.error) {
+			defaultRewardResponse = await invokeEndpoint('reward_getDefaultRewardAtHeight');
+		}
+		return defaultRewardResponse;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`);
+		}
+		logger.warn(`Error returned when invoking 'reward_getDefaultRewardAtHeight' with height: ${height}.\n${err.stack}`);
+
+		throw err;
+	}
+};
+
 module.exports = {
 	getRewardTokenID,
 	getInflationRate,
+	getDefaultRewardAtHeight,
 };

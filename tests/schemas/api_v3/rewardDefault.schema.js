@@ -13,8 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getInflationRate } = require('./rewardInflation');
+import Joi from 'joi';
+import regex from './regex';
+
+const data = {
+	defaultReward: Joi.string().pattern(regex.DIGITS).required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).optional(),
+};
+
+const meta = {};
+
+const rewardDefaultResponseSchema = {
+	data: Joi.object(data).required(),
+	meta: Joi.object(meta).required(),
+};
 
 module.exports = {
-	getInflationRate,
+	rewardDefaultResponseSchema: Joi.object(rewardDefaultResponseSchema).required(),
 };
