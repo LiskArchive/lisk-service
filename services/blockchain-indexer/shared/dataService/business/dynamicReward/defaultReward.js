@@ -22,11 +22,11 @@ const getDefaultRewardAtHeight = async (params) => {
 		data: {},
 		meta: {},
 	};
-	const defaultReward = await requestConnector('getDefaultRewardAtHeight', { height: params.height });
+	const defaultRewardResponse = await requestConnector('getDefaultRewardAtHeight', { height: params.height });
 	const rewardTokenID = await getRewardTokenID();
 
 	response.data = {
-		defaultReward: defaultReward.error ? null : defaultReward,
+		defaultReward: defaultRewardResponse.reward,
 		tokenID: rewardTokenID,
 	};
 
