@@ -13,22 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getDefaultRewardAtHeight,
-	getRewardConstants,
-} = require('./controllers/dynamicReward');
+const business = require('../business');
 
-module.exports = [
-	{
-		name: 'reward.default',
-		controller: getDefaultRewardAtHeight,
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
-		},
-	},
-	{
-		name: 'reward.constants',
-		controller: getRewardConstants,
-		params: {},
-	},
-];
+const getRewardConstants = async () => {
+	const response = await business.getRewardConstants();
+	return response;
+};
+
+module.exports = {
+	getRewardConstants,
+};

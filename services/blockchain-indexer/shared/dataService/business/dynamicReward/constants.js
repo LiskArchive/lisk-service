@@ -22,6 +22,17 @@ const getRewardTokenID = async () => {
 	return rewardTokenID;
 };
 
+const getRewardConstants = async () => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	response.data.rewardTokenID = await getRewardTokenID();
+	return response;
+};
+
 module.exports = {
 	getRewardTokenID,
+	getRewardConstants,
 };

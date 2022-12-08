@@ -13,22 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getDefaultRewardAtHeight,
-	getRewardConstants,
-} = require('./controllers/dynamicReward');
+import Joi from 'joi';
+import regex from './regex';
 
-module.exports = [
-	{
-		name: 'reward.default',
-		controller: getDefaultRewardAtHeight,
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
-		},
-	},
-	{
-		name: 'reward.constants',
-		controller: getRewardConstants,
-		params: {},
-	},
-];
+const data = {
+	rewardTokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+};
+
+const meta = {};
+
+const rewardConstantsResponseSchema = {
+	data: Joi.object(data).required(),
+	meta: Joi.object(meta).required(),
+};
+
+module.exports = {
+	rewardConstantsResponseSchema: Joi.object(rewardConstantsResponseSchema).required(),
+};

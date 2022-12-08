@@ -13,22 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getDefaultRewardAtHeight,
-	getRewardConstants,
-} = require('./controllers/dynamicReward');
-
-module.exports = [
-	{
-		name: 'reward.default',
-		controller: getDefaultRewardAtHeight,
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.reward.constants',
+	params: {},
+	definition: {
+		data: {
+			rewardTokenID: '=,string',
 		},
+		meta: {},
 	},
-	{
-		name: 'reward.constants',
-		controller: getRewardConstants,
-		params: {},
-	},
-];
+};
