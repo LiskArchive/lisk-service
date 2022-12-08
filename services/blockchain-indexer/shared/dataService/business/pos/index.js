@@ -13,11 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getPosValidators,
-	getAllPosValidators,
-	isPosModuleRegistered,
-} = require('./validators');
+const { MODULE } = require('../../../constants');
+const { requestConnector } = require('../../../utils/request');
 
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
@@ -25,11 +22,18 @@ const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
 const { getPosClaimableRewards } = require('./claimableRewards');
+const { getPosValidators, getAllPosValidators } = require('./validators');
+
+let isPosRegistered;
+const isPosModuleRegistered = async () => {
+	if (isPosRegistered === undefined) {
+		const response = await requestConnector('getSystemMetadata');
+		isPosRegistered = response.modules.some(module => module.name === MODULE.POS);
+	}
+	return isPosRegistered;
+};
 
 module.exports = {
-	// Validators
-	getPosValidators,
-	getAllPosValidators,
 	isPosModuleRegistered,
 
 	// Stakes
@@ -49,4 +53,8 @@ module.exports = {
 
 	// Claimable rewards
 	getPosClaimableRewards,
+
+	// Validators
+	getPosValidators,
+	getAllPosValidators,
 };

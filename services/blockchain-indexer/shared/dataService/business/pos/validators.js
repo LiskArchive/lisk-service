@@ -20,21 +20,9 @@ const { CacheRedis } = require('lisk-service-framework');
 const config = require('../../../../config');
 
 const { requestConnector } = require('../../../utils/request');
-const { MODULE } = require('../../../constants');
-
-const LAST_BLOCK_CACHE = 'lastBlock';
-const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
 
 const LAST_BLOCK_KEY = 'lastBlock';
-
-let isPosRegistered;
-const isPosModuleRegistered = async () => {
-	if (isPosRegistered === undefined) {
-		const response = await requestConnector('getSystemMetadata');
-		isPosRegistered = response.modules.some(module => module.name === MODULE.POS);
-	}
-	return isPosRegistered;
-};
+const lastBlockCache = CacheRedis(LAST_BLOCK_KEY, config.endpoints.cache);
 
 const verifyIfPunished = async validator => {
 	const latestBlockString = await lastBlockCache.get(LAST_BLOCK_KEY);
@@ -100,5 +88,4 @@ const getPosValidators = async (params) => {
 module.exports = {
 	getPosValidators,
 	getAllPosValidators,
-	isPosModuleRegistered,
 };
