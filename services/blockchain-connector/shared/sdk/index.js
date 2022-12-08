@@ -76,7 +76,8 @@ const {
 
 const {
 	getRewardTokenID,
-} = require('./reward');
+	getDefaultRewardAtHeight,
+} = require('./dynamicReward');
 
 const {
 	getFeeTokenID,
@@ -164,6 +165,7 @@ module.exports = {
 	getPosLockedRewards,
 
 	getRewardTokenID,
+	getDefaultRewardAtHeight,
 
 	getAuthAccount,
 

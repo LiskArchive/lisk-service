@@ -24,8 +24,8 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	stakeResponseSchema,
-} = require('../../../schemas/api_v3/stake.schema');
+	stakesResponseSchema,
+} = require('../../../schemas/api_v3/stakes.schema');
 
 const endpoint = `${baseUrlV3}/pos/stakes`;
 
@@ -48,21 +48,21 @@ describe('Stakes API', () => {
 	describe(`GET ${endpoint}`, () => {
 		it('Returns list of sent stakes when requested for known staker address', async () => {
 			const response = await api.get(`${endpoint}?address=${refStaker.address}`);
-			expect(response).toMap(stakeResponseSchema);
+			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
 		it('Returns list of sent stakes when requested for known staker name', async () => {
 			const response = await api.get(`${endpoint}?name=${refStaker.name}`);
-			expect(response).toMap(stakeResponseSchema);
+			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
 		it('Returns list of sent stakes when requested for known staker publicKey', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}`);
-			expect(response).toMap(stakeResponseSchema);
+			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});

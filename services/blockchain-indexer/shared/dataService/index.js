@@ -65,6 +65,10 @@ const {
 } = require('./pos');
 
 const {
+	getDefaultRewardAtHeight,
+} = require('./dynamicReward');
+
+const {
 	reloadGeneratorsCache,
 	getGenerators,
 } = require('./generators');
@@ -174,4 +178,6 @@ module.exports = {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
+
+	getDefaultRewardAtHeight,
 };

@@ -1,0 +1,35 @@
+{
+    "rewardDefaultWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "Default reward for a block height.",
+				"type": "object",
+				"required": [
+					"tokenID",
+					"defaultReward"
+				],
+				"properties": {
+					"tokenID": {
+						"type": "string",
+						"example": "0000000000000000",
+						"description": "The universal identifier for the token within the Lisk ecosystem used for rewards."
+					},
+					"defaultReward": {
+						"type": "string",
+						"example": "109000000000",
+						"description": "The default block generation reward for the queried block height."
+					}
+				}
+			},
+			"meta": {
+				"type":"object",
+				"properties": {}
+			}
+		}
+	}
+}

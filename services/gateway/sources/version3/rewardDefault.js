@@ -13,14 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-} = require('../shared/sdk');
-
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.reward.default',
+	params: {
+		height: '=,number',
 	},
-];
+	definition: {
+		data: {
+			defaultReward: '=,string',
+			tokenID: '=,string',
+		},
+		meta: {},
+	},
+};
