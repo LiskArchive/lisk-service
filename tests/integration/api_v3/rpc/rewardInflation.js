@@ -29,7 +29,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 const getRewardInflation = async () => request(wsRpcUrl, 'get.reward.inflation');
 
-describe('get.reward.default', () => {
+describe('get.reward.inflation', () => {
 	it('Returns current inflation rate', async () => {
 		const response = await getRewardInflation();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
