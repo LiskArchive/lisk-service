@@ -13,22 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPosClaimableRewards } = require('./claimableRewards');
-const { getPosUnlocks } = require('./unlocks');
-const { getPosLockedRewards } = require('./lockedRewards');
-const { getPosConstants } = require('./constants');
+const posClaimableReward = require('./mappings/posClaimableReward');
+const meta = require('./mappings/meta');
 
 module.exports = {
-	getStakes,
-
-	getStakers,
-
-	getPosUnlocks,
-
-	getPosClaimableRewards,
-	getPosLockedRewards,
-
-	getPosConstants,
+	type: 'moleculer',
+	method: 'indexer.pos.rewards.claimable',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+		limit: '=,number',
+		offset: '=,number',
+	},
+	definition: {
+		data: ['data', posClaimableReward],
+		meta,
+	},
 };

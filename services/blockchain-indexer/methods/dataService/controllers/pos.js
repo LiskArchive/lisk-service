@@ -93,6 +93,19 @@ const getStakers = async params => {
 	return stakers;
 };
 
+const getPosClaimableRewards = async (params) => {
+	const claimableRewards = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await dataService.getPosClaimableRewards(params);
+	if (response.data) claimableRewards.data = response.data;
+	if (response.meta) claimableRewards.meta = response.meta;
+
+	return claimableRewards;
+};
+
 const getPosLockedRewards = async (params) => {
 	try {
 		const rewardsLocked = {
@@ -120,5 +133,6 @@ module.exports = {
 	getPosLockedRewards,
 	getStakes,
 	getStakers,
+	getPosClaimableRewards,
 };
 

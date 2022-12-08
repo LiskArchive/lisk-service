@@ -24,7 +24,7 @@ const transformParams = (type, params) => {
 		if (type === 'blocks' && paramKey === 'id') {
 			value = { $ref: '#/parameters/block' };
 		} else if (type === 'PoS' && paramKey === 'status') {
-			value = { $ref: '#/parameters/delegateStatus' };
+			value = { $ref: '#/parameters/validatorStatus' };
 		} else if (type === 'interoperability' && paramKey === 'status') {
 			value = { $ref: '#/parameters/ccmStatus' };
 		} else if (type === 'network' && paramKey === 'q') {

@@ -1,5 +1,5 @@
 {
-	"delegateStatus": {
+	"validatorStatus": {
 		"name": "status",
 		"in": "query",
 		"description": "Query delegates by status.",

@@ -13,22 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getStakes } = require('./stakes');
-const { getStakers } = require('./stakers');
-const { getPosClaimableRewards } = require('./claimableRewards');
-const { getPosUnlocks } = require('./unlocks');
-const { getPosLockedRewards } = require('./lockedRewards');
-const { getPosConstants } = require('./constants');
-
 module.exports = {
-	getStakes,
-
-	getStakers,
-
-	getPosUnlocks,
-
-	getPosClaimableRewards,
-	getPosLockedRewards,
-
-	getPosConstants,
+	count: '=,number',
+	offset: '=,number',
+	total: '=,number',
 };
