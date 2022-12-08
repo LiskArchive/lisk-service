@@ -29,16 +29,16 @@ const getDefaultRewardAtHeight = async params => {
 };
 
 const getRewardConstants = async () => {
-	const defaultReward = {
+	const rewardConstants = {
 		data: {},
 		meta: {},
 	};
 
 	const response = await dataService.getRewardConstants();
-	if (response.data) defaultReward.data = response.data;
-	if (response.meta) defaultReward.meta = response.meta;
+	if (response.data) rewardConstants.data = response.data;
+	if (response.meta) rewardConstants.meta = response.meta;
 
-	return defaultReward;
+	return rewardConstants;
 };
 
 module.exports = {

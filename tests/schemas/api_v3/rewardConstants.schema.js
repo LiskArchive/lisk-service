@@ -17,7 +17,7 @@ import Joi from 'joi';
 import regex from './regex';
 
 const data = {
-	rewardTokenID: Joi.string().pattern(regex.DIGITS).required(),
+	rewardTokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
 };
 
 const meta = {};

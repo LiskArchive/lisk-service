@@ -38,6 +38,9 @@
 			"data": {
 				"description": "Reward constants.",
 				"type": "object",
+				"required":[
+					"rewardTokenID"
+				],
 				"properties": {
 					"rewardTokenID": {
 						"type": "string",

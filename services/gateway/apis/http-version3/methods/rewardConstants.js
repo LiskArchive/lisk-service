@@ -22,9 +22,7 @@ module.exports = {
 	swaggerApiPath: '/reward/constants',
 	rpcMethod: 'get.reward.constants',
 	tags: ['Reward'],
-	params: {
-		height: { optional: false, type: 'number', min: 0 },
-	},
+	params: {},
 	get schema() {
 		const rewardConstantsSchema = {};
 		rewardConstantsSchema[this.swaggerApiPath] = { get: {} };
