@@ -13,25 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadValidatorCache,
-	getTotalNumberOfValidators,
-	getPosValidators,
-} = require('./validators');
-
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
 const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
 const { getPosClaimableRewards } = require('./claimableRewards');
+const { reloadValidatorCache, getPosValidators } = require('./validators');
 
 module.exports = {
-	// Validators
-	reloadValidatorCache,
-	getTotalNumberOfValidators,
-	getPosValidators,
-
 	// Stakes
 	getStakes,
 
@@ -49,4 +39,8 @@ module.exports = {
 
 	// Claimable rewards
 	getPosClaimableRewards,
+
+	// Validators
+	reloadValidatorCache,
+	getPosValidators,
 };

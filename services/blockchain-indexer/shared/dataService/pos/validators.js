@@ -25,6 +25,7 @@ const {
 
 const business = require('../business');
 const config = require('../../../config');
+const accountsIndexSchema = require('../../database/schema/accounts');
 const validatorsIndexSchema = require('../../database/schema/validators');
 
 const {
@@ -39,6 +40,12 @@ const { sortComparator } = require('../../utils/arrayUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountsTable = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsIndexSchema.tableName,
@@ -114,13 +121,21 @@ const computeValidatorStatus = async () => {
 
 const loadAllPosValidators = async () => {
 	try {
+		// TODO: Enable with Lisk SDK v6.0.0-alpha.8
+		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7870
+		// // Fetch all the validators sorted by stake
+		// validatorList = await business.getPosValidatorsByStake({ limit: -1 });
 		validatorList = await business.getAllPosValidators();
+
+		// Cache and index all the necessary information
+		const accountsTable = await getAccountsTable();
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
-				await validatorCache.set(validator.address, validator.name);
-				await validatorCache.set(validator.name, validator.address);
-				return validator;
+				const { address, name } = validator;
+				await validatorCache.set(address, name);
+				await validatorCache.set(name, address);
+				await accountsTable.upsert({ address, name, isValidator: true });
 			},
 			{ concurrency: validatorList.length },
 		);
@@ -137,6 +152,7 @@ const reloadValidatorCache = async () => {
 	if (!await business.isPosModuleRegistered()) return;
 
 	await loadAllPosValidators();
+	// TODO: Remove rank computation after Lisk SDK v6.0.0-alpha.8
 	await computeValidatorRank();
 	await computeValidatorStatus();
 };
@@ -146,15 +162,6 @@ const getAllValidators = async () => {
 	return validatorList;
 };
 
-const getTotalNumberOfValidators = async (params = {}) => {
-	const allValidators = await getAllValidators();
-	const relevantValidators = allValidators.filter(validator => (
-		(!params.name || validator.name === params.name)
-		&& (!params.address || validator.address === params.address)
-	));
-	return relevantValidators.length;
-};
-
 const getPosValidators = async params => {
 	const validators = {
 		data: [],
@@ -162,15 +169,27 @@ const getPosValidators = async params => {
 	};
 
 	const validatorsTable = await getValidatorsTable();
-	const allValidators = await getAllValidators();
+	validators.data = await getAllValidators();
 
-	const filterBy = (list, entity) => list.filter((acc) => params[entity].includes(',')
-		? (acc[entity] && params[entity].split(',').includes(acc[entity]))
-		: (acc[entity] && acc[entity] === params[entity]),
+	const filterBy = (list, entity) => list.filter(
+		(acc) => params[entity].includes(',')
+			? (acc[entity] && params[entity].split(',').includes(acc[entity]))
+			: (acc[entity] && acc[entity] === params[entity]),
 	);
 
+	if (params.publicKey) {
+		params.address = getLisk32AddressFromPublicKey(params.publicKey);
+
+		// Index publicKey asynchronously
+		updateAccountPublicKey(params.publicKey);
+	}
+
+	if (params.address) validators.data = filterBy(validators.data, 'address');
+	if (params.name) validators.data = filterBy(validators.data, 'name');
+	if (params.status) validators.data = filterBy(validators.data, 'status');
+
 	validators.data = await BluebirdPromise.map(
-		allValidators,
+		validators.data,
 		async delegate => {
 			const [validatorInfo = {}] = await validatorsTable.find(
 				{ address: delegate.address },
@@ -182,34 +201,23 @@ const getPosValidators = async params => {
 				generatedBlocks: validatorInfo.generatedBlocks || 0,
 				rewards: validatorInfo.rewards || BigInt('0'),
 			};
-		}, { concurrency: allValidators.length },
+		},
+		{ concurrency: validators.data.length },
 	);
 
-	if (params.publicKey) {
-		params.address = getLisk32AddressFromPublicKey(params.publicKey);
-
-		// Index publicKey asynchronously
-		updateAccountPublicKey(params.publicKey);
-	}
-	if (params.address) {
-		validators.data = filterBy(validators.data, 'address');
-	}
-	if (params.name) {
-		validators.data = filterBy(validators.data, 'name');
-	}
-	if (params.status) {
-		validators.data = filterBy(validators.data, 'status');
-	}
-
+	// TODO: Remove after Lisk SDK v6.0.0-alpha.8
 	if (validators.data.every(validator => !validator.rank)) await computeValidatorRank();
 
+	// Assign the total count
+	validators.meta.total = validators.data.length;
+
+	// Sort appropriately and apply pagination
 	validators.data = validators.data
 		.sort(sortComparator(params.sort))
 		.slice(params.offset, params.offset + params.limit);
 
 	validators.meta.count = validators.data.length;
 	validators.meta.offset = params.offset;
-	validators.meta.total = await getTotalNumberOfValidators(params);
 
 	return parseToJSONCompatObj(validators);
 };
@@ -317,6 +325,5 @@ updateValidatorListOnAccountsUpdate();
 
 module.exports = {
 	reloadValidatorCache,
-	getTotalNumberOfValidators,
 	getPosValidators,
 };

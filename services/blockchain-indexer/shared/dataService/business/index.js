@@ -14,6 +14,11 @@
  *
  */
 const {
+	getGenerators,
+	getNumberOfGenerators,
+} = require('./generators');
+
+const {
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -24,28 +29,6 @@ const {
 } = require('./blocks');
 
 const {
-	getBlockchainApps,
-	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
-} = require('./interoperability');
-
-const {
-	getGenerators,
-	getNumberOfGenerators,
-} = require('./generators');
-
-const {
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
-} = require('./tokens');
-
-const {
-	getPendingTransactions,
-	loadAllPendingTransactions,
-} = require('./pendingTransactions');
-
-const {
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
@@ -54,10 +37,27 @@ const {
 } = require('./transactions');
 
 const {
+	getPendingTransactions,
+	loadAllPendingTransactions,
+} = require('./pendingTransactions');
+
+const {
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+	reloadBlockchainAppsStats,
+} = require('./interoperability');
+
+const {
+	getTokens,
+	getTopLiskAddresses,
+	getTokensSummary,
+} = require('./tokens');
+
+const {
 	getPosValidators,
 	getAllPosValidators,
+	getPosValidatorsByStake,
 	isPosModuleRegistered,
-	getVotesByTransactionIDs,
 	getPosLockedRewards,
 	getStakes,
 	getStakers,
@@ -75,8 +75,8 @@ const {
 const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
 const { getLegacyAccountInfo } = require('./legacy');
-const { getEvents, getEventsByHeight } = require('./events');
 const { postTransactions } = require('./postTransactions');
+const { getEvents, getEventsByHeight } = require('./events');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { getValidator, validateBLSKey } = require('./validator');
 
@@ -95,15 +95,15 @@ module.exports = {
 	getBlocksAssets,
 
 	// Transactions
-	getPendingTransactions,
-	loadAllPendingTransactions,
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
-	dryRunTransactions,
+	getPendingTransactions,
+	loadAllPendingTransactions,
 	postTransactions,
+	dryRunTransactions,
 
 	// Events
 	getEvents,
@@ -114,23 +114,22 @@ module.exports = {
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 
+	// Token
+	getTokens,
+	getTopLiskAddresses,
+	getTokensSummary,
+
 	// PoS
 	getPosValidators,
 	getAllPosValidators,
+	getPosValidatorsByStake,
 	isPosModuleRegistered,
-
-	getVotesByTransactionIDs,
+	getPosLockedRewards,
 	getStakes,
 	getStakers,
 	getPosClaimableRewards,
 	getPosUnlocks,
 	getPosConstants,
-	getPosLockedRewards,
-
-	// Token
-	getTokens,
-	getTopLiskAddresses,
-	getTokensSummary,
 
 	// Schemas
 	getSchemas,

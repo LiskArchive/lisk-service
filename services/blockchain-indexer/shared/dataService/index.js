@@ -55,7 +55,6 @@ const {
 const {
 	getPosValidators,
 	reloadValidatorCache,
-	getTotalNumberOfValidators,
 	getPosConstants,
 	getPosLockedRewards,
 	getStakes,
@@ -115,7 +114,6 @@ module.exports = {
 	// PoS
 	getPosValidators,
 	reloadValidatorCache,
-	getTotalNumberOfValidators,
 	getPosConstants,
 	getPosUnlocks,
 	getStakes,

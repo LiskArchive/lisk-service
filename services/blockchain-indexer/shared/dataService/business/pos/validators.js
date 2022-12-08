@@ -35,6 +35,32 @@ const verifyIfPunished = async validator => {
 	return isPunished;
 };
 
+const getPosValidators = async (params) => {
+	const { address, addresses } = params;
+	const validatorAddressList = address ? [address] : addresses;
+
+	const validators = await BluebirdPromise.map(
+		validatorAddressList,
+		async validatorAddress => {
+			const validator = await requestConnector('getPosValidator', { address: validatorAddress });
+			// TODO: Verify
+			// TODO: Check if it is possible to move this logic to the connector
+			if (validator.isBanned || await verifyIfPunished(validator)) {
+				validator.validatorWeight = BigInt('0');
+			} else {
+				const cap = BigInt(validator.selfStake) * BigInt(10);
+				validator.totalStakeReceived = BigInt(validator.totalStakeReceived);
+				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
+					? cap
+					: validator.totalStakeReceived;
+			}
+			return validator;
+		},
+		{ concurrency: validatorAddressList.length },
+	);
+	return validators;
+};
+
 const getAllPosValidators = async () => {
 	const { validators: rawValidators } = await requestConnector('getAllPosValidators');
 	const validators = await BluebirdPromise.map(
@@ -58,34 +84,13 @@ const getAllPosValidators = async () => {
 	return validators;
 };
 
-const getPosValidators = async (params) => {
-	const { address, addresses, ...remParams } = params;
-	params = remParams;
-	params.addresses = address ? [address] : addresses;
-
-	const validators = await BluebirdPromise.map(
-		params.addresses,
-		async validatorAddress => {
-			const validator = await requestConnector('getPosValidator', { address: validatorAddress });
-			// TODO: Verify
-			// TODO: Check if it is possible to move this logic to the connector
-			if (validator.isBanned || await verifyIfPunished(validator)) {
-				validator.validatorWeight = BigInt('0');
-			} else {
-				const cap = BigInt(validator.selfStake) * BigInt(10);
-				validator.totalStakeReceived = BigInt(validator.totalStakeReceived);
-				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
-					? cap
-					: validator.totalStakeReceived;
-			}
-			return validator;
-		},
-		{ concurrency: params.addresses.length },
-	);
+const getPosValidatorsByStake = async (params) => {
+	const { validators } = await requestConnector('getPosValidatorsByStake', { limit: params.limit });
 	return validators;
 };
 
 module.exports = {
 	getPosValidators,
 	getAllPosValidators,
+	getPosValidatorsByStake,
 };
