@@ -1,0 +1,31 @@
+{
+    "rewardInflationWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "Current inflation rate.",
+                "type": "object",
+                "properties": {
+                    "rate": {
+                        "type": "string",
+                        "example": "10.32",
+                        "description": "Current inflation rate."
+                    },
+                    "tokenID": {
+                        "type": "string",
+                        "example": "0000000000000000",
+                        "description": "The universal identifier for the token within the Lisk ecosystem used for rewards."
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "properties": {}
+            }
+        }
+    }
+}
