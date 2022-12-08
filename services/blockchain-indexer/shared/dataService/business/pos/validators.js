@@ -27,10 +27,13 @@ const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
 
 const LAST_BLOCK_KEY = 'lastBlock';
 
+let isPosRegistered;
 const isPosModuleRegistered = async () => {
-	const response = await requestConnector('getSystemMetadata');
-	const isRegistered = response.modules.some(module => module.name === MODULE.POS);
-	return isRegistered;
+	if (isPosRegistered === undefined) {
+		const response = await requestConnector('getSystemMetadata');
+		isPosRegistered = response.modules.some(module => module.name === MODULE.POS);
+	}
+	return isPosRegistered;
 };
 
 const verifyIfPunished = async validator => {
