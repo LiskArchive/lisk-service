@@ -28,10 +28,7 @@ const getRewardConstants = async () => {
 		meta: {},
 	};
 
-	response.data = {
-		rewardTokenID: await getRewardTokenID(),
-	};
-
+	response.data.rewardTokenID = await getRewardTokenID();
 	return response;
 };
 
