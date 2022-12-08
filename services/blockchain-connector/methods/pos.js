@@ -16,6 +16,7 @@
 const {
 	getAllPosValidators,
 	getPosValidator,
+	getPosValidatorsByStake,
 	getPosConstants,
 	getPosLockedRewards,
 	getPosPendingUnlocks,
@@ -35,6 +36,13 @@ module.exports = [
 		name: 'getAllPosValidators',
 		controller: async () => getAllPosValidators(),
 		params: {},
+	},
+	{
+		name: 'getPosValidatorsByStake',
+		controller: async ({ limit }) => getPosValidatorsByStake(limit),
+		params: {
+			limit: { optional: true, type: 'number' },
+		},
 	},
 	{
 		name: 'getPosConstants',

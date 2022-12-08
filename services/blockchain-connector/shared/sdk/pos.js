@@ -48,6 +48,19 @@ const getAllPosValidators = async () => {
 	}
 };
 
+const getPosValidatorsByStake = async (limit) => {
+	try {
+		const validators = await invokeEndpoint('pos_getValidatorsByStake', { limit });
+		return validators;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getPosValidatorsByStake\'.');
+		}
+		logger.warn(`Error returned when invoking 'pos_getValidatorsByStake'.\n${err.stack}`);
+		throw err;
+	}
+};
+
 const getPosConstants = async () => {
 	try {
 		const response = await invokeEndpoint('pos_getConstants');
@@ -117,6 +130,7 @@ const getPosLockedRewards = async ({ address, tokenID }) => {
 module.exports = {
 	getPosValidator,
 	getAllPosValidators,
+	getPosValidatorsByStake,
 	getPosLockedRewards,
 	getPosConstants,
 	getStaker,
