@@ -9,6 +9,10 @@
 			"data": {
 				"description": "Default reward for a block height.",
 				"type": "object",
+				"required": [
+					"tokenID",
+					"defaultReward"
+				],
 				"properties": {
 					"tokenID": {
 						"type": "string",
