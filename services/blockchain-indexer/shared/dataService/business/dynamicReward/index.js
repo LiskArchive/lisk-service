@@ -15,8 +15,14 @@
  */
 const { getDefaultRewardAtHeight } = require('./defaultReward');
 const { getInflationRate } = require('./rewardInflation');
+const {
+	getRewardTokenID,
+	getRewardConstants,
+} = require('./constants');
 
 module.exports = {
 	getDefaultRewardAtHeight,
 	getInflationRate,
+	getRewardTokenID,
+	getRewardConstants,
 };

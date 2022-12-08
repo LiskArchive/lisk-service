@@ -91,7 +91,11 @@ const {
 	getPosConstants,
 } = require('./pos');
 
-const { getDefaultRewardAtHeight, getInflationRate } = require('./dynamicReward');
+const {
+	getDefaultRewardAtHeight,
+	getInflationRate,
+	getRewardConstants,
+} = require('./dynamicReward');
 
 const { getAuthAccountInfo } = require('./auth');
 const { getEvents, getEventsByHeight } = require('./events');
@@ -148,4 +152,5 @@ module.exports = {
 
 	getInflationRate,
 	getDefaultRewardAtHeight,
+	getRewardConstants,
 };

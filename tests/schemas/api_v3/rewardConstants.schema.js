@@ -13,26 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../../utils/request');
+import Joi from 'joi';
+import regex from './regex';
 
-let rewardTokenID;
-
-const getRewardTokenID = async () => {
-	if (!rewardTokenID) rewardTokenID = await requestConnector('getRewardTokenID');
-	return rewardTokenID;
+const data = {
+	rewardTokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
 };
 
-const getRewardConstants = async () => {
-	const response = {
-		data: {},
-		meta: {},
-	};
+const meta = {};
 
-	response.data.rewardTokenID = await getRewardTokenID();
-	return response;
+const rewardConstantsResponseSchema = {
+	data: Joi.object(data).required(),
+	meta: Joi.object(meta).required(),
 };
 
 module.exports = {
-	getRewardTokenID,
-	getRewardConstants,
+	rewardConstantsResponseSchema: Joi.object(rewardConstantsResponseSchema).required(),
 };

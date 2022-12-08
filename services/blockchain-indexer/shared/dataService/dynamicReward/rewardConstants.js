@@ -13,26 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../../utils/request');
-
-let rewardTokenID;
-
-const getRewardTokenID = async () => {
-	if (!rewardTokenID) rewardTokenID = await requestConnector('getRewardTokenID');
-	return rewardTokenID;
-};
+const business = require('../business');
 
 const getRewardConstants = async () => {
-	const response = {
-		data: {},
-		meta: {},
-	};
-
-	response.data.rewardTokenID = await getRewardTokenID();
+	const response = await business.getRewardConstants();
 	return response;
 };
 
 module.exports = {
-	getRewardTokenID,
 	getRewardConstants,
 };
