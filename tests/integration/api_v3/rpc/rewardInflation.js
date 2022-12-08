@@ -27,18 +27,18 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getRewardDefault = async () => request(wsRpcUrl, 'get.reward.inflation');
+const getRewardInflation = async () => request(wsRpcUrl, 'get.reward.inflation');
 
 describe('get.reward.default', () => {
 	it('Returns current inflation rate', async () => {
-		const response = await getRewardDefault({ height: 1 });
+		const response = await getRewardInflation();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(rewardInflationResponseSchema);
 	});
 
-	it('Invalid request param -> invalid param', async () => {
-		const response = await getRewardDefault({ invalidParam: 'invalid' });
+	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
+		const response = getRewardInflation().catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
 });
