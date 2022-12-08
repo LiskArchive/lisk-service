@@ -58,7 +58,7 @@ const getAccounts = async params => {
 			}
 			const {
 				delegate, approval, missedBlocks, generatedBlocks, productivity,
-				rank, rewards, username, vote, isBanned, status: _status, pomHeights,
+				rank, rewards, username, vote, isBanned, status: _status, pomHeights, punishmentPeriods,
 				lastForgedHeight, consecutiveMissedBlocks,
 				...nonDelegateAccount
 			} = account;

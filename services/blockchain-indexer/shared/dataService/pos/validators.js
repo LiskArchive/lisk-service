@@ -92,14 +92,15 @@ const computeValidatorStatus = async () => {
 	const activeGeneratorsList = generatorsList.map(generator => generator.address);
 
 	const verifyIfPunished = (validator) => {
-		const isPunished = validator.pomHeights.some(
-			pomHeight => pomHeight.start <= lastestBlock.height && lastestBlock.height <= pomHeight.end,
+		const isPunished = validator.punishmentPeriods.some(
+			punishmentPeriod => punishmentPeriod.start <= lastestBlock.height
+				&& lastestBlock.height <= punishmentPeriod.end,
 		);
 		return isPunished;
 	};
 
 	logger.debug('Determine validator status.');
-	validatorList.map((validator) => {
+	validatorList.forEach((validator) => {
 		// Update validator status, if applicable
 		if (validator.isBanned) {
 			validator.status = VALIDATOR_STATUS.BANNED;

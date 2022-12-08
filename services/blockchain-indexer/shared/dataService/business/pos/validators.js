@@ -76,6 +76,12 @@ const getAllPosValidators = async () => {
 					? cap
 					: validator.totalStakeReceived;
 			}
+
+			// TODO: Remove after Lisk SDK v6.0.0-alpha.8
+			if (!('punishmentPeriods' in validator)) {
+				validator.punishmentPeriods = validator.pomHeights.map(h => ({ start: h, end: h + 1000 }));
+			}
+
 			return validator;
 		},
 		{ concurrency: rawValidators.length },

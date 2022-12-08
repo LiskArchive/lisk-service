@@ -22,7 +22,8 @@ module.exports = {
 	lastGeneratedHeight: '=,number',
 	status: '=,string',
 	isBanned: '=,boolean',
-	pomHeights: ['pomHeights', {
+	pomHeights: '=',
+	punishmentPeriods: ['punishmentPeriods', {
 		start: '=,number',
 		end: '=,number',
 	}],
