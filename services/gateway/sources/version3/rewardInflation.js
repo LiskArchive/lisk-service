@@ -13,28 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getInflationRate,
-	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
-
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getInflationRate',
-		controller: async () => getInflationRate(),
-		params: {},
-	},
-	{
-		name: 'getDefaultRewardAtHeight',
-		controller: async ({ height }) => getDefaultRewardAtHeight(height),
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.reward.inflation',
+	params: {},
+	definition: {
+		data: {
+			tokenID: '=,string',
+			rate: '=,string',
 		},
+		meta: {},
 	},
-];
+};

@@ -13,28 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getInflationRate,
-	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
+import Joi from 'joi';
+import regex from './regex';
 
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getInflationRate',
-		controller: async () => getInflationRate(),
-		params: {},
-	},
-	{
-		name: 'getDefaultRewardAtHeight',
-		controller: async ({ height }) => getDefaultRewardAtHeight(height),
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
-		},
-	},
-];
+const data = {
+	// TODO: Verify and update the schema
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).optional(),
+	rate: Joi.string().required(),
+};
+
+const meta = {};
+
+const rewardInflationResponseSchema = {
+	data: Joi.object(data).required(),
+	meta: Joi.object(meta).required(),
+};
+
+module.exports = {
+	rewardInflationResponseSchema: Joi.object(rewardInflationResponseSchema).required(),
+};

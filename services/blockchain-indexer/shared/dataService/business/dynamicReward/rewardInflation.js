@@ -13,28 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getInflationRate,
-	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
+const { requestConnector } = require('../../../utils/request');
 
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getInflationRate',
-		controller: async () => getInflationRate(),
-		params: {},
-	},
-	{
-		name: 'getDefaultRewardAtHeight',
-		controller: async ({ height }) => getDefaultRewardAtHeight(height),
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
-		},
-	},
-];
+const getInflationRate = async () => {
+	const rewardInflation = {
+		data: {},
+		meta: {},
+	};
+
+	// TODO: Refactor implementation once given endpoint is exposed from SDK
+	// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7799
+	rewardInflation.data = await requestConnector('getInflationRate');
+	return rewardInflation;
+};
+
+module.exports = {
+	getInflationRate,
+};

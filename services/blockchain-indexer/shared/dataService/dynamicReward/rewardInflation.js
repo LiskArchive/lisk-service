@@ -13,28 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getInflationRate,
-	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
+const business = require('../business');
 
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-	{
-		name: 'getInflationRate',
-		controller: async () => getInflationRate(),
-		params: {},
-	},
-	{
-		name: 'getDefaultRewardAtHeight',
-		controller: async ({ height }) => getDefaultRewardAtHeight(height),
-		params: {
-			height: { optional: false, type: 'number', min: 0 },
-		},
-	},
-];
+const getInflationRate = async () => {
+	const response = await business.getInflationRate();
+	return response;
+};
+
+module.exports = {
+	getInflationRate,
+};

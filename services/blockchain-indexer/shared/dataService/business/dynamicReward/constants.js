@@ -18,7 +18,11 @@ const { requestConnector } = require('../../../utils/request');
 let rewardTokenID;
 
 const getRewardTokenID = async () => {
-	if (!rewardTokenID) rewardTokenID = await requestConnector('getRewardTokenID');
+	if (!rewardTokenID) {
+		const response = await requestConnector('getRewardTokenID');
+		if (response.error) throw new Error(response.error.message);
+		rewardTokenID = response;
+	}
 	return rewardTokenID;
 };
 
