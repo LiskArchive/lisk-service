@@ -181,6 +181,9 @@ const formatEvent = (event) => {
 	if (!topics || topics.length === 0) {
 		console.error(`EVENT_TOPICS undefined for event: ${event.name}.`);
 		console.info(require('util').inspect(event));
+	} else if (topics.length !== event.topics.length) {
+		console.error(`EVENT_TOPICS defined incorrectly for event: ${event.name}.`);
+		console.info(require('util').inspect(event));
 	}
 
 	let eventTopics;
