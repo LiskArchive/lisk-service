@@ -77,7 +77,10 @@ const {
 
 const {
 	getRewardTokenID,
-} = require('./reward');
+	getInflationRate,
+	getDefaultRewardAtHeight,
+	cacheRegisteredRewardModule,
+} = require('./dynamicReward');
 
 const {
 	getFeeTokenID,
@@ -95,6 +98,7 @@ const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const init = async () => {
 	// Initialize the local cache
 	await refreshNetworkStatus();
+	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 
 	// Cache all the schemas
@@ -165,6 +169,8 @@ module.exports = {
 
 	// Reward
 	getRewardTokenID,
+	getInflationRate,
+	getDefaultRewardAtHeight,
 
 	// Fee
 	getFeeTokenID,

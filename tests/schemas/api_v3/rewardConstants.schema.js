@@ -13,14 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-} = require('../shared/sdk');
+import Joi from 'joi';
+import regex from './regex';
 
-module.exports = [
-	{
-		name: 'getRewardTokenID',
-		controller: async () => getRewardTokenID(),
-		params: {},
-	},
-];
+const data = {
+	rewardTokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+};
+
+const meta = {};
+
+const rewardConstantsResponseSchema = {
+	data: Joi.object(data).required(),
+	meta: Joi.object(meta).required(),
+};
+
+module.exports = {
+	rewardConstantsResponseSchema: Joi.object(rewardConstantsResponseSchema).required(),
+};

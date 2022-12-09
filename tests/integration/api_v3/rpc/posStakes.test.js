@@ -22,8 +22,8 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	stakeResponseSchema,
-} = require('../../../schemas/api_v3/stake.schema');
+	stakesResponseSchema,
+} = require('../../../schemas/api_v3/stakes.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -50,7 +50,7 @@ describe('get.pos.stakes', () => {
 		const response = await getStakes({ address: refStaker.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(stakeResponseSchema);
+		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
@@ -59,7 +59,7 @@ describe('get.pos.stakes', () => {
 		const response = await getStakes({ name: refStaker.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(stakeResponseSchema);
+		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
@@ -68,7 +68,7 @@ describe('get.pos.stakes', () => {
 		const response = await getStakes({ publicKey: refStaker.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(stakeResponseSchema);
+		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});

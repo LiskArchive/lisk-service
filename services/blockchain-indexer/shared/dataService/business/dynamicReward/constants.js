@@ -13,29 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
-
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { requestConnector } = require('../../../utils/request');
 
 let rewardTokenID;
 
 const getRewardTokenID = async () => {
 	if (!rewardTokenID) {
-		try {
-			// TODO: Update endpoint once exposed by SDK
-			// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
-			const response = await invokeEndpoint('reward_getRewardTokenID');
-			rewardTokenID = response.error ? null : response;
-		} catch (err) {
-			if (err.message.includes(timeoutMessage)) {
-				throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
-			}
-			throw err;
-		}
+		const response = await requestConnector('getRewardTokenID');
+		if (response.error) throw new Error(response.error.message);
+		rewardTokenID = response;
 	}
 	return rewardTokenID;
 };
 
+const getRewardConstants = async () => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	response.data.rewardTokenID = await getRewardTokenID();
+	return response;
+};
+
 module.exports = {
 	getRewardTokenID,
+	getRewardConstants,
 };

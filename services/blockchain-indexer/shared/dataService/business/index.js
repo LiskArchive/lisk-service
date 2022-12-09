@@ -67,6 +67,12 @@ const {
 } = require('./pos');
 
 const {
+	getDefaultRewardAtHeight,
+	getInflationRate,
+	getRewardConstants,
+} = require('./dynamicReward');
+
+const {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
@@ -148,4 +154,8 @@ module.exports = {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountByName,
+
+	getInflationRate,
+	getDefaultRewardAtHeight,
+	getRewardConstants,
 };
