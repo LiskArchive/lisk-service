@@ -11,6 +11,7 @@
 			"status",
 			"isBanned",
 			"pomHeights",
+			"punishmentPeriods",
 			"consecutiveMissedBlocks",
 			"commission",
 			"lastCommissionIncreaseHeight",
@@ -62,17 +63,24 @@
 			"pomHeights": {
 				"type": "array",
 				"items": {
+					"type": "number",
+					"example": 123
+				}
+			},
+			"punishmentPeriods": {
+				"type": "array",
+				"items": {
 					"type": "object",
 					"properties": {
 						"start": {
 							"type": "integer",
 							"example": 123,
-							"description": "PoM starting height."
+							"description": "Punishment starting height. Corresponds to the entries in pomHeights."
 						},
 						"end": {
 							"type": "integer",
 							"example": 260123,
-							"description": "The corresponding PoM end height."
+							"description": "The corresponding punishment end height."
 						}
 					}
 				}
@@ -677,7 +685,7 @@
 				}
 			},
 			"meta": {
-				"$ref": "#/definitions/Pagination"
+				"$ref": "#/definitions/pagination"
 			}
 		}
 	},
