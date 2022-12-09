@@ -23,7 +23,6 @@ const { getRegisteredModules } = require('./endpoints_1');
 
 const logger = Logger();
 
-let rewardTokenID;
 let registeredRewardModule;
 
 const MODULE = {
@@ -34,28 +33,22 @@ const MODULE = {
 const cacheRegisteredRewardModule = async () => {
 	const registeredModules = await getRegisteredModules();
 	registeredRewardModule = registeredModules.find(m => Object.values(MODULE).includes(m));
-	if (!registeredRewardModule) {
-		throw new Error('Unable to determine registered reward module.');
-	}
+	if (!registeredRewardModule) throw new Error('Unable to determine registered reward module.');
 };
 
 const getRewardTokenID = async () => {
-	if (!rewardTokenID) {
-		try {
-			// TODO: Update endpoint once exposed by SDK
-			// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
-			const response = await invokeEndpoint(`${registeredRewardModule}_getRewardTokenID`);
-			rewardTokenID = response.error ? null : response;
-		} catch (err) {
-			if (err.message.includes(timeoutMessage)) {
-				throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
-			}
-			logger.warn(`Error returned when invoking '${registeredRewardModule}_getRewardTokenID'.\n${err.stack}`);
-
-			throw err;
+	try {
+		// TODO: Update endpoint once exposed by SDK
+		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
+		const rewardTokenID = await invokeEndpoint(`${registeredRewardModule}_getRewardTokenID`);
+		return rewardTokenID;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
 		}
+		logger.warn(`Error returned when invoking '${registeredRewardModule}_getRewardTokenID'.\n${err.stack}`);
+		throw err;
 	}
-	return rewardTokenID;
 };
 
 const getInflationRate = async () => {
@@ -69,7 +62,6 @@ const getInflationRate = async () => {
 			throw new TimeoutException('Request timed out when calling \'getInflationRate\'.');
 		}
 		logger.warn(`Error returned when invoking '${registeredRewardModule}_getInflationRate'.\n${err.stack}`);
-
 		throw err;
 	}
 };
@@ -85,7 +77,6 @@ const getDefaultRewardAtHeight = async height => {
 			throw new TimeoutException(`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`);
 		}
 		logger.warn(`Error returned when invoking '${registeredRewardModule}_getDefaultRewardAtHeight' with height: ${height}.\n${err.stack}`);
-
 		throw err;
 	}
 };

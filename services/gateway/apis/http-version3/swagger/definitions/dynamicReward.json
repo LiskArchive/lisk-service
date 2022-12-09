@@ -1,5 +1,5 @@
 {
-    "rewardDefaultWithEnvelope": {
+	"rewardDefaultWithEnvelope": {
 		"type": "object",
 		"required": [
 			"data",
@@ -27,7 +27,7 @@
 				}
 			},
 			"meta": {
-				"type":"object",
+				"type": "object",
 				"properties": {}
 			}
 		}
@@ -42,7 +42,7 @@
 			"data": {
 				"description": "Reward constants.",
 				"type": "object",
-				"required":[
+				"required": [
 					"rewardTokenID"
 				],
 				"properties": {
@@ -54,7 +54,36 @@
 				}
 			},
 			"meta": {
-				"type":"object",
+				"type": "object",
+				"properties": {}
+			}
+		}
+	},
+	"rewardInflationWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "Current inflation rate for the specified reward token.",
+				"type": "object",
+				"properties": {
+					"tokenID": {
+						"type": "string",
+						"example": "0000000000000000",
+						"description": "The universal identifier for the token within the Lisk ecosystem used for rewards."
+					},
+					"rate": {
+						"type": "string",
+						"example": "10.32",
+						"description": "Current inflation rate."
+					}
+				}
+			},
+			"meta": {
+				"type": "object",
 				"properties": {}
 			}
 		}

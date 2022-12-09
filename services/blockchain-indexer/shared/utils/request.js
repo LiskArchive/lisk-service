@@ -22,7 +22,7 @@ const getAppContext = () => app;
 
 const requestRpc = async (service, method, params = {}) => {
 	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
-	if (data && data.error) throw new Error(data.error.message);
+	if (data.error) throw new Error(data.error.message);
 	return data;
 };
 
