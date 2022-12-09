@@ -14,17 +14,13 @@
  *
  */
 // Command specific constants
-const COMMAND_NAME = 'reclaimLSK';
+const COMMAND_NAME = 'messageRecoveryInitialization';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	// Nothing to act on
-};
+const applyTransaction = async (blockHeader, tx, dbTrx) => { };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// Nothing to act on
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => { };
 
 module.exports = {
 	COMMAND_NAME,

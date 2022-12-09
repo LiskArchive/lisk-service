@@ -43,33 +43,42 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'sidechainCCUpdate';
 
-// eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsTable = await getTransactionsTable();
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
-
 	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
+	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		name: tx.params.name,
-		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
-		state: tx.status, // TODO: Verify and update
-		lastCertificateHeight: '',
-		lastUpdated: '',
+		state: '', // TODO: Update chain status from events
+		address: '',
+		lastUpdated: blockHeader.timestamp,
+		lastCertificateHeight: blockHeader.height,
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	await transactionsTable.upsert(tx, dbTrx);
 	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
-// eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	const blockchainAppsTable = await getBlockchainAppsTable();
+
+	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
+
+	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
+	// TODO: Remove the last value (keep oldest if 2 values exist): state, lastUpdated, lastCertHeight
+	const appInfo = {
+		chainID: tx.params.sendingChainID,
+		state: '',
+		address: '',
+		lastUpdated: blockHeader.timestamp,
+		lastCertificateHeight: blockHeader.height,
+	};
+
+	await blockchainAppsTable.upsert(appInfo, dbTrx);
+	logger.debug(`Reverted cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 module.exports = {

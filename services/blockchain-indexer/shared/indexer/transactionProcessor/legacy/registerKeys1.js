@@ -41,41 +41,54 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 // Command specific constants
-const COMMAND_NAME = 'updateGeneratorKey';
+const COMMAND_NAME = 'registerKeys';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const accountsTable = await getAccountsTable();
 	const validatorsTable = await getValidatorsTable();
 
-	const validator = {
+	const account = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		publicKey: tx.senderPublicKey,
 		isValidator: true,
+		blsKey: tx.params.blsKey,
+		proofOfPosession: tx.params.proofOfPosession,
 		generatorKey: tx.params.generatorKey,
 	};
 
-	logger.trace(`Updating account index for the account with address ${validator.address}.`);
-	await accountsTable.upsert(validator, dbTrx);
-	logger.debug(`Updated account index for the account with address ${validator.address}.`);
+	logger.trace(`Updating account index for the account with address ${account.address}`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}`);
 
-	logger.trace(`Indexing validator with address ${validator.address}.`);
-	await validatorsTable.upsert(validator, dbTrx);
-	logger.debug(`Indexed validator with address ${validator.address}.`);
+	logger.trace(`Indexing validator with address ${account.address}`);
+	await validatorsTable.upsert(account, dbTrx);
+	logger.debug(`Indexed validator with address ${account.address}`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
+	const accountsTable = await getAccountsTable();
 	const validatorsTable = await getValidatorsTable();
 
-	const validator = {
+	// Remove the validator details from the table on transaction reversal
+	const account = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		publicKey: tx.senderPublicKey,
+		isValidator: true,
+		blsKey: null,
+		proofOfPosession: null,
 		generatorKey: null,
 	};
 
-	logger.trace(`Removing generatorKey for validator with address ${validator.address}.`);
-	await validatorsTable.upsert(validator, dbTrx);
-	logger.debug(`Removed generatorKey for validator with address ${validator.address}.`);
+	logger.trace(`Updating account index for the account with address ${account.address}`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}`);
+
+	logger.trace(`Remove validator entry for address ${account.address}`);
+	const validatorPK = account[validatorsTableSchema.primaryKey];
+	await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
+	logger.debug(`Removed validator entry for address ${account.address}`);
 };
 
 module.exports = {

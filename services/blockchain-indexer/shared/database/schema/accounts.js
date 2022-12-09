@@ -18,8 +18,8 @@ module.exports = {
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },
-		publicKey: { type: 'string', null: true },
-		name: { type: 'string', null: true },
+		publicKey: { type: 'string', null: true, defaultValue: null },
+		name: { type: 'string', null: true, defaultValue: null },
 		isValidator: { type: 'boolean', null: false, defaultValue: false },
 	},
 	indexes: {},

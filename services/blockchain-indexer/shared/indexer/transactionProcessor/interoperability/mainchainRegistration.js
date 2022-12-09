@@ -17,44 +17,50 @@ const {
 	Logger,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+
+const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
+
 const config = require('../../../../config');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
-const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
+const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
+const getBlockchainAppsTable = () => getTableInstance(
+	blockchainAppsTableSchema.tableName,
+	blockchainAppsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const COMMAND_NAME = 'mainchainRegistration';
 
-// eslint-disable-next-line no-unused-vars
+// TODO: Needs work
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
-	const blockchainAppsDB = await getBlockchainAppsIndex();
+	const blockchainAppsTable = await getBlockchainAppsTable();
 
-	logger.trace(`Indexing cross chain register transaction ${tx.id} contained in block at height ${tx.height}`);
-
-	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
-
+	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
-		name: tx.params.ownName,
 		chainID: tx.params.ownChainID,
-		address: '', // TODO: Verify and update address
-		state: tx.status,
+		name: tx.params.ownName,
+		state: '', // TODO: Set init state from events
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		lastUpdated: blockHeader.timestamp,
+		lastCertificateHeight: blockHeader.height,
 	};
-	await blockchainAppsDB.upsert(appInfo, dbTrx);
 
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed cross chain register transaction ${tx.id} contained in block at height ${tx.height}`);
+	await blockchainAppsTable.upsert(appInfo, dbTrx);
+	logger.debug(`Indexed mainchain (${tx.params.chainID}) registration information.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	const blockchainAppsTable = await getBlockchainAppsTable();
+
+	logger.trace(`Reverting mainchain (${tx.params.chainID}) registration information.`);
+	await blockchainAppsTable.deleteByPrimaryKey(tx.params.chainID, dbTrx);
+	logger.debug(`Reverted mainchain (${tx.params.chainID}) registration information.`);
 };
 
 module.exports = {

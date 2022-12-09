@@ -306,6 +306,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	};
 
 	const find = async (params = {}, columns) => {
+		// TODO: Add support for IS NULL, IS NOT NULL, LIKE
 		const trx = await createDefaultTransaction(knex);
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);

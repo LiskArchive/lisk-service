@@ -22,26 +22,46 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
+const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getBlockchainAppsTable = () => getTableInstance(
+	blockchainAppsTableSchema.tableName,
+	blockchainAppsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const COMMAND_NAME = 'terminateSidechainForLiveness';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
+	const blockchainAppsTable = await getBlockchainAppsTable();
 
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
+	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
+	const { chainID } = tx.params;
+	const appInfo = {
+		chainID,
+		state: 'terminated', // TODO: Update chain status from events
+	};
+
+	logger.trace(`Updating chain ${chainID} state.`);
+	await blockchainAppsTable.upsert(appInfo, dbTrx);
+	logger.debug(`Updated chain ${chainID} state.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	const blockchainAppsTable = await getBlockchainAppsTable();
+
+	const { chainID } = tx.params;
+	const appInfo = {
+		chainID,
+		state: '', // TODO: Remove `terminated` from CSV
+	};
+
+	logger.trace(`Reverting chain ${chainID} state.`);
+	await blockchainAppsTable.upsert(appInfo, dbTrx);
+	logger.debug(`Reverted chain ${chainID} state.`);
 };
 
 module.exports = {

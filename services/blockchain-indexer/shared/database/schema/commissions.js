@@ -13,21 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// Command specific constants
-const COMMAND_NAME = 'reclaimLSK';
-
-// eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	// Nothing to act on
-};
-
-// eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// Nothing to act on
-};
-
 module.exports = {
-	COMMAND_NAME,
-	applyTransaction,
-	revertTransaction,
+	tableName: 'commissions',
+	primaryKey: ['address', 'height'],
+	schema: {
+		address: { type: 'string', null: false },
+		commission: { type: 'string', null: false },
+		height: { type: 'string', null: false },
+	},
+	indexes: {
+		address: { type: 'key' },
+		commission: { type: 'range' },
+		height: { type: 'range' },
+	},
+	purge: {},
 };

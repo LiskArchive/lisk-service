@@ -72,7 +72,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const accountsTable = await getAccountsTable();
 	const validatorsTable = await getValidatorsTable();
 
-	// Remove the validator details from the DB on transaction reversal
+	// Remove the validator details from the table on transaction reversal
 	const account = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		publicKey: tx.senderPublicKey,

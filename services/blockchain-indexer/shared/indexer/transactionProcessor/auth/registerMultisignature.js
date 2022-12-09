@@ -21,14 +21,19 @@ const config = require('../../../../config');
 
 const {
 	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
 } = require('../../../utils/accountUtils');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const multisignatureIndexSchema = require('../../../database/schema/multisignature');
+const multisignatureTableSchema = require('../../../database/schema/multisignature');
 
-const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
+const getMultisignatureTable = () => getTableInstance(
+	multisignatureTableSchema.tableName,
+	multisignatureTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const COMMAND_NAME = 'registerMultisignature';
@@ -44,6 +49,9 @@ const resolveMultisignatureMemberships = (tx) => {
 			groupAddress: tx.senderAddress,
 		};
 		multisignatureInfoToIndex.push(members);
+
+		// Asynchronously index all the publicKeys
+		updateAccountPublicKey(key);
 	});
 
 	return multisignatureInfoToIndex;
@@ -51,24 +59,23 @@ const resolveMultisignatureMemberships = (tx) => {
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const multisignatureDB = await getMultisignatureIndex();
-
-	const multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
+	const multisignatureTable = await getMultisignatureTable();
 
 	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
-	await multisignatureDB.upsert(multisignatureInfoToIndex, dbTrx);
+	const multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
+	await multisignatureTable.upsert(multisignatureInfoToIndex, dbTrx);
 	logger.debug(`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	const multisignatureDB = await getMultisignatureIndex();
+	const multisignatureTable = await getMultisignatureTable();
 
 	const multisignatureInfo = resolveMultisignatureMemberships(tx);
 	const multisignatureIdsToDelete = multisignatureInfo.map(item => item.id);
 
 	logger.trace(`Reverting multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
-	await multisignatureDB.deleteByPrimaryKey(multisignatureIdsToDelete, dbTrx);
+	await multisignatureTable.deleteByPrimaryKey(multisignatureIdsToDelete, dbTrx);
 	logger.debug(`Reverted multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 

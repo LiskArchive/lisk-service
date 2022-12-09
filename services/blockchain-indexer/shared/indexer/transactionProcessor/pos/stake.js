@@ -21,12 +21,12 @@ const {
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
+
 const config = require('../../../../config');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-
 const stakesTableSchema = require('../../../database/schema/stakes');
 
 const getStakesTable = () => getTableInstance(
@@ -55,7 +55,7 @@ const getStakeIndexingInfo = async (tx) => {
 	return stakes;
 };
 
-const upsertStakeTrx = async (stake, trx) => {
+const incrementStakeTrx = async (stake, trx) => {
 	const stakesTable = await getStakesTable();
 
 	const incrementParam = {
@@ -74,7 +74,7 @@ const upsertStakeTrx = async (stake, trx) => {
 	}
 };
 
-const removeStakeFromTable = async (stake, trx) => {
+const decrementStakeTrx = async (stake, trx) => {
 	const stakesTable = await getStakesTable();
 
 	const decrementParam = {
@@ -95,13 +95,11 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
-
 	await BluebirdPromise.map(
 		stakes,
-		async (stake) => upsertStakeTrx(stake, dbTrx),
+		async (stake) => incrementStakeTrx(stake, dbTrx),
 		{ concurrency: 1 },
 	);
-
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
@@ -110,13 +108,11 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 
 	logger.trace(`Reverting stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
-
 	await BluebirdPromise.map(
 		stakes,
-		async (stake) => removeStakeFromTable(stake, dbTrx),
+		async (stake) => decrementStakeTrx(stake, dbTrx),
 		{ concurrency: 1 },
 	);
-
 	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
