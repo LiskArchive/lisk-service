@@ -25,7 +25,7 @@ let generatorsList = [];
 const loadAllGenerators = async () => {
 	try {
 		generatorsList = await business.getGenerators();
-		logger.info(`Updated generators list with ${generatorsList.length} delegates.`);
+		logger.info(`Updated generators list with ${generatorsList.length} validators.`);
 	} catch (err) {
 		logger.warn(`Failed to load all generators due to: ${err.message}`);
 		throw err;

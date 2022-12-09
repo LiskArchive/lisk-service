@@ -21,17 +21,17 @@ const {
 const dataService = require('../../../shared/dataService');
 
 const getPosValidators = async params => {
-	const delegates = {
+	const validators = {
 		data: [],
 		meta: {},
 	};
 
 	try {
 		const response = await dataService.getPosValidators(params);
-		if (response.data) delegates.data = response.data;
-		if (response.meta) delegates.meta = response.meta;
+		if (response.data) validators.data = response.data;
+		if (response.meta) validators.meta = response.meta;
 
-		return delegates;
+		return validators;
 	} catch (err) {
 		let status;
 		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';

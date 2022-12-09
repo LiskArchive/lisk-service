@@ -191,16 +191,24 @@ const getPosValidators = async params => {
 
 	validators.data = await BluebirdPromise.map(
 		validators.data,
-		async delegate => {
+		async validator => {
 			const [validatorInfo = {}] = await validatorsTable.find(
-				{ address: delegate.address },
-				['generatedBlocks', 'rewards'],
+				{ address: validator.address },
+				['generatedBlocks', 'totalCommission', 'totalSelfStakeRewards'],
 			);
-			// TODO: Update - generatedBlocks, totalCommission & totalSelfStakeReward
+
+			const {
+				generatedBlocks = 0,
+				totalCommission = BigInt('0'),
+				totalSelfStakeRewards = BigInt('0'),
+			} = validatorInfo;
+
 			return {
-				...delegate,
-				generatedBlocks: validatorInfo.generatedBlocks || 0,
-				rewards: validatorInfo.rewards || BigInt('0'),
+				...validator,
+				generatedBlocks,
+				totalCommission,
+				totalSelfStakeRewards,
+				earnedRewards: totalCommission + totalSelfStakeRewards,
 			};
 		},
 		{ concurrency: validators.data.length },
@@ -223,6 +231,7 @@ const getPosValidators = async params => {
 	return parseToJSONCompatObj(validators);
 };
 
+// TODO: Test
 // Keep the validator cache up-to-date
 const updateValidatorListEveryBlock = () => {
 	const EVENT_NEW_BLOCK = 'newBlock';

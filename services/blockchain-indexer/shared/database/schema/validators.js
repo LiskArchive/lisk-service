@@ -22,9 +22,9 @@ module.exports = {
 		blsKey: { type: 'string', null: true },
 		proofOfPosession: { type: 'string', null: true },
 		generatorKey: { type: 'string', null: true },
-		// TODO: Commission and selfStakeRewards
-		rewards: { type: 'bigInteger', null: false, defaultValue: 0 },
 		generatedBlocks: { type: 'integer', null: false, defaultValue: 0 },
+		totalCommission: { type: 'bigInteger', null: false, defaultValue: 0 },
+		totalSelfStakeRewards: { type: 'bigInteger', null: false, defaultValue: 0 },
 	},
 	indexes: {
 		name: { type: 'key' },
