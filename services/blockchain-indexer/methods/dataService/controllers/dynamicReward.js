@@ -29,16 +29,16 @@ const getDefaultRewardAtHeight = async params => {
 };
 
 const getInflationRate = async () => {
-	const InflationReward = {
+	const inflationRate = {
 		data: {},
 		meta: {},
 	};
 
 	const response = await dataService.getInflationRate();
-	if (response.data) InflationReward.data = response.data;
-	if (response.meta) InflationReward.meta = response.meta;
+	if (response.data) inflationRate.data = response.data;
+	if (response.meta) inflationRate.meta = response.meta;
 
-	return InflationReward;
+	return inflationRate;
 };
 
 const getRewardConstants = async () => {
