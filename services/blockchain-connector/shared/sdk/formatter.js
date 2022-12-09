@@ -60,10 +60,10 @@ const EVENT_TOPICS = {
 	EVENT_NAME_ALL_TOKENS_FROM_CHAIN_SUPPORT_REMOVED: ['chainID'],
 	EVENT_NAME_TOKEN_ID_SUPPORTED: ['tokenID'],
 	EVENT_NAME_TOKEN_ID_SUPPORT_REMOVED: ['tokenID'],
-	registerDelegate: ['delegateAddress'],
+	validatorRegistered: ['delegateAddress'],
 	validatorStaked: ['senderAddress', 'delegateAddress'],
-	delegatePunished: ['delegateAddress'],
-	delegateBanned: ['delegateAddress'],
+	validatorPunished: ['delegateAddress'],
+	validatorBanned: ['delegateAddress'],
 	generatorKeyRegistration: ['defaultTopic', 'address'],
 	bLSKeyRegistration: ['defaultTopic', 'address'],
 };
