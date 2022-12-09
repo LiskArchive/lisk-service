@@ -33,6 +33,7 @@ const { getMinFeePerByte } = require('./fee');
 // TODO: Verify event names
 const EVENT_TOPICS = {
 	commandExecutionResult: ['transactionID'],
+	initializeUserAccount: ['transactionID', 'userAccountAddress'],
 	generatorFeeProcessed: ['transactionID', 'senderAddress', 'generatorAddress'],
 	rewardMinted: ['defaultTopic', 'generatorAddress'],
 	feeProcessed: ['senderAddress', 'generatorAddress'],
