@@ -197,8 +197,17 @@ const indexBlock = async job => {
 			const blockRewardEvent = events.find(e => ['reward', 'dynamicReward'].includes(e.module) && e.name === 'rewardMinted');
 			if (blockRewardEvent) {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
+
+				// TODO: Implement proper logic
+				const commission = blockReward;
+				const selfStakeReward = blockReward;
+
 				await validatorsTable.increment({
-					increment: { rewards: blockReward },
+					increment: { totalCommission: commission },
+					where: { address: block.generatorAddress },
+				}, dbTrx);
+				await validatorsTable.increment({
+					increment: { totalSelfStakeRewards: selfStakeReward },
 					where: { address: block.generatorAddress },
 				}, dbTrx);
 			}
