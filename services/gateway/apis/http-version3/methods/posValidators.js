@@ -38,6 +38,7 @@ module.exports = {
 				'commission:asc', 'commission:desc',
 				'validatorWeight:desc', 'validatorWeight:asc',
 				'rank:asc', 'rank:desc',
+				'name:asc', 'name:desc',
 			],
 			default: 'commission:asc',
 		},

@@ -188,6 +188,10 @@ const getPosValidators = async params => {
 	if (params.address) validators.data = filterBy(validators.data, 'address');
 	if (params.name) validators.data = filterBy(validators.data, 'name');
 	if (params.status) validators.data = filterBy(validators.data, 'status');
+	if (params.search) {
+		validators.data = validators.data
+			.filter(v => v.name.toLowerCase().includes(params.search.toLowerCase()));
+	}
 
 	validators.data = await BluebirdPromise.map(
 		validators.data,

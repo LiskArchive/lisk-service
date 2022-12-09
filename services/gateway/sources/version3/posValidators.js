@@ -23,6 +23,7 @@ module.exports = {
 		publicKey: '=,string',
 		name: '=,string',
 		status: '=,string',
+		search: '=,string',
 		offset: '=,number',
 		limit: '=,number',
 		sort: '=,string',
