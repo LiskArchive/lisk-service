@@ -18,21 +18,12 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
-
 const config = require('../../../../config');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsTableSchema = require('../../../database/schema/transactions');
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-
-const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema.tableName,
-	transactionsTableSchema,
-	MYSQL_ENDPOINT,
-);
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
