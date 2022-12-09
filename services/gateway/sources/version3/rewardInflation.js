@@ -19,8 +19,8 @@ module.exports = {
 	params: {},
 	definition: {
 		data: {
-			rate: '=,string',
 			tokenID: '=,string',
+			rate: '=,string',
 		},
 		meta: {},
 	},

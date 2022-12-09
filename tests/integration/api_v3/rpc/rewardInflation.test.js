@@ -23,7 +23,7 @@ const {
 
 const {
 	rewardInflationResponseSchema,
-} = require('../../../schemas/api_v3/reward.schema');
+} = require('../../../schemas/api_v3/rewardInflation.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 

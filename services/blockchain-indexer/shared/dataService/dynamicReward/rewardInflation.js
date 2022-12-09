@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getInflationRate = async () => {
-	const response = await dataService.getInflationRate();
+	const response = await business.getInflationRate();
 	return response;
 };
 

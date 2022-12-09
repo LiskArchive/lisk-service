@@ -21,7 +21,7 @@ const getInflationRate = async () => {
 		meta: {},
 	};
 
-	// TODO: Refactor implementation once given endpoint is exposed from sdk
+	// TODO: Refactor implementation once given endpoint is exposed from SDK
 	// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7799
 	rewardInflation.data = await requestConnector('getInflationRate');
 	return rewardInflation;
