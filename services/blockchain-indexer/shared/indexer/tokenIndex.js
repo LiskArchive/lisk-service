@@ -23,16 +23,16 @@ const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
 
-const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses');
+const topLSKAddressesTableSchema = require('../database/schema/topLSKAddresses');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 let liskTokenID;
 const TOKEN_ID_LSK_MAINNET = '0000000000000000';
 
-const getTopLSKAddressesIndex = () => getTableInstance(
-	topLSKAddressesIndexSchema.tableName,
-	topLSKAddressesIndexSchema,
+const getTopLSKAddressesTable = () => getTableInstance(
+	topLSKAddressesTableSchema.tableName,
+	topLSKAddressesTableSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -57,8 +57,8 @@ const getLiskBalanceByAddress = async (address) => {
 const updateLiskBalance = async (job) => {
 	const { address } = job.data;
 	const balance = await getLiskBalanceByAddress(address);
-	const topLSKAddressesDB = await getTopLSKAddressesIndex();
-	await topLSKAddressesDB.upsert({ address, balance });
+	const topLSKAddressesTable = await getTopLSKAddressesTable();
+	await topLSKAddressesTable.upsert({ address, balance });
 };
 
 const updateAddressBalanceQueue = Queue(config.endpoints.cache, 'updateAddressBalanceQueue', updateLiskBalance, 10);

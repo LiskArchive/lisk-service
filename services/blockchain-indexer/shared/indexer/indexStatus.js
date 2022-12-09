@@ -28,13 +28,17 @@ const {
 	updateFinalizedHeight,
 } = require('../constants');
 
-const blocksIndexSchema = require('../database/schema/blocks');
+const blocksTableSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
@@ -42,7 +46,7 @@ const getIndexReadyStatus = () => isIndexReady;
 
 const getIndexStats = async () => {
 	try {
-		const blocksTable = await getBlocksIndex();
+		const blocksTable = await getBlocksTable();
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
 		const numBlocksIndexed = await blocksTable.count();
