@@ -29,7 +29,7 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandName = 'mainchainRegistration';
+const COMMAND_NAME = 'mainchainRegistration';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
@@ -58,7 +58,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

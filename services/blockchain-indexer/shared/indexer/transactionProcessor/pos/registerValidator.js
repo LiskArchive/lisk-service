@@ -19,30 +19,42 @@ const {
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
+
 const config = require('../../../../config');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const accountsTableSchema = require('../../../database/schema/accounts');
+const validatorsTableSchema = require('../../../database/schema/validators');
 
-const accountsIndexSchema = require('../../../database/schema/accounts');
-const validatorsIndexSchema = require('../../../database/schema/validators');
+const getAccountsTable = () => getTableInstance(
+	accountsTableSchema.tableName,
+	accountsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
+const getValidatorsTable = () => getTableInstance(
+	validatorsTableSchema.tableName,
+	validatorsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
-const COMMAND_NAME = 'updateGeneratorKey';
+const COMMAND_NAME = 'registerValidator';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const accountsTable = await getAccountsIndex();
-	const validatorsTable = await getValidatorsIndex();
+	const accountsTable = await getAccountsTable();
+	const validatorsTable = await getValidatorsTable();
 
 	const account = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
-		isValidator: true,
 		publicKey: tx.senderPublicKey,
+		name: tx.params.name,
+		isValidator: true,
+		blsKey: tx.params.blsKey,
+		proofOfPosession: tx.params.proofOfPosession,
 		generatorKey: tx.params.generatorKey,
 	};
 
@@ -57,7 +69,28 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	const accountsTable = await getAccountsTable();
+	const validatorsTable = await getValidatorsTable();
+
+	// Remove the validator details from the DB on transaction reversal
+	const account = {
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		publicKey: tx.senderPublicKey,
+		name: null,
+		isValidator: false,
+		blsKey: null,
+		proofOfPosession: null,
+		generatorKey: null,
+	};
+
+	logger.trace(`Updating account index for the account with address ${account.address}`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}`);
+
+	logger.trace(`Remove validator entry for address ${account.address}`);
+	const validatorPK = account[validatorsTableSchema.primaryKey];
+	await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
+	logger.debug(`Removed validator entry for address ${account.address}`);
 };
 
 module.exports = {

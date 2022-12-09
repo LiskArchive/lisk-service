@@ -31,7 +31,7 @@ const multisignatureIndexSchema = require('../../../database/schema/multisignatu
 const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandName = 'registerMultisignature';
+const COMMAND_NAME = 'registerMultisignature';
 
 const resolveMultisignatureMemberships = (tx) => {
 	const multisignatureInfoToIndex = [];
@@ -55,9 +55,9 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 	const multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
 
-	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await multisignatureDB.upsert(multisignatureInfoToIndex, dbTrx);
-	logger.debug(`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug(`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -67,13 +67,13 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const multisignatureInfo = resolveMultisignatureMemberships(tx);
 	const multisignatureIdsToDelete = multisignatureInfo.map(item => item.id);
 
-	logger.trace(`Reverting multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Reverting multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await multisignatureDB.deleteByPrimaryKey(multisignatureIdsToDelete, dbTrx);
-	logger.debug(`Reverted multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug(`Reverted multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

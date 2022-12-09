@@ -34,7 +34,7 @@ const entityIndexSchema = require('../../../database/schema/transactions');
 const getEntityIndex = () => getTableInstance('entity_index_name', entityIndexSchema, MYSQL_ENDPOINT);
 
 // Declare and export the following command specific constants
-const commandName = 'commandName';
+const COMMAND_NAME = 'command';
 
 // Implement the custom logic in the 'applyTransaction' method and export it
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
@@ -64,7 +64,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

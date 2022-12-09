@@ -27,7 +27,7 @@ const transactionsIndexSchema = require('../../../database/schema/transactions')
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandName = 'stateRecovery';
+const COMMAND_NAME = 'stateRecovery';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
@@ -45,7 +45,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

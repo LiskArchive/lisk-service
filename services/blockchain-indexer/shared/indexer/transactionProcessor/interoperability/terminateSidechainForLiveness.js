@@ -15,28 +15,37 @@
  */
 const {
 	Logger,
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
-const { reloadDelegateCache } = require('../../../dataService');
+const config = require('../../../../config');
 
 const logger = Logger();
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const transactionsIndexSchema = require('../../../database/schema/transactions');
+
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+
 // Command specific constants
-const commandName = 'reportDelegateMisbehavior';
+const COMMAND_NAME = 'terminateSidechainForLiveness';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	logger.debug('Reloading delegates cache on reportDelegateMisbehavior transaction');
-	await reloadDelegateCache();
+	const transactionsDB = await getTransactionsIndex();
+
+	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
+	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
+	await transactionsDB.upsert(tx, dbTrx);
+	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	logger.debug('Reloading delegates cache on reversal of reportDelegateMisbehavior transaction');
-	await reloadDelegateCache();
+	// TODO: Implement
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

@@ -14,19 +14,20 @@
  *
  */
 // Command specific constants
-const commandName = 'unlockToken';
+const COMMAND_NAME = 'unlock';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
+	// No transaction params available to act on
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	// No transaction params available to act on
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

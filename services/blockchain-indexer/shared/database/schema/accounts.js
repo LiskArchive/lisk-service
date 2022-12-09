@@ -18,9 +18,9 @@ module.exports = {
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },
-		isValidator: { type: 'boolean', null: false, defaultValue: false },
 		publicKey: { type: 'string', null: true },
 		name: { type: 'string', null: true },
+		isValidator: { type: 'boolean', null: false, defaultValue: false },
 	},
 	indexes: {},
 	purge: {},

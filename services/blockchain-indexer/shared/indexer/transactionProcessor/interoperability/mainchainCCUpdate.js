@@ -22,21 +22,30 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
-const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
+const transactionsTableSchema = require('../../../database/schema/transactions');
+const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(
+	transactionsTableSchema.tableName,
+	transactionsTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getBlockchainAppsTable = () => getTableInstance(
+	blockchainAppsTableSchema.tableName,
+	blockchainAppsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
-const commandName = 'mainchainCCUpdate';
+const COMMAND_NAME = 'mainchainCCUpdate';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
-	const blockchainAppsDB = await getBlockchainAppsIndex();
+	const transactionsTable = await getTransactionsTable();
+	const blockchainAppsTable = await getBlockchainAppsTable();
 
-	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
 	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
 
@@ -48,10 +57,10 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		lastCertificateHeight: '',
 		lastUpdated: '',
 	};
-	await blockchainAppsDB.upsert(appInfo, dbTrx);
 
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}`);
+	await blockchainAppsTable.upsert(appInfo, dbTrx);
+	await transactionsTable.upsert(tx, dbTrx);
+	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -60,7 +69,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

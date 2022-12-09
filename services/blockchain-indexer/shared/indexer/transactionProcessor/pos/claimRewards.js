@@ -36,7 +36,7 @@ const getStakesTable = () => getTableInstance(
 );
 
 // Command specific constants
-const COMMAND_NAME = 'stake';
+const COMMAND_NAME = 'claimRewards';
 
 const getStakeIndexingInfo = async (tx) => {
 	const stakes = await BluebirdPromise.map(

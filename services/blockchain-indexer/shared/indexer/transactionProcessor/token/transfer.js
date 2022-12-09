@@ -40,7 +40,7 @@ const getTransactionsIndex = () => getTableInstance(
 );
 
 // Command specific constants
-const commandName = 'transfer';
+const COMMAND_NAME = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
@@ -69,7 +69,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

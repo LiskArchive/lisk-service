@@ -15,6 +15,6 @@
  */
 
 // Declare and export the following module specific constants
-const moduleName = 'module';
+const MODULE_NAME = 'module';
 
-export default moduleName;
+export default MODULE_NAME;
