@@ -77,7 +77,7 @@ const formatTransaction = (transaction) => {
 
 	// Calculate transaction min fee
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
 	const nonEmptySignaturesCount = transaction.signatures.filter(s => s).length;
 	const transactionMinFee = computeMinFee(
 		{ ...schemaCompliantTransaction, params: transactionParams },
@@ -134,7 +134,7 @@ const formatBlock = (block) => {
 		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
 		// TODO: Can be made schema compliant dynamically
 		const formattedAssetData = blockAssetDataSchema
-			? codec.decode(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+			? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
 			: asset.data;
 
 		const formattedBlockAsset = {
@@ -163,7 +163,7 @@ const formatEvent = (event) => {
 
 	const eventDataSchema = getDataSchemaByEventName(event.name);
 	const eventData = eventDataSchema
-		? codec.decode(eventDataSchema, Buffer.from(event.data, 'hex'))
+		? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
 		: { data: event.data };
 
 	// TODO: Remove after SDK fixes the address format
