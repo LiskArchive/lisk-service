@@ -38,18 +38,6 @@ const getTokens = async params => {
 	}
 };
 
-const getTopLiskAddresses = async params => {
-	const topLiskAddresses = {
-		data: {},
-		meta: {},
-	};
-	const response = await dataService.getTopLiskAddresses(params);
-	if (response.data) topLiskAddresses.data = response.data;
-	if (response.meta) topLiskAddresses.meta = response.meta;
-
-	return topLiskAddresses;
-};
-
 const getTokensSummary = async params => {
 	const tokensSummary = {
 		data: {},
@@ -64,6 +52,5 @@ const getTokensSummary = async params => {
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 };
