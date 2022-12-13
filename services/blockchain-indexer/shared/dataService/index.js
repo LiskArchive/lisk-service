@@ -24,6 +24,7 @@ const {
 	getAllDelegates,
 	isDposModuleRegistered,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getBlockByHeight,
@@ -60,7 +61,6 @@ const {
 } = require('./dpos');
 
 const {
-	reloadGeneratorsCache,
 	getGenerators,
 } = require('./generators');
 

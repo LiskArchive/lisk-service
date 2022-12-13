@@ -26,7 +26,6 @@ const { getDPoSConstants } = require('./constants');
 const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
-const { getAllGenerators } = require('../generators');
 const { getLisk32AddressFromPublicKey, getLisk32Address, getHexAddress } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -77,7 +76,7 @@ const computeDelegateStatus = async () => {
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const generatorsList = await getAllGenerators();
+	const generatorsList = await dataService.getGenerators();
 
 	const generatorInfo = (delegateList
 		.filter(o1 => generatorsList.some(o2 => o1.address === o2.address)))
@@ -335,4 +334,5 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
+	getAllDelegates,
 };
