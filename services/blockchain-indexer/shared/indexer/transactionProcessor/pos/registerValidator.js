@@ -58,13 +58,13 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		generatorKey: tx.params.generatorKey,
 	};
 
-	logger.trace(`Updating account index for the account with address ${account.address}`);
+	logger.trace(`Updating account index for the account with address ${account.address}.`);
 	await accountsTable.upsert(account, dbTrx);
-	logger.debug(`Updated account index for the account with address ${account.address}`);
+	logger.debug(`Updated account index for the account with address ${account.address}.`);
 
-	logger.trace(`Indexing validator with address ${account.address}`);
+	logger.trace(`Indexing validator with address ${account.address}.`);
 	await validatorsTable.upsert(account, dbTrx);
-	logger.debug(`Indexed validator with address ${account.address}`);
+	logger.debug(`Indexed validator with address ${account.address}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -83,14 +83,14 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 		generatorKey: null,
 	};
 
-	logger.trace(`Updating account index for the account with address ${account.address}`);
+	logger.trace(`Updating account index for the account with address ${account.address}.`);
 	await accountsTable.upsert(account, dbTrx);
-	logger.debug(`Updated account index for the account with address ${account.address}`);
+	logger.debug(`Updated account index for the account with address ${account.address}.`);
 
-	logger.trace(`Remove validator entry for address ${account.address}`);
+	logger.trace(`Remove validator entry for address ${account.address}.`);
 	const validatorPK = account[validatorsTableSchema.primaryKey];
 	await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
-	logger.debug(`Removed validator entry for address ${account.address}`);
+	logger.debug(`Removed validator entry for address ${account.address}.`);
 };
 
 module.exports = {

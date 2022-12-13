@@ -2,43 +2,64 @@
 	"events": {
 		"type": "object",
 		"required": [
-			"moduleID",
-			"moduleName",
+			"id",
+			"module",
+			"name",
+			"data",
 			"topics",
-			"data"
+			"index",
+			"block"
 		],
 		"properties": {
-			"moduleID": {
+			"id": {
 				"type": "string",
-				"example": "2",
-				"description": "module ID of the transaction.\n"
+				"example": "382b22c19980774b3c53504fd2e82995cec1354534051d50e48dd537db964a73",
+				"description": "Event ID."
 			},
-			"moduleName": {
+			"module": {
 				"type": "string",
-				"example": "token",
-				"description": "module name of the transaction.\n"
+				"example": "dynamicReward",
+				"description": "The registered module that emitted this particular event."
+			},
+			"name": {
+				"type": "string",
+				"example": "rewardMinted",
+				"description": "Name of the reward. It can used to identify the type of the event."
 			},
 			"data": {
 				"type": "object",
+				"description": "The data contained within the emitted event. This varies based on the `module` and `name` properties.",
 				"properties": {
 					"amount": {
 						"type": "string",
-						"example": "15000000"
+						"example": "100000000"
 					},
-					"recipientAddress": {
-						"type": "string",
-						"format": "address",
-						"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-						"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-					},
-					"data": {
-						"type": "string",
-						"example": "test"
-					}
+					"reduction": 0
 				}
+			},
+			"topics": {
+				"type": "array",
+				"description": "The list of topic that the data is related to within the emitted event. The number and order of the topics vary based on the `module` and `name` properties.",
+				"items": {
+					"type": "string"
+				},
+				"example": [
+					"03",
+					"lsksod8bj35gmndy94yehxm25nybg5os6ycysejsm"
+				]
+			},
+			"index": {
+				"type": "number",
+				"description": "Index of this particular event within the list of events in the block.",
+				"example": 0
 			},
 			"block": {
 				"type": "object",
+				"required": [
+					"id",
+					"height",
+					"timestamp"
+				],
 				"properties": {
 					"id": {
 						"type": "string",
@@ -46,26 +67,19 @@
 						"minLength": 1,
 						"maxLength": 64,
 						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-						"description": "Unique identifier of the block.\nDerived from the block signature.\n"
+						"description": "Unique identifier of the block.\nDerived from the block signature."
 					},
 					"height": {
 						"type": "integer",
 						"minimum": 1,
 						"example": 8350681,
-						"description": "The height of the block in which the transaction was included.\n"
+						"description": "The height of the block in which the transaction was included."
 					},
 					"timestamp": {
 						"type": "integer",
 						"example": 1613323667,
-						"description": "UNIX Timestamp"
+						"description": "UNIX Timestamp indicating the time of block generation."
 					}
-				}
-			},
-			"topics": {
-				"type": "array",
-				"items": {
-					"type": "string",
-					"example": "478842a844914f18a1c620a6494bf9931d0a862e96212bf5fc6f3ca18658febe"
 				}
 			}
 		}
@@ -78,7 +92,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "List of events",
+				"description": "List of events.",
 				"type": "array",
 				"items": {
 					"$ref": "#/definitions/events"

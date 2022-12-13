@@ -135,7 +135,7 @@ const indexBlock = async job => {
 	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
-	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}`);
+	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
 	let blockReward = BigInt('0');
 

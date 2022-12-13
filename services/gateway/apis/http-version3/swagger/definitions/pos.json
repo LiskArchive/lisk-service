@@ -182,19 +182,24 @@
 				"type": "string",
 				"format": "publicKey",
 				"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-				"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
+				"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
 			},
 			"name": {
 				"type": "string",
 				"example": "genesis_84",
-				"description": "Name of auth account"
+				"description": "Name of auth account."
 			},
 			"unlocking": {
 				"type": "array",
+				"required": [
+					"validatorAddress",
+					"amount",
+					"unvoteHeight"
+				],
 				"items": {
 					"type": "object",
 					"properties": {
-						"delegateAddress": {
+						"validatorAddress": {
 							"type": "string",
 							"example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu"
 						},
@@ -204,6 +209,10 @@
 						},
 						"unvoteHeight": {
 							"type": "object",
+							"required": [
+								"start",
+								"end"
+							],
 							"properties": {
 								"start": {
 									"type": "integer",
@@ -228,7 +237,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "Array of delegate unlocks",
+				"description": "List of validator unlocks.",
 				"type": "array",
 				"items": {
 					"$ref": "#/definitions/unlock"
