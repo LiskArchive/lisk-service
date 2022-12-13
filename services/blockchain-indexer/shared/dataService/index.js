@@ -75,7 +75,6 @@ const {
 
 const {
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 } = require('./token');
 
@@ -138,7 +137,6 @@ module.exports = {
 	getAccounts,
 	getLegacyAccountInfo,
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 	getBlocks,
 	getBlocksAssets,

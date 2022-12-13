@@ -23,7 +23,6 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { updateAddressBalanceQueue } = require('../../tokenIndex');
 const accountsIndexSchema = require('../../../database/schema/accounts');
 const transactionsIndexSchema = require('../../../database/schema/transactions');
 
@@ -51,8 +50,6 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	tx.data = tx.params.data;
 	tx.recipientAddress = tx.params.recipientAddress;
 
-	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
-
 	const account = { address: tx.recipientAddress };
 	logger.trace(`Updating account index for the account with address ${account.address}`);
 	await accountsDB.upsert(account, dbTrx);
@@ -64,9 +61,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => {};
 
 module.exports = {
 	commandName,

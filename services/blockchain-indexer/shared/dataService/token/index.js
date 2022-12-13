@@ -15,12 +15,10 @@
  */
 const {
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 } = require('./token');
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 };
