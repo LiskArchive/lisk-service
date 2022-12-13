@@ -77,7 +77,7 @@ const formatTransaction = (transaction) => {
 
 	// Calculate transaction min fee
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
 	const nonEmptySignaturesCount = transaction.signatures.filter(s => s).length;
 	const transactionMinFee = computeMinFee(
 		{ ...schemaCompliantTransaction, params: transactionParams },
