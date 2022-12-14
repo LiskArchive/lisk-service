@@ -34,7 +34,11 @@ const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.tableName,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
@@ -110,7 +114,7 @@ const indexSchemas = {
 const initializeSearchIndex = async () => {
 	await BluebirdPromise.map(
 		Object.keys(indexSchemas),
-		key => getTableInstance(key, indexSchemas[key]),
+		key => getTableInstance(indexSchemas[key].tableName, indexSchemas[key]),
 		{ concurrency: 1 },
 	);
 	Signals.get('searchIndexInitialized').dispatch();

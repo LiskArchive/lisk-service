@@ -24,7 +24,11 @@ const newsfeedIndexSchema = require('./schema/newsfeed');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema, MYSQL_ENDPOINT);
+const getNewsFeedIndex = () => getTableInstance(
+	newsfeedIndexSchema.tableName,
+	newsfeedIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getNewsfeedArticles = async params => {
 	const { offset } = params;

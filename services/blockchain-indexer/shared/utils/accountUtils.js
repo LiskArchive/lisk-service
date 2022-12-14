@@ -32,7 +32,11 @@ const {
 const accountsIndexSchema = require('../database/schema/accounts');
 const config = require('../../config');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
+const getAccountsIndex = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	config.endpoints.mysql,
+);
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
