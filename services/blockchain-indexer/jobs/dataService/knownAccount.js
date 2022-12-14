@@ -28,7 +28,7 @@ module.exports = [
 			logger.debug('Initializing the known accounts cache...');
 			try {
 				await reloadKnowledge();
-				logger.info('Successfully initialized the known accounts cache');
+				logger.info('Successfully initialized the known accounts cache.');
 			} catch (err) {
 				logger.warn(`Initializing the known accounts cache failed due to: ${err.message}`);
 			}

@@ -21,7 +21,7 @@ const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const NAME = /^[\w!@$&.]{3,20}$/;
 const NAME_CSV = /^[\w!@$&.,]{3,}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
-const DPOS_DELEGATE_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
+const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,)+\b$/;
@@ -46,7 +46,7 @@ module.exports = {
 	NAME,
 	NAME_CSV,
 	TRANSACTION_EXECUTION_STATUS,
-	DPOS_DELEGATE_STATUS,
+	POS_VALIDATOR_STATUS,
 	NEWSFEED_SOURCE,
 	HASH_SHA256,
 	TIMESTAMP_RANGE,

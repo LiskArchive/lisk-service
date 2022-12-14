@@ -29,7 +29,7 @@ const getAccounts = async params => {
 	const { status, ...remainingParams } = params;
 	let response;
 	if (status) {
-		// Include delegate info in all accounts requests unless explicitly stated
+		// Include validator info in all accounts requests unless explicitly stated
 		response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
 	} else {
 		response = await dataService.getAccounts(remainingParams);
@@ -57,8 +57,8 @@ const getAccounts = async params => {
 				return delegateAccount;
 			}
 			const {
-				delegate, approval, missedBlocks, producedBlocks, productivity,
-				rank, rewards, username, vote, isBanned, status: _status, pomHeights,
+				delegate, approval, missedBlocks, generatedBlocks, productivity,
+				rank, rewards, username, vote, isBanned, status: _status, pomHeights, punishmentPeriods,
 				lastForgedHeight, consecutiveMissedBlocks,
 				...nonDelegateAccount
 			} = account;

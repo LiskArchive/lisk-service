@@ -14,7 +14,7 @@
  *
  */
 const {
-	getDelegates,
+	getPosValidators,
 	getPosConstants,
 	getPosUnlocks,
 	getPosLockedRewards,
@@ -27,14 +27,17 @@ const regex = require('../../shared/utils/regex');
 
 module.exports = [
 	{
-		name: 'dpos.delegates',
-		controller: getDelegates,
+		name: 'pos.validators',
+		controller: getPosValidators,
 		params: {
-			address: { optional: true, type: 'any' },
-			name: { optional: true, type: 'any' },
-			status: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
+			address: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			status: { optional: true, type: 'string' },
+			search: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+			sort: { optional: true, type: 'string' },
 		},
 	},
 	{

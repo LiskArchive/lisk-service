@@ -13,30 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-} = require('lisk-service-framework');
-const { reloadDelegateCache } = require('../../../dataService');
-
-const logger = Logger();
-
 // Command specific constants
-const commandName = 'reportDelegateMisbehavior';
+const COMMAND_NAME = 'messageRecoveryInitialization';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	logger.debug('Reloading delegates cache on reportDelegateMisbehavior transaction');
-	await reloadDelegateCache();
-};
+const applyTransaction = async (blockHeader, tx, dbTrx) => { };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	logger.debug('Reloading delegates cache on reversal of reportDelegateMisbehavior transaction');
-	await reloadDelegateCache();
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => { };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

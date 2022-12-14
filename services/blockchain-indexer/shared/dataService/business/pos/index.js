@@ -13,22 +13,49 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { MODULE } = require('../../../constants');
+const { requestConnector } = require('../../../utils/request');
+
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
-const { getPosClaimableRewards } = require('./claimableRewards');
 const { getPosUnlocks } = require('./unlocks');
-const { getPosLockedRewards } = require('./lockedRewards');
 const { getPosConstants } = require('./constants');
+const { getPosLockedRewards } = require('./lockedRewards');
+const { getPosClaimableRewards } = require('./claimableRewards');
+const { getPosValidators, getAllPosValidators, getPosValidatorsByStake } = require('./validators');
+
+let isPosRegistered;
+const isPosModuleRegistered = async () => {
+	if (isPosRegistered === undefined) {
+		const response = await requestConnector('getSystemMetadata');
+		isPosRegistered = response.modules.some(module => module.name === MODULE.POS);
+	}
+	return isPosRegistered;
+};
 
 module.exports = {
+	isPosModuleRegistered,
+
+	// Stakes
 	getStakes,
 
+	// Stakers
 	getStakers,
 
+	// Unlocks
 	getPosUnlocks,
 
-	getPosClaimableRewards,
+	// Constants
+	getPosConstants,
+
+	// Locked rewards
 	getPosLockedRewards,
 
-	getPosConstants,
+	// Claimable rewards
+	getPosClaimableRewards,
+
+	// Validators
+	getPosValidators,
+	getAllPosValidators,
+	getPosValidatorsByStake,
 };

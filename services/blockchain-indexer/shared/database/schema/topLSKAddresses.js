@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	// TODO: Remove with issue #1253
 	tableName: 'topLSKAddresses',
 	primaryKey: 'address',
 	schema: {

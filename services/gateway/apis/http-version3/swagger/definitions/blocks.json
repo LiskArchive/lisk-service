@@ -1,211 +1,211 @@
 {
-    "Block": {
-        "type": "object",
-        "required": [
-            "id",
-            "version",
-            "height",
-            "timestamp",
-            "generatorAddress",
-            "transactionRoot",
-            "assetsRoot",
-            "stateRoot",
-            "maxHeightPrevoted",
-            "maxHeightGenerated",
-            "validatorsHash",
-            "aggregateCommit",
-            "signature",
-            "isFinal"
-        ],
-        "properties": {
-            "id": {
-                "type": "string",
-                "format": "id",
-                "minLength": 1,
-                "maxLength": 64,
-                "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                "description": "Unique identifier of the block.\nDerived from the block signature."
-            },
-            "version": {
-                "type": "integer",
-                "example": 0,
-                "minimum": 0,
-                "description": "Lisk protocol version to which this block adheres to."
-            },
-            "height": {
-                "type": "integer",
-                "example": 8344448,
-                "minimum": 1,
-                "description": "Height of the network, when the block got forged.\nThe height of the networks represents the number of blocks, that have been forged on the network since Genesis Block."
-            },
-            "timestamp": {
-                "type": "integer",
-                "example": 85944650,
-                "description": "UNIX Timestamp"
-            },
-            "previousBlockId": {
-                "type": "string",
-                "format": "id",
-                "example": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
-                "description": "ID of the parent block."
-            },
-            "generatorAddress": {
-                "type": "string",
-                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Address of the block generator."
-            },
-            "transactionRoot": {
-                "type": "string",
-                "format": "hex",
-                "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                "description": "Merkle root of the block payload.\nThe block payload comprises the transactions contained within the block."
-            },
-            "assetsRoot": {
-                "type": "string",
-                "example": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
-                "description": "Merkle root of the block assets array."
-            },
-            "stateRoot": {
-                "type": "string",
-                "example": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
-                "description": "The root of the sparse Merkle tree that is computed from the state of the blockchain."
-            },
-            "maxHeightGenerated": {
-                "type": "integer",
-                "example": 559421
-            },
-            "maxHeightPrevoted": {
-                "type": "integer",
-                "example": 559434
-            },
-            "validatorsHash": {
-                "type": "string",
-                "example": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
-                "description": "Hash to authenticates the active set of validators"
-            },
-            "aggregateCommit": {
-                "type": "object",
-                "properties": {
-                    "height": {
-                        "type": "string",
-                        "example": "166"
-                    },
-                    "aggregationBits": {
-                        "type": "string",
-                        "example": "ffffffffffffffffffffffff1f"
-                    },
-                    "certificateSignature": {
-                        "type": "string",
-                        "example": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
-                    }
-                }
-            },
-            "totalBurnt": {
-                "type": "string",
-                "example": "0",
-                "description": "The total amount of Lisk (in Beddows) that was burnt in this block. It is the sum total of minimum fees for each transaction contained within the block."
-            },
-            "networkFee": {
-                "type": "string",
-                "example": "15000000",
-                "description": "TThe total amount of Lisk (in Beddows) that the block generator makes from the transaction fees after burning the minimum fees."
-            },
-            "totalForged": {
-                "type": "string",
-                "example": "65000000",
-                "description": "Total amount of Lisk (in Beddows) that has been forged in this block. It is a sum of all the transaction fees and the block reward."
-            },
-            "reward": {
-                "type": "string",
-                "example": "50000000",
-                "description": "The amount of Lisk (in Beddows) that was rewarded to the block generator."
-            },
-            "signature": {
-                "type": "string",
-                "format": "signature",
-                "example": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
-                "description": "Derived from a SHA-256 hash of the block header,\nthat is signed by the private key of the delegate who forged the block."
-            },
-            "isFinal": {
-                "type": "boolean",
-                "example": "true"
-            }
-        }
-    },
-    "BlocksWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "List of blocks",
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/Block"
-                }
-            },
-            "meta": {
-                "$ref": "#/definitions/Pagination"
-            }
-        }
-    },
-    "BlockAsset": {
-        "type": "object",
-        "required": [
-            "block",
-            "moduleID",
-            "data"
-        ],
-        "properties": {
-            "block": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b"
-                    },
-                    "height": {
-                        "type": "string",
-                        "example": "166"
-                    },
-                    "timestamp": {
-                        "type": "integer",
-                        "example": 85944650
-                    }
-                }
-            },
-            "moduleID": {
-                "type": "string",
-                "format": "id",
-                "minLength": 1,
-                "maxLength": 4294967295,
-                "example": "2",
-                "description": "Module ID"
-            },
-            "data": {
-                "type": "object"
-            }
-        }
-    },
-    "BlocksAssetsWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "List of block assets",
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/BlockAsset"
-                }
-            },
-            "meta": {
-                "$ref": "#/definitions/Pagination"
-            }
-        }
-    }
+	"Block": {
+		"type": "object",
+		"required": [
+			"id",
+			"version",
+			"height",
+			"timestamp",
+			"generatorAddress",
+			"transactionRoot",
+			"assetsRoot",
+			"stateRoot",
+			"maxHeightPrevoted",
+			"maxHeightGenerated",
+			"validatorsHash",
+			"aggregateCommit",
+			"signature",
+			"isFinal"
+		],
+		"properties": {
+			"id": {
+				"type": "string",
+				"format": "id",
+				"minLength": 1,
+				"maxLength": 64,
+				"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+				"description": "Unique identifier of the block.\nDerived from the block signature."
+			},
+			"version": {
+				"type": "integer",
+				"example": 0,
+				"minimum": 0,
+				"description": "Lisk protocol version to which this block adheres to."
+			},
+			"height": {
+				"type": "integer",
+				"example": 8344448,
+				"minimum": 1,
+				"description": "Height of the network, when the block got forged.\nThe height of the networks represents the number of blocks, that have been forged on the network since Genesis Block."
+			},
+			"timestamp": {
+				"type": "integer",
+				"example": 85944650,
+				"description": "UNIX Timestamp"
+			},
+			"previousBlockId": {
+				"type": "string",
+				"format": "id",
+				"example": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
+				"description": "ID of the parent block."
+			},
+			"generatorAddress": {
+				"type": "string",
+				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				"description": "Address of the block generator."
+			},
+			"transactionRoot": {
+				"type": "string",
+				"format": "hex",
+				"example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+				"description": "Merkle root of the block payload.\nThe block payload comprises the transactions contained within the block."
+			},
+			"assetsRoot": {
+				"type": "string",
+				"example": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+				"description": "Merkle root of the block assets array."
+			},
+			"stateRoot": {
+				"type": "string",
+				"example": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
+				"description": "The root of the sparse Merkle tree that is computed from the state of the blockchain."
+			},
+			"maxHeightGenerated": {
+				"type": "integer",
+				"example": 559421
+			},
+			"maxHeightPrevoted": {
+				"type": "integer",
+				"example": 559434
+			},
+			"validatorsHash": {
+				"type": "string",
+				"example": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
+				"description": "Hash to authenticates the active set of validators."
+			},
+			"aggregateCommit": {
+				"type": "object",
+				"properties": {
+					"height": {
+						"type": "string",
+						"example": "166"
+					},
+					"aggregationBits": {
+						"type": "string",
+						"example": "ffffffffffffffffffffffff1f"
+					},
+					"certificateSignature": {
+						"type": "string",
+						"example": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
+					}
+				}
+			},
+			"totalBurnt": {
+				"type": "string",
+				"example": "0",
+				"description": "The total amount of Lisk (in Beddows) that was burnt in this block. It is the sum total of minimum fees for each transaction contained within the block."
+			},
+			"networkFee": {
+				"type": "string",
+				"example": "15000000",
+				"description": "TThe total amount of Lisk (in Beddows) that the block generator makes from the transaction fees after burning the minimum fees."
+			},
+			"totalForged": {
+				"type": "string",
+				"example": "65000000",
+				"description": "Total amount of Lisk (in Beddows) that has been forged in this block. It is a sum of all the transaction fees and the block reward."
+			},
+			"reward": {
+				"type": "string",
+				"example": "50000000",
+				"description": "The amount of Lisk (in Beddows) that was rewarded to the block generator."
+			},
+			"signature": {
+				"type": "string",
+				"format": "signature",
+				"example": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
+				"description": "Derived from a SHA-256 hash of the block header,\nthat is signed by the private key of the delegate who forged the block."
+			},
+			"isFinal": {
+				"type": "boolean",
+				"example": "true"
+			}
+		}
+	},
+	"BlocksWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "List of blocks.",
+				"type": "array",
+				"items": {
+					"$ref": "#/definitions/Block"
+				}
+			},
+			"meta": {
+				"$ref": "#/definitions/pagination"
+			}
+		}
+	},
+	"BlockAsset": {
+		"type": "object",
+		"required": [
+			"block",
+			"moduleID",
+			"data"
+		],
+		"properties": {
+			"block": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b"
+					},
+					"height": {
+						"type": "string",
+						"example": "166"
+					},
+					"timestamp": {
+						"type": "integer",
+						"example": 85944650
+					}
+				}
+			},
+			"moduleID": {
+				"type": "string",
+				"format": "id",
+				"minLength": 1,
+				"maxLength": 4294967295,
+				"example": "2",
+				"description": "Module ID"
+			},
+			"data": {
+				"type": "object"
+			}
+		}
+	},
+	"BlocksAssetsWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "List of block assets.",
+				"type": "array",
+				"items": {
+					"$ref": "#/definitions/BlockAsset"
+				}
+			},
+			"meta": {
+				"$ref": "#/definitions/pagination"
+			}
+		}
+	}
 }

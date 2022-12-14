@@ -13,21 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// Command specific constants
+const COMMAND_NAME = 'unlock';
+
+// eslint-disable-next-line no-unused-vars
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
+	// No transaction params available to act on
+};
+
+// eslint-disable-next-line no-unused-vars
+const revertTransaction = async (blockHeader, tx, dbTrx) => {
+	// No transaction params available to act on
+};
+
 module.exports = {
-	name: '=,string',
-	totalVotesReceived: '=,string',
-	selfVotes: '=,string',
-	voteWeight: '=,string',
-	address: '=,string',
-	lastGeneratedHeight: '=,number',
-	status: '=,string',
-	isBanned: '=,boolean',
-	pomHeights: ['pomHeights', {
-		start: '=,number',
-		end: '=,number',
-	}],
-	rank: '=,number',
-	consecutiveMissedBlocks: '=,number',
-	forgedBlocks: '=,number',
-	rewards: '=,string',
+	COMMAND_NAME,
+	applyTransaction,
+	revertTransaction,
 };

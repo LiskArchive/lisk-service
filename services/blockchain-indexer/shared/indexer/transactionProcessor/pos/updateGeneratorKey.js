@@ -19,49 +19,67 @@ const {
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
+
 const config = require('../../../../config');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const accountsTableSchema = require('../../../database/schema/accounts');
+const validatorsTableSchema = require('../../../database/schema/validators');
 
-const accountsIndexSchema = require('../../../database/schema/accounts');
-const validatorsIndexSchema = require('../../../database/schema/validators');
+const getAccountsTable = () => getTableInstance(
+	accountsTableSchema.tableName,
+	accountsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
+const getValidatorsTable = () => getTableInstance(
+	validatorsTableSchema.tableName,
+	validatorsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
-const commandName = 'updateGeneratorKey';
+const COMMAND_NAME = 'updateGeneratorKey';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const accountsDB = await getAccountsIndex();
-	const validatorsDB = await getValidatorsIndex();
+	const accountsTable = await getAccountsTable();
+	const validatorsTable = await getValidatorsTable();
 
-	const account = {
+	const validator = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
-		isValidator: true,
 		publicKey: tx.senderPublicKey,
+		isValidator: true,
 		generatorKey: tx.params.generatorKey,
 	};
 
-	logger.trace(`Updating account index for the account with address ${account.address}`);
-	await accountsDB.upsert(account, dbTrx);
-	logger.debug(`Updated account index for the account with address ${account.address}`);
+	logger.trace(`Updating account index for the account with address ${validator.address}.`);
+	await accountsTable.upsert(validator, dbTrx);
+	logger.debug(`Updated account index for the account with address ${validator.address}.`);
 
-	logger.trace(`Indexing validator with address ${account.address}`);
-	await validatorsDB.upsert(account, dbTrx);
-	logger.debug(`Indexed validator with address ${account.address}`);
+	logger.trace(`Indexing validator with address ${validator.address}.`);
+	await validatorsTable.upsert(validator, dbTrx);
+	logger.debug(`Indexed validator with address ${validator.address}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	const validatorsTable = await getValidatorsTable();
+
+	const validator = {
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		generatorKey: null,
+	};
+
+	logger.trace(`Removing generatorKey for validator with address ${validator.address}.`);
+	await validatorsTable.upsert(validator, dbTrx);
+	logger.debug(`Removed generatorKey for validator with address ${validator.address}.`);
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

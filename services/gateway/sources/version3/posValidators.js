@@ -13,25 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegate = require('./mappings/dposDelegate');
+const validator = require('./mappings/posValidator');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.dpos.delegates',
+	method: 'indexer.pos.validators',
 	params: {
 		address: '=,string',
+		publicKey: '=,string',
 		name: '=,string',
 		status: '=,string',
+		search: '=,string',
 		offset: '=,number',
 		limit: '=,number',
+		sort: '=,string',
 	},
 	definition: {
-		data: ['data', delegate],
+		data: ['data', validator],
 		meta: {
 			count: '=,number',
 			offset: '=,number',
 			total: '=,number',
 		},
-		links: {},
 	},
 };

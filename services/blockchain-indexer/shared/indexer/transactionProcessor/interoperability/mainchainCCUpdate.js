@@ -13,20 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { applyTransaction, revertTransaction } = require('./sidechainCCUpdate');
+
 // Command specific constants
-const commandName = 'unlockToken';
-
-// eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-};
-
-// eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
-};
+const COMMAND_NAME = 'mainchainCCUpdate';
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

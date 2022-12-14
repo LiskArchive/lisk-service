@@ -17,7 +17,7 @@
         "tags": [
             {
                 "name": "Transaction Export",
-                "description": "Lisk Network transaction history export API"
+                "description": "Lisk Network transaction history export API."
             }
         ],
         "schemes": [

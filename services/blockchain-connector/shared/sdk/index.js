@@ -14,22 +14,6 @@
  *
  */
 const {
-	getLastBlock,
-	getBlockByID,
-	getBlocksByIDs,
-	getBlockByHeight,
-	getBlocksByHeightBetween,
-} = require('./blocks');
-
-const {
-	getTransactionByID,
-	getTransactionsByIDs,
-	getTransactionsFromPool,
-	postTransaction,
-	dryRunTransaction,
-} = require('./transactions');
-
-const {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
@@ -50,6 +34,22 @@ const {
 } = require('./endpoints');
 
 const {
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+} = require('./blocks');
+
+const {
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+} = require('./transactions');
+
+const {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
@@ -65,13 +65,14 @@ const {
 } = require('./tokens');
 
 const {
-	getDelegate,
-	getAllDelegates,
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
 	getPosConstants,
-	getStaker,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
 	getPosLockedRewards,
+	getStaker,
 } = require('./pos');
 
 const {
@@ -111,34 +112,16 @@ const init = async () => {
 module.exports = {
 	init,
 
-	getLastBlock,
-	getBlockByID,
-	getBlocksByIDs,
-	getBlockByHeight,
-	getBlocksByHeightBetween,
-
-	getEventsByHeight,
-
-	getTransactionByID,
-	getTransactionsByIDs,
-	getTransactionsFromPool,
-	postTransaction,
-	dryRunTransaction,
-
-	getFeeTokenID,
-	getMinFeePerByte,
-
+	// Genesis block
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
 
+	// Endpoints
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-
-	getNetworkStatus,
-
 	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
@@ -147,34 +130,71 @@ module.exports = {
 	getNodeInfo,
 	getSystemMetadata,
 
+	// Blocks
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+
+	// Transactions
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+
+	// Peers
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getPeersStatistics,
 
+	// Tokens
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
 
-	getDelegate,
-	getAllDelegates,
-	getPosClaimableRewards,
+	// PoS
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
 	getPosConstants,
-
-	getStaker,
 	getPosPendingUnlocks,
+	getPosClaimableRewards,
 	getPosLockedRewards,
+	getStaker,
 
+	// Reward
 	getRewardTokenID,
 	getInflationRate,
 	getDefaultRewardAtHeight,
 
+	// Fee
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
+
+	// Auth
 	getAuthAccount,
 
+	// Legacy
+	getLegacyAccount,
+
+	// Events
+	getEventsByHeight,
+
+	// Schema
+	setSchemas,
+	setMetadata,
+
+	// Validators
 	getValidator,
 	validateBLSKey,
 
-	getLegacyAccount,
+	// Network
+	refreshNetworkStatus,
+	getNetworkStatus,
 };

@@ -15,8 +15,8 @@
  */
 
 // Module specific constants
-const moduleName = 'legacy';
+const MODULE_NAME = 'legacy';
 
 module.exports = {
-	moduleName,
+	MODULE_NAME,
 };

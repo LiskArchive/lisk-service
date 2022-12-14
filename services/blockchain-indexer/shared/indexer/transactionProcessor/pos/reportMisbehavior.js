@@ -15,37 +15,28 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
-const config = require('../../../../config');
+const { reloadValidatorCache } = require('../../../dataService');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
-
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-
 // Command specific constants
-const commandName = 'stateRecoveryInitialization';
+const COMMAND_NAME = 'reportMisbehavior';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
-
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug('Reloading validators cache on reportMisbehavior transaction.');
+	await reloadValidatorCache();
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	logger.debug('Reloading validators cache on reversal of reportMisbehavior transaction.');
+	await reloadValidatorCache();
 };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

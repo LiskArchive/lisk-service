@@ -15,8 +15,8 @@
  */
 
 // Module specific constants
-const moduleName = 'interoperability';
+const MODULE_NAME = 'interoperability';
 
 module.exports = {
-	moduleName,
+	MODULE_NAME,
 };

@@ -16,35 +16,35 @@
 const logger = require('lisk-service-framework').Logger();
 
 const {
-	reloadDelegateCache,
-	// isDposModuleRegistered,
+	reloadValidatorCache,
+	isPosModuleRegistered,
 } = require('../../shared/dataService');
 
 module.exports = [
 	{
-		name: 'reload.delegates',
-		description: 'Keep the delegate list up-to-date',
+		name: 'reload.validators',
+		description: 'Keep the validators list up-to-date',
 		schedule: '*/5 * * * *', // Every 5 min
 		init: async () => {
-			// if (await isDposModuleRegistered()) {
-			logger.debug('Initializing delegate cache...');
-			try {
-				await reloadDelegateCache();
-				logger.info('Successfully initialized delegate cache');
-			} catch (err) {
-				logger.warn(`Initializing delegate cache failed due to: ${err.message}`);
+			if (await isPosModuleRegistered()) {
+				logger.debug('Initializing validators cache...');
+				try {
+					await reloadValidatorCache();
+					logger.info('Successfully initialized validators cache.');
+				} catch (err) {
+					logger.warn(`Initializing validators cache failed due to: ${err.stack}`);
+				}
 			}
-			// }
 		},
 		controller: async () => {
-			// if (await isDposModuleRegistered()) {
-			logger.debug('Reloading delegate cache...');
-			try {
-				await reloadDelegateCache();
-			} catch (err) {
-				logger.warn(`Reloading delegate cache failed due to: ${err.message}`);
+			if (await isPosModuleRegistered()) {
+				logger.debug('Reloading validators cache...');
+				try {
+					await reloadValidatorCache();
+				} catch (err) {
+					logger.warn(`Reloading validators cache failed due to: ${err.message}`);
+				}
 			}
-			// }
 		},
 	},
 ];

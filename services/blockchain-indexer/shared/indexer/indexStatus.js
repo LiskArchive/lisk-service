@@ -28,13 +28,17 @@ const {
 	updateFinalizedHeight,
 } = require('../constants');
 
-const blocksIndexSchema = require('../database/schema/blocks');
+const blocksTableSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
@@ -42,7 +46,7 @@ const getIndexReadyStatus = () => isIndexReady;
 
 const getIndexStats = async () => {
 	try {
-		const blocksTable = await getBlocksIndex();
+		const blocksTable = await getBlocksTable();
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
 		const numBlocksIndexed = await blocksTable.count();
@@ -99,12 +103,16 @@ const reportIndexStatus = async () => {
 
 const indexSchemas = {
 	accounts: require('../database/schema/accounts'),
+	blockchainApps: require('../database/schema/blockchainApps'),
 	blocks: require('../database/schema/blocks'),
+	commissions: require('../database/schema/commissions'),
+	events: require('../database/schema/events'),
+	eventTopics: require('../database/schema/eventTopics'),
+	kvStore: require('../database/schema/kvStore'),
 	multisignature: require('../database/schema/multisignature'),
+	stakes: require('../database/schema/stakes'),
 	transactions: require('../database/schema/transactions'),
 	validators: require('../database/schema/validators'),
-	stakes: require('../database/schema/stakes'),
-	key_value_store: require('../database/schema/kvStore'),
 };
 
 const initializeSearchIndex = async () => {

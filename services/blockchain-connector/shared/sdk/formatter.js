@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { inspect } = require('util');
 const { codec } = require('@liskhq/lisk-codec');
 const { utils: { hash } } = require('@liskhq/lisk-cryptography');
 const { computeMinFee } = require('@liskhq/lisk-transactions');
@@ -25,47 +26,15 @@ const {
 	getEventSchema,
 } = require('./schema');
 
+const {
+	EVENT_TOPIC_MAPPINGS_BY_MODULE,
+	COMMAND_EXECUTION_RESULT_TOPICS,
+} = require('./constants/eventTopics');
+
+const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 const { getLisk32Address } = require('../utils/accountUtils');
 const { getMinFeePerByte } = require('./fee');
-
-// TODO: Remove when SDK exposes topics information in metadata
-// TODO: Verify event names
-const EVENT_TOPICS = {
-	commandExecutionResult: ['transactionID'],
-	generatorFeeProcessed: ['transactionID', 'senderAddress', 'generatorAddress'],
-	rewardMinted: ['defaultTopic', 'generatorAddress'],
-	feeProcessed: ['senderAddress', 'generatorAddress'],
-	ccmProcessed: ['sendingChainID', 'receivingChainID'],
-	chainAccountUpdated: ['sendingChainID'],
-	accountReclaimed: ['legacyAddress', 'newAddress'],
-	keysRegistered: ['validatorAddress', 'generatorKey', 'blsKey'],
-	transfer: ['defaultTopic', 'senderAddress', 'recipientAddress'],
-	transferCrossChain: ['senderAddress', 'recipientAddress', 'receivingChainID'],
-	ccmTransfer: ['senderAddress', 'recipientAddress', 'ownChainID'],
-	mint: ['address'],
-	burn: ['defaultTopic', 'address'],
-	lock: ['address'],
-	unlock: ['address'],
-	EVENT_NAME_INITIALIZE_TOKEN: ['tokenID'],
-	EVENT_NAME_INITIALIZE_USER_ACCOUNT: ['address'],
-	EVENT_NAME_INITIALIZE_ESCROW_ACCOUNT: ['chainID'],
-	recover: ['address'],
-	beforeCCCExecution: ['relayerAddress', 'messageFeeTokenID'],
-	beforeCCMForwarding: ['sendingChainID', 'receivingChainID'],
-	EVENT_NAME_ALL_TOKENS_SUPPORTED: [],
-	EVENT_NAME_ALL_TOKENS_SUPPORT_REMOVED: [],
-	EVENT_NAME_ALL_TOKENS_FROM_CHAIN_SUPPORTED: ['chainID'],
-	EVENT_NAME_ALL_TOKENS_FROM_CHAIN_SUPPORT_REMOVED: ['chainID'],
-	EVENT_NAME_TOKEN_ID_SUPPORTED: ['tokenID'],
-	EVENT_NAME_TOKEN_ID_SUPPORT_REMOVED: ['tokenID'],
-	registerDelegate: ['delegateAddress'],
-	validatorStaked: ['senderAddress', 'delegateAddress'],
-	delegatePunished: ['delegateAddress'],
-	delegateBanned: ['delegateAddress'],
-	generatorKeyRegistrationEvent: ['defaultTopic', 'address'],
-	blsKeyRegistration: ['address'],
-};
 
 const formatTransaction = (transaction) => {
 	// Calculate transaction size
@@ -133,7 +102,7 @@ const formatBlock = (block) => {
 		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
 		// TODO: Can be made schema compliant dynamically
 		const formattedAssetData = blockAssetDataSchema
-			? codec.decode(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+			? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
 			: asset.data;
 
 		const formattedBlockAsset = {
@@ -162,7 +131,7 @@ const formatEvent = (event) => {
 
 	const eventDataSchema = getDataSchemaByEventName(event.name);
 	const eventData = eventDataSchema
-		? codec.decode(eventDataSchema, Buffer.from(event.data, 'hex'))
+		? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
 		: { data: event.data };
 
 	// TODO: Remove after SDK fixes the address format
@@ -174,12 +143,23 @@ const formatEvent = (event) => {
 		});
 	}
 
-	const topics = EVENT_TOPICS[event.name];
+	const eventTopicMappings = EVENT_TOPIC_MAPPINGS_BY_MODULE[event.module] || {};
+	// TODO: Remove after all transaction types are tested
+	if (!(event.module in EVENT_TOPIC_MAPPINGS_BY_MODULE)) {
+		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE missing for module: ${event.module}.`);
+		console.info(inspect(event));
+	}
 
+	const topics = event.name === EVENT_NAME_COMMAND_EXECUTION_RESULT
+		? COMMAND_EXECUTION_RESULT_TOPICS
+		: eventTopicMappings[event.name];
 	// TODO: Remove after all transaction types are tested
 	if (!topics || topics.length === 0) {
-		console.error(`EVENT_TOPICS undefined for event: ${event.name}.`);
-		console.info(require('util').inspect(event));
+		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE undefined for event: ${event.name}.`);
+		console.info(inspect(event));
+	} else if (topics.length !== event.topics.length) {
+		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE defined incorrectly for event: ${event.name}.`);
+		console.info(inspect(event));
 	}
 
 	let eventTopics;

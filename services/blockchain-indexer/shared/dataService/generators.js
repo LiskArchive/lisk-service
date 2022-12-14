@@ -16,7 +16,7 @@
 const { Logger } = require('lisk-service-framework');
 const { parseToJSONCompatObj } = require('../utils/parser');
 
-const dataService = require('./business');
+const business = require('./business');
 
 const logger = Logger();
 
@@ -24,8 +24,8 @@ let generatorsList = [];
 
 const loadAllGenerators = async () => {
 	try {
-		generatorsList = await dataService.getGenerators();
-		logger.info(`Updated generators list with ${generatorsList.length} delegates.`);
+		generatorsList = await business.getGenerators();
+		logger.info(`Updated generators list with ${generatorsList.length} validators.`);
 	} catch (err) {
 		logger.warn(`Failed to load all generators due to: ${err.message}`);
 		throw err;

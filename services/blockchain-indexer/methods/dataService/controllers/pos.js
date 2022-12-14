@@ -20,18 +20,18 @@ const {
 
 const dataService = require('../../../shared/dataService');
 
-const getDelegates = async params => {
-	const delegates = {
+const getPosValidators = async params => {
+	const validators = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await dataService.getDelegates(params);
-		if (response.data) delegates.data = response.data;
-		if (response.meta) delegates.meta = response.meta;
+		const response = await dataService.getPosValidators(params);
+		if (response.data) validators.data = response.data;
+		if (response.meta) validators.meta = response.meta;
 
-		return delegates;
+		return validators;
 	} catch (err) {
 		let status;
 		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
@@ -127,7 +127,7 @@ const getPosLockedRewards = async (params) => {
 };
 
 module.exports = {
-	getDelegates,
+	getPosValidators,
 	getPosConstants,
 	getPosUnlocks,
 	getPosLockedRewards,
@@ -135,4 +135,3 @@ module.exports = {
 	getStakers,
 	getPosClaimableRewards,
 };
-

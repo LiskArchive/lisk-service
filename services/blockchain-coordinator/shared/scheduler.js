@@ -59,7 +59,7 @@ const getRegisteredModuleAssets = () => registeredLiskModules;
 const scheduleGenesisBlockIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	await blockIndexQueue.add({ height: genesisHeight });
-	logger.info('Finished scheduling of genesis block indexing');
+	logger.info('Finished scheduling of genesis block indexing.');
 };
 
 const scheduleBlocksIndexing = async (heights) => {
@@ -71,7 +71,7 @@ const scheduleBlocksIndexing = async (heights) => {
 		blockHeights,
 		async height => {
 			await blockIndexQueue.add({ height });
-			logger.debug(`Scheduled indexing for block at height: ${height}`);
+			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		},
 		{ concurrency: blockHeights.length },
 	);
@@ -81,24 +81,24 @@ const scheduleBlocksIndexing = async (heights) => {
 // 	await Promise.all(addresses
 // 		.map(async (address) => accountIndexQueue.add({ address })),
 // 	);
-// 	logger.info('Finished scheduling of delegate accounts indexing');
+// 	logger.info('Finished scheduling of validator accounts indexing.');
 // };
 
 // const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 // 	await Promise.all(accountAddressesToIndex
 // 		.map(async (address) => accountIndexQueue.add({ address })),
 // 	);
-// 	logger.info('Finished scheduling of genesis accounts indexing');
+// 	logger.info('Finished scheduling of genesis accounts indexing.');
 // };
 
 const initIndexingScheduler = async () => {
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
 
-	// Get all delegates and schedule indexing
-	// const delegates = await getDelegateAccounts();
-	// if (Array.isArray(delegates) && delegates.length) {
-	// 	await scheduleDelegateAccountsIndexing(delegates);
+	// Get all validators and schedule indexing
+	// const validators = await getDelegateAccounts();
+	// if (Array.isArray(validators) && validators.length) {
+	// 	await scheduleDelegateAccountsIndexing(validators);
 	// }
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
@@ -147,7 +147,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	try {
 		if (!Array.isArray(missingBlocksByHeight)) {
 			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
-			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}`);
+			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}.`);
 		}
 
 		if (missingBlocksByHeight.length === 0) {
@@ -158,7 +158,7 @@ const scheduleMissingBlocksIndexing = async () => {
 			await scheduleBlocksIndexing(missingBlocksByHeight);
 		}
 	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
+		logger.warn(`Missed blocks indexing failed due to: ${err.message}.`);
 	}
 };
 

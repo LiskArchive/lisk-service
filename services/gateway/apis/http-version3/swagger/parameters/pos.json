@@ -2,14 +2,14 @@
 	"validatorStatus": {
 		"name": "status",
 		"in": "query",
-		"description": "Query delegates by status.",
+		"description": "Query validators by status.",
 		"type": "string",
 		"minLength": 1
 	},
 	"validatorName": {
 		"name": "name",
 		"in": "query",
-		"description": "Registered name of the validator.",
+		"description": "Query validators by their registered name.",
 		"type": "string",
 		"minLength": 1
 	},

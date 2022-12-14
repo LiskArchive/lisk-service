@@ -19,11 +19,12 @@ module.exports = {
 	schema: {
 		address: { type: 'string' },
 		name: { type: 'string', null: true },
-		generatorKey: { type: 'string', null: true },
 		blsKey: { type: 'string', null: true },
 		proofOfPosession: { type: 'string', null: true },
-		rewards: { type: 'bigInteger', null: false, defaultValue: 0 },
-		producedBlocks: { type: 'integer', null: false, defaultValue: 0 },
+		generatorKey: { type: 'string', null: true },
+		generatedBlocks: { type: 'integer', null: false, defaultValue: 0 },
+		totalCommission: { type: 'bigInteger', null: false, defaultValue: 0 },
+		totalSelfStakeRewards: { type: 'bigInteger', null: false, defaultValue: 0 },
 	},
 	indexes: {
 		name: { type: 'key' },

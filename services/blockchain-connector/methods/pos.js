@@ -14,27 +14,35 @@
  *
  */
 const {
-	getDelegate,
-	getAllDelegates,
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
 	getPosConstants,
 	getPosLockedRewards,
-	getStaker,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
+	getStaker,
 } = require('../shared/sdk');
 
 module.exports = [
 	{
-		name: 'getDelegate',
-		controller: async ({ address }) => getDelegate(address),
+		name: 'getPosValidator',
+		controller: async ({ address }) => getPosValidator(address),
 		params: {
 			address: { optional: false, type: 'string' },
 		},
 	},
 	{
-		name: 'getAllDelegates',
-		controller: async () => getAllDelegates(),
+		name: 'getAllPosValidators',
+		controller: async () => getAllPosValidators(),
 		params: {},
+	},
+	{
+		name: 'getPosValidatorsByStake',
+		controller: async ({ limit }) => getPosValidatorsByStake(limit),
+		params: {
+			limit: { optional: true, type: 'number' },
+		},
 	},
 	{
 		name: 'getPosConstants',

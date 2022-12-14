@@ -13,32 +13,34 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
 const { getStakes } = require('./stakes');
 const { getStakers } = require('./stakers');
-const { getPosClaimableRewards } = require('./claimableRewards');
 const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
+const { getPosClaimableRewards } = require('./claimableRewards');
+const { reloadValidatorCache, getPosValidators } = require('./validators');
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
+	// Stakes
 	getStakes,
 
+	// Stakers
 	getStakers,
 
+	// Unlocks
 	getPosUnlocks,
 
-	getPosClaimableRewards,
+	// Constants
 	getPosConstants,
 
+	// Locked rewards
 	getPosLockedRewards,
+
+	// Claimable rewards
+	getPosClaimableRewards,
+
+	// Validators
+	reloadValidatorCache,
+	getPosValidators,
 };
