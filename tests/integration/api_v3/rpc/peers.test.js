@@ -90,7 +90,7 @@ xdescribe('Peers API', () => {
 		});
 
 		it('invalid networkVersion -> invalid param', async () => {
-			const error = await requestPeers({ networkVersion: 'v2.0' });
+			const error = await requestPeers({ networkVersion: 'v3.0' });
 			expect(error).toMap(invalidParamsSchema);
 		});
 

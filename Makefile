@@ -36,7 +36,7 @@ test-functional:
 	$(compose) exec -T tests npm run test:functional
 
 test-integration:
-	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
+	$(compose) exec -T tests npm run test:integration:APIv3:SDKv6
 
 cli: cli-gateway
 
