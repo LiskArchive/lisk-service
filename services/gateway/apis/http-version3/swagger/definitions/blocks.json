@@ -81,7 +81,7 @@
 			"validatorsHash": {
 				"type": "string",
 				"example": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
-				"description": "Hash to authenticates the active set of validators"
+				"description": "Hash to authenticates the active set of validators."
 			},
 			"aggregateCommit": {
 				"type": "object",
@@ -140,7 +140,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "List of blocks",
+				"description": "List of blocks.",
 				"type": "array",
 				"items": {
 					"$ref": "#/definitions/Block"
@@ -197,7 +197,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "List of block assets",
+				"description": "List of block assets.",
 				"type": "array",
 				"items": {
 					"$ref": "#/definitions/BlockAsset"
