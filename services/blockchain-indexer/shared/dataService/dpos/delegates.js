@@ -72,7 +72,7 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const { numberActiveDelegates } = (await getDPoSConstants()).data;
+	const { numberActiveDelegates, numberStandbyDelegates } = (await getDPoSConstants()).data;
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
@@ -84,6 +84,9 @@ const computeDelegateStatus = async () => {
 		.sort(validatorComparator);
 
 	const activeGeneratorsList = (generatorInfo.slice(0, numberActiveDelegates))
+		.map(acc => acc.address);
+
+	const standByGeneratorsList = (generatorInfo.slice(generatorInfo.length - numberStandbyDelegates))
 		.map(acc => acc.address);
 
 	const verifyIfPunished = (delegate) => {
@@ -98,6 +101,8 @@ const computeDelegateStatus = async () => {
 		// Update delegate status, if applicable
 		if (delegate.isBanned) {
 			delegate.status = DELEGATE_STATUS.BANNED;
+		} else if (standByGeneratorsList.includes(delegate.address)) {
+			delegate.status = DELEGATE_STATUS.STANDBY;
 		} else if (verifyIfPunished(delegate)) {
 			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {

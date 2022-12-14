@@ -29,8 +29,23 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
+const getDPoSConstants = async () => request(wsRpcUrl, 'get.dpos.constants');
+
+const STATUS = {
+	ACTIVE: 'active',
+	STANDBY: 'standby',
+};
 
 describe('Generators API', () => {
+	let numberActiveDelegates;
+	let numberStandbyDelegates;
+	beforeAll(async () => {
+		const response = await getDPoSConstants();
+		const constants = response.result.data;
+		numberActiveDelegates = constants.numberActiveDelegates;
+		numberStandbyDelegates = constants.numberStandbyDelegates;
+	});
+
 	describe('GET /generators', () => {
 		it('returns generators list -> ok', async () => {
 			const response = await getGenerators();
@@ -41,6 +56,24 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
 			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns generators list with limit=103-> ok', async () => {
+			const response = await getGenerators();
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(103);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+
+			const activeGenerators = result.data.map(generator => generator.status === STATUS.ACTIVE);
+			const standbyGenerators = result.data.map(generator => generator.status === STATUS.STANDBY);
+			expect(activeGenerators.length).toEqual(numberActiveDelegates);
+			expect(standbyGenerators.length).toEqual(numberStandbyDelegates);
+
 			expect(result.meta).toMap(metaSchema);
 		});
 

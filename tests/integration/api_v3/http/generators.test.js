@@ -29,7 +29,20 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/v3`;
 
+const STATUS = {
+	ACTIVE: 'active',
+	STANDBY: 'standby',
+};
+
 describe('Generators API', () => {
+	let numberActiveDelegates;
+	let numberStandbyDelegates;
+	beforeAll(async () => {
+		const response = (await api.get(`${endpoint}/dpos/constants`)).data;
+		numberActiveDelegates = response.numberActiveDelegates;
+		numberStandbyDelegates = response.numberStandbyDelegates;
+	});
+
 	describe('GET /generators', () => {
 		it('retrieve generators list -> ok', async () => {
 			const response = await api.get(`${endpoint}/generators`);
@@ -38,6 +51,22 @@ describe('Generators API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(103);
 			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list with limit 103-> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?limit=103`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(103);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+
+			const activeGenerators = response.data.map(generator => generator.status === STATUS.ACTIVE);
+			const standbyGenerators = response.data.map(generator => generator.status === STATUS.STANDBY);
+			expect(activeGenerators.length).toEqual(numberActiveDelegates);
+			expect(standbyGenerators.length).toEqual(numberStandbyDelegates);
+
 			expect(response.meta).toMap(metaSchema);
 		});
 
