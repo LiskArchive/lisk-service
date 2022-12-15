@@ -23,8 +23,8 @@ const {
 const logger = Logger();
 
 const {
-	indexCommissionInfo,
-	indexStakeInfo,
+	indexValidatorCommissionInfo,
+	indexStakersInfo,
 } = require('./validatorIndex');
 
 const {
@@ -143,9 +143,9 @@ const init = async () => {
 
 	const genesisBlock = await getBlockByHeight(await getGenesisHeight());
 
-	// Index stake and commission information available in genesis block
-	await indexCommissionInfo(genesisBlock);
-	await indexStakeInfo(genesisBlock);
+	// Index stakers and commission information available in genesis block
+	await indexValidatorCommissionInfo(genesisBlock);
+	await indexStakersInfo(genesisBlock);
 };
 
 module.exports = {

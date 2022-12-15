@@ -18,6 +18,8 @@ const {
 } = require('lisk-service-framework');
 
 const commissionsTableSchema = require('../database/schema/commissions');
+const stakesTableSchema = require('../database/schema/stakes');
+
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -28,7 +30,13 @@ const getCommissionsTable = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const indexCommissionInfo = async (genesisBlock) => {
+const getStakesTable = () => getTableInstance(
+	stakesTableSchema.tableName,
+	stakesTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const indexValidatorCommissionInfo = async (genesisBlock) => {
 	const commissionsTable = await getCommissionsTable();
 	const { validators } = (genesisBlock.assets.find(asset => asset.module === 'pos')).data;
 	const commissionInfo = validators.map(validator => ({
@@ -36,14 +44,25 @@ const indexCommissionInfo = async (genesisBlock) => {
 		height: genesisBlock.height,
 		commission: validator.commission,
 	}));
-	await commissionsTable.upsert(commissionInfo);
+	if (commissionInfo.length) await commissionsTable.upsert(commissionInfo);
 };
 
-const indexStakeInfo = async (genesisBlock) => {
+const indexStakersInfo = async (genesisBlock) => {
+	const stakesTable = await getStakesTable();
 	const { stakers } = (genesisBlock.assets.find(asset => asset.module === 'pos')).data;
+	const stakestoIndex = [];
+	await stakers.forEach(async staker => staker.sentStakes.forEach(stake => {
+		stakestoIndex.push({
+			stakerAddress: staker.address,
+			validatorAddress: stake.validatorAddress,
+			amount: stake.amount,
+		});
+	}));
+
+	if (stakestoIndex.length) await stakesTable.upsert(stakestoIndex);
 };
 
 module.exports = {
-	indexCommissionInfo,
-	indexStakeInfo,
+	indexValidatorCommissionInfo,
+	indexStakersInfo,
 };
