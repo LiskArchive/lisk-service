@@ -77,15 +77,12 @@ const calculateCommission = async (generatorAddress, reward) => {
 
 // TODO: Verify
 const calculateSelfStakeRewards = async (generatorAddress) => {
-	let selfStakeWeight = BigInt('0');
-	let totalStakeWeight = BigInt('0');
-
 	const stakesTable = await getStakesTable();
 	const stakerInfo = await stakesTable.find({ validatorAddress: generatorAddress });
 	const selfStakes = stakerInfo.map(stake => stake.stakerAddress === generatorAddress);
 
-	selfStakeWeight = selfStakes.reduce((a, b) => a.amount + b.amount);
-	totalStakeWeight = stakerInfo.reduce((a, b) => a.amount + b.amount);
+	const selfStakeWeight = selfStakes.reduce((a, b) => a.amount + b.amount);
+	const totalStakeWeight = stakerInfo.reduce((a, b) => a.amount + b.amount);
 
 	const selfStakeReward = (selfStakeWeight / totalStakeWeight) * 100;
 	return selfStakeReward;
