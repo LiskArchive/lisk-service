@@ -20,13 +20,22 @@ const {
 
 const config = require('../../config');
 const accountsIndexSchema = require('../database/schema/accounts');
+const commissionsTableSchema = require('../database/schema/commissions');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const getAccountsIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
-	config.endpoints.mysql,
+	MYSQL_ENDPOINT,
+);
+
+const getCommissionsTable = () => getTableInstance(
+	commissionsTableSchema.tableName,
+	commissionsTableSchema,
+	MYSQL_ENDPOINT,
 );
 
 const getNameByAddress = async (address) => {
@@ -51,7 +60,20 @@ const getAddressByName = async (name) => {
 	return null;
 };
 
+const calculateCommission = async (reward) => {
+	const commissionsTable = await getCommissionsTable();
+	const [{ commission: currentCommission }] = await commissionsTable.find({ sort: 'height:desc', limit: 1 }, 'commission');
+	const commission = (reward * currentCommission) / 100;
+	return commission;
+};
+
+const calculateSelfStakeRewards = async (reward) => {
+
+};
+
 module.exports = {
 	getNameByAddress,
 	getAddressByName,
+	calculateCommission,
+	calculateSelfStakeRewards,
 };
