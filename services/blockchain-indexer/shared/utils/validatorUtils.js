@@ -21,6 +21,7 @@ const {
 const config = require('../../config');
 const accountsIndexSchema = require('../database/schema/accounts');
 const commissionsTableSchema = require('../database/schema/commissions');
+const stakesTableSchema = require('../database/schema/stakes');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -35,6 +36,12 @@ const getAccountsIndex = () => getTableInstance(
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getStakesTable = () => getTableInstance(
+	stakesTableSchema.tableName,
+	stakesTableSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -60,15 +67,28 @@ const getAddressByName = async (name) => {
 	return null;
 };
 
-const calculateCommission = async (reward) => {
+const calculateCommission = async (generatorAddress, reward) => {
 	const commissionsTable = await getCommissionsTable();
-	const [{ commission: currentCommission }] = await commissionsTable.find({ sort: 'height:desc', limit: 1 }, 'commission');
-	const commission = (reward * currentCommission) / 100;
+	const [{ commission: currentCommission }] = await commissionsTable
+		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
+	const commission = (reward * currentCommission) / BigInt('100');
 	return commission;
 };
 
-const calculateSelfStakeRewards = async (reward) => {
+// TODO: Verify
+const calculateSelfStakeRewards = async (generatorAddress) => {
+	let selfStakeWeight = BigInt('0');
+	let totalStakeWeight = BigInt('0');
 
+	const stakesTable = await getStakesTable();
+	const stakerInfo = await stakesTable.find({ validatorAddress: generatorAddress });
+	const selfStakes = stakerInfo.map(stake => stake.stakerAddress === generatorAddress);
+
+	selfStakeWeight = selfStakes.reduce((a, b) => a.amount + b.amount);
+	totalStakeWeight = stakerInfo.reduce((a, b) => a.amount + b.amount);
+
+	const selfStakeReward = (selfStakeWeight / totalStakeWeight) * 100;
+	return selfStakeReward;
 };
 
 module.exports = {

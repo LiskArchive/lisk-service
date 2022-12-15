@@ -182,7 +182,7 @@ const indexBlock = async job => {
 
 				if (blockReward !== BigInt('0')) {
 					// TODO: Implement proper logic
-					const commission = await calculateCommission(blockReward);
+					const commission = await calculateCommission(block.generatorAddress, blockReward);
 					const selfStakeReward = await calculateSelfStakeRewards(block.generatorAddress);
 
 					await validatorsTable.increment({
