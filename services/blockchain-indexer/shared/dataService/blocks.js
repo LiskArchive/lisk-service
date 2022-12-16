@@ -71,7 +71,7 @@ const getBlocks = async (params = {}) => {
 	if (response.meta) blocks.meta = response.meta;
 
 	await Promise.all(blocks.data.map(async block => {
-		block.generatorUsername = await getNameByAddress(block.generatorAddress);
+		block.generator.name = await getNameByAddress(block.generatorAddress);
 		return block;
 	}));
 
