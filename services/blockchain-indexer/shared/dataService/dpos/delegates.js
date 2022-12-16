@@ -54,7 +54,7 @@ const DELEGATE_STATUS = {
 
 let delegateList = [];
 
-const validatorComparator = (a, b) => {
+const delegateComparator = (a, b) => {
 	const diff = BigInt(b.voteWeight) - BigInt(a.voteWeight);
 	if (diff !== BigInt('0')) return Number(diff);
 	return a.hexAddress.localeCompare(b.hexAddress, 'en');
@@ -64,7 +64,7 @@ const validatorComparator = (a, b) => {
 const computeDelegateRank = async () => {
 	delegateList
 		.map(delegate => ({ ...delegate, hexAddress: getHexAddress(delegate.address) }))
-		.sort(validatorComparator);
+		.sort(delegateComparator);
 	delegateList.map((delegate, index) => {
 		delegate.rank = index + 1;
 		return delegate;
@@ -72,7 +72,10 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const { numberActiveDelegates, numberStandbyDelegates } = (await getDPoSConstants()).data;
+	const {
+		data: { numberActiveDelegates, numberStandbyDelegates },
+	} = await getDPoSConstants();
+
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
@@ -81,7 +84,7 @@ const computeDelegateStatus = async () => {
 	const generatorInfo = (delegateList
 		.filter(o1 => generatorsList.some(o2 => o1.address === o2.address)))
 		.map(entry => ({ ...entry, hexAddress: getHexAddress(entry.address) }))
-		.sort(validatorComparator);
+		.sort(delegateComparator);
 
 	const activeGeneratorsList = (generatorInfo.slice(0, numberActiveDelegates))
 		.map(acc => acc.address);

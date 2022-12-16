@@ -54,7 +54,7 @@ describe('Generators API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('retrieve generators list with limit 103-> ok', async () => {
+		it('retrieve generators list with limit 103 -> ok', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=103`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

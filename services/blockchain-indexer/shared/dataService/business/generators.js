@@ -25,7 +25,7 @@ const logger = Logger();
 
 let generatorsListCache = [];
 
-const resolveGenerators = async () => {
+const getGeneratorsInfo = async () => {
 	const { list: generatorsList } = await requestConnector('getGenerators');
 	const generators = await BluebirdPromise.map(
 		generatorsList,
@@ -52,7 +52,7 @@ const getNumberOfGenerators = async () => {
 
 const loadAllGenerators = async () => {
 	try {
-		generatorsListCache = await resolveGenerators();
+		generatorsListCache = await getGeneratorsInfo();
 		logger.info(`Updated generators list with ${generatorsListCache.length} delegates.`);
 	} catch (err) {
 		logger.warn(`Failed to load all generators due to: ${err.message}`);

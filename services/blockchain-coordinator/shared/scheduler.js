@@ -78,14 +78,17 @@ const scheduleBlocksIndexing = async (heights) => {
 };
 
 const scheduleDelegateAccountsIndexing = async (delegates) => {
-	await Promise.all(delegates
-		.map(async (delegate) => accountIndexQueue.add({
+	await BluebirdPromise.map(
+		delegates,
+		async delegate => accountIndexQueue.add({
 			account: {
 				...delegate,
 				isValidator: true,
 			},
-		})),
+		}),
+		{ concurrency: delegates.length },
 	);
+
 	logger.info('Finished scheduling of delegate accounts indexing');
 };
 

@@ -59,7 +59,7 @@ describe('Generators API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns generators list with limit=103-> ok', async () => {
+		it('returns generators list with limit=103 -> ok', async () => {
 			const response = await getGenerators();
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
