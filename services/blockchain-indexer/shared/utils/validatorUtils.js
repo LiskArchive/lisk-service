@@ -71,20 +71,27 @@ const calcCommission = async (generatorAddress, reward) => {
 	const commissionsTable = await getCommissionsTable();
 	const [{ commission: currentCommission }] = await commissionsTable
 		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
-	const commission = (reward * currentCommission) / BigInt('100');
+	const commission = (reward * BigInt(currentCommission)) / BigInt('100');
 	return commission;
 };
 
 // TODO: Verify
 const calcSelfStakeReward = async (generatorAddress, reward) => {
+	let selfStakeReward = BigInt('0');
+
 	const stakesTable = await getStakesTable();
-	const stakerInfo = await stakesTable.find({ validatorAddress: generatorAddress });
-	const selfStakes = stakerInfo.map(stake => stake.stakerAddress === generatorAddress);
+	const stakerInfo = await stakesTable.find(
+		{ validatorAddress: generatorAddress },
+		['stakerAddress', 'validatorAddress', 'amount'],
+	);
 
-	const selfStakeWeight = selfStakes.reduce((a, b) => a.amount + b.amount);
-	const totalStakeWeight = stakerInfo.reduce((a, b) => a.amount + b.amount);
+	if (stakerInfo.length) {
+		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
+		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
+		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
+		selfStakeReward = reward * ((selfStakes / totalStakes) * 100);
+	}
 
-	const selfStakeReward = reward * ((selfStakeWeight / totalStakeWeight) * 100);
 	return selfStakeReward;
 };
 
