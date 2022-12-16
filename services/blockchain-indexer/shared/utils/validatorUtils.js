@@ -67,7 +67,7 @@ const getAddressByName = async (name) => {
 	return null;
 };
 
-const calculateCommission = async (generatorAddress, reward) => {
+const calcCommission = async (generatorAddress, reward) => {
 	const commissionsTable = await getCommissionsTable();
 	const [{ commission: currentCommission }] = await commissionsTable
 		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
@@ -76,7 +76,7 @@ const calculateCommission = async (generatorAddress, reward) => {
 };
 
 // TODO: Verify
-const calculateSelfStakeRewards = async (generatorAddress) => {
+const calcSelfStakeReward = async (generatorAddress, reward) => {
 	const stakesTable = await getStakesTable();
 	const stakerInfo = await stakesTable.find({ validatorAddress: generatorAddress });
 	const selfStakes = stakerInfo.map(stake => stake.stakerAddress === generatorAddress);
@@ -84,13 +84,13 @@ const calculateSelfStakeRewards = async (generatorAddress) => {
 	const selfStakeWeight = selfStakes.reduce((a, b) => a.amount + b.amount);
 	const totalStakeWeight = stakerInfo.reduce((a, b) => a.amount + b.amount);
 
-	const selfStakeReward = (selfStakeWeight / totalStakeWeight) * 100;
+	const selfStakeReward = reward * ((selfStakeWeight / totalStakeWeight) * 100);
 	return selfStakeReward;
 };
 
 module.exports = {
 	getNameByAddress,
 	getAddressByName,
-	calculateCommission,
-	calculateSelfStakeRewards,
+	calcCommission,
+	calcSelfStakeReward,
 };

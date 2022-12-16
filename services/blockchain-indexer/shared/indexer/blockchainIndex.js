@@ -44,7 +44,7 @@ const {
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
 const { getEventsInfoToIndex } = require('../utils/eventsUtils');
-const { calculateCommission, calculateSelfStakeRewards } = require('../utils/validatorUtils');
+const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
 const { updateAddressBalanceQueue } = require('./tokenIndex');
 
@@ -182,8 +182,8 @@ const indexBlock = async job => {
 
 				if (blockReward !== BigInt('0')) {
 					// TODO: Implement proper logic
-					const commission = await calculateCommission(block.generatorAddress, blockReward);
-					const selfStakeReward = await calculateSelfStakeRewards(block.generatorAddress);
+					const commission = await calcCommission(block.generatorAddress, blockReward);
+					const selfStakeReward = await calcSelfStakeReward(block.generatorAddress, blockReward);
 
 					await validatorsTable.increment({
 						increment: { totalCommission: BigInt(commission) },
