@@ -26,7 +26,6 @@ const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
 	// isGenesisAccountsIndexed,
-	getDelegateAccounts,
 	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
@@ -37,6 +36,7 @@ const {
 
 const {
 	getRegisteredModules,
+	getAllDelegates,
 } = require('./sources/connector');
 
 const config = require('../config');
@@ -104,7 +104,7 @@ const initIndexingScheduler = async () => {
 	registeredLiskModules = await getRegisteredModules();
 
 	// Get all delegates and schedule indexing
-	const { delegates } = await getDelegateAccounts();
+	const { delegates } = await getAllDelegates();
 	if (Array.isArray(delegates) && delegates.length) {
 		await scheduleDelegateAccountsIndexing(delegates);
 	}

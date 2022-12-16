@@ -50,7 +50,7 @@ const getNumberOfGenerators = async () => {
 	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
 };
 
-const loadAllGenerators = async () => {
+const reloadGeneratorsCache = async () => {
 	try {
 		generatorsListCache = await getGeneratorsInfo();
 		logger.info(`Updated generators list with ${generatorsListCache.length} delegates.`);
@@ -61,12 +61,12 @@ const loadAllGenerators = async () => {
 };
 
 const getGenerators = async () => {
-	if (generatorsListCache.length === 0) await loadAllGenerators();
+	if (generatorsListCache.length === 0) await reloadGeneratorsCache();
 	return generatorsListCache;
 };
 
 module.exports = {
-	reloadGeneratorsCache: loadAllGenerators,
+	reloadGeneratorsCache,
 	getGenerators,
 	getNumberOfGenerators,
 

@@ -160,8 +160,6 @@ const isGenesisAccountsIndexed = async () => {
 	return true;
 };
 
-const getDelegateAccounts = async () => requestConnector('getAllDelegates');
-
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
 const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
@@ -183,7 +181,6 @@ module.exports = {
 	triggerAccountUpdates,
 	buildLegacyAccountCache,
 	isGenesisAccountsIndexed,
-	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,

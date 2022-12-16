@@ -81,8 +81,10 @@ const computeDelegateStatus = async () => {
 	const lastestBlock = getLastBlock();
 	const generatorsList = await dataService.getGenerators();
 
+	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));
+
 	const generatorInfo = (delegateList
-		.filter(o1 => generatorsList.some(o2 => o1.address === o2.address)))
+		.filter(delegate => generatorMap.get(delegate.address)))
 		.map(entry => ({ ...entry, hexAddress: getHexAddress(entry.address) }))
 		.sort(delegateComparator);
 

@@ -29,12 +29,12 @@ const getGenerators = async params => {
 	const generatorsList = await dataService.getGenerators();
 	const delegateList = await getAllDelegates();
 
-	generatorsList.forEach((generator) => {
-		delegateList.forEach((delegate) => {
-			if (delegate.address === generator.address) {
-				generators.data.push({ ...generator, status: delegate.status });
-			}
-		});
+	const delegateMap = new Map(delegateList.map(delegate => [delegate.address, delegate]));
+	generatorsList.forEach(generator => {
+		if (delegateMap.has(generator.address)) {
+			const delegate = delegateMap.get(generator.address);
+			generators.data.push({ ...generator, status: delegate.status });
+		}
 	});
 
 	generators.data = generators.data.slice(offset, offset + limit);

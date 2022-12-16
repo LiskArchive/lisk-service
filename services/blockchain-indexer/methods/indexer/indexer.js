@@ -21,7 +21,6 @@ const {
 } = require('../../shared/indexer/blockchainIndex');
 
 const {
-	getDelegateAccounts,
 	buildLegacyAccountCache,
 	getGenesisAccountAddresses,
 	isGenesisAccountsIndexed,
@@ -56,11 +55,6 @@ module.exports = [
 	{
 		name: 'isGenesisAccountsIndexed',
 		controller: isGenesisAccountsIndexed,
-		params: {},
-	},
-	{
-		name: 'getDelegateAccounts',
-		controller: getDelegateAccounts,
 		params: {},
 	},
 	{
