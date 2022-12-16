@@ -69,5 +69,4 @@ module.exports = {
 	reloadGeneratorsCache,
 	getGenerators,
 	getNumberOfGenerators,
-
 };
