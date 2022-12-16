@@ -76,7 +76,7 @@ const calcCommission = async (generatorAddress, reward) => {
 };
 
 // TODO: Verify
-const calcSelfStakeReward = async (generatorAddress, reward) => {
+const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
 	let selfStakeReward = BigInt('0');
 
 	const stakesTable = await getStakesTable();
@@ -87,9 +87,10 @@ const calcSelfStakeReward = async (generatorAddress, reward) => {
 
 	if (stakerInfo.length) {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
+		// TODO: from validator endpoint
 		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
 		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
-		selfStakeReward = reward * ((selfStakes / totalStakes) * 100);
+		selfStakeReward = reward * (1 - commission) * ((selfStakes / totalStakes) * 100);
 	}
 
 	return selfStakeReward;
