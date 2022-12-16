@@ -89,7 +89,8 @@ const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
 		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
 		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
-		selfStakeReward = (reward * (MAX_COMMISSION - commission) * selfStakes) / (totalStakes * MAX_COMMISSION);
+		selfStakeReward = (reward * (MAX_COMMISSION - commission) * selfStakes)
+			/ (totalStakes * MAX_COMMISSION);
 	}
 
 	return selfStakeReward;
