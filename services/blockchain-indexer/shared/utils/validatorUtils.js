@@ -45,6 +45,8 @@ const getStakesTable = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const MAX_COMMISSION = BigInt('10000');
+
 const getNameByAddress = async (address) => {
 	if (address) {
 		const name = await validatorCache.get(address);
@@ -71,26 +73,23 @@ const calcCommission = async (generatorAddress, reward) => {
 	const commissionsTable = await getCommissionsTable();
 	const [{ commission: currentCommission }] = await commissionsTable
 		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
-	const commission = (reward * BigInt(currentCommission)) / BigInt('100');
+	const commission = (reward * BigInt(currentCommission)) / MAX_COMMISSION;
 	return commission;
 };
 
-// TODO: Verify
 const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
 	let selfStakeReward = BigInt('0');
 
 	const stakesTable = await getStakesTable();
 	const stakerInfo = await stakesTable.find(
-		{ validatorAddress: generatorAddress },
-		['stakerAddress', 'validatorAddress', 'amount'],
+		{ validatorAddress: generatorAddress }, ['stakerAddress', 'amount'],
 	);
 
 	if (stakerInfo.length) {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
-		// TODO: from validator endpoint
 		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
 		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
-		selfStakeReward = reward * (1 - commission) * ((selfStakes / totalStakes) * 100);
+		selfStakeReward = (reward * (MAX_COMMISSION - commission) * selfStakes) / (totalStakes * MAX_COMMISSION);
 	}
 
 	return selfStakeReward;
