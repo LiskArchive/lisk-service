@@ -34,22 +34,22 @@ A list of the most commonly used environment variables can be seen below:
 The variables listed above can be overridden globally by using global variables.
 
 ```bash
-export ENABLE_HTTP_API="http-status,http-version2"
+export ENABLE_HTTP_API="http-status,http-version3"
 ```
 
 ### Examples
 
 ```bash
 # Run local instance with HTTP API only
-ENABLE_HTTP_API="http-status,http-version2" \
+ENABLE_HTTP_API="http-status,http-version3" \
 ENABLE_WS_API="" \
 node app.js
 ```
 
 ```bash
 # Run a local instance with the RPC API in a strict mode and using HTTP
-ENABLE_HTTP_API="http-status,http-version2" \
-ENABLE_WS_API="blockchain,rpc-v2" \
+ENABLE_HTTP_API="http-status,http-version3" \
+ENABLE_WS_API="blockchain,rpc-v3" \
 JSON_RPC_STRICT_MODE="true" \
 node app.js
 ```

@@ -24,7 +24,11 @@ const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
+const getVotesIndex = () => getTableInstance(
+	votesIndexSchema.tableName,
+	votesIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getVotesReceived = async params => {
 	const votesDB = await getVotesIndex();

@@ -14,13 +14,6 @@
  *
  */
 const {
-	getMultisignatureGroups,
-	getMultisignatureMemberships,
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	getIndexedAccountInfo,
-	resolveMultisignatureMemberships,
 	getAllDelegates,
 	isDposModuleRegistered,
 	getNumberOfGenerators,
@@ -32,16 +25,8 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
-	getVotesByTransactionIDs,
 	getEventsByHeight,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
 } = require('./business');
-
-const {
-	getAccounts,
-} = require('./accounts');
 
 const {
 	getBlocks,
@@ -109,13 +94,6 @@ const { getValidator, validateBLSKey } = require('./validator');
 const { getSchemas } = require('./schemas');
 
 module.exports = {
-	getMultisignatureGroups,
-	getMultisignatureMemberships,
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	getIndexedAccountInfo,
-	resolveMultisignatureMemberships,
 	getAllDelegates,
 	isDposModuleRegistered,
 	getNumberOfGenerators,
@@ -132,9 +110,7 @@ module.exports = {
 	getTransactionIDsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
-	getVotesByTransactionIDs,
 
-	getAccounts,
 	getLegacyAccountInfo,
 	getTokens,
 	getTokensSummary,
@@ -168,7 +144,4 @@ module.exports = {
 	getAuthAccountInfo,
 	getValidator,
 	validateBLSKey,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
 };

@@ -31,7 +31,11 @@ const logger = Logger();
 
 const entityIndexSchema = require('../../../database/schema/transactions');
 
-const getEntityIndex = () => getTableInstance('entity_index_name', entityIndexSchema, MYSQL_ENDPOINT);
+const getEntityIndex = () => getTableInstance(
+	entityIndexSchema.tableName,
+	entityIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Declare and export the following command specific constants
 export const commandName = 'commandName';
