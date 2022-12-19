@@ -42,6 +42,7 @@ const {
 const {
 	getGenerators,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 } = require('./generators');
 
 const {
@@ -101,6 +102,7 @@ module.exports = {
 	isDposModuleRegistered,
 	getGenerators,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 	dryRunTransactions,
 	postTransactions,
 	getTokens,

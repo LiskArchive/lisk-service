@@ -22,10 +22,10 @@ const {
 	Signals,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+const { getDPoSConstants } = require('./constants');
 const dataService = require('../business');
 
 const { getLastBlock } = require('../blocks');
-const { getAllGenerators } = require('../generators');
 const { getLisk32AddressFromPublicKey, getLisk32Address, getHexAddress } = require('../../utils/accountUtils');
 const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -72,11 +72,27 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
+	const {
+		data: { numberActiveDelegates, numberStandbyDelegates },
+	} = await getDPoSConstants();
+
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const generatorsList = await getAllGenerators();
-	const activeGeneratorsList = generatorsList.map(generator => generator.address);
+	const generatorsList = await dataService.getGenerators();
+
+	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));
+
+	const generatorInfo = (delegateList
+		.filter(delegate => generatorMap.get(delegate.address)))
+		.map(entry => ({ ...entry, hexAddress: getHexAddress(entry.address) }))
+		.sort(delegateComparator);
+
+	const activeGeneratorsList = (generatorInfo.slice(0, numberActiveDelegates))
+		.map(acc => acc.address);
+
+	const standByGeneratorsList = (generatorInfo.slice(generatorInfo.length - numberStandbyDelegates))
+		.map(acc => acc.address);
 
 	const verifyIfPunished = (delegate) => {
 		const isPunished = delegate.pomHeights
@@ -85,24 +101,26 @@ const computeDelegateStatus = async () => {
 		return isPunished;
 	};
 
+	logger.debug('Determine delegate status.');
 	delegateList.map((delegate) => {
-		logger.debug('Determine delegate status');
-
-		// Default delegate status
-		delegate.status = DELEGATE_STATUS.INELIGIBLE;
-
 		// Update delegate status, if applicable
 		if (delegate.isBanned) {
 			delegate.status = DELEGATE_STATUS.BANNED;
+		} else if (standByGeneratorsList.includes(delegate.address)) {
+			delegate.status = DELEGATE_STATUS.STANDBY;
 		} else if (verifyIfPunished(delegate)) {
 			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = DELEGATE_STATUS.ACTIVE;
 		} else if (BigInt(delegate.voteWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = DELEGATE_STATUS.STANDBY;
+		} else {
+			// Default delegate status
+			delegate.status = DELEGATE_STATUS.INELIGIBLE;
 		}
 		return delegate;
 	});
+
 	return delegateList;
 };
 
@@ -326,4 +344,5 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
+	getAllDelegates,
 };
