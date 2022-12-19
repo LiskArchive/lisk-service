@@ -17,6 +17,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
+const { MODULE } = require('../constants');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
@@ -49,7 +50,7 @@ const indexValidatorCommissionInfo = async (genesisBlock) => {
 
 const indexStakersInfo = async (genesisBlock) => {
 	const stakesTable = await getStakesTable();
-	const { stakers } = (genesisBlock.assets.find(asset => asset.module === 'pos')).data;
+	const { stakers } = (genesisBlock.assets.find(asset => asset.module === MODULE.POS)).data;
 	const stakestoIndex = [];
 	await stakers.forEach(async staker => staker.sentStakes.forEach(stake => {
 		stakestoIndex.push({
