@@ -36,7 +36,11 @@ const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.tableName,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getTransactionIDsByBlockID = async blockID => {
 	const transactionsTable = await getTransactionsIndex();

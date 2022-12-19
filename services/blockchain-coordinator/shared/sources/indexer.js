@@ -19,8 +19,6 @@ const isGenesisBlockIndexed = async () => requestIndexer('isGenesisBlockIndexed'
 
 const isGenesisAccountsIndexed = async () => requestIndexer('isGenesisAccountsIndexed');
 
-const getDelegateAccounts = async () => requestIndexer('getDelegateAccounts');
-
 const getGenesisAccountAddresses = async () => requestIndexer('getGenesisAccountAddresses');
 
 const getMissingblocks = async (from, to) => requestIndexer('getMissingBlocks', {
@@ -39,7 +37,6 @@ const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifie
 module.exports = {
 	isGenesisBlockIndexed,
 	isGenesisAccountsIndexed,
-	getDelegateAccounts,
 	getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,

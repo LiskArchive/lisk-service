@@ -24,7 +24,11 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const transactionsIndexSchema = require('../../../database/schema/transactions');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.tableName,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const commandName = 'reclaimLSK';

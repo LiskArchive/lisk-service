@@ -45,7 +45,6 @@ const defaultConfig = {
 const PATH_API_MAPPINGS = {
 	'/': ['http-status'],
 	'/test': ['http-test'],
-	'/v2': ['http-version2', 'http-exports'],
 	'/v3': ['http-version3', 'http-exports'],
 };
 

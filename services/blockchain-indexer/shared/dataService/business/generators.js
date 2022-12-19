@@ -14,13 +14,18 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const { Logger } = require('lisk-service-framework');
 
 const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { getGenesisConfig } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../utils/delegateUtils');
 
-const getGenerators = async () => {
+const logger = Logger();
+
+let generatorsListCache = [];
+
+const getGeneratorsInfo = async () => {
 	const { list: generatorsList } = await requestConnector('getGenerators');
 	const generators = await BluebirdPromise.map(
 		generatorsList,
@@ -45,7 +50,23 @@ const getNumberOfGenerators = async () => {
 	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
 };
 
+const reloadGeneratorsCache = async () => {
+	try {
+		generatorsListCache = await getGeneratorsInfo();
+		logger.info(`Updated generators list with ${generatorsListCache.length} delegates.`);
+	} catch (err) {
+		logger.warn(`Failed to load all generators due to: ${err.message}`);
+		throw err;
+	}
+};
+
+const getGenerators = async () => {
+	if (generatorsListCache.length === 0) await reloadGeneratorsCache();
+	return generatorsListCache;
+};
+
 module.exports = {
+	reloadGeneratorsCache,
 	getGenerators,
 	getNumberOfGenerators,
 };

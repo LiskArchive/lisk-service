@@ -11,7 +11,7 @@
             "name": {
                 "type": "string",
                 "example": "genesis_84",
-                "description": "Generator name"
+                "description": "Generator name."
             },
             "publicKey": {
                 "type": "string",
@@ -22,7 +22,12 @@
             "nextForgingTime": {
                 "type": "integer",
                 "example": 1616058987,
-                "description": "UNIX Timestamp"
+                "description": "UNIX Timestamp."
+            },
+            "status": {
+                "type": "string",
+                "example": "active",
+                "description": "Validator status."
             }
         }
     },

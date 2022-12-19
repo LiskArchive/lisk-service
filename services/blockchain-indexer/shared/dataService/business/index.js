@@ -34,12 +34,6 @@ const {
 } = require('./legacy');
 
 const {
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
-} = require('./coreCache');
-
-const {
 	getDelegates,
 	getAllDelegates,
 	isDposModuleRegistered,
@@ -48,6 +42,7 @@ const {
 const {
 	getGenerators,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 } = require('./generators');
 
 const {
@@ -81,7 +76,6 @@ const {
 } = require('./schemas');
 
 const {
-	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
@@ -108,6 +102,7 @@ module.exports = {
 	isDposModuleRegistered,
 	getGenerators,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 	dryRunTransactions,
 	postTransactions,
 	getTokens,
@@ -120,7 +115,6 @@ module.exports = {
 	getTransactionsByIDs,
 	getSchemas,
 	normalizeTransaction,
-	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
 	getUnlocks,
@@ -133,7 +127,4 @@ module.exports = {
 	getEvents,
 	getEventsByHeight,
 	getLegacyAccountInfo,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
 };

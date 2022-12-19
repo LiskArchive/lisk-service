@@ -24,18 +24,22 @@ const newsfeedIndexSchema = require('./schema/newsfeed');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema, MYSQL_ENDPOINT);
+const getNewsFeedTable = () => getTableInstance(
+	newsfeedIndexSchema.tableName,
+	newsfeedIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getNewsfeedArticles = async params => {
 	const { offset } = params;
-	const newsfeedDB = await getNewsFeedIndex();
+	const newsfeedTable = await getNewsFeedTable();
 
 	if (params.source) params = {
 		...params,
 		orWhereIn: { property: 'source', values: params.source.split(',') },
 	};
 
-	const data = await newsfeedDB.find(
+	const data = await newsfeedTable.find(
 		{ sort: 'created_at:desc', ...params },
 		Object.keys(newsfeedIndexSchema.schema),
 	);
@@ -43,7 +47,7 @@ const getNewsfeedArticles = async params => {
 	// Send 'Service Unavailable' when no data is available
 	if (!data.length) throw new ServiceUnavailableException('Service not available');
 
-	const total = await newsfeedDB.count(params);
+	const total = await newsfeedTable.count(params);
 
 	return {
 		data,
@@ -55,4 +59,4 @@ const getNewsfeedArticles = async params => {
 	};
 };
 
-module.exports = { getNewsfeedArticles, getNewsFeedIndex };
+module.exports = { getNewsfeedArticles, getNewsFeedTable };
