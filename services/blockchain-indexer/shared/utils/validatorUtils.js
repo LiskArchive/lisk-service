@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { math: { q96 } } = require('@liskhq/lisk-utils');
 const {
 	CacheRedis,
 	MySQL: { getTableInstance },
@@ -72,8 +73,12 @@ const calcCommission = async (generatorAddress, reward) => {
 	const commissionsTable = await getCommissionsTable();
 	const [{ commission: currentCommission }] = await commissionsTable
 		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
-	const commission = (BigInt(reward) * BigInt(currentCommission)) / MAX_COMMISSION;
-	return commission;
+
+	const rewardQ = q96(reward);
+	const currentCommissionQ = q96(BigInt(currentCommission));
+	const maxCommissionQ = q96(MAX_COMMISSION);
+	const commission = (rewardQ.mul(currentCommissionQ)).div(maxCommissionQ);
+	return commission.floor();
 };
 
 const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
