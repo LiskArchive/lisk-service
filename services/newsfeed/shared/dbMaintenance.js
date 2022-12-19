@@ -25,22 +25,26 @@ const config = require('../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getTable = (tableName) => getTableInstance(tableName, newsfeedTableSchema, MYSQL_ENDPOINT);
+const getNewsFeedTable = (tableName) => getTableInstance(
+	tableName,
+	newsfeedTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 const logger = Logger();
 
 const prune = async (source, tableName, expiryInDays) => {
-	const db = await getTable(tableName);
+	const newsfeedTable = await getNewsFeedTable(tableName);
 
 	const propBetweens = [{
 		property: 'modified_at',
 		to: moment().subtract(expiryInDays, 'days').unix(),
 	}];
 
-	const result = await db.find({ source, propBetweens });
+	const result = await newsfeedTable.find({ source, propBetweens });
 
 	logger.debug(`Removing ${result.length} entries from '${tableName}' index for source '${source}' with '${newsfeedTableSchema.primaryKey}':\n${result.map(r => r[`${newsfeedTableSchema.primaryKey}`])}`);
-	await db.deleteByPrimaryKey(result.map(r => r[`${newsfeedTableSchema.primaryKey}`]));
+	await newsfeedTable.deleteByPrimaryKey(result.map(r => r[`${newsfeedTableSchema.primaryKey}`]));
 };
 
 module.exports = {
