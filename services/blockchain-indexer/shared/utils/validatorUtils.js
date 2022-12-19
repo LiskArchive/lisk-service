@@ -19,6 +19,7 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../config');
+const { MAX_COMMISSION } = require('../constants');
 const accountsIndexSchema = require('../database/schema/accounts');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
@@ -44,8 +45,6 @@ const getStakesTable = () => getTableInstance(
 	stakesTableSchema,
 	MYSQL_ENDPOINT,
 );
-
-const MAX_COMMISSION = BigInt('10000');
 
 const getNameByAddress = async (address) => {
 	if (address) {
