@@ -69,7 +69,9 @@ const normalizeBlock = async (originalblock) => {
 			block.generator = {
 				address: block.generatorAddress,
 				publicKey: generatorInfo ? generatorInfo.publicKey : null,
-				name: generatorInfo ? generatorInfo.name : await getNameByAddress(block.generatorAddress),
+				name: generatorInfo && generatorInfo.name
+					? generatorInfo.name
+					: await getNameByAddress(block.generatorAddress),
 			};
 		}
 
