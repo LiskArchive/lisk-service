@@ -14,14 +14,12 @@
  *
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 const util = require('util');
 
 const logger = Logger();
 
 const business = require('./business');
 const { getGenesisHeight } = require('../constants');
-const { getNameByAddress } = require('../utils/delegateUtils');
 
 const config = require('../../config');
 
@@ -68,15 +66,8 @@ const getBlocks = async (params = {}) => {
 	};
 
 	const response = await getBlocksFromServer(params);
+	if (response.data) blocksResponse.data = response.data;
 	if (response.meta) blocksResponse.meta = response.meta;
-
-	blocksResponse.data = await BluebirdPromise.map(
-		response.data,
-		async block => {
-			block.generator.name = await getNameByAddress(block.generatorAddress);
-			return block;
-		},
-		{ concurrency: response.data.length });
 
 	let total;
 	if (params.generatorAddress) {
