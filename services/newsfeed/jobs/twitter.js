@@ -26,7 +26,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const logger = Logger();
 
 const getNewsFeedIndex = () => getTableInstance(
-	config.sources.twitter_lisk.table,
+	newsfeedIndexSchema.tableName,
 	newsfeedIndexSchema,
 	MYSQL_ENDPOINT,
 );

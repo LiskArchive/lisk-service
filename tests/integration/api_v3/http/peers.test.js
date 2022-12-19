@@ -87,7 +87,7 @@ xdescribe('Peers API', () => {
 		});
 
 		it('invalid networkVersion -> bad request', async () => {
-			const response = await api.get(`${endpoint}?networkVersion=v2.0`, 400);
+			const response = await api.get(`${endpoint}?networkVersion=v3.0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 

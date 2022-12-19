@@ -27,8 +27,16 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const accountsIndexSchema = require('../../../database/schema/accounts');
 const validatorsIndexSchema = require('../../../database/schema/validators');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
+const getAccountsIndex = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getValidatorsIndex = () => getTableInstance(
+	validatorsIndexSchema.tableName,
+	validatorsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const commandName = 'registerDelegate';

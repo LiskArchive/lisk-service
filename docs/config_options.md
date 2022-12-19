@@ -41,8 +41,8 @@ HOST=0.0.0.0   # or 127.0.0.1 for localhost
 ```bash
 # Enable certain APIs (HTTP & WebSocket)
 # Use comma separated list
-ENABLE_HTTP_API=http-status,http-version2,http-exports
-ENABLE_WS_API=blockchain,rpc-v2
+ENABLE_HTTP_API=http-status,http-version3,http-exports
+ENABLE_WS_API=blockchain,rpc-v3
 ```
 
 ### Caching

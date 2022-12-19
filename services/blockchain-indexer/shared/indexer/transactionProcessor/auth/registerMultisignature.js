@@ -28,7 +28,11 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const multisignatureIndexSchema = require('../../../database/schema/multisignature');
 
-const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
+const getMultisignatureIndex = () => getTableInstance(
+	multisignatureIndexSchema.tableName,
+	multisignatureIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const commandName = 'registerMultisignature';

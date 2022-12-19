@@ -13,19 +13,42 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('./dataService');
-const { ADDRESS_LISK32 } = require('./regex');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
+const accountsIndexSchema = require('./database/schema/accounts');
+
+const config = require('../config');
+
+const regex = require('./regex');
 
 const isStringType = value => typeof value === 'string';
 
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
 
-const validateLisk32Address = address => (typeof address === 'string' && ADDRESS_LISK32.test(address));
+const validateLisk32Address = address => (typeof address === 'string' && regex.ADDRESS_LISK32.test(address));
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getAccountsTable = async () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getCachedAccountBy = async (key, value) => {
+	const accountsTable = await getAccountsTable();
+	const [result] = await accountsTable.find({ [key]: value, limit: 1 }, ['address', 'name', 'publicKey']);
+	if (!result) return null;
+	const { address, name, publicKey } = result;
+	const account = { address, name, publicKey };
+	return account;
+};
+
+const getCachedAccountByAddress = getCachedAccountBy.bind(null, 'address');
 
 const confirmAddress = async address => {
 	if (!validateLisk32Address(address)) return false;
-	const account = await dataService.getCachedAccountByAddress(parseAddress(address));
-	return !!(account && account.address);
+	const account = await getCachedAccountByAddress(parseAddress(address));
+	return account && account.address;
 };
 
 module.exports = {

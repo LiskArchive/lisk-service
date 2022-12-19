@@ -25,8 +25,16 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const transactionsIndexSchema = require('../../../database/schema/transactions');
 const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.tableName,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getBlockchainAppsIndex = () => getTableInstance(
+	blockchainAppsIndexSchema.tableName,
+	blockchainAppsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const commandName = 'mainchainRegistration';
