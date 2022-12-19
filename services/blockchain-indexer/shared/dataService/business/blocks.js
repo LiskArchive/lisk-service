@@ -34,6 +34,7 @@ const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { normalizeTransaction } = require('../../utils/transactionsUtils');
+const { getNameByAddress } = require('../../utils/delegateUtils');
 
 const config = require('../../../config');
 
@@ -68,7 +69,9 @@ const normalizeBlock = async (originalblock) => {
 			block.generator = {
 				address: block.generatorAddress,
 				publicKey: generatorInfo ? generatorInfo.publicKey : null,
-				name: generatorInfo ? generatorInfo.name : null,
+				name: generatorInfo && generatorInfo.name
+					? generatorInfo.name
+					: await getNameByAddress(block.generatorAddress),
 			};
 		}
 
