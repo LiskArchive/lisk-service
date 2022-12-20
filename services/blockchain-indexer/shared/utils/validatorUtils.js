@@ -29,6 +29,8 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
+const maxCommissionQ = q96(MAX_COMMISSION);
+
 const getAccountsIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
@@ -76,13 +78,12 @@ const calcCommission = async (generatorAddress, reward) => {
 
 	const rewardQ = q96(reward);
 	const currentCommissionQ = q96(BigInt(currentCommission));
-	const maxCommissionQ = q96(MAX_COMMISSION);
 	const commission = (rewardQ.mul(currentCommissionQ)).div(maxCommissionQ);
 	return commission.floor();
 };
 
 const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
-	let selfStakeReward = BigInt('0');
+	let selfStakeReward = q96(BigInt('0'));
 
 	const stakesTable = await getStakesTable();
 	const stakerInfo = await stakesTable.find(
@@ -93,11 +94,18 @@ const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
 		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
 		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount));
-		selfStakeReward = (BigInt(reward) * (MAX_COMMISSION - BigInt(commission)) * selfStakes)
-			/ (totalStakes * MAX_COMMISSION);
+
+		const rewardQ = q96(reward);
+		const commissionQ = q96(commission);
+		const selfStakesQ = q96(selfStakes);
+		const totalStakesQ = q96(totalStakes);
+		const remCommissionQ = q96(maxCommissionQ.sub(commissionQ));
+
+		const rewardFractionQ = rewardQ.mul(remCommissionQ);
+		selfStakeReward = (rewardFractionQ.mul(selfStakesQ)).div(totalStakesQ.mul(maxCommissionQ));
 	}
 
-	return selfStakeReward;
+	return selfStakeReward.floor();
 };
 
 module.exports = {
