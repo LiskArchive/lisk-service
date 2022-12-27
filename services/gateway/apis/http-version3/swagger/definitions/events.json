@@ -34,7 +34,10 @@
 						"type": "string",
 						"example": "100000000"
 					},
-					"reduction": 0
+					"reduction": {
+						"type": "integer",
+						"example": 0
+					}
 				}
 			},
 			"topics": {

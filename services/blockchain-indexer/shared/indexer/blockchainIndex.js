@@ -44,6 +44,7 @@ const {
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
 const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
 const { updateAddressBalanceQueue } = require('./tokenIndex');
 
@@ -98,25 +99,6 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
-
-// const getGeneratorPkInfoArray = async (blocks) => {
-// 	const blocksTable = await getBlocksIndex();
-// 	const pkInfoArray = [];
-// 	await BluebirdPromise.map(
-// 		blocks,
-// 		async block => {
-// 			const [blockInfo] = await blocksTable.find({ id: block.id, limit: 1 }, ['id']);
-// 			pkInfoArray.push({
-// 				publicKey: block.generatorPublicKey,
-// 				reward: block.reward,
-// 				isForger: true,
-// 				isBlockIndexed: !!blockInfo,
-// 			});
-// 		},
-// 		{ concurrency: blocks.length },
-// 	);
-// 	return pkInfoArray;
-// };
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -198,18 +180,23 @@ const indexBlock = async job => {
 			if (blockRewardEvent) {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
 
-				// TODO: Implement proper logic
-				const commission = blockReward;
-				const selfStakeReward = blockReward;
+				if (blockReward !== BigInt('0')) {
+					const commission = await calcCommission(block.generatorAddress, blockReward);
+					const selfStakeReward = await calcSelfStakeReward(
+						block.generatorAddress,
+						blockReward,
+						commission,
+					);
 
-				await validatorsTable.increment({
-					increment: { totalCommission: commission },
-					where: { address: block.generatorAddress },
-				}, dbTrx);
-				await validatorsTable.increment({
-					increment: { totalSelfStakeRewards: selfStakeReward },
-					where: { address: block.generatorAddress },
-				}, dbTrx);
+					await validatorsTable.increment({
+						increment: { totalCommission: BigInt(commission) },
+						where: { address: block.generatorAddress },
+					}, dbTrx);
+					await validatorsTable.increment({
+						increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
+						where: { address: block.generatorAddress },
+					}, dbTrx);
+				}
 			}
 		}
 
@@ -314,7 +301,7 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 30);
+const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 1);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 

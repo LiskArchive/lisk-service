@@ -23,10 +23,19 @@ const {
 const logger = Logger();
 
 const {
+	indexValidatorCommissionInfo,
+	indexStakersInfo,
+} = require('./validatorIndex');
+
+const {
 	getCurrentHeight,
 	getGenesisHeight,
 	updateFinalizedHeight,
 } = require('../constants');
+
+const {
+	getBlockByHeight,
+} = require('../dataService');
 
 const blocksTableSchema = require('../database/schema/blocks');
 
@@ -131,6 +140,12 @@ const init = async () => {
 	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('chainNewBlock').add(updateFinalizedHeight);
+
+	const genesisBlock = await getBlockByHeight(await getGenesisHeight());
+
+	// Index stakers and commission information available in genesis block
+	await indexValidatorCommissionInfo(genesisBlock);
+	await indexStakersInfo(genesisBlock);
 };
 
 module.exports = {
