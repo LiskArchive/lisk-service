@@ -271,7 +271,7 @@ const updateValidatorListEveryBlock = () => {
 					} else if (tx.command === COMMAND.STAKE) {
 						// TODO: Verify
 						tx.params.stakes
-							.forEach(stake => updatedValidatorAddresses.push(stake.address));
+							.forEach(stake => updatedValidatorAddresses.push(stake.validatorAddress));
 					}
 				}
 			});
@@ -279,7 +279,7 @@ const updateValidatorListEveryBlock = () => {
 			// TODO: Validate the logic if there is need to update validator cache on (un-)stake tx
 			if (updatedValidatorAddresses.length) {
 				const updatedValidatorAccounts = await business
-					.getValidators({ addresses: updatedValidatorAddresses });
+					.getPosValidators({ addresses: updatedValidatorAddresses });
 
 				updatedValidatorAccounts.forEach(validator => {
 					const validatorIndex = validatorList.findIndex(acc => acc.address === validator.address);
