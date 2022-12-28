@@ -14,16 +14,9 @@
  *
  */
 const {
-	getMultisignatureGroups,
-	getMultisignatureMemberships,
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	getIndexedAccountInfo,
-	resolveMultisignatureMemberships,
-	getAllDelegates,
 	isPosModuleRegistered,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getBlockByHeight,
@@ -32,16 +25,8 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
-	getVotesByTransactionIDs,
 	getEventsByHeight,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
 } = require('./business');
-
-const {
-	getAccounts,
-} = require('./accounts');
 
 const {
 	getBlocks,
@@ -78,7 +63,6 @@ const {
 
 const {
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 } = require('./token');
 
@@ -103,12 +87,9 @@ const { getAuthAccountInfo } = require('./auth');
 const { getNetworkStatus } = require('./network');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
-const { reloadGeneratorsCache, getGenerators } = require('./generators');
+const { getGenerators } = require('./generators');
 
 module.exports = {
-	// Accounts
-	getAccounts,
-
 	// Blocks
 	getBlocks,
 	getBlocksAssets,
@@ -134,7 +115,6 @@ module.exports = {
 
 	// Token
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 
 	// Transactions
@@ -173,15 +153,6 @@ module.exports = {
 	reloadGeneratorsCache,
 	getGenerators,
 
-	// Others to be arranged
-	getMultisignatureGroups,
-	getMultisignatureMemberships,
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	getIndexedAccountInfo,
-	resolveMultisignatureMemberships,
-	getAllDelegates,
 	isPosModuleRegistered,
 	getNumberOfGenerators,
 	getFinalizedHeight,
@@ -192,12 +163,8 @@ module.exports = {
 	getTransactionIDsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
-	getVotesByTransactionIDs,
 	getPosLockedRewards,
 	getEventsByHeight,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
 
 	getInflationRate,
 	getDefaultRewardAtHeight,

@@ -25,7 +25,7 @@ for (let i = 0; i < baseUrls.length; i++) {
 	const baseUrl = baseUrls[i];
 
 	xdescribe(`Forgers API on baseUrl: ${baseUrl}`, () => {
-		const endpoint = `${baseUrl}/api/v2`;
+		const endpoint = `${baseUrl}/api/v3`;
 		const forgersEndpoint = `${endpoint}/forgers?limit=103`;
 		const blockEndpoint = `${endpoint}/blocks?limit=1`;
 		const delegateEndpoint = `${endpoint}/accounts?isDelegate=true&limit=1`;

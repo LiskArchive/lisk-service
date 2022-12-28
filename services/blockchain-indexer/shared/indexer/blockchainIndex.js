@@ -46,8 +46,6 @@ const { normalizeTransaction } = require('../utils/transactionsUtils');
 const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
-const { updateAddressBalanceQueue } = require('./tokenIndex');
-
 const {
 	getFinalizedHeight,
 	getCurrentHeight,
@@ -139,7 +137,6 @@ const indexBlock = async job => {
 					tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
 					tx.executionStatus = getTransactionExecutionStatus(tx, events);
-					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
 
 					// Store address -> publicKey mapping
 					updateAccountPublicKey(tx.senderPublicKey);
@@ -198,10 +195,6 @@ const indexBlock = async job => {
 					}, dbTrx);
 				}
 			}
-		}
-
-		if (block.generatorAddress) {
-			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
 		}
 
 		const blockToIndex = {

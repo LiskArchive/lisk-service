@@ -23,7 +23,6 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { updateAddressBalanceQueue } = require('../../tokenIndex');
 const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');
 
@@ -52,11 +51,6 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		...tx.params,
 	};
 
-	// TODO: Remove this information?
-	// Update the account balance
-	await updateAddressBalanceQueue.add({ address: tx.params.recipientAddress });
-
-	// TODO: Probably this section (accountsTable) can be removed
 	const account = { address: tx.recipientAddress };
 	logger.trace(`Updating account index for the account with address ${account.address}.`);
 	await accountsTable.upsert(account, dbTrx);
@@ -68,11 +62,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Remove this information?
-	// Update the account balance
-	await updateAddressBalanceQueue.add({ address: tx.params.recipientAddress });
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => {};
 
 module.exports = {
 	COMMAND_NAME,

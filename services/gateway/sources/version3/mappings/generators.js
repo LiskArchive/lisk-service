@@ -18,4 +18,5 @@ module.exports = {
 	name: '=,string',
 	publicKey: '=,string',
 	nextAllocatedTime: '=,number',
+	status: '=,string',
 };

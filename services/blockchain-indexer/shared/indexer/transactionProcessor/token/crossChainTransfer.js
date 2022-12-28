@@ -23,7 +23,6 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { updateAddressBalanceQueue } = require('../../tokenIndex');
 const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');
 
@@ -52,8 +51,6 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		...tx.params,
 	};
 
-	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
-
 	// TODO: Remove this information?
 	// Update the account balance
 	const account = { address: tx.recipientAddress };
@@ -67,11 +64,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Remove this information?
-	// Update the account balance
-	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => {};
 
 module.exports = {
 	COMMAND_NAME,

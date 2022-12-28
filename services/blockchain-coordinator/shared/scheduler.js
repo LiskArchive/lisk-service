@@ -26,7 +26,6 @@ const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
 	// isGenesisAccountsIndexed,
-	// getDelegateAccounts,
 	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
@@ -37,6 +36,7 @@ const {
 
 const {
 	getRegisteredModules,
+	getAllPosValidators,
 } = require('./sources/connector');
 
 const config = require('../config');
@@ -47,11 +47,11 @@ const blockIndexQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-// const accountIndexQueue = new MessageQueue(
-// 	config.queue.accounts.name,
-// 	config.endpoints.messageQueue,
-// 	{ defaultJobOptions: config.queue.defaultJobOptions },
-// );
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
@@ -77,12 +77,20 @@ const scheduleBlocksIndexing = async (heights) => {
 	);
 };
 
-// const scheduleDelegateAccountsIndexing = async (addresses) => {
-// 	await Promise.all(addresses
-// 		.map(async (address) => accountIndexQueue.add({ address })),
-// 	);
-// 	logger.info('Finished scheduling of validator accounts indexing.');
-// };
+const scheduleValidatorsIndexing = async (validators) => {
+	await BluebirdPromise.map(
+		validators,
+		async validator => accountIndexQueue.add({
+			account: {
+				...validator,
+				isValidator: true,
+			},
+		}),
+		{ concurrency: validators.length },
+	);
+
+	logger.info('Finished scheduling of validators indexing');
+};
 
 // const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 // 	await Promise.all(accountAddressesToIndex
@@ -96,10 +104,10 @@ const initIndexingScheduler = async () => {
 	registeredLiskModules = await getRegisteredModules();
 
 	// Get all validators and schedule indexing
-	// const validators = await getDelegateAccounts();
-	// if (Array.isArray(validators) && validators.length) {
-	// 	await scheduleDelegateAccountsIndexing(validators);
-	// }
+	const { validators } = await getAllPosValidators();
+	if (Array.isArray(validators) && validators.length) {
+		await scheduleValidatorsIndexing(validators);
+	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
 	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();

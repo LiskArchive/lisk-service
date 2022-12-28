@@ -28,7 +28,11 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema, MYSQL_ENDPOINT);
+const getNewsFeedIndex = () => getTableInstance(
+	newsfeedIndexSchema.tableName,
+	newsfeedIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const reloadNewsFromDrupal = async drupalSources => {
 	const newsfeedDB = await getNewsFeedIndex();

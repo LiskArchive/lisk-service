@@ -23,6 +23,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
+const { getPosConstants } = require('./constants');
 const business = require('../business');
 const config = require('../../../config');
 const accountsIndexSchema = require('../../database/schema/accounts');
@@ -34,7 +35,6 @@ const {
 	updateAccountPublicKey,
 } = require('../../utils/accountUtils');
 const { getLastBlock } = require('../blocks');
-const { getAllGenerators } = require('../generators');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/arrayUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -85,11 +85,27 @@ const computeValidatorRank = async () => {
 };
 
 const computeValidatorStatus = async () => {
+	const {
+		data: { numberActiveValidators, numberStandbyValidators },
+	} = await getPosConstants();
+
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const generatorsList = await getAllGenerators();
-	const activeGeneratorsList = generatorsList.map(generator => generator.address);
+	const generatorsList = await business.getGenerators();
+
+	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));
+
+	const generatorInfo = (validatorList
+		.filter(validator => generatorMap.get(validator.address)))
+		.map(entry => ({ ...entry, hexAddress: getHexAddress(entry.address) }))
+		.sort(validatorComparator);
+
+	const activeGeneratorsList = (generatorInfo.slice(0, numberActiveValidators))
+		.map(acc => acc.address);
+
+	const standByGeneratorsList = (generatorInfo
+		.slice(generatorInfo.length - numberStandbyValidators)).map(acc => acc.address);
 
 	const verifyIfPunished = (validator) => {
 		const isPunished = validator.punishmentPeriods.some(
@@ -108,6 +124,8 @@ const computeValidatorStatus = async () => {
 			validator.status = VALIDATOR_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(validator.address)) {
 			validator.status = VALIDATOR_STATUS.ACTIVE;
+		} else if (standByGeneratorsList.includes(validator.address)) {
+			validator.status = VALIDATOR_STATUS.STANDBY;
 		} else if (BigInt(validator.validatorWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			validator.status = VALIDATOR_STATUS.STANDBY;
 		} else {
@@ -340,4 +358,5 @@ updateValidatorListOnAccountsUpdate();
 module.exports = {
 	reloadValidatorCache,
 	getPosValidators,
+	getAllValidators,
 };

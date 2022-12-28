@@ -16,6 +16,7 @@
 const {
 	getGenerators,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 } = require('./generators');
 
 const {
@@ -49,7 +50,6 @@ const {
 
 const {
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 } = require('./tokens');
 
@@ -72,12 +72,6 @@ const {
 	getRewardConstants,
 } = require('./dynamicReward');
 
-const {
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
-} = require('./coreCache');
-
 const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
 const { getLegacyAccountInfo } = require('./legacy');
@@ -90,6 +84,7 @@ module.exports = {
 	// Generators
 	getGenerators,
 	getNumberOfGenerators,
+	reloadGeneratorsCache,
 
 	// Blocks
 	getBlocks,
@@ -122,7 +117,6 @@ module.exports = {
 
 	// Token
 	getTokens,
-	getTopLiskAddresses,
 	getTokensSummary,
 
 	// PoS
@@ -149,11 +143,6 @@ module.exports = {
 	// Validator
 	getValidator,
 	validateBLSKey,
-
-	// Core cache
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByName,
 
 	getInflationRate,
 	getDefaultRewardAtHeight,

@@ -712,7 +712,7 @@ const liskBlockHeaderAsset = Object.freeze({
 	},
 });
 
-const liskBlockHeaderAssetV2 = Object.freeze({
+const liskBlockHeaderAssetV3 = Object.freeze({
 	input: {
 		maxHeightPreviouslyForged: 18211671,
 		maxHeightPrevoted: 18211676,
@@ -724,7 +724,7 @@ const liskBlockHeaderAssetV2 = Object.freeze({
 		seedReveal: Buffer.from('bbe7d7e3afb79ff40551b3535c1fbd6b', 'hex'),
 	},
 	schema: {
-		$id: '/blockHeader/asset/v2',
+		$id: '/blockHeader/asset/v3',
 		type: 'object',
 		properties: {
 			maxHeightPreviouslyForged: {
@@ -1393,7 +1393,7 @@ module.exports = {
 	liskBlock,
 	liskBlockHeader,
 	liskBlockHeaderAsset,
-	liskBlockHeaderAssetV2,
+	liskBlockHeaderAssetV3,
 	liskTransaction,
 	liskTransactionAssets,
 };

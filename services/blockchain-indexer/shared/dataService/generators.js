@@ -13,29 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
 const { parseToJSONCompatObj } = require('../utils/parser');
 
-const business = require('./business');
-
-const logger = Logger();
-
-let generatorsList = [];
-
-const loadAllGenerators = async () => {
-	try {
-		generatorsList = await business.getGenerators();
-		logger.info(`Updated generators list with ${generatorsList.length} validators.`);
-	} catch (err) {
-		logger.warn(`Failed to load all generators due to: ${err.message}`);
-		throw err;
-	}
-};
-
-const getAllGenerators = async () => {
-	if (generatorsList.length === 0) await loadAllGenerators();
-	return generatorsList;
-};
+const dataService = require('./business');
+const { getAllValidators } = require('./pos/validators');
 
 const getGenerators = async params => {
 	const generators = {
@@ -45,7 +26,18 @@ const getGenerators = async params => {
 
 	const { offset, limit } = params;
 
-	generators.data = generatorsList.slice(offset, offset + limit);
+	const generatorsList = await dataService.getGenerators();
+	const validatorList = await getAllValidators();
+
+	const validatorMap = new Map(validatorList.map(validator => [validator.address, validator]));
+	generatorsList.forEach(generator => {
+		if (validatorMap.has(generator.address)) {
+			const validator = validatorMap.get(generator.address);
+			generators.data.push({ ...generator, status: validator.status });
+		}
+	});
+
+	generators.data = generators.data.slice(offset, offset + limit);
 
 	generators.meta.count = generators.data.length;
 	generators.meta.offset = offset;
@@ -55,7 +47,5 @@ const getGenerators = async params => {
 };
 
 module.exports = {
-	reloadGeneratorsCache: loadAllGenerators,
-	getAllGenerators,
 	getGenerators,
 };

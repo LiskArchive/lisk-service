@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'newsfeed',
 	primaryKey: 'source_id',
 	charset: 'utf8mb4',
 	schema: {

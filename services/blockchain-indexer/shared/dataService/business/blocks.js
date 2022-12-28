@@ -34,12 +34,17 @@ const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { normalizeTransaction } = require('../../utils/transactionsUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.tableName,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
@@ -64,7 +69,9 @@ const normalizeBlock = async (originalblock) => {
 			block.generator = {
 				address: block.generatorAddress,
 				publicKey: generatorInfo ? generatorInfo.publicKey : null,
-				name: generatorInfo ? generatorInfo.name : null,
+				name: generatorInfo && generatorInfo.name
+					? generatorInfo.name
+					: await getNameByAddress(block.generatorAddress),
 			};
 		}
 
