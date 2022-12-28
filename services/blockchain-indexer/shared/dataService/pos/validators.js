@@ -23,7 +23,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getPosConstants } = require('./constants');
+const { getPosConstants } = require('../business');
 const business = require('../business');
 const config = require('../../../config');
 const accountsIndexSchema = require('../../database/schema/accounts');

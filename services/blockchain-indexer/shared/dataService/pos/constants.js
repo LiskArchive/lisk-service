@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getPosConstants = async () => {
-	const response = await dataService.getPosConstants();
+	const response = await business.getPosConstants();
 	return response;
 };
 
