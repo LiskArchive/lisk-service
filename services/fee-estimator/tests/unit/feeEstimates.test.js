@@ -23,7 +23,7 @@ const {
 	calculateBlockSize,
 	calculateWeightedAvg,
 	EMAcalc,
-} = require('../../shared/dynamicFees');
+} = require('../../shared/utils/dynamicFeesLIP');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');

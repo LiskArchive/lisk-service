@@ -22,35 +22,57 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
+let feeTokenID;
 let minFeePerByte;
 
-const getFeeConstants = async () => {
+const cacheFeeTokenID = async () => {
 	try {
-		// TODO: Update endpoint when available from SDK
-		const response = await invokeEndpoint('');
-		return response;
+		logger.trace('Attemping to update feeTokenID.');
+		const response = await invokeEndpoint('fee_getFeeTokenID');
+		if (response.error) throw response.error;
+
+		feeTokenID = response;
+		logger.info(`Updated feeTokenID to ${feeTokenID}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getFeeConstants\'.');
+			throw new TimeoutException('Request timed out when calling \'cacheFeeTokenID\'.');
 		}
 		throw err;
 	}
 };
 
-const refreshMinFeePerByte = async () => {
+const cacheMinFeePerByte = async () => {
 	try {
 		logger.trace('Attemping to update minFeePerByte.');
-		const feeConstants = await getFeeConstants();
-		minFeePerByte = feeConstants.minFeePerByte;
+		const response = await invokeEndpoint('fee_getMinFeePerByte');
+		if (response.error) throw response.error;
+
+		minFeePerByte = response;
 		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
 	} catch (err) {
-		logger.warn(`Error occurred while refreshing refreshMinFeePerByte:\n${err.stack}`);
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'cacheMinFeePerByte\'.');
+		}
+		throw err;
 	}
 };
+
+const cacheFeeConstants = async () => {
+	try {
+		if (minFeePerByte === undefined) await cacheMinFeePerByte();
+		if (feeTokenID === undefined) await cacheFeeTokenID();
+	} catch (err) {
+		logger.warn(`Error occurred when calling 'cacheFeeConstants':\n${err.stack}`);
+	}
+};
+
+const getFeeTokenID = () => feeTokenID;
 
 const getMinFeePerByte = () => minFeePerByte;
 
 module.exports = {
+	cacheFeeConstants,
+
+	getFeeTokenID,
 	getMinFeePerByte,
-	refreshMinFeePerByte,
 };

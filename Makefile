@@ -107,18 +107,18 @@ build-tests:
 build-local:
 	npm ci
 	cd ./framework && npm ci
-	cd ./services/blockchain-app-registry && npm ci
-	cd ./services/blockchain-connector && npm ci
-	cd ./services/blockchain-coordinator && npm ci
-	cd ./services/blockchain-indexer && npm ci
-	cd ./services/transaction-statistics && npm ci
-	cd ./services/fee-estimator && npm ci
-	cd ./services/market && npm ci
-	cd ./services/newsfeed && npm ci
-	cd ./services/gateway && npm ci
-	cd ./services/export && npm ci
-	cd ./services/template && npm ci
-	cd ./tests && npm ci
+	cd ./services/blockchain-app-registry && npm i --registry https://npm.lisk.com
+	cd ./services/blockchain-connector && npm i --registry https://npm.lisk.com
+	cd ./services/blockchain-coordinator && npm i --registry https://npm.lisk.com
+	cd ./services/blockchain-indexer && npm i --registry https://npm.lisk.com
+	cd ./services/transaction-statistics && npm i --registry https://npm.lisk.com
+	cd ./services/fee-estimator && npm i --registry https://npm.lisk.com
+	cd ./services/market && npm i --registry https://npm.lisk.com
+	cd ./services/newsfeed && npm i --registry https://npm.lisk.com
+	cd ./services/gateway && npm i --registry https://npm.lisk.com
+	cd ./services/export && npm i --registry https://npm.lisk.com
+	cd ./services/template && npm i --registry https://npm.lisk.com
+	cd ./tests && npm i --registry https://npm.lisk.com
 
 clean: clean-local clean-images
 

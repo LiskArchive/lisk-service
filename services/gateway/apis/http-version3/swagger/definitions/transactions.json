@@ -1,520 +1,520 @@
 {
-    "TransactionsStatisticsWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "$ref": "#/definitions/TransactionsStatistics"
-            },
-            "meta": {
-                "$ref": "#/definitions/TransactionStatisticsMeta"
-            }
-        }
-    },
-    "TransactionStatisticsMeta": {
-        "type": "object",
-        "required": [
-            "count",
-            "offset",
-            "total",
-            "duration",
-            "info"
-        ],
-        "properties": {
-            "count": {
-                "type": "integer",
-                "example": 10,
-                "minimum": 0,
-                "description": "Number of timeline items per tokenID returned in the response."
-            },
-            "offset": {
-                "type": "integer",
-                "example": 10,
-                "minimum": 0,
-                "description": "Number of items skipped in the response."
-            },
-            "total": {
-                "type": "integer",
-                "example": 100,
-                "minimum": 0,
-                "description": "Total number of available timeline items per tokenID matching the request query."
-            },
-            "duration": {
-                "type": "object",
-                "properties": {
-                    "format": {
-                        "type": "string",
-                        "example": "YYYY-MM",
-                        "description": "Date/month format for the stated aggregation interval ('from' & 'to')."
-                    },
-                    "from": {
-                        "type": "string",
-                        "example": "2021-12",
-                        "description": "Date/month representing the beginning of the aggregation interval."
-                    },
-                    "to": {
-                        "type": "string",
-                        "example": "2022-09",
-                        "description": "Date/month representing the ending of the aggregation interval."
-                    }
-                }
-            }
-        }
-    },
-    "TransactionsStatistics": {
-        "type": "object",
-        "description": "Transactions statistics",
-        "required": [
-            "distributionByType",
-            "distributionByAmount",
-            "timeline"
-        ],
-        "properties": {
-            "distributionByType": {
-                "type": "object",
-                "description": "Count of transactions segregated by transaction type (i.e. moduleCommand) for the stated time interval in the response 'meta'.",
-                "properties": {
-                    "token:transfer": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                }
-            },
-            "distributionByAmount": {
-                "type": "object",
-                "description": "Count of Token Transfer transactions segregated by amount range for the stated time interval in the response 'meta'.",
-                "properties": {
-                    "0000000100000000": {
-                        "type": "object",
-                        "properties": {
-                            "1_10": {
-                                "type": "integer",
-                                "example": 1
-                            }
-                        }
-                    }
-                }
-            },
-            "timeline": {
-                "type": "object",
-                "properties": {
-                    "0000000100000000": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "required": [
-                                "timestamp",
-                                "date",
-                                "transactionCount",
-                                "volume"
-                            ],
-                            "properties": {
-                                "timestamp": {
-                                    "type": "integer",
-                                    "description": "UNIX timestamp representing the beginning of the aggregation interval.",
-                                    "example": 1556100060
-                                },
-                                "date": {
-                                    "type": "string",
-                                    "description": "Date representing the beginning of the aggregation interval.",
-                                    "example": "2019-11-27"
-                                },
-                                "transactionCount": {
-                                    "type": "integer",
-                                    "description": "Count of all transactions in the given time span.",
-                                    "example": "14447177193385"
-                                },
-                                "volume": {
-                                    "type": "string",
-                                    "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows).",
-                                    "example": "14447177193385"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "Transaction": {
-        "type": "object",
-        "required": [
-            "id",
-            "moduleCommand",
-            "fee",
-            "minFee",
-            "size",
-            "nonce",
-            "block",
-            "sender",
-            "params",
-            "executionStatus"
-        ],
-        "properties": {
-            "id": {
-                "type": "string",
-                "format": "id",
-                "example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
-                "minLength": 1,
-                "maxLength": 64,
-                "description": "Unique identifier of the transaction.\nDerived from the transaction signature."
-            },
-            "moduleCommand": {
-                "type": "string",
-                "example": "token:transfer",
-                "description": "Combination of transaction moduleName:commandName."
-            },
-            "nonce": {
-                "type": "string",
-                "example": "0"
-            },
-            "fee": {
-                "type": "string",
-                "example": "1000000",
-                "description": "Transaction fee."
-            },
-            "minFee": {
-                "type": "string",
-                "example": "75000",
-                "description": "Minimum fee for the transaction."
-            },
-            "size": {
-                "type": "integer",
-                "example": 165,
-                "minimum": 1,
-                "description": "Transaction size in bytes."
-            },
-            "block": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "id",
-                        "minLength": 1,
-                        "maxLength": 64,
-                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "Unique identifier of the block.\nDerived from the block signature."
-                    },
-                    "height": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "example": 8350681,
-                        "description": "The height of the network, at the moment where this transaction was included in the blockchain."
-                    },
-                    "timestamp": {
-                        "type": "integer",
-                        "example": 1613323667,
-                        "description": "UNIX Timestamp"
-                    },
-                    "isFinal": {
-                        "type": "boolean",
-                        "example": true
-                    }
-                }
-            },
-            "sender": {
-                "type": "object",
-                "properties": {
-                    "address": {
-                        "type": "string",
-                        "format": "address",
-                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-                    },
-                    "publicKey": {
-                        "type": "string",
-                        "format": "publicKey",
-                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "genesis_84",
-                        "description": "Delegate name"
-                    }
-                }
-            },
-            "params": {
-                "type": "object",
-                "properties": {
-                    "amount": {
-                        "type": "string",
-                        "example": "100003490",
-                        "description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
-                    },
-                    "recipient": {
-                        "type": "object",
-                        "properties": {
-                            "address": {
-                                "type": "string",
-                                "format": "address",
-                                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-                            },
-                            "name": {
-                                "type": "string",
-                                "example": "genesis_84",
-                                "description": "Delegate name"
-                            },
-                            "publicKey": {
-                                "type": "string",
-                                "format": "publicKey",
-                                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-                            }
-                        }
-                    },
-                    "data": {
-                        "type": "string",
-                        "example": "test"
-                    }
-                }
-            },
-            "executionStatus": {
-                "type": "string",
-                "example": "success",
-                "description": "Execution status of the transaction."
-            },
-            "index": {
-                "type": "integer",
-                "example": 0,
-                "description": "Transaction index (zero-based) within the block payload."
-            }
-        }
-    },
-    "TransactionsWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "description": "List of transactions",
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/Transaction"
-                }
-            },
-            "meta": {
-                "$ref": "#/definitions/Pagination"
-            }
-        }
-    },
-    "postTransactionWithEnvelope": {
-        "type": "object",
-        "properties": {
-            "message": {
-                "type": "string",
-                "example": "Transaction payload was successfully passed to the network node"
-            },
-            "transactionID": {
-                "type": "string",
-                "example": "bfd3521aeddd586f43931b6972b5771e9919e18f2cc91e940a15eacb588ecc6c",
-                "description": "Transaction ID"
-            }
-        }
-    },
-    "badRequestEnvelope": {
-        "type": "object",
-        "properties": {
-            "error": {
-                "type": "boolean",
-                "example": true
-            },
-            "message": {
-                "type": "string",
-                "example": "Transaction payload was rejected by the network node"
-            }
-        }
-    },
-    "serverErrorEnvelope": {
-        "type": "object",
-        "properties": {
-            "error": {
-                "type": "boolean",
-                "example": true
-            },
-            "message": {
-                "type": "string",
-                "example": "Unable to reach a network node"
-            }
-        }
-    },
-    "transactionParamEnvelope": {
-        "type": "object",
-        "properties": {
-            "transaction": {
-                "type": "string",
-                "example": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b",
-                "description": "Binary payload"
-            }
-        }
-    },
-    "dryrunTransactionParamEnvelope": {
-        "type": "object",
-        "properties": {
-            "isSkipVerify": {
-                "type": "boolean",
-                "description": "A boolean indicator to skip transaction verification.",
-                "example": "false",
-                "default": false
-            },
-            "transaction": {
-                "type": "object",
-                "description": "Binary payload or the transaction object.",
-                "properties": {
-                    "module": {
-                        "type": "string",
-                        "example": "token",
-                        "description": "Name of the blockchain module associated with the transaction."
-                    },
-                    "command": {
-                        "type": "string",
-                        "example": "transfer",
-                        "description": "Specific command name in the module to be executed."
-                    },
-                    "fee": {
-                        "type": "string",
-                        "example": "100000000",
-                        "description": "Transaction fee."
-                    },
-                    "nonce": {
-                        "type": "string",
-                        "example": "0"
-                    },
-                    "senderPublicKey": {
-                        "type": "string",
-                        "format": "senderPublicKey",
-                        "example": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
-                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key.\n"
-                    },
-                    "signatures": {
-                        "type": "string",
-                        "example": [
-                            "48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
-                        ],
-                        "description": "An array representing signature(s) of the transaction sender."
-                    },
-                    "params": {
-                        "type": "object",
-                        "properties": {
-                            "recipientAddress": {
-                                "type": "string",
-                                "example": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
-                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
-                            },
-                            "amount": {
-                                "type": "string",
-                                "example": "10000000000",
-                                "description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
-                            },
-                            "tokenID": {
-                                "type": "string",
-                                "example": "0000000000000000",
-                                "description": "Unique token identifier."
-                            },
-                            "data": {
-                                "type": "string",
-                                "example": "Token transfer tx",
-                                "description": "Transaction data."
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "dryTransactionWithEnvelope": {
-        "type": "object",
-        "properties": {
-            "data": {
-                "type": "object",
-                "properties": {
-                    "success": {
-                        "type": "boolean",
-                        "example": true
-                    },
-                    "events": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "data": {
-                                    "type": "object",
-                                    "properties": {
-                                        "senderAddress": {
-                                            "type": "string",
-                                            "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
-                                        },
-                                        "tokenID": {
-                                            "type": "string",
-                                            "example": "0000000000000000",
-                                            "description": "Unique token identifier."
-                                        },
-                                        "amount": {
-                                            "type": "string",
-                                            "example": "100003490",
-                                            "description": "Amount of tokens transferred in this transaction. The type of token can be identified by the 'tokenID' property."
-                                        },
-                                        "recipientAddress": {
-                                            "type": "string",
-                                            "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                            "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
-                                        }
-                                    }
-                                },
-                                "index": {
-                                    "type": "integer",
-                                    "example": 0
-                                },
-                                "module": {
-                                    "type": "string",
-                                    "example": "token"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "example": "transferEvent"
-                                },
-                                "topics": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    },
-                                    "example": [
-                                        "86afcdd640846bf41525481938653ee942be3fac1ecbcff08e98f9aeda3a9583",
-                                        "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                        "0000000000000000",
-                                        "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99"
-                                    ]
-                                },
-                                "height": {
-                                    "type": "number",
-                                    "example": 10
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "meta": {
-                "type": "object",
-                "properties": {
-                    "params": {
-                        "type": "object",
-                        "properties": {
-                            "transaction": {
-                                "type": "string",
-                                "example": "0a05746f6b656e12087472616e7366657218002080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a40639d43851b1277a059903f3eca7e98b083148a60838ad2380296d3989781b6e0f848fbbb2694885d2f447d7cb59dde3306f202d85ba7b36922f5035933879c09"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+	"TransactionsStatisticsWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"$ref": "#/definitions/TransactionsStatistics"
+			},
+			"meta": {
+				"$ref": "#/definitions/TransactionStatisticsMeta"
+			}
+		}
+	},
+	"TransactionStatisticsMeta": {
+		"type": "object",
+		"required": [
+			"count",
+			"offset",
+			"total",
+			"duration",
+			"info"
+		],
+		"properties": {
+			"count": {
+				"type": "integer",
+				"example": 10,
+				"minimum": 0,
+				"description": "Number of timeline items per tokenID returned in the response."
+			},
+			"offset": {
+				"type": "integer",
+				"example": 10,
+				"minimum": 0,
+				"description": "Number of items skipped in the response."
+			},
+			"total": {
+				"type": "integer",
+				"example": 100,
+				"minimum": 0,
+				"description": "Total number of available timeline items per tokenID matching the request query."
+			},
+			"duration": {
+				"type": "object",
+				"properties": {
+					"format": {
+						"type": "string",
+						"example": "YYYY-MM",
+						"description": "Date/month format for the stated aggregation interval ('from' & 'to')."
+					},
+					"from": {
+						"type": "string",
+						"example": "2021-12",
+						"description": "Date/month representing the beginning of the aggregation interval."
+					},
+					"to": {
+						"type": "string",
+						"example": "2022-09",
+						"description": "Date/month representing the ending of the aggregation interval."
+					}
+				}
+			}
+		}
+	},
+	"TransactionsStatistics": {
+		"type": "object",
+		"description": "Transactions statistics",
+		"required": [
+			"distributionByType",
+			"distributionByAmount",
+			"timeline"
+		],
+		"properties": {
+			"distributionByType": {
+				"type": "object",
+				"description": "Count of transactions segregated by transaction type (i.e. moduleCommand) for the stated time interval in the response 'meta'.",
+				"properties": {
+					"token:transfer": {
+						"type": "integer",
+						"example": 1
+					}
+				}
+			},
+			"distributionByAmount": {
+				"type": "object",
+				"description": "Count of Token Transfer transactions segregated by amount range for the stated time interval in the response 'meta'.",
+				"properties": {
+					"0000000100000000": {
+						"type": "object",
+						"properties": {
+							"1_10": {
+								"type": "integer",
+								"example": 1
+							}
+						}
+					}
+				}
+			},
+			"timeline": {
+				"type": "object",
+				"properties": {
+					"0000000100000000": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"required": [
+								"timestamp",
+								"date",
+								"transactionCount",
+								"volume"
+							],
+							"properties": {
+								"timestamp": {
+									"type": "integer",
+									"description": "UNIX timestamp representing the beginning of the aggregation interval.",
+									"example": 1556100060
+								},
+								"date": {
+									"type": "string",
+									"description": "Date representing the beginning of the aggregation interval.",
+									"example": "2019-11-27"
+								},
+								"transactionCount": {
+									"type": "integer",
+									"description": "Count of all transactions in the given time span.",
+									"example": "14447177193385"
+								},
+								"volume": {
+									"type": "string",
+									"description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows).",
+									"example": "14447177193385"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"Transaction": {
+		"type": "object",
+		"required": [
+			"id",
+			"moduleCommand",
+			"fee",
+			"minFee",
+			"size",
+			"nonce",
+			"block",
+			"sender",
+			"params",
+			"executionStatus"
+		],
+		"properties": {
+			"id": {
+				"type": "string",
+				"format": "id",
+				"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
+				"minLength": 1,
+				"maxLength": 64,
+				"description": "Unique identifier of the transaction.\nDerived from the transaction signature."
+			},
+			"moduleCommand": {
+				"type": "string",
+				"example": "token:transfer",
+				"description": "Combination of transaction moduleName:commandName."
+			},
+			"nonce": {
+				"type": "string",
+				"example": "0"
+			},
+			"fee": {
+				"type": "string",
+				"example": "1000000",
+				"description": "Transaction fee."
+			},
+			"minFee": {
+				"type": "string",
+				"example": "75000",
+				"description": "Minimum fee for the transaction."
+			},
+			"size": {
+				"type": "integer",
+				"example": 165,
+				"minimum": 1,
+				"description": "Transaction size in bytes."
+			},
+			"block": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "id",
+						"minLength": 1,
+						"maxLength": 64,
+						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+						"description": "Unique identifier of the block.\nDerived from the block signature."
+					},
+					"height": {
+						"type": "integer",
+						"minimum": 1,
+						"example": 8350681,
+						"description": "The height of the network, at the moment where this transaction was included in the blockchain."
+					},
+					"timestamp": {
+						"type": "integer",
+						"example": 1613323667,
+						"description": "UNIX Timestamp"
+					},
+					"isFinal": {
+						"type": "boolean",
+						"example": true
+					}
+				}
+			},
+			"sender": {
+				"type": "object",
+				"properties": {
+					"address": {
+						"type": "string",
+						"format": "address",
+						"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+						"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+					},
+					"publicKey": {
+						"type": "string",
+						"format": "publicKey",
+						"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+						"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+					},
+					"name": {
+						"type": "string",
+						"example": "genesis_84",
+						"description": "Delegate name"
+					}
+				}
+			},
+			"params": {
+				"type": "object",
+				"properties": {
+					"amount": {
+						"type": "string",
+						"example": "100003490",
+						"description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
+					},
+					"recipient": {
+						"type": "object",
+						"properties": {
+							"address": {
+								"type": "string",
+								"format": "address",
+								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+								"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+							},
+							"name": {
+								"type": "string",
+								"example": "genesis_84",
+								"description": "Delegate name"
+							},
+							"publicKey": {
+								"type": "string",
+								"format": "publicKey",
+								"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+							}
+						}
+					},
+					"data": {
+						"type": "string",
+						"example": "test"
+					}
+				}
+			},
+			"executionStatus": {
+				"type": "string",
+				"example": "success",
+				"description": "Execution status of the transaction."
+			},
+			"index": {
+				"type": "integer",
+				"example": 0,
+				"description": "Transaction index (zero-based) within the block payload."
+			}
+		}
+	},
+	"TransactionsWithEnvelope": {
+		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
+		"properties": {
+			"data": {
+				"description": "List of transactions",
+				"type": "array",
+				"items": {
+					"$ref": "#/definitions/Transaction"
+				}
+			},
+			"meta": {
+				"$ref": "#/definitions/pagination"
+			}
+		}
+	},
+	"postTransactionWithEnvelope": {
+		"type": "object",
+		"properties": {
+			"message": {
+				"type": "string",
+				"example": "Transaction payload was successfully passed to the network node"
+			},
+			"transactionID": {
+				"type": "string",
+				"example": "bfd3521aeddd586f43931b6972b5771e9919e18f2cc91e940a15eacb588ecc6c",
+				"description": "Transaction ID"
+			}
+		}
+	},
+	"badRequestEnvelope": {
+		"type": "object",
+		"properties": {
+			"error": {
+				"type": "boolean",
+				"example": true
+			},
+			"message": {
+				"type": "string",
+				"example": "Transaction payload was rejected by the network node"
+			}
+		}
+	},
+	"serverErrorEnvelope": {
+		"type": "object",
+		"properties": {
+			"error": {
+				"type": "boolean",
+				"example": true
+			},
+			"message": {
+				"type": "string",
+				"example": "Unable to reach a network node"
+			}
+		}
+	},
+	"transactionParamEnvelope": {
+		"type": "object",
+		"properties": {
+			"transaction": {
+				"type": "string",
+				"example": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b",
+				"description": "Binary payload"
+			}
+		}
+	},
+	"dryrunTransactionParamEnvelope": {
+		"type": "object",
+		"properties": {
+			"isSkipVerify": {
+				"type": "boolean",
+				"description": "A boolean indicator to skip transaction verification.",
+				"example": "false",
+				"default": false
+			},
+			"transaction": {
+				"type": "object",
+				"description": "Binary payload or the transaction object.",
+				"properties": {
+					"module": {
+						"type": "string",
+						"example": "token",
+						"description": "Name of the blockchain module associated with the transaction."
+					},
+					"command": {
+						"type": "string",
+						"example": "transfer",
+						"description": "Specific command name in the module to be executed."
+					},
+					"fee": {
+						"type": "string",
+						"example": "100000000",
+						"description": "Transaction fee."
+					},
+					"nonce": {
+						"type": "string",
+						"example": "0"
+					},
+					"senderPublicKey": {
+						"type": "string",
+						"format": "senderPublicKey",
+						"example": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
+						"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+					},
+					"signatures": {
+						"type": "string",
+						"example": [
+							"48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
+						],
+						"description": "An array representing signature(s) of the transaction sender."
+					},
+					"params": {
+						"type": "object",
+						"properties": {
+							"recipientAddress": {
+								"type": "string",
+								"example": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
+								"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
+							},
+							"amount": {
+								"type": "string",
+								"example": "10000000000",
+								"description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
+							},
+							"tokenID": {
+								"type": "string",
+								"example": "0000000000000000",
+								"description": "Unique token identifier."
+							},
+							"data": {
+								"type": "string",
+								"example": "Token transfer tx",
+								"description": "Transaction data."
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"dryTransactionWithEnvelope": {
+		"type": "object",
+		"properties": {
+			"data": {
+				"type": "object",
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"example": true
+					},
+					"events": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"data": {
+									"type": "object",
+									"properties": {
+										"senderAddress": {
+											"type": "string",
+											"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+											"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
+										},
+										"tokenID": {
+											"type": "string",
+											"example": "0000000000000000",
+											"description": "Unique token identifier."
+										},
+										"amount": {
+											"type": "string",
+											"example": "100003490",
+											"description": "Amount of tokens transferred in this transaction. The type of token can be identified by the 'tokenID' property."
+										},
+										"recipientAddress": {
+											"type": "string",
+											"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+											"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
+										}
+									}
+								},
+								"index": {
+									"type": "integer",
+									"example": 0
+								},
+								"module": {
+									"type": "string",
+									"example": "token"
+								},
+								"name": {
+									"type": "string",
+									"example": "transferEvent"
+								},
+								"topics": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"example": [
+										"86afcdd640846bf41525481938653ee942be3fac1ecbcff08e98f9aeda3a9583",
+										"lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+										"0000000000000000",
+										"lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99"
+									]
+								},
+								"height": {
+									"type": "number",
+									"example": 10
+								}
+							}
+						}
+					}
+				}
+			},
+			"meta": {
+				"type": "object",
+				"properties": {
+					"params": {
+						"type": "object",
+						"properties": {
+							"transaction": {
+								"type": "string",
+								"example": "0a05746f6b656e12087472616e7366657218002080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a40639d43851b1277a059903f3eca7e98b083148a60838ad2380296d3989781b6e0f848fbbb2694885d2f447d7cb59dde3306f202d85ba7b36922f5035933879c09"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

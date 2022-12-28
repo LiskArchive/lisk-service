@@ -14,6 +14,12 @@
  *
  */
 const {
+	getGenerators,
+	getNumberOfGenerators,
+	reloadGeneratorsCache,
+} = require('./generators');
+
+const {
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -24,46 +30,6 @@ const {
 } = require('./blocks');
 
 const {
-	getBlockchainApps,
-	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
-} = require('./interoperability');
-
-const {
-	getLegacyAccountInfo,
-} = require('./legacy');
-
-const {
-	getDelegates,
-	getAllDelegates,
-	isDposModuleRegistered,
-} = require('./delegates');
-
-const {
-	getGenerators,
-	getNumberOfGenerators,
-	reloadGeneratorsCache,
-} = require('./generators');
-
-const {
-	getPendingTransactions,
-	loadAllPendingTransactions,
-} = require('./pendingTransactions');
-
-const {
-	postTransactions,
-} = require('./postTransactions');
-
-const {
-	dryRunTransactions,
-} = require('./transactionsDryRun');
-
-const {
-	getTokens,
-	getTokensSummary,
-} = require('./tokens');
-
-const {
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
@@ -72,21 +38,55 @@ const {
 } = require('./transactions');
 
 const {
-	getSchemas,
-} = require('./schemas');
+	getPendingTransactions,
+	loadAllPendingTransactions,
+} = require('./pendingTransactions');
 
 const {
-	getVotesReceived,
-	getVotesSent,
-	getUnlocks,
-	getDPoSConstants,
-} = require('./dpos');
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+	reloadBlockchainAppsStats,
+} = require('./interoperability');
 
+const {
+	getTokens,
+	getTokensSummary,
+} = require('./tokens');
+
+const {
+	getPosValidators,
+	getAllPosValidators,
+	getPosValidatorsByStake,
+	isPosModuleRegistered,
+	getPosLockedRewards,
+	getStakes,
+	getStakers,
+	getPosClaimableRewards,
+	getPosUnlocks,
+	getPosConstants,
+} = require('./pos');
+
+const {
+	getDefaultRewardAtHeight,
+	getInflationRate,
+	getRewardConstants,
+} = require('./dynamicReward');
+
+const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
+const { getLegacyAccountInfo } = require('./legacy');
+const { postTransactions } = require('./postTransactions');
 const { getEvents, getEventsByHeight } = require('./events');
+const { dryRunTransactions } = require('./transactionsDryRun');
 const { getValidator, validateBLSKey } = require('./validator');
 
 module.exports = {
+	// Generators
+	getGenerators,
+	getNumberOfGenerators,
+	reloadGeneratorsCache,
+
+	// Blocks
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -94,37 +94,57 @@ module.exports = {
 	getBlockByHeight,
 	getBlockByID,
 	getBlocksAssets,
-	getBlockchainApps,
-	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
-	getDelegates,
-	getAllDelegates,
-	isDposModuleRegistered,
-	getGenerators,
-	getNumberOfGenerators,
-	reloadGeneratorsCache,
-	dryRunTransactions,
-	postTransactions,
-	getTokens,
-	getTokensSummary,
-	getPendingTransactions,
-	loadAllPendingTransactions,
+
+	// Transactions
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
-	getSchemas,
 	normalizeTransaction,
-	getVotesReceived,
-	getVotesSent,
-	getUnlocks,
-	getDPoSConstants,
+	getPendingTransactions,
+	loadAllPendingTransactions,
+	postTransactions,
+	dryRunTransactions,
+
+	// Events
+	getEvents,
+	getEventsByHeight,
+
+	// Interoperability
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+	reloadBlockchainAppsStats,
+
+	// Token
+	getTokens,
+	getTokensSummary,
+
+	// PoS
+	getPosValidators,
+	getAllPosValidators,
+	getPosValidatorsByStake,
+	isPosModuleRegistered,
+	getPosLockedRewards,
+	getStakes,
+	getStakers,
+	getPosClaimableRewards,
+	getPosUnlocks,
+	getPosConstants,
+
+	// Schemas
+	getSchemas,
+
+	// Auth
 	getAuthAccountInfo,
 
+	// Legacy
+	getLegacyAccountInfo,
+
+	// Validator
 	getValidator,
 	validateBLSKey,
 
-	getEvents,
-	getEventsByHeight,
-	getLegacyAccountInfo,
+	getInflationRate,
+	getDefaultRewardAtHeight,
+	getRewardConstants,
 };

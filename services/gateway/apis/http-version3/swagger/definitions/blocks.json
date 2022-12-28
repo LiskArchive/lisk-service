@@ -181,7 +181,7 @@
                 }
             },
             "meta": {
-                "$ref": "#/definitions/Pagination"
+                "$ref": "#/definitions/pagination"
             }
         }
     },
@@ -238,7 +238,7 @@
                 }
             },
             "meta": {
-                "$ref": "#/definitions/Pagination"
+                "$ref": "#/definitions/pagination"
             }
         }
     }

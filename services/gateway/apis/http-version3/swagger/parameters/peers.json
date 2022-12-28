@@ -2,21 +2,21 @@
     "ip": {
         "name": "ip",
         "in": "query",
-        "description": "IP of the node or delegate",
+        "description": "IP of the node.",
         "type": "string",
         "format": "ip"
     },
     "networkVersion": {
         "name": "networkVersion",
         "in": "query",
-        "description": "Network version",
+        "description": "Network version.",
         "type": "string",
         "format": "version"
     },
     "state": {
         "name": "state",
         "in": "query",
-        "description": "Current state of the network",
+        "description": "Current state of the network.",
         "type": "integer",
         "format": "int32",
         "minimum": 0,

@@ -13,43 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	MySQL: { getTableInstance },
-} = require('lisk-service-framework');
-const config = require('../../../../config');
-
-const logger = Logger();
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
-
-const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.tableName,
-	transactionsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
 // Command specific constants
-const commandName = 'messageRecovery';
+const COMMAND_NAME = 'messageRecovery';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
-
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	tx.moduleCommand = `${tx.module}:${tx.crossChainCommand}`;
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
-};
+const applyTransaction = async (blockHeader, tx, dbTrx) => { };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => { };
 
 module.exports = {
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

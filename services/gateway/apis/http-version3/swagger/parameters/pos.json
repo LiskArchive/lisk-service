@@ -1,0 +1,22 @@
+{
+	"validatorStatus": {
+		"name": "status",
+		"in": "query",
+		"description": "Query validators by status.",
+		"type": "string",
+		"minLength": 1
+	},
+	"validatorName": {
+		"name": "name",
+		"in": "query",
+		"description": "Query validators by their registered name.",
+		"type": "string",
+		"minLength": 1
+	},
+	"isUnlockable": {
+		"name": "isUnlockable",
+		"in": "query",
+		"description": "Query pending unlocks filtered by unlockable.",
+		"type": "boolean"
+	}
+}

@@ -14,22 +14,6 @@
  *
  */
 const {
-	getLastBlock,
-	getBlockByID,
-	getBlocksByIDs,
-	getBlockByHeight,
-	getBlocksByHeightBetween,
-} = require('./blocks');
-
-const {
-	getTransactionByID,
-	getTransactionsByIDs,
-	getTransactionsFromPool,
-	postTransaction,
-	dryRunTransaction,
-} = require('./transactions');
-
-const {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
@@ -50,6 +34,22 @@ const {
 } = require('./endpoints');
 
 const {
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+} = require('./blocks');
+
+const {
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+} = require('./transactions');
+
+const {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
@@ -65,28 +65,45 @@ const {
 } = require('./tokens');
 
 const {
-	getDelegate,
-	getAllDelegates,
-	getDPoSConstants,
-	getVoter,
-} = require('./dpos');
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
+	getPosConstants,
+	getPosPendingUnlocks,
+	getPosClaimableRewards,
+	getPosLockedRewards,
+	getStaker,
+} = require('./pos');
+
+const {
+	getRewardTokenID,
+	getInflationRate,
+	getDefaultRewardAtHeight,
+	cacheRegisteredRewardModule,
+} = require('./dynamicReward');
+
+const {
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
+} = require('./fee');
+
 const { getAuthAccount } = require('./auth');
-const { getValidator, validateBLSKey } = require('./validators');
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
-const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 const { setSchemas, setMetadata } = require('./schema');
-const { refreshMinFeePerByte } = require('./fee');
+const { getValidator, validateBLSKey } = require('./validators');
+const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 
 const init = async () => {
+	// Initialize the local cache
 	await refreshNetworkStatus();
+	await cacheRegisteredRewardModule();
+	await cacheFeeConstants();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
 	setMetadata(await getSystemMetadata());
-
-	// Cache fee related constants
-	await refreshMinFeePerByte();
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
@@ -95,31 +112,16 @@ const init = async () => {
 module.exports = {
 	init,
 
-	getLastBlock,
-	getBlockByID,
-	getBlocksByIDs,
-	getBlockByHeight,
-	getBlocksByHeightBetween,
-
-	getEventsByHeight,
-
-	getTransactionByID,
-	getTransactionsByIDs,
-	getTransactionsFromPool,
-	postTransaction,
-	dryRunTransaction,
-
+	// Genesis block
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
 
+	// Endpoints
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-
-	getNetworkStatus,
-
 	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
@@ -128,26 +130,71 @@ module.exports = {
 	getNodeInfo,
 	getSystemMetadata,
 
+	// Blocks
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+
+	// Transactions
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+
+	// Peers
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getPeersStatistics,
 
+	// Tokens
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
 
-	getDelegate,
-	getAllDelegates,
-	getDPoSConstants,
-	getVoter,
+	// PoS
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
+	getPosConstants,
+	getPosPendingUnlocks,
+	getPosClaimableRewards,
+	getPosLockedRewards,
+	getStaker,
 
+	// Reward
+	getRewardTokenID,
+	getInflationRate,
+	getDefaultRewardAtHeight,
+
+	// Fee
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
+
+	// Auth
 	getAuthAccount,
 
+	// Legacy
+	getLegacyAccount,
+
+	// Events
+	getEventsByHeight,
+
+	// Schema
+	setSchemas,
+	setMetadata,
+
+	// Validators
 	getValidator,
 	validateBLSKey,
 
-	getLegacyAccount,
+	// Network
+	refreshNetworkStatus,
+	getNetworkStatus,
 };

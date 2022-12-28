@@ -36,7 +36,7 @@ const {
 
 const {
 	getRegisteredModules,
-	getAllDelegates,
+	getAllPosValidators,
 } = require('./sources/connector');
 
 const config = require('../config');
@@ -59,7 +59,7 @@ const getRegisteredModuleAssets = () => registeredLiskModules;
 const scheduleGenesisBlockIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	await blockIndexQueue.add({ height: genesisHeight });
-	logger.info('Finished scheduling of genesis block indexing');
+	logger.info('Finished scheduling of genesis block indexing.');
 };
 
 const scheduleBlocksIndexing = async (heights) => {
@@ -71,42 +71,42 @@ const scheduleBlocksIndexing = async (heights) => {
 		blockHeights,
 		async height => {
 			await blockIndexQueue.add({ height });
-			logger.debug(`Scheduled indexing for block at height: ${height}`);
+			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		},
 		{ concurrency: blockHeights.length },
 	);
 };
 
-const scheduleDelegateAccountsIndexing = async (delegates) => {
+const scheduleValidatorsIndexing = async (validators) => {
 	await BluebirdPromise.map(
-		delegates,
-		async delegate => accountIndexQueue.add({
+		validators,
+		async validator => accountIndexQueue.add({
 			account: {
-				...delegate,
+				...validator,
 				isValidator: true,
 			},
 		}),
-		{ concurrency: delegates.length },
+		{ concurrency: validators.length },
 	);
 
-	logger.info('Finished scheduling of delegate accounts indexing');
+	logger.info('Finished scheduling of validators indexing');
 };
 
 // const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 // 	await Promise.all(accountAddressesToIndex
 // 		.map(async (address) => accountIndexQueue.add({ address })),
 // 	);
-// 	logger.info('Finished scheduling of genesis accounts indexing');
+// 	logger.info('Finished scheduling of genesis accounts indexing.');
 // };
 
 const initIndexingScheduler = async () => {
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
 
-	// Get all delegates and schedule indexing
-	const { delegates } = await getAllDelegates();
-	if (Array.isArray(delegates) && delegates.length) {
-		await scheduleDelegateAccountsIndexing(delegates);
+	// Get all validators and schedule indexing
+	const { validators } = await getAllPosValidators();
+	if (Array.isArray(validators) && validators.length) {
+		await scheduleValidatorsIndexing(validators);
 	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
@@ -155,7 +155,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	try {
 		if (!Array.isArray(missingBlocksByHeight)) {
 			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
-			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}`);
+			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}.`);
 		}
 
 		if (missingBlocksByHeight.length === 0) {
@@ -166,7 +166,7 @@ const scheduleMissingBlocksIndexing = async () => {
 			await scheduleBlocksIndexing(missingBlocksByHeight);
 		}
 	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
+		logger.warn(`Missed blocks indexing failed due to: ${err.message}.`);
 	}
 };
 

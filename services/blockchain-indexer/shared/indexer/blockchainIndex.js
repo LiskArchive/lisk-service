@@ -41,10 +41,10 @@ const {
 	range,
 } = require('../utils/arrayUtils');
 
-const { getLisk32AddressFromPublicKey } = require('../utils/accountUtils');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
-
 const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
 const {
 	getFinalizedHeight,
@@ -54,75 +54,49 @@ const {
 
 const config = require('../../config');
 
-const keyValueDB = require('../database/mysqlKVStore');
+const keyValueTable = require('../database/mysqlKVStore');
 
-const accountsIndexSchema = require('../database/schema/accounts');
-const blocksIndexSchema = require('../database/schema/blocks');
-const eventsIndexSchema = require('../database/schema/events');
-const eventTopicsIndexSchema = require('../database/schema/eventTopics');
-const transactionsIndexSchema = require('../database/schema/transactions');
-const validatorsIndexSchema = require('../database/schema/validators');
+const blocksTableSchema = require('../database/schema/blocks');
+const eventsTableSchema = require('../database/schema/events');
+const eventTopicsTableSchema = require('../database/schema/eventTopics');
+const transactionsTableSchema = require('../database/schema/transactions');
+const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema.tableName,
-	blocksIndexSchema,
+const getEventsTable = () => getTableInstance(
+	eventsTableSchema.tableName,
+	eventsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getEventsIndex = () => getTableInstance(
-	eventsIndexSchema.tableName,
-	eventsIndexSchema,
+const getEventTopicsTable = () => getTableInstance(
+	eventTopicsTableSchema.tableName,
+	eventTopicsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getEventTopicsIndex = () => getTableInstance(
-	eventTopicsIndexSchema.tableName,
-	eventTopicsIndexSchema,
+const getTransactionsTable = () => getTableInstance(
+	transactionsTableSchema.tableName,
+	transactionsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.tableName,
-	transactionsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getValidatorsIndex = () => getTableInstance(
-	validatorsIndexSchema.tableName,
-	validatorsIndexSchema,
+const getValidatorsTable = () => getTableInstance(
+	validatorsTableSchema.tableName,
+	validatorsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
-
-// const getGeneratorPkInfoArray = async (blocks) => {
-// 	const blocksTable = await getBlocksIndex();
-// 	const pkInfoArray = [];
-// 	await BluebirdPromise.map(
-// 		blocks,
-// 		async block => {
-// 			const [blockInfo] = await blocksTable.find({ id: block.id, limit: 1 }, ['id']);
-// 			pkInfoArray.push({
-// 				publicKey: block.generatorPublicKey,
-// 				reward: block.reward,
-// 				isForger: true,
-// 				isBlockIndexed: !!blockInfo,
-// 			});
-// 		},
-// 		{ concurrency: blocks.length },
-// 	);
-// 	return pkInfoArray;
-// };
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -130,28 +104,28 @@ const getTransactionExecutionStatus = (tx, events) => {
 	const expectedEventName = `${tx.module}:commandExecutionResult`;
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
+	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
 	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
 };
 
 const indexBlock = async job => {
-	let blockReward = BigInt('0');
-
 	const { block } = job.data;
-	const blocksTable = await getBlocksIndex();
-	const events = await getEventsByHeight(block.height);
+	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
 
-	if (!validateBlock(block)) throw new Error(`Error: Invalid block ${block.id} at height ${block.height} }`);
-
+	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
-	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}`);
+	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
+
+	let blockReward = BigInt('0');
 
 	try {
+		const events = await getEventsByHeight(block.height);
+
 		if (block.transactions.length) {
 			const { transactions, assets, ...blockHeader } = block;
 
-			const accountsDB = await getAccountsIndex();
-			const transactionsDB = await getTransactionsIndex();
+			const transactionsTable = await getTransactionsTable();
 			await BluebirdPromise.map(
 				block.transactions,
 				async (tx, index) => {
@@ -165,10 +139,9 @@ const indexBlock = async job => {
 					tx.executionStatus = getTransactionExecutionStatus(tx, events);
 
 					// Store address -> publicKey mapping
-					const account = { address: tx.senderAddress, publicKey: tx.senderPublicKey };
-					accountsDB.upsert(account);
+					updateAccountPublicKey(tx.senderPublicKey);
 
-					await transactionsDB.upsert(tx, dbTrx);
+					await transactionsTable.upsert(tx, dbTrx);
 
 					// Invoke 'applyTransaction' to execute command specific processing logic
 					await applyTransaction(blockHeader, tx, dbTrx);
@@ -177,36 +150,50 @@ const indexBlock = async job => {
 			);
 		}
 
-		// Update producedBlocks count for the block generator
-		const validatorsTable = await getValidatorsIndex();
+		// Update generatedBlocks count for the block generator
+		const validatorsTable = await getValidatorsTable();
 		const numRowsAffected = await validatorsTable.increment({
-			increment: { producedBlocks: 1 },
+			increment: { generatedBlocks: 1 },
 			where: { address: block.generatorAddress },
 		}, dbTrx);
 		if (numRowsAffected === 0) {
 			await validatorsTable.upsert({
 				address: block.generatorAddress,
-				producedBlocks: 1,
+				generatedBlocks: 1,
 			}, dbTrx);
 		}
 
 		if (events.length) {
-			const eventsDB = await getEventsIndex();
-			const eventTopicsDB = await getEventTopicsIndex();
+			const eventsTable = await getEventsTable();
+			const eventTopicsTable = await getEventTopicsTable();
 
 			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
-			await eventsDB.upsert(eventsInfo, dbTrx);
-			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
+			await eventsTable.upsert(eventsInfo, dbTrx);
+			await eventTopicsTable.upsert(eventTopicsInfo, dbTrx);
 
 			// Update the generator's rewards
 			// TODO: Create constants
-			const blockRewardEvent = events.find(e => e.module === 'reward' && e.name === 'Reward Minted Data');
+			const blockRewardEvent = events.find(e => ['reward', 'dynamicReward'].includes(e.module) && e.name === 'rewardMinted');
 			if (blockRewardEvent) {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
-				await validatorsTable.increment({
-					increment: { rewards: blockReward },
-					where: { address: block.generatorAddress },
-				}, dbTrx);
+
+				if (blockReward !== BigInt('0')) {
+					const commission = await calcCommission(block.generatorAddress, blockReward);
+					const selfStakeReward = await calcSelfStakeReward(
+						block.generatorAddress,
+						blockReward,
+						commission,
+					);
+
+					await validatorsTable.increment({
+						increment: { totalCommission: BigInt(commission) },
+						where: { address: block.generatorAddress },
+					}, dbTrx);
+					await validatorsTable.increment({
+						increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
+						where: { address: block.generatorAddress },
+					}, dbTrx);
+				}
 			}
 		}
 
@@ -231,12 +218,13 @@ const indexBlock = async job => {
 		}
 
 		logger.warn(`Error occured while indexing block ${block.id} at height ${block.height}. Will retry later.`);
+		logger.warn(error.stack);
 		throw error;
 	}
 };
 
 const updateBlockIndex = async job => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const { blocks } = job.data;
 	await blocksTable.upsert(blocks);
 };
@@ -245,7 +233,7 @@ const deleteIndexedBlocks = async job => {
 	const { blocks } = job.data;
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
@@ -254,7 +242,7 @@ const deleteIndexedBlocks = async job => {
 			blocks,
 			async block => {
 				let forkedTransactions;
-				const transactionsDB = await getTransactionsIndex();
+				const transactionsTable = await getTransactionsTable();
 
 				if (block.transactions && block.transactions.length) {
 					const { transactions, assets, ...blockHeader } = block;
@@ -283,7 +271,7 @@ const deleteIndexedBlocks = async job => {
 					);
 					forkedTransactions = deletedTransactions.map(e => e !== null);
 				}
-				await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 			});
 
@@ -306,14 +294,14 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 30);
+const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 1);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
 const indexNewBlock = async block => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
@@ -324,7 +312,7 @@ const indexNewBlock = async block => {
 		// Update block finality status
 		const finalizedBlockHeight = await getFinalizedHeight();
 		const nonFinalBlocks = await blocksTable.find({ isFinal: false, limit: 1000 },
-			Object.keys(blocksIndexSchema.schema));
+			Object.keys(blocksTableSchema.schema));
 		await updateBlockIndexQueue.add({
 			blocks: nonFinalBlocks
 				.filter(b => b.height <= finalizedBlockHeight)
@@ -381,7 +369,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	const totalNumOfBlocks = toHeight - fromHeight + 1;
 	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks)`);
 
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const propBetweens = [{
 		property: 'height',
 		from: fromHeight,
@@ -415,7 +403,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 };
 
 const getMinNonFinalHeight = async () => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksTable.find({
 		sort: 'height:asc',
@@ -445,7 +433,7 @@ const getMissingBlocks = async (params) => {
 };
 
 const isGenesisBlockIndexed = async () => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const genesisHeight = await getGenesisHeight();
 	const [block] = await blocksTable.find({ height: genesisHeight, limit: 1 }, ['height']);
 	return !!block;
@@ -456,9 +444,9 @@ const addBlockToQueue = async height => {
 	indexBlocksQueue.add({ block });
 };
 
-const setIndexVerifiedHeight = ({ height }) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, height);
+const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
 
-const getIndexVerifiedHeight = () => keyValueDB.get(INDEX_VERIFIED_HEIGHT);
+const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
 module.exports = {
 	indexBlock,

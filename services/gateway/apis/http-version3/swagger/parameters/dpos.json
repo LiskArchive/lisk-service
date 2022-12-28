@@ -1,9 +1,0 @@
-{
-    "delegateStatus": {
-        "name": "status",
-        "in": "query",
-        "description": "Query delegates by status",
-        "type": "string",
-        "minLength": 1
-    }
-}

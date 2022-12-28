@@ -19,12 +19,14 @@ const fs = require('fs');
 const transformParams = (type, params) => {
 	const data = [];
 	const paramsKeys = Object.keys(params);
+
+	// TODO: Integrate this logic within the method defs instead
 	paramsKeys.forEach((paramKey) => {
 		let value = {};
 		if (type === 'blocks' && paramKey === 'id') {
 			value = { $ref: '#/parameters/block' };
-		} else if (type === 'DPoS' && paramKey === 'status') {
-			value = { $ref: '#/parameters/delegateStatus' };
+		} else if (type === 'PoS' && paramKey === 'status') {
+			value = { $ref: '#/parameters/validatorStatus' };
 		} else if (type === 'interoperability' && paramKey === 'status') {
 			value = { $ref: '#/parameters/ccmStatus' };
 		} else if (type === 'network' && paramKey === 'q') {
@@ -34,7 +36,7 @@ const transformParams = (type, params) => {
 			value = {
 				name: 'sort',
 				in: 'query',
-				description: 'Fields to sort results by',
+				description: 'Fields to sort results by.',
 				required: false,
 				type: params[paramKey].type,
 				enum: params[paramKey].enum,
@@ -44,7 +46,7 @@ const transformParams = (type, params) => {
 			value = {
 				name: 'search',
 				in: 'query',
-				description: 'Delegate name full text search phrase',
+				description: 'Validator name full text search phrase.',
 				type: 'string',
 				minLength: 1,
 				maxLength: 20,
@@ -60,12 +62,16 @@ const transformParams = (type, params) => {
 			value = {
 				name: 'order',
 				in: 'query',
-				description: 'Fields to order results by. The ordering is applied whenever the entries share the same block height',
+				description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
 				required: false,
 				type: params[paramKey].type,
 				enum: params[paramKey].enum,
 				default: params[paramKey].default,
 			};
+		} else if (type === 'PoS') {
+			if (paramKey === 'name') value = { $ref: '#/parameters/validatorName' };
+		} else if (type === 'reward' && paramKey === 'height') {
+			value = { $ref: '#/parameters/blockHeight' };
 		}
 		data.push(value);
 	});

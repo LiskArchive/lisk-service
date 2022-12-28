@@ -29,19 +29,19 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const accountsIndexSchema = require('../database/schema/accounts');
+const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
+const getAccountsTable = () => getTableInstance(
+	accountsTableSchema.tableName,
+	accountsTableSchema,
 	config.endpoints.mysql,
 );
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
-		const accountsDB = await getAccountsIndex();
-		const [account = {}] = await accountsDB.find(params, columns);
+		const accountsTable = await getAccountsTable();
+		const [account = {}] = await accountsTable.find(params, columns);
 		return account;
 	}
 	return {};
@@ -64,8 +64,8 @@ const getHexAddress = address => address.startsWith('lsk')
 	: address;
 
 const updateAccountPublicKey = async (publicKey) => {
-	const accountsDB = await getAccountsIndex();
-	await accountsDB.upsert({
+	const accountsTable = await getAccountsTable();
+	await accountsTable.upsert({
 		address: getLisk32AddressFromPublicKey(publicKey),
 		publicKey,
 	});

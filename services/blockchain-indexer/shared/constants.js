@@ -85,18 +85,20 @@ const getSystemMetadata = async () => {
 };
 
 const MODULE = {
-	DPOS: 'dpos',
+	POS: 'pos',
 };
 
 const COMMAND = {
-	REGISTER_DELEGATE: 'registerDelegate',
-	VOTE_DELEGATE: 'voteDelegate',
+	REGISTER_VALIDATOR: 'registerValidator',
+	STAKE: 'stake',
 };
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const LENGTH_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const PATTERN_ANY_TOKEN_ID = '*';
 const PATTERN_ANY_LOCAL_ID = '*'.repeat(LENGTH_LOCAL_ID);
+
+const MAX_COMMISSION = BigInt('10000');
 
 module.exports = {
 	updateFinalizedHeight,
@@ -115,4 +117,5 @@ module.exports = {
 	PATTERN_ANY_LOCAL_ID,
 	MODULE,
 	COMMAND,
+	MAX_COMMISSION,
 };

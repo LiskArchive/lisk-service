@@ -32,7 +32,7 @@ const {
 const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
-const keyValueDB = require('../database/mysqlKVStore');
+const keyValueTable = require('../database/mysqlKVStore');
 
 const redis = new Redis(config.endpoints.cache);
 
@@ -58,8 +58,8 @@ const updateAccountInfoPk = async (job) => {
 
 	const account = await getAccountsByPublicKey2([publicKey]);
 	if (account.length) {
-		const accountsDB = await getAccountIndex();
-		await accountsDB.upsert(account);
+		const accountsTable = await getAccountIndex();
+		await accountsTable.upsert(account);
 	}
 };
 
@@ -68,16 +68,16 @@ const updateAccountInfoAddr = async (job) => {
 
 	const account = await getAccountsByAddress([address]);
 	if (account.length) {
-		const accountsDB = await getAccountIndex();
-		await accountsDB.upsert(account);
+		const accountsTable = await getAccountIndex();
+		await accountsTable.upsert(account);
 	}
 };
 
 const updateAccountWithData = async (job) => {
 	const accounts = job.data;
 
-	const accountsDB = await getAccountIndex();
-	await accountsDB.upsert(accounts);
+	const accountsTable = await getAccountIndex();
+	await accountsTable.upsert(accounts);
 };
 
 const accountPkUpdateQueue = Queue(config.endpoints.cache, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
@@ -146,13 +146,13 @@ const buildLegacyAccountCache = async () => {
 };
 
 const isGenesisAccountsIndexed = async () => {
-	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
+	const isIndexed = await keyValueTable.get(isGenesisAccountIndexingFinished);
 	if (!isIndexed) {
 		const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
-		const accountsDB = await getAccountIndex();
-		const count = await accountsDB.count();
+		const accountsTable = await getAccountIndex();
+		const count = await accountsTable.count();
 		if (count >= numOfGenesisAccounts) {
-			await keyValueDB.set(isGenesisAccountIndexingFinished, true);
+			await keyValueTable.set(isGenesisAccountIndexingFinished, true);
 			return true;
 		}
 		return false;
@@ -164,10 +164,10 @@ const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(
 const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
 const keepAccountsCacheUpdated = async () => {
-	const accountsDB = await getAccountIndex();
+	const accountsTable = await getAccountIndex();
 	const updateAccountsCacheListener = async (address) => {
 		const accounts = await getAccountsByAddress(address);
-		await accountsDB.upsert(accounts);
+		await accountsTable.upsert(accounts);
 	};
 	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
 };

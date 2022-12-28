@@ -16,7 +16,7 @@
 const { parseToJSONCompatObj } = require('../utils/parser');
 
 const dataService = require('./business');
-const { getAllDelegates } = require('./dpos/delegates');
+const { getAllValidators } = require('./pos/validators');
 
 const getGenerators = async params => {
 	const generators = {
@@ -27,13 +27,13 @@ const getGenerators = async params => {
 	const { offset, limit } = params;
 
 	const generatorsList = await dataService.getGenerators();
-	const delegateList = await getAllDelegates();
+	const validatorList = await getAllValidators();
 
-	const delegateMap = new Map(delegateList.map(delegate => [delegate.address, delegate]));
+	const validatorMap = new Map(validatorList.map(validator => [validator.address, validator]));
 	generatorsList.forEach(generator => {
-		if (delegateMap.has(generator.address)) {
-			const delegate = delegateMap.get(generator.address);
-			generators.data.push({ ...generator, status: delegate.status });
+		if (validatorMap.has(generator.address)) {
+			const validator = validatorMap.get(generator.address);
+			generators.data.push({ ...generator, status: validator.status });
 		}
 	});
 

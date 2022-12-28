@@ -20,9 +20,9 @@ const getRegisteredModules = async () => {
 	return systemMetada.modules;
 };
 
-const getAllDelegates = async () => requestConnector('getAllDelegates');
+const getAllPosValidators = async () => requestConnector('getAllPosValidators');
 
 module.exports = {
 	getRegisteredModules,
-	getAllDelegates,
+	getAllPosValidators,
 };
