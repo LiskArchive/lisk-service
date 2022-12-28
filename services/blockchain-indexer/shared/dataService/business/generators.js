@@ -16,8 +16,8 @@
 const BluebirdPromise = require('bluebird');
 const { Logger } = require('lisk-service-framework');
 
+const { getPosConstants } = require('../pos/constants');
 const { getIndexedAccountInfo } = require('../../utils/accountUtils');
-const { getGenesisConfig } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../utils/validatorUtils');
 
@@ -46,14 +46,14 @@ const getGeneratorsInfo = async () => {
 };
 
 const getNumberOfGenerators = async () => {
-	const genesisConfig = await getGenesisConfig();
-	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
+	const constants = await getPosConstants();
+	return constants.numberActiveValidators + constants.numberStandbyValidators;
 };
 
 const reloadGeneratorsCache = async () => {
 	try {
 		generatorsListCache = await getGeneratorsInfo();
-		logger.info(`Updated generators list with ${generatorsListCache.length} delegates.`);
+		logger.info(`Updated generators list with ${generatorsListCache.length} validators.`);
 	} catch (err) {
 		logger.warn(`Failed to load all generators due to: ${err.message}`);
 		throw err;

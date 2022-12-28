@@ -89,8 +89,8 @@ const MODULE = {
 };
 
 const COMMAND = {
-	REGISTER_DELEGATE: 'registerDelegate',
-	VOTE_DELEGATE: 'voteDelegate',
+	REGISTER_VALIDATOR: 'registerValidator',
+	STAKE: 'stake',
 };
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles

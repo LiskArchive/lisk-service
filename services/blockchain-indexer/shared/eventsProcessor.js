@@ -20,7 +20,7 @@ const {
 	getBlocks,
 	performLastBlockUpdate,
 	reloadGeneratorsCache,
-	reloadDelegateCache,
+	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
 	normalizeBlocks,
@@ -67,7 +67,7 @@ const deleteBlockProcessor = async (block) => {
 
 const newRoundProcessor = async () => {
 	logger.debug('Performing updates on new round');
-	await reloadDelegateCache();
+	await reloadValidatorCache();
 	await reloadGeneratorsCache();
 	const limit = await getNumberOfGenerators();
 	const generators = await getGenerators({ limit, offset: 0 });

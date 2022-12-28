@@ -265,13 +265,13 @@ const updateValidatorListEveryBlock = () => {
 		if (block && block.transactions && Array.isArray(block.transactions)) {
 			block.transactions.forEach(tx => {
 				if (tx.module === MODULE.POS) {
-					if (tx.command === COMMAND.REGISTER_DELEGATE) {
+					if (tx.command === COMMAND.REGISTER_VALIDATOR) {
 						updatedValidatorAddresses
 							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
+					} else if (tx.command === COMMAND.STAKE) {
 						// TODO: Verify
-						tx.params.votes
-							.forEach(vote => updatedValidatorAddresses.push(vote.address));
+						tx.params.stakes
+							.forEach(stake => updatedValidatorAddresses.push(stake.address));
 					}
 				}
 			});
