@@ -27,23 +27,24 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const applicationsIndexSchema = require('./database/schema/applications');
-const tokensIndexSchema = require('./database/schema/tokens');
+const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
+const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
 const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 
 const config = require('../config');
+const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getApplicationsIndex = () => getTableInstance(
-	applicationsIndexSchema.tableName,
-	applicationsIndexSchema,
+const getApplicationMetadataIndex = () => getTableInstance(
+	applicationMetadataIndexSchema.tableName,
+	applicationMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
-const getTokensIndex = () => getTableInstance(
-	tokensIndexSchema.tableName,
-	tokensIndexSchema,
+const getTokenMetadataIndex = () => getTableInstance(
+	tokenMetadataIndexSchema.tableName,
+	tokenMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -54,28 +55,28 @@ const { FILENAME } = config;
 const KNOWN_CONFIG_FILES = Object.freeze(Object.values(FILENAME));
 
 const indexTokensMeta = async (tokenMeta, dbTrx) => {
-	const tokensDB = await getTokensIndex();
+	const tokenMetadataTable = await getTokenMetadataIndex();
 
 	const tokenMetaToIndex = await BluebirdPromise.map(
 		tokenMeta.tokens,
 		async (token) => {
 			const result = {
-				chainID: tokenMeta.chainID,
+				chainID: tokenMeta.chainID.toLowerCase(),
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				tokenID: token.tokenID,
-				tokenName: token.name,
+				localID: token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
+				tokenName: token.tokenName,
 			};
 			return result;
 		},
 		{ concurrency: tokenMeta.tokens.length },
 	);
 
-	await tokensDB.upsert(tokenMetaToIndex, dbTrx);
+	await tokenMetadataTable.upsert(tokenMetaToIndex, dbTrx);
 };
 
 const indexChainMeta = async (chainMeta, dbTrx) => {
-	const applicationsDB = await getApplicationsIndex();
+	const applicationMetadataTable = await getApplicationMetadataIndex();
 
 	const chainMetaToIndex = {
 		chainID: chainMeta.chainID,
@@ -85,7 +86,7 @@ const indexChainMeta = async (chainMeta, dbTrx) => {
 		appDirName: chainMeta.appDirName,
 	};
 
-	await applicationsDB.upsert(chainMetaToIndex, dbTrx);
+	await applicationMetadataTable.upsert(chainMetaToIndex, dbTrx);
 };
 
 const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
@@ -155,7 +156,7 @@ const indexAllBlockchainAppsMeta = async () => {
 									logger.debug('Committed MySQL transaction to index blockchain metadata information');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
-									logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
+									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
 								}
 							}
 						},

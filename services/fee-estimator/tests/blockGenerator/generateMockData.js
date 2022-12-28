@@ -38,7 +38,7 @@ const blockData = {
 		function: () => generateHex(64),
 	},
 	height: {
-		faker: 'random.number',
+		faker: 'datatype.number',
 	},
 	version: {
 		function: () => 2,
@@ -55,7 +55,7 @@ const blockData = {
 	signature: {
 		function: () => generateHex(128),
 	},
-	previousBlockId: {
+	previousBlockID: {
 		function: () => Math.floor(Math.random() * 10 ** 19),
 	},
 	reward: {
@@ -66,10 +66,10 @@ const blockData = {
 	},
 	asset: {
 		maxHeightPreviouslyForged: {
-			faker: 'random.number',
+			faker: 'datatype.number',
 		},
 		maxHeightPrevoted: {
-			faker: 'random.number',
+			faker: 'datatype.number',
 		},
 		seedReveal: {
 			function: () => generateHex(32),

@@ -24,8 +24,8 @@ module.exports = {
 	rpcMethod: 'get.tokens',
 	tags: ['Tokens'],
 	params: {
-		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
-		tokenID: { optional: true, type: 'string', min: 8, max: 8 },
+		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
+		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
 	},

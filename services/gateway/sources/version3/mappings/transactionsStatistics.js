@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	timeline: '=',
 	distributionByType: '=',
 	distributionByAmount: '=',
+	timeline: '=',
 };

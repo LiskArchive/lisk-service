@@ -20,45 +20,31 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getLastBlock, getBlockByID } = require('./blocks');
-const { getAvailableModuleCommands } = require('../../constants');
+const { getBlockByID } = require('./blocks');
 
 const {
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { normalizeTransaction } = require('../../utils/transactionsUtils');
+const { getFinalizedHeight } = require('../../constants');
 
 const transactionsIndexSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-
-const resolveModuleCommand = async (moduleCommandVal) => {
-	const availableModuleCommands = await getAvailableModuleCommands();
-	const [module, command] = moduleCommandVal.split(':');
-	let response;
-	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(command))) {
-		const { name } = (availableModuleCommands
-			.find(moduleCommand => moduleCommand.id === moduleCommandVal));
-		response = name;
-	} else {
-		const { id } = (availableModuleCommands
-			.find(moduleCommand => moduleCommand.name === moduleCommandVal));
-		response = id;
-	}
-	if ([undefined, null, '']
-		.includes(response)) return new Error(`Incorrect moduleCommand ID/Name combination: ${moduleCommandVal}`);
-	return response;
-};
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.tableName,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getTransactionIDsByBlockID = async blockID => {
-	const transactionsDB = await getTransactionsIndex();
-	const transactions = await transactionsDB.find({
+	const transactionsTable = await getTransactionsIndex();
+	const transactions = await transactionsTable.find({
 		whereIn: {
 			property: 'blockId',
 			values: [blockID],
@@ -100,13 +86,6 @@ const validateParams = async params => {
 		throw new InvalidParamsException('Nonce based retrieval is only possible along with senderAddress');
 	}
 
-	if (params.moduleCommandName) {
-		const { moduleCommandName, ...remParams } = params;
-		params = remParams;
-
-		params.moduleCommandID = await resolveModuleCommand(moduleCommandName);
-	}
-
 	if (params.executionStatus) {
 		const { executionStatus, ...remParams } = params;
 		params = remParams;
@@ -126,7 +105,7 @@ const validateParams = async params => {
 };
 
 const getTransactions = async params => {
-	const transactionsDB = await getTransactionsIndex();
+	const transactionsTable = await getTransactionsIndex();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -134,10 +113,10 @@ const getTransactions = async params => {
 
 	params = await validateParams(params);
 
-	const total = await transactionsDB.count(params);
-	const resultSet = await transactionsDB.find(
+	const total = await transactionsTable.count(params);
+	const resultSet = await transactionsTable.find(
 		{ ...params, limit: params.limit || total },
-		['id', 'timestamp', 'height', 'blockID', 'executionStatus'],
+		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index'],
 	);
 	params.ids = resultSet.map(row => row.id);
 
@@ -159,9 +138,7 @@ const getTransactions = async params => {
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
-			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id);
-
-			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
+			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 			const senderAccount = await getIndexedAccountInfo(
 				{ address: senderAddress, limit: 1 },
 				['name'],
@@ -188,18 +165,16 @@ const getTransactions = async params => {
 				};
 			}
 
+			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id) || {};
 			transaction.block = {
 				id: indexedTxInfo.blockID,
 				height: indexedTxInfo.height,
 				timestamp: indexedTxInfo.timestamp,
+				isFinal: indexedTxInfo.height <= (await getFinalizedHeight()),
 			};
 
-			transaction.confirmations = (await getLastBlock()).height - indexedTxInfo.height + 1;
 			transaction.executionStatus = indexedTxInfo.executionStatus;
-
-			// The following two lines below are necessary for transaction statistics
-			if (transaction.moduleCommandID) transaction.type = transaction.moduleCommandID;
-			transaction.amount = transaction.params.amount || 0;
+			transaction.index = indexedTxInfo.index;
 
 			return transaction;
 		},
@@ -218,7 +193,7 @@ const getTransactionsByBlockID = async blockID => {
 	const transactions = await BluebirdPromise.map(
 		block.transactions,
 		async (transaction) => {
-			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
+			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 
 			const senderAccount = await getIndexedAccountInfo(
 				{ address: senderAddress, limit: 1 },
@@ -253,8 +228,8 @@ const getTransactionsByBlockID = async blockID => {
 			};
 
 			// TODO: Check - this information might not be available yet
-			const transactionsDB = await getTransactionsIndex();
-			const [indexedTxInfo = {}] = await transactionsDB.find(
+			const transactionsTable = await getTransactionsIndex();
+			const [indexedTxInfo = {}] = await transactionsTable.find(
 				{ id: transaction.id, limit: 1 },
 				['executionStatus'],
 			);
@@ -266,7 +241,7 @@ const getTransactionsByBlockID = async blockID => {
 	);
 
 	return {
-		data: await normalizeTransaction(transactions),
+		data: transactions,
 		meta: {
 			offset: 0,
 			count: transactions.length,

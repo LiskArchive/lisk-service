@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-newsfeed",
-  "version": "0.7.0-alpha.0",
+  "version": "0.7.0-alpha.3",
   "description": "Lisk Service Newsfeed",
   "keywords": [
     "lisk",
@@ -34,7 +34,7 @@
     "html-entities": "^2.3.2",
     "html-to-text": "^8.0.0",
     "knex": "^2.0.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/a7345a5fb7e4ca9d2fe971613af223e2cd354f73/framework/dist/lisk-service-framework-1.4.9.tgz",
     "moment": "^2.29.4",
     "object-hash": "^2.2.0",
     "twitter": "^1.7.1"

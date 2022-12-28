@@ -17,6 +17,7 @@ import Joi from 'joi';
 import regex from './regex';
 
 const validStatuses = ['registered', 'active', 'terminated', 'any'];
+const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
 const goodRequestSchemaForStats = {
 	data: Joi.object().required(),
@@ -34,10 +35,13 @@ const blockchainAppSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.number().integer().min(1).required(),
 	state: Joi.string().valid(...validStatuses).required(),
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
-	isDefault: Joi.boolean().required(),
-	lastCertificateHeight: Joi.string().required(),
-	lastUpdated: Joi.string().required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	lastCertificateHeight: Joi.number().integer().min(0).required(),
+	lastUpdated: Joi.number()
+		.integer()
+		.positive()
+		.max(getCurrentTimestamp())
+		.required(),
 };
 
 module.exports = {

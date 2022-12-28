@@ -13,12 +13,188 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { refreshNetworkStatus } = require('./network');
+const {
+	getGenesisHeight,
+	getGenesisBlockID,
+	getGenesisBlock,
+	getGenesisConfig,
+} = require('./genesisBlock');
+
+const {
+	getGenerators,
+	getForgingStatus,
+	updateForgingStatus,
+	invokeEndpointProxy,
+	getSchemas,
+	getRegisteredActions,
+	getRegisteredEvents,
+	getRegisteredModules,
+	getNodeInfo,
+	getSystemMetadata,
+} = require('./endpoints');
+
+const {
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+} = require('./blocks');
+
+const {
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+} = require('./transactions');
+
+const {
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
+} = require('./peers');
+
+const {
+	getTokenBalance,
+	getTokenBalances,
+	getEscrowedAmounts,
+	getSupportedTokens,
+	getTotalSupply,
+} = require('./tokens');
+
+const {
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
+	getPosConstants,
+	getPosPendingUnlocks,
+	getPosClaimableRewards,
+	getPosLockedRewards,
+	getStaker,
+} = require('./pos');
+
+const {
+	getRewardTokenID,
+	getInflationRate,
+	getDefaultRewardAtHeight,
+	cacheRegisteredRewardModule,
+} = require('./dynamicReward');
+
+const {
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
+} = require('./fee');
+
+const { getAuthAccount } = require('./auth');
+const { getLegacyAccount } = require('./legacy');
+const { getEventsByHeight } = require('./events');
+const { setSchemas, setMetadata } = require('./schema');
+const { getValidator, validateBLSKey } = require('./validators');
+const { refreshNetworkStatus, getNetworkStatus } = require('./network');
 
 const init = async () => {
+	// Initialize the local cache
 	await refreshNetworkStatus();
+	await cacheRegisteredRewardModule();
+	await cacheFeeConstants();
+
+	// Cache all the schemas
+	setSchemas(await getSchemas());
+	setMetadata(await getSystemMetadata());
+
+	// Download the genesis block, if applicable
+	await getGenesisBlock();
 };
 
 module.exports = {
 	init,
+
+	// Genesis block
+	getGenesisHeight,
+	getGenesisBlockID,
+	getGenesisBlock,
+	getGenesisConfig,
+
+	// Endpoints
+	getGenerators,
+	getForgingStatus,
+	updateForgingStatus,
+	invokeEndpointProxy,
+	getSchemas,
+	getRegisteredActions,
+	getRegisteredEvents,
+	getRegisteredModules,
+	getNodeInfo,
+	getSystemMetadata,
+
+	// Blocks
+	getLastBlock,
+	getBlockByID,
+	getBlocksByIDs,
+	getBlockByHeight,
+	getBlocksByHeightBetween,
+
+	// Transactions
+	getTransactionByID,
+	getTransactionsByIDs,
+	getTransactionsFromPool,
+	postTransaction,
+	dryRunTransaction,
+
+	// Peers
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
+
+	// Tokens
+	getTokenBalance,
+	getTokenBalances,
+	getEscrowedAmounts,
+	getSupportedTokens,
+	getTotalSupply,
+
+	// PoS
+	getAllPosValidators,
+	getPosValidator,
+	getPosValidatorsByStake,
+	getPosConstants,
+	getPosPendingUnlocks,
+	getPosClaimableRewards,
+	getPosLockedRewards,
+	getStaker,
+
+	// Reward
+	getRewardTokenID,
+	getInflationRate,
+	getDefaultRewardAtHeight,
+
+	// Fee
+	getFeeTokenID,
+	getMinFeePerByte,
+	cacheFeeConstants,
+
+	// Auth
+	getAuthAccount,
+
+	// Legacy
+	getLegacyAccount,
+
+	// Events
+	getEventsByHeight,
+
+	// Schema
+	setSchemas,
+	setMetadata,
+
+	// Validators
+	getValidator,
+	validateBLSKey,
+
+	// Network
+	refreshNetworkStatus,
+	getNetworkStatus,
 };

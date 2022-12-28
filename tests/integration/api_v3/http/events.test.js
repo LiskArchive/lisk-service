@@ -33,11 +33,10 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/events`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Events API', () => {
+describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommandID=2:0`);
+		const response = await api.get(`${baseUrl}/transactions?limit=1&moduleCommand=token:transfer`);
 		[refTransaction] = response.data;
 	});
 
@@ -569,6 +568,54 @@ xdescribe('Events API', () => {
 						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Events ordered by index', () => {
+		it('returns events ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns events ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
 						}
 					}
 				}

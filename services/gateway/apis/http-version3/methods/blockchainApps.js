@@ -24,8 +24,7 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps',
 	tags: ['Interoperability'],
 	params: {
-		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.CHAINID_RANGE },
-		isDefault: { optional: true, type: 'boolean' },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV },
 		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		state: { optional: true, type: 'string', pattern: regex.APPLICATION_STATE },
 		search: { optional: true, type: 'string' },

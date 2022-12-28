@@ -25,7 +25,6 @@ const endpoint = `${baseUrlV3}/blocks/assets`;
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	wrongInputParamSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
@@ -75,29 +74,29 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by moduleID -> ok', async () => {
-			const response = await api.get(`${endpoint}?moduleID=${refAsset.moduleID}`);
+		it('returns block assets by module -> ok', async () => {
+			const response = await api.get(`${endpoint}?module=${refAsset.module}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
-				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
+				blockAssets.assets.forEach(asset => expect(asset.module).toEqual(refAsset.module));
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by multiple moduleIDs -> ok', async () => {
-			const arrayOfModuleIDs = refBlockAssets.assets.map(asset => asset.moduleID);
-			const response = await api.get(`${endpoint}?moduleID=${arrayOfModuleIDs.join(',')}`);
+		it('returns block assets by multiple modules -> ok', async () => {
+			const modules = refBlockAssets.assets.map(asset => asset.moduleID);
+			const response = await api.get(`${endpoint}?module=${modules.join(',')}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
-				blockAssets.assets.forEach(asset => expect(arrayOfModuleIDs).toContain(asset.moduleID));
+				blockAssets.assets.forEach(asset => expect(modules).toContain(asset.module));
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -148,9 +147,11 @@ describe('Blocks Assets API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('non-existent height -> 404', async () => {
-			const response = await api.get(`${endpoint}?height=2000000000`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('non-existent height -> 200', async () => {
+			const response = await api.get(`${endpoint}?height=2000000000`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid query parameter -> 400', async () => {

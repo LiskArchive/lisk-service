@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const regex = require('../shared/utils/regex');
+
 const {
 	getBlockchainAppsMetadata,
 	getBlockchainAppsMetaList,
@@ -25,7 +27,8 @@ module.exports = [
 		params: {
 			chainID: { optional: true, type: 'string' },
 			chainName: { optional: true, type: 'string' },
-			network: { optional: true, type: 'string' },
+			isDefault: { optional: true, type: 'boolean' },
+			network: { optional: true, type: 'string', pattern: regex.NETWORK },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
@@ -52,7 +55,7 @@ module.exports = [
 			chainID: { optional: true, type: 'string' },
 			tokenName: { optional: true, type: 'string' },
 			tokenID: { optional: true, type: 'string' },
-			network: { optional: false, type: 'string' },
+			network: { optional: true, type: 'string', pattern: regex.NETWORK },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

@@ -20,22 +20,30 @@ let genesisHeight;
 let moduleCommands;
 let registeredModules;
 let systemMetadata;
+let finalizedHeight;
+
+const updateFinalizedHeight = async () => {
+	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
+	finalizedHeight = latestFinalizedHeight;
+};
 
 const getFinalizedHeight = async () => {
-	const { finalizedHeight } = await requestConnector('getNodeInfo');
+	if (typeof finalizedHeight !== 'number') {
+		await updateFinalizedHeight();
+	}
 	return finalizedHeight;
 };
 
 const getGenesisHeight = async () => {
-	if (!genesisHeight) {
+	if (typeof genesisHeight !== 'number') {
 		genesisHeight = await requestConnector('getGenesisHeight');
 	}
 	return genesisHeight;
 };
 
 const getCurrentHeight = async () => {
-	const currentHeight = (await requestConnector('getNodeInfo')).height;
-	return currentHeight;
+	const { height } = await requestConnector('getNetworkStatus');
+	return height;
 };
 
 const getGenesisConfig = async () => {
@@ -43,23 +51,14 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolveModuleCommands = (data) => {
-	let result = [];
-	data.forEach(liskModule => {
-		if (liskModule.commands.length) {
-			result = result.concat(
-				liskModule.commands.map(command => {
-					const id = String(liskModule.id).concat(':').concat(command.id);
-					if (liskModule.name && command.name) {
-						const name = liskModule.name.concat(':').concat(command.name);
-						return { id, name };
-					}
-					return { id };
-				}),
-			);
-		}
+const resolveModuleCommands = (systemMeta) => {
+	const moduleCommandList = [];
+	systemMeta.forEach(module => {
+		module.commands.forEach(command => {
+			moduleCommandList.push(`${module.name}:${command.name}`);
+		});
 	});
-	return result;
+	return moduleCommandList;
 };
 
 const getAvailableModuleCommands = async () => {
@@ -85,16 +84,24 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
-const MODULE_ID = {
-	DPOS: process.env.MODULE_ID_DPOS || '0000000d',
+const MODULE = {
+	POS: 'pos',
 };
 
-const COMMAND_ID = {
-	REGISTER_DELEGATE: process.env.COMMAND_ID_DPOS_REGISTER_DELEGATE || 0,
-	VOTE_DELEGATE: process.env.COMMAND_ID_DPOS_VOTE_DELEGATE || 1,
+const COMMAND = {
+	REGISTER_VALIDATOR: 'registerValidator',
+	STAKE: 'stake',
 };
+
+const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const LENGTH_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const PATTERN_ANY_TOKEN_ID = '*';
+const PATTERN_ANY_LOCAL_ID = '*'.repeat(LENGTH_LOCAL_ID);
+
+const MAX_COMMISSION = BigInt('10000');
 
 module.exports = {
+	updateFinalizedHeight,
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisConfig,
@@ -104,6 +111,11 @@ module.exports = {
 	getRegisteredModules,
 	getSystemMetadata,
 
-	MODULE_ID,
-	COMMAND_ID,
+	LENGTH_CHAIN_ID,
+	LENGTH_LOCAL_ID,
+	PATTERN_ANY_TOKEN_ID,
+	PATTERN_ANY_LOCAL_ID,
+	MODULE,
+	COMMAND,
+	MAX_COMMISSION,
 };

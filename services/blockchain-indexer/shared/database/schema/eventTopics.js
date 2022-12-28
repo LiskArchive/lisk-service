@@ -15,11 +15,13 @@
  */
 module.exports = {
 	tableName: 'event_topics',
-	primaryKey: ['id', 'topic'],
+	primaryKey: 'tempID',
 	schema: {
-		id: { type: 'string' }, // Unique event identifier
+		tempID: { type: 'string' },
+		eventID: { type: 'string' },
 		topic: { type: 'string' },
 		height: { type: 'integer' },
+		index: { type: 'integer' },
 		timestamp: { type: 'integer' },
 	},
 	indexes: {

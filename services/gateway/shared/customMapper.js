@@ -56,7 +56,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 					dataSource.forEach(item => {
 						if (validate(mapObject(item, innerDef))) tempArr.push(mapObject(item, innerDef));
 					});
-					if (!isEmptyArr(tempArr)) acc[key] = tempArr;
+					acc[key] = tempArr;
 				}
 			} else if (definition[key].length === 1) {
 				const innerDef = definition[key][0];

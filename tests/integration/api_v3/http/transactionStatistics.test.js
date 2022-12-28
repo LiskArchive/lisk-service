@@ -16,6 +16,7 @@
 import moment from 'moment';
 
 const config = require('../../../config');
+const regex = require('../../../schemas/api_v3/regex');
 const { api } = require('../../../helpers/api');
 
 const {
@@ -45,19 +46,25 @@ describe('Transaction statistics API', () => {
 			dateFormat: 'YYYY-MM',
 		}].forEach(({ interval, dateFormat }) => {
 			describe(`GET /transactions/statistics?interval=${interval}`, () => {
-				const startOfUnitUtc = moment().utc().startOf(interval);
+				const startOfIntervalInUTC = moment().utc().startOf(interval);
 
 				it(`returns stats for last 10 ${interval}s if called without any params`, async () => {
 					const response = await api.get(`${baseEndpoint}?interval=${interval}`);
 					expect(response).toMap(goodRequestSchema);
 					expect(response.data).toMap(transactionStatisticsSchema);
-					response.data.timeline.forEach((timelineItem, i) => {
-						const date = moment(startOfUnitUtc).subtract(i, interval);
-						expect(timelineItem).toMap(timelineItemSchema, {
-							date: date.format(dateFormat),
-							timestamp: date.unix(),
+
+					const tokensListEntries = Object.entries(response.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						timeline.forEach((timelineItem, i) => {
+							const date = moment(startOfIntervalInUTC).subtract(i, interval);
+							expect(timelineItem).toMap(timelineItemSchema, {
+								date: date.format(dateFormat),
+								timestamp: date.unix(),
+							});
 						});
 					});
+
 					expect(response.meta).toMap(metaSchema);
 				});
 
@@ -65,12 +72,17 @@ describe('Transaction statistics API', () => {
 					const limit = 1;
 					const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.data.timeline).toHaveLength(1);
-					response.data.timeline.forEach(timelineItem => expect(timelineItem)
-						.toMap(timelineItemSchema, {
-							date: startOfUnitUtc.format(dateFormat),
-							timestamp: startOfUnitUtc.unix(),
-						}));
+					expect(response.data).toMap(transactionStatisticsSchema);
+					const tokensListEntries = Object.entries(response.data.timeline);
+					tokensListEntries.forEach(([tokenID, timeline]) => {
+						expect(tokenID).toMatch(regex.TOKEN_ID);
+						expect(timeline).toHaveLength(1);
+						timeline.forEach(timelineItem => expect(timelineItem)
+							.toMap(timelineItemSchema, {
+								date: startOfIntervalInUTC.format(dateFormat),
+								timestamp: startOfIntervalInUTC.unix(),
+							}));
+					});
 					expect(response.meta).toMap(metaSchema, { limit });
 				});
 
@@ -78,24 +90,28 @@ describe('Transaction statistics API', () => {
 					if (interval === 'day') {
 						const limit = 1;
 						const offset = 1;
-						const startOfYesterday = moment(startOfUnitUtc).subtract(1, interval);
+						const startOfYesterday = moment(startOfIntervalInUTC).subtract(1, interval);
 
 						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
 						expect(response).toMap(goodRequestSchema);
 						expect(response.data).toMap(transactionStatisticsSchema);
-						expect(response.data.timeline).toHaveLength(1);
-						response.data.timeline.forEach(timelineItem => expect(timelineItem)
-							.toMap(timelineItemSchema, {
-								date: startOfYesterday.format(dateFormat),
-								timestamp: startOfYesterday.unix(),
-							}));
-						expect(response.meta).toMap(metaSchema, {
-							limit,
-							offset,
+						const tokensListEntries = Object.entries(response.data.timeline);
+						tokensListEntries.forEach(([tokenID, timeline]) => {
+							expect(tokenID).toMatch(regex.TOKEN_ID);
+							expect(timeline).toHaveLength(1);
+							timeline.forEach(timelineItem => expect(timelineItem)
+								.toMap(timelineItemSchema, {
+									date: startOfYesterday.format(dateFormat),
+									timestamp: startOfYesterday.unix(),
+								}));
+						});
+
+						expect(response.meta.date).toMatchObject({
 							dateFormat,
 							dateFrom: startOfYesterday.format(dateFormat),
 							dateTo: startOfYesterday.format(dateFormat),
 						});
+						expect(response.meta).toMap(metaSchema, { limit, offset });
 					}
 				});
 
@@ -107,21 +123,23 @@ describe('Transaction statistics API', () => {
 						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
 						expect(response).toMap(goodRequestSchema);
 						expect(response.data).toMap(transactionStatisticsSchema);
-						expect(response.data.timeline).toBeInstanceOf(Array);
-						expect(response.data.timeline.length).toBeGreaterThanOrEqual(1);
-						expect(response.data.timeline.length).toBeLessThanOrEqual(limit);
-						response.data.timeline.forEach((timelineItem, i) => {
-							const date = moment(startOfUnitUtc).subtract(i + offset, interval);
-							expect(timelineItem).toMap(timelineItemSchema, {
-								date: date.format(dateFormat),
-								timestamp: date.unix(),
+						const tokensListEntries = Object.entries(response.data.timeline);
+						tokensListEntries.forEach(([tokenID, timeline]) => {
+							expect(tokenID).toMatch(regex.TOKEN_ID);
+							expect(timeline).toBeInstanceOf(Array);
+							expect(timeline.length).toBeGreaterThanOrEqual(1);
+							expect(timeline.length).toBeLessThanOrEqual(limit);
+							timeline.forEach((timelineItem, i) => {
+								const date = moment(startOfIntervalInUTC).subtract(i + offset, interval);
+								expect(timelineItem).toMap(timelineItemSchema, {
+									date: date.format(dateFormat),
+									timestamp: date.unix(),
+								});
 							});
 						});
-						expect(response.meta).toMap(metaSchema, {
-							limit,
-							offset,
-							dateFormat,
-						});
+
+						expect(response.meta.date).toMatchObject({ dateFormat });
+						expect(response.meta).toMap(metaSchema, { limit, offset });
 					}
 				});
 

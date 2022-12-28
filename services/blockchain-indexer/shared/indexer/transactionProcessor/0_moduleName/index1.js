@@ -15,10 +15,8 @@
  */
 
 // Declare and export the following module specific constants
-const moduleID = 0;
-const moduleName = 'moduleName';
+const MODULE_NAME = 'module';
 
 module.exports = {
-	moduleID,
-	moduleName,
+	MODULE_NAME,
 };

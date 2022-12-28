@@ -32,7 +32,6 @@ module.exports = [
 			chainID: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			state: { optional: true, type: 'string' },
-			isDefault: { optional: true, type: 'boolean' },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

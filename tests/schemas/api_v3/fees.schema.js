@@ -26,13 +26,8 @@ const feeEstimatePerByteSchema = {
 
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object(feeEstimatePerByteSchema).required(),
-	baseFeeByID: Joi.object()
-		.pattern(regex.MODULE_COMMAND_ID, Joi.string().required())
-		.required(),
-	baseFeeByName: Joi.object()
-		.pattern(regex.MODULE_COMMAND_NAME, Joi.string().required())
-		.required(),
-	minFeePerByte: Joi.number().integer().required(),
+	feeTokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	minFeePerByte: Joi.number().integer().min(0).required(),
 };
 
 const metaSchema = {
@@ -44,8 +39,8 @@ const metaSchema = {
 };
 
 const goodRequestSchema = {
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
+	data: Joi.object(feeEstimateSchema).required(),
+	meta: Joi.object(metaSchema).required(),
 	links: Joi.object().optional(),
 };
 

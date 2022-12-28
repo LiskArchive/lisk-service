@@ -38,32 +38,19 @@ const getTokens = async params => {
 	}
 };
 
-const getTopLiskAddresses = async params => {
-	const topLiskAddresses = {
+const getTokensSummary = async params => {
+	const tokensSummary = {
 		data: {},
 		meta: {},
 	};
-	const response = await dataService.getTopLiskAddresses(params);
-	if (response.data) topLiskAddresses.data = response.data;
-	if (response.meta) topLiskAddresses.meta = response.meta;
+	const response = await dataService.getTokensSummary(params);
+	if (response.data) tokensSummary.data = response.data;
+	if (response.meta) tokensSummary.meta = response.meta;
 
-	return topLiskAddresses;
-};
-
-const getSupportedTokens = async params => {
-	const supportedTokens = {
-		data: {},
-		meta: {},
-	};
-	const response = await dataService.getSupportedTokens(params);
-	if (response.data) supportedTokens.data = response.data;
-	if (response.meta) supportedTokens.meta = response.meta;
-
-	return supportedTokens;
+	return tokensSummary;
 };
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 };

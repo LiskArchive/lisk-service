@@ -21,6 +21,7 @@ const timeoutMessage = 'Response not received in';
 
 // Caching for constants from SDK application
 let metadata;
+let nodeInfo;
 let schema;
 let registeredActions;
 let registeredEvents;
@@ -34,7 +35,7 @@ const getSchemas = async () => {
 		return schema;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSchema\'');
+			throw new TimeoutException('Request timed out when calling \'getSchema\'.');
 		}
 		throw err;
 	}
@@ -48,7 +49,7 @@ const getRegisteredActions = async () => {
 		return registeredActions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredActions\'');
+			throw new TimeoutException('Request timed out when calling \'getRegisteredActions\'.');
 		}
 		throw err;
 	}
@@ -62,33 +63,21 @@ const getRegisteredEvents = async () => {
 		return registeredEvents;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredEvents\'');
+			throw new TimeoutException('Request timed out when calling \'getRegisteredEvents\'.');
 		}
 		throw err;
 	}
 };
 
-const getRegisteredModules = async () => {
+const getNodeInfo = async (isForceUpdate = false) => {
 	try {
-		if (!registeredModules) {
-			registeredModules = await invokeEndpoint('app_getRegisteredModules');
+		if (isForceUpdate || !nodeInfo) {
+			nodeInfo = await invokeEndpoint('system_getNodeInfo');
 		}
-		return registeredModules;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredModules\'');
-		}
-		throw err;
-	}
-};
-
-const getNodeInfo = async () => {
-	try {
-		const nodeInfo = await invokeEndpoint('system_getNodeInfo');
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'');
+			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'.');
 		}
 		throw err;
 	}
@@ -102,7 +91,22 @@ const getSystemMetadata = async () => {
 		return metadata;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSystemMetadata\'');
+			throw new TimeoutException('Request timed out when calling \'getSystemMetadata\'.');
+		}
+		throw err;
+	}
+};
+
+const getRegisteredModules = async () => {
+	try {
+		if (!registeredModules) {
+			const systemMetadata = await getSystemMetadata();
+			registeredModules = systemMetadata.modules.map(module => module.name);
+		}
+		return registeredModules;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getRegisteredModules\'.');
 		}
 		throw err;
 	}

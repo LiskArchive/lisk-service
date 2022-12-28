@@ -14,16 +14,19 @@
  *
  */
 module.exports = {
+	tableName: 'transaction_statistics',
 	primaryKey: 'id',
 	schema: {
 		amount_range: { type: 'string' },
 		count: { type: 'integer' },
 		date: { type: 'integer' },
 		id: { type: 'string' },
-		type: { type: 'string' },
+		moduleCommand: { type: 'string' },
 		volume: { type: 'bigInteger' },
+		tokenID: { type: 'string', null: false },
 	},
 	indexes: {
 		date: { type: 'range' },
+		tokenID: { type: 'key' },
 	},
 };

@@ -23,55 +23,49 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { updateAddressBalanceQueue } = require('../../tokenIndex');
-const accountsIndexSchema = require('../../../database/schema/accounts');
-const transactionsIndexSchema = require('../../../database/schema/transactions');
+const accountsTableSchema = require('../../../database/schema/accounts');
+const transactionsTableSchema = require('../../../database/schema/transactions');
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
+const getAccountsTable = () => getTableInstance(
+	accountsTableSchema.tableName,
+	accountsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.tableName,
-	transactionsIndexSchema,
+const getTransactionsTable = () => getTableInstance(
+	transactionsTableSchema.tableName,
+	transactionsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 // Command specific constants
-const commandID = '00000000';
-const commandName = 'transfer';
+const COMMAND_NAME = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const accountsDB = await getAccountsIndex();
-	const transactionsDB = await getTransactionsIndex();
+	const accountsTable = await getAccountsTable();
+	const transactionsTable = await getTransactionsTable();
 
-	tx.amount = tx.params.amount;
-	tx.data = tx.params.data;
-	tx.recipientAddress = tx.params.recipientAddress;
-
-	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
+	tx = {
+		...tx,
+		...tx.params,
+	};
 
 	const account = { address: tx.recipientAddress };
-	logger.trace(`Updating account index for the account with address ${account.address}`);
-	await accountsDB.upsert(account, dbTrx);
-	logger.debug(`Updated account index for the account with address ${account.address}`);
+	logger.trace(`Updating account index for the account with address ${account.address}.`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}.`);
 
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
+	await transactionsTable.upsert(tx, dbTrx);
+	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => {};
 
 module.exports = {
-	commandID,
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

@@ -17,12 +17,12 @@ import Joi from 'joi';
 import regex from './regex';
 
 const lockedAmount = {
-	moduleID: Joi.string().pattern(regex.MODULE_COMMAND_ID).required(),
+	module: Joi.string().pattern(regex.MODULE).required(),
 	amount: Joi.string().required(),
 };
 
 const tokensMetaSchema = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	count: Joi.number().integer().min(0).required(),
 	offset: Joi.number().integer().min(0).required(),
 	total: Joi.number().integer().min(0).required(),
@@ -30,8 +30,6 @@ const tokensMetaSchema = {
 
 const tokensSchema = {
 	tokenID: Joi.string().required(),
-	name: Joi.string().optional(),
-	symbol: Joi.string().optional(),
 	availableBalance: Joi.string().required(),
 	lockedAmount: Joi.array().items(lockedAmount).required(),
 };

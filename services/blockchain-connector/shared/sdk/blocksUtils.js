@@ -20,12 +20,8 @@ const path = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
-const { exists, mkdir } = require('../fsUtils');
-const {
-	downloadAndExtractTarball,
-	downloadJSONFile,
-	downloadFile,
-} = require('../downloadFile');
+const { exists, mkdir, rm, extractTarBall } = require('../utils/fs');
+const { downloadFile, verifyFileChecksum } = require('../utils/download');
 
 const config = require('../../config');
 
@@ -46,28 +42,27 @@ const getGenesisBlockId = () => genesisBlock.header.id;
 
 const loadConfig = async () => {
 	const nodeInfo = await getNodeInfo();
-	const { networkIdentifier } = nodeInfo;
+	const { chainID } = nodeInfo;
 
-	if (process.env.GENESIS_BLOCK_URL) {
-		logger.info('Genesis block URL is defined by environment variable (GENESIS_BLOCK_URL)');
-
+	if (config.genesisBlockUrl !== config.constants.GENESIS_BLOCK_URL_DEFAULT) {
 		genesisBlockUrl = config.genesisBlockUrl;
 		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
 
-		genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
+		genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
 		logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
 	} else {
-		const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+		// Check if current node is running Lisk Core
+		const [networkConfig] = config.networks.LISK.filter(c => chainID === c.chainID);
 		if (networkConfig) {
-			logger.info(`Found config for ${networkConfig.name} (${networkIdentifier})`);
+			logger.info(`Found config for ${networkConfig.name} (${chainID})`);
 
 			genesisBlockUrl = networkConfig.genesisBlockUrl;
 			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
 
-			genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
+			genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
 			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
 		} else {
-			logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
+			logger.info(`Network is neither defined in the config, nor in the environment variable (${chainID})`);
 			return;
 		}
 	}
@@ -80,28 +75,52 @@ const loadConfig = async () => {
 	}
 };
 
-const downloadGenesisBlock = async () => {
+// eslint-disable-next-line consistent-return
+const downloadAndValidateGenesisBlock = async (retries = 2) => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
+	const genesisFileName = genesisBlockUrl.substring(genesisBlockUrl.lastIndexOf('/') + 1);
+	const genesisFilePath = `${directoryPath}/${genesisFileName}`;
+	const checksumFilePath = `${genesisFilePath}.SHA256`;
 
-	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
+	do {
+		/* eslint-disable no-await-in-loop */
+		try {
+			if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
-	if (genesisBlockUrl.endsWith('.tar.gz')) await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
-	else await downloadJSONFile(genesisBlockUrl, genesisBlockFilePath);
+			// Download the genesis and the digest files
+			const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
+			await downloadFile(genesisBlockUrl, directoryPath);
+			await downloadFile(genesisBlockUrlSHA256, directoryPath);
 
-	// Download tar file
-	await downloadFile(genesisBlockUrl, directoryPath);
+			// Verify the integrity of the downloaded file, retry on failure
+			const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
 
-	// Download SHA256 file
-	const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
-	await downloadFile(genesisBlockUrlSHA256, directoryPath);
+			if (isValidGenesisBlock) {
+				// Extract if downloaded file is a tar archive
+				if (genesisFilePath.endsWith('.tar.gz')) await extractTarBall(genesisFilePath, directoryPath);
+
+				return true;
+			}
+
+			// Delete all previous files including the containing directory if genesis block is not valid
+			await rm(directoryPath, { recursive: true, force: true });
+		} catch (err) {
+			logger.error('Error while downloading and validating genesis block');
+			logger.error(err.message);
+		}
+		/* eslint-enable no-await-in-loop */
+	} while (retries-- > 0);
+
+	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}`);
+	logger.fatal('Exiting the application');
+	process.exit(1);
 };
 
 const getGenesisBlockFromFS = async () => {
 	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
 		if (!(await exists(genesisBlockFilePath))) {
-			await downloadGenesisBlock();
+			await downloadAndValidateGenesisBlock();
 			readStream = fs.createReadStream(genesisBlockFilePath);
 		}
 

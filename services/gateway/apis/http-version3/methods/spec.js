@@ -17,7 +17,6 @@
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/spec',
-	envelope: {},
 	source: {
 		type: 'moleculer',
 		method: 'gateway.spec',
@@ -34,4 +33,5 @@ module.exports = {
 			responses: '=',
 		},
 	},
+	envelope: {},
 };

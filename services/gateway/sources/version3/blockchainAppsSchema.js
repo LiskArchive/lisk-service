@@ -20,7 +20,6 @@ module.exports = {
 	method: 'indexer.blockchain.apps',
 	params: {
 		chainID: '=,string',
-		isDefault: '=,boolean',
 		name: '=,string',
 		search: '=,string',
 		state: '=,string',

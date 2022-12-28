@@ -16,6 +16,7 @@
 const {
 	getIndexedAccountInfo,
 } = require('../../../utils/accountUtils');
+const { requestConnector } = require('../../../utils/request');
 
 const getValidator = async params => {
 	const validator = {
@@ -23,11 +24,7 @@ const getValidator = async params => {
 		meta: {},
 	};
 
-	// TODO: Retrieve validator account info from SDK directly once available
-	validator.data = {
-		generatorKey: '5b52bc27d3dde5c3ba83e67257e46f51',
-		blsKey: '81290d9d37d0495698ba92df44fce9d59c3ec1ddf6ae00c5',
-	};
+	validator.data = await requestConnector('getValidator', { address: params.address });
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);
 	validator.meta = {

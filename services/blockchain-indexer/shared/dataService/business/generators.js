@@ -14,32 +14,59 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const { Logger } = require('lisk-service-framework');
 
-const { getBase32AddressFromHex } = require('../../utils/accountUtils');
-const { getGenesisConfig } = require('../../constants');
+const { getPosConstants } = require('./pos');
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
-const { getNameByAddress } = require('../../utils/delegateUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
-const getGenerators = async () => {
-	const { list: generatorsAddresses } = await requestConnector('getGenerators');
+const logger = Logger();
+
+let generatorsListCache = [];
+
+const getGeneratorsInfo = async () => {
+	const { list: generatorsList } = await requestConnector('getGenerators');
 	const generators = await BluebirdPromise.map(
-		generatorsAddresses,
-		async address => ({
-			address: getBase32AddressFromHex(address),
-			name: await getNameByAddress(address),
-			// TODO: Update when nextForgingTime is available from SDK
-			nextForgingTime: Math.floor(Date.now() / 1000) + 1000,
-		}));
+		generatorsList,
+		async generator => {
+			const { name, publicKey } = await getIndexedAccountInfo(
+				{ address: generator.address, limit: 1 },
+				['name', 'publicKey'],
+			);
+
+			return {
+				...generator,
+				name: name || await getNameByAddress(generator.address),
+				publicKey,
+			};
+		});
 
 	return generators;
 };
 
 const getNumberOfGenerators = async () => {
-	const genesisConfig = await getGenesisConfig();
-	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
+	const constants = await getPosConstants();
+	return constants.numberActiveValidators + constants.numberStandbyValidators;
+};
+
+const reloadGeneratorsCache = async () => {
+	try {
+		generatorsListCache = await getGeneratorsInfo();
+		logger.info(`Updated generators list with ${generatorsListCache.length} validators.`);
+	} catch (err) {
+		logger.warn(`Failed to load all generators due to: ${err.message}`);
+		throw err;
+	}
+};
+
+const getGenerators = async () => {
+	if (generatorsListCache.length === 0) await reloadGeneratorsCache();
+	return generatorsListCache;
 };
 
 module.exports = {
+	reloadGeneratorsCache,
 	getGenerators,
 	getNumberOfGenerators,
 };

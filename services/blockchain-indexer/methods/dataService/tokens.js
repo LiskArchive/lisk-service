@@ -15,8 +15,7 @@
  */
 const {
 	getTokens,
-	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 } = require('./controllers/tokens');
 
 module.exports = [
@@ -31,17 +30,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'tokens.lsk.top',
-		controller: getTopLiskAddresses,
-		params: {
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-			sort: { optional: true, type: 'string' },
-		},
-	},
-	{
-		name: 'tokens.supported',
-		controller: getSupportedTokens,
+		name: 'tokens.summary',
+		controller: getTokensSummary,
 		params: {
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

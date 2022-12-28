@@ -65,13 +65,7 @@ config.gitHub = {
 
 config.dataDir = `${process.cwd()}/data`;
 
-config.serviceURL = {
-	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
-	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
-	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
-};
-
-config.supportedNetworks = ['mainnet', 'testnet', 'betanet'];
+config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
@@ -81,6 +75,14 @@ config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
 config.FILENAME = Object.freeze({
 	APP_JSON: 'app.json',
 	NATIVETOKENS_JSON: 'nativetokens.json',
+});
+
+config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
+	'00': 'mainnet',
+	'01': 'testnet',
+	'02': 'betanet',
+	'03': 'alphanet',
+	'04': 'devnet',
 });
 
 module.exports = config;

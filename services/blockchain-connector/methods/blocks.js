@@ -19,7 +19,7 @@ const {
 	getBlocksByIDs,
 	getBlockByHeight,
 	getBlocksByHeightBetween,
-} = require('../shared/sdk/endpoints');
+} = require('../shared/sdk');
 
 const {
 	getGenesisHeight,

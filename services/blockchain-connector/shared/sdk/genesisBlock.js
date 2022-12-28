@@ -29,7 +29,8 @@ let genesisBlockID;
 let genesisConfig;
 
 const getGenesisHeight = async () => {
-	if (!genesisHeight) {
+	// TODO: Verify if this is correct
+	if (typeof genesisHeight !== 'number') {
 		const nodeInfo = await getNodeInfo();
 		genesisHeight = 'genesisHeight' in nodeInfo ? nodeInfo.genesisHeight : 0;
 	}
@@ -67,7 +68,7 @@ const getGenesisBlock = async (includeAccounts = false) => {
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'');
+			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'.');
 		}
 		throw err;
 	}
@@ -97,12 +98,12 @@ const getGenesisAccounts = async (limit, offset) => {
 const getGenesisConfig = async () => {
 	try {
 		if (!genesisConfig) {
-			genesisConfig = (await invokeEndpoint('system_getNodeInfo')).genesis;
+			genesisConfig = (await getNodeInfo()).genesis;
 		}
 		return genesisConfig;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'');
+			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'.');
 		}
 		throw err;
 	}

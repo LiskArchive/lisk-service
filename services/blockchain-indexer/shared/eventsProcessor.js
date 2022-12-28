@@ -20,13 +20,13 @@ const {
 	getBlocks,
 	performLastBlockUpdate,
 	reloadGeneratorsCache,
-	reloadDelegateCache,
+	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
 	normalizeBlocks,
 } = require('./dataService');
 
-const { deleteBlock } = require('./indexer/blockchainIndex');
+const { deleteBlock, indexNewBlock } = require('./indexer/blockchainIndex');
 
 const config = require('../config');
 
@@ -41,7 +41,9 @@ const eventsQueue = new MessageQueue(
 const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
 	const response = await getBlocks({ height: block.height });
-	await performLastBlockUpdate(response.data[0]);
+	const [newBlock] = response.data;
+	await indexNewBlock(newBlock);
+	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 };
 
@@ -65,7 +67,7 @@ const deleteBlockProcessor = async (block) => {
 
 const newRoundProcessor = async () => {
 	logger.debug('Performing updates on new round');
-	await reloadDelegateCache();
+	await reloadValidatorCache();
 	await reloadGeneratorsCache();
 	const limit = await getNumberOfGenerators();
 	const generators = await getGenerators({ limit, offset: 0 });

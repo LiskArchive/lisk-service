@@ -19,7 +19,6 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -31,8 +30,7 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/dpos/delegates`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('DPOS Delegates API', () => {
+describe('DPOS Delegates API', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		const response = await api.get(`${endpoint}?limit=1`);
@@ -240,9 +238,11 @@ xdescribe('DPOS Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with known address and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('returns 200 OK when queried with known address and non-zero offset', async () => {
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns delegate when queried with known name and zero offset', async () => {
@@ -256,9 +256,11 @@ xdescribe('DPOS Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with known name and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?name=${refDelegate.name}&offset=1`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('returns 200 OK when queried with known name and non-zero offset', async () => {
+			const response = await api.get(`${endpoint}?name=${refDelegate.name}&offset=1`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns delegate when queried with known status and non-zero offset', async () => {

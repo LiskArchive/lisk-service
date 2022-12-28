@@ -23,7 +23,11 @@ const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getKeyValueStoreIndex = () => getTableInstance('key_value_store', keyValueStoreSchema, MYSQL_ENDPOINT);
+const getKeyValueStoreIndex = () => getTableInstance(
+	keyValueStoreSchema.tableName,
+	keyValueStoreSchema,
+	MYSQL_ENDPOINT,
+);
 
 const set = async (key, value) => {
 	const keyValueDB = await getKeyValueStoreIndex();

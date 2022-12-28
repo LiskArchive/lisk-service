@@ -23,17 +23,31 @@ const {
 const logger = Logger();
 
 const {
+	indexValidatorCommissionInfo,
+	indexStakersInfo,
+} = require('./validatorIndex');
+
+const {
 	getCurrentHeight,
 	getGenesisHeight,
+	updateFinalizedHeight,
 } = require('../constants');
 
-const blocksIndexSchema = require('../database/schema/blocks');
+const {
+	getBlockByHeight,
+} = require('../dataService');
+
+const blocksTableSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
@@ -41,11 +55,11 @@ const getIndexReadyStatus = () => isIndexReady;
 
 const getIndexStats = async () => {
 	try {
-		const blocksDB = await getBlocksIndex();
+		const blocksTable = await getBlocksTable();
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+		const numBlocksIndexed = await blocksTable.count();
+		const [lastIndexedBlock = {}] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, ['height']);
 		const chainLength = currentChainHeight - genesisHeight + 1;
 		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
@@ -98,18 +112,22 @@ const reportIndexStatus = async () => {
 
 const indexSchemas = {
 	accounts: require('../database/schema/accounts'),
+	blockchainApps: require('../database/schema/blockchainApps'),
 	blocks: require('../database/schema/blocks'),
+	commissions: require('../database/schema/commissions'),
+	events: require('../database/schema/events'),
+	eventTopics: require('../database/schema/eventTopics'),
+	kvStore: require('../database/schema/kvStore'),
 	multisignature: require('../database/schema/multisignature'),
+	stakes: require('../database/schema/stakes'),
 	transactions: require('../database/schema/transactions'),
 	validators: require('../database/schema/validators'),
-	votes: require('../database/schema/votes'),
-	key_value_store: require('../database/schema/kvStore'),
 };
 
 const initializeSearchIndex = async () => {
 	await BluebirdPromise.map(
 		Object.keys(indexSchemas),
-		key => getTableInstance(key, indexSchemas[key]),
+		key => getTableInstance(indexSchemas[key].tableName, indexSchemas[key]),
 		{ concurrency: 1 },
 	);
 	Signals.get('searchIndexInitialized').dispatch();
@@ -118,7 +136,16 @@ const initializeSearchIndex = async () => {
 const init = async () => {
 	await initializeSearchIndex();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+
+	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
+	Signals.get('chainNewBlock').add(updateFinalizedHeight);
+
+	const genesisBlock = await getBlockByHeight(await getGenesisHeight());
+
+	// Index stakers and commission information available in genesis block
+	await indexValidatorCommissionInfo(genesisBlock);
+	await indexStakersInfo(genesisBlock);
 };
 
 module.exports = {

@@ -15,7 +15,7 @@
  */
 const { Logger, Signals } = require('lisk-service-framework');
 const { getNodeInfo } = require('./endpoints');
-const { parseToJSONCompatObj } = require('../parser');
+const { parseToJSONCompatObj } = require('../utils/parser');
 
 const logger = Logger();
 
@@ -30,8 +30,6 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const getNetworkStatus = async () => parseToJSONCompatObj(networkStatus);
-
 const refreshNetworkStatus = async () => {
 	const refreshNetworkStatusListener = async () => {
 		try {
@@ -42,6 +40,13 @@ const refreshNetworkStatus = async () => {
 		}
 	};
 	Signals.get('chainNewBlock').add(refreshNetworkStatusListener);
+};
+
+const getNetworkStatus = async () => {
+	if (!networkStatus) {
+		await refreshNetworkStatus();
+	}
+	return parseToJSONCompatObj(networkStatus);
 };
 
 module.exports = {

@@ -25,26 +25,26 @@ const DELEGATE_STATUSES = [
 	'ineligible',
 ];
 
-const pomHeightsSchema = {
-	start: Joi.number().integer().positive().min(1)
-		.required(),
-	end: Joi.number().integer().positive().min(1)
-		.required(),
+const punishmentPeriodSchema = {
+	start: Joi.number().integer().positive().required(),
+	end: Joi.number().integer().positive().required(),
 };
 
 const delegateSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
-	totalVotesReceived: Joi.string().min(10).required(),
-	selfVotes: Joi.string().min(10).required(),
-	voteWeight: Joi.string().min(10).required(),
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
-	lastGeneratedHeight: Joi.number().integer().positive().min(1)
-		.required(),
+	totalVotesReceived: Joi.string().min(0).required(),
+	selfVotes: Joi.string().min(0).required(),
+	voteWeight: Joi.string().pattern(regex.VOTE_WEIGHT).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	lastGeneratedHeight: Joi.number().integer().min(0).required(),
 	status: Joi.string().valid(...DELEGATE_STATUSES).required(),
 	isBanned: Joi.boolean().required(),
-	pomHeights: Joi.array().items(pomHeightsSchema).required(),
-	consecutiveMissedBlocks: Joi.number().integer().positive().min(0)
-		.required(),
+	pomHeights: Joi.array().items(Joi.number().integer().positive().required()).min(0).required(),
+	punishmentPeriods: Joi.array().items(punishmentPeriodSchema).min(0).required(),
+	consecutiveMissedBlocks: Joi.number().integer().min(0).required(),
+	generatedBlocks: Joi.number().integer().min(0).required(),
+	rank: Joi.number().integer().min(1).required(),
+	rewards: Joi.string().pattern(regex.DIGITS).allow(regex.EMPTY_STRING).required(),
 };
 
 module.exports = {

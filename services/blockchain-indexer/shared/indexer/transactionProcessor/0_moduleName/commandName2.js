@@ -29,22 +29,25 @@ const logger = Logger();
  *                                                      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const entityIndexSchema = require('../../../database/schema/transactions');
+const entityTableSchema = require('../../../database/schema/transactions');
 
-const getEntityIndex = () => getTableInstance('entity_index_name', entityIndexSchema, MYSQL_ENDPOINT);
+const getEntityTable = () => getTableInstance(
+	entityTableSchema.tableName,
+	entityTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Declare and export the following command specific constants
-export const commandID = 0;
-export const commandName = 'commandName';
+export const COMMAND_NAME = 'command';
 
 // Implement the custom logic in the 'applyTransaction' method and export it
 export const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const entityDB = await getEntityIndex();
+	const entityTable = await getEntityTable();
 
-	const entityIndexEntry = { ...tx };
-	// Process the transaction to create the entityIndexEntry
+	const entityTableEntry = { ...tx };
+	// Process the transaction to create the entityTableEntry
 	// And, finally, perform DB operations to update the index
-	await entityDB.upsert(entityIndexEntry, dbTrx); // it is important to pass dbTrx
+	await entityTable.upsert(entityTableEntry, dbTrx); // it is important to pass dbTrx
 	logger.debug('Add custom logs');
 
 	Promise.resolve({ blockHeader, tx });
@@ -53,12 +56,12 @@ export const applyTransaction = async (blockHeader, tx, dbTrx) => {
 // Implement the custom logic in the 'revertTransaction' method and export it
 // This logic is executed to revert the effect of 'applyTransaction' method in case of deleteBlock
 export const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	const entityDB = await getEntityIndex();
+	const entityTable = await getEntityTable();
 
-	const entityIndexEntry = { ...tx };
-	// Process the transaction to create the entityIndexEntry
+	const entityTableEntry = { ...tx };
+	// Process the transaction to create the entityTableEntry
 	// And, finally, perform DB operations to update the index and revert the induced changes
-	await entityDB.delete(entityIndexEntry, dbTrx); // it is important to pass dbTrx
+	await entityTable.delete(entityTableEntry, dbTrx); // it is important to pass dbTrx
 	logger.debug('Add custom logs');
 
 	Promise.resolve({ blockHeader, tx });

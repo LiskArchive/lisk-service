@@ -28,7 +28,7 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 } = require('./helpers/account');
 
 const {
@@ -80,7 +80,7 @@ const getFirstBlock = async () => app.requestRpc(
 );
 
 const getAddressFromParams = (params) => params.address
-	|| getBase32AddressFromPublicKey(params.publicKey);
+	|| getLisk32AddressFromPublicKey(params.publicKey);
 
 const getTransactionsInAsc = async (params) => getTransactions({
 	senderIdOrRecipientId: getAddressFromParams(params),

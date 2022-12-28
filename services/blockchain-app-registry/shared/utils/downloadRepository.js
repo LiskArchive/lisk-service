@@ -156,34 +156,25 @@ const getUniqueNetworkAppDirPairs = async (files) => {
 	return updatedNetworkAppDirs;
 };
 
-const buildEventPayload = async (filesChanged) => {
-	const mainnetFilesUpdated = await filterMetaConfigFilesByNetwork('mainnet', filesChanged);
-	const testnetFilesUpdated = await filterMetaConfigFilesByNetwork('testnet', filesChanged);
-	const betanetFilesUpdated = await filterMetaConfigFilesByNetwork('betanet', filesChanged);
+const buildEventPayload = async (allFilesModified) => {
+	const eventPayload = {};
 
-	const mainnetAppsUpdated = await BluebirdPromise.map(
-		await getUniqueNetworkAppDirPairs(mainnetFilesUpdated),
-		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
-		{ concurrency: mainnetFilesUpdated.length },
-	);
+	const { supportedNetworks } = config;
+	const numSupportedNetworks = supportedNetworks.length;
+	for (let index = 0; index < numSupportedNetworks; index++) {
+		/* eslint-disable no-await-in-loop */
+		const networkType = supportedNetworks[index];
+		const filesUpdated = await filterMetaConfigFilesByNetwork(networkType, allFilesModified);
 
-	const testnetAppsUpdated = await BluebirdPromise.map(
-		await getUniqueNetworkAppDirPairs(testnetFilesUpdated),
-		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
-		{ concurrency: testnetFilesUpdated.length },
-	);
+		const appsUpdated = await BluebirdPromise.map(
+			await getUniqueNetworkAppDirPairs(filesUpdated),
+			async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
+			{ concurrency: filesUpdated.length },
+		);
 
-	const betanetAppsUpdated = await BluebirdPromise.map(
-		await getUniqueNetworkAppDirPairs(betanetFilesUpdated),
-		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
-		{ concurrency: betanetFilesUpdated.length },
-	);
-
-	const eventPayload = {
-		mainnet: mainnetAppsUpdated,
-		testnet: testnetAppsUpdated,
-		betanet: betanetAppsUpdated,
-	};
+		eventPayload[networkType] = appsUpdated;
+		/* eslint-enable no-await-in-loop */
+	}
 
 	return eventPayload;
 };

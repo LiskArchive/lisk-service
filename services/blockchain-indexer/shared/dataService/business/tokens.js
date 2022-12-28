@@ -13,79 +13,44 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const {
-	MySQL: { getTableInstance },
 	Exceptions: {
 		InvalidParamsException,
-		ValidationException,
 	},
 } = require('lisk-service-framework');
 
-const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
-const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
-const { requestConnector, requestAppRegistry } = require('../../utils/request');
-const regex = require('../../utils/regex');
-const { getAccountKnowledge } = require('../../knownAccounts');
+const { requestConnector } = require('../../utils/request');
 
-const config = require('../../../config');
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-
-const getTopLSKAddressesIndex = () => getTableInstance(
-	topLSKAddressesIndexSchema.tableName,
-	topLSKAddressesIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTokenMetadataByID = async (tokenID) => {
-	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
-
-	const chainID = tokenID.slice(0, 8);
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, tokenID });
-	return tokenMetadata;
-};
+const {
+	LENGTH_CHAIN_ID,
+	PATTERN_ANY_TOKEN_ID,
+	PATTERN_ANY_LOCAL_ID,
+} = require('../../constants');
 
 const getTokens = async (params) => {
-	let tokensInfo;
+	const tokensInfo = [];
 	const tokens = {
 		data: [],
 		meta: {},
 	};
 
 	if (params.tokenID && !params.address) {
-		throw new InvalidParamsException('tokenID based retrieval is only possible along with address');
+		throw new InvalidParamsException('tokenID based retrieval is only possible along with address.');
 	}
 
-	// TODO: Add logic to retrieve symbol and name from the SDK once endpoint is available
 	if (params.tokenID && params.address) {
-		const response = await requestConnector('token_getBalance', {
-			address: getHexAddressFromBase32(params.address), tokenID: params.tokenID,
-		});
+		const response = await requestConnector(
+			'getTokenBalance',
+			{ address: params.address, tokenID: params.tokenID });
 
-		tokensInfo = [{ ...response, tokenID: params.tokenID }];
+		tokensInfo.push({ ...response, tokenID: params.tokenID });
 	} else {
-		const response = await requestConnector('token_getBalances', {
-			address: getHexAddressFromBase32(params.address),
-		});
+		const response = await requestConnector(
+			'getTokenBalances',
+			{ address: params.address });
 
-		tokensInfo = response.balances;
+		if (response.balances) tokensInfo.push(...response.balances);
 	}
-
-	// TODO: Enable the code once token metadata is available
-	// tokens.data = await BluebirdPromise.map(
-	// 	tokensInfo,
-	// 	async tokenInfo => {
-	// 		const [tokenMetadata] = (await getTokenMetadataByID(tokenInfo.tokenID)).data;
-	// 		return {
-	// 			...tokenInfo,
-	// 			symbol: tokenMetadata.symbol,
-	// 			name: tokenMetadata.tableName,
-	// 		};
-	// 	},
-	// 	{ concurrency: tokensInfo.length },
-	// );
 
 	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);
 
@@ -99,81 +64,46 @@ const getTokens = async (params) => {
 	return tokens;
 };
 
-const getTopLiskAddresses = async (params) => {
-	const topLSKAddressesDB = await getTopLSKAddressesIndex();
-
-	const topLiskAddresses = {
-		data: [],
-		meta: {},
-	};
-	const EMPTY_STRING = '';
-
-	const response = await topLSKAddressesDB.find(
-		params,
-		Object.getOwnPropertyNames(topLSKAddressesIndexSchema.schema),
-	);
-
-	topLiskAddresses.data = await BluebirdPromise.map(
-		response,
-		async (account) => {
-			const accountKnowledge = await getAccountKnowledge(account.address);
-			return {
-				...account,
-				owner: accountKnowledge ? accountKnowledge.owner : EMPTY_STRING,
-				description: accountKnowledge ? accountKnowledge.description : EMPTY_STRING,
-			};
-		},
-		{ concurrency: response.length },
-	);
-
-	topLiskAddresses.meta = {
-		count: topLiskAddresses.data.length,
-		offset: params.offset,
-	};
-
-	return topLiskAddresses;
-};
-
-const getSupportedTokens = async (params) => {
-	const supportedTokensList = {
-		data: {
-			supportedTokens: [],
-		},
+const getTokensSummary = async () => {
+	const summary = {
+		data: {},
 		meta: {},
 	};
 
-	const response = await requestConnector('token_getSupportedTokens');
+	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
+	const { totalSupply } = await requestConnector('getTotalSupply');
+	const { supportedTokens: supportedTokenIDs } = await requestConnector('getSupportedTokens');
 
-	supportedTokensList.data.supportedTokens = await BluebirdPromise.map(
-		response.tokenIDs,
-		async (tokenID) => {
-			const tokenMetadataResponse = await getTokenMetadataByID(tokenID);
-			const [tokenMetadata = {}] = tokenMetadataResponse.data || [];
-
-			return {
-				tokenID,
-				symbol: tokenMetadata.symbol,
-				name: tokenMetadata.tokenName,
-			};
-		},
-		{ concurrency: response.tokenIDs.length },
-	);
-
-	const total = supportedTokensList.data.supportedTokens.length;
-	supportedTokensList.data.supportedTokens = supportedTokensList.data.supportedTokens
-		.slice(params.offset, params.offset + params.limit);
-
-	supportedTokensList.meta = {
-		count: supportedTokensList.data.supportedTokens.length,
-		offset: params.offset,
-		total,
+	const supportedTokens = {
+		isSupportAllTokens: false,
+		exactTokenIDs: [],
+		patternTokenIDs: [],
 	};
 
-	return supportedTokensList;
+	supportedTokenIDs.forEach(tokenID => {
+		if (tokenID === PATTERN_ANY_TOKEN_ID) {
+			supportedTokens.isSupportAllToken = true;
+		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_LOCAL_ID) {
+			supportedTokens.patternTokenIDs.push(tokenID);
+		} else {
+			supportedTokens.exactTokenIDs.push(tokenID);
+		}
+	});
+
+	summary.data = {
+		escrowedAmounts,
+		supportedTokens: {
+			...supportedTokens,
+			exactTokenIDs: [...new Set(supportedTokens.exactTokenIDs)],
+			patternTokenIDs: [...new Set(supportedTokens.patternTokenIDs)],
+		},
+		totalSupply,
+	};
+
+	return summary;
 };
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
-	getSupportedTokens,
+	getTokensSummary,
 };

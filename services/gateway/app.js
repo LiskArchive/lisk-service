@@ -143,9 +143,7 @@ const gatewayConfig = {
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 		'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
 	},
-	dependencies: [
-		'connector',
-	],
+	dependencies: [],
 };
 
 if (config.rateLimit.enable) {

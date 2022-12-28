@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.export.transactions',
 	tags: ['Transaction Export'],
 	params: {
-		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		publicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY },
 		interval: { optional: true, type: 'string', min: 10, max: 21, pattern: regex.INTERVAL },
 	},

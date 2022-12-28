@@ -19,10 +19,10 @@ const {
 	createIPCClient,
 } = require('@liskhq/lisk-api-client');
 
-const { decodeResponse } = require('./decoder');
+const { formatResponse } = require('./formatter');
 const config = require('../../config');
-const delay = require('../delay');
-const waitForIt = require('../waitForIt');
+const delay = require('../utils/delay');
+const waitForIt = require('../utils/waitForIt');
 
 const logger = Logger();
 
@@ -40,9 +40,13 @@ let isClientAlive = false;
 let isInstantiating = false;
 
 const checkIsClientAlive = async () => {
-	await clientCache._channel.invoke('app_getNodeInfo')
-		.then(() => { isClientAlive = true; })
-		.catch(() => { isClientAlive = false; });
+	if (config.isUseLiskIPCClient) {
+		await clientCache._channel.invoke('system_getNodeInfo')
+			.then(() => { isClientAlive = true; })
+			.catch(() => { isClientAlive = false; });
+	} else {
+		isClientAlive = clientCache._channel.isAlive;
+	}
 
 	return isClientAlive;
 };
@@ -52,8 +56,7 @@ const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
 			// TODO: Verify and enable the code
-			// if (!clientCache || !(await checkIsClientAlive())) {
-			if (!clientCache) {
+			if (!clientCache || !(await checkIsClientAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				// if (clientCache) await clientCache.disconnect();
@@ -114,8 +117,8 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 
 const invokeEndpointProxy = async (endpoint, params) => {
 	const response = await invokeEndpoint(endpoint, params);
-	const decodedResponse = decodeResponse(endpoint, response);
-	return decodedResponse;
+	const formattedResponse = formatResponse(endpoint, response);
+	return formattedResponse;
 };
 
 module.exports = {

@@ -1,0 +1,813 @@
+{
+    "commandsParamsSchema": {
+        "type": "object",
+        "required": [
+            "moduleCommand",
+            "schema"
+        ],
+        "properties": {
+            "moduleCommand": {
+                "type": "string",
+                "example": "token:transfer",
+                "description": "Combination of transaction moduleName:commandName.\n"
+            },
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "example": "lisk/transfer-asset",
+                        "description": "Unique identifier of the transaction schema\n"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minimum": 1,
+                        "example": "Transfer transaction asset",
+                        "description": "Title of schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "amount",
+                            "recipientAddress",
+                            "data"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "recipientAddress": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    }
+                                }
+                            },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 64
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "blockSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/block",
+                        "description": "Unique identifier of the block schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "header",
+                            "transactions",
+                            "assets"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "header": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "transactions": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "array"
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "dataType": {
+                                                "type": "string",
+                                                "example": "bytes"
+                                            }
+                                        }
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "assets": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "array"
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "dataType": {
+                                                "type": "string",
+                                                "example": "bytes"
+                                            }
+                                        }
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "assetSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/block/asset/3",
+                        "description": "Unique identifier of the block asset schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "module",
+                            "data"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "module": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "eventSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/block/asset/3",
+                        "description": "Unique identifier of the event schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "module",
+                            "name",
+                            "data",
+                            "topics",
+                            "height",
+                            "index"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "module": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "name": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                }
+                            },
+                            "topics": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "array"
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "dataType": {
+                                                "type": "string",
+                                                "example": "bytes"
+                                            }
+                                        }
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                }
+                            },
+                            "height": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                }
+                            },
+                            "index": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "integer"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "assetsSchema": {
+        "type": "object",
+        "required": [
+            "module",
+            "version",
+            "schema"
+        ],
+        "properties": {
+            "module": {
+                "type": "string",
+                "example": "random"
+            },
+            "version": {
+                "type": "string",
+                "example": "2"
+            },
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/modules/random/block/header/asset",
+                        "description": "Unique identifier of the assets schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "seedReveal"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "seedReveal": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 16
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 16
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "eventsSchema": {
+        "type": "object",
+        "required": [
+            "module",
+            "name",
+            "schema"
+        ],
+        "properties": {
+            "module": {
+                "type": "string",
+                "example": "token"
+            },
+            "name": {
+                "type": "string",
+                "example": "transferEvent"
+            },
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/token/events/transfer",
+                        "description": "Unique identifier of the assets schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "senderAddress",
+                            "recipientAddress",
+                            "tokenID",
+                            "amount",
+                            "result"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "senderAddress": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "recipientAddress": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "tokenID": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                }
+                            },
+                            "amount": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                }
+                            },
+                            "result": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "transactionSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/token/events/transfer",
+                        "description": "Unique identifier of the transaction schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "module",
+                            "command",
+                            "nonce",
+                            "fee",
+                            "senderPublicKey",
+                            "params"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "module": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "command": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "nonce": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                }
+                            },
+                            "fee": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                }
+                            },
+                            "senderPublicKey": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                }
+                            },
+                            "params": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 6
+                                    }
+                                }
+                            },
+                            "signatures": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "array"
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "dataType": {
+                                                "type": "string",
+                                                "example": "bytes"
+                                            }
+                                        }
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 7
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "schemaWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of schemas",
+                "type": "object",
+                "properties": {
+                    "blocks": {
+                        "$ref": "#/definitions/blockSchema"
+                    },
+                    "asset": {
+                        "$ref": "#/definitions/assetSchema"
+                    },
+                    "transactions": {
+                        "$ref": "#/definitions/transactionSchema"
+                    },
+                    "event": {
+                        "$ref": "#/definitions/eventSchema"
+                    },
+                    "events": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/eventsSchema"
+                        }
+                    },
+                    "assets": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/assetsSchema"
+                        }
+                    },
+                    "commands": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/commandsParamsSchema"
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "type": "object"
+            }
+        }
+    }
+}

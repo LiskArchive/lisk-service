@@ -25,11 +25,10 @@ module.exports = {
 	tags: ['Transactions'],
 	params: {
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
-		moduleCommandID: { optional: true, type: 'string', min: 1, max: 21 },
-		moduleCommandName: { optional: true, type: 'string', min: 1 },
-		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
-		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
-		recipientAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+		moduleCommand: { optional: true, type: 'string', min: 1.0, pattern: regex.MODULE_COMMAND },
+		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
+		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
+		recipientAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		height: { optional: true, type: 'string', min: 1, pattern: regex.HEIGHT_RANGE },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
@@ -44,9 +43,10 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: ['amount:asc', 'amount:desc', 'timestamp:asc', 'timestamp:desc'],
+			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'timestamp:desc',
 		},
+		order: { optional: true, type: 'string', enum: ['index:asc', 'index:desc'], default: 'index:asc' },
 	},
 	get schema() {
 		const transactionSchema = {};

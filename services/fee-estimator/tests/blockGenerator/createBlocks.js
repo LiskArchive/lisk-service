@@ -33,16 +33,6 @@ const blockMocker = (blockData, batchSize, payloadLength) => mocker()
 				block.transactions = [];
 			} else {
 				block.transactions = txMocker(payloadLength);
-				let transactionIndex = block.transactions.length - 1;
-				do {
-					const transaction = block.transactions[transactionIndex];
-
-					let txPayloadLength;
-					if (transaction.moduleID === 2 && transaction.assetID === 0) txPayloadLength = 130;
-					else if (transaction.moduleID === 4 && transaction.assetID === 0) txPayloadLength = 117;
-					else if (transaction.moduleID === 5 && transaction.assetID === 1) txPayloadLength = 130;
-					transaction.size += txPayloadLength;
-				} while (--transactionIndex >= 0);
 			}
 			if (blockIndex > 0) {
 				block.previousBlockId = data.blocks[blockIndex - 1].id;

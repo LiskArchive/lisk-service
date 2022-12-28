@@ -25,7 +25,7 @@ module.exports = {
 		publicKey: '=,string',
 	},
 	transactionRoot: '=,string',
-	assetsRoot: '=,string',
+	assetRoot: '=,string',
 	stateRoot: '=,string',
 	maxHeightPrevoted: '=,number',
 	maxHeightGenerated: '=,number',
@@ -40,7 +40,8 @@ module.exports = {
 	numberOfEvents: '=,number',
 	totalForged: '=,string',
 	totalBurnt: '=,string',
-	totalFee: '=,string',
+	networkFee: '=,string',
 	signature: '=,string',
+	reward: '=,string',
 	isFinal: '=,boolean',
 };

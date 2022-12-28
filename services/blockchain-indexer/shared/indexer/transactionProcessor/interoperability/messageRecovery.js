@@ -13,46 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	MySQL: { getTableInstance },
-} = require('lisk-service-framework');
-const config = require('../../../../config');
-
-const logger = Logger();
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
-const crossChainMessagesIndexSchema = require('../../../database/schema/crossChainMessages');
-
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
-
-// command specific constants
-const commandID = '00000005';
-const commandName = 'messageRecovery';
+// Command specific constants
+const COMMAND_NAME = 'messageRecovery';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
-	const crossChainMessagesDB = await getCrossChainMessagesIndex();
-
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
-
-	await crossChainMessagesDB.upsert(tx, dbTrx);
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
-};
+const applyTransaction = async (blockHeader, tx, dbTrx) => { };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
-};
+const revertTransaction = async (blockHeader, tx, dbTrx) => { };
 
 module.exports = {
-	commandID,
-	commandName,
+	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
 };

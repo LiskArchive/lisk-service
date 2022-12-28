@@ -17,6 +17,7 @@ const config = {
 	endpoints: {},
 	jobs: {},
 	log: {},
+	db: {},
 };
 
 /**
@@ -32,7 +33,6 @@ config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://loc
 config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
 config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
-config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 
 /**
  * LOGGING
@@ -76,40 +76,32 @@ config.operations = {
 	isIndexingModeEnabled: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
-config.networks = [
-	{
-		name: 'mainnet',
-		address: '',
-		serviceURL: 'https://service.lisk.com',
-		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
-	},
-	{
-		name: 'testnet',
-		address: '',
-		serviceURL: 'https://testnet-service.lisk.com',
-		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
-	},
-	{
-		name: 'betanet',
-		address: '',
-		serviceURL: 'https://betanet-service.lisk.com',
-		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/betanet/genesis_block.json.tar.gz',
-	},
-];
+config.networks = Object.freeze({
+	LISK: [
+		{
+			name: 'mainnet',
+			chainID: '00000000',
+			serviceURL: 'https://service.lisk.com',
+		},
+		{
+			name: 'testnet',
+			chainID: '01000000',
+			serviceURL: 'https://testnet-service.lisk.com',
 
-const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
-const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
+		},
+		{
+			name: 'betanet',
+			chainID: '02000000',
+			serviceURL: 'https://betanet-service.lisk.com',
+		},
+		{
+			name: 'alphanet',
+			chainID: '03000000',
+			serviceURL: 'https://alphanet-service.lisk.com',
+		},
+	],
+});
 
-config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
-
-// Global tokenIDs
-config.tokens = {
-	lisk: {
-		id: '0000000100000000',
-	},
-};
+config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true');
 
 module.exports = config;

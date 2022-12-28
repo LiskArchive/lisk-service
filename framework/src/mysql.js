@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// TODO: Rename all methods to use 'DB' instead of 'Db'
+
 const Logger = require('./logger').get;
 
 const logger = Logger();
@@ -90,8 +92,8 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
-		'sort', 'limit', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'offset',
-		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf',
+		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -215,6 +217,23 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (columns) query.select(columns);
 		query.where(queryParams);
 
+		if (params.distinct) {
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
+		}
+
+		if (params.sort) {
+			const [sortColumn, sortDirection] = params.sort.split(':');
+			query.whereNotNull(sortColumn);
+			query.select(sortColumn).orderBy(sortColumn, sortDirection);
+		}
+
+		if (params.order) {
+			const [orderColumn, orderDirection] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+			query.select(orderColumn).orderBy(orderColumn, orderDirection);
+		}
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -226,24 +245,23 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 				});
 		}
 
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			query.orderBy(sortProp, sortOrder);
-			query.whereNotNull(sortProp);
-		}
-
 		if (params.whereIn) {
-			const { property, values } = params.whereIn;
-			query.whereIn(property, values);
+			const { whereIn } = params;
+			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
+
+			whereIns.forEach(param => {
+				const { property, values } = param;
+				query.whereIn(property, values);
+			});
 		}
 
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, val0);
+				this.whereJsonSupersetOf(property, [val0]);
 				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, value);
+					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
 		}
@@ -288,6 +306,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	};
 
 	const find = async (params = {}, columns) => {
+		// TODO: Add support for IS NULL, IS NOT NULL, LIKE
 		const trx = await createDefaultTransaction(knex);
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
@@ -351,10 +370,26 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 	const count = async (params = {}) => {
 		const trx = await createDefaultTransaction(knex);
-		const query = knex(tableName).transacting(trx).count(`${tableConfig.primaryKey} as count`);
+		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
+
+		if (params.distinct) {
+			query.countDistinct(`${params.distinct} as count`);
+		} else {
+			query.count(`${tableConfig.primaryKey} as count`);
+		}
+
+		if (params.sort) {
+			const [sortProp] = params.sort.split(':');
+			query.whereNotNull(sortProp);
+		}
+
+		if (params.order) {
+			const [orderColumn] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+		}
 
 		if (params.propBetweens) {
 			const { propBetweens } = params;
@@ -367,23 +402,23 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 				});
 		}
 
-		if (params.sort) {
-			const [sortProp] = params.sort.split(':');
-			query.whereNotNull(sortProp);
-		}
-
 		if (params.whereIn) {
-			const { property, values } = params.whereIn;
-			query.whereIn(property, values);
+			const { whereIn } = params;
+			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
+
+			whereIns.forEach(param => {
+				const { property, values } = param;
+				query.whereIn(property, values);
+			});
 		}
 
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, val0);
+				this.whereJsonSupersetOf(property, [val0]);
 				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, value);
+					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
 		}

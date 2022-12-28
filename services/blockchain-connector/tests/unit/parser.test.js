@@ -16,14 +16,14 @@
 const {
 	parseToJSONCompatObj,
 	parseInputBySchema,
-} = require('../../shared/parser');
+} = require('../../shared/utils/parser');
 
 const {
 	liskAccount,
 	liskBlock,
 	liskBlockHeader,
 	liskBlockHeaderAsset,
-	liskBlockHeaderAssetV2,
+	liskBlockHeaderAssetV3,
 	liskTransaction,
 	liskTransactionAssets,
 } = require('../constants/parser');
@@ -164,8 +164,8 @@ describe('Unit tests for parse utilities', () => {
 			expect(result).toStrictEqual(expected);
 		});
 
-		it('Parse Lisk Block Header Asset v2', async () => {
-			const { input, expected, schema } = liskBlockHeaderAssetV2;
+		it('Parse Lisk Block Header Asset v3', async () => {
+			const { input, expected, schema } = liskBlockHeaderAssetV3;
 			const result = parseInputBySchema(input, schema);
 			expect(typeof result).toBe(typeof input);
 			expect(input === result).toBeFalsy(); // Expect result to be a cloned object

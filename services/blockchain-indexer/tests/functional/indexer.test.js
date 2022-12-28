@@ -24,8 +24,16 @@ const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getAccountIndex = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.tableName,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',
@@ -70,8 +78,8 @@ describe('Test indexer methods', () => {
 		});
 
 		it('validate block indexing progress', async () => {
-			const blocksDB = await getBlocksIndex();
-			const blocks = await blocksDB.find();
+			const blocksTable = await getBlocksIndex();
+			const blocks = await blocksTable.find();
 			expect(blocks.length).toBeGreaterThan(1);
 		});
 	});

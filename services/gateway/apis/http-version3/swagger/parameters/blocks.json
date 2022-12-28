@@ -17,13 +17,11 @@
         "minLength": 1,
         "maxLength": 41
     },
-    "moduleID": {
-        "name": "moduleID",
+    "module": {
+        "name": "module",
         "in": "query",
-        "description": "Module ID to query",
+        "description": "Module name to query",
         "type": "string",
-        "format": "id",
-        "minLength": 1,
-        "maxLength": 4294967295
+        "minLength": 1
     }
 }

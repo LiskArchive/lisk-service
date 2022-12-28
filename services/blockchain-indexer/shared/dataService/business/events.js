@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	CacheLRU,
 	Exceptions: { NotFoundException },
 	MySQL: {
 		getTableInstance,
@@ -28,7 +29,6 @@ const blocksIndexSchema = require('../../database/schema/blocks');
 const eventsIndexSchema = require('../../database/schema/events');
 const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
 
-const { decodeEvent } = require('../../utils/eventsUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -51,26 +51,27 @@ const getEventTopicsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-let registeredModules;
+const eventCache = CacheLRU('events');
 
 const getEventsByHeight = async (height) => {
-	const events = await requestConnector('chain_getEvents', { height });
+	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
 };
 
-const getModuleNameByID = async (moduleID) => {
-	if (!registeredModules) {
-		const response = await requestConnector('getSystemMetadata');
-		registeredModules = response.modules;
+const getEventsFromCache = async (height) => {
+	const events = await eventCache.get(height);
+	if (!events) {
+		const eventFromNode = await getEventsByHeight(height);
+		await eventCache.set(height, JSON.stringify(eventFromNode));
+		return eventFromNode;
 	}
-	const filteredModule = registeredModules.map(module => module.id === moduleID);
-	return filteredModule.name;
+	return JSON.parse(events);
 };
 
 const getEvents = async (params) => {
-	const blocksDB = await getBlocksIndex();
-	const eventsDB = await getEventsIndex();
-	const eventTopicsDB = await getEventTopicsIndex();
+	const blocksTable = await getBlocksIndex();
+	const eventsTable = await getEventsIndex();
+	const eventTopicsTable = await getEventTopicsIndex();
 
 	const events = {
 		data: [],
@@ -117,44 +118,50 @@ const getEvents = async (params) => {
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
 		params = remParams;
-		const [block] = await blocksDB.find({ id: blockID }, ['height']);
+		const [block] = await blocksTable.find({ id: blockID }, ['height']);
 		if ('height' in params && params.height !== block.height) {
 			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 		}
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsDB.count(params);
-	const response = await eventTopicsDB.find(params, ['id']);
+	const response = await eventTopicsTable.find(
+		{ ...params, distinct: 'eventID' },
+		['eventID'],
+	);
 
-	const eventIDs = response.map(entry => entry.id);
-	const eventsInfo = await eventsDB.find(
-		{ whereIn: { property: 'id', values: eventIDs } },
-		['event', 'height'],
+	const eventIDs = response.map(entry => entry.eventID);
+	const eventsInfo = await eventsTable.find(
+		{
+			whereIn: { property: 'id', values: eventIDs },
+			order: params.order,
+		},
+		['eventStr', 'height', 'index'],
 	);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
-		async (eventInfo) => {
-			const decodedEvent = await decodeEvent(eventInfo.event);
-			decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
+		async ({ eventStr, height, index }) => {
+			let event;
+			if (config.db.isPersistEvents) {
+				if (eventStr) event = JSON.parse(eventStr);
+			}
+			if (!event) {
+				const eventsFromCache = await getEventsFromCache(height);
+				event = eventsFromCache.find(entry => entry.index === index);
+			}
 
-			const [blockInfo] = await blocksDB.find(
-				{ height: eventInfo.height },
-				['id', 'timestamp'],
-			);
+			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
 
-			return {
-				...decodedEvent,
-				block: {
-					id: blockInfo.id,
-					height: eventInfo.height,
-					timestamp: blockInfo.timestamp,
-				},
-			};
+			return parseToJSONCompatObj({
+				...event,
+				block: { id, height, timestamp },
+			});
 		},
 		{ concurrency: eventsInfo.length },
 	);
+
+	const total = await eventTopicsTable.count({ ...params, distinct: 'eventID' });
 
 	events.meta = {
 		count: events.data.length,

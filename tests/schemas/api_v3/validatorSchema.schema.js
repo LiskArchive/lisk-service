@@ -22,7 +22,7 @@ const goodRequestSchemaForValidator = {
 };
 
 const validatorMetaSchema = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().pattern(regex.NAME).required(),
 };
@@ -33,8 +33,19 @@ const validatorInfoSchema = {
 	proofOfPosession: Joi.string().required(),
 };
 
+const validateBLSKeySchema = {
+	isValid: Joi.boolean().required(),
+};
+
+const validateBLSKeyGoodRequestSchema = {
+	data: Joi.object(validateBLSKeySchema).required(),
+	meta: Joi.object({}).required(),
+};
+
 module.exports = {
 	validatorInfoSchema: Joi.object(validatorInfoSchema).required(),
 	validatorMetaSchema: Joi.object(validatorMetaSchema).required(),
 	goodRequestSchemaForValidator: Joi.object(goodRequestSchemaForValidator).required(),
+	validateBLSKeySchema: Joi.object(validateBLSKeySchema).required(),
+	validateBLSKeyGoodRequestSchema: Joi.object(validateBLSKeyGoodRequestSchema).required(),
 };

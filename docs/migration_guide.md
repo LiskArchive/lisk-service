@@ -10,7 +10,7 @@ To enable this feature ensure that your PM2 config has the lisk-service-export m
 
 Consider adding the `http-exports` string to `ENABLE_HTTP_API` in order to make this feature available for users.
 
-`ENABLE_HTTP_API=http-status,http-version2,http-exports`
+`ENABLE_HTTP_API=http-status,http-version3,http-exports`
 
 ### Blockchain index
 

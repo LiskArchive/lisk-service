@@ -23,7 +23,7 @@ const {
 	calculateBlockSize,
 	calculateWeightedAvg,
 	EMAcalc,
-} = require('../../shared/dynamicFees');
+} = require('../../shared/utils/dynamicFeesLIP');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
@@ -60,19 +60,30 @@ describe('Fee estimation tests', () => {
 		it('Batch of non-empty blocks (lowTraffic)', async () => {
 			const wavg = await calculateWeightedAvg(lowTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(19346.3862945068);
+			expect(wavg).toBeCloseTo(1770.111034798482);
 		});
 
 		it('Batch of non-empty blocks (moderateTraffic)', async () => {
 			const wavg = await calculateWeightedAvg(moderateTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(51251.21374171622);
+			expect(wavg).toBeCloseTo(4684.743393978207);
 		});
 
 		it('Batch of non-empty blocks (highTraffic)', async () => {
 			const wavg = await calculateWeightedAvg(highTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(160557.05610962515);
+			expect(wavg).toBeCloseTo(17636.34365733198);
+		});
+
+		it('Batch of 20 blocks each having size 15', async () => {
+			const blocks = new Array(20).fill(
+				{
+					transactions: [{ size: 15 }],
+				});
+
+			const wavg = await calculateWeightedAvg(blocks);
+			expect(wavg).not.toBe(0);
+			expect(wavg).toBeCloseTo(15);
 		});
 	});
 

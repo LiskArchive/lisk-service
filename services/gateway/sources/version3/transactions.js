@@ -20,8 +20,7 @@ module.exports = {
 	method: 'indexer.transactions',
 	params: {
 		id: 'transactionID,string',
-		moduleCommandID: '=,string',
-		moduleCommandName: '=,string',
+		moduleCommand: '=,string',
 		senderAddress: '=,string',
 		recipientAddress: '=,string',
 		address: '=,string',
@@ -33,6 +32,7 @@ module.exports = {
 		limit: '=,number',
 		offset: '=,number',
 		sort: '=,string',
+		order: '=,string',
 	},
 	definition: {
 		data: ['data', transaction],

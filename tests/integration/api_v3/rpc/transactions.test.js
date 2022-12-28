@@ -34,10 +34,10 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-xdescribe('Method get.transactions', () => {
+describe('Method get.transactions', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '2:0', limit: 1 });
+		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
 		[refTransaction] = response.result.data;
 	});
 
@@ -109,30 +109,10 @@ xdescribe('Method get.transactions', () => {
 		});
 	});
 
-	describe('is able to retrieve list of transactions using moduleCommands', () => {
-		it('known transaction moduleCommandID -> ok', async () => {
-			const response = await getTransactions({ moduleCommandID: refTransaction.moduleCommandID });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach((transaction, i) => {
-				expect(transaction)
-					.toMap(transactionSchema, { moduleCommandID: refTransaction.moduleCommandID });
-				if (i > 0) {
-					const prevTx = result.data[i];
-					const prevTxTimestamp = prevTx.block.timestamp;
-					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
-				}
-			});
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('known transaction moduleCommandName -> ok', async () => {
+	describe('is able to retrieve list of transactions using moduleCommand', () => {
+		it('known transaction moduleCommand -> ok', async () => {
 			const response = await getTransactions({
-				moduleCommandName: refTransaction.moduleCommandName,
+				moduleCommand: refTransaction.moduleCommand,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -142,7 +122,7 @@ xdescribe('Method get.transactions', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((transaction, i) => {
 				expect(transaction)
-					.toMap(transactionSchema, { moduleCommandName: refTransaction.moduleCommandName });
+					.toMap(transactionSchema, { moduleCommand: refTransaction.moduleCommand });
 				if (i > 0) {
 					const prevTx = result.data[i];
 					const prevTxTimestamp = prevTx.block.timestamp;
@@ -152,29 +132,15 @@ xdescribe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid transaction moduleCommandID -> empty response', async () => {
-			const response = await getTransactions({ moduleCommandID: '999' });
+		it('invalid transaction moduleCommand -> empty response', async () => {
+			const response = await getTransactions({ moduleCommand: '999' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('empty transaction moduleCommandID -> empty response', async () => {
-			const response = await getTransactions({ moduleCommandID: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
-		});
-
-		it('invalid transaction moduleCommandName -> empty response', async () => {
-			const response = await getTransactions({ moduleCommandName: '999' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
-		});
-
-		it('empty transaction moduleCommandName -> empty response', async () => {
-			const response = await getTransactions({ moduleCommandName: '' });
+		it('empty transaction moduleCommand -> empty response', async () => {
+			const response = await getTransactions({ moduleCommand: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
@@ -626,6 +592,58 @@ xdescribe('Method get.transactions', () => {
 				expect(transaction).toMap(transactionSchema);
 				expect(transaction.id).toBe(refTransaction.id);
 				expect(transaction.height).toBe(refTransaction.block.height);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Transactions ordered by index', () => {
+		it('returns 10 transactions ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await getTransactions({ order });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = result.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await getTransactions({ order });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = result.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
+				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});

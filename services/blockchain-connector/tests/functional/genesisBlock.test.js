@@ -17,7 +17,7 @@ const { ServiceBroker } = require('moleculer');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const { exists } = require('../../shared/fsUtils');
+const { exists } = require('../../shared/utils/fs');
 const config = require('../../config');
 
 const broker = new ServiceBroker({
@@ -34,8 +34,8 @@ describe('Genesis Block import tests', () => {
 	afterAll(() => broker.stop());
 
 	it('Verify if genesis block is downloaded successfully', async () => {
-		const nodeInfo = await broker.call('connector.getNetworkStatus');
-		genesisBlockFilePath = `./data/${nodeInfo.data.networkIdentifier}/genesis_block.json.tar.gz`;
+		const { chainID } = await broker.call('connector.getNetworkStatus');
+		genesisBlockFilePath = `./data/${chainID}/genesis_block.json.tar.gz`;
 
 		const isExists = await exists(genesisBlockFilePath);
 		expect(isExists).toBe(true);

@@ -64,8 +64,7 @@ const validateParams = async params => {
 
 	if (params.id) validatedParams.id = params.id;
 	if (params.senderAddress) validatedParams.senderAddress = params.senderAddress;
-	if (params.moduleCommandID) validatedParams.moduleCommandID = params.moduleCommandID;
-	if (params.moduleCommandName) validatedParams.moduleCommandName = params.moduleCommandName;
+	if (params.moduleCommand) validatedParams.moduleCommand = params.moduleCommand;
 	if (params.sort) validatedParams.sort = params.sort;
 
 	return validatedParams;
@@ -99,18 +98,15 @@ const getPendingTransactions = async params => {
 				|| transaction.id === params.id)
 			&& (!params.senderAddress
 				|| transaction.senderAddress === params.senderAddress)
-			&& (!params.moduleCommandID
-				|| transaction.moduleCommandID === params.moduleCommandID)
-			&& (!params.moduleCommandName
-				|| transaction.moduleCommandName === params.moduleCommandName)
+			&& (!params.moduleCommand
+				|| transaction.moduleCommand === params.moduleCommand)
 		));
 
 		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(params.sort))
 			.slice(offset, offset + limit)
 			.forEach(transaction => {
-				// Assign 'confirmations' and 'executionStatus'
-				transaction.confirmations = 0;
+				// Set the 'executionStatus'
 				transaction.executionStatus = 'pending';
 				return transaction;
 			});

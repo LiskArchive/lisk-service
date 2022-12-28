@@ -16,12 +16,22 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const GENERATOR_STATUSES = [
+	'active',
+	'standby',
+	'punished',
+	'banned',
+	'ineligible',
+];
+
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
 const generatorSchema = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
-	nextForgingTime: Joi.number().integer().min(getCurrentTimestamp()).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	nextAllocatedTime: Joi.number().integer().min(getCurrentTimestamp()).required(),
+	status: Joi.string().valid(...GENERATOR_STATUSES).required(),
 };
 
 module.exports = {

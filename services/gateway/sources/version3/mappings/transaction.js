@@ -15,10 +15,11 @@
  */
 module.exports = {
 	id: '=,string',
-	moduleCommandID: '=,string',
-	moduleCommandName: '=,string',
+	moduleCommand: '=,string',
 	nonce: '=,string',
 	fee: '=,string',
+	minFee: '=,string',
+	size: '=,number',
 	sender: {
 		address: '=,string',
 		publicKey: '=,string',
@@ -29,6 +30,7 @@ module.exports = {
 		id: '=,string',
 		height: '=,number',
 		timestamp: '=,number',
+		isFinal: '=,boolean',
 	},
 	meta: {
 		recipient: {
@@ -37,6 +39,6 @@ module.exports = {
 			name: '=,string',
 		},
 	},
-	confirmations: '=,number',
 	executionStatus: '=,string',
+	index: '=,number',
 };

@@ -85,7 +85,7 @@
             "fileUrl": {
                 "type": "string",
                 "format": "fileUrl",
-                "example": "/api/v2/exports/transactions_<address>_<from>_<to>.csv",
+                "example": "/api/v3/exports/transactions_<address>_<from>_<to>.csv",
                 "description": "The file URL path containing the exported account transaction history.\n"
             }
         }

@@ -24,11 +24,11 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps.meta.tokens',
 	tags: ['Interoperability'],
 	params: {
-		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		chainID: { optional: true, type: 'string', min: 1, max: 21 },
-		tokenName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		tokenID: { optional: true, type: 'string', min: 1, max: 21 },
-		network: { optional: false, type: 'string', min: 1, default: 'mainnet', enum: ['mainnet', 'testnet', 'betanet'] },
+		chainName: { optional: true, type: 'string', pattern: regex.NAME },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID },
+		tokenName: { optional: true, type: 'string', pattern: regex.NAME_CSV },
+		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID_CSV },
+		network: { optional: true, type: 'string', pattern: regex.NETWORK_CSV },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
@@ -48,7 +48,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns blockchain applications off-chain metadata for tokens',
 		});
-		blockchainAppsTokenMetadataSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsMetaList', this.params);
+		blockchainAppsTokenMetadataSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsTokensMeta', this.params);
 		blockchainAppsTokenMetadataSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of blockchain applications off-chain metadata for tokens',
