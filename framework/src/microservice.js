@@ -57,6 +57,7 @@ const Microservice = (config = {}) => {
 	const jobsToBeScheduled = [];
 
 	const broker = new ServiceBroker({
+		...moleculerConfig,
 		transporter: moleculerConfig.transporter,
 		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
 		logger: {

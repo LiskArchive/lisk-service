@@ -14,26 +14,27 @@
  *
  */
 const {
-	getValidator,
-	validateBLSKey,
-} = require('./controllers/validator');
-
-const regex = require('../../shared/regex');
+	getDefaultRewardAtHeight,
+	getInflationRate,
+	getRewardConstants,
+} = require('../controllers/dynamicReward');
 
 module.exports = [
 	{
-		name: 'validator',
-		controller: getValidator,
+		name: 'reward.default',
+		controller: getDefaultRewardAtHeight,
 		params: {
-			address: { optional: false, type: 'string' },
+			height: { optional: false, type: 'number', min: 0 },
 		},
 	},
 	{
-		name: 'validateBLSKey',
-		controller: validateBLSKey,
-		params: {
-			blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
-			proofOfPossession: { optional: false, type: 'string', pattern: regex.PROOF_OF_POSSESSION },
-		},
+		name: 'reward.inflation',
+		controller: getInflationRate,
+		params: {},
+	},
+	{
+		name: 'reward.constants',
+		controller: getRewardConstants,
+		params: {},
 	},
 ];

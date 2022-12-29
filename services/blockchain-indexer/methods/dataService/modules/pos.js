@@ -21,9 +21,9 @@ const {
 	getStakes,
 	getStakers,
 	getPosClaimableRewards,
-} = require('./controllers/pos');
+} = require('../controllers/pos');
 
-const regex = require('../../shared/utils/regex');
+const regex = require('../../../shared/utils/regex');
 
 module.exports = [
 	{

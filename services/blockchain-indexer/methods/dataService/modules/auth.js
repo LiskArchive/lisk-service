@@ -15,7 +15,7 @@
  */
 const {
 	getAuthAccountInfo,
-} = require('./controllers/auth');
+} = require('../controllers/auth');
 
 module.exports = [
 	{
