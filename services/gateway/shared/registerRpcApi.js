@@ -137,7 +137,10 @@ const transformParams = (params = {}, specs) => {
 };
 
 const registerApi = (apiNames, config, registeredModuleNames) => {
-	const { aliases, whitelist, methodPaths } = configureApi(apiNames, config.path, registeredModuleNames);
+	const {
+		aliases,
+		whitelist,
+		methodPaths } = configureApi(apiNames, config.path, registeredModuleNames);
 
 	const transformRequest = (apiPath, params) => {
 		try {

@@ -84,11 +84,11 @@ tempNode.run().then(async () => {
 
 		// Register SDK specific methods
 		registeredModules.forEach(moduleName => {
-			const tempPath = path.join(__dirname, 'methods', 'dataService', 'modules', moduleName.concat('.js'));
+			const methodsPath = path.join(__dirname, 'methods', 'dataService', 'modules', moduleName.concat('.js'));
 			/* eslint-disable import/no-dynamic-require */
 			try {
-				const tempMethods = require(tempPath);
-				Object.values(tempMethods).forEach(method => app.addMethod(method));
+				const methodsObj = require(methodsPath);
+				Object.values(methodsObj).forEach(method => app.addMethod(method));
 			} catch (err) {
 				logger.trace(`Module specific endpoint not found. Error:${err}`);
 			}
