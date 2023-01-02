@@ -27,7 +27,7 @@ const ApiService = Libs['moleculer-web'];
 const { methods } = require('./shared/moleculer-web/methods');
 
 const config = require('./config');
-const { getRoutes } = require('./routes');
+const { getHttpRoutes } = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
@@ -69,7 +69,7 @@ tempNode.run().then(async () => {
 	const response = await tempNode.requestRpc('connector.getSystemMetadata');
 	const registeredModules = response.modules.map(module => module.name);
 	await tempNode.getBroker().stop();
-	const routes = getRoutes(config.api.http, registeredModules);
+	const routes = getHttpRoutes(registeredModules);
 
 	const broker = Microservice({
 		name: 'gateway',

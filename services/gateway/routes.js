@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('./config');
 const registerApi = require('./shared/registerHttpApi');
 
 const defaultConfig = {
@@ -77,6 +78,8 @@ const filterApis = (requiredApis, registeredModules) => {
 	return filteredApis;
 };
 
+const getHttpRoutes = (registeredModuleNames) => filterApis(config.api.http, registeredModuleNames);
+
 module.exports = {
-	getRoutes: filterApis,
+	getHttpRoutes,
 };
