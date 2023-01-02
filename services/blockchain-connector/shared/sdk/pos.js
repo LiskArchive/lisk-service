@@ -114,15 +114,15 @@ const getPosClaimableRewards = async ({ address }) => {
 	}
 };
 
-const getPosLockedRewards = async ({ address, tokenID }) => {
+const getPosLockedReward = async ({ address, tokenID }) => {
 	try {
-		const lockedRewards = await invokeEndpoint('pos_getLockedRewards', { address, tokenID });
-		return lockedRewards;
+		const lockedReward = await invokeEndpoint('pos_getLockedReward', { address, tokenID });
+		return lockedReward;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPosLockedRewards\'.');
+			throw new TimeoutException('Request timed out when calling \'getPosLockedReward\'.');
 		}
-		logger.warn(`Error returned when invoking 'pos_getLockedRewards' with address: ${address}, tokenID: ${tokenID}.\n${err.stack}`);
+		logger.warn(`Error returned when invoking 'pos_getLockedReward' with address: ${address}, tokenID: ${tokenID}.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -131,7 +131,7 @@ module.exports = {
 	getPosValidator,
 	getAllPosValidators,
 	getPosValidatorsByStake,
-	getPosLockedRewards,
+	getPosLockedReward,
 	getPosConstants,
 	getStaker,
 	getPosClaimableRewards,
