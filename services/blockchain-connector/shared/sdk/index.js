@@ -71,7 +71,7 @@ const {
 	getPosConstants,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
-	getPosLockedRewards,
+	getPosLockedReward,
 	getStaker,
 } = require('./pos');
 
@@ -164,7 +164,7 @@ module.exports = {
 	getPosConstants,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
-	getPosLockedRewards,
+	getPosLockedReward,
 	getStaker,
 
 	// Reward

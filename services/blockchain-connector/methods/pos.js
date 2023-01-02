@@ -18,7 +18,7 @@ const {
 	getPosValidator,
 	getPosValidatorsByStake,
 	getPosConstants,
-	getPosLockedRewards,
+	getPosLockedReward,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
 	getStaker,
@@ -71,8 +71,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getPosLockedRewards',
-		controller: async ({ address, tokenID }) => getPosLockedRewards({ address, tokenID }),
+		name: 'getPosLockedReward',
+		controller: async ({ address, tokenID }) => getPosLockedReward({ address, tokenID }),
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: false, type: 'string' },
