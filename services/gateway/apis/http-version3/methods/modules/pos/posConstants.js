@@ -14,9 +14,9 @@
  *
  */
 
-const posConstantsSource = require('../../../sources/version3/posConstants');
-const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { response, getSwaggerDescription } = require('../../../shared/utils');
+const posConstantsSource = require('../../../../../sources/version3/posConstants');
+const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
+const { response, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',

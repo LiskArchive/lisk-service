@@ -27,7 +27,7 @@ const ApiService = Libs['moleculer-web'];
 const { methods } = require('./shared/moleculer-web/methods');
 
 const config = require('./config');
-const routes = require('./routes');
+const { getRoutes } = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
@@ -52,116 +52,136 @@ LoggerConfig(loggerConf);
 
 const logger = Logger();
 
-const broker = Microservice({
-	name: 'gateway',
+// Use temporary service to fetch registered sdk modules
+const tempNode = Microservice({
+	name: 'temp_service_gateway',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
-}).getBroker();
+	events: {},
+	dependencies: [
+		'connector',
+	],
+});
 
-const sendSocketIoEvent = (eventName, payload) => {
-	broker.call('gateway.broadcast', {
-		namespace: '/blockchain',
-		event: eventName,
-		args: [payload],
-	});
-};
+tempNode.run().then(async () => {
+	// Prepare routes
+	const response = await tempNode.requestRpc('connector.getSystemMetadata');
+	const registeredModules = response.modules.map(module => module.name);
+	await tempNode.getBroker().stop();
+	const routes = getRoutes(config.api.http, registeredModules);
 
-const gatewayConfig = {
-	transporter: config.transporter,
-	mixins: [ApiService, SocketIOService],
-	name: 'gateway',
-	actions: {
-		spec(ctx) { return genDocs(ctx); },
-		status() { return getStatus(this.broker); },
-		ready() { return getReady(this.broker); },
-		isBlockchainIndexReady() { return getIndexStatus(); },
-	},
-	settings: {
-		host,
-		port,
-		path: '/api',
-		etag: 'strong',
-		use: [],
+	const broker = Microservice({
+		name: 'gateway',
+		transporter: config.transporter,
+		brokerTimeout: config.brokerTimeout, // in seconds
+		logger: loggerConf,
+	}).getBroker();
 
-		cors: {
-			origin: '*',
-			methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
-			allowedHeaders: [
-				'Content-Type',
-				'Access-Control-Request-Method',
-				'Access-Control-Request-Headers',
-				'Access-Control-Max-Age',
-			],
-			exposedHeaders: [],
-			credentials: false,
-			maxAge: 3600,
-		},
-
-		// Used server instance. If null, it will create a new HTTP(s)(2) server
-		// If false, it will start without server in middleware mode
-		server: true,
-
-		logRequestParams: 'debug',
-		logResponseData: 'debug',
-		logRequest: 'debug',
-		enableHTTPRequest: false,
-		log2XXResponses: 'debug',
-		enable2XXResponses: false,
-		httpServerTimeout: 30 * 1000, // ms
-		optimizeOrder: true,
-		routes,
-
-		assets: {
-			folder: './public',
-			options: {},
-		},
-
-		onError(req, res, err) {
-			if (err instanceof ValidationException === false) {
-				res.setHeader('Content-Type', 'application/json');
-				res.writeHead(err.code || 500);
-				res.end(JSON.stringify({
-					error: true,
-					message: `Server error: ${err.message}`,
-				}));
-			}
-		},
-		io: {
-			namespaces,
-		},
-	},
-	methods,
-	events: {
-		'block.new': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
-		'transactions.new': (payload) => sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
-		'block.delete': (payload) => sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
-		'transactions.delete': (payload) => sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
-		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
-		'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
-		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
-		'coreService.Ready': (payload) => updateSvcStatus(payload),
-		'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
-	},
-	dependencies: [],
-};
-
-if (config.rateLimit.enable) {
-	logger.info(`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`);
-
-	gatewayConfig.settings.rateLimit = {
-		window: (config.rateLimit.window || 10) * 1000,
-		limit: config.rateLimit.connectionLimit || 200,
-		headers: true,
-
-		key: (req) => req.headers['x-forwarded-for']
-			|| req.connection.remoteAddress
-			|| req.socket.remoteAddress
-			|| req.connection.socket.remoteAddress,
+	const sendSocketIoEvent = (eventName, payload) => {
+		broker.call('gateway.broadcast', {
+			namespace: '/blockchain',
+			event: eventName,
+			args: [payload],
+		});
 	};
-}
 
-broker.createService(gatewayConfig);
+	const gatewayConfig = {
+		transporter: config.transporter,
+		mixins: [ApiService, SocketIOService],
+		name: 'gateway',
+		actions: {
+			spec(ctx) { return genDocs(ctx); },
+			status() { return getStatus(this.broker); },
+			ready() { return getReady(this.broker); },
+			isBlockchainIndexReady() { return getIndexStatus(); },
+		},
+		settings: {
+			host,
+			port,
+			path: '/api',
+			etag: 'strong',
+			use: [],
 
-broker.start();
-logger.info(`Started Gateway API on ${host}:${port}`);
+			cors: {
+				origin: '*',
+				methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+				allowedHeaders: [
+					'Content-Type',
+					'Access-Control-Request-Method',
+					'Access-Control-Request-Headers',
+					'Access-Control-Max-Age',
+				],
+				exposedHeaders: [],
+				credentials: false,
+				maxAge: 3600,
+			},
+
+			// Used server instance. If null, it will create a new HTTP(s)(2) server
+			// If false, it will start without server in middleware mode
+			server: true,
+
+			logRequestParams: 'debug',
+			logResponseData: 'debug',
+			logRequest: 'debug',
+			enableHTTPRequest: false,
+			log2XXResponses: 'debug',
+			enable2XXResponses: false,
+			httpServerTimeout: 30 * 1000, // ms
+			optimizeOrder: true,
+			routes,
+
+			assets: {
+				folder: './public',
+				options: {},
+			},
+
+			onError(req, res, err) {
+				if (err instanceof ValidationException === false) {
+					res.setHeader('Content-Type', 'application/json');
+					res.writeHead(err.code || 500);
+					res.end(JSON.stringify({
+						error: true,
+						message: `Server error: ${err.message}`,
+					}));
+				}
+			},
+			io: {
+				namespaces,
+			},
+		},
+		methods,
+		events: {
+			'block.new': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
+			'transactions.new': (payload) => sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
+			'block.delete': (payload) => sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
+			'transactions.delete': (payload) => sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
+			'round.change': (payload) => sendSocketIoEvent('update.round', payload),
+			'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
+			'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
+			'coreService.Ready': (payload) => updateSvcStatus(payload),
+			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
+		},
+		dependencies: [],
+	};
+
+	if (config.rateLimit.enable) {
+		logger.info(`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`);
+
+		gatewayConfig.settings.rateLimit = {
+			window: (config.rateLimit.window || 10) * 1000,
+			limit: config.rateLimit.connectionLimit || 200,
+			headers: true,
+
+			key: (req) => req.headers['x-forwarded-for']
+				|| req.connection.remoteAddress
+				|| req.socket.remoteAddress
+				|| req.connection.socket.remoteAddress,
+		};
+	}
+
+	broker.createService(gatewayConfig);
+	broker.start();
+	logger.info(`Started Gateway API on ${host}:${port}`);
+});
+

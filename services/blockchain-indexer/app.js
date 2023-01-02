@@ -53,7 +53,7 @@ const app = Microservice({
 
 // Setup temporary node to query SDK module names
 const tempNode = Microservice({
-	name: 'temp5435',
+	name: 'temp_service_indexer',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
@@ -65,6 +65,10 @@ const tempNode = Microservice({
 setAppContext(tempNode);
 
 tempNode.run().then(async () => {
+	const { getRegisteredModules } = require('./shared/constants');
+	const registeredModules = await getRegisteredModules();
+	await tempNode.getBroker().stop();
+
 	// Add routes, events & jobs
 	if (config.operations.isIndexingModeEnabled) {
 		app.addMethods(path.join(__dirname, 'methods', 'indexer'));
@@ -79,8 +83,6 @@ tempNode.run().then(async () => {
 		app.addMethods(path.join(__dirname, 'methods', 'dataService'));
 
 		// Register SDK specific methods
-		const { getRegisteredModules } = require('./shared/constants');
-		const registeredModules = await getRegisteredModules();
 		registeredModules.forEach(moduleName => {
 			const tempPath = path.join(__dirname, 'methods', 'dataService', 'modules', moduleName.concat('.js'));
 			/* eslint-disable import/no-dynamic-require */
@@ -112,6 +114,4 @@ tempNode.run().then(async () => {
 		logger.fatal(err.stack);
 		process.exit(1);
 	});
-
-	await tempNode.getBroker().stop();
 });

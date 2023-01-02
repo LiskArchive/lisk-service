@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokensSummarySource = require('../../../sources/version3/tokensSummary');
-const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const tokensSummarySource = require('../../../../../sources/version3/tokensSummary');
+const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',

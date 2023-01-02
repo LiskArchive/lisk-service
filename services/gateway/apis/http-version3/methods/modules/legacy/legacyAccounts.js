@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const legacyAccountsSource = require('../../../sources/version3/legacyAccountsSchema');
-const regex = require('../../../shared/regex');
-const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const legacyAccountsSource = require('../../../../../sources/version3/legacyAccountsSchema');
+const regex = require('../../../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
