@@ -67,10 +67,10 @@ const tempNode = Microservice({
 tempNode.run().then(async () => {
 	// Prepare routes
 	const response = await tempNode.requestRpc('connector.getSystemMetadata');
-	const registeredModules = response.modules.map(module => module.name);
+	const registeredModuleNames = response.modules.map(module => module.name);
 	await tempNode.getBroker().stop();
-	const httpRoutes = getHttpRoutes(registeredModules);
-	const socketNamespaces = getSocketNamespaces(registeredModules);
+	const httpRoutes = getHttpRoutes(registeredModuleNames);
+	const socketNamespaces = getSocketNamespaces(registeredModuleNames);
 
 	// Prepare gateway service
 	const broker = Microservice({

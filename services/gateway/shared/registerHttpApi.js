@@ -29,7 +29,7 @@ const { validate, dropEmptyProps } = require('./paramValidator');
 const logger = Logger();
 const apiMeta = [];
 
-const configureApi = (apiNames, apiPrefix, registeredModules) => {
+const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
@@ -48,7 +48,7 @@ const configureApi = (apiNames, apiPrefix, registeredModules) => {
 		);
 		// Assign SDK specific endpoints
 		if (apiName === 'http-version3') {
-			registeredModules.forEach(moduleName => {
+			registeredModuleNames.forEach(moduleName => {
 				const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
 				try {
 					Object.assign(
@@ -140,11 +140,11 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
-const registerApi = (apiNames, config, registeredModules) => {
+const registerApi = (apiNames, config, registeredModuleNames) => {
 	const {
 		aliases,
 		whitelist,
-		methodPaths } = configureApi(apiNames, config.path, registeredModules);
+		methodPaths } = configureApi(apiNames, config.path, registeredModuleNames);
 
 	const transformRequest = (apiPath, params) => {
 		try {
