@@ -28,7 +28,7 @@ const { methods } = require('./shared/moleculer-web/methods');
 
 const config = require('./config');
 const { getHttpRoutes } = require('./routes');
-const namespaces = require('./namespaces');
+const { getSocketNamespaces } = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
 const { getReady, updateSvcStatus, getIndexStatus } = require('./shared/ready');
@@ -69,8 +69,10 @@ tempNode.run().then(async () => {
 	const response = await tempNode.requestRpc('connector.getSystemMetadata');
 	const registeredModules = response.modules.map(module => module.name);
 	await tempNode.getBroker().stop();
-	const routes = getHttpRoutes(registeredModules);
+	const httpRoutes = getHttpRoutes(registeredModules);
+	const socketNamespaces = getSocketNamespaces(registeredModules);
 
+	// Prepare gateway service
 	const broker = Microservice({
 		name: 'gateway',
 		transporter: config.transporter,
@@ -129,7 +131,7 @@ tempNode.run().then(async () => {
 			enable2XXResponses: false,
 			httpServerTimeout: 30 * 1000, // ms
 			optimizeOrder: true,
-			routes,
+			routes: httpRoutes,
 
 			assets: {
 				folder: './public',
@@ -147,7 +149,7 @@ tempNode.run().then(async () => {
 				}
 			},
 			io: {
-				namespaces,
+				namespaces: socketNamespaces,
 			},
 		},
 		methods,

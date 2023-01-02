@@ -27,7 +27,6 @@ const mapper = require('./customMapper');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const logger = Logger();
-
 const apiMeta = [];
 
 const configureApi = (apiNames, apiPrefix, registeredModules) => {
