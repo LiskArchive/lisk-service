@@ -116,8 +116,8 @@ const getPosClaimableRewards = async ({ address }) => {
 
 const getPosLockedReward = async ({ address, tokenID }) => {
 	try {
-		const lockedRewards = await invokeEndpoint('pos_getLockedReward', { address, tokenID });
-		return lockedRewards;
+		const lockedReward = await invokeEndpoint('pos_getLockedReward', { address, tokenID });
+		return lockedReward;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getPosLockedReward\'.');
