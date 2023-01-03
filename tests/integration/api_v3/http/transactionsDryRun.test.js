@@ -31,7 +31,8 @@ const {
 
 const {
 	goodRequestSchema,
-	dryrunTransactionResponseSchema,
+	dryrunTransactionSuccessResponseSchema,
+	dryrunTransactionInvalidResponseSchema,
 	metaSchema,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
@@ -48,9 +49,8 @@ describe('Post dryrun transactions API', () => {
 		);
 
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(response.data.events.length).toBeGreaterThan(0);
-		expect(response.data.success).toBe(true);
 		expect(response.meta).toMap(metaSchema);
 	});
 
@@ -61,9 +61,8 @@ describe('Post dryrun transactions API', () => {
 		);
 
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(response.data.events.length).toBeGreaterThan(0);
-		expect(response.data.success).toBe(true);
 		expect(response.meta).toMap(metaSchema);
 	});
 
@@ -74,9 +73,8 @@ describe('Post dryrun transactions API', () => {
 		);
 
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(dryrunTransactionResponseSchema);
+		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(response.data.events.length).toBeGreaterThan(0);
-		expect(response.data.success).toBe(true);
 		expect(response.meta).toMap(metaSchema);
 	});
 
@@ -88,9 +86,8 @@ describe('Post dryrun transactions API', () => {
 		);
 
 		expect(firstResponse).toMap(goodRequestSchema);
-		expect(firstResponse.data).toMap(dryrunTransactionResponseSchema);
+		expect(firstResponse.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(firstResponse.data.events.length).toBeGreaterThan(0);
-		expect(firstResponse.data.success).toBe(true);
 		expect(firstResponse.meta).toMap(metaSchema);
 
 		// Send transaction and wait for it to be included in the next block
@@ -107,8 +104,7 @@ describe('Post dryrun transactions API', () => {
 		);
 
 		expect(secondResponse).toMap(goodRequestSchema);
-		expect(secondResponse.data).toMap(dryrunTransactionResponseSchema);
-		expect(secondResponse.data.success).toBe(false);
+		expect(secondResponse.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(secondResponse.data.events.length).toBe(0);
 		expect(secondResponse.meta).toMap(metaSchema);
 	});

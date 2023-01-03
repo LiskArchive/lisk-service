@@ -24,20 +24,38 @@ const event = {
 	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
 	height: Joi.number().integer().min(0).required(),
+	id: Joi.string().pattern(regex.HEX).required(),
 };
 
-const dryrunTransactionResponseSchema = {
-	success: Joi.boolean().required(),
+const dryrunTransactionSuccessResponseSchema = {
+	result: Joi.number().integer().valid(1).required(),
 	events: Joi.array().items(Joi.object(event).optional()).required(),
+};
+const dryrunTransactionFailedResponseSchema = {
+	result: Joi.number().integer().valid(1).required(),
+	events: Joi.array().items(Joi.object(event).optional()).required(),
+};
+const dryrunTransactionInvalidResponseSchema = {
+	result: Joi.number().integer().valid(-1).required(),
+	events: Joi.array().items(Joi.object(event).optional()).required(),
+	errorMessage: Joi.string().required(),
 };
 
 const goodRequestSchema = {
-	data: Joi.object(dryrunTransactionResponseSchema).required(),
+	data: Joi.object().required(),
 	meta: Joi.object().required(),
 };
 
 module.exports = {
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
-	dryrunTransactionResponseSchema: Joi.object(dryrunTransactionResponseSchema).required(),
+	dryrunTransactionSuccessResponseSchema: Joi.object(
+		dryrunTransactionSuccessResponseSchema,
+	).required(),
+	dryrunTransactionFailedResponseSchema: Joi.object(
+		dryrunTransactionFailedResponseSchema,
+	).required(),
+	dryrunTransactionInvalidResponseSchema: Joi.object(
+		dryrunTransactionInvalidResponseSchema,
+	).required(),
 	metaSchema: Joi.object().required(),
 };

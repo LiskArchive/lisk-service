@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { formatTransaction } = require('./formatter');
+const { formatTransaction, formatEvent } = require('./formatter');
 const { encodeTransaction } = require('./encoder');
 const {
 	getTransactionByID,
@@ -47,7 +47,9 @@ const dryRunTransactionWrapper = async (params) => {
 		? encodeTransaction(transaction)
 		: transaction;
 
-	return dryRunTransaction({ transaction: encodedTransaction, skipVerify });
+	const response = await dryRunTransaction({ transaction: encodedTransaction, skipVerify });
+	response.events = response.events.map(event => formatEvent(event));
+	return response;
 };
 
 module.exports = {
