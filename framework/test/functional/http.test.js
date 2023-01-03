@@ -26,7 +26,7 @@ const waitMs = (n) => new Promise((resolve) => {
 beforeEach(() => {
 });
 
-const url = 'https://service.lisk.com/api/v2/blocks';
+const url = 'https://service.lisk.com/api/v3/blocks';
 
 describe('HTTP library is able to send GET request', () => {
 	test('with default parameters', async () => {
