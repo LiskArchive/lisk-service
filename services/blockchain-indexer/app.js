@@ -66,7 +66,7 @@ setAppContext(tempNode);
 
 tempNode.run().then(async () => {
 	const { getRegisteredModules } = require('./shared/constants');
-	const registeredModules = await getRegisteredModules();
+	const registeredModules = (await getRegisteredModules()).map(moduleName => moduleName === 'reward' ? 'dynamicReward' : moduleName);
 	await tempNode.getBroker().stop();
 
 	// Add routes, events & jobs

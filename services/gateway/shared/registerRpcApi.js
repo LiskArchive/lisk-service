@@ -45,19 +45,17 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames = []) => {
 		);
 
 		// Assign SDK specific endpoints
-		if (apiName === 'http-version3') {
-			registeredModuleNames.forEach(moduleName => {
-				const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
-				try {
-					Object.assign(
-						allMethods,
-						Utils.requireAllJs(path.resolve(__dirname, dirPath)),
-					);
-				} catch (err) {
-					logger.trace(`Gateway folder not found. module:${moduleName} dirPath:${dirPath}.`);
-				}
-			});
-		}
+		registeredModuleNames.forEach(moduleName => {
+			const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
+			try {
+				Object.assign(
+					allMethods,
+					Utils.requireAllJs(path.resolve(__dirname, dirPath)),
+				);
+			} catch (err) {
+				logger.trace(`Gateway folder not found. module:${moduleName} dirPath:${dirPath}.`);
+			}
+		});
 	},
 	);
 

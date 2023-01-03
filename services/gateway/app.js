@@ -67,7 +67,7 @@ const tempNode = Microservice({
 tempNode.run().then(async () => {
 	// Prepare routes
 	const response = await tempNode.requestRpc('connector.getSystemMetadata');
-	const registeredModuleNames = response.modules.map(module => module.name);
+	const registeredModuleNames = response.modules.map(module => module.name === 'reward' ? 'dynamicReward' : module.name);
 	await tempNode.getBroker().stop();
 	const httpRoutes = getHttpRoutes(registeredModuleNames);
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);
