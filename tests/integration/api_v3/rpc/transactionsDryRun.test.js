@@ -34,10 +34,12 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	dryrunTransactionResponseSchema,
-	goodRequestSchema,
+	dryrunTransactionSuccessResponseSchema,
+	dryrunTransactionInvalidResponseSchema,
 	metaSchema,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
+
+const { goodRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactions.dryrun', params);
@@ -55,7 +57,7 @@ describe('Method post.transactions.dryrun', () => {
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionResponseSchema);
+		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 		expect(result.data.events.length).toBeGreaterThan(0);
 	});
@@ -71,7 +73,7 @@ describe('Method post.transactions.dryrun', () => {
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionResponseSchema);
+		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 		expect(result.data.events.length).toBeGreaterThan(0);
 	});
@@ -88,7 +90,7 @@ describe('Method post.transactions.dryrun', () => {
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionResponseSchema);
+		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 		expect(result.data.events.length).toBeGreaterThan(0);
 	});
@@ -101,7 +103,7 @@ describe('Method post.transactions.dryrun', () => {
 		const { result: firstResult } = firstResponse;
 		expect(firstResult).toMap(goodRequestSchema);
 		expect(firstResult.data).toBeInstanceOf(Object);
-		expect(firstResult.data).toMap(dryrunTransactionResponseSchema);
+		expect(firstResult.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(firstResult.meta).toMap(metaSchema);
 		expect(firstResult.data.events.length).toBeGreaterThan(0);
 
@@ -116,9 +118,8 @@ describe('Method post.transactions.dryrun', () => {
 		const { result: secondResult } = secondResponse;
 		expect(secondResult).toMap(goodRequestSchema);
 		expect(secondResult.data).toBeInstanceOf(Object);
-		expect(secondResult.data).toMap(dryrunTransactionResponseSchema);
+		expect(secondResult.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(secondResult.data.events.length).toBe(0);
-		expect(secondResult.data.success).toBe(false);
 		expect(secondResult.meta).toMap(metaSchema);
 	});
 

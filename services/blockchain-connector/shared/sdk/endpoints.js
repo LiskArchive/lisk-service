@@ -27,6 +27,7 @@ const {
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
+const { formatEvent } = require('./formatter');
 
 const getConnectedPeers = async () => {
 	try {
@@ -240,6 +241,7 @@ const dryRunTransaction = async ({ transaction, skipVerify }) => {
 	try {
 		const apiClient = await getApiClient();
 		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction, skipVerify });
+		response.events = response.events.map(event => formatEvent(event));
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

@@ -27,10 +27,10 @@ const { waitMs } = require('../../../helpers/utils');
 const {
 	badRequestSchema,
 	wrongInputParamSchema,
+	goodRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	goodRequestSchema,
 	dryrunTransactionSuccessResponseSchema,
 	dryrunTransactionInvalidResponseSchema,
 	metaSchema,
