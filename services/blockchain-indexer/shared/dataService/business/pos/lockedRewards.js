@@ -70,7 +70,7 @@ const getPosLockedRewards = async params => {
 	if (!address || !tokenID) {
 		return response;
 	}
-	const { reward } = await requestConnector('getPosLockedRewards', { tokenID, address });
+	const { reward } = await requestConnector('getPosLockedReward', { tokenID, address });
 	response.data.push({
 		reward,
 		tokenID,
