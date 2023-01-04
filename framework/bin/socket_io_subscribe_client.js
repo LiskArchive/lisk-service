@@ -46,6 +46,7 @@ const subscribe = event => {
 	});
 };
 
+// subscribe('*'); // Listen to all the events
 subscribe('update.block');
 subscribe('update.round');
 subscribe('update.forgers');

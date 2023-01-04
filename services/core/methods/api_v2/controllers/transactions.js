@@ -55,6 +55,7 @@ const getTransactions = async (params) => {
 	try {
 		const result = await CoreService.getTransactions({
 			sort: 'timestamp:desc',
+			order: 'index:asc',
 			...params,
 		});
 

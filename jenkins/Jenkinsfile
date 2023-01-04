@@ -16,15 +16,15 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm i' }
-					dir('./framework') { sh 'npm i' }
-					dir('./services/core') { sh 'npm i' }
-					dir('./services/market') { sh 'npm i' }
-					dir('./services/newsfeed') { sh 'npm i' }
-					dir('./services/export') { sh 'npm i' }
-					dir('./services/gateway') { sh 'npm i' }
-					dir('./services/template') { sh 'npm i' }
-					dir('./tests') { sh 'npm i' }
+					dir('./') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./framework') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./services/core') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./services/market') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./services/newsfeed') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./services/export') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./services/gateway') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./services/template') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./tests') { sh 'npm i --registry https://npm.lisk.com' }
 				}
 			}
 		}
@@ -54,8 +54,14 @@ pipeline {
 			script { echoBanner('Failed to run the pipeline') }
 		}
 		cleanup {
-			script { echoBanner('Cleaning up...') }
-			echo 'Keeping dependencies for the next build'
+			script {
+			    echoBanner('Cleaning up...')
+				nvm(readFile('.nvmrc').trim()) {
+					echoBanner('Removing dependencies')
+					sh 'make clean-local'
+				}
+			}
+			echo 'All installed dependencies successfully removed'
 		}
 	}
 }
