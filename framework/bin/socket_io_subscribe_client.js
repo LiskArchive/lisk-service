@@ -47,10 +47,8 @@ const subscribe = event => {
 };
 
 // subscribe('*'); // Listen to all the events
-subscribe('new.block');
-subscribe('new.transactions');
-subscribe('delete.block');
-subscribe('delete.transactions');
+subscribe('update.block');
 subscribe('update.round');
-subscribe('update.generators');
+subscribe('update.forgers');
+subscribe('update.transactions');
 subscribe('update.fee_estimates');
