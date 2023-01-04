@@ -31,8 +31,8 @@ const dryrunTransactionSuccessResponseSchema = {
 	result: Joi.number().integer().valid(1).required(),
 	events: Joi.array().items(Joi.object(event).optional()).required(),
 };
-const dryrunTransactionFailedResponseSchema = {
-	result: Joi.number().integer().valid(1).required(),
+const dryrunTransactionFailResponseSchema = {
+	result: Joi.number().integer().valid(0).required(),
 	events: Joi.array().items(Joi.object(event).optional()).required(),
 };
 const dryrunTransactionInvalidResponseSchema = {
@@ -45,8 +45,8 @@ module.exports = {
 	dryrunTransactionSuccessResponseSchema: Joi.object(
 		dryrunTransactionSuccessResponseSchema,
 	).required(),
-	dryrunTransactionFailedResponseSchema: Joi.object(
-		dryrunTransactionFailedResponseSchema,
+	dryrunTransactionFailResponseSchema: Joi.object(
+		dryrunTransactionFailResponseSchema,
 	).required(),
 	dryrunTransactionInvalidResponseSchema: Joi.object(
 		dryrunTransactionInvalidResponseSchema,

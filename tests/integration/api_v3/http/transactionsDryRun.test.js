@@ -78,7 +78,7 @@ describe('Post dryrun transactions API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('Returns proper response for duplicate transaction', async () => {
+	it('Returns proper response (Invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await api.post(
 			endpoint,
@@ -109,7 +109,7 @@ describe('Post dryrun transactions API', () => {
 		expect(secondResponse.meta).toMap(metaSchema);
 	});
 
-	it('Throws error when posting invalid binary transaction', async () => {
+	it('Returns error when posting invalid transaction', async () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
 			{ transaction: TRANSACTION_OBJECT_INVALID },
@@ -123,7 +123,7 @@ describe('Post dryrun transactions API', () => {
 		expect(response).toMap(wrongInputParamSchema);
 	});
 
-	it('Throws error in case of invalid query params', async () => {
+	it('Returns error in case of invalid query params', async () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
 			{

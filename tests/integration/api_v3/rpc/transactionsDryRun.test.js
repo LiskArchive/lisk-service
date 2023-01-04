@@ -95,7 +95,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result.data.events.length).toBeGreaterThan(0);
 	});
 
-	it('Returns proper response for duplicate transaction', async () => {
+	it('Returns proper response (Invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(jsonRpcEnvelopeSchema);
@@ -123,7 +123,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(secondResult.meta).toMap(metaSchema);
 	});
 
-	it('invalid binary transaction -> empty response', async () => {
+	it('invalid transaction -> empty response', async () => {
 		const response = await postDryrunTransaction({
 			transaction: TRANSACTION_OBJECT_INVALID,
 		}).catch(e => e);
