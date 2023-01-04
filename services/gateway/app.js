@@ -52,33 +52,33 @@ LoggerConfig(loggerConf);
 
 const logger = Logger();
 
-// Use temporary service to fetch registered sdk modules
-const tempNode = Microservice({
-	name: 'temp_service_gateway',
+const defaultBrokerConfig = {
+	name: 'gateway',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+};
+
+// Use temporary service to fetch registered sdk modules
+const tempApp = Microservice({
+	...defaultBrokerConfig,
+	name: 'temp_service_gateway',
 	events: {},
 	dependencies: [
 		'connector',
 	],
 });
 
-tempNode.run().then(async () => {
+tempApp.run().then(async () => {
 	// Prepare routes
-	const response = await tempNode.requestRpc('connector.getSystemMetadata');
+	const response = await tempApp.requestRpc('connector.getSystemMetadata');
 	const registeredModuleNames = response.modules.map(module => module.name === 'reward' ? 'dynamicReward' : module.name);
-	await tempNode.getBroker().stop();
+	await tempApp.getBroker().stop();
 	const httpRoutes = getHttpRoutes(registeredModuleNames);
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);
 
 	// Prepare gateway service
-	const broker = Microservice({
-		name: 'gateway',
-		transporter: config.transporter,
-		brokerTimeout: config.brokerTimeout, // in seconds
-		logger: loggerConf,
-	}).getBroker();
+	const broker = Microservice(defaultBrokerConfig).getBroker();
 
 	const sendSocketIoEvent = (eventName, payload) => {
 		broker.call('gateway.broadcast', {

@@ -46,7 +46,7 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 			allMethods,
 			Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
 		);
-		// Assign SDK specific endpoints
+		// Assign registered application module specific endpoints
 		registeredModuleNames.forEach(moduleName => {
 			const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
 			try {
@@ -55,7 +55,7 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 					Utils.requireAllJs(path.resolve(__dirname, dirPath)),
 				);
 			} catch (err) {
-				logger.trace(`Gateway folder not found. module:${moduleName} dirPath:${dirPath}.`);
+				logger.warn(`Moleculer method definitions (HTTP endpoints) missing for module: ${moduleName}. Is this expected?\nMethod definition was expected at: ${dirPath}.`);
 			}
 		});
 	});
@@ -139,10 +139,11 @@ const transformParams = (params = {}, specs) => {
 };
 
 const registerApi = (apiNames, config, registeredModuleNames) => {
-	const {
-		aliases,
-		whitelist,
-		methodPaths } = configureApi(apiNames, config.path, registeredModuleNames);
+	const { aliases, whitelist, methodPaths } = configureApi(
+		apiNames,
+		config.path,
+		registeredModuleNames,
+	);
 
 	const transformRequest = (apiPath, params) => {
 		try {

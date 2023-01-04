@@ -35,7 +35,7 @@ LoggerConfig(loggerConf);
 
 const logger = Logger();
 
-const app = Microservice({
+const defaultBrokerConfig = Object.freeze({
 	name: 'indexer',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
@@ -51,23 +51,25 @@ const app = Microservice({
 	],
 });
 
-// Setup temporary node to query SDK module names
-const tempNode = Microservice({
-	name: 'temp_service_indexer',
-	transporter: config.transporter,
-	brokerTimeout: config.brokerTimeout, // in seconds
-	logger: loggerConf,
-	events: {},
-	dependencies: [
-		'connector',
-	],
-});
-setAppContext(tempNode);
+const app = Microservice(defaultBrokerConfig);
 
-tempNode.run().then(async () => {
+// Start a temporary broker to query for SDK module names
+// To be used for dynamically registering the available module specific endpoints
+const tempApp = Microservice({
+	...defaultBrokerConfig,
+	name: 'temp_service_indexer',
+	events: {},
+});
+setAppContext(tempApp);
+
+tempApp.run().then(async () => {
 	const { getRegisteredModules } = require('./shared/constants');
-	const registeredModules = (await getRegisteredModules()).map(moduleName => moduleName === 'reward' ? 'dynamicReward' : moduleName);
-	await tempNode.getBroker().stop();
+	const registeredModules = await getRegisteredModules();
+	registeredModules.forEach((module, index, self) => {
+		// Map 'reward' module to the 'dynamicReward' endpoints
+		if (module === 'reward') self[index] = 'dynamicReward';
+	});
+	await tempApp.getBroker().stop();
 
 	// Add routes, events & jobs
 	if (config.operations.isIndexingModeEnabled) {
@@ -76,30 +78,26 @@ tempNode.run().then(async () => {
 	}
 
 	if (config.operations.isDataRetrievalModeEnabled) {
-		// Add jobs
 		app.addJobs(path.join(__dirname, 'jobs', 'dataService'));
 
-		// Register default methods
+		// First register all the default methods and then app registered module specific methods
 		app.addMethods(path.join(__dirname, 'methods', 'dataService'));
-
-		// Register SDK specific methods
-		registeredModules.forEach(moduleName => {
-			const methodsPath = path.join(__dirname, 'methods', 'dataService', 'modules', moduleName.concat('.js'));
-			/* eslint-disable import/no-dynamic-require */
+		registeredModules.forEach(module => {
+			const methodFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
 			try {
-				const methodsObj = require(methodsPath);
-				Object.values(methodsObj).forEach(method => app.addMethod(method));
+				// eslint-disable-next-line import/no-dynamic-require
+				const methods = require(methodFilePath);
+				methods.forEach(method => app.addMethod(method));
 			} catch (err) {
-				logger.trace(`Module specific endpoint not found. Error:${err}`);
+				logger.warn(`Moleculer method definitions missing for module: ${moduleName}. Is this expected?\nMethod definitions were expected at: ${methodFilePath}.`);
 			}
-			/* eslint-enable import/no-dynamic-require */
 		});
 	}
 
+	// Set the correct app context and start the application
 	setAppContext(app);
-	// Run the application
 	app.run().then(async () => {
-		logger.info(`Service started ${packageJson.name}`);
+		logger.info(`Service started ${packageJson.name}.`);
 
 		// Init database
 		const status = require('./shared/indexer/indexStatus');
@@ -109,9 +107,9 @@ tempNode.run().then(async () => {
 			const processor = require('./shared/processor');
 			await processor.init();
 		}
-	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-		logger.fatal(err.stack);
-		process.exit(1);
 	});
+}).catch(err => {
+	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(err.stack);
+	process.exit(1);
 });
