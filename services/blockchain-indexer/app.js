@@ -68,11 +68,7 @@ setAppContext(tempApp);
 
 tempApp.run().then(async () => {
 	const { getRegisteredModules } = require('./shared/constants');
-	const registeredModules = await getRegisteredModules();
-	registeredModules.forEach((module, index) => {
-		// Map 'reward' module to the 'dynamicReward' module endpoints
-		if (module === MODULE.REWARD) registeredModules[index] = module.DYNAMIC_REWARD;
-	});
+	let registeredModules = await getRegisteredModules();
 	await tempApp.getBroker().stop();
 
 	// Add routes, events & jobs
@@ -86,6 +82,11 @@ tempApp.run().then(async () => {
 
 		// First register all the default methods and then app registered module specific methods
 		app.addMethods(path.join(__dirname, 'methods', 'dataService'));
+
+		// Map 'reward' module to the 'dynamicReward' module endpoints
+		registeredModules = registeredModules.map(
+			module => module === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module,
+		);
 		registeredModules.forEach(module => {
 			const methodsFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
 			try {

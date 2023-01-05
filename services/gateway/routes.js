@@ -69,11 +69,9 @@ const filterApis = (requiredApis, registeredModuleNames) => {
 		}, {});
 
 	// Generate the final routes to be registered at the gateway in moleculer-web
-	Object.entries(apisToRegister).forEach(
-		([path, apis]) => filteredApis.push(
-			registerApi(apis, { ...defaultConfig, path }, registeredModuleNames),
-		),
-	);
+	Object.entries(apisToRegister).forEach(([path, apis]) => filteredApis.push(
+		registerApi(apis, { ...defaultConfig, path }, registeredModuleNames),
+	));
 
 	return filteredApis;
 };

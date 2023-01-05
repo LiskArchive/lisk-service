@@ -61,6 +61,10 @@ const defaultBrokerConfig = {
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+	dependencies: [
+		'connector',
+		'indexer',
+	],
 };
 
 // Use temporary service to fetch registered sdk modules
@@ -68,9 +72,6 @@ const tempApp = Microservice({
 	...defaultBrokerConfig,
 	name: 'temp_service_gateway',
 	events: {},
-	dependencies: [
-		'connector',
-	],
 });
 
 tempApp.run().then(async () => {
