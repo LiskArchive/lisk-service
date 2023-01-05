@@ -68,9 +68,7 @@ const getInflationRate = async () => {
 
 const getDefaultRewardAtHeight = async height => {
 	try {
-		// TODO: Update endpoint once exposed by SDK
-		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7865
-		const defaultRewardResponse = await invokeEndpoint(`${registeredRewardModule}_getDefaultRewardAtHeight`);
+		const defaultRewardResponse = await invokeEndpoint(`${registeredRewardModule}_getDefaultRewardAtHeight`, { height });
 		return defaultRewardResponse;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
