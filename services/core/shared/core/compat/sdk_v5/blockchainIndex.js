@@ -14,7 +14,6 @@
  *
  */
 const {
-	CacheRedis,
 	Logger,
 } = require('lisk-service-framework');
 
@@ -73,8 +72,6 @@ const {
 } = require('../../../indexdb/mysql');
 
 const keyValueDB = require('../../../indexdb/mysqlKVStore');
-
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const blocksIndexSchema = require('./schema/blocks');
 const accountsIndexSchema = require('./schema/accounts');
@@ -357,28 +354,6 @@ const verifyAndIndexBlock = async data => {
 };
 
 const verifyBlocksQueue = Queue('verifyBlocksQueue', verifyAndIndexBlock, 1);
-
-const cacheLegacyAccountInfo = async () => {
-	// Cache the legacy account reclaim balance information
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-	const unregisteredAccounts = genesisBlock.asset.accounts
-		.filter(account => account.address.length !== 40);
-
-	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
-	logger.info('Starting to cache legacy account reclaim balance information');
-	await BluebirdPromise.map(
-		unregisteredAccounts,
-		async account => {
-			const legacyAccountInfo = {
-				address: account.address,
-				balance: account.token.balance,
-			};
-			await legacyAccountCache.set(account.address, JSON.stringify(legacyAccountInfo));
-		},
-		{ concurrency: 1000 },
-	);
-	logger.info('Finished caching legacy account reclaim balance information');
-};
 
 const performGenesisAccountsIndexing = async () => {
 	const accountsDB = await getAccountsIndex();
@@ -700,7 +675,6 @@ const init = async () => {
 
 		// Start the indexing process (accounts)
 		await indexGenesisAccounts();
-		await cacheLegacyAccountInfo();
 
 		// Index all the delegate accounts first
 		await indexAllDelegateAccounts();

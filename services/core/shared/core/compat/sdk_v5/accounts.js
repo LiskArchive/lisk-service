@@ -30,7 +30,6 @@ const {
 	confirmPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	getLegacyHexAddressFromPublicKey,
 	getLegacyAddressFromPublicKey,
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
@@ -79,7 +78,6 @@ const getMultisignatureIndex = () => getTableInstance('multisignature', multisig
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 const redis = new Redis(config.endpoints.redis);
@@ -365,18 +363,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			},
 		);
 	} else {
-		// Fetch legacy account info from the cache or query Core if unavailable
-		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
-		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
-		const accountInfo = cachedAccountInfoStr
-			? JSON.parse(cachedAccountInfoStr)
-			: await requestApi(coreApi.getLegacyAccountInfo, publicKey);
-
+		const accountInfo = await requestApi(coreApi.getLegacyAccountInfo, publicKey);
 		if (accountInfo && Object.keys(accountInfo).length) {
-			if (!cachedAccountInfoStr) {
-				await legacyAccountCache.set(legacyHexAddress, JSON.stringify(accountInfo));
-			}
-
 			const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
 			const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 			Object.assign(
@@ -397,9 +385,6 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 					},
 				},
 			);
-		} else if (!cachedAccountInfoStr) {
-			// Cache empty object for accounts for which core returns 'undefined'
-			await legacyAccountCache.set(legacyHexAddress, JSON.stringify(legacyAccountInfo));
 		}
 	}
 	return legacyAccountInfo;
@@ -623,26 +608,6 @@ const resolveMultisignatureMemberships = tx => {
 	return multisignatureInfoToIndex;
 };
 
-const removeReclaimedLegacyAccountInfoFromCache = () => {
-	// Clear the legacyAccount cache when a reclaim transaction has been made
-	const removeReclaimedAccountFromCacheListener = async (eventPayload) => {
-		const reclaimTxModuleId = 1000;
-		const reclaimTxAssetId = 0;
-
-		const [block] = eventPayload.data;
-		if (block && block.payload && Array.isArray(block.payload)) {
-			await block.payload.forEach(async tx => {
-				if (tx.moduleID === reclaimTxModuleId && tx.assetID === reclaimTxAssetId) {
-					const legacyHexAddress = getLegacyHexAddressFromPublicKey(tx.senderPublicKey);
-					await legacyAccountCache.delete(legacyHexAddress);
-				}
-			});
-		}
-	};
-	Signals.get('blockIndexed').add(removeReclaimedAccountFromCacheListener);
-	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
-};
-
 const keepAccountsCacheUpdated = async () => {
 	const updateAccountsCacheListener = async (addresses) => BluebirdPromise.map(
 		addresses,
@@ -653,7 +618,6 @@ const keepAccountsCacheUpdated = async () => {
 	Signals.get('updateAccountsByAddresses').add(updateAccountsCacheListener);
 };
 
-Signals.get('searchIndexInitialized').add(removeReclaimedLegacyAccountInfoFromCache);
 Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
 module.exports = {
