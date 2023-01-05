@@ -6,29 +6,29 @@
         "type": "string",
         "format": "id",
         "minLength": 1,
-        "maxLength": 20,
-        "pattern": "^\\d*$"
+        "maxLength": 64
     },
     "moduleAssetId": {
         "name": "moduleAssetId",
         "in": "query",
         "description": "Combination of module:asset Id",
         "type": "string",
-        "minLength": 1
+        "minLength": 3
     },
     "moduleAssetName": {
         "name": "moduleAssetName",
         "in": "query",
         "description": "Combination of module:asset Name",
         "type": "string",
-        "minLength": 1
+        "minLength": 3
     },
     "recipientAddress": {
         "name": "recipientAddress",
         "in": "query",
         "description": "Lisk account address",
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "maxLength": 41
     },
     "recipientPublicKey": {
         "name": "recipientPublicKey",
@@ -49,28 +49,32 @@
         "in": "query",
         "description": "Lisk account address",
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "maxLength": 41
     },
     "senderPublicKey": {
         "name": "senderPublicKey",
         "in": "query",
         "description": "Lisk account public key",
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "maxLength": 64
     },
     "senderUsername": {
         "name": "senderUsername",
         "in": "query",
         "description": "Lisk account username",
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "maxLength": 20
     },
     "amount": {
         "name": "amount",
         "in": "query",
         "description": "Amount range of from:to amount",
         "type": "string",
-        "minimum": 0
+        "minimum": 0,
+        "minLength": 1
     },
     "transaction": {
         "name": "transaction",
