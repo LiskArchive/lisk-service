@@ -34,6 +34,10 @@ const loggerConf = {
 LoggerConfig(loggerConf);
 
 const logger = Logger();
+const MODULE = {
+	DYNAMIC_REWARD: 'dynamicReward',
+	REWARD: 'reward',
+};
 
 const defaultBrokerConfig = Object.freeze({
 	name: 'indexer',
@@ -65,9 +69,9 @@ setAppContext(tempApp);
 tempApp.run().then(async () => {
 	const { getRegisteredModules } = require('./shared/constants');
 	const registeredModules = await getRegisteredModules();
-	registeredModules.forEach((module, index, self) => {
-		// Map 'reward' module to the 'dynamicReward' endpoints
-		if (module === 'reward') self[index] = 'dynamicReward';
+	registeredModules.forEach((module, index) => {
+		// Map 'reward' module to the 'dynamicReward' module endpoints
+		if (module === MODULE.REWARD) registeredModules[index] = module.DYNAMIC_REWARD;
 	});
 	await tempApp.getBroker().stop();
 
@@ -89,7 +93,7 @@ tempApp.run().then(async () => {
 				const methods = require(methodFilePath);
 				methods.forEach(method => app.addMethod(method));
 			} catch (err) {
-				logger.warn(`Moleculer method definitions missing for module: ${moduleName}. Is this expected?\nMethod definitions were expected at: ${methodFilePath}.`);
+				logger.warn(`Moleculer method definitions missing for module: ${module}. Is this expected?\nMethod definitions were expected at: ${methodFilePath}.`);
 			}
 		});
 	}

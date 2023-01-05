@@ -51,6 +51,10 @@ const loggerConf = {
 LoggerConfig(loggerConf);
 
 const logger = Logger();
+const MODULE = {
+	DYNAMIC_REWARD: 'dynamicReward',
+	REWARD: 'reward',
+};
 
 const defaultBrokerConfig = {
 	name: 'gateway',
@@ -71,8 +75,10 @@ const tempApp = Microservice({
 
 tempApp.run().then(async () => {
 	// Prepare routes
-	const response = await tempApp.requestRpc('connector.getSystemMetadata');
-	const registeredModuleNames = response.modules.map(module => module.name === 'reward' ? 'dynamicReward' : module.name);
+	const { modules } = await tempApp.requestRpc('connector.getSystemMetadata');
+	const registeredModuleNames = modules.map(
+		module => module.name === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module.name,
+	);
 	await tempApp.getBroker().stop();
 	const httpRoutes = getHttpRoutes(registeredModuleNames);
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);

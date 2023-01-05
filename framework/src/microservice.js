@@ -48,7 +48,7 @@ const jobSchema = {
 const validator = new Validator();
 
 const Microservice = (config = {}) => {
-	const moleculerConfig = config;
+	const moleculerConfig = { ...config };
 	moleculerConfig.actions = {};
 
 	const logger = loggerLib.get();
