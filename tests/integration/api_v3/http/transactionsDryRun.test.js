@@ -20,6 +20,7 @@ const { api } = require('../../../helpers/api');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_INVALID,
+	TRANSACTION_OBJECT_FAIL,
 	TRANSACTION_ENCODED_VALID,
 } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
@@ -33,6 +34,7 @@ const {
 const {
 	dryrunTransactionSuccessResponseSchema,
 	dryrunTransactionInvalidResponseSchema,
+	dryrunTransactionFailResponseSchema,
 	metaSchema,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
@@ -42,6 +44,18 @@ const endpoint = `${baseUrlV3}/transactions/dryrun`;
 const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
+	it('Returns proper response for transaction with less than required fee', async () => {
+		const response = await api.post(
+			endpoint,
+			{ transaction: TRANSACTION_OBJECT_FAIL },
+		);
+
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionFailResponseSchema);
+		expect(response.data.events.length).toBeGreaterThan(0);
+		expect(response.meta).toMap(metaSchema);
+	});
+
 	it('Post dryrun transaction succesfully with only transaction object', async () => {
 		const response = await api.post(
 			endpoint,
