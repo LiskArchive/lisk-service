@@ -39,7 +39,7 @@ const MODULE = {
 	REWARD: 'reward',
 };
 
-const defaultBrokerConfig = Object.freeze({
+const defaultBrokerConfig = {
 	name: 'indexer',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
@@ -53,7 +53,7 @@ const defaultBrokerConfig = Object.freeze({
 	dependencies: [
 		'connector',
 	],
-});
+};
 
 const app = Microservice(defaultBrokerConfig);
 
@@ -87,13 +87,13 @@ tempApp.run().then(async () => {
 		// First register all the default methods and then app registered module specific methods
 		app.addMethods(path.join(__dirname, 'methods', 'dataService'));
 		registeredModules.forEach(module => {
-			const methodFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
+			const methodsFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
 			try {
 				// eslint-disable-next-line import/no-dynamic-require
-				const methods = require(methodFilePath);
+				const methods = require(methodsFilePath);
 				methods.forEach(method => app.addMethod(method));
 			} catch (err) {
-				logger.warn(`Moleculer method definitions missing for module: ${module}. Is this expected?\nMethod definitions were expected at: ${methodFilePath}.`);
+				logger.warn(`Moleculer method definitions missing for module: ${module}. Is this expected?\nMethod definitions were expected at: ${methodsFilePath}.`);
 			}
 		});
 	}

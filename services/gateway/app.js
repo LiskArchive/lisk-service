@@ -75,8 +75,8 @@ const tempApp = Microservice({
 
 tempApp.run().then(async () => {
 	// Prepare routes
-	const { modules } = await tempApp.requestRpc('connector.getSystemMetadata');
-	const registeredModuleNames = modules.map(
+	const { modules: registeredModules } = await tempApp.requestRpc('connector.getSystemMetadata');
+	const registeredModuleNames = registeredModules.map(
 		module => module.name === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module.name,
 	);
 	await tempApp.getBroker().stop();
