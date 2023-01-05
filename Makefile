@@ -105,8 +105,8 @@ build-tests:
 	cd ./tests && docker build --tag=lisk/service_tests ./
 
 build-local:
-	npm ci
-	cd ./framework && npm ci
+	npm i --registry https://npm.lisk.com
+	cd ./framework && npm i --registry https://npm.lisk.com
 	cd ./services/blockchain-app-registry && npm i --registry https://npm.lisk.com
 	cd ./services/blockchain-connector && npm i --registry https://npm.lisk.com
 	cd ./services/blockchain-coordinator && npm i --registry https://npm.lisk.com

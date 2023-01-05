@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-transaction-statistics",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.5",
   "description": "Lisk Service Transaction Statistics",
   "keywords": [
     "lisk",
