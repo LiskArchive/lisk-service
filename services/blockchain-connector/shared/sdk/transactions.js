@@ -47,7 +47,8 @@ const dryRunTransactionWrapper = async (params) => {
 		? encodeTransaction(transaction)
 		: transaction;
 
-	return dryRunTransaction({ transaction: encodedTransaction, skipVerify });
+	const response = await dryRunTransaction({ transaction: encodedTransaction, skipVerify });
+	return response;
 };
 
 module.exports = {
