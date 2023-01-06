@@ -14,15 +14,27 @@
  *
  */
 const {
-	getLegacyAccountInfo,
-} = require('./controllers/legacy');
+	getTokens,
+	getTokensSummary,
+} = require('../controllers/tokens');
 
 module.exports = [
 	{
-		name: 'legacy',
-		controller: getLegacyAccountInfo,
+		name: 'tokens',
+		controller: getTokens,
 		params: {
-			publicKey: { optional: false, type: 'string' },
+			address: { optional: false, type: 'string' },
+			tokenID: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'tokens.summary',
+		controller: getTokensSummary,
+		params: {
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
 		},
 	},
 ];

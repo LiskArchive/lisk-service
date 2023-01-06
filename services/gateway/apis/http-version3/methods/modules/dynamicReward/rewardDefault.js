@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const rewardDefaultSource = require('../../../sources/version3/rewardDefault');
-const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { getSwaggerDescription, transformParams } = require('../../../shared/utils');
+const rewardDefaultSource = require('../../../../../sources/version3/rewardDefault');
+const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
+const { getSwaggerDescription, transformParams } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',

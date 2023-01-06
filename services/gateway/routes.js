@@ -48,7 +48,7 @@ const PATH_API_MAPPINGS = {
 	'/v3': ['http-version3', 'http-exports'],
 };
 
-const filterApis = (requiredApis) => {
+const filterApis = (requiredApis, registeredModuleNames) => {
 	requiredApis = requiredApis.split(',');
 
 	const filteredApis = [];
@@ -69,10 +69,15 @@ const filterApis = (requiredApis) => {
 		}, {});
 
 	// Generate the final routes to be registered at the gateway in moleculer-web
-	Object.entries(apisToRegister)
-		.forEach(([path, apis]) => filteredApis.push(registerApi(apis, { ...defaultConfig, path })));
+	Object.entries(apisToRegister).forEach(([path, apis]) => filteredApis.push(
+		registerApi(apis, { ...defaultConfig, path }, registeredModuleNames),
+	));
 
 	return filteredApis;
 };
 
-module.exports = filterApis(config.api.http);
+const getHttpRoutes = (registeredModuleNames) => filterApis(config.api.http, registeredModuleNames);
+
+module.exports = {
+	getHttpRoutes,
+};
