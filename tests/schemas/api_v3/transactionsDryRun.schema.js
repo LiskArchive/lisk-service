@@ -29,15 +29,15 @@ const event = {
 
 const dryrunTransactionSuccessResponseSchema = {
 	result: Joi.number().integer().valid(1).required(),
-	events: Joi.array().items(Joi.object(event).optional()).required(),
+	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 const dryrunTransactionFailResponseSchema = {
 	result: Joi.number().integer().valid(0).required(),
-	events: Joi.array().items(Joi.object(event).optional()).required(),
+	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 const dryrunTransactionInvalidResponseSchema = {
 	result: Joi.number().integer().valid(-1).required(),
-	events: Joi.array().items(Joi.object(event).optional()).required(),
+	events: Joi.array().length(0).required(),
 	errorMessage: Joi.string().required(),
 };
 

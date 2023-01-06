@@ -22,6 +22,8 @@ const {
 	TRANSACTION_OBJECT_INVALID,
 	TRANSACTION_OBJECT_FAIL,
 	TRANSACTION_ENCODED_VALID,
+	TRANSACTION_ENCODED_FAIL,
+	TRANSACTION_ENCODED_INVALID,
 } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
@@ -44,39 +46,31 @@ const endpoint = `${baseUrlV3}/transactions/dryrun`;
 const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
-	it('Returns proper response for transaction with less than required fee', async () => {
-		const response = await api.post(
-			endpoint,
-			{ transaction: TRANSACTION_OBJECT_FAIL },
-		);
-
+	it('Returns proper response (Fail) when transaction object has less than required fee', async () => {
+		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_FAIL });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(dryrunTransactionFailResponseSchema);
-		expect(response.data.events.length).toBeGreaterThan(0);
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('Returns proper response (Fail) when transaction string has less than required fee', async () => {
+		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_FAIL });
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionFailResponseSchema);
 		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('Post dryrun transaction succesfully with only transaction object', async () => {
-		const response = await api.post(
-			endpoint,
-			{ transaction: TRANSACTION_OBJECT_VALID },
-		);
-
+		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(response.data.events.length).toBeGreaterThan(0);
 		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('Post dryrun transaction succesfully with only transaction string', async () => {
-		const response = await api.post(
-			endpoint,
-			{ transaction: TRANSACTION_ENCODED_VALID },
-		);
-
+		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_VALID });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(response.data.events.length).toBeGreaterThan(0);
 		expect(response.meta).toMap(metaSchema);
 	});
 
@@ -85,45 +79,40 @@ describe('Post dryrun transactions API', () => {
 			endpoint,
 			{ transaction: TRANSACTION_OBJECT_VALID, isSkipVerify: true },
 		);
-
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(response.data.events.length).toBeGreaterThan(0);
 		expect(response.meta).toMap(metaSchema);
 	});
 
+	it('Returns proper response (Invalid) when transaction string has less than minimum required fee', async () => {
+		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_INVALID });
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(dryrunTransactionInvalidResponseSchema);
+		expect(response.meta).toMap(metaSchema);
+	});
+
 	it('Returns proper response (Invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
-		const firstResponse = await api.post(
-			endpoint,
-			{ transaction: TRANSACTION_OBJECT_VALID },
-		);
-
+		const firstResponse = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(goodRequestSchema);
 		expect(firstResponse.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(firstResponse.data.events.length).toBeGreaterThan(0);
 		expect(firstResponse.meta).toMap(metaSchema);
 
 		// Send transaction and wait for it to be included in the next block
-		await api.post(
-			postTransactionEndpoint,
-			{ transaction: TRANSACTION_ENCODED_VALID },
-		);
+		await api.post(postTransactionEndpoint, { transaction: TRANSACTION_ENCODED_VALID });
 		await waitMs(15000);
 
 		// Check dry run fails for duplicate transaction
-		const secondResponse = await api.post(
-			endpoint,
-			{ transaction: TRANSACTION_OBJECT_VALID },
-		);
-
+		const secondResponse = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
 		expect(secondResponse).toMap(goodRequestSchema);
 		expect(secondResponse.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(secondResponse.data.events.length).toBe(0);
 		expect(secondResponse.meta).toMap(metaSchema);
 	});
 
-	it('Returns error when posting invalid transaction', async () => {
+	it('Returns proper response (Invalid) when posting invalid transaction', async () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
 			{ transaction: TRANSACTION_OBJECT_INVALID },
