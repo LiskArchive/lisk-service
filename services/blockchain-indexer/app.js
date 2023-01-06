@@ -55,10 +55,9 @@ const defaultBrokerConfig = {
 	],
 };
 
+// Add routes, events & jobs
 (async () => {
 	const registeredModules = [];
-	// Populate registered module names. temporary node must be stopped before app definition
-	// to avoid context (logger) overwriting issue
 	if (config.operations.isDataRetrievalModeEnabled) {
 		// Start a temporary broker to query for SDK module names
 		// To be used for dynamically registering the available module specific endpoints
@@ -69,33 +68,26 @@ const defaultBrokerConfig = {
 		});
 		setAppContext(tempApp);
 		await tempApp.run();
-
 		const { getRegisteredModules } = require('./shared/constants');
 		registeredModules.push(...await getRegisteredModules());
+		// Stop the temporary node before app definition to avoid context (logger) overwriting issue
 		await tempApp.getBroker().stop();
 	}
 
 	const app = Microservice(defaultBrokerConfig);
-	// Add routes, events & jobs
-	if (config.operations.isIndexingModeEnabled) {
-		app.addMethods(path.join(__dirname, 'methods', 'indexer'));
-		app.addEvents(path.join(__dirname, 'events'));
-	}
 
 	if (config.operations.isDataRetrievalModeEnabled) {
 		app.addJobs(path.join(__dirname, 'jobs', 'dataService'));
 
-		// First register all the default methods and then app registered module specific methods
+		// First register all the default methods followed by app specific module methods
 		app.addMethods(path.join(__dirname, 'methods', 'dataService'));
+		registeredModules.forEach(module => {
+			// Map 'reward' module to the 'dynamicReward' module endpoints
+			if (module === MODULE.REWARD) module = MODULE.DYNAMIC_REWARD;
 
-		// Map 'reward' module to the 'dynamicReward' module endpoints
-		const registeredModuleEndpoints = registeredModules.map(
-			module => module === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module,
-		);
-		registeredModuleEndpoints.forEach(module => {
 			const methodsFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
 			try {
-			// eslint-disable-next-line import/no-dynamic-require
+				// eslint-disable-next-line import/no-dynamic-require
 				const methods = require(methodsFilePath);
 				methods.forEach(method => app.addMethod(method));
 			} catch (err) {
@@ -104,7 +96,12 @@ const defaultBrokerConfig = {
 		});
 	}
 
-	// Set the correct app context and start the application
+	if (config.operations.isIndexingModeEnabled) {
+		app.addMethods(path.join(__dirname, 'methods', 'indexer'));
+		app.addEvents(path.join(__dirname, 'events'));
+	}
+
+	// Set the app context and start the application
 	setAppContext(app);
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}.`);
@@ -123,4 +120,3 @@ const defaultBrokerConfig = {
 		process.exit(1);
 	});
 })();
-
