@@ -53,7 +53,7 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 					Utils.requireAllJs(path.resolve(__dirname, dirPath)),
 				);
 			} catch (err) {
-				logger.warn(`Moleculer method definitions (RPC endpoints) missing for module: ${moduleName}. Is this expected?\nMethod definition was expected at: ${dirPath}.`);
+				logger.warn(`Moleculer method definitions (RPC endpoints) missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`);
 			}
 		});
 	});

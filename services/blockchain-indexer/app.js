@@ -91,7 +91,7 @@ const defaultBrokerConfig = {
 				const methods = require(methodsFilePath);
 				methods.forEach(method => app.addMethod(method));
 			} catch (err) {
-				logger.warn(`Moleculer method definitions missing for module: ${module}. Is this expected?\nMethod definitions were expected at: ${methodsFilePath}.`);
+				logger.warn(`Moleculer method definitions missing for module: ${module}. Is this expected?\nWas expected at: ${methodsFilePath}.`);
 			}
 		});
 	}
