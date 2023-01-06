@@ -55,22 +55,27 @@ const defaultBrokerConfig = {
 	],
 };
 
-const app = Microservice(defaultBrokerConfig);
+(async () => {
+	const registeredModules = [];
+	// Populate registered module names. temporary node must be stopped before app definition
+	// to avoid context (logger) overwriting issue
+	if (config.operations.isDataRetrievalModeEnabled) {
+		// Start a temporary broker to query for SDK module names
+		// To be used for dynamically registering the available module specific endpoints
+		const tempApp = Microservice({
+			...defaultBrokerConfig,
+			name: 'temp_service_indexer',
+			events: {},
+		});
+		setAppContext(tempApp);
+		await tempApp.run();
 
-// Start a temporary broker to query for SDK module names
-// To be used for dynamically registering the available module specific endpoints
-const tempApp = Microservice({
-	...defaultBrokerConfig,
-	name: 'temp_service_indexer',
-	events: {},
-});
-setAppContext(tempApp);
+		const { getRegisteredModules } = require('./shared/constants');
+		registeredModules.push(...await getRegisteredModules());
+		await tempApp.getBroker().stop();
+	}
 
-tempApp.run().then(async () => {
-	const { getRegisteredModules } = require('./shared/constants');
-	let registeredModules = await getRegisteredModules();
-	await tempApp.getBroker().stop();
-
+	const app = Microservice(defaultBrokerConfig);
 	// Add routes, events & jobs
 	if (config.operations.isIndexingModeEnabled) {
 		app.addMethods(path.join(__dirname, 'methods', 'indexer'));
@@ -84,13 +89,13 @@ tempApp.run().then(async () => {
 		app.addMethods(path.join(__dirname, 'methods', 'dataService'));
 
 		// Map 'reward' module to the 'dynamicReward' module endpoints
-		registeredModules = registeredModules.map(
+		const registeredModuleEndpoints = registeredModules.map(
 			module => module === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module,
 		);
-		registeredModules.forEach(module => {
+		registeredModuleEndpoints.forEach(module => {
 			const methodsFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
 			try {
-				// eslint-disable-next-line import/no-dynamic-require
+			// eslint-disable-next-line import/no-dynamic-require
 				const methods = require(methodsFilePath);
 				methods.forEach(method => app.addMethod(method));
 			} catch (err) {
@@ -112,9 +117,10 @@ tempApp.run().then(async () => {
 			const processor = require('./shared/processor');
 			await processor.init();
 		}
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
 	});
-}).catch(err => {
-	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-	logger.fatal(err.stack);
-	process.exit(1);
-});
+})();
+
