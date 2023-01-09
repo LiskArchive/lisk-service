@@ -202,7 +202,8 @@ const indexBlock = async job => {
 			// events.forEach(event => {
 			// 	const { data: eventData } = event;
 			// 	// Initialize map entry with BigInt
-			// 	if (['locked', 'unlocked'].includes(event.name) && !(eventData.tokenID in tokenIDLockedAmountChangeMap[eventData.tokenID])) {
+			// 	if (['locked', 'unlocked'].includes(event.name) &&
+			//		!(eventData.tokenID in tokenIDLockedAmountChangeMap[eventData.tokenID])) {
 			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 			// 	}
 
