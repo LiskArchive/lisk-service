@@ -72,12 +72,8 @@ const getPattern = async (pattern) => {
 		['key', 'value', 'type'],
 	);
 
-	const response = result.map(({ key, value, type }) => ({
-		key,
-		value: formatValue(value, type),
-		type,
-	}));
-	return response;
+	result.forEach(row => row.value = formatValue(row.value, row.type));
+	return result;
 };
 
 const deleteEntry = async (key) => {

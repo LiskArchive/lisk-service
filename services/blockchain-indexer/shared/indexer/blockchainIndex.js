@@ -196,7 +196,6 @@ const indexBlock = async job => {
 				}
 			}
 
-			// go through events and update key value stores for totalLocked.filter locked/unlocked events
 			// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
 			// const tokenIDLockedAmountChangeMap = {};
 			// events.forEach(event => {
