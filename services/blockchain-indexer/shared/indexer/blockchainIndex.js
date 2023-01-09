@@ -195,6 +195,35 @@ const indexBlock = async job => {
 					}, dbTrx);
 				}
 			}
+
+			// go through events and update key value stores for totalLocked.filter locked/unlocked events
+			// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+			// const tokenIDLockedAmountChangeMap = {};
+			// events.forEach(event => {
+			// 	const { data: eventData } = event;
+			// 	// Initialize map entry with BigInt
+			// 	if (['locked', 'unlocked'].includes(event.name) && !(eventData.tokenID in tokenIDLockedAmountChangeMap[eventData.tokenID])) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+			// 	}
+
+			// 	if (event.name === 'locked') {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
+			// 	} else if (event.name === 'unlocked') {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
+			// 	}
+			// });
+
+			// Object.entries(tokenIDLockedAmountChangeMap).forEach(([tokenID, lockedAmountChange]) => {
+			// 	const tokenKey = `${keyValueTable.KEYS.TOTAL_LOCKED_PREFIX}_${tokenID}`;
+			// 	const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+			// 	const newLockedAmount = curLockedAmount + lockedAmountChange;
+
+			// 	if (newLockedAmount === 0) {
+			// 		keyValueTable.delete(tokenKey);
+			// 	} else {
+			// 		keyValueTable.set(tokenKey, newLockedAmount);
+			// 	}
+			// });
 		}
 
 		const blockToIndex = {

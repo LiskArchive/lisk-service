@@ -24,10 +24,13 @@ const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils')
 
 const config = require('../../../../config');
 
+const keyValueTable = require('../../../database/mysqlKVStore');
+
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const stakesTableSchema = require('../../../database/schema/stakes');
+const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema.tableName,
@@ -90,29 +93,54 @@ const decrementStakeTrx = async (stake, trx) => {
 	await stakesTable.decrement(decrementParam, trx);
 };
 
+const updateTotalStake = async (changeAmount) => {
+	const tokenID = await getPosTokenID();
+	const tokenKey = `${keyValueTable.KEYS.TOTAL_STAKED_PREFIX}_${tokenID}`;
+	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+	const newStakedAmount = curStakedAmount + changeAmount;
+
+	if (newStakedAmount === 0) {
+		await keyValueTable.delete(tokenKey);
+	} else {
+		await keyValueTable.set(tokenKey, newStakedAmount);
+	}
+};
+
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
+	let totalStakeChange = BigInt(0);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await BluebirdPromise.map(
 		stakes,
-		async (stake) => incrementStakeTrx(stake, dbTrx),
+		async (stake) => {
+			incrementStakeTrx(stake, dbTrx);
+			totalStakeChange += BigInt(stake.amount);
+		},
 		{ concurrency: 1 },
 	);
+	// Update total stake amount in key value store table
+	await updateTotalStake(totalStakeChange);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
+	let totalStakeChange = BigInt(0);
 
 	logger.trace(`Reverting stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await BluebirdPromise.map(
 		stakes,
-		async (stake) => decrementStakeTrx(stake, dbTrx),
+		async (stake) => {
+			decrementStakeTrx(stake, dbTrx);
+			totalStakeChange += BigInt(stake.amount);
+		},
 		{ concurrency: 1 },
 	);
+	// Update total stake amount in key value store table. Negate to reverse the impact
+	await updateTotalStake(-totalStakeChange);
 	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
