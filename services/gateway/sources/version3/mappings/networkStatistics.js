@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,21 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const totalItem = require('./mappings/networkStatistics');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.peers.statistics',
-	params: {},
-	definition: {
-		data: {
-			basic: '=',
-			height: '=',
-			networkVersion: '=',
-			totalLocked: ['data.totalLocked', totalItem],
-			totalStaked: totalItem,
-		},
-		meta: {},
-		links: {},
-	},
+	amount: '=,string',
+	tokenID: '=,string',
 };

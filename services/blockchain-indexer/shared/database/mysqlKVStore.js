@@ -41,14 +41,7 @@ const set = async (key, value) => {
 	await keyValueDB.upsert({ key, value: finalValue, type });
 };
 
-const get = async (key) => {
-	const keyValueDB = await getKeyValueStoreIndex();
-
-	const [{ value, type } = {}] = await keyValueDB.find(
-		{ key, limit: 1 },
-		['value', 'type'],
-	);
-
+const formatValue = (value, type) => {
 	// Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#description
 	if (type === 'boolean') return Boolean(value);
 	if (type === 'number') return Number(value);
@@ -58,6 +51,33 @@ const get = async (key) => {
 
 	// type: ['symbol', 'function', 'object'], should be unreachable
 	return value;
+};
+
+const get = async (key) => {
+	const keyValueDB = await getKeyValueStoreIndex();
+
+	const [{ value, type } = {}] = await keyValueDB.find(
+		{ key, limit: 1 },
+		['value', 'type'],
+	);
+
+	return formatValue(value, type);
+};
+
+const getPattern = async (pattern) => {
+	const keyValueDB = await getKeyValueStoreIndex();
+
+	const result = await keyValueDB.find(
+		{ search: { property: 'key', pattern } },
+		['key', 'value', 'type'],
+	);
+
+	const response = result.map(({ key, value, type }) => ({
+		key,
+		value: formatValue(value, type),
+		type,
+	}));
+	return response;
 };
 
 const deleteEntry = async (key) => {
@@ -73,6 +93,7 @@ const KEYS = {
 module.exports = {
 	set,
 	get,
+	getPattern,
 	delete: deleteEntry,
 	KEYS,
 };
