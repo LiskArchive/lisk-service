@@ -16,15 +16,15 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./framework') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./services/core') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./services/market') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./services/newsfeed') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./services/export') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./services/gateway') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./services/template') { sh 'npm i --registry https://npm.lisk.com' }
-					dir('./tests') { sh 'npm i --registry https://npm.lisk.com' }
+					dir('./') { sh 'npm ci' }
+					dir('./framework') { sh 'npm ci' }
+					dir('./services/core') { sh 'npm ci' }
+					dir('./services/market') { sh 'npm ci' }
+					dir('./services/newsfeed') { sh 'npm ci' }
+					dir('./services/export') { sh 'npm ci' }
+					dir('./services/gateway') { sh 'npm ci' }
+					dir('./services/template') { sh 'npm ci' }
+					dir('./tests') { sh 'npm ci' }
 				}
 			}
 		}

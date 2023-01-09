@@ -90,15 +90,15 @@ build-tests:
 	cd ./tests && docker build --tag=lisk/service_tests ./
 
 build-local:
-	npm i --registry https://npm.lisk.com
-	cd ./framework && npm i --registry https://npm.lisk.com
-	cd ./services/core && npm i --registry https://npm.lisk.com
-	cd ./services/market && npm i --registry https://npm.lisk.com
-	cd ./services/newsfeed && npm i --registry https://npm.lisk.com
-	cd ./services/gateway && npm i --registry https://npm.lisk.com
-	cd ./services/export && npm i --registry https://npm.lisk.com
-	cd ./services/template && npm i --registry https://npm.lisk.com
-	cd ./tests && npm i --registry https://npm.lisk.com
+	npm ci
+	cd ./framework && npm ci
+	cd ./services/core && npm ci
+	cd ./services/market && npm ci
+	cd ./services/newsfeed && npm ci
+	cd ./services/gateway && npm ci
+	cd ./services/export && npm ci
+	cd ./services/template && npm ci
+	cd ./tests && npm ci
 
 clean: clean-local clean-images
 
