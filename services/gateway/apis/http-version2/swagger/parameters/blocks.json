@@ -6,7 +6,7 @@
         "type": "string",
         "format": "id",
         "minLength": 1,
-        "maxLength": 20
+        "maxLength": 64
     },
     "generatorPublicKey": {
         "name": "generatorPublicKey",
@@ -14,7 +14,8 @@
         "description": "Public key to query",
         "type": "string",
         "format": "publicKey",
-        "minLength": 1
+        "minLength": 1,
+        "maxLength": 64
     },
     "generatorUsername": {
         "name": "generatorUsername",
@@ -32,6 +33,6 @@
         "type": "string",
         "format": "address",
         "minLength": 1,
-        "maxLength": 22
+        "maxLength": 41
     }
 }

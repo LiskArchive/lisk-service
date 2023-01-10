@@ -4,7 +4,8 @@
         "in": "query",
         "description": "IP of the node or delegate",
         "type": "string",
-        "format": "ip"
+        "format": "ip",
+        "minLength": 7
     },
     "networkVersion": {
         "name": "networkVersion",

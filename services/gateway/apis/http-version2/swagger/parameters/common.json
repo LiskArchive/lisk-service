@@ -23,7 +23,7 @@
         "in": "query",
         "description": "Query for block(s) by height or a height range (fromHeight:toHeight, both inclusive)",
         "type": "string",
-        "minimum": 1
+        "minimum": 0
     },
     "timestamp": {
         "name": "timestamp",
@@ -46,6 +46,7 @@
         "name": "search",
         "required": true,
         "description": "Search query",
-        "type": "string"
+        "type": "string",
+        "minLength": 1
     }
 }
