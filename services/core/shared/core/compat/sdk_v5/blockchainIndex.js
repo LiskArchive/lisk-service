@@ -299,6 +299,12 @@ const deleteIndexedBlocks = async job => {
 		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 		await rollbackDbTransaction(trx);
 
+		// Reschedule the job to delete the block when the re-attempts do not work
+		if (job.opts.attempts === job.attemptsMade + 1) {
+			// eslint-disable-next-line no-use-before-define
+			await deleteIndexedBlocksQueue.add({ blocks });
+		}
+
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
 			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;
 			logger.warn(errMessage);
