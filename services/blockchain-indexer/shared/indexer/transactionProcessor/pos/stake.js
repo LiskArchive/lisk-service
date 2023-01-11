@@ -103,11 +103,7 @@ const updateTotalStake = async (changeAmount, dbTrx) => {
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 	const newStakedAmount = curStakedAmount + changeAmount;
 
-	if (newStakedAmount === 0) {
-		await keyValueTable.delete(tokenKey);
-	} else {
-		await keyValueTable.set(tokenKey, newStakedAmount, dbTrx);
-	}
+	await keyValueTable.set(tokenKey, newStakedAmount, dbTrx);
 };
 
 // eslint-disable-next-line no-unused-vars

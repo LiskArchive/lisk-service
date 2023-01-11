@@ -14,6 +14,6 @@
  *
  */
 module.exports = {
-	amount: '=,string',
 	tokenID: '=,string',
+	amount: '=,string',
 };

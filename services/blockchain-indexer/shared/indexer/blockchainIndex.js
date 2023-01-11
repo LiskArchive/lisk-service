@@ -97,10 +97,6 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
-const EVENT_NAMES = Object.freeze({
-	LOCKED: 'locked',
-	UNLOCKED: 'unlocked',
-});
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -202,8 +198,14 @@ const indexBlock = async job => {
 
 			// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
 			// Calculate locked amount change and update in key_value_store table for affected tokens
+
 			// Move this require to top
 			// const { KEY_VALUE_TABLE_KEYS } = require('../constants');
+			// const EVENT_NAMES = Object.freeze({
+			// 	LOCKED: 'locked',
+			// 	UNLOCKED: 'unlocked',
+			// });
+
 			// const tokenIDLockedAmountChangeMap = {};
 			// events.forEach(event => {
 			// 	const { data: eventData } = event;

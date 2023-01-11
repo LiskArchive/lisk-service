@@ -77,15 +77,15 @@
                         "type":"object",
                         "description": "An object representing total staked amount for the PoS token ID.",
                         "properties":{
-                            "amount": {
-                                "type": "string",
-                                "description": "Amount of total staked token.",
-                                "example": "10000000000"
-                            },
                             "tokenID": {
                                 "type": "string",
                                 "description": "Universal ID of the staked token.",
                                 "example":"0000000000000000"
+                            },
+                            "amount": {
+                                "type": "string",
+                                "description": "Amount of total staked token.",
+                                "example": "10000000000"
                             }
                         }
                     }

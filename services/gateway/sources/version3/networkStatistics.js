@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const totalItem = require('./mappings/networkStatistics');
+const totalItem = require('./mappings/totalItem');
 
 module.exports = {
 	type: 'moleculer',

@@ -24,8 +24,8 @@ const basicStatsSchema = {
 };
 
 const totalItem = {
-	amount: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	amount: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 };
 
 const networkStatisticsSchema = {
