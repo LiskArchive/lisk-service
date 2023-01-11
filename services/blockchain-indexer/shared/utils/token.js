@@ -13,21 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const amountEntry = require('./mappings/amountEntry');
+const keyValueTable = require('../database/mysqlKVStore');
+
+const { KEY_VALUE_TABLE_KEYS } = require('../constants');
+
+const getTotalLocked = async () => {
+	const lockAmountsInfo = await keyValueTable.getPattern(
+		KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX,
+	);
+
+	const totalLockedResponse = lockAmountsInfo.map(({ key, value }) => {
+		const tokenID = key.split('_').pop();
+		return {
+			tokenID,
+			amount: value.toString(),
+		};
+	});
+
+	return totalLockedResponse;
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.peers.statistics',
-	params: {},
-	definition: {
-		data: {
-			basic: '=',
-			height: '=',
-			networkVersion: '=',
-			totalLocked: ['data.totalLocked', amountEntry],
-			totalStaked: amountEntry,
-		},
-		meta: {},
-		links: {},
-	},
+	getTotalLocked,
 };

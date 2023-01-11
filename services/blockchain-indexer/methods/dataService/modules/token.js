@@ -16,7 +16,7 @@
 const {
 	getTokens,
 	getTokensSummary,
-} = require('../controllers/tokens');
+} = require('../controllers/token');
 
 module.exports = [
 	{

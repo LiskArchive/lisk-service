@@ -15,6 +15,10 @@
  */
 const dataService = require('../../../shared/dataService');
 
+const { getTotalStaked } = require('../../../shared/utils/pos');
+
+const { getTotalLocked } = require('../../../shared/utils/token');
+
 const getPeers = async params => {
 	const peers = {
 		data: [],
@@ -59,6 +63,9 @@ const getPeersStatistics = async () => {
 	const response = await dataService.getPeersStatistics();
 	if (response.data) peerStatistics.data = response.data;
 	if (response.meta) peerStatistics.meta = response.meta;
+
+	peerStatistics.data.totalLocked = await getTotalLocked();
+	peerStatistics.data.totalStaked = await getTotalStaked();
 
 	return peerStatistics;
 };

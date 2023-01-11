@@ -23,7 +23,7 @@ const basicStatsSchema = {
 	disconnectedPeers: Joi.number().integer().min(0).required(),
 };
 
-const totalItem = {
+const amountEntry = {
 	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
 	amount: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 };
@@ -32,8 +32,8 @@ const networkStatisticsSchema = {
 	basic: Joi.object(basicStatsSchema).required(),
 	height: Joi.object().required(),
 	networkVersion: Joi.object().required(),
-	totalLocked: Joi.array().items(Joi.object(totalItem).required()).required(),
-	totalStaked: Joi.object(totalItem).required(),
+	totalLocked: Joi.array().items(Joi.object(amountEntry).required()).required(),
+	totalStaked: Joi.object(amountEntry).required(),
 };
 
 module.exports = {

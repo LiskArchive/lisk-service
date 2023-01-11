@@ -55,7 +55,7 @@ const {
 const {
 	getTokens,
 	getTokensSummary,
-} = require('./tokens');
+} = require('./token');
 
 const {
 	getPosValidators,
