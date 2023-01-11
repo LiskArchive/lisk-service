@@ -97,6 +97,10 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
+const EVENT_NAMES = Object.freeze({
+	LOCKED: 'locked',
+	UNLOCKED: 'unlocked',
+});
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -197,35 +201,36 @@ const indexBlock = async job => {
 			}
 
 			// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+			// Calculate locked amount change and update in key_value_store table for affected tokens
 			// Move this require to top
 			// const { KEY_VALUE_TABLE_KEYS } = require('../constants');
 			// const tokenIDLockedAmountChangeMap = {};
 			// events.forEach(event => {
 			// 	const { data: eventData } = event;
 			// 	// Initialize map entry with BigInt
-			// 	if (['locked', 'unlocked'].includes(event.name) &&
-			//		!(eventData.tokenID in tokenIDLockedAmountChangeMap[eventData.tokenID])) {
+			// 	if ([EVENT_NAMES.LOCKED, EVENT_NAMES.UNLOCKED].includes(event.name)
+			// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap[eventData.tokenID])) {
 			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 			// 	}
 
-			// 	if (event.name === 'locked') {
+			// 	if (event.name === EVENT_NAMES.LOCKED) {
 			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
-			// 	} else if (event.name === 'unlocked') {
+			// 	} else if (event.name === EVENT_NAMES.UNLOCKED) {
 			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
 			// 	}
 			// });
 
-			// Object.entries(tokenIDLockedAmountChangeMap).forEach(([tokenID, lockedAmountChange]) => {
-			// 	const tokenKey = `${KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX}_${tokenID}`;
-			// 	const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
-			// 	const newLockedAmount = curLockedAmount + lockedAmountChange;
+			// await BluebirdPromise.map(
+			// 	Object.entries(tokenIDLockedAmountChangeMap),
+			// 	async ([tokenID, lockedAmountChange]) => {
+			// 		const tokenKey = `${KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX}_${tokenID}`;
+			// 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+			// 		const newLockedAmount = curLockedAmount + lockedAmountChange;
 
-			// 	if (newLockedAmount === 0) {
-			// 		keyValueTable.delete(tokenKey);
-			// 	} else {
-			// 		keyValueTable.set(tokenKey, newLockedAmount);
-			// 	}
-			// });
+			// 		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
+			// 	},
+			// 	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
+			// );
 		}
 
 		const blockToIndex = {

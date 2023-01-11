@@ -97,7 +97,7 @@ const decrementStakeTrx = async (stake, trx) => {
 	await stakesTable.decrement(decrementParam, trx);
 };
 
-const updateTotalStake = async (changeAmount) => {
+const updateTotalStake = async (changeAmount, dbTrx) => {
 	const tokenID = await getPosTokenID();
 	const tokenKey = `${KEY_VALUE_TABLE_KEYS.TOTAL_STAKED_PREFIX}_${tokenID}`;
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
@@ -106,7 +106,7 @@ const updateTotalStake = async (changeAmount) => {
 	if (newStakedAmount === 0) {
 		await keyValueTable.delete(tokenKey);
 	} else {
-		await keyValueTable.set(tokenKey, newStakedAmount);
+		await keyValueTable.set(tokenKey, newStakedAmount, dbTrx);
 	}
 };
 
@@ -125,7 +125,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		{ concurrency: 1 },
 	);
 	// Update total stake amount in key value store table
-	await updateTotalStake(totalStakeChange);
+	await updateTotalStake(totalStakeChange, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
@@ -139,12 +139,13 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 		stakes,
 		async (stake) => {
 			decrementStakeTrx(stake, dbTrx);
-			totalStakeChange += BigInt(stake.amount);
+			// Substract to reverse the impact
+			totalStakeChange -= BigInt(stake.amount);
 		},
 		{ concurrency: 1 },
 	);
-	// Update total stake amount in key value store table. Negate to reverse the impact
-	await updateTotalStake(-totalStakeChange);
+	// Update total stake amount in key value store table.
+	await updateTotalStake(totalStakeChange, dbTrx);
 	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 

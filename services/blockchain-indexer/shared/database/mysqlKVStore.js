@@ -29,7 +29,7 @@ const getKeyValueStoreIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const set = async (key, value) => {
+const set = async (key, value, dbTrx) => {
 	const keyValueDB = await getKeyValueStoreIndex();
 	const type = typeof (value);
 
@@ -38,7 +38,7 @@ const set = async (key, value) => {
 	}
 
 	const finalValue = value === undefined ? value : String(value);
-	await keyValueDB.upsert({ key, value: finalValue, type });
+	await keyValueDB.upsert({ key, value: finalValue, type }, dbTrx);
 };
 
 const formatValue = (value, type) => {
