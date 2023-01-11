@@ -26,11 +26,15 @@ const config = require('../../../../config');
 
 const keyValueTable = require('../../../database/mysqlKVStore');
 
+const { KEY_VALUE_TABLE_KEYS } = require('../../../constants');
+
+const stakesTableSchema = require('../../../database/schema/stakes');
+
+const { getPosTokenID } = require('../../../dataService/business/pos/constants');
+
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const stakesTableSchema = require('../../../database/schema/stakes');
-const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema.tableName,
@@ -95,7 +99,7 @@ const decrementStakeTrx = async (stake, trx) => {
 
 const updateTotalStake = async (changeAmount) => {
 	const tokenID = await getPosTokenID();
-	const tokenKey = `${keyValueTable.KEYS.TOTAL_STAKED_PREFIX}_${tokenID}`;
+	const tokenKey = `${KEY_VALUE_TABLE_KEYS.TOTAL_STAKED_PREFIX}_${tokenID}`;
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 	const newStakedAmount = curStakedAmount + changeAmount;
 

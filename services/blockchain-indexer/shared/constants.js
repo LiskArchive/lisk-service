@@ -100,6 +100,11 @@ const PATTERN_ANY_LOCAL_ID = '*'.repeat(LENGTH_LOCAL_ID);
 
 const MAX_COMMISSION = BigInt('10000');
 
+const KEY_VALUE_TABLE_KEYS = {
+	TOTAL_LOCKED_PREFIX: 'total_locked',
+	TOTAL_STAKED_PREFIX: 'total_staked',
+};
+
 module.exports = {
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -118,4 +123,5 @@ module.exports = {
 	MODULE,
 	COMMAND,
 	MAX_COMMISSION,
+	KEY_VALUE_TABLE_KEYS,
 };

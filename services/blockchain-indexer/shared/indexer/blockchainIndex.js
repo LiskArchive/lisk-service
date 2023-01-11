@@ -197,6 +197,8 @@ const indexBlock = async job => {
 			}
 
 			// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+			// Move this require to top
+			// const { KEY_VALUE_TABLE_KEYS } = require('../constants');
 			// const tokenIDLockedAmountChangeMap = {};
 			// events.forEach(event => {
 			// 	const { data: eventData } = event;
@@ -214,7 +216,7 @@ const indexBlock = async job => {
 			// });
 
 			// Object.entries(tokenIDLockedAmountChangeMap).forEach(([tokenID, lockedAmountChange]) => {
-			// 	const tokenKey = `${keyValueTable.KEYS.TOTAL_LOCKED_PREFIX}_${tokenID}`;
+			// 	const tokenKey = `${KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX}_${tokenID}`;
 			// 	const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 			// 	const newLockedAmount = curLockedAmount + lockedAmountChange;
 

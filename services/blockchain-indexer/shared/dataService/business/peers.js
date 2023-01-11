@@ -19,22 +19,26 @@ const keyValueTable = require('../../database/mysqlKVStore');
 
 const { getPosTokenID } = require('./pos/constants');
 
+const { KEY_VALUE_TABLE_KEYS } = require('../../constants');
+
 const getTotalStaked = async () => {
 	const result = await keyValueTable.getPattern(
-		keyValueTable.KEYS.TOTAL_STAKED_PREFIX,
+		KEY_VALUE_TABLE_KEYS.TOTAL_STAKED_PREFIX,
 	);
 	const [row] = result;
-	const { value: totalStaked } = row;
+
+	let totalStaked = null;
+	if (row && row.value) totalStaked = row.value.toString();
 
 	return {
-		amount: totalStaked.toString(),
+		amount: totalStaked,
 		tokenID: await getPosTokenID(),
 	};
 };
 
 const getTotalLocked = async () => {
 	const lockAmountsInfo = await keyValueTable.getPattern(
-		keyValueTable.KEYS.TOTAL_LOCKED_PREFIX,
+		KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX,
 	);
 
 	const totalLockedResponse = lockAmountsInfo.map(({ key, value }) => {

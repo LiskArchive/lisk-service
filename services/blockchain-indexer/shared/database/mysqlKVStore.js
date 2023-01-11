@@ -81,15 +81,9 @@ const deleteEntry = async (key) => {
 	return keyValueDB.deleteByPrimaryKey([key]);
 };
 
-const KEYS = {
-	TOTAL_LOCKED_PREFIX: 'total_locked',
-	TOTAL_STAKED_PREFIX: 'total_staked',
-};
-
 module.exports = {
 	set,
 	get,
 	getPattern,
 	delete: deleteEntry,
-	KEYS,
 };
