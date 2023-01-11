@@ -111,7 +111,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
 
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.trace(`Indexing stakes of transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await BluebirdPromise.map(
 		stakes,
 		async (stake) => {
@@ -122,7 +122,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	);
 	// Update total stake amount in key value store table
 	await updateTotalStake(totalStakeChange, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.debug(`Indexed stakes of transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
