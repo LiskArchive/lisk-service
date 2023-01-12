@@ -23,6 +23,7 @@ const {
 const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
 const { KV_STORE_KEYS } = require('../../../constants');
 const { getPosTokenID } = require('../../../dataService/business/pos/constants');
+
 const config = require('../../../../config');
 const keyValueTable = require('../../../database/mysqlKVStore');
 const stakesTableSchema = require('../../../database/schema/stakes');
