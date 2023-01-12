@@ -15,6 +15,9 @@
  */
 const dataService = require('../../../shared/dataService');
 
+const { getTotalStaked } = require('../../../shared/utils/pos');
+const { getTotalLocked } = require('../../../shared/utils/token');
+
 const getNetworkStatus = async () => {
 	const networkStatus = {
 		data: {},
@@ -28,6 +31,22 @@ const getNetworkStatus = async () => {
 	return networkStatus;
 };
 
+const getNetworkStatistics = async () => {
+	const peerStatistics = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.getPeersStatistics();
+	if (response.data) peerStatistics.data = response.data;
+	if (response.meta) peerStatistics.meta = response.meta;
+
+	peerStatistics.data.totalLocked = await getTotalLocked();
+	peerStatistics.data.totalStaked = await getTotalStaked();
+
+	return peerStatistics;
+};
+
 module.exports = {
 	getNetworkStatus,
+	getNetworkStatistics,
 };
