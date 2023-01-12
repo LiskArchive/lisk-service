@@ -19,18 +19,21 @@ const keyValueTable = require('../database/mysqlKVStore');
 
 const { KV_STORE_KEYS } = require('../constants');
 
-const getTotalStaked = async () => {
-	const [row] = await keyValueTable.getByPattern(
-		KV_STORE_KEYS.PREFIX.TOTAL_STAKED,
-	);
-	const totalStaked = row && row.value ? row.value.toString() : null;
+const getStakeInfo = async (keyPrefix) => {
+	const [row] = await keyValueTable.getByPattern(keyPrefix);
+	const stakeAmount = row && row.value ? row.value.toString() : null;
 
 	return {
-		amount: totalStaked,
+		amount: stakeAmount,
 		tokenID: await getPosTokenID(),
 	};
 };
 
+const getTotalStaked = async () => getStakeInfo(KV_STORE_KEYS.PREFIX.TOTAL_STAKED);
+
+const getTotalSelfStaked = async () => getStakeInfo(KV_STORE_KEYS.PREFIX.TOTAL_SELF_STAKED);
+
 module.exports = {
 	getTotalStaked,
+	getTotalSelfStaked,
 };

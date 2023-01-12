@@ -26,6 +26,7 @@ module.exports = {
 			networkVersion: '=',
 			totalLocked: ['data.totalLocked', amountEntry],
 			totalStaked: amountEntry,
+			totalSelfStaked: amountEntry,
 		},
 		meta: {},
 		links: {},

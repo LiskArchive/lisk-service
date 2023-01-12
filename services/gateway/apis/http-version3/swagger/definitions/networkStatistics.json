@@ -58,41 +58,36 @@
                         "type": "array",
                         "description": "An array representing total of locked tokens.",
                         "items": {
-                            "type":"object",
-                            "properties":{
-                                "tokenID": {
-                                    "type": "string",
-                                    "description": "Universal ID of the locked token.",
-                                    "example":"0000000000000000"
-                                },
-                                "amount": {
-                                    "type": "string",
-                                    "description": "Amount of total locked token.",
-                                    "example": "10000000000"
-                                }
-                            }
+                            "$ref": "#/definitions/AmountItem"
                         }
                     },
                     "totalStaked": {
-                        "type":"object",
                         "description": "An object representing total staked amount for the PoS token ID.",
-                        "properties":{
-                            "tokenID": {
-                                "type": "string",
-                                "description": "Universal ID of the staked token.",
-                                "example":"0000000000000000"
-                            },
-                            "amount": {
-                                "type": "string",
-                                "description": "Amount of total staked token.",
-                                "example": "10000000000"
-                            }
-                        }
+                        "$ref": "#/definitions/AmountItem"
+                    },
+                    "totalSelfStaked": {
+                        "description": "An object representing total self staked amount for the PoS token ID.",
+                        "$ref": "#/definitions/AmountItem"
                     }
                 }
             },
             "meta": {
                 "type": "object"
+            }
+        }
+    },
+    "AmountItem": {
+        "type": "object",
+        "properties": {
+            "tokenID": {
+                "type": "string",
+                "description": "Universal ID of the token.",
+                "example":"0000000000000000"
+            },
+            "amount": {
+                "type": "string",
+                "description": "Amount of total token.",
+                "example": "10000000000"
             }
         }
     }

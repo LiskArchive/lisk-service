@@ -34,6 +34,7 @@ const networkStatisticsSchema = {
 	networkVersion: Joi.object().required(),
 	totalLocked: Joi.array().items(Joi.object(amountEntry).required()).required(),
 	totalStaked: Joi.object(amountEntry).required(),
+	totalSelfStaked: Joi.object(amountEntry).required(),
 };
 
 module.exports = {

@@ -72,8 +72,11 @@ const getByPattern = async (pattern) => {
 		['key', 'value', 'type'],
 	);
 
-	result.forEach(row => row.value = formatValue(row.value, row.type));
-	return result;
+	const formattedResult = result.map(row => ({
+		key: row.key,
+		value: formatValue(row.value, row.type),
+	}));
+	return formattedResult;
 };
 
 const deleteEntry = async (key) => {
