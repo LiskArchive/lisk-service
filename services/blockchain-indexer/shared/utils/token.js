@@ -15,24 +15,24 @@
  */
 const keyValueTable = require('../database/mysqlKVStore');
 
-const { KEY_VALUE_TABLE_KEYS } = require('../constants');
+const { KEY_VALUE_STORE_KEYS } = require('../constants');
 
 const getTotalLocked = async () => {
-	const lockAmountsInfo = await keyValueTable.getPattern(
-		KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX,
-	);
+    const lockAmountsInfo = await keyValueTable.getByPattern(
+        KEY_VALUE_STORE_KEYS.PREFIX.TOTAL_LOCKED,
+    );
 
-	const totalLockedResponse = lockAmountsInfo.map(({ key, value }) => {
-		const tokenID = key.split('_').pop();
-		return {
-			tokenID,
-			amount: value.toString(),
-		};
-	});
+    const totalLockedResponse = lockAmountsInfo.map(({ key, value }) => {
+        const tokenID = key.split(KEY_VALUE_STORE_KEYS.PREFIX.TOTAL_LOCKED).pop();
+        return {
+            tokenID,
+            amount: value.toString(),
+        };
+    });
 
-	return totalLockedResponse;
+    return totalLockedResponse;
 };
 
 module.exports = {
-	getTotalLocked,
+    getTotalLocked,
 };

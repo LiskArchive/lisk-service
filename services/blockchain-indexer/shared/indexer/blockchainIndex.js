@@ -200,7 +200,7 @@ const indexBlock = async job => {
 			// Calculate locked amount change and update in key_value_store table for affected tokens
 
 			// Move this require to top
-			// const { KEY_VALUE_TABLE_KEYS } = require('../constants');
+			// const { KEY_VALUE_STORE_KEYS } = require('../constants');
 			// const EVENT_NAMES = Object.freeze({
 			// 	LOCKED: 'locked',
 			// 	UNLOCKED: 'unlocked',
@@ -225,7 +225,7 @@ const indexBlock = async job => {
 			// await BluebirdPromise.map(
 			// 	Object.entries(tokenIDLockedAmountChangeMap),
 			// 	async ([tokenID, lockedAmountChange]) => {
-			// 		const tokenKey = `${KEY_VALUE_TABLE_KEYS.TOTAL_LOCKED_PREFIX}_${tokenID}`;
+			// 		const tokenKey = KEY_VALUE_STORE_KEYS.PREFIX.TOTAL_LOCKED.concat(tokenID);
 			// 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 			// 		const newLockedAmount = curLockedAmount + lockedAmountChange;
 

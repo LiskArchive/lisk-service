@@ -64,7 +64,7 @@ const get = async (key) => {
 	return formatValue(value, type);
 };
 
-const getPattern = async (pattern) => {
+const getByPattern = async (pattern) => {
 	const keyValueDB = await getKeyValueStoreIndex();
 
 	const result = await keyValueDB.find(
@@ -84,6 +84,6 @@ const deleteEntry = async (key) => {
 module.exports = {
 	set,
 	get,
-	getPattern,
+	getByPattern,
 	delete: deleteEntry,
 };
