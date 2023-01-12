@@ -13,12 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNetworkStatus } = require('./controllers/network');
+const {
+	getNetworkStatus,
+	getNetworkStatistics,
+} = require('./controllers/network');
 
 module.exports = [
 	{
 		name: 'network.status',
 		controller: getNetworkStatus,
+		params: {},
+	},
+	{
+		name: 'network.statistics',
+		controller: getNetworkStatistics,
 		params: {},
 	},
 ];

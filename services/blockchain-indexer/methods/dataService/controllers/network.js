@@ -32,18 +32,18 @@ const getNetworkStatus = async () => {
 };
 
 const getNetworkStatistics = async () => {
-	const peerStatistics = {
+	const networkStats = {
 		data: {},
 		meta: {},
 	};
 	const response = await dataService.getPeersStatistics();
-	if (response.data) peerStatistics.data = response.data;
-	if (response.meta) peerStatistics.meta = response.meta;
+	if (response.data) networkStats.data = response.data;
+	if (response.meta) networkStats.meta = response.meta;
 
-	peerStatistics.data.totalLocked = await getTotalLocked();
-	peerStatistics.data.totalStaked = await getTotalStaked();
+	networkStats.data.totalLocked = await getTotalLocked();
+	networkStats.data.totalStaked = await getTotalStaked();
 
-	return peerStatistics;
+	return networkStats;
 };
 
 module.exports = {

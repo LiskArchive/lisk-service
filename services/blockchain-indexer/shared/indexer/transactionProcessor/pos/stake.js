@@ -21,12 +21,11 @@ const {
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
-
+const { KV_STORE_KEYS } = require('../../../constants');
+const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 const config = require('../../../../config');
 const keyValueTable = require('../../../database/mysqlKVStore');
 const stakesTableSchema = require('../../../database/schema/stakes');
-const { KEY_VALUE_STORE_KEYS } = require('../../../constants');
-const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
 const logger = Logger();
 
@@ -95,7 +94,16 @@ const decrementStakeTrx = async (stake, trx) => {
 
 const updateTotalStake = async (changeAmount, dbTrx) => {
 	const tokenID = await getPosTokenID();
-	const tokenKey = KEY_VALUE_STORE_KEYS.PREFIX.TOTAL_STAKED.concat(tokenID);
+	const tokenKey = KV_STORE_KEYS.PREFIX.TOTAL_STAKED.concat(tokenID);
+	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+	const newStakedAmount = curStakedAmount + changeAmount;
+
+	await keyValueTable.set(tokenKey, newStakedAmount, dbTrx);
+};
+
+const updateTotalSelfStake = async (changeAmount, dbTrx) => {
+	const tokenID = await getPosTokenID();
+	const tokenKey = KV_STORE_KEYS.PREFIX.TOTAL_SELF_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 	const newStakedAmount = curStakedAmount + changeAmount;
 
@@ -106,18 +114,24 @@ const updateTotalStake = async (changeAmount, dbTrx) => {
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
+	let totalSelfStakeChange = BigInt(0);
 
 	logger.trace(`Indexing stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await BluebirdPromise.map(
 		stakes,
 		async (stake) => {
 			await incrementStakeTrx(stake, dbTrx);
+
+			if (stake.stakerAddress === stake.validatorAddress) {
+				totalSelfStakeChange += BigInt(stake.amount);
+			}
 			totalStakeChange += BigInt(stake.amount);
 		},
 		{ concurrency: 1 },
 	);
 	// Update total stake amount in key value store table
 	await updateTotalStake(totalStakeChange, dbTrx);
+	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
 	logger.debug(`Indexed stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
@@ -125,6 +139,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
+	let totalSelfStakeChange = BigInt(0);
 
 	logger.trace(`Reverting stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await BluebirdPromise.map(
@@ -132,12 +147,16 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 		async (stake) => {
 			await decrementStakeTrx(stake, dbTrx);
 			// Substract to reverse the impact
+			if (stake.stakerAddress === stake.validatorAddress) {
+				totalSelfStakeChange -= BigInt(stake.amount);
+			}
 			totalStakeChange -= BigInt(stake.amount);
 		},
 		{ concurrency: 1 },
 	);
 	// Update total stake amount in key value store table.
 	await updateTotalStake(totalStakeChange, dbTrx);
+	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
 	logger.debug(`Reverted stakes in transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 

@@ -17,7 +17,7 @@ const amountEntry = require('./mappings/amountEntry');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.peers.statistics',
+	method: 'indexer.network.statistics',
 	params: {},
 	definition: {
 		data: {

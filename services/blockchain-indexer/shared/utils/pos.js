@@ -17,11 +17,11 @@ const { getPosTokenID } = require('../dataService/business/pos/constants');
 
 const keyValueTable = require('../database/mysqlKVStore');
 
-const { KEY_VALUE_STORE_KEYS } = require('../constants');
+const { KV_STORE_KEYS } = require('../constants');
 
 const getTotalStaked = async () => {
 	const [row] = await keyValueTable.getByPattern(
-		KEY_VALUE_STORE_KEYS.PREFIX.TOTAL_STAKED,
+		KV_STORE_KEYS.PREFIX.TOTAL_STAKED,
 	);
 	const totalStaked = row && row.value ? row.value.toString() : null;
 
