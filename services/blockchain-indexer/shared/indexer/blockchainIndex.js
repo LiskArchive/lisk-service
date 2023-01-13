@@ -312,7 +312,7 @@ const deleteIndexedBlocks = async job => {
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 
-				// TODO: Update events fetching logic once confirmed by SDK
+				// TODO: Update events fetching logic
 				// const events = await getEventsByHeight(block.height);
 				// if (events.length) {
 				// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
