@@ -15,15 +15,15 @@
  */
 const keyValueTable = require('../database/mysqlKVStore');
 
-const { KV_STORE_KEYS } = require('../constants');
+const { KV_STORE_KEY } = require('../constants');
 
 const getTotalLocked = async () => {
 	const lockAmountsInfo = await keyValueTable.getByPattern(
-		KV_STORE_KEYS.PREFIX.TOTAL_LOCKED,
+		KV_STORE_KEY.PREFIX.TOTAL_LOCKED,
 	);
 
 	const totalLockedResponse = lockAmountsInfo.map(({ key, value }) => {
-		const tokenID = key.split(KV_STORE_KEYS.PREFIX.TOTAL_LOCKED).pop();
+		const tokenID = key.split(KV_STORE_KEY.PREFIX.TOTAL_LOCKED).pop();
 		return {
 			tokenID,
 			amount: value.toString(),

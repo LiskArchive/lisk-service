@@ -21,7 +21,7 @@ const {
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
-const { KV_STORE_KEYS } = require('../../../constants');
+const { KV_STORE_KEY } = require('../../../constants');
 const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
 const config = require('../../../../config');
@@ -95,7 +95,7 @@ const decrementStakeTrx = async (stake, trx) => {
 
 const updateTotalStake = async (changeAmount, dbTrx) => {
 	const tokenID = await getPosTokenID();
-	const tokenKey = KV_STORE_KEYS.PREFIX.TOTAL_STAKED.concat(tokenID);
+	const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 	const newStakedAmount = curStakedAmount + changeAmount;
 
@@ -104,7 +104,7 @@ const updateTotalStake = async (changeAmount, dbTrx) => {
 
 const updateTotalSelfStake = async (changeAmount, dbTrx) => {
 	const tokenID = await getPosTokenID();
-	const tokenKey = KV_STORE_KEYS.PREFIX.TOTAL_SELF_STAKED.concat(tokenID);
+	const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_SELF_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 	const newStakedAmount = curStakedAmount + changeAmount;
 

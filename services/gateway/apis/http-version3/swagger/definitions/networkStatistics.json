@@ -58,16 +58,16 @@
                         "type": "array",
                         "description": "An array representing total of locked tokens.",
                         "items": {
-                            "$ref": "#/definitions/AmountItem"
+                            "$ref": "#/definitions/AmountEntry"
                         }
                     },
                     "totalStaked": {
                         "description": "An object representing total staked amount for the PoS token ID.",
-                        "$ref": "#/definitions/AmountItem"
+                        "$ref": "#/definitions/AmountEntry"
                     },
                     "totalSelfStaked": {
                         "description": "An object representing total self staked amount for the PoS token ID.",
-                        "$ref": "#/definitions/AmountItem"
+                        "$ref": "#/definitions/AmountEntry"
                     }
                 }
             },
@@ -76,7 +76,7 @@
             }
         }
     },
-    "AmountItem": {
+    "AmountEntry": {
         "type": "object",
         "properties": {
             "tokenID": {

@@ -17,7 +17,7 @@ const { getPosTokenID } = require('../dataService/business/pos/constants');
 
 const keyValueTable = require('../database/mysqlKVStore');
 
-const { KV_STORE_KEYS } = require('../constants');
+const { KV_STORE_KEY } = require('../constants');
 
 const getStakeInfo = async (keyPrefix) => {
 	const [row] = await keyValueTable.getByPattern(keyPrefix);
@@ -29,9 +29,9 @@ const getStakeInfo = async (keyPrefix) => {
 	};
 };
 
-const getTotalStaked = async () => getStakeInfo(KV_STORE_KEYS.PREFIX.TOTAL_STAKED);
+const getTotalStaked = async () => getStakeInfo(KV_STORE_KEY.PREFIX.TOTAL_STAKED);
 
-const getTotalSelfStaked = async () => getStakeInfo(KV_STORE_KEYS.PREFIX.TOTAL_SELF_STAKED);
+const getTotalSelfStaked = async () => getStakeInfo(KV_STORE_KEY.PREFIX.TOTAL_SELF_STAKED);
 
 module.exports = {
 	getTotalStaked,
