@@ -108,7 +108,7 @@ const getTransactionExecutionStatus = (tx, events) => {
 	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
 };
 
-// // Move this require to top
+// TODO: Move this require to top
 // const { KV_STORE_KEY } = require('../constants');
 // const EVENT_NAME = Object.freeze({
 // 	LOCKED: 'locked',

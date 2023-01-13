@@ -24,8 +24,8 @@ const getStakeInfo = async (keyPrefix) => {
 	const stakeAmount = row && row.value ? row.value.toString() : null;
 
 	return {
-		amount: stakeAmount,
 		tokenID: await getPosTokenID(),
+		amount: stakeAmount,
 	};
 };
 
