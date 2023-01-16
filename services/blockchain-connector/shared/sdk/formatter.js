@@ -133,6 +133,8 @@ const formatEvent = (event) => {
 	const eventData = eventDataSchema
 		? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
 		: { data: event.data };
+	// TODO: Remove this after SDK exposes all event schemas
+	if (!eventDataSchema) console.warn(`Event data schema missing for ${event.module}:${event.name}`);
 
 	// TODO: Remove after SDK fixes the address format
 	if (eventDataSchema) {

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,20 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getNetworkStatus,
-	getNetworkStatistics,
-} = require('./controllers/network');
-
-module.exports = [
-	{
-		name: 'network.status',
-		controller: getNetworkStatus,
-		params: {},
-	},
-	{
-		name: 'network.statistics',
-		controller: getNetworkStatistics,
-		params: {},
-	},
-];
+module.exports = {
+	tokenID: '=,string',
+	amount: '=,string',
+};

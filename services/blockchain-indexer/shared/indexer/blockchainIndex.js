@@ -108,6 +108,25 @@ const getTransactionExecutionStatus = (tx, events) => {
 	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
 };
 
+// TODO: Move this require to top
+// const { KV_STORE_KEY } = require('../constants');
+// const EVENT_NAME = Object.freeze({
+// 	LOCKED: 'locked',
+// 	UNLOCKED: 'unlocked',
+// });
+
+// const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
+// 	Object.entries(tokenIDLockedAmountChangeMap),
+// 	async ([tokenID, lockedAmountChange]) => {
+// 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
+// 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+// 		const newLockedAmount = curLockedAmount + lockedAmountChange;
+
+// 		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
+// 	},
+// 	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
+// );
+
 const indexBlock = async job => {
 	const { block } = job.data;
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
@@ -195,6 +214,25 @@ const indexBlock = async job => {
 					}, dbTrx);
 				}
 			}
+
+			// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+			// // Calculate locked amount change and update in key_value_store table for affected tokens
+			// const tokenIDLockedAmountChangeMap = {};
+			// events.forEach(event => {
+			// 	const { data: eventData } = event;
+			// 	// Initialize map entry with BigInt
+			// 	if ([EVENT_NAME.LOCKED, EVENT_NAME.UNLOCKED].includes(event.name)
+			// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+			// 	}
+
+			// 	if (event.name === EVENT_NAME.LOCKED) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
+			// 	} else if (event.name === EVENT_NAME.UNLOCKED) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
+			// 	}
+			// });
+			// await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 		}
 
 		const blockToIndex = {
@@ -273,6 +311,30 @@ const deleteIndexedBlocks = async job => {
 				}
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
+
+				// TODO: Update events fetching logic
+				// const events = await getEventsByHeight(block.height);
+				// if (events.length) {
+				// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+				// // Calculate locked amount change and update in key_value_store table for affected tokens
+				// const tokenIDLockedAmountChangeMap = {};
+				// events.forEach(event => {
+				// 	const { data: eventData } = event;
+				// 	// Initialize map entry with BigInt
+				// 	if ([EVENT_NAME.LOCKED, EVENT_NAME.UNLOCKED].includes(event.name)
+				// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap) {
+				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+				// 	}
+
+				// 	// Negate amount to reverse the affect
+				// 	if (event.name === EVENT_NAME.LOCKED) {
+				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
+				// 	} else if (event.name === EVENT_NAME.UNLOCKED) {
+				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
+				// 	}
+				// });
+				// await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+				// }
 			});
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);

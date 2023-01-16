@@ -33,7 +33,7 @@ const buildTimestamp = getBuildTimestamp();
 
 const getStatus = async broker => {
 	let version;
-	const networkStatistics = await broker.call('indexer.peers.statistics');
+	const networkStatistics = await broker.call('indexer.network.statistics');
 	const { chainID } = await broker.call('connector.getNetworkStatus');
 
 	if (Object.getOwnPropertyNames(networkStatistics.data.coreVer).length) {

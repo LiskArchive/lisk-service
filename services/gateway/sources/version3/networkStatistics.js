@@ -13,15 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const amountEntry = require('./mappings/amountEntry');
+
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.peers.statistics',
+	method: 'indexer.network.statistics',
 	params: {},
 	definition: {
 		data: {
 			basic: '=',
 			height: '=',
 			networkVersion: '=',
+			totalLocked: ['data.totalLocked', amountEntry],
+			totalStaked: amountEntry,
+			totalSelfStaked: amountEntry,
 		},
 		meta: {},
 		links: {},
