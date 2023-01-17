@@ -38,7 +38,7 @@ const getStakesIndex = () => getTableInstance(
 
 const getStakers = async params => {
 	const stakesTable = await getStakesIndex();
-	const stakers = {
+	const stakersResponse = {
 		data: { stakers: [] },
 		meta: {
 			validator: {},
@@ -53,7 +53,7 @@ const getStakers = async params => {
 		params = remParams;
 
 		params.validatorAddress = address;
-		stakers.meta.validator.address = address;
+		stakersResponse.meta.validator.address = address;
 	}
 
 	if (params.publicKey) {
@@ -61,8 +61,8 @@ const getStakers = async params => {
 		params = remParams;
 
 		params.validatorAddress = getLisk32AddressFromPublicKey(publicKey);
-		stakers.meta.validator.address = params.validatorAddress;
-		stakers.meta.validator.publicKey = publicKey;
+		stakersResponse.meta.validator.address = params.validatorAddress;
+		stakersResponse.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
 		await updateAccountPublicKey(publicKey);
@@ -74,12 +74,13 @@ const getStakers = async params => {
 
 		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
 		params.validatorAddress = address;
-		stakers.meta.validator.name = name;
+		stakersResponse.meta.validator.name = name;
 	}
 
 	// If validatorAddress is unavailable, return empty response
-	if (!params.validatorAddress) return stakers;
+	if (!params.validatorAddress) return stakersResponse;
 
+	// TODO: DISCUSS ABOUT TOTAL CALCULATION
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(stakerAddress) as numStakers from ${stakesIndexSchema.tableName} WHERE validatorAddress='${params.validatorAddress}'`);
 
@@ -93,36 +94,55 @@ const getStakers = async params => {
 		},
 		['stakerAddress', 'amount'],
 	);
-	if (resultSet.length) stakers.data.stakers = resultSet;
 
-	stakers.data.stakers = await BluebirdPromise.map(
-		stakers.data.stakers,
+	const stakes = resultSet.length ? resultSet : [];
+
+	// Filter stakers by params.search and response
+	const stakerInfoQuerySearchParam = {};
+	if (params.search) {
+		stakerInfoQuerySearchParam.search = {
+			property: 'name',
+			pattern: params.search,
+		};
+	}
+
+	await BluebirdPromise.map(
+		stakes,
 		async stake => {
-			const { name = null } = await getIndexedAccountInfo({ address: stake.stakerAddress, limit: 1 }, ['name']);
-			return {
+			// Build query params
+			const stakerInfoQueryParams = {
+				...stakerInfoQuerySearchParam,
 				address: stake.stakerAddress,
-				amount: stake.amount,
-				name,
+				limit: 1,
 			};
+
+			const { name: stakerName = null } = await getIndexedAccountInfo(stakerInfoQueryParams, ['name']);
+			if (stakerName) {
+				stakersResponse.data.stakers.push({
+					address: stake.stakerAddress,
+					amount: stake.amount,
+					name: stakerName,
+				});
+			}
 		},
-		{ concurrency: stakers.data.stakers.length },
+		{ concurrency: stakes.length },
 	);
 
 	const validatorAccountInfo = await getIndexedAccountInfo(
 		{ address: params.validatorAddress, limit: 1 },
 		['name', 'publicKey'],
 	);
-	stakers.meta.validator = {
+	stakersResponse.meta.validator = {
 		address: params.validatorAddress,
 		name: validatorAccountInfo.name || null,
 		publicKey: validatorAccountInfo.publicKey || null,
 	};
 
-	stakers.meta.count = stakers.data.stakers.length;
-	stakers.meta.offset = params.offset;
-	stakers.meta.total = numStakers;
+	stakersResponse.meta.count = stakersResponse.data.stakers.length;
+	stakersResponse.meta.offset = params.offset;
+	stakersResponse.meta.total = numStakers;
 
-	return stakers;
+	return stakersResponse;
 };
 
 module.exports = {
