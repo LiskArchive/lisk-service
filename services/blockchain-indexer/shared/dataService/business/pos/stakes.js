@@ -44,19 +44,38 @@ const getStakes = async params => {
 		params.address = getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('getStaker', { address: params.address });
-	stakesReponse.data.stakes = await BluebirdPromise.map(
-		response.sentStakes,
+	const stakerInfo = await requestConnector('getStaker', { address: params.address });
+
+	// Filter stakes by user inputted validator name and add to response
+	const accountInfoQuerySearchParam = {};
+	if (params.search) {
+		accountInfoQuerySearchParam.search = {
+			property: 'name',
+			pattern: params.search,
+		};
+	}
+	await BluebirdPromise.map(
+		stakerInfo.sentStakes,
 		async sentStake => {
 			const stake = normalizeStake(sentStake);
-			const { name = null } = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
-			return {
+			// Set validator address in the query param
+			const accountInfoQueryParams = {
+				...accountInfoQuerySearchParam,
 				address: stake.validatorAddress,
-				amount: stake.amount,
-				name,
+				limit: 1,
 			};
+			const { name: validatorName = null } = await getIndexedAccountInfo(accountInfoQueryParams, ['name']);
+
+			// Add validator to response
+			if (validatorName) {
+				stakesReponse.data.stakes.push({
+					address: stake.validatorAddress,
+					amount: stake.amount,
+					name: validatorName,
+				});
+			}
 		},
-		{ concurrency: response.sentStakes.length },
+		{ concurrency: stakerInfo.sentStakes.length },
 	);
 
 	// Populate staker account name
