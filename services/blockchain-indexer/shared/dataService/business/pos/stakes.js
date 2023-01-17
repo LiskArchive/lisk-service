@@ -26,7 +26,7 @@ const { requestConnector } = require('../../../utils/request');
 const normalizeStake = stake => parseToJSONCompatObj(stake);
 
 const getStakes = async params => {
-	const stakesReponse = {
+	const stakesResponse = {
 		data: {
 			stakes: [],
 		},
@@ -46,10 +46,10 @@ const getStakes = async params => {
 
 	const stakerInfo = await requestConnector('getStaker', { address: params.address });
 
-	// Filter stakes by user inputted validator name and add to response
-	const accountInfoQuerySearchParam = {};
+	// Filter stakes by user inputted search param (validator name) and add to response
+	const accountInfoQueryFilter = {};
 	if (params.search) {
-		accountInfoQuerySearchParam.search = {
+		accountInfoQueryFilter.search = {
 			property: 'name',
 			pattern: params.search,
 		};
@@ -58,17 +58,19 @@ const getStakes = async params => {
 		stakerInfo.sentStakes,
 		async sentStake => {
 			const stake = normalizeStake(sentStake);
-			// Set validator address in the query param
-			const accountInfoQueryParams = {
-				...accountInfoQuerySearchParam,
-				address: stake.validatorAddress,
-				limit: 1,
-			};
-			const { name: validatorName = null } = await getIndexedAccountInfo(accountInfoQueryParams, ['name']);
+			const { name: validatorName = null } = await getIndexedAccountInfo(
+				{
+					...accountInfoQueryFilter,
+					address: stake.validatorAddress,
+					isValidator: 1,
+					limit: 1,
+				},
+				['name'],
+			);
 
 			// Add validator to response
 			if (validatorName) {
-				stakesReponse.data.stakes.push({
+				stakesResponse.data.stakes.push({
 					address: stake.validatorAddress,
 					amount: stake.amount,
 					name: validatorName,
@@ -80,15 +82,15 @@ const getStakes = async params => {
 
 	// Populate staker account name
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
-	stakesReponse.meta.staker = {
+	stakesResponse.meta.staker = {
 		address: params.address,
 		name: accountInfo.name || null,
 		publicKey: accountInfo.publicKey || null,
 	};
 
-	stakesReponse.meta.count = stakesReponse.data.stakes.length;
+	stakesResponse.meta.count = stakesResponse.data.stakes.length;
 
-	return stakesReponse;
+	return stakesResponse;
 };
 
 module.exports = {
