@@ -79,4 +79,5 @@ module.exports = {
 	getLisk32Address,
 	updateAccountPublicKey,
 	getHexAddress,
+	getAccountsTable,
 };

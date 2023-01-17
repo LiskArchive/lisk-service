@@ -25,6 +25,7 @@ const stakesIndexSchema = require('../../../database/schema/stakes');
 const {
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
+	getAccountsTable,
 	getLisk32AddressFromPublicKey,
 } = require('../../../utils/accountUtils');
 
@@ -38,6 +39,7 @@ const getStakesIndex = () => getTableInstance(
 
 const getStakers = async params => {
 	const stakesTable = await getStakesIndex();
+	const accountsTable = await getAccountsTable();
 	const stakersResponse = {
 		data: { stakers: [] },
 		meta: {
@@ -80,12 +82,34 @@ const getStakers = async params => {
 	// If validatorAddress is unavailable, return empty response
 	if (!params.validatorAddress) return stakersResponse;
 
-	// TODO: DISCUSS ABOUT TOTAL CALCULATION
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(stakerAddress) as numStakers from ${stakesIndexSchema.tableName} WHERE validatorAddress='${params.validatorAddress}'`);
+	// Search param is used to filter stakers by name. Prepare list of valid staker addresses
+	// for the given search (staker name) param
+	const allowedStakersAddressNameMap = {};
+	const stakerAddressQueryFilter = {};
+	if (params.search) {
+		const stakerAccountsInfo = await accountsTable.find(
+			{
+				search: {
+					property: 'name',
+					pattern: params.search,
+				},
+			},
+			['name', 'address'],
+		);
 
-	const resultSet = await stakesTable.find(
+		stakerAccountsInfo.forEach(accountInfo => {
+			allowedStakersAddressNameMap[accountInfo.address] = accountInfo.name;
+		});
+		stakerAddressQueryFilter.whereIn = {
+			property: 'stakerAddress',
+			values: Object.keys(allowedStakersAddressNameMap),
+		};
+	}
+
+	// Fetch list of stakes
+	const stakes = await stakesTable.find(
 		{
+			...stakerAddressQueryFilter,
 			validatorAddress: params.validatorAddress,
 			limit: params.limit,
 			offset: params.offset,
@@ -95,35 +119,27 @@ const getStakers = async params => {
 		['stakerAddress', 'amount'],
 	);
 
-	const stakes = resultSet.length ? resultSet : [];
-
-	// Filter stakers by params.search and response
-	const stakerInfoQuerySearchParam = {};
-	if (params.search) {
-		stakerInfoQuerySearchParam.search = {
-			property: 'name',
-			pattern: params.search,
-		};
-	}
-
-	await BluebirdPromise.map(
+	// Populate stakers name and prepare response
+	stakersResponse.data.stakers = await BluebirdPromise.map(
 		stakes,
 		async stake => {
-			// Build query params
-			const stakerInfoQueryParams = {
-				...stakerInfoQuerySearchParam,
-				address: stake.stakerAddress,
-				limit: 1,
-			};
-
-			const { name: stakerName = null } = await getIndexedAccountInfo(stakerInfoQueryParams, ['name']);
-			if (stakerName) {
-				stakersResponse.data.stakers.push({
+			// Try to use cached staker name. Query DB if not found.
+			let stakerName = allowedStakersAddressNameMap[stake.stakerAddress];
+			if (!stakerName) {
+				const accountInfo = await getIndexedAccountInfo({
 					address: stake.stakerAddress,
-					amount: stake.amount,
-					name: stakerName,
-				});
+					limit: 1,
+				},
+				['name'],
+				);
+				stakerName = accountInfo.name;
 			}
+
+			return {
+				address: stake.stakerAddress,
+				amount: stake.amount,
+				name: stakerName,
+			};
 		},
 		{ concurrency: stakes.length },
 	);
@@ -140,7 +156,10 @@ const getStakers = async params => {
 
 	stakersResponse.meta.count = stakersResponse.data.stakers.length;
 	stakersResponse.meta.offset = params.offset;
-	stakersResponse.meta.total = numStakers;
+	stakersResponse.meta.total = await stakesTable.count({
+		...stakerAddressQueryFilter,
+		validatorAddress: params.validatorAddress,
+	});
 
 	return stakersResponse;
 };
