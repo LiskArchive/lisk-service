@@ -24,7 +24,6 @@ const {
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -91,6 +90,7 @@ const {
 const { getAuthAccount } = require('./auth');
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
+const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
 const { getValidator, validateBLSKey } = require('./validators');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
@@ -122,7 +122,6 @@ module.exports = {
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -185,6 +184,9 @@ module.exports = {
 
 	// Events
 	getEventsByHeight,
+
+	// Invoke
+	invokeEndpointProxy,
 
 	// Schema
 	setSchemas,
