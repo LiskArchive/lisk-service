@@ -100,7 +100,7 @@ tempApp.run().then(async () => {
 		mixins: [ApiService, SocketIOService],
 		name: 'gateway',
 		actions: {
-			spec(ctx) { return genDocs(ctx); },
+			spec(ctx) { return genDocs(ctx, registeredModuleNames); },
 			status() { return getStatus(this.broker); },
 			ready() { return getReady(this.broker); },
 			isBlockchainIndexReady() { return getIndexStatus(); },

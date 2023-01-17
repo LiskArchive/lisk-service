@@ -15,13 +15,28 @@
  */
 const {
 	Utils,
+	Logger,
 } = require('lisk-service-framework');
 const path = require('path');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
 
-const createApiDocs = (apiName, apiJsonPaths) => {
-	const services = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
+const logger = Logger();
+
+const createApiDocs = (apiName, apiJsonPaths, registeredModuleNames) => {
+	const methodsDir = path.resolve(__dirname, `../apis/${apiName}/methods`);
+	// Load generic method definitions
+	const services = Utils.requireAllJs(methodsDir);
+	// Load module specific method definitions
+	registeredModuleNames.forEach(module => {
+		const dirPath = path.resolve(`${methodsDir}/modules/${module}`);
+		try {
+			Object.assign(services, Utils.requireAllJs(dirPath));
+		} catch (err) {
+			logger.warn(`Swagger method definitions missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`);
+		}
+	});
+
 	const methods = Object.keys(services).reduce((acc, key) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
@@ -34,7 +49,7 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 	return apiJsonPaths;
 };
 
-const genDocs = ctx => {
+const genDocs = (ctx, registeredModuleNames) => {
 	if (!config.api.versions[ctx.endpoint.baseUrl]) return {
 		info: { description: `This route offers no specs for ${ctx.endpoint.baseUrl}` },
 	};
@@ -61,7 +76,7 @@ const genDocs = ctx => {
 		apiJson.tags.forEach(tag => tags.push(tag));
 
 		const paths = finalDoc.paths || {};
-		Object.assign(paths, createApiDocs(api, apiJson.paths));
+		Object.assign(paths, createApiDocs(api, apiJson.paths, registeredModuleNames));
 
 		Object.assign(finalDoc,
 			{
