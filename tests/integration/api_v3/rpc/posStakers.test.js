@@ -25,8 +25,9 @@ const getStakers = async params => request(wsRpcUrl, 'get.pos.stakers', params);
 
 describe('get.pos.stakers', () => {
 	let refValidator;
-	let refValidatorAddress;
+	let refStaker;
 	beforeAll(async () => {
+		let refValidatorAddress;
 		do {
 			// eslint-disable-next-line no-await-in-loop
 			const response1 = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'pos:stake', limit: 1 });
@@ -35,6 +36,7 @@ describe('get.pos.stakers', () => {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { stakes: [stake] } } = stakeTx;
 				refValidatorAddress = stake.validatorAddress;
+				refStaker = stakeTx.sender;
 			}
 		} while (!refValidatorAddress);
 		const response2 = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
@@ -48,6 +50,15 @@ describe('get.pos.stakers', () => {
 		expect(result).toMap(goodRequestSchema);
 		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+	});
+
+	it('Returns list of stakers when requested for known validator address and search param (staker name)', async () => {
+		const response = await getStakers({ address: refValidator.address, search: refStaker.name });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator address and offset=1', async () => {
