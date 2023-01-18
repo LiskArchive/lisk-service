@@ -17,11 +17,11 @@ const { Signals } = require('lisk-service-framework');
 
 module.exports = [
 	{
-		name: 'indexer.Ready',
-		description: 'Returns current readiness status of blockchain indexer',
+		name: 'statistics.Ready',
+		description: 'Returns current readiness status of transaction statistics',
 		controller: async callback => {
-			const indexerServiceReadyListener = async () => callback(true);
-			Signals.get('indexerServiceReady').add(indexerServiceReadyListener);
+			const statisticsServiceReadyListener = async () => callback(true);
+			Signals.get('transactionStatsReady').add(statisticsServiceReadyListener);
 		},
 	},
 ];

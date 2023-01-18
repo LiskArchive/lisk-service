@@ -14,14 +14,19 @@
  *
  */
 const { Signals } = require('lisk-service-framework');
+const { getEstimateFeePerByte } = require('../shared/dynamicFees');
 
 module.exports = [
 	{
-		name: 'indexer.Ready',
-		description: 'Returns current readiness status of blockchain indexer',
+		name: 'fee.Ready',
+		description: 'Returns current readiness status of fee estimator',
 		controller: async callback => {
-			const indexerServiceReadyListener = async () => callback(true);
-			Signals.get('indexerServiceReady').add(indexerServiceReadyListener);
+			const feeServiceReadyListener = async () => {
+				const fees = await getEstimateFeePerByte();
+				const status = !!Object.getOwnPropertyNames(fees.data.feeEstimatePerByte).length;
+				callback(status);
+			};
+			Signals.get('newBlock').add(feeServiceReadyListener);
 		},
 	},
 ];

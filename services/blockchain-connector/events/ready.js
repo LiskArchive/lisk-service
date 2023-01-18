@@ -14,14 +14,19 @@
  *
  */
 const { Signals } = require('lisk-service-framework');
+const { getNetworkStatus } = require('../shared/sdk');
 
 module.exports = [
 	{
-		name: 'indexer.Ready',
-		description: 'Returns current readiness status of blockchain indexer',
+		name: 'connector.Ready',
+		description: 'Returns current readiness status of blockchain connector',
 		controller: async callback => {
-			const indexerServiceReadyListener = async () => callback(true);
-			Signals.get('indexerServiceReady').add(indexerServiceReadyListener);
+			const connectorServiceReadyListener = async () => {
+				const networkStatus = await getNetworkStatus();
+				const status = !!Object.getOwnPropertyNames(networkStatus).length;
+				callback(status);
+			};
+			Signals.get('chainNewBlock').add(connectorServiceReadyListener);
 		},
 	},
 ];
