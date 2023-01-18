@@ -19,7 +19,6 @@ const {
 	createIPCClient,
 } = require('@liskhq/lisk-api-client');
 
-const { formatResponse } = require('./formatter');
 const config = require('../../config');
 const delay = require('../utils/delay');
 const waitForIt = require('../utils/waitForIt');
@@ -115,16 +114,9 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const invokeEndpointProxy = async (endpoint, params) => {
-	const response = await invokeEndpoint(endpoint, params);
-	const formattedResponse = formatResponse(endpoint, response);
-	return formattedResponse;
-};
-
 module.exports = {
 	timeoutMessage,
 
 	getApiClient,
 	invokeEndpoint,
-	invokeEndpointProxy,
 };

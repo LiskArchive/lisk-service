@@ -13,6 +13,8 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const { genesisPosStoreSchema } = require('./storeSchemas');
+
 let schemas;
 let metadata;
 
@@ -38,9 +40,14 @@ const getTransactionParamsSchema = (transaction) => {
 
 const setMetadata = (_metadata) => metadata = _metadata;
 
-const getBlockAssetDataSchemaByModule = (module) => {
-	const moduleMetadata = metadata.modules.find(m => m.name === module);
-	const [{ data: schema } = {}] = moduleMetadata.assets;
+const getBlockAssetDataSchemaByModule = (_module) => {
+	const moduleMetadata = metadata.modules.find(m => m.name === _module);
+
+	// TODO: Enable the logic with Lisk SDK alpha.12 once SDK resolves issue: https://github.com/LiskHQ/lisk-sdk/issues/7993
+	// const [{ data: schema } = {}] = moduleMetadata.assets;
+	const [{ data: schema } = {}] = _module !== 'pos'
+		? moduleMetadata.assets
+		: [{ version: 0, data: genesisPosStoreSchema }];
 	return schema;
 };
 
