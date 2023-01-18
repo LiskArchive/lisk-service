@@ -12,8 +12,9 @@ All modules can be easily replaced by other libraries when needed.
 
 ## Installation
 
+Set the target URL to the desired tarball distribution permalink.
 ```
-npm install lisk-service-framework
+npm install https://github.com/LiskHQ/lisk-service/raw/2fbc65f49ae5c5aaa3689667051dbd4082b8c25a/framework/dist/lisk-service-framework-1.4.10.tgz
 ```
 
 ## Quick Start
