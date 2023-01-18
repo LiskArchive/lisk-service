@@ -16,12 +16,12 @@
 const { MoleculerError } = require('moleculer').Errors;
 
 const currentSvcStatus = {
-	indexerReady: false,
-	connectorReady: false,
-	feeReady: false,
-	newsfeedReady: false,
-	marketReady: false,
-	statisticsReady: false,
+	indexerSvcReady: false,
+	connectorSvcReady: false,
+	feeSvcReady: false,
+	newsfeedSvcReady: false,
+	marketSvcReady: false,
+	statisticsSvcReady: false,
 };
 
 const getReady = async () => {
@@ -36,20 +36,20 @@ const getReady = async () => {
 
 const updateSvcStatus = data => {
 	const {
-		isIndexerReady,
-		isConnectorReady,
-		isFeeReady,
-		isNewsfeedReady,
-		isMarketReady,
-		isStatisticsReady,
+		isIndexerSvcReady,
+		isConnectorSvcReady,
+		isFeeSvcReady,
+		isNewsfeedSvcReady,
+		isMarketSvcReady,
+		isStatisticsSvcReady,
 	} = data;
 
-	if (isIndexerReady) currentSvcStatus.indexerReady = isIndexerReady;
-	if (isConnectorReady) currentSvcStatus.connectorReady = isConnectorReady;
-	if (isFeeReady) currentSvcStatus.feeReady = isFeeReady;
-	if (isNewsfeedReady) currentSvcStatus.newsfeedReady = isNewsfeedReady;
-	if (isMarketReady) currentSvcStatus.marketReady = isMarketReady;
-	if (isStatisticsReady) currentSvcStatus.statisticsReady = isStatisticsReady;
+	if (isIndexerSvcReady) currentSvcStatus.indexerSvcReady = isIndexerSvcReady;
+	if (isConnectorSvcReady) currentSvcStatus.connectorSvcReady = isConnectorSvcReady;
+	if (isFeeSvcReady) currentSvcStatus.feeSvcReady = isFeeSvcReady;
+	if (isNewsfeedSvcReady) currentSvcStatus.newsfeedSvcReady = isNewsfeedSvcReady;
+	if (isMarketSvcReady) currentSvcStatus.marketSvcReady = isMarketSvcReady;
+	if (isStatisticsSvcReady) currentSvcStatus.statisticsSvcReady = isStatisticsSvcReady;
 };
 
 const getIndexStatus = async () => currentSvcStatus.indexer;

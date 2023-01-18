@@ -40,6 +40,9 @@ const newBlockListener = async () => {
 		const validators = await dataService.getPosValidators({ limit: 10, offset: 0, sort: 'commission:asc' });
 		if (validators.data.length) serviceTasks.isValidatorsListReady = true;
 
+		const generators = await dataService.getGenerators({ limit: 1, offset: 0 });
+		if (generators.data.length) serviceTasks.isGeneratorsListReady = true;
+
 		const transactions = await dataService.getTransactions({ limit: 1 });
 		if (transactions.data.length) serviceTasks.isTransactionsEndpointReady = true;
 
@@ -53,14 +56,16 @@ const newBlockListener = async () => {
 
 		const schemas = await dataService.getSchemas();
 		if (Object.getOwnPropertyNames(schemas.data).length) serviceTasks.isSchemasEndpointReady = true;
-
-		const generators = await dataService.getGenerators({ limit: 1 });
-		if (generators.data.length) serviceTasks.isGeneratorsListReady = true;
 	}
 
 	logger.debug(`============== 'indexerServiceReady' signal: ${Signals.get('indexerServiceReady')} ==============`);
 	if (isIndexerServiceReady()) Signals.get('indexerServiceReady').dispatch(true);
 };
 
+const getCurrentSvcStatus = async () => serviceTasks;
+
 Signals.get('chainNewBlock').add(newBlockListener);
 
+module.exports = {
+	getCurrentSvcStatus,
+};

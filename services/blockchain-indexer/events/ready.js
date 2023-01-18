@@ -13,14 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
+const { getCurrentSvcStatus } = require('../ready');
+
+const logger = Logger();
 
 module.exports = [
 	{
 		name: 'indexer.Ready',
 		description: 'Returns current readiness status of blockchain indexer',
 		controller: async callback => {
-			const indexerServiceReadyListener = async () => callback(true);
+			const indexerServiceReadyListener = async () => {
+				const status = await getCurrentSvcStatus();
+				logger.debug(`Indexer readiness status: ${JSON.stringify(status, null, 2)}`);
+				callback(true);
+			};
 			Signals.get('indexerServiceReady').add(indexerServiceReadyListener);
 		},
 	},
