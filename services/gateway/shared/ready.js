@@ -28,9 +28,9 @@ const getReady = async () => {
 	try {
 		const servicesStatus = !Object.keys(currentSvcStatus).some(value => !currentSvcStatus[value]);
 		if (servicesStatus) return Promise.resolve({ services: currentSvcStatus });
-		return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentSvcStatus));
+		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
 	} catch (_) {
-		return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentSvcStatus));
+		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
 	}
 };
 
@@ -44,12 +44,12 @@ const updateSvcStatus = data => {
 		isStatisticsReady,
 	} = data;
 
-	currentSvcStatus.indexerReady = isIndexerReady || false;
-	currentSvcStatus.connectorReady = isConnectorReady || false;
-	currentSvcStatus.feeReady = isFeeReady || false;
-	currentSvcStatus.newsfeedReady = isNewsfeedReady || false;
-	currentSvcStatus.marketReady = isMarketReady || false;
-	currentSvcStatus.statisticsReady = isStatisticsReady || false;
+	if (isIndexerReady) currentSvcStatus.indexerReady = isIndexerReady;
+	if (isConnectorReady) currentSvcStatus.connectorReady = isConnectorReady;
+	if (isFeeReady) currentSvcStatus.feeReady = isFeeReady;
+	if (isNewsfeedReady) currentSvcStatus.newsfeedReady = isNewsfeedReady;
+	if (isMarketReady) currentSvcStatus.marketReady = isMarketReady;
+	if (isStatisticsReady) currentSvcStatus.statisticsReady = isStatisticsReady;
 };
 
 const getIndexStatus = async () => currentSvcStatus.indexer;

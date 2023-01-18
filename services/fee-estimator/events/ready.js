@@ -23,7 +23,7 @@ module.exports = [
 		controller: async callback => {
 			const feeServiceReadyListener = async () => {
 				const fees = await getEstimateFeePerByte();
-				const status = !!Object.getOwnPropertyNames(fees.data.feeEstimatePerByte).length;
+				const status = fees ? !!Object.getOwnPropertyNames(fees).length : false;
 				callback(status);
 			};
 			Signals.get('newBlock').add(feeServiceReadyListener);

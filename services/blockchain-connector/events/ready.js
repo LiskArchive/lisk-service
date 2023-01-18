@@ -23,7 +23,7 @@ module.exports = [
 		controller: async callback => {
 			const connectorServiceReadyListener = async () => {
 				const networkStatus = await getNetworkStatus();
-				const status = !!Object.getOwnPropertyNames(networkStatus).length;
+				const status = networkStatus ? !!Object.getOwnPropertyNames(networkStatus).length : false;
 				callback(status);
 			};
 			Signals.get('chainNewBlock').add(connectorServiceReadyListener);
