@@ -16,6 +16,7 @@
 const { Logger, Signals } = require('lisk-service-framework');
 
 const dataService = require('./shared/dataService');
+const { getIndexReadyStatus } = require('./shared/indexer/indexStatus');
 
 const logger = Logger();
 
@@ -31,17 +32,11 @@ const serviceTasks = {
 
 const isIndexerServiceReady = () => !Object.keys(serviceTasks).some(value => !serviceTasks[value]);
 
-// Check if all blocks are indexed
-const blockIndexReadyListener = () => {
-	logger.debug('The blockchain index is complete');
-	serviceTasks.isBlockchainIndexReady = true;
-};
-
-Signals.get('blockIndexReady').add(blockIndexReadyListener);
-
 const newBlockListener = async () => {
 	if (!isIndexerServiceReady()) {
-		// Check if validators list is ready
+		const isIndexReady = getIndexReadyStatus();
+		if (isIndexReady) serviceTasks.isBlockchainIndexReady = true;
+
 		const validators = await dataService.getPosValidators({ limit: 10, offset: 0, sort: 'commission:asc' });
 		if (validators.data.length) serviceTasks.isValidatorsListReady = true;
 
