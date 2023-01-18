@@ -172,6 +172,7 @@ tempApp.run().then(async () => {
 			'connector.Ready': (payload) => updateSvcStatus({ isConnectorReady: payload }),
 			'fee.Ready': (payload) => updateSvcStatus({ isFeeReady: payload }),
 			'statistics.Ready': (payload) => updateSvcStatus({ isStatisticsReady: payload }),
+			'market.Ready': (payload) => updateSvcStatus({ isMarketReady: payload }),
 			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
 		},
 		dependencies: [],
