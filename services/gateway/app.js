@@ -177,7 +177,7 @@ tempApp.run().then(async () => {
 			'fee.Ready': (payload) => updateSvcStatus({ isFeeSvcReady: payload }),
 			'market.Ready': (payload) => updateSvcStatus({ isMarketSvcReady: payload }),
 			'newsfeed.Ready': (payload) => updateSvcStatus({ isNewsfeedSvcReady: payload }),
-			'statistics.Ready': (payload) => updateSvcStatus({ isStatisticsSvcReady: payload }),
+			'transactionStatistics.Ready': (payload) => updateSvcStatus({ isStatisticsSvcReady: payload }),
 		},
 		dependencies: [],
 	};

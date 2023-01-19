@@ -17,7 +17,7 @@ const { Signals } = require('lisk-service-framework');
 
 module.exports = [
 	{
-		name: 'statistics.Ready',
+		name: 'transactionStatistics.Ready',
 		description: 'Returns current readiness status of transaction statistics microservice',
 		controller: async callback => {
 			const statisticsServiceReadyListener = async () => callback(true);
