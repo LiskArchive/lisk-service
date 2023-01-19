@@ -61,6 +61,7 @@ describe('get.pos.stakes', () => {
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
+
 	it('Returns list of sent stakes when requested for known staker address and search (validator name) param', async () => {
 		const response = await getStakes({ address: refStaker.address, search: refValidator.name[0] });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
