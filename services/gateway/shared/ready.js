@@ -58,7 +58,7 @@ const updateSvcStatus = data => {
 	if (isStatisticsSvcReady) currentSvcStatus.statisticsSvcReady = isStatisticsSvcReady;
 };
 
-const getIndexStatus = async () => currentSvcStatus.indexer;
+const getIndexStatus = async () => currentSvcStatus.indexerSvcReady;
 
 module.exports = {
 	getReady,
