@@ -22,7 +22,7 @@ module.exports = [
 		description: 'Returns current readiness status of blockchain app registry microservice',
 		controller: async callback => {
 			const appRegistryServiceReadyListener = async () => {
-				const appMetaList = await getBlockchainAppsMetaList();
+				const appMetaList = await getBlockchainAppsMetaList({ limit: 10, offset: 0 });
 				const status = !!appMetaList.data.length;
 				callback(status);
 			};
