@@ -31,8 +31,10 @@ const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('get.pos.stakes', () => {
 	let refStaker;
+	let refValidator;
 	let maxNumberSentStakes;
 	beforeAll(async () => {
+		let refValidatorAddress;
 		const posConstants = (await request(wsRpcUrl, 'get.pos.constants')).result;
 		maxNumberSentStakes = posConstants.data.maxNumberSentStakes;
 
@@ -41,13 +43,25 @@ describe('get.pos.stakes', () => {
 			const response = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'pos:stake', limit: 1 });
 			const { data: [stakeTx] = [] } = response.result;
 			if (stakeTx) {
+				const { params: { stakes: [stake] } } = stakeTx;
+				refValidatorAddress = stake.validatorAddress;
 				refStaker = stakeTx.sender;
 			}
 		} while (!refStaker);
+		const response = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
+		[refValidator] = response.result.data;
 	});
 
 	it('Returns list of sent stakes when requested for known staker address', async () => {
 		const response = await getStakes({ address: refStaker.address });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(stakesResponseSchema);
+		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+	});
+	it('Returns list of sent stakes when requested for known staker address and search (validator name) param', async () => {
+		const response = await getStakes({ address: refStaker.address, search: refValidator.name[0] });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(stakesResponseSchema);

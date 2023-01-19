@@ -53,7 +53,8 @@ describe('get.pos.stakers', () => {
 	});
 
 	it('Returns list of stakers when requested for known validator address and search param (staker name)', async () => {
-		const response = await getStakers({ address: refValidator.address, search: refStaker.name });
+		const searchParam = refStaker.name ? refStaker.name[0] : '';
+		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);

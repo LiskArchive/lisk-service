@@ -76,7 +76,6 @@ const getStakers = async params => {
 
 		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
 		params.validatorAddress = address;
-		stakersResponse.meta.validator.name = name;
 	}
 
 	// If validatorAddress is unavailable, return empty response
