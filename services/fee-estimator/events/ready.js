@@ -19,7 +19,7 @@ const { getEstimateFeePerByte } = require('../shared/dynamicFees');
 module.exports = [
 	{
 		name: 'fee.Ready',
-		description: 'Returns current readiness status of fee estimator',
+		description: 'Returns current readiness status of fee estimator microservice',
 		controller: async callback => {
 			const feeServiceReadyListener = async () => {
 				const fees = await getEstimateFeePerByte();

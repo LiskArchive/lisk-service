@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, MySQL: { getTableInstance } } = require('lisk-service-framework');
+const {
+	Logger,
+	MySQL: { getTableInstance },
+	Signals,
+} = require('lisk-service-framework');
 
 const { normalizeData } = require('../shared/normalizers');
 const { getData } = require('../shared/twitter');
@@ -31,7 +35,7 @@ const getNewsFeedIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const refreshTwitterData = async () => {
+const refreshTwitterData = async (isInitCall = false) => {
 	try {
 		logger.debug('Updating Twitter data...');
 		const newsfeedDB = await getNewsFeedIndex();
@@ -39,6 +43,7 @@ const refreshTwitterData = async () => {
 		const response = await getData();
 		const normalizedData = normalizeData(config.sources.twitter_lisk, response);
 		await newsfeedDB.upsert(normalizedData);
+		if (isInitCall) Signals.get('twitterFeedReady').dispatch(true);
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
@@ -51,7 +56,7 @@ module.exports = [
 		name: 'newsfeed.retrieve.twitter',
 		description: 'Retrieves data from Twitter',
 		interval: config.sources.twitter_lisk.interval,
-		init: refreshTwitterData,
-		controller: refreshTwitterData,
+		init: async () => refreshTwitterData(true),
+		controller: async () => refreshTwitterData(),
 	},
 ];

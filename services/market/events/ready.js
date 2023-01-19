@@ -19,7 +19,7 @@ const { getMarketPrices } = require('../methods/controllers/market');
 module.exports = [
 	{
 		name: 'market.Ready',
-		description: 'Returns current readiness status of market',
+		description: 'Returns current readiness status of market microservice',
 		controller: async callback => {
 			const marketServiceReadyListener = async () => {
 				const marketPrices = await getMarketPrices();

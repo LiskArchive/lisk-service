@@ -15,12 +15,15 @@
  */
 const { MoleculerError } = require('moleculer').Errors;
 
+const { Logger } = require('lisk-service-framework');
+
 const currentSvcStatus = {
-	indexerSvcReady: false,
+	appRegistrySvcReady: false,
 	connectorSvcReady: false,
+	indexerSvcReady: false,
 	feeSvcReady: false,
-	newsfeedSvcReady: false,
 	marketSvcReady: false,
+	newsfeedSvcReady: false,
 	statisticsSvcReady: false,
 };
 
@@ -28,6 +31,7 @@ const getReady = async () => {
 	try {
 		const servicesStatus = !Object.keys(currentSvcStatus).some(value => !currentSvcStatus[value]);
 		if (servicesStatus) return Promise.resolve({ services: currentSvcStatus });
+		Logger.debug(`Current service status: ${currentSvcStatus}`);
 		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
 	} catch (_) {
 		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
@@ -36,19 +40,21 @@ const getReady = async () => {
 
 const updateSvcStatus = data => {
 	const {
-		isIndexerSvcReady,
+		isAppRegistrySvcReady,
 		isConnectorSvcReady,
+		isIndexerSvcReady,
 		isFeeSvcReady,
-		isNewsfeedSvcReady,
 		isMarketSvcReady,
+		isNewsfeedSvcReady,
 		isStatisticsSvcReady,
 	} = data;
 
-	if (isIndexerSvcReady) currentSvcStatus.indexerSvcReady = isIndexerSvcReady;
+	if (isAppRegistrySvcReady) currentSvcStatus.appRegistrySvcReady = isAppRegistrySvcReady;
 	if (isConnectorSvcReady) currentSvcStatus.connectorSvcReady = isConnectorSvcReady;
+	if (isIndexerSvcReady) currentSvcStatus.indexerSvcReady = isIndexerSvcReady;
 	if (isFeeSvcReady) currentSvcStatus.feeSvcReady = isFeeSvcReady;
-	if (isNewsfeedSvcReady) currentSvcStatus.newsfeedSvcReady = isNewsfeedSvcReady;
 	if (isMarketSvcReady) currentSvcStatus.marketSvcReady = isMarketSvcReady;
+	if (isNewsfeedSvcReady) currentSvcStatus.newsfeedSvcReady = isNewsfeedSvcReady;
 	if (isStatisticsSvcReady) currentSvcStatus.statisticsSvcReady = isStatisticsSvcReady;
 };
 

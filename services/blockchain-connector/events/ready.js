@@ -19,7 +19,7 @@ const { getNetworkStatus } = require('../shared/sdk');
 module.exports = [
 	{
 		name: 'connector.Ready',
-		description: 'Returns current readiness status of blockchain connector',
+		description: 'Returns current readiness status of blockchain connector microservice',
 		controller: async callback => {
 			const connectorServiceReadyListener = async () => {
 				const networkStatus = await getNetworkStatus();

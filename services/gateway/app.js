@@ -100,9 +100,9 @@ tempApp.run().then(async () => {
 		mixins: [ApiService, SocketIOService],
 		name: 'gateway',
 		actions: {
+			ready() { return getReady(); },
 			spec(ctx) { return genDocs(ctx); },
 			status() { return getStatus(this.broker); },
-			ready() { return getReady(this.broker); },
 			isBlockchainIndexReady() { return getIndexStatus(); },
 		},
 		settings: {
@@ -168,12 +168,16 @@ tempApp.run().then(async () => {
 			'round.change': (payload) => sendSocketIoEvent('update.round', payload),
 			'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 			'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
-			'indexer.Ready': (payload) => updateSvcStatus({ isIndexerSvcReady: payload }),
-			'connector.Ready': (payload) => updateSvcStatus({ isConnectorSvcReady: payload }),
-			'fee.Ready': (payload) => updateSvcStatus({ isFeeSvcReady: payload }),
-			'statistics.Ready': (payload) => updateSvcStatus({ isStatisticsSvcReady: payload }),
-			'market.Ready': (payload) => updateSvcStatus({ isMarketSvcReady: payload }),
 			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
+
+			// Events for updating gateway readiness
+			'appRegistry.Ready': (payload) => updateSvcStatus({ isConnectorSvcReady: payload }),
+			'connector.Ready': (payload) => updateSvcStatus({ isConnectorSvcReady: payload }),
+			'indexer.Ready': (payload) => updateSvcStatus({ isIndexerSvcReady: payload }),
+			'fee.Ready': (payload) => updateSvcStatus({ isFeeSvcReady: payload }),
+			'market.Ready': (payload) => updateSvcStatus({ isMarketSvcReady: payload }),
+			'newsfeed.Ready': (payload) => updateSvcStatus({ isNewsfeedSvcReady: payload }),
+			'statistics.Ready': (payload) => updateSvcStatus({ isStatisticsSvcReady: payload }),
 		},
 		dependencies: [],
 	};

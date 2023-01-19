@@ -34,25 +34,21 @@ const isIndexerServiceReady = () => !Object.keys(serviceTasks).some(value => !se
 
 const newBlockListener = async () => {
 	if (!isIndexerServiceReady()) {
-		const isIndexReady = getIndexReadyStatus();
-		if (isIndexReady) serviceTasks.isBlockchainIndexReady = true;
-
-		const validators = await dataService.getPosValidators({ limit: 10, offset: 0, sort: 'commission:asc' });
-		if (validators.data.length) serviceTasks.isValidatorsListReady = true;
-
-		const generators = await dataService.getGenerators({ limit: 1, offset: 0 });
-		if (generators.data.length) serviceTasks.isGeneratorsListReady = true;
-
-		const transactions = await dataService.getTransactions({ limit: 1 });
-		if (transactions.data.length) serviceTasks.isTransactionsEndpointReady = true;
+		serviceTasks.isBlockchainIndexReady = getIndexReadyStatus();
 
 		const events = await dataService.getEvents({ limit: 1 });
 		if (events.data.length) serviceTasks.isEventsEndpointReady = true;
+
+		const generators = await dataService.getGenerators({ limit: 1, offset: 0 });
+		if (generators.data.length) serviceTasks.isGeneratorsListReady = true;
 
 		const networkStatus = await dataService.getNetworkStatus();
 		if (Object.getOwnPropertyNames(networkStatus.data).length) {
 			serviceTasks.isNetworkStatusEndpointReady = true;
 		}
+
+		const transactions = await dataService.getTransactions({ limit: 1 });
+		if (transactions.data.length) serviceTasks.isTransactionsEndpointReady = true;
 
 		const schemas = await dataService.getSchemas();
 		if (Object.getOwnPropertyNames(schemas.data).length) serviceTasks.isSchemasEndpointReady = true;

@@ -13,22 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
-const { getCurrentSvcStatus } = require('../ready');
-
-const logger = Logger();
+const { Signals } = require('lisk-service-framework');
+const { getBlockchainAppsMetaList } = require('../shared/metadata');
 
 module.exports = [
 	{
-		name: 'indexer.Ready',
-		description: 'Returns current readiness status of blockchain indexer microservice',
+		name: 'appRegistry.Ready',
+		description: 'Returns current readiness status of blockchain app registry microservice',
 		controller: async callback => {
-			const indexerServiceReadyListener = async () => {
-				const status = await getCurrentSvcStatus();
-				logger.debug(`Indexer readiness status: ${JSON.stringify(status, null, 2)}`);
-				callback(true);
+			const appRegistryServiceReadyListener = async () => {
+				const appMetaList = await getBlockchainAppsMetaList();
+				const status = !!appMetaList.data.length;
+				callback(status);
 			};
-			Signals.get('indexerServiceReady').add(indexerServiceReadyListener);
+			Signals.get('appRegistryReady').add(appRegistryServiceReadyListener);
 		},
 	},
 ];

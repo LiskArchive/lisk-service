@@ -25,6 +25,7 @@ const {
 		commitDbTransaction,
 		rollbackDbTransaction,
 	},
+	Signals,
 } = require('lisk-service-framework');
 
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
@@ -168,6 +169,7 @@ const indexAllBlockchainAppsMeta = async () => {
 		},
 		{ concurrency: supportedNetworks.length },
 	);
+	Signals.get('appRegistryReady').dispatch(true);
 };
 
 module.exports = {
