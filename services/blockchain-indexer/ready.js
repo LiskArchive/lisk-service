@@ -22,7 +22,6 @@ const logger = Logger();
 
 const serviceTasks = {
 	isBlockchainIndexReady: false,
-	isValidatorsListReady: false,
 	isGeneratorsListReady: false,
 	isTransactionsEndpointReady: false,
 	isEventsEndpointReady: false,
