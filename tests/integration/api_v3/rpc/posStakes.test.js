@@ -19,6 +19,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -48,8 +49,8 @@ describe('get.pos.stakes', () => {
 				refStaker = stakeTx.sender;
 			}
 		} while (!refStaker);
-		const response = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
-		[refValidator] = response.result.data;
+		const response = await request(wsRpcUrl, 'get.validator', { address: refValidatorAddress });
+		refValidator = response.result.meta;
 	});
 
 	it('Returns list of sent stakes when requested for known staker address', async () => {
@@ -89,7 +90,7 @@ describe('get.pos.stakes', () => {
 
 	it('No address -> invalid param', async () => {
 		const response = await getStakes();
-		expect(response).toMap(invalidParamsSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('Invalid request param -> invalid param', async () => {

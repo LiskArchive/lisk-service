@@ -16,7 +16,7 @@
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const { invalidParamsSchema, jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
+const { invalidParamsSchema, invalidRequestSchema, jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
 const { goodRequestSchema } = require('../../../schemas/api_v3/staker.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -39,8 +39,8 @@ describe('get.pos.stakers', () => {
 				refStaker = stakeTx.sender;
 			}
 		} while (!refValidatorAddress);
-		const response2 = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
-		[refValidator] = response2.result.data;
+		const response = await request(wsRpcUrl, 'get.validator', { address: refValidatorAddress });
+		refValidator = response.result.meta;
 	});
 
 	it('Returns list of stakers when requested for known validator address', async () => {
@@ -48,8 +48,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested for known validator address and search param (staker name)', async () => {
@@ -67,8 +67,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator address and limit=5', async () => {
@@ -76,8 +76,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested with known validator address, offset=1 and limit=5', async () => {
@@ -87,8 +87,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested for known validator publicKey', async () => {
@@ -96,8 +96,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator publicKey and offset=1', async () => {
@@ -105,8 +105,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator publicKey and limit=5', async () => {
@@ -114,8 +114,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested with known validator publicKey, offset=1 and limit=5', async () => {
@@ -125,8 +125,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested for known validator name', async () => {
@@ -134,8 +134,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator name and offset=1', async () => {
@@ -143,8 +143,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of stakers when requested with known validator name and limit=5', async () => {
@@ -152,8 +152,8 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of stakers when requested with known validator name, offset=1 and limit=5', async () => {
@@ -161,21 +161,21 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns empty when requested for known non-validator address', async () => {
-		const response = await getStakers({ name: 'lsk99999999999999999999999999999999999999' });
+		const response = await getStakers({ address: 'lsk99999999999999999999999999999999999999' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(response.data.stakers.length).toBe(0);
+		expect(result.data.stakers.length).toBe(0);
 	});
 
 	it('No address -> invalid param', async () => {
 		const response = await getStakers();
-		expect(response).toMap(invalidParamsSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('Invalid request param -> invalid param', async () => {
