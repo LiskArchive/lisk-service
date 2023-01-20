@@ -22,9 +22,8 @@ const {
 
 module.exports = [
 	{
-		name: 'reload.validators',
-		description: 'Keep the validators list up-to-date',
-		schedule: '*/5 * * * *', // Every 5 min
+		name: 'init.validators',
+		description: 'Initialize validators cache',
 		init: async () => {
 			if (await isPosModuleRegistered()) {
 				logger.debug('Initializing validators cache...');
@@ -33,16 +32,6 @@ module.exports = [
 					logger.info('Successfully initialized validators cache.');
 				} catch (err) {
 					logger.warn(`Initializing validators cache failed due to: ${err.stack}`);
-				}
-			}
-		},
-		controller: async () => {
-			if (await isPosModuleRegistered()) {
-				logger.debug('Reloading validators cache...');
-				try {
-					await reloadValidatorCache();
-				} catch (err) {
-					logger.warn(`Reloading validators cache failed due to: ${err.message}`);
 				}
 			}
 		},

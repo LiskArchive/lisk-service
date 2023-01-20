@@ -73,17 +73,6 @@ const validatorComparator = (a, b) => {
 	return a.hexAddress.localeCompare(b.hexAddress, 'en');
 };
 
-// TODO: Remove code after SDK returns rank
-const computeValidatorRank = async () => {
-	validatorList
-		.map(validator => ({ ...validator, hexAddress: getHexAddress(validator.address) }))
-		.sort(validatorComparator);
-	validatorList.map((validator, index) => {
-		validator.rank = index + 1;
-		return validator;
-	});
-};
-
 const computeValidatorStatus = async () => {
 	const {
 		data: { numberActiveValidators, numberStandbyValidators },
@@ -171,8 +160,6 @@ const reloadValidatorCache = async () => {
 	if (!await business.isPosModuleRegistered()) return;
 
 	await loadAllPosValidators();
-	// TODO: Remove rank computation after Lisk SDK v6.0.0-alpha.8
-	await computeValidatorRank();
 	await computeValidatorStatus();
 };
 
@@ -236,9 +223,6 @@ const getPosValidators = async params => {
 		{ concurrency: validators.data.length },
 	);
 
-	// TODO: Remove after Lisk SDK v6.0.0-alpha.8
-	if (validators.data.every(validator => !validator.rank)) await computeValidatorRank();
-
 	// Assign the total count
 	validators.meta.total = validators.data.length;
 
@@ -256,80 +240,21 @@ const getPosValidators = async params => {
 // TODO: Test
 // Keep the validator cache up-to-date
 const updateValidatorListEveryBlock = () => {
-	const EVENT_NEW_BLOCK = 'newBlock';
-	const EVENT_DELETE_BLOCK = 'deleteBlock';
-
-	const updateValidatorCacheListener = async (eventType, data) => {
-		const updatedValidatorAddresses = [];
+	const updateValidatorCacheListener = async (data) => {
 		const [block] = data.data;
 		if (block && block.transactions && Array.isArray(block.transactions)) {
-			block.transactions.forEach(tx => {
+			block.transactions.forEach(async tx => {
 				if (tx.module === MODULE.POS) {
-					if (tx.command === COMMAND.REGISTER_VALIDATOR) {
-						updatedValidatorAddresses
-							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.command === COMMAND.STAKE) {
-						// TODO: Verify
-						tx.params.stakes
-							.forEach(stake => updatedValidatorAddresses.push(stake.validatorAddress));
+					if (tx.command === COMMAND.REGISTER_VALIDATOR || tx.command === COMMAND.STAKE) {
+						await reloadValidatorCache();
 					}
 				}
 			});
-
-			// TODO: Validate the logic if there is need to update validator cache on (un-)stake tx
-			if (updatedValidatorAddresses.length) {
-				const updatedValidatorAccounts = await business
-					.getPosValidators({ addresses: updatedValidatorAddresses });
-
-				updatedValidatorAccounts.forEach(validator => {
-					const validatorIndex = validatorList.findIndex(acc => acc.address === validator.address);
-
-					if (eventType === EVENT_DELETE_BLOCK && validatorIndex !== -1) {
-						// Remove validator from list when deleteBlock event contains validator registration tx
-						validatorList.splice(validatorIndex, 1);
-					} else if (validatorIndex === -1) {
-						// Append to validator list on newBlock event, if missing
-						validatorList.push(validator);
-					} else {
-						// Re-assign the current validator status before updating the validatorList
-						// Validator status can change only at the beginning of a new round
-						const { status } = validatorList[validatorIndex];
-						validatorList[validatorIndex] = { ...validator, status };
-					}
-				});
-
-				// Rank is impacted only when a validator gets (un-)voted
-				await computeValidatorRank();
-			}
-
-			// Update validator cache with generatedBlocks and rewards
-			const validatorIndex = validatorList.findIndex(acc => acc.address === block.generatorAddress);
-			if (validatorList[validatorIndex]
-				&& Object.getOwnPropertyNames(validatorList[validatorIndex]).length) {
-				// TODO: Update
-				if (
-					validatorList[validatorIndex].generatedBlocks && validatorList[validatorIndex].rewards
-				) {
-					validatorList[validatorIndex].generatedBlocks = eventType === EVENT_NEW_BLOCK
-						? validatorList[validatorIndex].generatedBlocks + 1
-						: validatorList[validatorIndex].generatedBlocks - 1;
-
-					validatorList[validatorIndex].rewards = eventType === EVENT_NEW_BLOCK
-						? (BigInt(validatorList[validatorIndex].rewards) + BigInt(block.reward)).toString()
-						: (BigInt(validatorList[validatorIndex].rewards) - BigInt(block.reward)).toString();
-				}
-			}
 		}
 	};
 
-	const updateValidatorCacheOnNewBlockListener = (block) => {
-		updateValidatorCacheListener(EVENT_NEW_BLOCK, block);
-	};
-	const updateValidatorCacheOnDeleteBlockListener = (block) => {
-		updateValidatorCacheListener(EVENT_DELETE_BLOCK, block);
-	};
-	Signals.get('newBlock').add(updateValidatorCacheOnNewBlockListener);
-	Signals.get('deleteBlock').add(updateValidatorCacheOnDeleteBlockListener);
+	Signals.get('newBlock').add(updateValidatorCacheListener);
+	Signals.get('deleteBlock').add(updateValidatorCacheListener);
 };
 
 // Updates the account details of the validators
