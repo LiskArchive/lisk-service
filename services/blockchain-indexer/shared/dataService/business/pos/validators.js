@@ -61,6 +61,7 @@ const getPosValidators = async (params) => {
 	return validators;
 };
 
+// TODO: Test the implementation after the issue https://github.com/LiskHQ/lisk-sdk/issues/8057 is fixed
 const getAllPosValidators = async () => {
 	const { validators: rawValidators } = await requestConnector('getPosValidatorsByStake', { limit: -1 });
 	const validators = await BluebirdPromise.map(
