@@ -187,32 +187,46 @@ const getPosValidators = async params => {
 		meta: {},
 	};
 
-	const validatorsTable = await getValidatorsTable();
-	validators.data = await getAllValidators();
-
-	const filterBy = (list, entity) => list.filter(
-		(acc) => params[entity].includes(',')
-			? (acc[entity] && params[entity].split(',').includes(acc[entity]))
-			: (acc[entity] && acc[entity] === params[entity]),
-	);
+	const addressSet = new Set();
+	const nameSet = new Set();
 
 	if (params.publicKey) {
-		params.address = getLisk32AddressFromPublicKey(params.publicKey);
+		const address = getLisk32AddressFromPublicKey(params.publicKey);
+		params.address = params.address || address;
+		addressSet.add(address);
 
 		// Index publicKey asynchronously
 		updateAccountPublicKey(params.publicKey);
 	}
 
-	if (params.address) validators.data = filterBy(validators.data, 'address');
-	if (params.name) validators.data = filterBy(validators.data, 'name');
-	if (params.status) validators.data = filterBy(validators.data, 'status');
-	if (params.search) {
-		validators.data = validators.data
-			.filter(v => v.name.toLowerCase().includes(params.search.toLowerCase()));
+	if (params.address) {
+		const addresses = params.address.split(',');
+		addresses.forEach(address => addressSet.add(address));
 	}
 
+	if (params.name) {
+		const names = params.name.split(',');
+		names.forEach(name => nameSet.add(name));
+	}
+
+	const validatorsTable = await getValidatorsTable();
+	validators.data = await getAllValidators();
+
+	const allValidators = await getAllValidators();
+
+	// Filter validators based on user passed params
+	const filteredValidators = allValidators.filter(validator => {
+		if (addressSet.size && !addressSet.has(validator.address)) return false;
+		if (nameSet.size && !nameSet.has(validator.name)) return false;
+		if (params.status && params.status !== validator.status) return false;
+		if (params.search && !validator.name.toLowerCase().includes(params.search.toLowerCase())) {
+			return false;
+		}
+		return true;
+	});
+
 	validators.data = await BluebirdPromise.map(
-		validators.data,
+		filteredValidators,
 		async validator => {
 			const [validatorInfo = {}] = await validatorsTable.find(
 				{ address: validator.address },
