@@ -13,20 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
-const { getEstimateFeePerByte } = require('../shared/dynamicFees');
+const { getStatus } = require('../shared/status');
 
 module.exports = [
 	{
-		name: 'fee.Ready',
-		description: 'Returns current readiness status of fee estimator microservice',
-		controller: async callback => {
-			const feeServiceReadyListener = async () => {
-				const fees = await getEstimateFeePerByte();
-				const status = !!Object.getOwnPropertyNames(fees).length;
-				callback(status);
-			};
-			Signals.get('newBlock').add(feeServiceReadyListener);
-		},
+		name: 'status',
+		controller: getStatus,
+		params: {},
 	},
 ];

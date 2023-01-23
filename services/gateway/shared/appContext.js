@@ -13,12 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getStatus } = require('../shared/status');
 
-module.exports = [
-	{
-		name: 'status',
-		controller: getStatus,
-		params: {},
-	},
-];
+let app;
+
+const setAppContext = (h) => app = h;
+
+const getAppContext = () => app;
+
+module.exports = {
+	setAppContext,
+	getAppContext,
+};

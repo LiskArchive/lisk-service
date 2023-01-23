@@ -13,20 +13,45 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const { MoleculerError } = require('moleculer').Errors;
 
 const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
+const { getAppContext } = require('./appContext');
 
 const currentSvcStatus = {
-	appRegistrySvcReady: false,
-	connectorSvcReady: false,
-	indexerSvcReady: false,
-	feeSvcReady: false,
-	marketSvcReady: false,
-	newsfeedSvcReady: false,
-	statisticsSvcReady: false,
+	indexer: false,
+	connector: false,
+	fees: false,
+	market: false,
+	newsfeed: false,
+	'app-registry': false,
+	statistics: false,
+};
+
+const knownMicroservices = [
+	'indexer',
+	'connector',
+	'fees',
+	'market',
+	'newsfeed',
+	'app-registry',
+	'statistics',
+];
+
+const updateSvcStatus = async () => {
+	await BluebirdPromise.map(
+		knownMicroservices,
+		async microservice => {
+			const broker = (await getAppContext()).getBroker();
+			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`).catch((err) => {
+				logger.error(err);
+				return false;
+			});
+		},
+	);
 };
 
 const getReady = async () => {
@@ -36,31 +61,12 @@ const getReady = async () => {
 		logger.debug(`Current service status: ${currentSvcStatus}`);
 		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
 	} catch (_) {
+		logger.error(`Current service status: ${currentSvcStatus}`);
 		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
 	}
 };
 
-const updateSvcStatus = data => {
-	const {
-		isAppRegistrySvcReady,
-		isConnectorSvcReady,
-		isIndexerSvcReady,
-		isFeeSvcReady,
-		isMarketSvcReady,
-		isNewsfeedSvcReady,
-		isStatisticsSvcReady,
-	} = data;
-
-	if (isAppRegistrySvcReady) currentSvcStatus.appRegistrySvcReady = isAppRegistrySvcReady;
-	if (isConnectorSvcReady) currentSvcStatus.connectorSvcReady = isConnectorSvcReady;
-	if (isIndexerSvcReady) currentSvcStatus.indexerSvcReady = isIndexerSvcReady;
-	if (isFeeSvcReady) currentSvcStatus.feeSvcReady = isFeeSvcReady;
-	if (isMarketSvcReady) currentSvcStatus.marketSvcReady = isMarketSvcReady;
-	if (isNewsfeedSvcReady) currentSvcStatus.newsfeedSvcReady = isNewsfeedSvcReady;
-	if (isStatisticsSvcReady) currentSvcStatus.statisticsSvcReady = isStatisticsSvcReady;
-};
-
-const getIndexStatus = async () => currentSvcStatus.indexerSvcReady;
+const getIndexStatus = async () => currentSvcStatus.indexer;
 
 module.exports = {
 	getReady,

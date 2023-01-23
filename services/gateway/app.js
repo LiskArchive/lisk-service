@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -31,8 +32,9 @@ const { getHttpRoutes } = require('./routes');
 const { getSocketNamespaces } = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
-const { getReady, updateSvcStatus, getIndexStatus } = require('./shared/ready');
+const { getReady, getIndexStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
+const { setAppContext } = require('./shared/appContext');
 
 const mapper = require('./shared/customMapper');
 const { definition: blocksDefinition } = require('./sources/version3/blocks');
@@ -85,7 +87,8 @@ tempApp.run().then(async () => {
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);
 
 	// Prepare gateway service
-	const broker = Microservice(defaultBrokerConfig).getBroker();
+	const app = Microservice(defaultBrokerConfig);
+	const broker = app.getBroker();
 
 	const sendSocketIoEvent = (eventName, payload) => {
 		broker.call('gateway.broadcast', {
@@ -169,15 +172,6 @@ tempApp.run().then(async () => {
 			'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 			'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
-
-			// Events for updating gateway readiness
-			'appRegistry.Ready': (payload) => updateSvcStatus({ isConnectorSvcReady: payload }),
-			'connector.Ready': (payload) => updateSvcStatus({ isConnectorSvcReady: payload }),
-			'indexer.Ready': (payload) => updateSvcStatus({ isIndexerSvcReady: payload }),
-			'fee.Ready': (payload) => updateSvcStatus({ isFeeSvcReady: payload }),
-			'market.Ready': (payload) => updateSvcStatus({ isMarketSvcReady: payload }),
-			'newsfeed.Ready': (payload) => updateSvcStatus({ isNewsfeedSvcReady: payload }),
-			'transactionStatistics.Ready': (payload) => updateSvcStatus({ isStatisticsSvcReady: payload }),
 		},
 		dependencies: [],
 	};
@@ -197,8 +191,16 @@ tempApp.run().then(async () => {
 		};
 	}
 
-	broker.createService(gatewayConfig);
-	broker.start();
-	logger.info(`Started Gateway API on ${host}:${port}`);
+	setAppContext(app);
+	app.addJobs(path.join(__dirname, 'jobs'));
+
+	// Run the application
+	app.run(gatewayConfig).then(async () => {
+		logger.info(`Started Gateway API on ${host}:${port}`);
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
 });
 

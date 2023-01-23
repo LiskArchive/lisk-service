@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getStatus } = require('../shared/status');
+const { getStatus } = require('../status');
 
 module.exports = [
 	{

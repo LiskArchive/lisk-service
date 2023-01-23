@@ -13,12 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
-
 const dataService = require('./shared/dataService');
 const { getIndexReadyStatus } = require('./shared/indexer/indexStatus');
 
-const logger = Logger();
+let isReady = false;
 
 const serviceTasks = {
 	isBlockchainIndexReady: false,
@@ -31,8 +29,8 @@ const serviceTasks = {
 
 const isIndexerServiceReady = () => !Object.keys(serviceTasks).some(value => !serviceTasks[value]);
 
-const newBlockListener = async () => {
-	if (!isIndexerServiceReady()) {
+const getStatus = async () => {
+	if (!isReady) {
 		serviceTasks.isBlockchainIndexReady = getIndexReadyStatus();
 
 		const events = await dataService.getEvents({ limit: 1 });
@@ -51,16 +49,12 @@ const newBlockListener = async () => {
 
 		const schemas = await dataService.getSchemas();
 		if (Object.getOwnPropertyNames(schemas.data).length) serviceTasks.isSchemasEndpointReady = true;
-	}
 
-	logger.debug(`============== 'indexerServiceReady' signal: ${Signals.get('indexerServiceReady')} ==============`);
-	if (isIndexerServiceReady()) Signals.get('indexerServiceReady').dispatch(true);
+		if (isIndexerServiceReady()) isReady = true;
+	}
+	return isReady;
 };
 
-const getCurrentSvcStatus = async () => serviceTasks;
-
-Signals.get('chainNewBlock').add(newBlockListener);
-
 module.exports = {
-	getCurrentSvcStatus,
+	getStatus,
 };

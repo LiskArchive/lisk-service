@@ -49,7 +49,6 @@ newsFeedStore.getNewsFeedTable().then(() => {
 	// Add routes, events & jobs
 	app.addMethods(path.join(__dirname, 'methods'));
 	app.addJobs(path.join(__dirname, 'jobs'));
-	app.addEvents(path.join(__dirname, 'events'));
 
 	// Run the application
 	app.run().then(() => {

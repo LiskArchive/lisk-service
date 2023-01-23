@@ -13,15 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const { getStatus } = require('../shared/status');
 
 module.exports = [
 	{
-		name: 'transactionStatistics.Ready',
-		description: 'Returns current readiness status of transaction statistics microservice',
-		controller: async callback => {
-			const statisticsServiceReadyListener = async () => callback(true);
-			Signals.get('transactionStatsReady').add(statisticsServiceReadyListener);
-		},
+		name: 'status',
+		controller: getStatus,
+		params: {},
 	},
 ];

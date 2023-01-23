@@ -13,20 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
-const { getMarketPrices } = require('../methods/controllers/market');
+const { getStatus } = require('../shared/status');
 
 module.exports = [
 	{
-		name: 'market.Ready',
-		description: 'Returns current readiness status of market microservice',
-		controller: async callback => {
-			const marketServiceReadyListener = async () => {
-				const marketPrices = await getMarketPrices();
-				const status = !!marketPrices.data.length;
-				callback(status);
-			};
-			Signals.get('marketPricesReady').add(marketServiceReadyListener);
-		},
+		name: 'status',
+		controller: getStatus,
+		params: {},
 	},
 ];
