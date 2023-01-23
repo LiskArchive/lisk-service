@@ -16,10 +16,9 @@
 const BluebirdPromise = require('bluebird');
 const { MoleculerError } = require('moleculer').Errors;
 
-const { Logger } = require('lisk-service-framework');
-
-const logger = Logger();
+const logger = require('lisk-service-framework').Logger();
 const { getAppContext } = require('./appContext');
+const config = require('../config');
 
 const currentSvcStatus = {
 	indexer: false,
@@ -55,14 +54,17 @@ const updateSvcStatus = async () => {
 };
 
 const getReady = async () => {
+	const includeSvcForReadiness = Object.entries(currentSvcStatus).filter(([key]) => config.allServices.split(',').includes(key));
+	const includeSvcForReadinessObj = Object.fromEntries(includeSvcForReadiness);
 	try {
-		const servicesStatus = !Object.keys(currentSvcStatus).some(value => !currentSvcStatus[value]);
-		if (servicesStatus) return Promise.resolve({ services: currentSvcStatus });
-		logger.debug(`Current service status: ${currentSvcStatus}`);
-		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
+		const servicesStatus = !Object.keys(includeSvcForReadinessObj)
+			.some(value => !includeSvcForReadinessObj[value]);
+		if (servicesStatus) return Promise.resolve({ services: includeSvcForReadinessObj });
+		logger.debug(`Current service status: ${includeSvcForReadinessObj}`);
+		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', includeSvcForReadinessObj));
 	} catch (_) {
-		logger.error(`Current service status: ${currentSvcStatus}`);
-		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
+		logger.error(`Current service status: ${includeSvcForReadinessObj}`);
+		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', includeSvcForReadinessObj));
 	}
 };
 
