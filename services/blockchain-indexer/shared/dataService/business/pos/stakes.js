@@ -58,7 +58,7 @@ const getStakes = async params => {
 		stakerInfo.sentStakes,
 		async sentStake => {
 			const stake = normalizeStake(sentStake);
-			const { name: validatorName = null } = await getIndexedAccountInfo(
+			const { name: validatorName } = await getIndexedAccountInfo(
 				{
 					...accountInfoQueryFilter,
 					address: stake.validatorAddress,

@@ -40,10 +40,8 @@ const getAccountsTable = () => getTableInstance(
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
-		params.limit = 1;
-
 		const accountsTable = await getAccountsTable();
-		const [account = {}] = await accountsTable.find(params, columns);
+		const [account = {}] = await accountsTable.find({ limit: 1, ...params }, columns);
 		return account;
 	}
 	return {};

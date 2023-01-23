@@ -59,7 +59,13 @@ describe('Stakes API', () => {
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
-		it('Returns list of sent stakes when requested for known staker name', async () => {
+		it('Returns list of sent stakes when requested with search param (exact staker name)', async () => {
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.name}`);
+			expect(response).toMap(stakesResponseSchema);
+			expect(response.data.stakes.length).toBe(1);
+		});
+
+		it('Returns list of sent stakes when requested with search param (partial staker name)', async () => {
 			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.name[0]}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);

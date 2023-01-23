@@ -150,7 +150,7 @@ const getStakers = async params => {
 	);
 	stakersResponse.meta.validator = {
 		address: stakersResponse.meta.validator.address || params.validatorAddress,
-		name: stakersResponse.meta.validator.name || validatorAccountInfo.name || null,
+		name: stakersResponse.meta.validator.name || validatorAccountInfo.name,
 		publicKey: stakersResponse.meta.validator.publicKey || validatorAccountInfo.publicKey || null,
 	};
 

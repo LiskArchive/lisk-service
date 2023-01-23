@@ -15,13 +15,10 @@
  */
 const {
 	Utils,
-	Logger,
 } = require('lisk-service-framework');
 const path = require('path');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
-
-const logger = Logger();
 
 const createApiDocs = (apiName, apiJsonPaths, registeredModuleNames) => {
 	const methodsDir = path.resolve(__dirname, `../apis/${apiName}/methods`);
@@ -32,9 +29,8 @@ const createApiDocs = (apiName, apiJsonPaths, registeredModuleNames) => {
 		const dirPath = path.resolve(`${methodsDir}/modules/${module}`);
 		try {
 			Object.assign(services, Utils.requireAllJs(dirPath));
-		} catch (err) {
-			logger.warn(`Swagger method definitions missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`);
-		}
+		// eslint-disable-next-line no-empty
+		} catch (err) {}
 	});
 
 	const methods = Object.keys(services).reduce((acc, key) => {
