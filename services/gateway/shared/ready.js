@@ -17,6 +17,8 @@ const { MoleculerError } = require('moleculer').Errors;
 
 const { Logger } = require('lisk-service-framework');
 
+const logger = Logger();
+
 const currentSvcStatus = {
 	appRegistrySvcReady: false,
 	connectorSvcReady: false,
@@ -31,7 +33,7 @@ const getReady = async () => {
 	try {
 		const servicesStatus = !Object.keys(currentSvcStatus).some(value => !currentSvcStatus[value]);
 		if (servicesStatus) return Promise.resolve({ services: currentSvcStatus });
-		Logger.debug(`Current service status: ${currentSvcStatus}`);
+		logger.debug(`Current service status: ${currentSvcStatus}`);
 		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
 	} catch (_) {
 		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', currentSvcStatus));
