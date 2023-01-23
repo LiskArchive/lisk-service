@@ -5,7 +5,15 @@
         "description": "Address of the account to query (can be expressed as CSV).",
         "type": "string",
         "format": "address",
-        "minLength": 41,
+        "minLength": 41
+    },
+    "address": {
+        "name": "address",
+        "in": "query",
+        "description": "Lisk account address.",
+        "type": "string",
+        "format": "address",
+        "minLength": 1,
         "maxLength": 41
     },
     "limit": {
@@ -47,15 +55,6 @@
         "description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive).",
         "type": "string",
         "minLength": 1
-    },
-    "address": {
-        "name": "address",
-        "in": "query",
-        "description": "Lisk account address.",
-        "type": "string",
-        "format": "address",
-        "minLength": 1,
-        "maxLength": 41
     },
     "search": {
         "in": "query",
