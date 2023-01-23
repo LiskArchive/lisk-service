@@ -15,6 +15,8 @@ FROM node:16-alpine
 
 RUN apk add --no-cache curl
 RUN adduser -D lisk
+RUN mkdir -p /home/lisk/lisk-service/blockchain-app-registry/data
+RUN chown -R lisk:lisk /home/lisk/
 
 COPY ./ /home/lisk/lisk-service/blockchain-app-registry/
 COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/blockchain-app-registry/node_modules/

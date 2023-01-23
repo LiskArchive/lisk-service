@@ -65,6 +65,8 @@ services:
       - services_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
+      - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
     restart: always
 
   blockchain-connector:
@@ -77,9 +79,12 @@ services:
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
-      - USE_LISK_IPC_CLIENT=${USE_LISK_IPC_CLIENT}
-      - LISK_APP_DATA_PATH=${LISK_APP_DATA_PATH}
       - LISK_APP_WS=${LISK_APP_WS}
+      # - USE_LISK_IPC_CLIENT=${USE_LISK_IPC_CLIENT}
+      # - LISK_APP_DATA_PATH=${LISK_APP_DATA_PATH}
+      # - GENESIS_BLOCK_URL=
+      # - GENESIS_BLOCK_URL_DEFAULT=
+      # - ENABLE_TESTING_MODE=
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -105,6 +110,7 @@ services:
       - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql:3306/lisk
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
+      - ENABLE_PERSIST_EVENTS=${ENABLE_PERSIST_EVENTS}
     restart: always
 
   blockchain-coordinator:
@@ -114,6 +120,8 @@ services:
         condition: service_started
       redis_persistent:
         condition: service_healthy
+      blockchain-indexer:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -134,9 +142,8 @@ services:
       - services_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_STATISTICS_CACHE_REDIS=redis://redis_persistent:6379/5
+      - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
       - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql:3306/lisk
-      - ENABLE_TRANSACTION_STATS=${ENABLE_TRANSACTION_STATS}
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
     restart: always
 
@@ -154,6 +161,7 @@ services:
       - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
+      - FEE_EST_COLD_START_BATCH_SIZE=${ENABLE_FEE_ESTIMATOR_FULL}
     restart: always
 
   gateway:
@@ -174,8 +182,8 @@ services:
       - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
-      - ENABLE_HTTP_CACHE_CONTROL=${ENABLE_HTTP_CACHE_CONTROL}
       - HTTP_CACHE_CONTROL_DIRECTIVES=${HTTP_CACHE_CONTROL_DIRECTIVES}
+      - ENABLE_HTTP_CACHE_CONTROL=${ENABLE_HTTP_CACHE_CONTROL}
       - ENABLE_WS_RATELIMIT=${ENABLE_WS_RATELIMIT}
       - WS_RATELIMIT_POINTS=${WS_RATELIMIT_POINTS}
       - WS_RATELIMIT_DURATION=${WS_RATELIMIT_DURATION}
@@ -197,9 +205,9 @@ services:
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
+      - EXCHANGERATESAPI_IO_API_KEY=${EXCHANGERATESAPI_IO_API_KEY}
       - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
       - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
-      - EXCHANGERATESAPI_IO_API_KEY=${EXCHANGERATESAPI_IO_API_KEY}
     restart: always
 
   newsfeed:
