@@ -13,7 +13,7 @@
         "description": "Lisk account address.",
         "type": "string",
         "format": "address",
-        "minLength": 1,
+        "minLength": 41,
         "maxLength": 41
     },
     "limit": {
