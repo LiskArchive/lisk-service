@@ -23,6 +23,14 @@ const transformParams = (type, params) => {
 	// TODO: Integrate this logic within the method defs instead
 	paramsKeys.forEach((paramKey) => {
 		let value = {};
+
+		if (params[paramKey].altSwaggerKey) {
+			data.push({
+				$ref: `#/parameters/${params[paramKey].altSwaggerKey}`,
+			});
+			return;
+		}
+
 		if (type === 'blocks' && paramKey === 'id') {
 			value = { $ref: '#/parameters/block' };
 		} else if (type === 'PoS' && paramKey === 'status') {

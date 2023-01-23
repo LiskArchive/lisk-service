@@ -13,6 +13,13 @@
 		"type": "string",
 		"minLength": 1
 	},
+	"validatorNameCsv": {
+		"name": "name",
+		"in": "query",
+		"description": "Query validators by their registered name (can be expressed as CSV).",
+		"type": "string",
+		"minLength": 1
+	},
 	"isUnlockable": {
 		"name": "isUnlockable",
 		"in": "query",

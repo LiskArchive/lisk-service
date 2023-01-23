@@ -1,8 +1,17 @@
 {
+    "accountAddressCsv": {
+        "name": "address",
+        "in": "query",
+        "description": "Address of the account to query (can be expressed as CSV).",
+        "type": "string",
+        "format": "address",
+        "minLength": 41,
+        "maxLength": 41
+    },
     "limit": {
         "in": "query",
         "name": "limit",
-        "description": "Limit to apply to the query results",
+        "description": "Limit to apply to the query results.",
         "type": "integer",
         "format": "int32",
         "minimum": 1,
@@ -12,7 +21,7 @@
     "offset": {
         "name": "offset",
         "in": "query",
-        "description": "Offset to apply to the query results",
+        "description": "Offset to apply to the query results.",
         "type": "integer",
         "format": "int32",
         "minimum": 0,
@@ -21,7 +30,7 @@
     "height": {
         "name": "height",
         "in": "query",
-        "description": "Query by height or a height range (fromHeight:toHeight, both inclusive)",
+        "description": "Query by height or a height range (fromHeight:toHeight, both inclusive).",
         "type": "string",
         "minimum": 0
     },
@@ -35,14 +44,14 @@
     "timestamp": {
         "name": "timestamp",
         "in": "query",
-        "description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive)",
+        "description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive).",
         "type": "string",
         "minLength": 1
     },
     "address": {
         "name": "address",
         "in": "query",
-        "description": "Lisk account address",
+        "description": "Lisk account address.",
         "type": "string",
         "format": "address",
         "minLength": 1,
@@ -52,7 +61,7 @@
         "in": "query",
         "name": "search",
         "required": true,
-        "description": "Search query",
+        "description": "Search query.",
         "type": "string",
         "minLength": 1
     }
