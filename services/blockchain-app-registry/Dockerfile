@@ -1,26 +1,28 @@
+##### Stage 1
+
 FROM node:16-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk=1.0-r1 python3=3.10.9-r1 git=2.38.3-r1
 RUN adduser -D builder
 
 USER builder
-RUN mkdir /home/builder/build
 WORKDIR /home/builder/build
 
 COPY ./package-lock.json ./package.json ./
 RUN npm ci
 
 
+##### Stage 2
+
 FROM node:16-alpine
 
-RUN apk add --no-cache curl
-RUN adduser -D lisk
-RUN mkdir -p /home/lisk/lisk-service/blockchain-app-registry/data
-RUN chown -R lisk:lisk /home/lisk/
-
-COPY ./ /home/lisk/lisk-service/blockchain-app-registry/
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/blockchain-app-registry/node_modules/
+RUN mkdir -p /home/lisk/lisk-service/blockchain-app-registry/data && \
+    adduser -D lisk && \
+    chown -R lisk:lisk /home/lisk/
 
 USER lisk
 WORKDIR /home/lisk/lisk-service/blockchain-app-registry
+
+COPY ./ .
+COPY --from=builder /home/builder/build/node_modules/ ./node_modules/
+
 CMD ["node", "app.js"]
