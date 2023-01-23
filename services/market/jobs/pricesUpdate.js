@@ -13,24 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Signals,
-	Exceptions: { ServiceUnavailableException },
-} = require('lisk-service-framework');
+const logger = require('lisk-service-framework').Logger();
 const { updatePrices } = require('../shared/market/priceUpdater');
-
-const logger = Logger();
-
-const updateMarketPrices = async (isInitCall = false) => updatePrices()
-	.then(() => { if (isInitCall) Signals.get('marketPricesReady').dispatch(true); })
-	.catch(err => {
-		if (err instanceof ServiceUnavailableException) {
-			logger.warn('Unable to fetch market prices from Exchangerateapi right now. Will retry later.');
-			return;
-		}
-		throw err;
-	});
 
 module.exports = [
 	{
@@ -39,11 +23,11 @@ module.exports = [
 		interval: 5, // seconds
 		init: async () => {
 			logger.debug('Initializing market prices');
-			await updateMarketPrices(true);
+			await updatePrices();
 		},
 		controller: async () => {
 			logger.debug('Job scheduled to maintain updated market prices');
-			await updateMarketPrices();
+			await updatePrices();
 		},
 	},
 ];

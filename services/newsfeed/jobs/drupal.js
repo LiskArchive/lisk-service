@@ -17,7 +17,6 @@ const {
 	HTTP: { request: requestLib },
 	Logger,
 	MySQL: { getTableInstance },
-	Signals,
 } = require('lisk-service-framework');
 
 const { normalizeData } = require('../shared/normalizers');
@@ -47,13 +46,12 @@ const reloadNewsFromDrupal = async drupalSources => {
 	});
 };
 
-const performUpdate = async (isInitCall = false) => {
+const performUpdate = async () => {
 	logger.debug('Updating Drupal data...');
 	await reloadNewsFromDrupal([
 		config.sources.drupal_lisk_announcements,
 		config.sources.drupal_lisk_general,
 	]);
-	if (isInitCall) Signals.get('drupalFeedReady').dispatch(true);
 };
 
 module.exports = [
@@ -61,7 +59,7 @@ module.exports = [
 		name: 'newsfeed.retrieve.drupal',
 		description: 'Retrieves data from Drupal',
 		interval: config.sources.drupal_lisk_general.interval,
-		init: async () => performUpdate(true),
-		controller: async () => performUpdate(),
+		init: performUpdate,
+		controller: performUpdate,
 	},
 ];
