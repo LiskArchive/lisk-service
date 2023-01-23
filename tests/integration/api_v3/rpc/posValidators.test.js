@@ -41,7 +41,9 @@ describe('pos/validators API', () => {
 
 	describe('get.pos.validators', () => {
 		it('Returns list of validators when requested', async () => {
-			const response = await getValidators({ limit: numberActiveValidators + numberStandbyValidators });
+			const response = await getValidators({
+				limit: numberActiveValidators + numberStandbyValidators,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			const activeDelegateCount = result.data.filter(validator => validator.status === 'active').length;
@@ -78,7 +80,11 @@ describe('pos/validators API', () => {
 		});
 
 		it('Returns list of validators when requested with search param (partial validator name), offset=1 and limit=5', async () => {
-			const response = await getValidators({ search: refGenerators[0].name[0], offset: 1, limit: 5 });
+			const response = await getValidators({
+				search: refGenerators[0].name[0],
+				offset: 1,
+				limit: 5,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
@@ -91,8 +97,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBe(1);
 		});
 
 		it('Returns list of validators when requested with known csv validator address', async () => {
@@ -141,8 +146,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBe(1);
 		});
 
 		it('Returns list of validators when requested for known validator name', async () => {
@@ -150,8 +154,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBe(1);
 		});
 
 		it('Returns list of validators when requested with known csv validator name', async () => {
