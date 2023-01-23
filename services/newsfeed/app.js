@@ -45,7 +45,7 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-newsFeedStore.getNewsFeedIndex().then(() => {
+newsFeedStore.getNewsFeedTable().then(() => {
 	// Add routes, events & jobs
 	app.addMethods(path.join(__dirname, 'methods'));
 	app.addJobs(path.join(__dirname, 'jobs'));

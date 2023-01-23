@@ -28,19 +28,19 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getNewsFeedIndex = () => getTableInstance(
+const getNewsFeedTable = () => getTableInstance(
 	newsfeedIndexSchema.tableName,
 	newsfeedIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
 const reloadNewsFromDrupal = async drupalSources => {
-	const newsfeedDB = await getNewsFeedIndex();
+	const newsfeedTable = await getNewsFeedTable();
 
 	drupalSources.forEach(async source => {
 		const response = await requestLib(source.url);
-		const normalizedData = normalizeData(source, response.data);
-		await newsfeedDB.upsert(normalizedData);
+		const normalizedData = response ? normalizeData(source, response.data) : [];
+		await newsfeedTable.upsert(normalizedData);
 	});
 };
 

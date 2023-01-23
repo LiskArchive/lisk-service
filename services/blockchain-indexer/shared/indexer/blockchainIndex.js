@@ -132,7 +132,7 @@ const indexBlock = async job => {
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection();
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
@@ -272,7 +272,7 @@ const deleteIndexedBlocks = async job => {
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection();
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	try {

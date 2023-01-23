@@ -126,8 +126,8 @@ const indexSchemas = {
 
 const initializeSearchIndex = async () => {
 	await BluebirdPromise.map(
-		Object.keys(indexSchemas),
-		key => getTableInstance(indexSchemas[key].tableName, indexSchemas[key]),
+		Object.values(indexSchemas),
+		schema => getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT),
 		{ concurrency: 1 },
 	);
 	Signals.get('searchIndexInitialized').dispatch();
