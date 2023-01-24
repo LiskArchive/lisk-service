@@ -19,6 +19,7 @@ module.exports = {
 	selfStake: '=,string',
 	validatorWeight: '=,string',
 	address: '=,string',
+	publicKey: '=,string',
 	lastGeneratedHeight: '=,number',
 	status: '=,string',
 	isBanned: '=,boolean',

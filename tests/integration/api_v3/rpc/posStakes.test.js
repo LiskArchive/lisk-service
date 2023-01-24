@@ -49,8 +49,8 @@ describe('get.pos.stakes', () => {
 				refStaker = stakeTx.sender;
 			}
 		} while (!refStaker);
-		const response = await request(wsRpcUrl, 'get.validator', { address: refValidatorAddress });
-		refValidator = response.result.meta;
+		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
+		[refValidator] = validatorsResponse.result.data;
 	});
 
 	it('Returns list of sent stakes when requested for known staker address', async () => {

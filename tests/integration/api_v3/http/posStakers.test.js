@@ -39,8 +39,8 @@ describe('Stakers API', () => {
 				refStaker = stakeTx.sender;
 			}
 		} while (!refValidatorAddress);
-		const response = await api.get(`${baseUrlV3}/validator?address=${refValidatorAddress}`);
-		refValidator = response.meta;
+		const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
+		[refValidator] = validatorsResponse.data;
 	});
 
 	describe(`GET ${endpoint}`, () => {
