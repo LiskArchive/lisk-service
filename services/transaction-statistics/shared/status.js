@@ -16,11 +16,11 @@
 const packageJson = require('../package.json');
 const { getTransactionsStatistics } = require('./transactionStatistics');
 
-const status = Object.freeze({
+const status = {
 	service: packageJson.name,
 	version: packageJson.version,
 	isReady: false,
-});
+};
 
 const getStatus = async () => {
 	if (!status.isReady) {

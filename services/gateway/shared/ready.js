@@ -30,19 +30,9 @@ const currentSvcStatus = {
 	statistics: false,
 };
 
-const knownMicroservices = [
-	'indexer',
-	'connector',
-	'fees',
-	'market',
-	'newsfeed',
-	'app-registry',
-	'statistics',
-];
-
 const updateSvcStatus = async () => {
 	await BluebirdPromise.map(
-		knownMicroservices,
+		Object.keys(currentSvcStatus),
 		async microservice => {
 			const broker = (await getAppContext()).getBroker();
 			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`)
@@ -56,7 +46,8 @@ const updateSvcStatus = async () => {
 };
 
 const getReady = async () => {
-	const includeSvcForReadiness = Object.entries(currentSvcStatus).filter(([key]) => config.allServices.split(',').includes(key));
+	const includeSvcForReadiness = Object.entries(currentSvcStatus)
+		.filter(([key]) => config.brokerDependencies.includes(key));
 	const includeSvcForReadinessObj = Object.fromEntries(includeSvcForReadiness);
 	try {
 		const servicesStatus = !Object.keys(includeSvcForReadinessObj)

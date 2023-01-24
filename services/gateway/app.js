@@ -63,10 +63,7 @@ const defaultBrokerConfig = {
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
-	dependencies: [
-		'connector',
-		'indexer',
-	],
+	dependencies: config.brokerDependencies,
 };
 
 // Use temporary service to fetch registered sdk modules

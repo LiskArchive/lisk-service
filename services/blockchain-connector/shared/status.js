@@ -16,11 +16,11 @@
 const packageJson = require('../package.json');
 const { getNetworkStatus } = require('./sdk');
 
-const status = Object.freeze({
+const status = {
 	service: packageJson.name,
 	version: packageJson.version,
 	isReady: false,
-});
+};
 
 const getStatus = async () => {
 	if (!status.isReady) {

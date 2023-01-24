@@ -17,11 +17,11 @@ const packageJson = require('./package.json');
 const dataService = require('./shared/dataService');
 const { getIndexReadyStatus } = require('./shared/indexer/indexStatus');
 
-const status = Object.freeze({
+const status = {
 	service: packageJson.name,
 	version: packageJson.version,
 	isReady: false,
-});
+};
 
 const serviceTasks = {
 	isBlockchainIndexReady: false,
@@ -32,7 +32,7 @@ const serviceTasks = {
 	isSchemasEndpointReady: false,
 };
 
-const isIndexerServiceReady = () => !Object.keys(serviceTasks).some(value => !serviceTasks[value]);
+const isIndexerServiceReady = () => Object.values(serviceTasks).every(v => v === true);
 
 const getStatus = async () => {
 	if (!status.isReady) {

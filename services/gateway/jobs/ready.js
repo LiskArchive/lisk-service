@@ -19,8 +19,8 @@ module.exports = [
 	{
 		name: 'readiness.status',
 		description: 'Keep the readiness status up-to-date',
-		schedule: '*/10 * * * *', // Every 10 min
-		init: () => updateSvcStatus(),
-		controller: () => updateSvcStatus(),
+		schedule: '* * * * *', // Every min
+		init: updateSvcStatus,
+		controller: updateSvcStatus,
 	},
 ];
