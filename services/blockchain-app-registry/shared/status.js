@@ -15,14 +15,16 @@
 */
 const { getBlockchainAppsMetaList } = require('./metadata');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		const appMetaList = await getBlockchainAppsMetaList({ limit: 10, offset: 0 });
-		isReady = !!appMetaList.data.length;
+		status.isReady = !!appMetaList.data.length;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

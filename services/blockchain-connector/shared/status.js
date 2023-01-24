@@ -15,14 +15,16 @@
 */
 const { getNetworkStatus } = require('./sdk');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		const networkStatus = await getNetworkStatus();
-		isReady = !!Object.getOwnPropertyNames(networkStatus).length;
+		status.isReady = !!Object.getOwnPropertyNames(networkStatus).length;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

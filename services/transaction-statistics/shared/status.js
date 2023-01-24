@@ -15,14 +15,16 @@
 */
 const { getTransactionsStatistics } = require('./transactionStatistics');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		const statistics = await getTransactionsStatistics({ interval: 'day' });
-		isReady = !!Object.getOwnPropertyNames(statistics.data.timeline).length;
+		status.isReady = !!Object.getOwnPropertyNames(statistics.data.timeline).length;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

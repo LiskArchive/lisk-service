@@ -15,14 +15,16 @@
 */
 const { getEstimateFeePerByte } = require('./dynamicFees');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		const fees = await getEstimateFeePerByte();
-		isReady = !!Object.getOwnPropertyNames(fees).length;
+		status.isReady = !!Object.getOwnPropertyNames(fees).length;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

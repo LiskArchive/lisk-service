@@ -15,14 +15,16 @@
 */
 const { getMarketPrices } = require('./market');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		const marketPrices = await getMarketPrices();
-		isReady = !!marketPrices.data.length;
+		status.isReady = !!marketPrices.data.length;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

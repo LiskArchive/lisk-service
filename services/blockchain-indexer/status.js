@@ -16,7 +16,9 @@
 const dataService = require('./shared/dataService');
 const { getIndexReadyStatus } = require('./shared/indexer/indexStatus');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const serviceTasks = {
 	isBlockchainIndexReady: false,
@@ -30,7 +32,7 @@ const serviceTasks = {
 const isIndexerServiceReady = () => !Object.keys(serviceTasks).some(value => !serviceTasks[value]);
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		serviceTasks.isBlockchainIndexReady = getIndexReadyStatus();
 
 		const events = await dataService.getEvents({ limit: 1 });
@@ -50,9 +52,9 @@ const getStatus = async () => {
 		const schemas = await dataService.getSchemas();
 		if (Object.getOwnPropertyNames(schemas.data).length) serviceTasks.isSchemasEndpointReady = true;
 
-		if (isIndexerServiceReady()) isReady = true;
+		if (isIndexerServiceReady()) status.isReady = true;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

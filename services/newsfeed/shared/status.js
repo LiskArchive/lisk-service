@@ -15,14 +15,16 @@
 */
 const { getNewsfeedArticles } = require('./newsfeed');
 
-let isReady = false;
+const status = {
+	isReady: false,
+};
 
 const getStatus = async () => {
-	if (!isReady) {
+	if (!status.isReady) {
 		const newsfeed = await getNewsfeedArticles({ offset: 0 });
-		isReady = !!newsfeed.data.length;
+		status.isReady = !!newsfeed.data.length;
 	}
-	return isReady;
+	return status;
 };
 
 module.exports = {

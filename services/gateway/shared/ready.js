@@ -45,10 +45,12 @@ const updateSvcStatus = async () => {
 		knownMicroservices,
 		async microservice => {
 			const broker = (await getAppContext()).getBroker();
-			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`).catch((err) => {
-				logger.error(err);
-				return false;
-			});
+			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`)
+				.then((res) => res.isReady)
+				.catch((err) => {
+					logger.error(err);
+					return false;
+				});
 		},
 	);
 };
