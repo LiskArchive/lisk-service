@@ -29,20 +29,40 @@ let pendingTransactionsList = [];
 
 const getPendingTransactionsFromCore = async () => {
 	const response = await requestConnector('getTransactionsFromPool');
-	let pendingTx = response.length ? await normalizeTransaction(response) : [];
-	pendingTx = await BluebirdPromise.map(
-		pendingTx,
+	const pendingTx = await BluebirdPromise.map(
+		response,
 		async transaction => {
+			const normalizedTransaction = await normalizeTransaction(transaction);
 			const account = await getIndexedAccountInfo({
-				publicKey: transaction.senderPublicKey,
+				publicKey: normalizedTransaction.senderPublicKey,
 				limit: 1,
-			}, ['address', 'username']);
-			transaction.senderId = account && account.address ? account.address : undefined;
-			transaction.username = account && account.username ? account.username : undefined;
-			transaction.isPending = true;
-			return transaction;
+			}, ['address', 'name']);
+
+			normalizedTransaction.sender = {
+				address: account.address ? account.address : null,
+				publicKey: transaction.senderPublicKey,
+				name: account ? account.name : null,
+			};
+
+			if (normalizedTransaction.params.recipientAddress) {
+				const recipientAccount = await getIndexedAccountInfo(
+					{ address: normalizedTransaction.params.recipientAddress, limit: 1 },
+					['publicKey', 'name'],
+				);
+
+				normalizedTransaction.meta = {
+					recipient: {
+						address: normalizedTransaction.params.recipientAddress,
+						publicKey: recipientAccount ? recipientAccount.publicKey : null,
+						name: recipientAccount ? recipientAccount.name : null,
+					},
+				};
+			}
+
+			normalizedTransaction.executionStatus = 'pending';
+			return normalizedTransaction;
 		},
-		{ concurrency: pendingTx.length },
+		{ concurrency: response.length },
 	);
 	return pendingTx;
 };
@@ -63,7 +83,12 @@ const validateParams = async params => {
 	}
 
 	if (params.id) validatedParams.id = params.id;
+	if (params.address) {
+		validatedParams.senderAddress = params.address;
+		validatedParams.recipientAddress = params.address;
+	}
 	if (params.senderAddress) validatedParams.senderAddress = params.senderAddress;
+	if (params.recipientAddress) validatedParams.recipientAddress = params.recipientAddress;
 	if (params.moduleCommand) validatedParams.moduleCommand = params.moduleCommand;
 	if (params.sort) validatedParams.sort = params.sort;
 
@@ -97,7 +122,9 @@ const getPendingTransactions = async params => {
 			(!params.id
 				|| transaction.id === params.id)
 			&& (!params.senderAddress
-				|| transaction.senderAddress === params.senderAddress)
+				|| transaction.sender.address === params.senderAddress)
+			&& (!params.recipientAddress
+				|| transaction.params.recipientAddress === params.recipientAddress)
 			&& (!params.moduleCommand
 				|| transaction.moduleCommand === params.moduleCommand)
 		));
