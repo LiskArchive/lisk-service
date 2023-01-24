@@ -192,7 +192,7 @@ tempApp.run().then(async () => {
 	app.addJobs(path.join(__dirname, 'jobs'));
 
 	// Run the application
-	app.run(gatewayConfig).then(async () => {
+	app.run(gatewayConfig).then(() => {
 		logger.info(`Started Gateway API on ${host}:${port}`);
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);

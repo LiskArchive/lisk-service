@@ -46,18 +46,16 @@ const updateSvcStatus = async () => {
 };
 
 const getReady = async () => {
-	const includeSvcForReadiness = Object.entries(currentSvcStatus)
-		.filter(([key]) => config.brokerDependencies.includes(key));
-	const includeSvcForReadinessObj = Object.fromEntries(includeSvcForReadiness);
 	try {
-		const servicesStatus = !Object.keys(includeSvcForReadinessObj)
-			.some(value => !includeSvcForReadinessObj[value]);
-		if (servicesStatus) return Promise.resolve({ services: includeSvcForReadinessObj });
-		logger.debug(`Current service status: ${includeSvcForReadinessObj}`);
-		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', includeSvcForReadinessObj));
+		const includeSvcForReadiness = {};
+		Object.entries(currentSvcStatus).forEach(([service, isReady]) => {
+			if (isReady) includeSvcForReadiness[service] = isReady;
+			else if (config.brokerDependencies.includes(service)) throw new MoleculerError();
+		});
+		return Promise.resolve({ services: includeSvcForReadiness });
 	} catch (_) {
-		logger.error(`Current service status: ${includeSvcForReadinessObj}`);
-		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY', includeSvcForReadinessObj));
+		logger.error(`Current service status: ${currentSvcStatus}`);
+		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY'));
 	}
 };
 
