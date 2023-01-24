@@ -13,12 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
 const dataService = require('./shared/dataService');
 const { getIndexReadyStatus } = require('./shared/indexer/indexStatus');
 
-const status = {
+const status = Object.freeze({
+	service: packageJson.name,
+	version: packageJson.version,
 	isReady: false,
-};
+});
 
 const serviceTasks = {
 	isBlockchainIndexReady: false,
