@@ -39,9 +39,9 @@ const getPendingTransactionsFromCore = async () => {
 			}, ['address', 'name']);
 
 			normalizedTransaction.sender = {
-				address: account.address ? account.address : null,
+				address: account.address || null,
 				publicKey: transaction.senderPublicKey,
-				name: account ? account.name : null,
+				name: account.name || null,
 			};
 
 			if (normalizedTransaction.params.recipientAddress) {
