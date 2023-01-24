@@ -2,7 +2,7 @@
 	"validatorStatus": {
 		"name": "status",
 		"in": "query",
-		"description": "Query validators by status.",
+		"description": "Query validators by status (can be expressed as CSV).",
 		"type": "string",
 		"minLength": 1
 	},

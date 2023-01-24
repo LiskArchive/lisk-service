@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.pos.validators',
 	tags: ['PoS'],
 	params: {
-		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32_CSV, max: 419, altSwaggerKey: 'accountAddressCsv' },
+		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32_CSV, max: 419, altSwaggerKey: 'addressCsv' },
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
 		name: { optional: true, type: 'string', pattern: regex.NAME_CSV, max: 209, altSwaggerKey: 'validatorNameCsv' },
 		status: { optional: true, type: 'string', pattern: regex.POS_VALIDATOR_STATUS },

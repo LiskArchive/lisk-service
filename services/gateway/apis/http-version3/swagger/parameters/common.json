@@ -1,5 +1,5 @@
 {
-    "accountAddressCsv": {
+    "addressCsv": {
         "name": "address",
         "in": "query",
         "description": "Address of the account to query (can be expressed as CSV).",

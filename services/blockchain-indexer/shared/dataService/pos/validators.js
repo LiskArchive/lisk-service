@@ -189,6 +189,7 @@ const getPosValidators = async params => {
 
 	const addressSet = new Set();
 	const nameSet = new Set();
+	const statusSet = new Set();
 
 	if (params.publicKey) {
 		const address = getLisk32AddressFromPublicKey(params.publicKey);
@@ -199,26 +200,18 @@ const getPosValidators = async params => {
 		updateAccountPublicKey(params.publicKey);
 	}
 
-	if (params.address) {
-		const addresses = params.address.split(',');
-		addresses.forEach(address => addressSet.add(address));
-	}
-
-	if (params.name) {
-		const names = params.name.split(',');
-		names.forEach(name => nameSet.add(name));
-	}
+	if (params.address) params.address.split(',').forEach(address => addressSet.add(address));
+	if (params.name) params.name.split(',').forEach(name => nameSet.add(name));
+	if (params.status) params.status.split(',').forEach(status => statusSet.add(status));
 
 	const validatorsTable = await getValidatorsTable();
-	validators.data = await getAllValidators();
-
 	const allValidators = await getAllValidators();
 
 	// Filter validators based on user passed params
 	const filteredValidators = allValidators.filter(validator => {
 		if (addressSet.size && !addressSet.has(validator.address)) return false;
 		if (nameSet.size && !nameSet.has(validator.name)) return false;
-		if (params.status && params.status !== validator.status) return false;
+		if (statusSet.size && !statusSet.has(validator.status)) return false;
 		if (params.search && !validator.name.toLowerCase().includes(params.search.toLowerCase())) {
 			return false;
 		}
