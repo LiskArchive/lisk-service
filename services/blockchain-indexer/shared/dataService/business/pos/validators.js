@@ -49,10 +49,10 @@ const getPosValidators = async (params) => {
 				validator.validatorWeight = BigInt('0');
 			} else {
 				const cap = BigInt(validator.selfStake) * BigInt(10);
-				validator.totalStakeReceived = BigInt(validator.totalStake);
-				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
+				validator.totalStake = BigInt(validator.totalStake);
+				validator.validatorWeight = BigInt(validator.totalStake) > cap
 					? cap
-					: validator.totalStakeReceived;
+					: validator.totalStake;
 			}
 			return validator;
 		},
@@ -71,10 +71,10 @@ const getAllPosValidators = async () => {
 				validator.validatorWeight = BigInt('0');
 			} else {
 				const cap = BigInt(validator.selfStake) * BigInt(10);
-				validator.totalStakeReceived = BigInt(validator.totalStake);
-				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
+				validator.totalStake = BigInt(validator.totalStake);
+				validator.validatorWeight = BigInt(validator.totalStake) > cap
 					? cap
-					: validator.totalStakeReceived;
+					: validator.totalStake;
 			}
 
 			return validator;
