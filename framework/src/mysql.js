@@ -378,9 +378,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.distinct) {
 			query.countDistinct(`${params.distinct} as count`);
 		} else {
-			const countColumnName = Array.isArray(tableConfig.primaryKey) ? tableConfig.primaryKey[0]
-				: tableConfig.primaryKey;
-			query.count(`${countColumnName} as count`);
+			query.count(`${tableConfig.primaryKey} as count`);
 		}
 
 		if (params.sort) {
