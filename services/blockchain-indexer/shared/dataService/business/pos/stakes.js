@@ -56,7 +56,7 @@ const getStakes = async params => {
 	}
 
 	await BluebirdPromise.map(
-		stakerInfo.sentStakes,
+		stakerInfo.stakes,
 		async sentStake => {
 			const stake = normalizeStake(sentStake);
 			// Get validator name filtered by user specified search param
@@ -78,7 +78,7 @@ const getStakes = async params => {
 				});
 			}
 		},
-		{ concurrency: stakerInfo.sentStakes.length },
+		{ concurrency: stakerInfo.stakes.length },
 	);
 
 	// Populate staker account name

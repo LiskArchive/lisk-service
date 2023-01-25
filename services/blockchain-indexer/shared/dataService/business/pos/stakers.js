@@ -31,14 +31,14 @@ const {
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getStakesIndex = () => getTableInstance(
+const getStakesTable = () => getTableInstance(
 	stakesIndexSchema.tableName,
 	stakesIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getStakers = async params => {
-	const stakesTable = await getStakesIndex();
+	const stakesTable = await getStakesTable();
 	const accountsTable = await getAccountsTable();
 	const stakersResponse = {
 		data: { stakers: [] },
@@ -74,7 +74,7 @@ const getStakers = async params => {
 		const { name, ...remParams } = params;
 		params = remParams;
 
-		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
+		const { address } = await getIndexedAccountInfo({ name }, ['address']);
 		params.validatorAddress = address;
 		stakersResponse.meta.validator.name = name;
 	}
@@ -126,12 +126,7 @@ const getStakers = async params => {
 			// Try to use cached staker name. Query DB if not found.
 			let stakerName = allowedStakersAddressNameMap[stake.stakerAddress];
 			if (!stakerName) {
-				const accountInfo = await getIndexedAccountInfo({
-					address: stake.stakerAddress,
-					limit: 1,
-				},
-				['name'],
-				);
+				const accountInfo = await getIndexedAccountInfo({ address: stake.stakerAddress }, ['name']);
 				stakerName = accountInfo.name;
 			}
 
@@ -145,7 +140,7 @@ const getStakers = async params => {
 	);
 
 	const validatorAccountInfo = await getIndexedAccountInfo(
-		{ address: params.validatorAddress, limit: 1 },
+		{ address: params.validatorAddress },
 		['name', 'publicKey'],
 	);
 	stakersResponse.meta.validator = {
