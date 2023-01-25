@@ -45,17 +45,17 @@ const updateSvcStatus = async () => {
 	);
 };
 
-const getReady = async () => {
+const getReady = () => {
 	try {
 		const includeSvcForReadiness = {};
 		Object.entries(currentSvcStatus).forEach(([service, isReady]) => {
 			if (isReady) includeSvcForReadiness[service] = isReady;
 			else if (config.brokerDependencies.includes(service)) throw new MoleculerError();
 		});
-		return Promise.resolve({ services: includeSvcForReadiness });
+		return { services: includeSvcForReadiness };
 	} catch (_) {
 		logger.error(`Current service status: ${currentSvcStatus}`);
-		return Promise.reject(new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY'));
+		throw new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY');
 	}
 };
 
