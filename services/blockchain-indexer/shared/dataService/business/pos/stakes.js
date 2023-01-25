@@ -46,7 +46,7 @@ const getStakes = async params => {
 
 	const stakerInfo = await requestConnector('getStaker', { address: params.address });
 
-	// Filter stakes by user inputted search param (validator name) and add to response
+	// Filter stakes by user specified search param (validator name) and add to response
 	const accountInfoQueryFilter = {};
 	if (params.search) {
 		accountInfoQueryFilter.search = {
