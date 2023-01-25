@@ -162,7 +162,7 @@ pipeline {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
 					}
 					sleep(90)
-					waitForHttp('http://localhost:9901/api/v3/blocks')
+					waitForHttp('http://localhost:9901/api/ready')
 				}
 			}
 		}

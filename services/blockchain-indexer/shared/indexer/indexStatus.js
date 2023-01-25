@@ -149,6 +149,7 @@ const init = async () => {
 };
 
 module.exports = {
+	getIndexReadyStatus,
 	getIndexStats,
 	init,
 };

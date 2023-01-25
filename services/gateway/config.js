@@ -96,4 +96,9 @@ config.rpcCache = {
 	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
 
+const DEFAULT_DEPENDENCIES = 'indexer,connector';
+const { GATEWAY_DEPENDENCIES } = process.env;
+
+config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIES || '').split(',');
+
 module.exports = config;

@@ -33,7 +33,7 @@
     "@liskhq/lisk-cryptography": "4.0.0-alpha.6",
     "@liskhq/lisk-transactions": "6.0.0-alpha.8",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/7516e2a5e98763730696e750f6016a581d2621d8/framework/dist/lisk-service-framework-1.4.10.tgz"
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/91a641edc62f4829105c49280b0bfa80aad5f732/framework/dist/lisk-service-framework-1.4.11.tgz"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
