@@ -22,7 +22,11 @@ const {
 const logger = Logger();
 
 const { normalizeTransaction } = require('./transactions');
-const { getIndexedAccountInfo } = require('../../utils/accountUtils');
+const {
+	getIndexedAccountInfo,
+	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
+} = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 
 let pendingTransactionsList = [];
@@ -33,20 +37,18 @@ const getPendingTransactionsFromCore = async () => {
 		response,
 		async transaction => {
 			const normalizedTransaction = await normalizeTransaction(transaction);
-			const account = await getIndexedAccountInfo({
-				publicKey: normalizedTransaction.senderPublicKey,
-				limit: 1,
-			}, ['address', 'name']);
+			const senderAddress = getLisk32AddressFromPublicKey(normalizedTransaction.senderPublicKey);
+			const account = await getIndexedAccountInfo({ address: senderAddress }, ['name']);
 
 			normalizedTransaction.sender = {
-				address: account.address || null,
-				publicKey: transaction.senderPublicKey,
+				address: senderAddress,
+				publicKey: normalizedTransaction.senderPublicKey,
 				name: account.name || null,
 			};
 
 			if (normalizedTransaction.params.recipientAddress) {
 				const recipientAccount = await getIndexedAccountInfo(
-					{ address: normalizedTransaction.params.recipientAddress, limit: 1 },
+					{ address: normalizedTransaction.params.recipientAddress },
 					['publicKey', 'name'],
 				);
 
@@ -59,6 +61,7 @@ const getPendingTransactionsFromCore = async () => {
 				};
 			}
 
+			updateAccountPublicKey(normalizedTransaction.senderPublicKey);
 			normalizedTransaction.executionStatus = 'pending';
 			return normalizedTransaction;
 		},
