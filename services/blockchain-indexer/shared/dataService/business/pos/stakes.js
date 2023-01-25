@@ -55,24 +55,28 @@ const getStakes = async params => {
 		};
 	}
 
-	stakesResponse.data.stakes = await BluebirdPromise.map(
+	await BluebirdPromise.map(
 		stakerInfo.sentStakes,
 		async sentStake => {
 			const stake = normalizeStake(sentStake);
-			const { name: validatorName } = await getIndexedAccountInfo(
+			// Get validator name filtered by user specified search param
+			const { name: validatorName = null } = await getIndexedAccountInfo(
 				{
 					...accountInfoQueryFilter,
 					address: stake.validatorAddress,
-					isValidator: true,
+					isValidator: 1,
 				},
 				['name'],
 			);
 
-			return {
-				address: stake.validatorAddress,
-				amount: stake.amount,
-				name: validatorName,
-			};
+			// Add validator to response
+			if (validatorName) {
+				stakesResponse.data.stakes.push({
+					address: stake.validatorAddress,
+					amount: stake.amount,
+					name: validatorName,
+				});
+			}
 		},
 		{ concurrency: stakerInfo.sentStakes.length },
 	);
