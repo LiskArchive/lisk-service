@@ -30,7 +30,7 @@
 	"validatorSearch": {
 		"name": "search",
 		"in": "query",
-		"description": "Validator name full text search phrase.",
+		"description": "Validator name text search phrase. Supports both partial and full text search.",
 		"type": "string",
 		"minLength": 1,
 		"maxLength": 20
