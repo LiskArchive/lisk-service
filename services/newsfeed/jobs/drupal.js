@@ -39,7 +39,7 @@ const reloadNewsFromDrupal = async drupalSources => {
 
 	drupalSources.forEach(async source => {
 		const response = await requestLib(source.url);
-		const normalizedData = normalizeData(source, response.data);
+		const normalizedData = response ? normalizeData(source, response.data) : [];
 		await newsfeedDB.upsert(normalizedData);
 	});
 };

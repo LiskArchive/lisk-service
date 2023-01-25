@@ -16,56 +16,50 @@
 const BluebirdPromise = require('bluebird');
 const { MoleculerError } = require('moleculer').Errors;
 
+const logger = require('lisk-service-framework').Logger();
+const { getAppContext } = require('./appContext');
 const config = require('../config');
 
-const currentStatus = {
-	indexReadyStatus: false,
-	transactionStatsStatus: false,
-	feesStatus: false,
-	delegatesStatus: false,
+const currentSvcStatus = {
+	indexer: false,
+	connector: false,
+	fees: false,
+	market: false,
+	newsfeed: false,
+	'app-registry': false,
+	statistics: false,
 };
 
-const getReady = async broker => {
-	const coreMethods = {
-		lisk_accounts: 'core.accounts',
-		lisk_blocks: 'core.blocks',
-		lisk_transactions: 'core.transactions',
-		// lisk_peers: 'core.peers',
-	};
-	try {
-		const services = await BluebirdPromise.map(
-			Object.getOwnPropertyNames(coreMethods),
-			async key => {
-				const service = {};
-				const response = await broker.call(coreMethods[key], { limit: 10 });
-				service[key] = !!response.data.length;
-				return service;
-			},
-		);
-		let allServices;
-		if (config.includeCoreReadiness) {
-			allServices = Object.assign(...services, currentStatus);
-		} else {
-			allServices = Object.assign(...services);
-		}
+const updateSvcStatus = async () => {
+	await BluebirdPromise.map(
+		Object.keys(currentSvcStatus),
+		async microservice => {
+			const broker = (await getAppContext()).getBroker();
+			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`)
+				.then((res) => res.isReady)
+				.catch((err) => {
+					logger.error(err);
+					return false;
+				});
+		},
+	);
+};
 
-		const servicesStatus = !Object.keys(allServices).some(value => !allServices[value]);
-		if (servicesStatus) return Promise.resolve({ services: allServices });
-		return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentStatus));
+const getReady = () => {
+	try {
+		const includeSvcForReadiness = {};
+		Object.entries(currentSvcStatus).forEach(([service, isReady]) => {
+			if (isReady) includeSvcForReadiness[service] = isReady;
+			else if (config.brokerDependencies.includes(service)) throw new MoleculerError();
+		});
+		return { services: includeSvcForReadiness };
 	} catch (_) {
-		return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentStatus));
+		logger.error(`Current service status: ${currentSvcStatus}`);
+		throw new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY');
 	}
 };
 
-const updateSvcStatus = data => {
-	const { isIndexReady, isTransactionStatsReady, isFeeEstimatesReady, isDelegatesReady } = data;
-	currentStatus.indexReadyStatus = isIndexReady;
-	currentStatus.transactionStatsStatus = isTransactionStatsReady;
-	currentStatus.feesStatus = isFeeEstimatesReady;
-	currentStatus.delegatesStatus = isDelegatesReady;
-};
-
-const getIndexStatus = async () => currentStatus.indexReadyStatus;
+const getIndexStatus = async () => currentSvcStatus.indexer;
 
 module.exports = {
 	getReady,

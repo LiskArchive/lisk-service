@@ -38,7 +38,7 @@
     "camelcase": "^6.3.0",
     "ioredis": "^4.28.5",
     "require-all": "^3.0.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/a7345a5fb7e4ca9d2fe971613af223e2cd354f73/framework/dist/lisk-service-framework-1.4.9.tgz"
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/91a641edc62f4829105c49280b0bfa80aad5f732/framework/dist/lisk-service-framework-1.4.11.tgz"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

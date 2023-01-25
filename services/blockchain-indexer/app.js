@@ -76,6 +76,8 @@ const defaultBrokerConfig = {
 
 	const app = Microservice(defaultBrokerConfig);
 
+	app.addMethods(path.join(__dirname, 'methods'));
+
 	if (config.operations.isDataRetrievalModeEnabled) {
 		app.addJobs(path.join(__dirname, 'jobs', 'dataService'));
 
