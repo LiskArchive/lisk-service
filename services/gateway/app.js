@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -31,8 +32,9 @@ const { getHttpRoutes } = require('./routes');
 const { getSocketNamespaces } = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
-const { getReady, updateSvcStatus, getIndexStatus } = require('./shared/ready');
+const { getReady, getIndexStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
+const { setAppContext } = require('./shared/appContext');
 
 const mapper = require('./shared/customMapper');
 const { definition: blocksDefinition } = require('./sources/version3/blocks');
@@ -61,10 +63,7 @@ const defaultBrokerConfig = {
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
-	dependencies: [
-		'connector',
-		'indexer',
-	],
+	dependencies: config.brokerDependencies,
 };
 
 // Use temporary service to fetch registered sdk modules
@@ -85,7 +84,8 @@ tempApp.run().then(async () => {
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);
 
 	// Prepare gateway service
-	const broker = Microservice(defaultBrokerConfig).getBroker();
+	const app = Microservice(defaultBrokerConfig);
+	const broker = app.getBroker();
 
 	const sendSocketIoEvent = (eventName, payload) => {
 		broker.call('gateway.broadcast', {
@@ -100,9 +100,9 @@ tempApp.run().then(async () => {
 		mixins: [ApiService, SocketIOService],
 		name: 'gateway',
 		actions: {
+			ready() { return getReady(); },
 			spec(ctx) { return genDocs(ctx); },
 			status() { return getStatus(this.broker); },
-			ready() { return getReady(this.broker); },
 			isBlockchainIndexReady() { return getIndexStatus(); },
 		},
 		settings: {
@@ -168,7 +168,6 @@ tempApp.run().then(async () => {
 			'round.change': (payload) => sendSocketIoEvent('update.round', payload),
 			'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 			'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
-			'coreService.Ready': (payload) => updateSvcStatus(payload),
 			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
 		},
 		dependencies: [],
@@ -189,8 +188,16 @@ tempApp.run().then(async () => {
 		};
 	}
 
-	broker.createService(gatewayConfig);
-	broker.start();
-	logger.info(`Started Gateway API on ${host}:${port}`);
+	setAppContext(app);
+	app.addJobs(path.join(__dirname, 'jobs'));
+
+	// Run the application
+	app.run(gatewayConfig).then(() => {
+		logger.info(`Started Gateway API on ${host}:${port}`);
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
 });
 

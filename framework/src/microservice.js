@@ -206,11 +206,11 @@ const Microservice = (config = {}) => {
 		_addItems(folderPath, 'job');
 	};
 
-	const run = () => {
-		logger.info(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
+	const run = (serviceConfig = moleculerConfig) => {
+		logger.info(`Creating a Moleculer service through ${serviceConfig.transporter}`);
 
 		// Create a service
-		broker.createService(moleculerConfig);
+		broker.createService(serviceConfig);
 
 		// Start server
 		return broker
