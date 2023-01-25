@@ -25,7 +25,6 @@ const getStakers = async params => request(wsRpcUrl, 'get.pos.stakers', params);
 
 describe('get.pos.stakers', () => {
 	let refValidator;
-	let refStaker;
 	beforeAll(async () => {
 		let refValidatorAddress;
 		do {
@@ -36,7 +35,6 @@ describe('get.pos.stakers', () => {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { stakes: [stake] } } = stakeTx;
 				refValidatorAddress = stake.validatorAddress;
-				refStaker = stakeTx.sender;
 			}
 		} while (!refValidatorAddress);
 		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
@@ -53,7 +51,7 @@ describe('get.pos.stakers', () => {
 	});
 
 	it('Returns list of stakers when requested for known validator address and search param (exact staker name)', async () => {
-		const response = await getStakers({ address: refValidator.address, search: refStaker.name });
+		const response = await getStakers({ address: refValidator.address, search: refValidator.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
@@ -61,7 +59,7 @@ describe('get.pos.stakers', () => {
 	});
 
 	it('Returns list of stakers when requested for known validator address and search param (partial staker name)', async () => {
-		const searchParam = refStaker.name ? refStaker.name[0] : '';
+		const searchParam = refValidator.name ? refValidator.name[0] : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

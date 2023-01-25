@@ -26,7 +26,6 @@ const endpoint = `${baseUrlV3}/pos/stakers`;
 
 describe('Stakers API', () => {
 	let refValidator;
-	let refStaker;
 	beforeAll(async () => {
 		let refValidatorAddress;
 		do {
@@ -36,7 +35,6 @@ describe('Stakers API', () => {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { stakes: [stake] } } = stakeTx;
 				refValidatorAddress = stake.validatorAddress;
-				refStaker = stakeTx.sender;
 			}
 		} while (!refValidatorAddress);
 		const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
@@ -52,13 +50,13 @@ describe('Stakers API', () => {
 		});
 
 		it('Returns list of stakers when requested for known validator address and search param (exact staker name)', async () => {
-			const response = await api.get(`${endpoint}?address=${refValidator.address}&search=${refStaker.name}`);
+			const response = await api.get(`${endpoint}?address=${refValidator.address}&search=${refValidator.name}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.stakers.length).toBe(1);
 		});
 
 		it('Returns list of stakers when requested for known validator address and search param (partial staker name)', async () => {
-			const searchParam = refStaker.name ? refStaker.name[0] : '';
+			const searchParam = refValidator.name ? refValidator.name[0] : '';
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&search=${searchParam}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
