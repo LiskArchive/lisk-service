@@ -193,8 +193,12 @@ const getPosValidators = async params => {
 
 	if (params.publicKey) {
 		const address = getLisk32AddressFromPublicKey(params.publicKey);
-		params.address = params.address || address;
-		addressSet.add(address);
+
+		// Return empty response if user specified address and publicKey pair does not match
+		if (params.address && params.address.split(',').includes(address)) {
+			return validators;
+		}
+		params.address = address;
 
 		// Index publicKey asynchronously
 		updateAccountPublicKey(params.publicKey);
