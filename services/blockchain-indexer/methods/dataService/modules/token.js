@@ -16,7 +16,10 @@
 const {
 	getTokens,
 	getTokensSummary,
+	checkTokenAccountExists,
 } = require('../controllers/token');
+
+const regex = require('../../../shared/regex');
 
 module.exports = [
 	{
@@ -35,6 +38,16 @@ module.exports = [
 		params: {
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'token.account.exists',
+		controller: checkTokenAccountExists,
+		params: {
+			address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
+			publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
+			name: { optional: true, type: 'string', pattern: regex.NAME },
+			tokenID: { optional: false, type: 'string', pattern: regex.TOKEN_ID },
 		},
 	},
 ];

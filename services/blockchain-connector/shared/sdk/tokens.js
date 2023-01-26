@@ -73,7 +73,19 @@ const getTotalSupply = async () => {
 	}
 };
 
+const hasUserAccount = async ({ address, tokenID }) => {
+	try {
+		return invokeEndpoint('token_hasUserAccount', { address, tokenID });
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'hasUserAccount\'.');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
+	checkUserAccountExistsForToken: hasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,

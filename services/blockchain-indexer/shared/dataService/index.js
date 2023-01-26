@@ -62,6 +62,7 @@ const {
 } = require('./peers');
 
 const {
+	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
 } = require('./token');
@@ -114,6 +115,7 @@ module.exports = {
 	getPeersStatistics,
 
 	// Token
+	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
 

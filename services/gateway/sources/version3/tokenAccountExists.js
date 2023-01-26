@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,14 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	checkTokenAccountExists,
-	getTokens,
-	getTokensSummary,
-} = require('./token');
-
 module.exports = {
-	checkTokenAccountExists,
-	getTokens,
-	getTokensSummary,
+	type: 'moleculer',
+	method: 'indexer.token.account.exists',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+		tokenID: '=,string',
+	},
+	definition: {
+		data: {
+			isExists: '=,boolean',
+		},
+		meta: {},
+	},
 };

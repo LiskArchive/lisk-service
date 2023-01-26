@@ -15,11 +15,14 @@
  */
 const business = require('../business');
 
+const checkTokenAccountExists = async (params) => business.checkTokenAccountExists(params);
+
 const getTokens = async (params) => business.getTokens(params);
 
 const getTokensSummary = async (params) => business.getTokensSummary(params);
 
 module.exports = {
+	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
 };

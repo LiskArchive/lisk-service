@@ -14,6 +14,7 @@
  *
  */
 const {
+	checkUserAccountExistsForToken,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
@@ -51,6 +52,17 @@ module.exports = [
 		name: 'getTotalSupply',
 		controller: async () => getTotalSupply(),
 		params: {},
+	},
+	{
+		name: 'checkUserAccountExistsForToken',
+		controller: async ({ address, tokenID }) => checkUserAccountExistsForToken({
+			address,
+			tokenID,
+		}),
+		params: {
+			address: { optional: false, type: 'string' },
+			tokenID: { optional: false, type: 'string' },
+		},
 	},
 
 ];

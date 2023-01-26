@@ -20,6 +20,8 @@ const {
 } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
+const { getLisk32AddressFromPublicKey } = require('../../utils/accountUtils');
+const { getAddressByName } = require('../../utils/validatorUtils');
 
 const {
 	LENGTH_CHAIN_ID,
@@ -103,7 +105,31 @@ const getTokensSummary = async () => {
 	return summary;
 };
 
+const checkTokenAccountExists = async (params) => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	const { tokenID } = params;
+	let { address } = params;
+
+	if (!address && params.name) {
+		address = await getAddressByName(params.name);
+	}
+
+	if (!address && params.publicKey) {
+		address = getLisk32AddressFromPublicKey(params.publicKey);
+	}
+
+	const { exists: isExists } = await requestConnector('checkUserAccountExistsForToken', { address, tokenID });
+	response.data.isExists = isExists;
+
+	return response;
+};
+
 module.exports = {
+	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
 };
