@@ -16,6 +16,7 @@
 const {
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 } = require('../controllers/token');
 
 module.exports = [
@@ -36,5 +37,10 @@ module.exports = [
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
+	},
+	{
+		name: 'token.constants',
+		controller: getTokenConstants,
+		params: {},
 	},
 ];

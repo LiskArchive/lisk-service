@@ -16,9 +16,11 @@
 const {
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 } = require('./token');
 
 module.exports = {
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 };

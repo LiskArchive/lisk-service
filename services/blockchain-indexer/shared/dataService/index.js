@@ -64,6 +64,7 @@ const {
 const {
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 } = require('./token');
 
 const {
@@ -116,6 +117,7 @@ module.exports = {
 	// Token
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 
 	// Transactions
 	getTransactions,
