@@ -2,7 +2,9 @@
 
 FROM node:16-alpine AS builder
 
-RUN adduser -D builder
+RUN adduser -D builder && \
+    mkdir /home/builder/build && \
+    chown -R builder:builder /home/builder/
 
 USER builder
 WORKDIR /home/builder/build
