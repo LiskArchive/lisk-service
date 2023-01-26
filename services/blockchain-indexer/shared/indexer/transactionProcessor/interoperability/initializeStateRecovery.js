@@ -14,7 +14,7 @@
  *
  */
 // Command specific constants
-const COMMAND_NAME = 'messageRecovery';
+const COMMAND_NAME = 'initializeStateRecovery';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => { };

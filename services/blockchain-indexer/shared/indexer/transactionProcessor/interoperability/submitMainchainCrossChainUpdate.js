@@ -13,14 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { applyTransaction, revertTransaction } = require('./submitSidechainCrossChainUpdate');
+
 // Command specific constants
-const COMMAND_NAME = 'stateRecoveryInitialization';
-
-// eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => { };
-
-// eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => { };
+const COMMAND_NAME = 'submitMainchainCrossChainUpdate';
 
 module.exports = {
 	COMMAND_NAME,

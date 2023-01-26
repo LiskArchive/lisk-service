@@ -13,10 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { applyTransaction, revertTransaction } = require('./sidechainCCUpdate');
-
 // Command specific constants
-const COMMAND_NAME = 'mainchainCCUpdate';
+const COMMAND_NAME = 'initializeMessageRecovery';
+
+// eslint-disable-next-line no-unused-vars
+const applyTransaction = async (blockHeader, tx, dbTrx) => { };
+
+// eslint-disable-next-line no-unused-vars
+const revertTransaction = async (blockHeader, tx, dbTrx) => { };
 
 module.exports = {
 	COMMAND_NAME,

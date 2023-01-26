@@ -39,7 +39,7 @@ const getTransactionsTable = () => getTableInstance(
 );
 
 // Command specific constants
-const COMMAND_NAME = 'crossChainTransfer';
+const COMMAND_NAME = 'transferCrossChain';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
