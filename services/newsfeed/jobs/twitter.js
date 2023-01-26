@@ -25,7 +25,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getNewsFeedIndex = () => getTableInstance(
+const getNewsFeedTable = () => getTableInstance(
 	newsfeedIndexSchema.tableName,
 	newsfeedIndexSchema,
 	MYSQL_ENDPOINT,
@@ -34,11 +34,11 @@ const getNewsFeedIndex = () => getTableInstance(
 const refreshTwitterData = async () => {
 	try {
 		logger.debug('Updating Twitter data...');
-		const newsfeedDB = await getNewsFeedIndex();
+		const newsfeedTable = await getNewsFeedTable();
 
 		const response = await getData();
-		const normalizedData = normalizeData(config.sources.twitter_lisk, response);
-		await newsfeedDB.upsert(normalizedData);
+		const normalizedData = response ? normalizeData(config.sources.twitter_lisk, response) : [];
+		await newsfeedTable.upsert(normalizedData);
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');

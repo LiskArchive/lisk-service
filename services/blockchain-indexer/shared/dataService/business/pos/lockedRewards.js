@@ -30,10 +30,12 @@ const validatorsTableSchema = require('../../../database/schema/validators');
 
 const { getRewardTokenID } = require('../dynamicReward');
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const getValidatorsTable = () => getTableInstance(
 	validatorsTableSchema.tableName,
 	validatorsTableSchema,
-	config.endpoints.mysql,
+	MYSQL_ENDPOINT,
 );
 
 const getPosLockedRewards = async params => {

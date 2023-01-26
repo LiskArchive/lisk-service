@@ -229,11 +229,16 @@ const downloadRepositoryToFS = async () => {
 	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {
+		logger.trace('Synchronizing with the remote repository.');
 		await syncWithRemoteRepo();
+		logger.debug('Finished synchronizing with the remote repository successfully.');
 	} else {
 		if (!(await exists(dataDirectory))) {
+			logger.trace('Creating data directory.');
 			await mkdir(dataDirectory, { recursive: true });
+			logger.debug('Created data directory successfully.');
 		}
+
 		const { url } = await getRepoDownloadURL();
 		await downloadAndExtractTarball(url, dataDirectory);
 

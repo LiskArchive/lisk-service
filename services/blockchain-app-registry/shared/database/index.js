@@ -16,8 +16,11 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	Logger,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+
+const logger = Logger();
 
 const config = require('../../config');
 
@@ -26,23 +29,34 @@ const indexSchemas = {
 	token_metadata: require('./schema/token_metadata'),
 };
 
-const initializeSearchIndex = async () => {
-	await BluebirdPromise.map(
-		Object.values(indexSchemas),
-		async schema => getTableInstance(schema.tableName, schema),
-		{ concurrency: 1 },
-	);
-};
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const truncateAllTables = async () => {
+const initializeSearchIndex = async () => {
+	logger.debug('Initializing all the tables.');
 	await BluebirdPromise.map(
 		Object.values(indexSchemas),
 		async schema => {
-			const db = await getTableInstance(schema.tableName, schema);
-			await db.rawQuery(`TRUNCATE TABLE ${schema.tableName};`);
+			logger.trace(`Initializing table: ${schema.tableName}.`);
+			return getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT);
 		},
 		{ concurrency: 1 },
 	);
+	logger.debug('Initialized all the tables successfully.');
+};
+
+const truncateAllTables = async () => {
+	logger.info('Truncating all the tables.');
+	await BluebirdPromise.map(
+		Object.values(indexSchemas),
+		async schema => {
+			logger.trace(`Truncating table: ${schema.tableName}.`);
+			const db = await getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT);
+			await db.rawQuery(`TRUNCATE TABLE ${schema.tableName};`);
+			logger.info(`Truncated table: ${schema.tableName}.`);
+		},
+		{ concurrency: 1 },
+	);
+	logger.debug('Truncated all the tables successfully.');
 };
 
 const initDatabase = async () => {
