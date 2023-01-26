@@ -13,16 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	checkTokenAccountExists,
-	getTokens,
-	getTokensSummary,
-	getTokenConstants,
-} = require('./token');
+const { applyTransaction, revertTransaction } = require('./submitSidechainCrossChainUpdate');
+
+// Command specific constants
+const COMMAND_NAME = 'submitMainchainCrossChainUpdate';
 
 module.exports = {
-	checkTokenAccountExists,
-	getTokens,
-	getTokensSummary,
-	getTokenConstants,
+	COMMAND_NAME,
+	applyTransaction,
+	revertTransaction,
 };

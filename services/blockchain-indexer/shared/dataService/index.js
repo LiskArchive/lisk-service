@@ -65,6 +65,7 @@ const {
 	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 } = require('./token');
 
 const {
@@ -118,6 +119,7 @@ module.exports = {
 	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 
 	// Transactions
 	getTransactions,

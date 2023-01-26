@@ -21,8 +21,11 @@ const getTokens = async (params) => business.getTokens(params);
 
 const getTokensSummary = async (params) => business.getTokensSummary(params);
 
+const getTokenConstants = async () => business.getTokenConstants();
+
 module.exports = {
 	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 };

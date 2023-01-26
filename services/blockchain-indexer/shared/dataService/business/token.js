@@ -29,6 +29,8 @@ const {
 	PATTERN_ANY_LOCAL_ID,
 } = require('../../constants');
 
+let moduleConstants = {};
+
 const getTokens = async (params) => {
 	const tokensInfo = [];
 	const tokens = {
@@ -128,8 +130,26 @@ const checkTokenAccountExists = async (params) => {
 	return response;
 };
 
+const getTokenConstants = async () => {
+	if (!Object.getOwnPropertyNames(moduleConstants).length) {
+		const initializationFees = await requestConnector('getTokenInitializationFees');
+		moduleConstants = {
+			extraCommandFees: {
+				userAccountInitializationFee: initializationFees.userAccount,
+				escrowAccountInitializationFee: initializationFees.escrowAccount,
+			},
+		};
+	}
+
+	return {
+		data: moduleConstants,
+		meta: {},
+	};
+};
+
 module.exports = {
 	checkTokenAccountExists,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 };

@@ -62,6 +62,7 @@ const {
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+	getTokenInitializationFees,
 } = require('./tokens');
 
 const {
@@ -157,6 +158,7 @@ module.exports = {
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+	getTokenInitializationFees,
 
 	// PoS
 	getAllPosValidators,

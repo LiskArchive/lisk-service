@@ -13,8 +13,10 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const { Exceptions: { TimeoutException }, Logger } = require('lisk-service-framework');
 const { timeoutMessage, invokeEndpoint } = require('./client');
+
+const logger = Logger();
 
 const getTokenBalances = async (address) => {
 	try {
@@ -24,6 +26,7 @@ const getTokenBalances = async (address) => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTokenBalances\'.');
 		}
+		logger.warn(`Error returned when invoking 'token_getBalances'.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -36,6 +39,7 @@ const getTokenBalance = async ({ address, tokenID }) => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTokenBalance\'.');
 		}
+		logger.warn(`Error returned when invoking 'token_getBalance'.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -47,6 +51,7 @@ const getEscrowedAmounts = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getEscrowedAmounts\'.');
 		}
+		logger.warn(`Error returned when invoking 'token_getEscrowedAmounts'.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -58,6 +63,7 @@ const getSupportedTokens = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getSupportedTokens\'.');
 		}
+		logger.warn(`Error returned when invoking 'token_getSupportedTokens'.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -69,6 +75,21 @@ const getTotalSupply = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTotalSupply\'.');
 		}
+		logger.warn(`Error returned when invoking 'token_getTotalSupply'.\n${err.stack}`);
+		throw err;
+	}
+};
+
+const getTokenInitializationFees = async () => {
+	try {
+		const response = await invokeEndpoint('token_getInitializationFees');
+		if (response.error) throw new Error(response.error);
+		return response;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getTokenInitializationFees\'.');
+		}
+		logger.warn(`Error returned when invoking 'token_getInitializationFees'.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -91,4 +112,5 @@ module.exports = {
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+	getTokenInitializationFees,
 };

@@ -249,7 +249,7 @@ const indexBlock = async job => {
 		await rollbackDbTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}`);
 
-		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+		if (['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e))) {
 			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
