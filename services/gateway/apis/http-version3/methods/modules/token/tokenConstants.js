@@ -27,14 +27,14 @@ module.exports = {
 		const constantsSchema = {};
 		constantsSchema[this.swaggerApiPath] = { get: {} };
 		constantsSchema[this.swaggerApiPath].get.tags = this.tags;
-		constantsSchema[this.swaggerApiPath].get.summary = 'Requests token Module Constants.';
+		constantsSchema[this.swaggerApiPath].get.summary = 'Requests Token module constants.';
 		constantsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Requests all the configured constants for the token module.',
+			description: 'Requests all the configured constants for the Token module.',
 		});
 		constantsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns all the configured constants for the token module.',
+				description: 'Returns all the configured constants for the Token module.',
 				schema: {
 					$ref: '#/definitions/tokenConstantsWithEnvelope',
 				},
