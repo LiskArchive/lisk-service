@@ -131,7 +131,7 @@ const transformStatsObjectToList = statsObject => (
 
 const insertToDB = async (statsList, date) => {
 	const db = await getDBInstance();
-	const connection = await getDbConnection();
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const trx = await startDbTransaction(connection);
 	try {
 		try {

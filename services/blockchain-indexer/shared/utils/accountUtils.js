@@ -32,10 +32,12 @@ const {
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const getAccountsTable = () => getTableInstance(
 	accountsTableSchema.tableName,
 	accountsTableSchema,
-	config.endpoints.mysql,
+	MYSQL_ENDPOINT,
 );
 
 const getIndexedAccountInfo = async (params, columns) => {

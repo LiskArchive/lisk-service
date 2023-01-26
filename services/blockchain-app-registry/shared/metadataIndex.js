@@ -92,19 +92,19 @@ const indexChainMeta = async (chainMeta, dbTrx) => {
 const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 	const { dataDir } = config;
 	const repo = config.gitHub.appRegistryRepoName;
-	logger.debug(`Indexing metadata information for the app: ${app} (${network})`);
+	logger.debug(`Indexing metadata information for the app: ${app} (${network}).`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
 	const appPathInClonedRepo = `${dataDir}/${repo}/${network}/${app}`;
-	logger.trace('Reading chain information');
+	logger.trace('Reading chain information.');
 	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
 	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
-		logger.debug(`Indexing chain information for the app: ${app} (${network})`);
+		logger.debug(`Indexing chain information for the app: ${app} (${network}).`);
 		await indexChainMeta(chainMeta, dbTrx);
-		logger.debug(`Indexed chain information for the app: ${app} (${network})`);
+		logger.debug(`Indexed chain information for the app: ${app} (${network}).`);
 	}
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
@@ -117,11 +117,11 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 			network,
 		};
 
-		logger.debug(`Indexing tokens information for the app: ${app} (${network})`);
+		logger.debug(`Indexing tokens information for the app: ${app} (${network}).`);
 		await indexTokensMeta(tokenMeta, dbTrx);
-		logger.debug(`Indexed tokens information for the app: ${app} (${network})`);
+		logger.debug(`Indexed tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished indexing metadata information for the app: ${app} (${network})`);
+	logger.info(`Finished indexing metadata information for the app: ${app} (${network}).`);
 };
 
 const indexAllBlockchainAppsMeta = async () => {
@@ -140,20 +140,21 @@ const indexAllBlockchainAppsMeta = async () => {
 				allAvailableApps,
 				async app => {
 					const allFilesFromApp = await getFiles(`${app}`);
+
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
 							const [appName, filename] = file.split('/').slice(-2);
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
-								const connection = await getDbConnection();
+								const connection = await getDbConnection(MYSQL_ENDPOINT);
 								const dbTrx = await startDbTransaction(connection);
 
 								try {
-									logger.debug('Created new MySQL transaction to index blockchain metadata information');
+									logger.debug('Created new MySQL transaction to index blockchain metadata information.');
 									await indexMetadataFromFile(network, appName, filename, dbTrx);
 									await commitDbTransaction(dbTrx);
-									logger.debug('Committed MySQL transaction to index blockchain metadata information');
+									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
 									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
