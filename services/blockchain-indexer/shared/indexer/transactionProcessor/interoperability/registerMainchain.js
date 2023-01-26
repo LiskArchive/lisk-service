@@ -34,15 +34,16 @@ const getBlockchainAppsTable = () => getTableInstance(
 );
 
 // Command specific constants
-const COMMAND_NAME = 'sidechainRegistration';
+const COMMAND_NAME = 'registerMainchain';
 
+// TODO: Needs work
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
-	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
+	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
-		chainID: tx.params.chainID,
-		name: tx.params.name,
+		chainID: tx.params.ownChainID,
+		name: tx.params.ownName,
 		state: '', // TODO: Set init state from events
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
@@ -50,15 +51,16 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	logger.debug(`Indexed sidechain (${tx.params.chainID}) registration information.`);
+	logger.debug(`Indexed mainchain (${tx.params.chainID}) registration information.`);
 };
 
+// eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
-	logger.trace(`Reverting sidechain (${tx.params.chainID}) registration information.`);
+	logger.trace(`Reverting mainchain (${tx.params.chainID}) registration information.`);
 	await blockchainAppsTable.deleteByPrimaryKey(tx.params.chainID, dbTrx);
-	logger.debug(`Reverted sidechain (${tx.params.chainID}) registration information.`);
+	logger.debug(`Reverted mainchain (${tx.params.chainID}) registration information.`);
 };
 
 module.exports = {
