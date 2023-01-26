@@ -29,9 +29,9 @@ const verifyIfPunished = async validator => {
 	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
 
 	// TODO: Get this information from SDK directly once available
-	const isPunished = validator.pomHeights
-		.some(pomHeight => pomHeight.start <= latestBlock.height
-			&& latestBlock.height <= pomHeight.end);
+	const isPunished = validator.reportMisbehaviorHeights
+		.some(reportMisbehaviorHeight => reportMisbehaviorHeight.start <= latestBlock.height
+			&& latestBlock.height <= reportMisbehaviorHeight.end);
 	return isPunished;
 };
 
@@ -49,10 +49,10 @@ const getPosValidators = async (params) => {
 				validator.validatorWeight = BigInt('0');
 			} else {
 				const cap = BigInt(validator.selfStake) * BigInt(10);
-				validator.totalStakeReceived = BigInt(validator.totalStakeReceived);
-				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
+				validator.totalStake = BigInt(validator.totalStake);
+				validator.validatorWeight = BigInt(validator.totalStake) > cap
 					? cap
-					: validator.totalStakeReceived;
+					: validator.totalStake;
 			}
 			return validator;
 		},
@@ -71,15 +71,10 @@ const getAllPosValidators = async () => {
 				validator.validatorWeight = BigInt('0');
 			} else {
 				const cap = BigInt(validator.selfStake) * BigInt(10);
-				validator.totalStakeReceived = BigInt(validator.totalStakeReceived);
-				validator.validatorWeight = BigInt(validator.totalStakeReceived) > cap
+				validator.totalStake = BigInt(validator.totalStake);
+				validator.validatorWeight = BigInt(validator.totalStake) > cap
 					? cap
-					: validator.totalStakeReceived;
-			}
-
-			// TODO: Remove after Lisk SDK v6.0.0-alpha.8
-			if (!('punishmentPeriods' in validator)) {
-				validator.punishmentPeriods = validator.pomHeights.map(h => ({ start: h, end: h + 1000 }));
+					: validator.totalStake;
 			}
 
 			return validator;

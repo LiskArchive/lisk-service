@@ -13,17 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const packageJson = require('../package.json');
+const { getStatus } = require('../shared/status');
 
 module.exports = [
 	{
 		name: 'status',
 		description: 'Status',
 		params: {},
-		controller: async () => ({
-			status: 'OK',
-			service: packageJson.name,
-			version: packageJson.version,
-		}),
+		controller: getStatus,
 	},
 ];

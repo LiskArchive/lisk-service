@@ -15,14 +15,14 @@
  */
 module.exports = {
 	name: '=,string',
-	totalStakeReceived: '=,string',
+	totalStake: '=,string',
 	selfStake: '=,string',
 	validatorWeight: '=,string',
 	address: '=,string',
 	lastGeneratedHeight: '=,number',
 	status: '=,string',
 	isBanned: '=,boolean',
-	pomHeights: '=',
+	reportMisbehaviorHeights: '=',
 	punishmentPeriods: ['punishmentPeriods', {
 		start: '=,number',
 		end: '=,number',

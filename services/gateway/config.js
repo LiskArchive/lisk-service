@@ -28,8 +28,8 @@ config.host = process.env.HOST || '0.0.0.0';
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
-config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/5';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/5';
 
 /**
  * Compatibility
@@ -95,5 +95,10 @@ config.rpcCache = {
 	ttl: 5, // in seconds
 	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
+
+const DEFAULT_DEPENDENCIES = 'indexer,connector';
+const { GATEWAY_DEPENDENCIES } = process.env;
+
+config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIES || '').split(',');
 
 module.exports = config;
