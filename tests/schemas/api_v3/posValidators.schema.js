@@ -28,14 +28,14 @@ const sharingCoefficient = {
 
 const validatorSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
-	totalStakeReceived: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
+	totalStake: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 	selfStake: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 	validatorWeight: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	lastGeneratedHeight: Joi.number().integer().min(0).required(),
 	status: Joi.string().pattern(regex.POS_VALIDATOR_STATUS).required(),
 	isBanned: Joi.boolean().required(),
-	pomHeights: Joi.array().items(Joi.number().integer().min(0)).required(),
+	reportMisbehaviorHeights: Joi.array().items(Joi.number().integer().min(0)).required(),
 	punishmentPeriods: Joi.array().items(punishmentPeriod).required(),
 	consecutiveMissedBlocks: Joi.number().integer().min(0).required(),
 	commission: Joi.number().integer().min(1).required(),
