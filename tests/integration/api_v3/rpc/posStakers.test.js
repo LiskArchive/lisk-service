@@ -56,6 +56,7 @@ describe('get.pos.stakers', () => {
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBe(1);
+		expect(result.data.stakers[0].address).toBe(refValidator.address);
 	});
 
 	it('Returns list of stakers when requested for known validator address and search param (partial staker name)', async () => {
@@ -66,6 +67,8 @@ describe('get.pos.stakers', () => {
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
+		expect(result.data.stakers.some(staker => staker.address === refValidator.address))
+			.toBe(true);
 	});
 
 	it('Returns list of stakers when requested with known validator address and offset=1', async () => {
@@ -173,6 +176,17 @@ describe('get.pos.stakers', () => {
 
 	it('Returns empty when requested for known non-validator address', async () => {
 		const response = await getStakers({ address: 'lsk99999999999999999999999999999999999999' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
+		expect(result.data.stakers.length).toBe(0);
+	});
+
+	it('Returns empty list when requested with invalid address and publicKey pair', async () => {
+		const response = await getStakers({
+			address: refValidator.address,
+			publicKey: '796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823'
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);

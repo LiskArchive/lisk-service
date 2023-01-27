@@ -419,7 +419,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "List of sent stakes for the queried staker.",
+				"description": "List of stakes for the queried staker.",
 				"type": "object",
 				"properties": {
 					"stakes": {

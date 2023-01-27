@@ -53,7 +53,7 @@ describe('get.pos.stakes', () => {
 		[refValidator] = validatorsResponse.result.data;
 	});
 
-	it('Returns list of sent stakes when requested for known staker address', async () => {
+	it('Returns list of stakes when requested for known staker address', async () => {
 		const response = await getStakes({ address: refStaker.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -62,25 +62,28 @@ describe('get.pos.stakes', () => {
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
 
-	it('Returns list of sent stakes when requested for known staker address and search (exact validator name) param', async () => {
+	it('Returns list of stakes when requested for known staker address and search (exact validator name) param', async () => {
 		const response = await getStakes({ address: refStaker.address, search: refValidator.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		expect(response.data.stakes[0].address).toBe(refValidator.address);
 	});
 
-	it('Returns list of sent stakes when requested for known staker address and search (partial validator name) param', async () => {
+	it('Returns list of stakes when requested for known staker address and search (partial validator name) param', async () => {
 		const response = await getStakes({ address: refStaker.address, search: refValidator.name[0] });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		expect(result.data.stakes.some(staker => staker.address === refValidator.address))
+			.toBe(true);
 	});
 
-	it('Returns list of sent stakes when requested for known staker name', async () => {
+	it('Returns list of stakes when requested for known staker name', async () => {
 		const response = await getStakes({ name: refStaker.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -89,13 +92,24 @@ describe('get.pos.stakes', () => {
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
 
-	it('Returns list of sent stakes when requested for known staker publicKey', async () => {
+	it('Returns list of stakes when requested for known staker publicKey', async () => {
 		const response = await getStakes({ publicKey: refStaker.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+	});
+
+	it('Returns empty list when requested with invalid address and publicKey pair', async () => {
+		const response = await getStakes({
+			address: refValidator.address,
+			publicKey: '796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823'
+		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(stakesResponseSchema);
+		expect(result.data.stakers.length).toBe(0);
 	});
 
 	it('No address -> invalid param', async () => {

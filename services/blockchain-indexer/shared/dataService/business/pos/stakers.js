@@ -62,7 +62,11 @@ const getStakers = async params => {
 		const { publicKey, ...remParams } = params;
 		params = remParams;
 
-		params.validatorAddress = getLisk32AddressFromPublicKey(publicKey);
+		const address = getLisk32AddressFromPublicKey(publicKey);
+		// TODO: Remove once gateway param pairings check is updated
+		if (params.validatorAddress && params.validatorAddress !== address) return stakersResponse;
+
+		params.validatorAddress = address;
 		stakersResponse.meta.validator.address = params.validatorAddress;
 		stakersResponse.meta.validator.publicKey = publicKey;
 
@@ -75,6 +79,9 @@ const getStakers = async params => {
 		params = remParams;
 
 		const { address } = await getIndexedAccountInfo({ name }, ['address']);
+		// TODO: Remove once gateway param pairings check is updated
+		if (params.validatorAddress && params.validatorAddress !== address) return stakersResponse;
+
 		params.validatorAddress = address;
 		stakersResponse.meta.validator.name = name;
 	}
@@ -84,7 +91,7 @@ const getStakers = async params => {
 
 	// Search param is used to filter stakers by name. Prepare list of valid staker addresses
 	// for the given search (staker name) param
-	const allowedStakersAddressNameMap = {};
+	const stakerAddressNameMap = {};
 	const stakerAddressQueryFilter = {};
 	if (params.search) {
 		const stakerAccountsInfo = await accountsTable.find(
@@ -98,11 +105,11 @@ const getStakers = async params => {
 		);
 
 		stakerAccountsInfo.forEach(accountInfo => {
-			allowedStakersAddressNameMap[accountInfo.address] = accountInfo.name;
+			stakerAddressNameMap[accountInfo.address] = accountInfo.name;
 		});
 		stakerAddressQueryFilter.whereIn = {
 			property: 'stakerAddress',
-			values: Object.keys(allowedStakersAddressNameMap),
+			values: Object.keys(stakerAddressNameMap),
 		};
 	}
 
@@ -124,7 +131,7 @@ const getStakers = async params => {
 		stakes,
 		async stake => {
 			// Try to use cached staker name. Query DB if not found.
-			let stakerName = allowedStakersAddressNameMap[stake.stakerAddress];
+			let stakerName = stakerAddressNameMap[stake.stakerAddress];
 			if (!stakerName) {
 				const accountInfo = await getIndexedAccountInfo({ address: stake.stakerAddress }, ['name']);
 				stakerName = accountInfo.name;

@@ -57,14 +57,14 @@ const getStakes = async params => {
 
 	await BluebirdPromise.map(
 		stakerInfo.stakes,
-		async sentStake => {
-			const stake = normalizeStake(sentStake);
+		async stake => {
+			const normalizedStake = normalizeStake(stake);
 			// Get validator name filtered by user specified search param
 			const { name: validatorName = null } = await getIndexedAccountInfo(
 				{
 					...accountInfoQueryFilter,
-					address: stake.validatorAddress,
-					isValidator: 1,
+					address: normalizedStake.validatorAddress,
+					isValidator: true,
 				},
 				['name'],
 			);
@@ -72,8 +72,8 @@ const getStakes = async params => {
 			// Add validator to response
 			if (validatorName) {
 				stakesResponse.data.stakes.push({
-					address: stake.validatorAddress,
-					amount: stake.amount,
+					address: normalizedStake.validatorAddress,
+					amount: normalizedStake.amount,
 					name: validatorName,
 				});
 			}
