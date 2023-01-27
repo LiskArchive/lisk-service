@@ -24,7 +24,7 @@ const { tokenAccountExistsSchema } = require('../../../schemas/api_v3/tokenAccou
 
 const endpoint = `${baseUrlV3}/tokens/account/exists`;
 
-describe('tokens/account/exists API', () => {
+describe('Token account exists API', () => {
 	let refValidator;
 	let refTokenID;
 	const unknownTokenID = '9999999999999999';
