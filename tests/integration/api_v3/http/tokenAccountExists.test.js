@@ -78,10 +78,10 @@ describe('tokens/account/exists API', () => {
 			expect(response.data.isExists).toBe(false);
 		});
 
-		it('Returns isExists:true requested for incorrect tokenID with known publicKey', async () => {
+		it('Returns isExists:false requested for incorrect tokenID with known publicKey', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&tokenID=${unknownTokenID}`);
 			expect(response).toMap(tokenAccountExistsSchema);
-			expect(response.data.isExists).toBe(true);
+			expect(response.data.isExists).toBe(false);
 		});
 
 		it('Returns isExists:true when requested for known validator name', async () => {
@@ -107,6 +107,11 @@ describe('tokens/account/exists API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
+		it('Invalid request param -> bad request', async () => {
+			const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
 		it('Only address -> bad request', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.address}`, 400);
 			expect(response).toMap(badRequestSchema);
@@ -119,11 +124,6 @@ describe('tokens/account/exists API', () => {
 
 		it('Only name -> bad request', async () => {
 			const response = await api.get(`${endpoint}?address=${refValidator.name}`, 400);
-			expect(response).toMap(badRequestSchema);
-		});
-
-		it('Invalid request param -> bad request', async () => {
-			const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});

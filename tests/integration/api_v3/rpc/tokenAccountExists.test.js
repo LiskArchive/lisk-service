@@ -96,7 +96,7 @@ describe('get.tokens.account.exists', () => {
 		expect(result.data.isExists).toBe(false);
 	});
 
-	it('Returns isExists:true requested for incorrect tokenID with known publicKey', async () => {
+	it('Returns isExists:false requested for incorrect tokenID with known publicKey', async () => {
 		const response = await getTokenAccountExists({
 			publicKey: refValidator.publicKey,
 			tokenID: unknownTokenID,
@@ -104,7 +104,7 @@ describe('get.tokens.account.exists', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(tokenAccountExistsSchema);
-		expect(result.data.isExists).toBe(true);
+		expect(result.data.isExists).toBe(false);
 	});
 
 	it('Returns isExists:true when requested for known validator name', async () => {
