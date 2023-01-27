@@ -104,7 +104,7 @@ describe('get.pos.stakes', () => {
 	it('Returns empty list when requested with invalid address and publicKey pair', async () => {
 		const response = await getStakes({
 			address: refValidator.address,
-			publicKey: '796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823'
+			publicKey: '796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823',
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
