@@ -3,14 +3,14 @@
 		"type": "object",
 		"required": [
 			"name",
-			"totalStakeReceived",
+			"totalStake",
 			"selfStake",
 			"validatorWeight",
 			"address",
 			"lastGeneratedHeight",
 			"status",
 			"isBanned",
-			"pomHeights",
+			"reportMisbehaviorHeights",
 			"punishmentPeriods",
 			"consecutiveMissedBlocks",
 			"commission",
@@ -24,7 +24,7 @@
 				"example": "genesis_84",
 				"description": "Validator name."
 			},
-			"totalStakeReceived": {
+			"totalStake": {
 				"type": "string",
 				"example": "109000000000",
 				"description": "Total stakes received in `posTokenID`."
@@ -37,7 +37,7 @@
 			"validatorWeight": {
 				"type": "string",
 				"example": "109000000000",
-				"description": "Validator weight. Minimum of (10 * selfStake) or totalStakeReceived."
+				"description": "Validator weight. Minimum of (10 * selfStake) or totalStake."
 			},
 			"address": {
 				"type": "string",
@@ -60,7 +60,7 @@
 				"example": false,
 				"description": "A boolean flag indicating if the validator is banned."
 			},
-			"pomHeights": {
+			"reportMisbehaviorHeights": {
 				"type": "array",
 				"items": {
 					"type": "number",

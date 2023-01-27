@@ -23,7 +23,7 @@ module.exports = {
 	rpcMethod: 'get.reward.default',
 	tags: ['Reward'],
 	params: {
-		height: { optional: false, type: 'number', min: 0 },
+		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
 	},
 	get schema() {
 		const rewardDefaultSchema = {};
