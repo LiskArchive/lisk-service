@@ -22,7 +22,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 const { tokenAccountExistsSchema } = require('../../../schemas/api_v3/tokenAccountExists.schema');
 
-const endpoint = `${baseUrlV3}/tokens/account/exists`;
+const endpoint = `${baseUrlV3}/token/account/exists`;
 
 describe('Token account exists API', () => {
 	let refValidator;

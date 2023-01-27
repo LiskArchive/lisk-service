@@ -22,9 +22,9 @@ const { tokenAccountExistsSchema } = require('../../../schemas/api_v3/tokenAccou
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getTokenAccountExists = async params => request(wsRpcUrl, 'get.tokens.account.exists', params);
+const getTokenAccountExists = async params => request(wsRpcUrl, 'get.token.account.exists', params);
 
-describe('get.tokens.account.exists', () => {
+describe('get.token.account.exists', () => {
 	let refValidator;
 	let refTokenID;
 	const unknownTokenID = '9999999999999999';
