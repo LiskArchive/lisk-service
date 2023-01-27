@@ -96,7 +96,7 @@ describe('Token account exists API', () => {
 			expect(response.data.isExists).toBe(false);
 		});
 
-		it('Returns isExists:false when requested for incorrect tokenID with know validator name', async () => {
+		it('Returns isExists:false when requested for incorrect tokenID with known validator name', async () => {
 			const response = await api.get(`${endpoint}?name=${refValidator.name}&tokenID=${unknownTokenID}`);
 			expect(response).toMap(tokenAccountExistsSchema);
 			expect(response.data.isExists).toBe(false);

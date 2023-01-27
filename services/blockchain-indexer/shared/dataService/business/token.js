@@ -107,7 +107,7 @@ const getTokensSummary = async () => {
 	return summary;
 };
 
-const checkTokenAccountExists = async (params) => {
+const tokenHasUserAccount = async (params) => {
 	const response = {
 		data: {
 			isExists: false,
@@ -153,7 +153,7 @@ const getTokenConstants = async () => {
 };
 
 module.exports = {
-	checkTokenAccountExists,
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
 	getTokenConstants,

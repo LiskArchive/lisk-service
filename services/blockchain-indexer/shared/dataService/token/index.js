@@ -14,14 +14,14 @@
  *
  */
 const {
-	checkTokenAccountExists,
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
 	getTokenConstants,
 } = require('./token');
 
 module.exports = {
-	checkTokenAccountExists,
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
 	getTokenConstants,

@@ -53,7 +53,7 @@ const {
 } = require('./interoperability');
 
 const {
-	checkTokenAccountExists,
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
 	getTokenConstants,
@@ -122,7 +122,7 @@ module.exports = {
 	reloadBlockchainAppsStats,
 
 	// Token
-	checkTokenAccountExists,
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
 	getTokenConstants,

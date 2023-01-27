@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/token/constants',
 	rpcMethod: 'get.token.constants',
-	tags: ['Tokens'],
+	tags: ['Token'],
 	get schema() {
 		const constantsSchema = {};
 		constantsSchema[this.swaggerApiPath] = { get: {} };

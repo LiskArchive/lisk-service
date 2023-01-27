@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/tokens',
 	rpcMethod: 'get.tokens',
-	tags: ['Tokens'],
+	tags: ['Token'],
 	params: {
 		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID },

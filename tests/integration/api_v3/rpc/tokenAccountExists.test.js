@@ -126,7 +126,7 @@ describe('get.tokens.account.exists', () => {
 		expect(result.data.isExists).toBe(false);
 	});
 
-	it('Returns isExists:false when requested for incorrect tokenID with know validator name', async () => {
+	it('Returns isExists:false when requested for incorrect tokenID with known validator name', async () => {
 		const response = await getTokenAccountExists({
 			name: refValidator.name,
 			tokenID: unknownTokenID,

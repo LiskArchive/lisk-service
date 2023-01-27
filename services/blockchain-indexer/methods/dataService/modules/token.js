@@ -16,7 +16,7 @@
 const {
 	getTokens,
 	getTokensSummary,
-	checkTokenAccountExists,
+	tokenHasUserAccount,
 	getTokenConstants,
 } = require('../controllers/token');
 
@@ -43,7 +43,7 @@ module.exports = [
 	},
 	{
 		name: 'token.account.exists',
-		controller: checkTokenAccountExists,
+		controller: tokenHasUserAccount,
 		params: {
 			address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 			publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
