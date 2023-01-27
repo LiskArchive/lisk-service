@@ -109,7 +109,9 @@ const getTokensSummary = async () => {
 
 const checkTokenAccountExists = async (params) => {
 	const response = {
-		data: {},
+		data: {
+			isExists: false,
+		},
 		meta: {},
 	};
 
@@ -124,8 +126,11 @@ const checkTokenAccountExists = async (params) => {
 		address = getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const { exists: isExists } = await requestConnector('checkUserAccountExistsForToken', { address, tokenID });
-	response.data.isExists = isExists;
+	// Check existence if address found. Return false otherwise
+	if (address) {
+		const { exists: isExists } = await requestConnector('checkUserAccountExistsForToken', { address, tokenID });
+		response.data.isExists = isExists;
+	}
 
 	return response;
 };

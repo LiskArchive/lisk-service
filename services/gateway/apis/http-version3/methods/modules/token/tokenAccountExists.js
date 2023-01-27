@@ -31,9 +31,9 @@ module.exports = {
 	},
 	paramsRequired: true,
 	validParamPairings: [
-		['address'],
-		['publicKey'],
-		['name'],
+		['address', 'tokenID'],
+		['publicKey', 'tokenID'],
+		['name', 'tokenID'],
 	],
 	get schema() {
 		const accountExistsSchema = {};
