@@ -22,6 +22,7 @@ module.exports = {
 		address: '=,string',
 		publicKey: '=,string',
 		name: '=,string',
+		search: '=,string',
 		limit: '=,number',
 		offset: '=,number',
 	},

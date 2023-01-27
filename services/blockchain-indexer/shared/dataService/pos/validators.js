@@ -33,6 +33,7 @@ const {
 	getLisk32AddressFromPublicKey,
 	getHexAddress,
 	updateAccountPublicKey,
+	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
 const { getLastBlock } = require('../blocks');
 const { MODULE, COMMAND } = require('../../constants');
@@ -229,15 +230,17 @@ const getPosValidators = async params => {
 				{ address: validator.address },
 				['generatedBlocks', 'totalCommission', 'totalSelfStakeRewards'],
 			);
-
 			const {
 				generatedBlocks = 0,
 				totalCommission = BigInt('0'),
 				totalSelfStakeRewards = BigInt('0'),
 			} = validatorInfo;
 
+			const { publicKey = null } = await getIndexedAccountInfo({ address: validator.address }, ['publicKey']);
+
 			return {
 				...validator,
+				publicKey,
 				generatedBlocks,
 				totalCommission,
 				totalSelfStakeRewards,

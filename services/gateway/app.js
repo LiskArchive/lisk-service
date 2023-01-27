@@ -101,7 +101,7 @@ tempApp.run().then(async () => {
 		name: 'gateway',
 		actions: {
 			ready() { return getReady(); },
-			spec(ctx) { return genDocs(ctx); },
+			async spec(ctx) { return genDocs(ctx, registeredModuleNames); },
 			status() { return getStatus(this.broker); },
 			isBlockchainIndexReady() { return getIndexStatus(); },
 		},

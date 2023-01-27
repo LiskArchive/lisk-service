@@ -43,7 +43,7 @@ const getAccountsTable = () => getTableInstance(
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
 		const accountsTable = await getAccountsTable();
-		const [account = {}] = await accountsTable.find(params, columns);
+		const [account = {}] = await accountsTable.find({ limit: 1, ...params }, columns);
 		return account;
 	}
 	return {};
@@ -81,4 +81,5 @@ module.exports = {
 	getLisk32Address,
 	updateAccountPublicKey,
 	getHexAddress,
+	getAccountsTable,
 };

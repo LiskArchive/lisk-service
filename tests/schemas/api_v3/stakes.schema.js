@@ -38,7 +38,7 @@ const meta = {
 };
 
 const stakesResponseSchema = {
-	data: Joi.array().items(data).min(0).required(),
+	data: Joi.object(data).required(),
 	meta: Joi.object(meta).required(),
 };
 

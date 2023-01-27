@@ -52,7 +52,7 @@ const indexStakersInfo = async (genesisBlock) => {
 	const stakesTable = await getStakesTable();
 	const { stakers } = (genesisBlock.assets.find(asset => asset.module === MODULE.POS)).data;
 	const stakestoIndex = [];
-	await stakers.forEach(async staker => staker.sentStakes.forEach(stake => {
+	await stakers.forEach(async staker => staker.stakes.forEach(stake => {
 		stakestoIndex.push({
 			stakerAddress: staker.address,
 			validatorAddress: stake.validatorAddress,
