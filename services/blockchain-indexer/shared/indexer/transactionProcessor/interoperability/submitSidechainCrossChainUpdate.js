@@ -32,7 +32,7 @@ const getBlockchainAppsTable = () => getTableInstance(
 );
 
 // Command specific constants
-const COMMAND_NAME = 'sidechainCCUpdate';
+const COMMAND_NAME = 'submitSidechainCrossChainUpdate';
 
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();

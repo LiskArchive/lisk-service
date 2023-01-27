@@ -188,32 +188,43 @@ const getPosValidators = async params => {
 		meta: {},
 	};
 
-	const validatorsTable = await getValidatorsTable();
-	validators.data = await getAllValidators();
-
-	const filterBy = (list, entity) => list.filter(
-		(acc) => params[entity].includes(',')
-			? (acc[entity] && params[entity].split(',').includes(acc[entity]))
-			: (acc[entity] && acc[entity] === params[entity]),
-	);
+	const addressSet = new Set();
+	const nameSet = new Set();
+	const statusSet = new Set();
 
 	if (params.publicKey) {
-		params.address = getLisk32AddressFromPublicKey(params.publicKey);
+		const address = getLisk32AddressFromPublicKey(params.publicKey);
+
+		// Return empty response if user specified address and publicKey pair does not match
+		if (params.address && params.address.split(',').includes(address)) {
+			return validators;
+		}
+		params.address = address;
 
 		// Index publicKey asynchronously
 		updateAccountPublicKey(params.publicKey);
 	}
 
-	if (params.address) validators.data = filterBy(validators.data, 'address');
-	if (params.name) validators.data = filterBy(validators.data, 'name');
-	if (params.status) validators.data = filterBy(validators.data, 'status');
-	if (params.search) {
-		validators.data = validators.data
-			.filter(v => v.name.toLowerCase().includes(params.search.toLowerCase()));
-	}
+	if (params.address) params.address.split(',').forEach(address => addressSet.add(address));
+	if (params.name) params.name.split(',').forEach(name => nameSet.add(name));
+	if (params.status) params.status.split(',').forEach(status => statusSet.add(status));
+
+	const validatorsTable = await getValidatorsTable();
+	const allValidators = await getAllValidators();
+
+	// Filter validators based on user passed params
+	const filteredValidators = allValidators.filter(validator => {
+		if (addressSet.size && !addressSet.has(validator.address)) return false;
+		if (nameSet.size && !nameSet.has(validator.name)) return false;
+		if (statusSet.size && !statusSet.has(validator.status)) return false;
+		if (params.search && !validator.name.toLowerCase().includes(params.search.toLowerCase())) {
+			return false;
+		}
+		return true;
+	});
 
 	validators.data = await BluebirdPromise.map(
-		validators.data,
+		filteredValidators,
 		async validator => {
 			const [validatorInfo = {}] = await validatorsTable.find(
 				{ address: validator.address },

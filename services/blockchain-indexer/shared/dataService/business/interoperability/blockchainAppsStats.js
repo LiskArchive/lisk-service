@@ -66,7 +66,7 @@ const reloadBlockchainAppsStats = async () => {
 			inflationRate: '',
 		};
 
-		logger.info('Updated blockchain apps statistics cache');
+		logger.info('Updated blockchain apps statistics cache.');
 	} catch (err) {
 		logger.warn(`Failed to update blockchain apps statistics cache due to: ${err.message}`);
 	}

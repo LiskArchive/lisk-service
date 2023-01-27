@@ -50,7 +50,21 @@ const getTokensSummary = async params => {
 	return tokensSummary;
 };
 
+const getTokenConstants = async () => {
+	const constants = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getTokenConstants();
+	if (response.data) constants.data = response.data;
+	if (response.meta) constants.meta = response.meta;
+
+	return constants;
+};
+
 module.exports = {
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 };

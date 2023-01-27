@@ -26,7 +26,7 @@ module.exports = {
 	params: {
 		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
-		name: { optional: true, type: 'string', pattern: regex.NAME },
+		name: { optional: true, type: 'string', pattern: regex.NAME, altSwaggerKey: 'validatorName' },
 		search: { optional: true, type: 'string', min: 1 },
 	},
 	paramsRequired: true,

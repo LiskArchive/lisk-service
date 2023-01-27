@@ -25,9 +25,9 @@ module.exports = [
 		controller: async () => {
 			logger.debug('Refreshing blockchain application metadata...');
 			try {
-				logger.info('Starting process to sync database with the repo');
+				logger.info('Starting process to sync database with the repo.');
 				await syncWithRemoteRepo();
-				logger.info('Database has been successfully synchronized');
+				logger.info('Database has been successfully synchronized.');
 			} catch (err) {
 				logger.warn(`Refreshing blockchain application metadata failed due to: ${err.message}`);
 			}

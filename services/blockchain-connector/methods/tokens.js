@@ -19,6 +19,7 @@ const {
 	getTotalSupply,
 	getTokenBalance,
 	getTokenBalances,
+	getTokenInitializationFees,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -52,5 +53,9 @@ module.exports = [
 		controller: async () => getTotalSupply(),
 		params: {},
 	},
-
+	{
+		name: 'getTokenInitializationFees',
+		controller: async () => getTokenInitializationFees(),
+		params: {},
+	},
 ];

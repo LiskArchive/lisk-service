@@ -58,6 +58,7 @@ const parseParams = (p) => {
 	};
 };
 
+// TODO: Add check so that only one pair is accepted among the validParamPairings
 const validateInputParams = (rawInputParams = {}, specs) => {
 	const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
 		if (!paramsRequired) return [];
