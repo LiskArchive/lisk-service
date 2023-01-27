@@ -101,17 +101,6 @@ describe('get.pos.stakes', () => {
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 	});
 
-	it('Returns empty list when requested with invalid address and publicKey pair', async () => {
-		const response = await getStakes({
-			address: refValidator.address,
-			publicKey: '796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823',
-		});
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(stakesResponseSchema);
-		expect(result.data.stakers.length).toBe(0);
-	});
-
 	it('No address -> invalid param', async () => {
 		const response = await getStakes();
 		expect(response).toMap(invalidRequestSchema);

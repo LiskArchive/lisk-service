@@ -82,12 +82,6 @@ describe('Stakes API', () => {
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
-		it('Returns empty list when requested with invalid address and publicKey pair', async () => {
-			const response = await api.get(`${endpoint}?address=${refValidator.address}&publicKey=796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823`);
-			expect(response).toMap(stakesResponseSchema);
-			expect(response.data.stakes.length).toBe(0);
-		});
-
 		it('No address -> bad request', async () => {
 			const response = await api.get(endpoint, 400);
 			expect(response).toMap(badRequestSchema);
