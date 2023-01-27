@@ -20,19 +20,14 @@ const transformParams = (type, params) => {
 	const data = [];
 	const paramsKeys = Object.keys(params);
 
-	// TODO: Integrate this logic within the method defs instead
 	paramsKeys.forEach((paramKey) => {
 		let value = {};
-		if (type === 'blocks' && paramKey === 'id') {
-			value = { $ref: '#/parameters/block' };
-		} else if (type === 'PoS' && paramKey === 'status') {
-			value = { $ref: '#/parameters/validatorStatus' };
-		} else if (type === 'interoperability' && paramKey === 'status') {
-			value = { $ref: '#/parameters/ccmStatus' };
-		} else if (type === 'network' && paramKey === 'q') {
-			value = { $ref: '#/parameters/searchQuery' };
-		} else value = { $ref: `#/parameters/${paramKey}` };
-		if (paramKey === 'sort') {
+
+		if (params[paramKey].altSwaggerKey) {
+			value = {
+				$ref: `#/parameters/${params[paramKey].altSwaggerKey}`,
+			};
+		} else if (paramKey === 'sort') {
 			value = {
 				name: 'sort',
 				in: 'query',
@@ -42,22 +37,6 @@ const transformParams = (type, params) => {
 				enum: params[paramKey].enum,
 				default: params[paramKey].default,
 			};
-		} else if (paramKey === 'search') {
-			value = {
-				name: 'search',
-				in: 'query',
-				description: 'Validator name full text search phrase.',
-				type: 'string',
-				minLength: 1,
-				maxLength: 20,
-			};
-		} else if (type === 'blockchainApps') {
-			if (paramKey === 'chainID') value = { $ref: '#/parameters/chainIDCSV' };
-			else if (paramKey === 'state') value = { $ref: '#/parameters/blockchainAppState' };
-		} else if (type === 'blockchainAppsMeta') {
-			if (paramKey === 'chainID') value = { $ref: '#/parameters/chainIDCSV' };
-		} else if (type === 'blockchainAppsTokensMeta' && paramKey === 'tokenID') {
-			value = { $ref: '#/parameters/tokenIDCSV' };
 		} else if (paramKey === 'order') {
 			value = {
 				name: 'order',
@@ -68,11 +47,8 @@ const transformParams = (type, params) => {
 				enum: params[paramKey].enum,
 				default: params[paramKey].default,
 			};
-		} else if (type === 'PoS') {
-			if (paramKey === 'name') value = { $ref: '#/parameters/validatorName' };
-		} else if (type === 'reward' && paramKey === 'height') {
-			value = { $ref: '#/parameters/blockHeight' };
-		}
+		} else value = { $ref: `#/parameters/${paramKey}` };
+
 		data.push(value);
 	});
 	return data;

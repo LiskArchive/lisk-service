@@ -26,7 +26,7 @@ module.exports = {
 	params: {
 		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
-		name: { optional: true, type: 'string', pattern: regex.NAME },
+		name: { optional: true, type: 'string', pattern: regex.NAME, altSwaggerKey: 'accountName' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},

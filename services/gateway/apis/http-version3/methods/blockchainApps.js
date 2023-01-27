@@ -24,9 +24,9 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps',
 	tags: ['Interoperability'],
 	params: {
-		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV, altSwaggerKey: 'chainIDCSV' },
 		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		state: { optional: true, type: 'string', pattern: regex.APPLICATION_STATE },
+		state: { optional: true, type: 'string', pattern: regex.APPLICATION_STATE, altSwaggerKey: 'blockchainAppState' },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
