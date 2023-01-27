@@ -56,7 +56,7 @@ const {
 } = require('./peers');
 
 const {
-	checkUserAccountExistsForToken,
+	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
@@ -152,7 +152,7 @@ module.exports = {
 	getPeersStatistics,
 
 	// Tokens
-	checkUserAccountExistsForToken,
+	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,

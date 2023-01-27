@@ -128,7 +128,7 @@ const checkTokenAccountExists = async (params) => {
 
 	// Check existence if address found. Return false otherwise
 	if (address) {
-		const { exists: isExists } = await requestConnector('checkUserAccountExistsForToken', { address, tokenID });
+		const { exists: isExists } = await requestConnector('tokenHasUserAccount', { address, tokenID });
 		response.data.isExists = isExists;
 	}
 

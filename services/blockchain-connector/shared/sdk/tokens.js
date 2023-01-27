@@ -106,7 +106,7 @@ const hasUserAccount = async ({ address, tokenID }) => {
 };
 
 module.exports = {
-	checkUserAccountExistsForToken: hasUserAccount,
+	tokenHasUserAccount: hasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
