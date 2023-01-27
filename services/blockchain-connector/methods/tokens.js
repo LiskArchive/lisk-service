@@ -14,6 +14,7 @@
  *
  */
 const {
+	tokenHasUserAccount,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
@@ -52,6 +53,17 @@ module.exports = [
 		name: 'getTotalSupply',
 		controller: async () => getTotalSupply(),
 		params: {},
+	},
+	{
+		name: 'tokenHasUserAccount',
+		controller: async ({ address, tokenID }) => tokenHasUserAccount({
+			address,
+			tokenID,
+		}),
+		params: {
+			address: { optional: false, type: 'string' },
+			tokenID: { optional: false, type: 'string' },
+		},
 	},
 	{
 		name: 'getTokenInitializationFees',

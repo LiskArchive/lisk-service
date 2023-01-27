@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/tokens/summary',
 	rpcMethod: 'get.tokens.summary',
-	tags: ['Tokens'],
+	tags: ['Token'],
 	params: {},
 	get schema() {
 		const tokenSummarySchema = {};

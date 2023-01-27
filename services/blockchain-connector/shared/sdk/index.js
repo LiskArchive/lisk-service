@@ -56,6 +56,7 @@ const {
 } = require('./peers');
 
 const {
+	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
@@ -151,6 +152,7 @@ module.exports = {
 	getPeersStatistics,
 
 	// Tokens
+	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,

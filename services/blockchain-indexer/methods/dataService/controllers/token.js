@@ -50,6 +50,18 @@ const getTokensSummary = async params => {
 	return tokensSummary;
 };
 
+const tokenHasUserAccount = async params => {
+	const tokenAccountExists = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.tokenHasUserAccount(params);
+	if (response.data) tokenAccountExists.data = response.data;
+	if (response.meta) tokenAccountExists.meta = response.meta;
+
+	return tokenAccountExists;
+};
+
 const getTokenConstants = async () => {
 	const constants = {
 		data: {},
@@ -64,6 +76,7 @@ const getTokenConstants = async () => {
 };
 
 module.exports = {
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
 	getTokenConstants,

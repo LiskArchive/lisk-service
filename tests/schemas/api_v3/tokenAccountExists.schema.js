@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,16 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
-	getTokenConstants,
-} = require('./token');
+import Joi from 'joi';
+
+const dataSchema = {
+	isExists: Joi.boolean().required(),
+};
+
+const metaSchema = {};
+
+const tokenAccountExistsSchema = {
+	data: Joi.object(dataSchema).required(),
+	meta: Joi.object(metaSchema).required(),
+	links: Joi.object().optional(),
+};
 
 module.exports = {
-	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
-	getTokenConstants,
+	tokenAccountExistsSchema: Joi.object(tokenAccountExistsSchema).required(),
 };
