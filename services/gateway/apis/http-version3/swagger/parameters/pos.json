@@ -35,10 +35,10 @@
 		"minLength": 1,
 		"maxLength": 20
 	},
-	"isUnlockable": {
-		"name": "isUnlockable",
+	"isLocked": {
+		"name": "isLocked",
 		"in": "query",
-		"description": "Query pending unlocks filtered by unlockable.",
+		"description": "Query pending unlocks filtered by lock status.",
 		"type": "boolean"
 	}
 }

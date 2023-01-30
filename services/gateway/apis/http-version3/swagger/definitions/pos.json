@@ -289,7 +289,7 @@
 						"tokenID",
 						"unstakeHeight",
 						"expectedUnlockableHeight",
-						"unlockable"
+						"isLocked"
 					],
 					"properties": {
 						"validatorAddress": {
@@ -317,10 +317,10 @@
 							"example": "270000",
 							"description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
 						},
-						"unlockable": {
+						"isLocked": {
 							"type": "boolean",
 							"example": true,
-							"description": "A boolean flag indicating if the corresponding (locked) staked amount is available to be unlocked."
+							"description": "A boolean flag indicating if the corresponding (previously) un-staked amount is available to be unlocked. When `isLocked: false`, the amount be unlocked with a `pos:unlock` transaction."
 						}
 					}
 				}
