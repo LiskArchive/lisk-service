@@ -320,7 +320,7 @@
 						"isLocked": {
 							"type": "boolean",
 							"example": true,
-							"description": "A boolean flag indicating if the corresponding (locked) staked amount is Locked."
+							"description": "A boolean flag indicating if the corresponding staked amount is Locked. The amount can be unlocked with an unstake transaction unless it is Locked."
 						}
 					}
 				}

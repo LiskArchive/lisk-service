@@ -38,7 +38,7 @@
 	"isLocked": {
 		"name": "isLocked",
 		"in": "query",
-		"description": "Query pending unlocks filtered by isLocked.",
+		"description": "Query pending unlocks filtered by lock status.",
 		"type": "boolean"
 	}
 }
