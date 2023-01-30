@@ -35,10 +35,21 @@ const getPosUnlocks = async params => {
 		{ address: params.address },
 	);
 
-	// Filter results based on `params.isUnlockable`
-	const filteredPendingUnlocks = 'isUnlockable' in params
-		? pendingUnlocks.filter(u => u.unlockable === params.isUnlockable)
-		: pendingUnlocks;
+	// Filter results based on `params.isLocked`
+	const unlockable = 'isLocked' in params ? !params.isLocked : undefined;
+	const filteredPendingUnlocks = unlockable === undefined
+		? pendingUnlocks
+		: pendingUnlocks.reduce((accumulator, pendingUnlock) => {
+			if (unlockable === pendingUnlock.unlockable) {
+				accumulator.push({
+					...pendingUnlock,
+					isLocked: !pendingUnlock.unlockable,
+				});
+			}
+			return accumulator;
+		},
+		[],
+		);
 
 	const { publicKey, name } = await getIndexedAccountInfo(
 		{ address: params.address, limit: 1 },

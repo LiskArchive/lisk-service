@@ -52,7 +52,7 @@ module.exports = [
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			publicKey: { optional: true, type: 'string' },
-			isUnlockable: { optional: true, type: 'boolean' },
+			isLocked: { optional: true, type: 'boolean' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},

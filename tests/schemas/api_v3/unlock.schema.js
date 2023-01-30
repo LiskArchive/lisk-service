@@ -22,7 +22,7 @@ const pendingUnlock = {
 	tokenID: Joi.string.pattern(regex.TOKEN_ID).required(),
 	unstakeHeight: Joi.number().integer().positive().required(),
 	expectedUnlockableHeight: Joi.number().integer().positive().required(),
-	unlockable: Joi.boolean().required(),
+	isLocked: Joi.boolean().required(),
 };
 
 const unlockSchema = {
