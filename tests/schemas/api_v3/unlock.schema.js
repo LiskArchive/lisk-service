@@ -19,7 +19,7 @@ import regex from './regex';
 const pendingUnlock = {
 	validatorAddress: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	amount: Joi.string().min(10).required(),
-	tokenID: Joi.string.pattern(regex.TOKEN_ID).required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
 	unstakeHeight: Joi.number().integer().positive().required(),
 	expectedUnlockableHeight: Joi.number().integer().positive().required(),
 	isLocked: Joi.boolean().required(),
