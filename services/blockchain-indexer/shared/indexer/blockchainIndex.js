@@ -510,6 +510,15 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
+const updateNumJobsInProgress = async () => {
+	const { queue: bullQueue } = indexBlocksQueue;
+	const numJobsInProgress = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+
+	Signals.get('numJobsInProgressUpdate').dispatch(numJobsInProgress);
+};
+
+setInterval(updateNumJobsInProgress, 10 * 1000); // ms
+
 module.exports = {
 	indexBlock,
 	indexNewBlock,

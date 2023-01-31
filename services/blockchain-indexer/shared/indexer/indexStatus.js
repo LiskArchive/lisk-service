@@ -97,13 +97,16 @@ const checkIndexReadiness = async () => {
 };
 
 const reportIndexStatus = async () => {
+	const indexStats = await getIndexStats();
 	const {
 		currentChainHeight,
 		numBlocksIndexed,
 		lastIndexedBlock = {},
 		chainLength,
 		percentage,
-	} = await getIndexStats();
+	} = indexStats;
+
+	Signals.get('indexStatUpdate').dispatch(indexStats);
 
 	logger.info([
 		`currentChainHeight: ${currentChainHeight}`,
