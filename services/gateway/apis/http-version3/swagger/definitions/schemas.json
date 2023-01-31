@@ -203,6 +203,299 @@
             }
         }
     },
+    "headerSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/block/header/3",
+                        "description": "Unique identifier of the block schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "properties": {
+                        "type": "object",
+                        "required": [
+                            "version",
+                            "timestamp",
+                            "height",
+                            "previousBlockID",
+                            "generatorAddress",
+                            "transactionRoot",
+                            "assetRoot",
+                            "eventRoot",
+                            "stateRoot",
+                            "maxHeightPrevoted",
+                            "maxHeightGenerated",
+                            "impliesMaxPrevotes",
+                            "validatorsHash",
+                            "aggregateCommit",
+                            "signature"
+                        ],
+                        "properties": {
+                            "version": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "timestamp": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "height": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                }
+                            },
+                            "previousBlockID": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                }
+                            },
+                            "generatorAddress": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "format": {
+                                        "type": "string",
+                                        "example": "lisk32"
+                                    }
+                                }
+                            },
+                            "transactionRoot": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 6
+                                    }
+                                }
+                            },
+                            "assetRoot": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 7
+                                    }
+                                }
+                            },
+                            "eventRoot": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 8
+                                    }
+                                }
+                            },
+                            "stateRoot": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 9
+                                    }
+                                }
+                            },
+                            "maxHeightPrevoted": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                }
+                            },
+                            "maxHeightGenerated": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 11
+                                    }
+                                }
+                            },
+                            "impliesMaxPrevotes": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "boolean"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 12
+                                    }
+                                }
+                            },
+                            "validatorsHash": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 13
+                                    }
+                                }
+                            },
+                            "aggregateCommit": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "object"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 14
+                                    },
+                                    "properties": {
+                                        "type": "object",
+                                        "required": [
+                                            "height",
+                                            "aggregationBits",
+                                            "certificateSignature"
+                                        ],
+                                        "properties": {
+                                            "height": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "dataType": {
+                                                        "type": "string",
+                                                        "example": "uint32"
+                                                    },
+                                                    "fieldNumber": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                }
+                                            },
+                                            "aggregationBits": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "dataType": {
+                                                        "type": "string",
+                                                        "example": "bytes"
+                                                    },
+                                                    "fieldNumber": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    }
+                                                } 
+                                            },
+                                            "certificateSignature": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "dataType": {
+                                                        "type": "string",
+                                                        "example": "bytes"
+                                                    },
+                                                    "fieldNumber": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "signature": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 15
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "assetSchema": {
         "type": "object",
         "required": [
@@ -762,6 +1055,174 @@
             }
         }
     },
+    "messageSchema": {
+        "type": "object",
+        "required": [
+            "moduleCommand",
+            "param",
+            "schema"
+        ],
+        "properties": {
+            "moduleCommand": {
+                "type": "string",
+                "example": "auth:registerMultisignature",
+                "description": "Combination of transaction moduleName:commandName.\n"
+            },
+            "param": {
+                "type": "string",
+                "example": "signatures"
+            },
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "example": "/auth/command/regMultisigMsg",
+                        "description": "Unique identifier of the message schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "address",
+                            "nonce",
+                            "numberOfSignatures",
+                            "mandatoryKeys",
+                            "optionalKeys"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "required": [
+                            "address",
+                            "nonce",
+                            "numberOfSignatures",
+                            "mandatoryKeys",
+                            "optionalKeys"
+                        ],
+                        "properties": {
+                            "address": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    }
+                                }
+                            },
+                            "nonce": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "numberOfSignatures": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                }
+                            },
+                            "mandatoryKeys": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "array"
+                                    },
+                                    "items": {
+                                        "type":"object",
+                                        "properties": {
+                                            "dataType": {
+                                                "type": "string",
+                                                "example": "bytes"
+                                            },
+                                            "minLength": {
+                                                "type": "integer",
+                                                "example": 32
+                                            },
+                                            "maxLength": {
+                                                "type": "integer",
+                                                "example": 32
+                                            }
+                                        }
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                }
+                            },
+                            "optionalKeys": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "example": "array"
+                                    },
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "dataType": {
+                                                "type": "string",
+                                                "example": "bytes"
+                                            },
+                                            "minLength": {
+                                                "type": "integer",
+                                                "example": 32
+                                            },
+                                            "maxLength": {
+                                                "type": "integer",
+                                                "example": 32
+                                            }
+                                        }
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "schemaWithEnvelope": {
         "type": "object",
         "required": [
@@ -773,8 +1234,11 @@
                 "description": "List of schemas",
                 "type": "object",
                 "properties": {
-                    "blocks": {
+                    "block": {
                         "$ref": "#/definitions/blockSchema"
+                    },
+                    "header": {
+                        "$ref": "#/definitions/headerSchema"
                     },
                     "asset": {
                         "$ref": "#/definitions/assetSchema"
@@ -801,6 +1265,12 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/definitions/commandsParamsSchema"
+                        }
+                    },
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/messageSchema"
                         }
                     }
                 }

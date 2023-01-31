@@ -43,4 +43,9 @@ module.exports = {
 		moduleCommand: '=,string',
 		schema: '=',
 	}],
+	messages: ['data.messages', {
+		moduleCommand: '=,string',
+		param: '=,string',
+		schema: '=',
+	}],
 };

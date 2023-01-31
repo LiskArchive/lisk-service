@@ -31,6 +31,19 @@ const getAuthAccount = async (address) => {
 	}
 };
 
+const getAuthMultiSigRegMsgSchema = async () => {
+	try {
+		const multiSigRegMsgSchema = await invokeEndpoint('auth_getMultiSigRegMsgSchema');
+		return multiSigRegMsgSchema;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getAuthMultiSigRegMsgSchema\'.');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
 };

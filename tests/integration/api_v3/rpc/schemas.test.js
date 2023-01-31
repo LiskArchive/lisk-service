@@ -43,6 +43,9 @@ describe('Method get.schemas', () => {
 		expect(result.data.asset.schema).toStrictEqual(schemas.assetSchema);
 		expect(result.data.transaction.schema).toStrictEqual(schemas.transactionSchema);
 		expect(result.data.event.schema).toStrictEqual(schemas.eventSchema);
+
+		result.data.messages
+			.forEach(message => expect(message.schema).toStrictEqual(schemas.messagesSchema));
 	});
 
 	it('returns invalid response for invalid param', async () => {

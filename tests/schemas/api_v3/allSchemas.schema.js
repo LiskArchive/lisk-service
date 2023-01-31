@@ -32,9 +32,15 @@ const commandsParamsSchemasSchema = {
 	schema: Joi.object(schema).optional(),
 };
 
+const messagesSchema = {
+	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
+	param: Joi.string().required(),
+	schema: Joi.object(schema).required(),
+};
+
 const eventsSchema = {
 	module: Joi.string().pattern(regex.MODULE).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	// TODO: Update schema to required when all schemas are avalable from sdk
 	schema: Joi.object(schema).optional(),
 };
@@ -59,6 +65,7 @@ const allSchemasSchema = {
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),
+	messages: Joi.array().items(messagesSchema).required(),
 };
 
 const goodRequestSchema = {
