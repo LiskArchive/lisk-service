@@ -13,14 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const BluebirdPromise = require('bluebird');
+
 const {
 	Logger,
 	MySQL: { getTableInstance },
 	Signals,
+	Utils,
 } = require('lisk-service-framework');
-
-const logger = Logger();
 
 const {
 	indexValidatorCommissionInfo,
@@ -36,6 +37,8 @@ const {
 const {
 	getBlockByHeight,
 } = require('../dataService');
+
+const logger = Logger();
 
 const blocksTableSchema = require('../database/schema/blocks');
 
@@ -110,23 +113,11 @@ const reportIndexStatus = async () => {
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
 };
 
-const indexSchemas = {
-	accounts: require('../database/schema/accounts'),
-	blockchainApps: require('../database/schema/blockchainApps'),
-	blocks: require('../database/schema/blocks'),
-	commissions: require('../database/schema/commissions'),
-	events: require('../database/schema/events'),
-	eventTopics: require('../database/schema/eventTopics'),
-	kvStore: require('../database/schema/kvStore'),
-	multisignature: require('../database/schema/multisignature'),
-	stakes: require('../database/schema/stakes'),
-	transactions: require('../database/schema/transactions'),
-	validators: require('../database/schema/validators'),
-};
-
 const initializeSearchIndex = async () => {
+	// Dynamically fetch all available table schemas
+	const tableSchemas = Object.values(Utils.requireAllJs(path.join(__dirname, '../database/schema')));
 	await BluebirdPromise.map(
-		Object.values(indexSchemas),
+		tableSchemas,
 		schema => getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT),
 		{ concurrency: 1 },
 	);

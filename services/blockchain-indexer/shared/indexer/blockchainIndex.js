@@ -350,7 +350,7 @@ const deleteIndexedBlocks = async job => {
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
+		logger.warn(`Error occurred while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };

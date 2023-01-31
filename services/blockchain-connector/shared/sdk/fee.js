@@ -43,7 +43,7 @@ const cacheFeeTokenID = async () => {
 
 const cacheMinFeePerByte = async () => {
 	try {
-		logger.trace('Attemping to update minFeePerByte.');
+		logger.trace('Attempting to update minFeePerByte.');
 		const response = await invokeEndpoint('fee_getMinFeePerByte');
 		if (response.error) throw response.error;
 

@@ -34,6 +34,7 @@ const loggerConf = {
 LoggerConfig(loggerConf);
 
 const logger = Logger();
+
 const MODULE = {
 	DYNAMIC_REWARD: 'dynamicReward',
 	REWARD: 'reward',
