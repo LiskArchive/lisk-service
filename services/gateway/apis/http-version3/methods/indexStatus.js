@@ -35,7 +35,7 @@ module.exports = {
 			200: {
 				description: 'Returns the current index status information.',
 				schema: {
-					$ref: '#/definitions/NetworkStatistics',
+					$ref: '#/definitions/IndexStatus',
 				},
 			},
 			404: {

@@ -1,0 +1,67 @@
+{
+    "IndexStatus": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "type": "object",
+                "description": "Number of items returned in the request.",
+                "properties": {
+                    "genesisHeight": {
+                        "type": "number",
+                        "example": "0",
+                        "description": "Height of the genesis block."
+                    },
+                    "lastBlockHeight": {
+                        "type": "number",
+                        "example": 2330,
+                        "description": "Latest block height."
+                    },
+                    "lastIndexedBlockHeight": {
+                        "type": "number",
+                        "example": 2330,
+                        "description": "Latest block height indexed."
+                    },
+                    "chainLength": {
+                        "type": "number",
+                        "example": 2331,
+                        "description": "Number of blocks in the chain."
+                    },
+                    "numBlocksIndexed": {
+                        "type": "number",
+                        "example": 2330,
+                        "minimum": 0,
+                        "description": "Current block height."
+                    },
+                    "percentageIndexed": {
+                        "type": "number",
+                        "example": 99.96,
+                        "minimum": 0,
+                        "description": "Percentage of blocks indexed."
+                    },
+                    "isIndexingInProgress": {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "A boolean flag indicating if the indexing process is currently under progress."
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "required": [
+                    "lastUpdate"
+                ],
+                "properties": {
+                    "lastUpdate": {
+                        "type": "number",
+                        "example": 1632471013,
+                        "description": "Last status update timestamp."
+                    }
+                }
+            }
+        }
+    }
+}
