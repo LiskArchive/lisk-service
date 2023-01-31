@@ -43,7 +43,7 @@ describe('Schemas API', () => {
 		expect(response.data.event.schema).toStrictEqual(schemas.eventSchema);
 
 		response.data.messages
-			.forEach(message => expect(message.schema).toStrictEqual(schemas.messagesSchema));
+			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));
 	});
 
 	it('invalid param -> 400', async () => {

@@ -45,7 +45,7 @@ describe('Method get.schemas', () => {
 		expect(result.data.event.schema).toStrictEqual(schemas.eventSchema);
 
 		result.data.messages
-			.forEach(message => expect(message.schema).toStrictEqual(schemas.messagesSchema));
+			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));
 	});
 
 	it('returns invalid response for invalid param', async () => {

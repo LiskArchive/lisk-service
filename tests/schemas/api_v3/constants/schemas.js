@@ -264,7 +264,7 @@ const eventSchema = {
 	},
 };
 
-const messagesSchema = {
+const messageSchema = {
 	$id: '/auth/command/regMultisigMsg',
 	type: 'object',
 	required: [
@@ -316,5 +316,5 @@ module.exports = {
 	assetSchema,
 	transactionSchema,
 	eventSchema,
-	messagesSchema,
+	messageSchema,
 };

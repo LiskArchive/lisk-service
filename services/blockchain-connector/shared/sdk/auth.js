@@ -37,7 +37,7 @@ const getAuthMultiSigRegMsgSchema = async () => {
 		return multiSigRegMsgSchema;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getAuthMultiSigRegMsgSchema\'.');
+			throw new TimeoutException('Request timed out when calling \'getMultiSigRegMsgSchema\'.');
 		}
 		throw err;
 	}
