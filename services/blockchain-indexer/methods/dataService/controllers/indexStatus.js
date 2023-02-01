@@ -17,7 +17,7 @@ const dataService = require('../../../shared/dataService');
 
 const getIndexStatus = async params => {
 	const indexStatus = {
-		data: [],
+		data: {},
 		meta: {},
 	};
 	const response = await dataService.getIndexStatus(params);
