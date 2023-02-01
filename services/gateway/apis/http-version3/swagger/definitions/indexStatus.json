@@ -34,7 +34,7 @@
                         "type": "number",
                         "example": 2330,
                         "minimum": 0,
-                        "description": "Current block height."
+                        "description": "Number of blocks currently indexed."
                     },
                     "percentageIndexed": {
                         "type": "number",
