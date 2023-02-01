@@ -203,7 +203,7 @@
             }
         }
     },
-    "headerSchema": {
+    "HeaderSchema": {
         "type": "object",
         "required": [
             "schema"
@@ -215,12 +215,12 @@
                     "$id": {
                         "type": "string",
                         "example": "/block/header/3",
-                        "description": "Unique identifier of the block schema\n"
+                        "description": "Unique identifier of the block schema."
                     },
                     "type": {
                         "type": "string",
                         "example": "object",
-                        "description": "type of schema"
+                        "description": "Type of schema."
                     },
                     "properties": {
                         "type": "object",
@@ -496,7 +496,7 @@
             }
         }
     },
-    "assetSchema": {
+    "AssetSchema": {
         "type": "object",
         "required": [
             "schema"
@@ -1055,7 +1055,7 @@
             }
         }
     },
-    "messageSchema": {
+    "MessageSchema": {
         "type": "object",
         "required": [
             "moduleCommand",
@@ -1066,11 +1066,12 @@
             "moduleCommand": {
                 "type": "string",
                 "example": "auth:registerMultisignature",
-                "description": "Combination of transaction moduleName:commandName.\n"
+                "description": "Combination of transaction moduleName:commandName."
             },
             "param": {
                 "type": "string",
-                "example": "signatures"
+                "example": "signatures",
+                "description": "The property within the params of the corresponding moduleCommand type transaction for which the corresponding schema is to be used to serialize the information.\nExample: The schema with `\"$id\": \"/auth/command/regMultisigMsg\"` is to be used to serialize the `signatures` data within the transaction params for the `auth:registerMultisignature` command."
             },
             "schema": {
                 "type": "object",
@@ -1080,12 +1081,12 @@
                         "format": "id",
                         "minLength": 1,
                         "example": "/auth/command/regMultisigMsg",
-                        "description": "Unique identifier of the message schema\n"
+                        "description": "Unique identifier of the message schema."
                     },
                     "type": {
                         "type": "string",
                         "example": "object",
-                        "description": "type of schema"
+                        "description": "Type of schema."
                     },
                     "required": {
                         "type": "array",
@@ -1223,7 +1224,7 @@
             }
         }
     },
-    "schemaWithEnvelope": {
+    "SchemaWithEnvelope": {
         "type": "object",
         "required": [
             "data",

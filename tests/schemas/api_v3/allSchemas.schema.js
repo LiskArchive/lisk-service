@@ -65,7 +65,7 @@ const allSchemasSchema = {
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),
-	messages: Joi.array().items(messagesSchema).required(),
+	messages: Joi.array().items(messagesSchema).min(0).required(),
 };
 
 const goodRequestSchema = {
