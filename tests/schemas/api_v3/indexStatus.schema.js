@@ -38,7 +38,5 @@ const goodResponseSchema = {
 };
 
 module.exports = {
-	indexStatusResponseSchema: Joi.object(indexStatusResponseSchema).required(),
 	goodResponseSchema: Joi.object(goodResponseSchema).required(),
-	indexStatusMetaResponseSchema: Joi.object(indexStatusMetaResponseSchema).required(),
 };

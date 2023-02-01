@@ -19,9 +19,7 @@ const { api } = require('../../../helpers/api');
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	indexStatusResponseSchema,
 	goodResponseSchema,
-	indexStatusMetaResponseSchema,
 } = require('../../../schemas/api_v3/indexStatus.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -32,9 +30,6 @@ describe('Index Status API', () => {
 	it('Retrieves index status -> ok', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data).toBeInstanceOf(Object);
-		expect(response.data).toMap(indexStatusResponseSchema);
-		expect(response.meta).toMap(indexStatusMetaResponseSchema);
 	});
 
 	it('Invalid request param -> bad request', async () => {

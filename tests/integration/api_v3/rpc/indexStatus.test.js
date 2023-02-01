@@ -25,9 +25,7 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	indexStatusResponseSchema,
 	goodResponseSchema,
-	indexStatusMetaResponseSchema,
 } = require('../../../schemas/api_v3/indexStatus.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -40,9 +38,6 @@ describe('get.index.status', () => {
 
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(indexStatusResponseSchema);
-		expect(result.meta).toMap(indexStatusMetaResponseSchema);
 	});
 
 	it('Invalid request param -> invalid param', async () => {

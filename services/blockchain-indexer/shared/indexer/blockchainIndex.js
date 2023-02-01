@@ -360,6 +360,12 @@ const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', index
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
+const getLiveIndexingJobCount = async () => {
+	const { queue: bullQueue } = indexBlocksQueue;
+	const count = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+	return count;
+};
+
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
 const indexNewBlock = async block => {
@@ -510,15 +516,6 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
-const updateNumJobsInProgress = async () => {
-	const { queue: bullQueue } = indexBlocksQueue;
-	const numJobsInProgress = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
-
-	Signals.get('numJobsInProgressUpdate').dispatch(numJobsInProgress);
-};
-
-setInterval(updateNumJobsInProgress, 10 * 1000); // ms
-
 module.exports = {
 	indexBlock,
 	indexNewBlock,
@@ -529,4 +526,5 @@ module.exports = {
 	deleteBlock,
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
+	getLiveIndexingJobCount,
 };
