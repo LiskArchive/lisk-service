@@ -48,51 +48,24 @@ const formatTransaction = (transaction) => {
 
 	// Calculate transaction min fee
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const transactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
-	const nonEmptySignaturesCount = transaction.signatures.filter(s => s).length;
+	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+
+	// TODO: Verify transaction minFee
+	const schemaCompliantTransactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	const nonEmptySignatureCount = transaction.signatures.filter(s => s).length;
 	const transactionMinFee = computeMinFee(
-		{ ...schemaCompliantTransaction, params: transactionParams },
+		{ ...schemaCompliantTransaction, params: schemaCompliantTransactionParams },
 		txParamsSchema,
 		{
 			minFeePerByte: getMinFeePerByte() || null,
-			numberOfSignatures: nonEmptySignaturesCount,
-			numberOfEmptySignatures: transaction.signatures.length - nonEmptySignaturesCount,
+			numberOfSignatures: nonEmptySignatureCount,
+			numberOfEmptySignatures: transaction.signatures.length - nonEmptySignatureCount,
 		},
 	);
 
-	// TODO: Remove once SDK fixes the address format
-	// Dynamically convert hex addresses to Lisk32 addresses
-	const formattedTransactionParams = {};
-	Object.entries(transactionParams).forEach(([key, value]) => {
-		if (Array.isArray(value)) {
-			formattedTransactionParams[key] = value.map(entry => {
-				let formattedEntry = {};
-				if (Buffer.isBuffer(entry)) {
-					formattedEntry = entry;
-				} else {
-					Object.entries(entry).forEach(([innerKey, innerValue]) => {
-						if (innerKey.toLowerCase().endsWith('address') && !innerKey.includes('legacy')) {
-							// TODO: Remove later or make it dynamic using txParamsSchema
-							console.error(`Incorrect address format determined for transaction type: ${transaction.module}:${transaction.command}.`);
-							console.info(inspect(transaction));
-							formattedEntry[innerKey] = getLisk32Address(innerValue.toString('hex'));
-						} else {
-							formattedEntry[innerKey] = innerValue;
-						}
-					});
-				}
-				return formattedEntry;
-			});
-		} else if (key.toLowerCase().endsWith('address') && !key.includes('legacy')) {
-			formattedTransactionParams[key] = getLisk32Address(value.toString('hex'));
-		} else {
-			formattedTransactionParams[key] = value;
-		}
-	});
-
 	const formattedTransaction = {
 		...transaction,
-		params: formattedTransactionParams,
+		params: transactionParams,
 		size: transactionSize,
 		minFee: transactionMinFee,
 	};

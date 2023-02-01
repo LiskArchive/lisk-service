@@ -297,10 +297,12 @@ const updateValidatorListEveryBlock = () => {
 						.getPosValidators({ addresses: updatedValidatorAddresses });
 
 					updatedValidatorAccounts.forEach(validator => {
-						const validatorIndex = validatorList.findIndex(acc => acc.address === validator.address);
+						const validatorIndex = validatorList
+							.findIndex(acc => acc.address === validator.address);
 
 						if (eventType === EVENT_DELETE_BLOCK && validatorIndex !== -1) {
-							// Remove validator from list when deleteBlock event contains validator registration tx
+							// Remove validator from list when
+							// deleteBlock event contains validator registration tx
 							validatorList.splice(validatorIndex, 1);
 						} else if (validatorIndex === -1) {
 							// Append to validator list on newBlock event, if missing
@@ -318,7 +320,8 @@ const updateValidatorListEveryBlock = () => {
 				}
 
 				// Update validator cache with generatedBlocks and rewards
-				const validatorIndex = validatorList.findIndex(acc => acc.address === block.generatorAddress);
+				const validatorIndex = validatorList
+					.findIndex(acc => acc.address === block.generatorAddress);
 				if (validatorList[validatorIndex]
 					&& Object.getOwnPropertyNames(validatorList[validatorIndex]).length) {
 					// TODO: Update
