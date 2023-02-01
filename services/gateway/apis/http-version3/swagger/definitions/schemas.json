@@ -705,6 +705,62 @@
             }
         }
     },
+    "StandardEventSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "required": [
+                    "$id",
+                    "type",
+                    "required",
+                    "properties"
+                ],
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/block/event/standard",
+                        "description": "Unique identifier of the event schema."
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "success"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "boolean"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "AssetsSchema": {
         "type": "object",
         "required": [
@@ -1252,6 +1308,9 @@
                     },
                     "transaction": {
                         "$ref": "#/definitions/TransactionSchema"
+                    },
+                    "standardEvent": {
+                        "$ref": "#/definitions/StandardEventSchema"
                     },
                     "event": {
                         "$ref": "#/definitions/EventSchema"

@@ -62,6 +62,7 @@ const allSchemasSchema = {
 	asset: Joi.object(genericSchema).required(),
 	transaction: Joi.object(genericSchema).required(),
 	event: Joi.object(genericSchema).required(),
+	standardEvent: Joi.object(genericSchema).required(),
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),

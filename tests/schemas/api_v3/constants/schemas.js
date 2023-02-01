@@ -264,6 +264,20 @@ const eventSchema = {
 	},
 };
 
+const standardEventSchema = {
+	$id: '/block/event/standard',
+	type: 'object',
+	required: [
+		'success',
+	],
+	properties: {
+		success: {
+			dataType: 'boolean',
+			fieldNumber: 1,
+		},
+	},
+};
+
 const messageSchema = {
 	$id: '/auth/command/regMultisigMsg',
 	type: 'object',
@@ -316,5 +330,6 @@ module.exports = {
 	assetSchema,
 	transactionSchema,
 	eventSchema,
+	standardEventSchema,
 	messageSchema,
 };
