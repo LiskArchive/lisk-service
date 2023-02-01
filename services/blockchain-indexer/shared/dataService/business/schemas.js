@@ -23,11 +23,11 @@ const getAuthMultiSigRegMsgSchema = async () => {
 	const isAuthModuleRegistered = registeredModules.includes(MODULE.AUTH);
 
 	if (isAuthModuleRegistered) {
-		const authMultiSigRegMsgSchema = await requestConnector('getAuthMultiSigRegMsgSchema');
+		const authMultiSigRegMsg = await requestConnector('getAuthMultiSigRegMsgSchema');
 		return {
 			moduleCommand: `${MODULE.AUTH}:registerMultisignature`,
 			param: 'signatures',
-			...authMultiSigRegMsgSchema, // schema
+			schema: authMultiSigRegMsg.schema,
 		};
 	}
 	return null;
