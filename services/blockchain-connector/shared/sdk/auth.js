@@ -15,9 +15,12 @@
  */
 const {
 	Exceptions: { TimeoutException },
+	Logger,
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+
+const logger = Logger();
 
 const getAuthAccount = async (address) => {
 	try {
@@ -39,6 +42,7 @@ const getAuthMultiSigRegMsgSchema = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getMultiSigRegMsgSchema\'.');
 		}
+		logger.warn(`Error returned when invoking 'auth_getMultiSigRegMsgSchema'.\n${err.stack}`);
 		throw err;
 	}
 };

@@ -13,25 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRegisteredModules, MODULE } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
+const { getAuthMultiSigRegMsgSchema } = require('./auth');
 
 let allSchemas;
-
-const getAuthMultiSigRegMsgSchema = async () => {
-	const registeredModules = await getRegisteredModules();
-	const isAuthModuleRegistered = registeredModules.includes(MODULE.AUTH);
-
-	if (isAuthModuleRegistered) {
-		const authMultiSigRegMsg = await requestConnector('getAuthMultiSigRegMsgSchema');
-		return {
-			moduleCommand: `${MODULE.AUTH}:registerMultisignature`,
-			param: 'signatures',
-			schema: authMultiSigRegMsg.schema,
-		};
-	}
-	return null;
-};
 
 const getSchemasFromNode = async () => {
 	const systemMetadata = await requestConnector('getSystemMetadata');
