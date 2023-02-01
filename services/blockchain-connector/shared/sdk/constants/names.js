@@ -24,7 +24,7 @@ const EVENT_NAME_INVALID_SIGNATURE = 'invalidSignature';
 // Validators
 const MODULE_NAME_VALIDATORS = 'validators';
 const EVENT_NAME_GENERATOR_KEY_REGISTRATION = 'generatorKeyRegistration';
-const EVENT_NAME_BLS_KEY_REGISTRATION = 'bLSKeyRegistration';
+const EVENT_NAME_BLS_KEY_REGISTRATION = 'blsKeyRegistration';
 
 // Token
 const MODULE_NAME_TOKEN = 'token';

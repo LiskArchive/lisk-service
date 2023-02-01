@@ -52,6 +52,9 @@ const getBlockAssetDataSchemaByModule = (_module) => {
 };
 
 const getDataSchemaByEventName = (eventName) => {
+	// TODO: Temporary patch, clean up
+	if (eventName === 'commandExecutionResult') return schemas.standardEvent;
+
 	// TODO: Optimize
 	for (let i = 0; i < metadata.modules.length; i++) {
 		const module = metadata.modules[i];

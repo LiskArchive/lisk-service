@@ -43,6 +43,7 @@ const getPosValidators = async (params) => {
 		validatorAddressList,
 		async validatorAddress => {
 			const validator = await requestConnector('getPosValidator', { address: validatorAddress });
+			// TODO: Add error handling
 			// TODO: Verify
 			// TODO: Check if it is possible to move this logic to the connector
 			if (validator.isBanned || await verifyIfPunished(validator)) {

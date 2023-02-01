@@ -80,8 +80,8 @@ const COMMAND_EXECUTION_RESULT_TOPICS = ['transactionID'];
 // TODO: Remove when SDK exposes topics information in metadata
 const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	[MODULE_NAME_AUTH]: {
-		[EVENT_NAME_MULTISIGNATURE_REGISTERED]: ['senderAddress'],
-		[EVENT_NAME_INVALID_SIGNATURE]: ['senderAddress'],
+		[EVENT_NAME_MULTISIGNATURE_REGISTERED]: ['transactionID', 'senderAddress'],
+		[EVENT_NAME_INVALID_SIGNATURE]: ['transactionID', 'senderAddress'],
 	},
 	[MODULE_NAME_VALIDATORS]: {
 		[EVENT_NAME_GENERATOR_KEY_REGISTRATION]: ['defaultTopic', 'validatorAddress'],
@@ -123,12 +123,12 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 		[EVENT_NAME_TERMINATED_OUTBOX_CREATED]: ['chainID'],
 	},
 	[MODULE_NAME_POS]: {
-		[EVENT_NAME_VALIDATOR_REGISTERED]: ['validatorAddress'],
-		[EVENT_NAME_VALIDATOR_STAKED]: ['stakerAddress', 'validatorAddress'],
-		[EVENT_NAME_VALIDATOR_PUNISHED]: ['validatorAddress'],
-		[EVENT_NAME_VALIDATOR_BANNED]: ['validatorAddress'],
-		[EVENT_NAME_COMMISSION_CHANGE]: ['validatorAddress'],
-		[EVENT_NAME_REWARDS_ASSIGNED]: ['stakerAddress'],
+		[EVENT_NAME_VALIDATOR_REGISTERED]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_VALIDATOR_STAKED]: ['transactionID', 'stakerAddress', 'validatorAddress'],
+		[EVENT_NAME_VALIDATOR_PUNISHED]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_VALIDATOR_BANNED]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_COMMISSION_CHANGE]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_REWARDS_ASSIGNED]: ['transactionID', 'stakerAddress'],
 	},
 	[MODULE_NAME_RANDOM]: {
 		// No events defined in LIP
