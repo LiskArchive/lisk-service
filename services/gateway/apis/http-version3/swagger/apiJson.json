@@ -36,7 +36,7 @@
                 "description": "Lisk Validators module API calls."
             },
             {
-                "name": "Tokens",
+                "name": "Token",
                 "description": "Lisk Token module API calls."
             },
             {

@@ -27,7 +27,7 @@ module.exports = {
 		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		name: { optional: true, type: 'string', pattern: regex.NAME, altSwaggerKey: 'accountName' },
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
-		isUnlockable: { optional: true, type: 'boolean' },
+		isLocked: { optional: true, type: 'boolean' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
@@ -36,9 +36,9 @@ module.exports = {
 		['address'],
 		['name'],
 		['publicKey'],
-		['address', 'isUnlockable'],
-		['name', 'isUnlockable'],
-		['publicKey', 'isUnlockable'],
+		['address', 'isLocked'],
+		['name', 'isLocked'],
+		['publicKey', 'isLocked'],
 	],
 	get schema() {
 		const unlocksSchema = {};
