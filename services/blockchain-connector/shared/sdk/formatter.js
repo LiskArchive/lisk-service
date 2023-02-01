@@ -17,6 +17,7 @@ const { inspect } = require('util');
 const { codec } = require('@liskhq/lisk-codec');
 const { utils: { hash } } = require('@liskhq/lisk-cryptography');
 const { computeMinFee } = require('@liskhq/lisk-transactions');
+const { Logger } = require('lisk-service-framework');
 
 const {
 	getBlockAssetDataSchemaByModule,
@@ -35,6 +36,8 @@ const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 const { getLisk32Address } = require('../utils/accountUtils');
 const { getMinFeePerByte } = require('./fee');
+
+const logger = Logger();
 
 const formatTransaction = (transaction) => {
 	// Calculate transaction size
@@ -58,17 +61,20 @@ const formatTransaction = (transaction) => {
 	);
 
 	// TODO: Remove once SDK fixes the address format
-	// Convert hex addresses to Lisk32 addresses
-	const formattedtransactionParams = {};
+	// Dynamically convert hex addresses to Lisk32 addresses
+	const formattedTransactionParams = {};
 	Object.entries(transactionParams).forEach(([key, value]) => {
 		if (Array.isArray(value)) {
-			formattedtransactionParams[key] = value.map(entry => {
+			formattedTransactionParams[key] = value.map(entry => {
 				let formattedEntry = {};
 				if (Buffer.isBuffer(entry)) {
 					formattedEntry = entry;
 				} else {
 					Object.entries(entry).forEach(([innerKey, innerValue]) => {
 						if (innerKey.toLowerCase().endsWith('address') && !innerKey.includes('legacy')) {
+							// TODO: Remove later or make it dynamic using txParamsSchema
+							console.error(`Incorrect address format determined for transaction type: ${transaction.module}:${transaction.command}.`);
+							console.info(inspect(transaction));
 							formattedEntry[innerKey] = getLisk32Address(innerValue.toString('hex'));
 						} else {
 							formattedEntry[innerKey] = innerValue;
@@ -78,15 +84,15 @@ const formatTransaction = (transaction) => {
 				return formattedEntry;
 			});
 		} else if (key.toLowerCase().endsWith('address') && !key.includes('legacy')) {
-			formattedtransactionParams[key] = getLisk32Address(value.toString('hex'));
+			formattedTransactionParams[key] = getLisk32Address(value.toString('hex'));
 		} else {
-			formattedtransactionParams[key] = value;
+			formattedTransactionParams[key] = value;
 		}
 	});
 
 	const formattedTransaction = {
 		...transaction,
-		params: formattedtransactionParams,
+		params: formattedTransactionParams,
 		size: transactionSize,
 		minFee: transactionMinFee,
 	};
@@ -100,10 +106,15 @@ const formatBlock = (block) => {
 	const blockAssets = block.assets.map(asset => {
 		const assetModule = asset.module;
 		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
-		// TODO: Can be made schema compliant dynamically
 		const formattedAssetData = blockAssetDataSchema
 			? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
 			: asset.data;
+
+		if (!blockAssetDataSchema) {
+			// TODO: Remove this after all asset schemas are exposed
+			console.error(`Block asset schema missing for module ${assetModule}.`);
+			logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+		}
 
 		const formattedBlockAsset = {
 			module: assetModule,
@@ -133,11 +144,13 @@ const formatEvent = (event) => {
 	const eventData = eventDataSchema
 		? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
 		: { data: event.data };
-	// TODO: Remove this after SDK exposes all event schemas
-	if (!eventDataSchema) console.warn(`Event data schema missing for ${event.module}:${event.name}`);
 
-	// TODO: Remove after SDK fixes the address format
-	if (eventDataSchema) {
+	if (!eventDataSchema) {
+		// TODO: Remove this after SDK exposes all event schemas
+		console.error(`Event data schema missing for ${event.module}:${event.name}.`);
+		logger.error(`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`);
+	} else {
+		// TODO: Remove after SDK fixes the address format
 		Object.keys(eventDataSchema.properties).forEach((prop) => {
 			if (prop.endsWith('Address')) {
 				eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
@@ -155,6 +168,7 @@ const formatEvent = (event) => {
 	const topics = event.name === EVENT_NAME_COMMAND_EXECUTION_RESULT
 		? COMMAND_EXECUTION_RESULT_TOPICS
 		: eventTopicMappings[event.name];
+
 	// TODO: Remove after all transaction types are tested
 	if (!topics || topics.length === 0) {
 		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE undefined for event: ${event.name}.`);

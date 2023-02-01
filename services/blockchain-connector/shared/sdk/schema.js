@@ -13,7 +13,7 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const { genesisPosStoreSchema } = require('./storeSchemas');
+const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
 
 let schemas;
 let metadata;
@@ -42,18 +42,12 @@ const setMetadata = (_metadata) => metadata = _metadata;
 
 const getBlockAssetDataSchemaByModule = (_module) => {
 	const moduleMetadata = metadata.modules.find(m => m.name === _module);
-
-	// TODO: Enable the logic with Lisk SDK alpha.12 once SDK resolves issue: https://github.com/LiskHQ/lisk-sdk/issues/7993
-	// const [{ data: schema } = {}] = moduleMetadata.assets;
-	const [{ data: schema } = {}] = _module !== 'pos'
-		? moduleMetadata.assets
-		: [{ version: 0, data: genesisPosStoreSchema }];
+	const [{ data: schema } = {}] = moduleMetadata.assets;
 	return schema;
 };
 
 const getDataSchemaByEventName = (eventName) => {
-	// TODO: Temporary patch, clean up
-	if (eventName === 'commandExecutionResult') return schemas.standardEvent;
+	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === eventName) return schemas.standardEvent;
 
 	// TODO: Optimize
 	for (let i = 0; i < metadata.modules.length; i++) {
