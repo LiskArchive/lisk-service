@@ -29,6 +29,9 @@ module.exports = {
 	event: {
 		schema: '=',
 	},
+	standardEvent: {
+		schema: '=',
+	},
 	events: ['data.events', {
 		module: '=,string',
 		name: '=,string',
@@ -43,4 +46,10 @@ module.exports = {
 		moduleCommand: '=,string',
 		schema: '=',
 	}],
+	messages: ['data.messages', {
+		moduleCommand: '=,string',
+		param: '=,string',
+		schema: '=',
+	}],
+
 };

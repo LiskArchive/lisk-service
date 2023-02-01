@@ -15,9 +15,12 @@
  */
 const {
 	Exceptions: { TimeoutException },
+	Logger,
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+
+const logger = Logger();
 
 const getAuthAccount = async (address) => {
 	try {
@@ -31,6 +34,20 @@ const getAuthAccount = async (address) => {
 	}
 };
 
+const getAuthMultiSigRegMsgSchema = async () => {
+	try {
+		const multiSigRegMsgSchema = await invokeEndpoint('auth_getMultiSigRegMsgSchema');
+		return multiSigRegMsgSchema;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getMultiSigRegMsgSchema\'.');
+		}
+		logger.warn(`Error returned when invoking 'auth_getMultiSigRegMsgSchema'.\n${err.stack}`);
+		throw err;
+	}
+};
+
 module.exports = {
 	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
 };
