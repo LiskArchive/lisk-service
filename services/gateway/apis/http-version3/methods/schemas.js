@@ -36,7 +36,7 @@ module.exports = {
 			200: {
 				description: 'Returns a list of schemas.',
 				schema: {
-					$ref: '#/definitions/schemaWithEnvelope',
+					$ref: '#/definitions/SchemaWithEnvelope',
 				},
 			},
 		};

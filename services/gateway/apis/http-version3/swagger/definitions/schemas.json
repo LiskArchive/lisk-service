@@ -1,5 +1,5 @@
 {
-    "commandsParamsSchema": {
+    "CommandsParamsSchema": {
         "type": "object",
         "required": [
             "moduleCommand",
@@ -107,7 +107,7 @@
             }
         }
     },
-    "blockSchema": {
+    "BlockSchema": {
         "type": "object",
         "required": [
             "schema"
@@ -560,7 +560,7 @@
             }
         }
     },
-    "eventSchema": {
+    "EventSchema": {
         "type": "object",
         "required": [
             "schema"
@@ -705,7 +705,7 @@
             }
         }
     },
-    "assetsSchema": {
+    "AssetsSchema": {
         "type": "object",
         "required": [
             "module",
@@ -773,7 +773,7 @@
             }
         }
     },
-    "eventsSchema": {
+    "EventsSchema": {
         "type": "object",
         "required": [
             "module",
@@ -889,7 +889,7 @@
             }
         }
     },
-    "transactionSchema": {
+    "TransactionSchema": {
         "type": "object",
         "required": [
             "schema"
@@ -1075,6 +1075,12 @@
             },
             "schema": {
                 "type": "object",
+                "required": [
+                    "$id",
+                    "type",
+                    "required",
+                    "properties"
+                ],
                 "properties": {
                     "$id": {
                         "type": "string",
@@ -1236,42 +1242,42 @@
                 "type": "object",
                 "properties": {
                     "block": {
-                        "$ref": "#/definitions/blockSchema"
+                        "$ref": "#/definitions/BlockSchema"
                     },
                     "header": {
-                        "$ref": "#/definitions/headerSchema"
+                        "$ref": "#/definitions/HeaderSchema"
                     },
                     "asset": {
-                        "$ref": "#/definitions/assetSchema"
+                        "$ref": "#/definitions/AssetSchema"
                     },
-                    "transactions": {
-                        "$ref": "#/definitions/transactionSchema"
+                    "transaction": {
+                        "$ref": "#/definitions/TransactionSchema"
                     },
                     "event": {
-                        "$ref": "#/definitions/eventSchema"
+                        "$ref": "#/definitions/EventSchema"
                     },
                     "events": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/eventsSchema"
+                            "$ref": "#/definitions/EventsSchema"
                         }
                     },
                     "assets": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/assetsSchema"
+                            "$ref": "#/definitions/AssetsSchema"
                         }
                     },
                     "commands": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/commandsParamsSchema"
+                            "$ref": "#/definitions/CommandsParamsSchema"
                         }
                     },
                     "messages": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/messageSchema"
+                            "$ref": "#/definitions/MessageSchema"
                         }
                     }
                 }
