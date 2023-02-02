@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,22 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getAuthAccount,
-	getAuthMultiSigRegMsgSchema,
-} = require('../shared/sdk');
-
-module.exports = [
-	{
-		name: 'getAuthAccount',
-		controller: async ({ address }) => getAuthAccount(address),
-		params: {
-			address: { optional: false, type: 'string' },
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.index.status',
+	params: {},
+	definition: {
+		data: {
+			genesisHeight: '=,number',
+			lastBlockHeight: '=,number',
+			lastIndexedBlockHeight: '=,number',
+			chainLength: '=,number',
+			numBlocksIndexed: '=,number',
+			percentageIndexed: '=,number',
+			isIndexingInProgress: '=,boolean',
 		},
+		meta: {
+			lastUpdate: '=,number',
+		},
+		links: {},
 	},
-	{
-		name: 'getAuthMultiSigRegMsgSchema',
-		controller: async () => getAuthMultiSigRegMsgSchema(),
-		params: {},
-	},
-];
+};

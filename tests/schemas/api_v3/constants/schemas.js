@@ -92,13 +92,17 @@ const headerSchema = {
 			dataType: 'uint32',
 			fieldNumber: 11,
 		},
+		impliesMaxPrevotes: {
+			dataType: 'boolean',
+			fieldNumber: 12,
+		},
 		validatorsHash: {
 			dataType: 'bytes',
-			fieldNumber: 12,
+			fieldNumber: 13,
 		},
 		aggregateCommit: {
 			type: 'object',
-			fieldNumber: 13,
+			fieldNumber: 14,
 			required: [
 				'height',
 				'aggregationBits',
@@ -121,7 +125,7 @@ const headerSchema = {
 		},
 		signature: {
 			dataType: 'bytes',
-			fieldNumber: 14,
+			fieldNumber: 15,
 		},
 	},
 	required: [
@@ -136,6 +140,7 @@ const headerSchema = {
 		'stateRoot',
 		'maxHeightPrevoted',
 		'maxHeightGenerated',
+		'impliesMaxPrevotes',
 		'validatorsHash',
 		'aggregateCommit',
 		'signature',
@@ -259,10 +264,72 @@ const eventSchema = {
 	},
 };
 
+const standardEventSchema = {
+	$id: '/block/event/standard',
+	type: 'object',
+	required: [
+		'success',
+	],
+	properties: {
+		success: {
+			dataType: 'boolean',
+			fieldNumber: 1,
+		},
+	},
+};
+
+const messageSchema = {
+	$id: '/auth/command/regMultisigMsg',
+	type: 'object',
+	required: [
+		'address',
+		'nonce',
+		'numberOfSignatures',
+		'mandatoryKeys',
+		'optionalKeys',
+	],
+	properties: {
+		address: {
+			dataType: 'bytes',
+			fieldNumber: 1,
+			minLength: 20,
+			maxLength: 20,
+		},
+		nonce: {
+			dataType: 'uint64',
+			fieldNumber: 2,
+		},
+		numberOfSignatures: {
+			dataType: 'uint32',
+			fieldNumber: 3,
+		},
+		mandatoryKeys: {
+			type: 'array',
+			items: {
+				dataType: 'bytes',
+				minLength: 32,
+				maxLength: 32,
+			},
+			fieldNumber: 4,
+		},
+		optionalKeys: {
+			type: 'array',
+			items: {
+				dataType: 'bytes',
+				minLength: 32,
+				maxLength: 32,
+			},
+			fieldNumber: 5,
+		},
+	},
+};
+
 module.exports = {
 	blockSchema,
 	headerSchema,
 	assetSchema,
 	transactionSchema,
 	eventSchema,
+	standardEventSchema,
+	messageSchema,
 };
