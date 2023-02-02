@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,16 +14,6 @@
  *
  */
 import Joi from 'joi';
-import regex from './api_v3/regex';
-
-const statusSchema = {
-	build: Joi.string().required(),
-	description: Joi.string().required(),
-	name: Joi.string().required(),
-	version: Joi.string().pattern(regex.SEMVER).required(),
-	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
-	networkNodeVersion: Joi.string().optional(),
-};
 
 const services = {
 	indexer: Joi.boolean().required(),
@@ -40,6 +30,5 @@ const readySchema = {
 };
 
 module.exports = {
-	statusSchema: Joi.object(statusSchema).required(),
 	readySchema: Joi.object(readySchema).required(),
 };

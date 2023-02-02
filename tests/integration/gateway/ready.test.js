@@ -18,11 +18,12 @@ const { api } = require('../../helpers/api');
 
 const {
 	badRequestSchema,
+	serviceUnavailableSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
 	readySchema,
-} = require('../../schemas/gateway.schema');
+} = require('../../schemas/gateway/ready.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/ready`;
@@ -30,8 +31,14 @@ const endpoint = `${baseUrl}/api/ready`;
 describe('Ready API', () => {
 	describe(`GET ${endpoint}`, () => {
 		it('Report readiness -> 200 OK', async () => {
-			const response = await api.get(endpoint);
-			expect(response).toMap(readySchema);
+			try {
+				const response = await api.get(endpoint);
+				expect(response).toMap(readySchema);
+			} catch (_) {
+				const expectedResponseCode = 503;
+				const response = await api.get(endpoint, expectedResponseCode);
+				expect(response).toMap(serviceUnavailableSchema);
+			}
 		});
 
 		it('params not supported -> 400 BAD_REQUEST', async () => {

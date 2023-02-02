@@ -22,7 +22,7 @@ const {
 
 const {
 	statusSchema,
-} = require('../../schemas/gateway.schema');
+} = require('../../schemas/gateway/status.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/status`;
