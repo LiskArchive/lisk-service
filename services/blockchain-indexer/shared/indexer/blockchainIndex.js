@@ -353,7 +353,7 @@ const deleteIndexedBlocks = async job => {
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
+		logger.warn(`Error occurred while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
@@ -362,6 +362,12 @@ const deleteIndexedBlocks = async job => {
 const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 1);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+
+const getLiveIndexingJobCount = async () => {
+	const { queue: bullQueue } = indexBlocksQueue;
+	const count = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+	return count;
+};
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
@@ -523,4 +529,5 @@ module.exports = {
 	deleteBlock,
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
+	getLiveIndexingJobCount,
 };

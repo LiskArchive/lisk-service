@@ -27,7 +27,7 @@ let minFeePerByte;
 
 const cacheFeeTokenID = async () => {
 	try {
-		logger.trace('Attemping to update feeTokenID.');
+		logger.trace('Attempting to update feeTokenID.');
 		const response = await invokeEndpoint('fee_getFeeTokenID');
 		if (response.error) throw response.error;
 
@@ -37,13 +37,14 @@ const cacheFeeTokenID = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'cacheFeeTokenID\'.');
 		}
+		logger.warn(`Error occurred when calling 'cacheFeeTokenID':\n${err.stack}`);
 		throw err;
 	}
 };
 
 const cacheMinFeePerByte = async () => {
 	try {
-		logger.trace('Attemping to update minFeePerByte.');
+		logger.trace('Attempting to update minFeePerByte.');
 		const response = await invokeEndpoint('fee_getMinFeePerByte');
 		if (response.error) throw response.error;
 
@@ -53,6 +54,7 @@ const cacheMinFeePerByte = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'cacheMinFeePerByte\'.');
 		}
+		logger.warn(`Error occurred when calling 'cacheMinFeePerByte':\n${err.stack}`);
 		throw err;
 	}
 };
