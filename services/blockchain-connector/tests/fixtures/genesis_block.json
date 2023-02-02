@@ -1,0 +1,43 @@
+{
+	"header": {
+		"version": 0,
+		"timestamp": 32578370,
+		"height": 16281111,
+		"previousBlockID": "1fafb9f1e7f636844948efe51d84a63c8e946114c3420beb353f3cf05ee2caea",
+		"stateRoot": "2acd66d90c5a58dff6b0edc31cc9760f6ac5bad33d41f448dc5cdcc4daebc79a",
+		"assetRoot": "586344d83bf4fd4cdcfa8030d248ab179c582b4423f667316a40beb0360f3761",
+		"eventRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+		"transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+		"validatorsHash": "27c24fcb8474773e2af799d0848495ff053272d33c432dc26277993df45c9276",
+		"aggregateCommit": {
+			"height": 0,
+			"aggregationBits": "",
+			"certificateSignature": ""
+		},
+		"generatorAddress": "lskzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz5fw596",
+		"maxHeightPrevoted": 16281111,
+		"maxHeightGenerated": 0,
+		"impliesMaxPrevotes": true,
+		"signature": "",
+		"id": "2cb3308d46f6f9590af24f68e36bd53eca46d73c8e68bf65fd6add6625a74694"
+	},
+	"transactions": [],
+	"assets": [
+		{
+			"module": "auth",
+			"data": "0a1c0a14cc96c0a5db38b968f563e7af6fb435585c889111120408001000"
+		},
+		{
+			"module": "legacy",
+			"data": "0a0d0a085aa68e3d334aaf5110ab02"
+		},
+		{
+			"module": "pos",
+			"data": "1a0408c0d803"
+		},
+		{
+			"module": "token",
+			"data": "0a2f0a1402e87c669d633481fc99f2b2d5cb2f587d96fbac120804000000000000001800220b0a066c656761637910ab020a250a14cc96c0a5db38b968f563e7af6fb435585c889111120804000000000000001880c2d72f120f0a08040000000000000010abc4d72f"
+		}
+	]
+}
