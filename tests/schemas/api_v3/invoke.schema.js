@@ -17,6 +17,7 @@ import Joi from 'joi';
 
 const invokeMetaResponseSchema = {
 	endpoint: Joi.string().required(),
+	params: Joi.object().optional(),
 };
 
 const errorSchema = {

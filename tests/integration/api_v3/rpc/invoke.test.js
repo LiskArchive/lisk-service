@@ -28,6 +28,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
+const getBlocks = async (params) => request(wsRpcUrl, 'get.blocks', params);
 
 describe('post.invoke', () => {
 	it('returns response when valid SDK endpoint invoked', async () => {
@@ -35,6 +36,18 @@ describe('post.invoke', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(invokeResponseSchema);
+	});
+
+	it('returns response when valid SDK endpoint invoked with params', async () => {
+		const response = await invoke({ endpoint: 'chain_getBlockByHeight', params: { height: 1 } });
+		const [block] = (await getBlocks({ height: '1' })).result.data;
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(invokeResponseSchema);
+
+		const blockIDSDK = result.data.header.id;
+		const blockIDService = block.id;
+		expect(blockIDSDK).toEqual(blockIDService);
 	});
 
 	it('returns error when invalid SDK endpoint invoked', async () => {

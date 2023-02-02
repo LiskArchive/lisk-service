@@ -16,9 +16,6 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV3 = `${baseUrl}/api/v3`;
-
 const {
 	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
@@ -28,12 +25,24 @@ const {
 	errorSchema,
 } = require('../../../schemas/api_v3/invoke.schema');
 
+const baseUrl = config.SERVICE_ENDPOINT;
+const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/invoke`;
 
 describe('Invoke API', () => {
 	it('Returns response when valid SDK endpoint invoked', async () => {
 		const response = await api.post(endpoint, { endpoint: 'system_getNodeInfo' });
 		expect(response).toMap(invokeResponseSchema);
+	});
+
+	it('Returns response when valid SDK endpoint invoked with valid params', async () => {
+		const response = await api.post(endpoint, { endpoint: 'chain_getBlockByHeight', params: { height: 1 } });
+		const [block] = (await api.get(`${baseUrlV3}/blocks?height=1`)).data;
+		expect(response).toMap(invokeResponseSchema);
+
+		const blockIDSDK = response.data.header.id;
+		const blockIDService = block.id;
+		expect(blockIDSDK).toEqual(blockIDService);
 	});
 
 	it('Returns error when invalid SDK endpoint invoked', async () => {

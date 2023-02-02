@@ -40,6 +40,7 @@ const HEX = /^\b[0-9a-fA-F]+\b$/;
 const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
 const EMPTY_STRING = /^$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
+const SWAGGER_SCHEMES = /^\b(?:http|https){1}\b$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -69,4 +70,5 @@ module.exports = {
 	EMPTY_STRING,
 	POSITIVE_DIGITS,
 	POS_VALIDATOR_STATUS,
+	SWAGGER_SCHEMES,
 };
