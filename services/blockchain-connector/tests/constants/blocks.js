@@ -209,6 +209,50 @@ const invalidBlock = Object.freeze({
 
 const invalidEncodedBlock = '80210a197db9206180122202d7c1de74a7353a8bea6f1af1620e5bbb9f6170fa4b5376267f8fb3d0e314d322a141348bdced232cf3c74742d8f3d96f436de3220e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b8553a20e626f31527f88edd955c3ce5b6eea63f8c1d2fb6ddd329eac0b81d9ab0919b77422041e6b1c0cd1eb398e64a0af03f1b6547096fb005669b35985776d8f1c2564107480050005a20f89987de86e18d8391339c3b92c796ae7d0f7a75f8d57b2392539cc3c39e5ffe6206080012001a006a40efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e74041a16080f12120a10a21eee43f81c4bc447ee5f';
 
+const genesisBlock = {
+	header: {
+		version: 0,
+		timestamp: 32578370,
+		height: 16281111,
+		previousBlockID: '1fafb9f1e7f636844948efe51d84a63c8e946114c3420beb353f3cf05ee2caea',
+		stateRoot: '2acd66d90c5a58dff6b0edc31cc9760f6ac5bad33d41f448dc5cdcc4daebc79a',
+		assetRoot: '586344d83bf4fd4cdcfa8030d248ab179c582b4423f667316a40beb0360f3761',
+		eventRoot: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+		transactionRoot: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+		validatorsHash: '27c24fcb8474773e2af799d0848495ff053272d33c432dc26277993df45c9276',
+		aggregateCommit: {
+			height: 0,
+			aggregationBits: '',
+			certificateSignature: '',
+		},
+		generatorAddress: 'lskzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz5fw596',
+		maxHeightPrevoted: 16281111,
+		maxHeightGenerated: 0,
+		impliesMaxPrevotes: true,
+		signature: '',
+		id: '2cb3308d46f6f9590af24f68e36bd53eca46d73c8e68bf65fd6add6625a74694',
+	},
+	transactions: [],
+	assets: [
+		{
+			module: 'auth',
+			data: '0a1c0a14cc96c0a5db38b968f563e7af6fb435585c889111120408001000',
+		},
+		{
+			module: 'legacy',
+			data: '0a0d0a085aa68e3d334aaf5110ab02',
+		},
+		{
+			module: 'pos',
+			data: '1a0408c0d803',
+		},
+		{
+			module: 'token',
+			data: '0a2f0a1402e87c669d633481fc99f2b2d5cb2f587d96fbac120804000000000000001800220b0a066c656761637910ab020a250a14cc96c0a5db38b968f563e7af6fb435585c889111120804000000000000001880c2d72f120f0a08040000000000000010abc4d72f',
+		},
+	],
+};
+
 module.exports = {
 	invalidBlock,
 	blockWithTransaction,
@@ -216,4 +260,5 @@ module.exports = {
 	blockWithoutTransaction,
 	decodedBlockWithoutTransaction,
 	invalidEncodedBlock,
+	genesisBlock,
 };
