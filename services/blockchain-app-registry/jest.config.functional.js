@@ -5,7 +5,6 @@ module.exports = {
 	coverageDirectory: 'test/coverage',
 
 	testMatch: [
-		'<rootDir>/tests/unit/*.test.js',
 		'<rootDir>/tests/functional/*.test.js',
 	],
 

@@ -29,7 +29,7 @@ const getKeyValueStoreIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const set = async (key, value) => {
+const set = async (key, value, dbTrx) => {
 	const keyValueDB = await getKeyValueStoreIndex();
 	const type = typeof (value);
 
@@ -38,17 +38,10 @@ const set = async (key, value) => {
 	}
 
 	const finalValue = value === undefined ? value : String(value);
-	await keyValueDB.upsert({ key, value: finalValue, type });
+	await keyValueDB.upsert({ key, value: finalValue, type }, dbTrx);
 };
 
-const get = async (key) => {
-	const keyValueDB = await getKeyValueStoreIndex();
-
-	const [{ value, type } = {}] = await keyValueDB.find(
-		{ key, limit: 1 },
-		['value', 'type'],
-	);
-
+const formatValue = (value, type) => {
 	// Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#description
 	if (type === 'boolean') return Boolean(value);
 	if (type === 'number') return Number(value);
@@ -60,6 +53,32 @@ const get = async (key) => {
 	return value;
 };
 
+const get = async (key) => {
+	const keyValueDB = await getKeyValueStoreIndex();
+
+	const [{ value, type } = {}] = await keyValueDB.find(
+		{ key, limit: 1 },
+		['value', 'type'],
+	);
+
+	return formatValue(value, type);
+};
+
+const getByPattern = async (pattern) => {
+	const keyValueDB = await getKeyValueStoreIndex();
+
+	const result = await keyValueDB.find(
+		{ search: { property: 'key', pattern } },
+		['key', 'value', 'type'],
+	);
+
+	const formattedResult = result.map(row => ({
+		key: row.key,
+		value: formatValue(row.value, row.type),
+	}));
+	return formattedResult;
+};
+
 const deleteEntry = async (key) => {
 	const keyValueDB = await getKeyValueStoreIndex();
 	return keyValueDB.deleteByPrimaryKey([key]);
@@ -68,5 +87,8 @@ const deleteEntry = async (key) => {
 module.exports = {
 	set,
 	get,
+	getByPattern,
 	delete: deleteEntry,
+	// for testing
+	formatValue,
 };
