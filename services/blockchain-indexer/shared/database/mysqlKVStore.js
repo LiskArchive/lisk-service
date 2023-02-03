@@ -89,4 +89,6 @@ module.exports = {
 	get,
 	getByPattern,
 	delete: deleteEntry,
+	// for testing
+	formatValue,
 };
