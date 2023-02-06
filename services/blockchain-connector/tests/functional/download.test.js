@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.setTimeout(25000);
+jest.setTimeout(50000);
 const fs = require('fs');
 const path = require('path');
 const { Logger } = require('lisk-service-framework');
@@ -25,13 +25,15 @@ const {
 	downloadFile,
 } = require('../../shared/utils/download');
 
+const { exists } = require('../../shared/utils/fs');
+
 const config = require('../../config');
 
 const logger = Logger();
 
 const directoryPath = path.join(__dirname, 'testDir');
 
-describe('downloadFile utility tests', () => {
+describe('Functional tests for download utility', () => {
 	beforeAll(async () => {
 		// Create test directory
 		await fs.mkdir(directoryPath, (err) => logger.error(err));
@@ -53,8 +55,7 @@ describe('downloadFile utility tests', () => {
 		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'mainnet');
 		const filePath = `${directoryPath}/genesis_block.json`;
 		await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
-		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
-		expect(isFileExists).toEqual(true);
+		expect(exists(filePath)).resolves.toBe(true);
 	});
 
 	it('downloadAndExtractTarball -> invalid url', async () => {
@@ -63,11 +64,10 @@ describe('downloadFile utility tests', () => {
 	});
 
 	it('downloadJSONFile -> valid url', async () => {
-		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
-		const filePath = `${directoryPath}/testFile1.json`;
+		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
+		const filePath = `${directoryPath}/apiJson.json`;
 		await downloadJSONFile(url, filePath);
-		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
-		expect(isFileExists).toEqual(true);
+		expect(exists(filePath)).resolves.toBe(true);
 	});
 
 	it('downloadJSONFile -> invalid url', async () => {
@@ -80,8 +80,7 @@ describe('downloadFile utility tests', () => {
 		const snapshotUrl = 'https://snapshots.lisk.io/testnet/service.sql.gz';
 		const filePath = `${directoryPath}/service-core-snapshot.sql`;
 		await downloadAndUnzipFile(snapshotUrl, filePath);
-		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
-		expect(isFileExists).toEqual(true);
+		expect(exists(filePath)).resolves.toBe(true);
 	});
 
 	it('downloadAndUnzipFile -> invalid url', async () => {
@@ -91,11 +90,10 @@ describe('downloadFile utility tests', () => {
 	});
 
 	it('downloadFile -> valid url', async () => {
-		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
-		const filePath = `${directoryPath}/known_mainnet.json`;
+		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
+		const filePath = `${directoryPath}/testFile.json`;
 		await downloadFile(url, directoryPath);
-		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
-		expect(isFileExists).toEqual(true);
+		expect(exists(filePath)).resolves.toBe(true);
 	});
 
 	it('downloadFile -> invalid url', async () => {

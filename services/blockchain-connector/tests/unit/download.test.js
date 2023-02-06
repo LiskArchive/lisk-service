@@ -16,9 +16,9 @@
 const { resolve } = require('path');
 const { verifyFileChecksum } = require('../../shared/utils/download');
 
-const genesisBlockFilePath = resolve(`${process.cwd()}/tests/fixtures/genesis_block.json`);
-const checksumFilePath = resolve(`${process.cwd()}/tests/fixtures/genesis_block.json.SHA256`);
-const invalidChecksumFilePath = resolve(`${process.cwd()}/tests/fixtures/invalid_genesis_block.json.SHA256`);
+const genesisBlockFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json`);
+const checksumFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json.SHA256`);
+const invalidChecksumFilePath = resolve(`${process.cwd()}/tests/constants/invalid_genesis_block.json.SHA256`);
 
 describe('Unit test for download utility -> verifyFileChecksum method', () => {
 	it('Return true in case of valid checksum', async () => {
