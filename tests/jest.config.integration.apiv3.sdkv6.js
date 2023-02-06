@@ -19,7 +19,7 @@ module.exports = {
 		'<rootDir>/integration/api_v3/http/*.test.js',
 		'<rootDir>/integration/api_v3/rpc/*.test.js',
 		'<rootDir>/integration/api_v3/events/*.test.js',
-		// '<rootDir>/integration/gateway/*.test.js', // TODO: Enable this after the issue https://github.com/LiskHQ/lisk-service/issues/1125
+		'<rootDir>/integration/gateway/*.test.js',
 	],
 	testEnvironment: 'node',
 	testTimeout: 50000,
