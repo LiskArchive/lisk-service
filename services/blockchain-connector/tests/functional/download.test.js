@@ -14,9 +14,7 @@
  *
  */
 jest.setTimeout(50000);
-const fs = require('fs');
 const { resolve, dirname } = require('path');
-const { Logger } = require('lisk-service-framework');
 
 const {
 	downloadAndExtractTarball,
@@ -25,30 +23,20 @@ const {
 	downloadFile,
 } = require('../../shared/utils/download');
 
-const { exists } = require('../../shared/utils/fs');
+const { exists, mkdir, rm } = require('../../shared/utils/fs');
 
 const config = require('../../config');
-
-const logger = Logger();
 
 describe('Functional tests for download utility', () => {
 	const directoryPath = resolve(`${dirname(__dirname)}/testDir`);
 
 	beforeAll(async () => {
 		// Create test directory
-		await fs.mkdir(directoryPath, { recursive: true }, (err) => logger.error(err));
+		await mkdir(directoryPath, { recursive: true });
 	});
 
 	afterAll(async () => {
-		// Remove test directory and its content
-		await fs.rmdir(
-			directoryPath,
-			{
-				recursive: true,
-				force: true,
-			},
-			(err) => logger.error(err),
-		);
+		await rm(directoryPath, { recursive: true, force: true });
 	});
 
 	it('downloadAndExtractTarball -> valid url', async () => {
