@@ -56,9 +56,9 @@ const license = {
 const info = {
 	title: Joi.string().required(),
 	version: Joi.string().required(),
-	contact: Joi.object(contact).optional(),
 	description: Joi.string().optional(),
 	termsOfService: Joi.string().optional(),
+	contact: Joi.object(contact).optional(),
 	license: Joi.object(license).optional(),
 };
 
@@ -100,14 +100,16 @@ const schema = {
 	uniqueItems: Joi.boolean().optional(),
 	maxProperties: Joi.number().integer().min(0).optional(),
 	minProperties: Joi.number().integer().min(0).optional(),
-	required: Joi.boolean().optional(),
+	required: Joi.array().items(Joi.string().optional()).optional(),
 	enum: Joi.array().items(Joi.string().required()).optional(),
 	additionalProperties: Joi.alternatives(Joi.boolean().optional(), Joi.string().optional())
 		.optional(),
 	type: Joi.alternatives(Joi.string().valid(...TYPES_ENUM).optional(), Joi.array().optional())
 		.optional(),
-	items: Joi.alternatives(Joi.string().optional(), Joi.array().min(1).optional())
-		.optional(),
+	items: Joi.alternatives(
+		Joi.object().optional(),
+		Joi.array().min(1).optional(),
+	).optional(),
 	allOf: Joi.array().min(1).optional(),
 	properties: Joi.object().optional(),
 	discriminator: Joi.string().optional(),
@@ -133,7 +135,7 @@ const fileSchema = {
 const commonProps = {
 	format: Joi.string().optional(),
 	description: Joi.string().optional(),
-	default: Joi.string().optional(),
+	default: Joi.any().optional(),
 	multipleOf: Joi.number().integer().optional(),
 	maximum: Joi.number().integer().optional(),
 	exclusiveMaximum: Joi.boolean().optional(),
@@ -206,20 +208,20 @@ const nonBodyParameter = Joi.alternatives(
 	Joi.object(pathParameterSubSchema).optional(),
 ).optional();
 
+const paramter = Joi.alternatives(bodyParameter, nonBodyParameter.optional()).optional();
+
 const responseKey = Joi.string().pattern(regex.SWAGGER_RESPONSE_KEY).min(1).required();
 const responseEntry = Joi.alternatives(
 	Joi.object(response).optional(),
 	Joi.object(jsonReference).optional(),
 ).optional();
 
-const entries = {
+const pathEntries = {
 	tags: Joi.array().items(Joi.string().required()).optional(),
 	summary: Joi.string().optional(),
 	description: Joi.string().optional(),
-	parameters: Joi.alternatives(
-		Joi.object(bodyParameter).optional(), Joi.object(nonBodyParameter).optional(),
-	).optional(),
-	responses: Joi.object().pattern(responseKey, responseEntry).required(),
+	parameters: Joi.array().items(Joi.alternatives(paramter, jsonReference)).optional(),
+	responses: Joi.object().pattern(responseKey, responseEntry).optional(),
 	operationId: Joi.string().optional(),
 	deprecated: Joi.boolean().optional(),
 	schemes: Joi.array().items(Joi.string().valid(...SWAGGER_SCHEMES_LIST).required()).optional(),
@@ -231,16 +233,14 @@ const entries = {
 
 const path = {
 	$ref: Joi.string().optional(),
-	get: Joi.object(entries).optional(),
-	post: Joi.object(entries).optional(),
-	put: Joi.object(entries).optional(),
-	delete: Joi.object(entries).optional(),
-	options: Joi.object(entries).optional(),
-	head: Joi.object(entries).optional(),
-	patch: Joi.object(entries).optional(),
-	parameters: Joi.alternatives(
-		Joi.object(bodyParameter).optional(), Joi.object(nonBodyParameter).optional(),
-	).optional(),
+	get: Joi.object(pathEntries).optional(),
+	post: Joi.object(pathEntries).optional(),
+	put: Joi.object(pathEntries).optional(),
+	delete: Joi.object(pathEntries).optional(),
+	options: Joi.object(pathEntries).optional(),
+	head: Joi.object(pathEntries).optional(),
+	patch: Joi.object(pathEntries).optional(),
+	parameters: Joi.array().items(Joi.alternatives(paramter, jsonReference)).optional(),
 };
 
 const pathKey = Joi.string().required();
@@ -249,26 +249,26 @@ const pathEntry = Joi.object(path).required();
 const definitionKey = Joi.string().required();
 const definitionEntry = Joi.object(schema).required();
 
+const paramKey = Joi.string().required();
+const paramEntry = Joi.alternatives(bodyParameter, nonBodyParameter).optional();
+
 // Schema specified according to https://github.com/OAI/OpenAPI-Specification/blob/36a3a67264cc1c4f1eff110cea3ebfe679435108/schemas/v2.0/schema.json
 const specResponseSchema = {
 	swagger: Joi.string().valid(...SWAGGER_VERSION).required(),
 	info: Joi.object(info).required(),
-	paths: Joi.object().pattern(pathKey, pathEntry).required(),
-	host: Joi.string().pattern(regex.SWAGGER_HOST).optional(),
+	host: Joi.string().optional(),
 	basePath: Joi.string().optional(),
 	schemes: Joi.array().items(Joi.string().valid(...SWAGGER_SCHEMES_LIST).required()).optional(),
-	tags: Joi.array().items(tag).optional(),
-	parameters: Joi.alternatives(
-		Joi.object(bodyParameter).optional(),
-		Joi.object(nonBodyParameter).optional(),
-	).optional(),
-	definitions: Joi.object().pattern(definitionKey, definitionEntry).optional(),
-	responses: Joi.object().pattern(responseKey, responseEntry).optional(),
-	externalDocs: Joi.object(externalDocs).optional(),
-	produces: Joi.string().optional(),
 	consumes: Joi.string().optional(),
+	produces: Joi.string().optional(),
+	paths: Joi.object().pattern(pathKey, pathEntry).required(),
+	definitions: Joi.object().pattern(definitionKey, definitionEntry).optional(),
+	parameters: Joi.object().pattern(paramKey, paramEntry).required(),
+	responses: Joi.object().pattern(responseKey, responseEntry).optional(),
 	security: Joi.array().items(Joi.object().optional()).optional(),
 	securityDefinitions: Joi.object().optional(),
+	tags: Joi.array().items(tag).optional(),
+	externalDocs: Joi.object(externalDocs).optional(),
 };
 
 module.exports = {
