@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { resolve } = require('path');
+const { resolve, dirname } = require('path');
 
 const {
 	exists,
@@ -26,9 +26,14 @@ const {
 const { genesisBlock } = require('../constants/blocks');
 
 describe('Unit tests for filesystem utilities', () => {
-	const dirPath = resolve(`${process.cwd()}/tests/testDir`);
+	const dirPath = resolve(`${dirname(__dirname)}/testDir`);
 	const filePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json`);
 	const tarFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json.tar.gz`);
+
+	afterAll(async () => {
+		// Remove test directory
+		await rm(dirPath, { recursive: true, force: true });
+	});
 
 	it('mkdir() method', async () => {
 		expect(exists(dirPath)).resolves.toBe(false);
@@ -51,11 +56,5 @@ describe('Unit tests for filesystem utilities', () => {
 		const result = await read(filePath);
 		const parsedResult = JSON.parse(result);
 		expect(parsedResult).toMatchObject(genesisBlock);
-	});
-
-	it('rm() method', async () => {
-		expect(exists(dirPath)).resolves.toBe(true);
-		await rm(dirPath, { recursive: true, force: true });
-		expect(exists(dirPath)).resolves.toBe(false);
 	});
 });

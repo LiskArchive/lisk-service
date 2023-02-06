@@ -15,7 +15,7 @@
  */
 jest.setTimeout(50000);
 const fs = require('fs');
-const path = require('path');
+const { resolve, dirname } = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const {
@@ -31,12 +31,12 @@ const config = require('../../config');
 
 const logger = Logger();
 
-const directoryPath = path.join(__dirname, 'testDir');
-
 describe('Functional tests for download utility', () => {
+	const directoryPath = resolve(`${dirname(__dirname)}/testDir`);
+
 	beforeAll(async () => {
 		// Create test directory
-		await fs.mkdir(directoryPath, (err) => logger.error(err));
+		await fs.mkdir(directoryPath, { recursive: true }, (err) => logger.error(err));
 	});
 
 	afterAll(async () => {

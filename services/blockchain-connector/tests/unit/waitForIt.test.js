@@ -15,10 +15,19 @@
  */
 const waitForIt = require('../../shared/utils/waitForIt');
 
-const testFn = jest.fn().mockReturnValue(true);
+let testValue = false;
 
 describe('Unit test for waitForIt utility', () => {
-	it('WaitForIt success', async () => {
+	it('Test WaitForIt method', async () => {
+		const testFn = () => testValue = true;
+		expect(testValue).toBe(false);
+		await waitForIt(testFn);
+		expect(testValue).toBe(true);
+	});
+
+	it('Test WaitForIt method with mocked function', async () => {
+		const testFn = jest.fn().mockReturnValue(true);
+
 		expect(testFn).toHaveBeenCalledTimes(0);
 		await waitForIt(testFn);
 		expect(testFn).toHaveBeenCalledTimes(1);
