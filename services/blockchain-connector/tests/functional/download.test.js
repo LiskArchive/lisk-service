@@ -39,52 +39,56 @@ describe('Functional tests for download utility', () => {
 		await rm(directoryPath, { recursive: true, force: true });
 	});
 
-	it('downloadAndExtractTarball -> valid url', async () => {
+	it('should download and extract tar file -> valid url', async () => {
 		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'mainnet');
 		const filePath = `${directoryPath}/genesis_block.json`;
+		expect(exists(filePath)).resolves.toBe(false);
 		await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
 		expect(exists(filePath)).resolves.toBe(true);
 	});
 
-	it('downloadAndExtractTarball -> invalid url', async () => {
+	it('should download and extract tar file -> invalid url', async () => {
 		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block_invalid.json';
 		expect(downloadAndExtractTarball(url, directoryPath)).rejects.toThrow();
 	});
 
-	it('downloadJSONFile -> valid url', async () => {
+	it('should download JSON file -> valid url', async () => {
 		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 		const filePath = `${directoryPath}/apiJson.json`;
+		expect(exists(filePath)).resolves.toBe(false);
 		await downloadJSONFile(url, filePath);
 		expect(exists(filePath)).resolves.toBe(true);
 	});
 
-	it('downloadJSONFile -> invalid url', async () => {
+	it('should download JSON file -> invalid url', async () => {
 		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block.json';
 		const filePath = `${directoryPath}/genesis_block.json`;
 		expect(downloadJSONFile(url, filePath)).rejects.toThrow();
 	});
 
-	it('downloadAndUnzipFile -> valid url', async () => {
+	it('should download and unzip file -> valid url', async () => {
 		const snapshotUrl = 'https://snapshots.lisk.io/testnet/service.sql.gz';
 		const filePath = `${directoryPath}/service-core-snapshot.sql`;
+		expect(exists(filePath)).resolves.toBe(false);
 		await downloadAndUnzipFile(snapshotUrl, filePath);
 		expect(exists(filePath)).resolves.toBe(true);
 	});
 
-	it('downloadAndUnzipFile -> invalid url', async () => {
+	it('should download and unzip file -> invalid url', async () => {
 		const url = 'https://downloads.lisk.com/lisk/testnet/service-core-snapshot-invalid.sql.gz';
 		const filePath = `${directoryPath}/service-core-snapshot-invalid.sql`;
 		expect(downloadAndUnzipFile(url, filePath)).rejects.toThrow();
 	});
 
-	it('downloadFile -> valid url', async () => {
+	it('should download file -> valid url', async () => {
 		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 		const filePath = `${directoryPath}/testFile.json`;
+		expect(exists(filePath)).resolves.toBe(false);
 		await downloadFile(url, directoryPath);
 		expect(exists(filePath)).resolves.toBe(true);
 	});
 
-	it('downloadFile -> invalid url', async () => {
+	it('should download file -> invalid url', async () => {
 		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block.json';
 		expect(downloadJSONFile(url, directoryPath)).rejects.toThrow();
 	});

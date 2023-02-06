@@ -35,13 +35,13 @@ describe('Unit tests for filesystem utilities', () => {
 		await rm(dirPath, { recursive: true, force: true });
 	});
 
-	it('mkdir() method', async () => {
+	it('should create directory', async () => {
 		expect(exists(dirPath)).resolves.toBe(false);
 		await mkdir(dirPath, { recursive: true });
 		expect(exists(dirPath)).resolves.toBe(true);
 	});
 
-	it('extractTarBall() method', async () => {
+	it('should extract tar file', async () => {
 		const outputPath = `${dirPath}/genesis_block.json`;
 		expect(exists(outputPath)).resolves.toBe(false);
 
@@ -50,7 +50,7 @@ describe('Unit tests for filesystem utilities', () => {
 		expect(exists(outputPath)).resolves.toBe(true);
 	});
 
-	it('read() method', async () => {
+	it('should read data from file', async () => {
 		expect(exists(filePath)).resolves.toBe(true);
 		// Read data from file
 		const result = await read(filePath);

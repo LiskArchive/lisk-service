@@ -18,14 +18,14 @@ const waitForIt = require('../../shared/utils/waitForIt');
 let testValue = false;
 
 describe('Unit test for waitForIt utility', () => {
-	it('Test WaitForIt method', async () => {
+	it('should wait for the function to invoke', async () => {
 		const testFn = () => testValue = true;
 		expect(testValue).toBe(false);
 		await waitForIt(testFn);
 		expect(testValue).toBe(true);
 	});
 
-	it('Test WaitForIt method with mocked function', async () => {
+	it('should wait for the mocked function to invoke', async () => {
 		const testFn = jest.fn().mockReturnValue(true);
 
 		expect(testFn).toHaveBeenCalledTimes(0);

@@ -21,12 +21,12 @@ const checksumFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block
 const invalidChecksumFilePath = resolve(`${process.cwd()}/tests/constants/invalid_genesis_block.json.SHA256`);
 
 describe('Unit test for download utility -> verifyFileChecksum method', () => {
-	it('Return true in case of valid checksum', async () => {
+	it('should return true in case of valid checksum', async () => {
 		const result = await verifyFileChecksum(genesisBlockFilePath, checksumFilePath);
 		expect(result).toEqual(true);
 	});
 
-	it('Return false in case of invalid checksum', async () => {
+	it('should return false in case of invalid checksum', async () => {
 		const result = await verifyFileChecksum(genesisBlockFilePath, invalidChecksumFilePath);
 		expect(result).toEqual(false);
 	});

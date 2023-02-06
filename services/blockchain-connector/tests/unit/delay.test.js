@@ -16,7 +16,15 @@
 const delay = require('../../shared/utils/delay');
 
 describe('Unit test for delay utility', () => {
-	it('Add delay -> 2ms', async () => {
+	it('should add default delay', async () => {
+		const startTime = Date.now();
+		await delay();
+		const endTime = Date.now();
+		const millisDifference = endTime - startTime;
+		expect(millisDifference).toBeGreaterThan(0);
+	});
+
+	it('should add delay of 2ms', async () => {
 		const delayMs = 2000;
 		const startTime = Date.now();
 		await delay(delayMs);
@@ -25,7 +33,7 @@ describe('Unit test for delay utility', () => {
 		expect(millisDifference).toBeGreaterThanOrEqual(delayMs);
 	});
 
-	it('Add delay -> 4ms', async () => {
+	it('should add delay of 4ms', async () => {
 		const delayMs = 4000;
 		const startTime = Date.now();
 		await delay(delayMs);
