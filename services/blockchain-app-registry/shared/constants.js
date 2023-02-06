@@ -15,6 +15,11 @@
  */
 const LENGTH_CHAIN_ID = 8;
 
+const KV_STORE_KEY = {
+	COMMIT_HASH_UNTIL_LAST_SYNC: 'commitHashUntilLastSync',
+};
+
 module.exports = {
 	LENGTH_CHAIN_ID,
+	KV_STORE_KEY,
 };
