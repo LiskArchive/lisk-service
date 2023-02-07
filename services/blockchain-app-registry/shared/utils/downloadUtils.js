@@ -64,7 +64,7 @@ const downloadFile = (url, filePath) => new Promise((resolve, reject) => {
 			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
-				resolve();
+				setTimeout(resolve, 100); // Since the promise resolves earlier than expected
 			});
 		} else {
 			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
