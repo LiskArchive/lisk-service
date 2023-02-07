@@ -29,7 +29,7 @@ describe('Unit tests for mysqlKVStore', () => {
 			expect(typeof response).toBe('number');
 		});
 
-		it('Should bigint return  when type is bigint', () => {
+		it('Should return bigint when type is bigint', () => {
 			const response = formatValue('123', 'bigint');
 			expect(response).toBe(BigInt(123));
 			expect(typeof response).toBe('bigint');

@@ -31,6 +31,7 @@ describe('Test set and get methods', () => {
 		await keyValueTable.set(KEY_1, VALUE_1);
 		const response = await keyValueTable.get(KEY_1);
 		expect(response).toBe(VALUE_1);
+
 		// Update and check key
 		await keyValueTable.set(KEY_1, VALUE_2);
 		const response2 = await keyValueTable.get(KEY_1);
@@ -95,7 +96,7 @@ describe('Test delete method', () => {
 		expect(responseAfter).toEqual(undefined);
 	});
 
-	it('Returns correct response after deleting non-existing key', async () => {
+	it('Returns undefined after deleting non-existing key', async () => {
 		const responseBefore = await keyValueTable.get(KEY_1);
 		expect(responseBefore).toEqual(undefined);
 
