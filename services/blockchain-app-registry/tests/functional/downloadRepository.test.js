@@ -50,7 +50,7 @@ describe('Test getCommitInfo method', () => {
 	));
 	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
 
-	it('Returns correct commit hash info', async () => {
+	it('Returns correct commit info', async () => {
 		const response = await getCommitInfo();
 		expect(Object.keys(response)).toEqual(['lastSyncedCommitHash', 'latestCommitHash']);
 		expect(response.lastSyncedCommitHash).toEqual(lastSyncedCommitHash);
@@ -59,14 +59,14 @@ describe('Test getCommitInfo method', () => {
 });
 
 describe('Test getRepoDownloadURL method', () => {
-	it('Returns correct repository download url', async () => {
+	it('Returns correct repository download url info', async () => {
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(/^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main\?token=\w*$/);
 	});
 });
 
 describe('Test getFileDownloadURL method', () => {
-	it('Returns correct repository download info when file is valid', async () => {
+	it('Returns correct file download info when file is valid', async () => {
 		const response = await getFileDownloadURL('devnet/Enevti/nativetokens.json');
 		/* eslint-disable-next-line no-useless-escape */
 		expect(response.url).toMatch(new RegExp(`^https:\/\/\\w*.github.com\/repos\/LiskHQ\/${config.gitHub.appRegistryRepoName}\/contents\/devnet\/Enevti\/nativetokens.json\\?owner=LiskHQ&repo=${config.gitHub.appRegistryRepoName}&ref=${config.gitHub.branch}$`));
@@ -96,6 +96,26 @@ describe('Test getDiff method', () => {
 			'betanet/Lisk/nativetokens.json',
 			'devnet/Lisk/nativetokens.json',
 		]);
+	});
+
+	it('Throws error when both commits are invalid', async () => {
+		expect(() => getDiff('aaaa64896420410dcbade293980fe42ca95931d0', 'bbbb21f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
+	});
+
+	it('Throws error when lastSyncedCommitHash is invalid', async () => {
+		expect(() => getDiff('aaaa64896420410dcbade293980fe42ca95931d0', '5ca021f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
+	});
+
+	it('Throws error when both latestCommitHash is invalid', async () => {
+		expect(() => getDiff('838464896420410dcbade293980fe42ca95931d0', 'bbbb21f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
+	});
+
+	it('Throws error when both commits are undefined', async () => {
+		expect(() => getDiff(undefined, undefined)).rejects.toThrow();
+	});
+
+	it('Throws error when both commits are null', async () => {
+		expect(() => getDiff(null, null)).rejects.toThrow();
 	});
 });
 
@@ -164,7 +184,7 @@ describe('Test syncWithRemoteRepo method', () => {
 	});
 	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
 
-	it('Sync repository with current state', async () => {
+	it('Syncs repository upto latest commit', async () => {
 		await syncWithRemoteRepo();
 		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
 	});

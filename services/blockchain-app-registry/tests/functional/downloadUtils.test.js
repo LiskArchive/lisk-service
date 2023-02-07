@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.setTimeout(15000);
 const { downloadAndExtractTarball, downloadFile } = require('../../shared/utils/downloadUtils');
 const { mkdir, rmdir, exists } = require('../../shared/utils/fsUtils');
 
@@ -25,10 +24,30 @@ beforeEach(async () => mkdir(dirPath));
 afterEach(async () => rmdir(dirPath));
 
 describe('Test downloadAndExtractTarball method', () => {
-	it('Downloads and extracts correctly for right url and data directory', async () => {
+	it('Downloads and extracts correctly when url and data directory is valid', async () => {
 		await downloadAndExtractTarball(url, dirPath);
 
 		expect(await exists(`${dirPath}/lisk-service-0.6.4`)).toEqual(true);
+	});
+
+	it('Throws error when url is invalid', async () => {
+		expect(downloadAndExtractTarball(`${url}/invalid_file`, dirPath)).rejects.toThrow();
+	});
+
+	it('Throws error when url is undefined', async () => {
+		expect(downloadAndExtractTarball(undefined, dirPath)).rejects.toThrow();
+	});
+
+	it('Throws error when url is null', async () => {
+		expect(downloadAndExtractTarball(null, dirPath)).rejects.toThrow();
+	});
+
+	it('Downloads and extracts correctly when dirPath is undefined', async () => {
+		expect(downloadAndExtractTarball(url, undefined)).rejects.toThrow();
+	});
+
+	it('Downloads and extracts correctly when dirPath is null', async () => {
+		expect(downloadAndExtractTarball(url, null)).rejects.toThrow();
 	});
 });
 

@@ -28,6 +28,11 @@ const logger = Logger();
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
+	if (!url || !directoryPath) {
+		reject(new Error(`Invalid url or directoryPath. url: ${url} directoryPath:${directoryPath}`));
+		return;
+	}
+
 	logger.info(`Downloading and extracting file from ${url} to ${directoryPath}.`);
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
