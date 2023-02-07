@@ -52,6 +52,11 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadFile = (url, filePath) => new Promise((resolve, reject) => {
+	if (!url || !filePath) {
+		reject(new Error(`Invalid url or directoryPath. url: ${url} filePath:${filePath}`));
+		return;
+	}
+
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
 			const writeStream = fs.createWriteStream(filePath);

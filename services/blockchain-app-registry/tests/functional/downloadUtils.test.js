@@ -42,22 +42,44 @@ describe('Test downloadAndExtractTarball method', () => {
 		expect(downloadAndExtractTarball(null, dirPath)).rejects.toThrow();
 	});
 
-	it('Downloads and extracts correctly when dirPath is undefined', async () => {
+	it('Throws error when dirPath is undefined', async () => {
 		expect(downloadAndExtractTarball(url, undefined)).rejects.toThrow();
 	});
 
-	it('Downloads and extracts correctly when dirPath is null', async () => {
+	it('Throws error when dirPath is null', async () => {
 		expect(downloadAndExtractTarball(url, null)).rejects.toThrow();
 	});
 });
 
 describe('Test downloadFile method', () => {
-	it('Downloads file for a correct url and directory path', async () => {
+	const fileUrl = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
+	const filePath = `${dirPath}/test.json`;
+
+	it('Downloads file for a correct url and file path', async () => {
 		await mkdir(dirPath);
-		const fileUrl = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
-		const filePath = `${dirPath}/test.json`;
 		await downloadFile(fileUrl, filePath);
 
 		expect(await exists(filePath)).toEqual(true);
+		await rmdir(filePath);
+	});
+
+	it('Throws error when url is invalid', async () => {
+		expect(downloadFile(`${fileUrl}/invalid_file`, filePath)).rejects.toThrow();
+	});
+
+	it('Throws error when url is undefined', async () => {
+		expect(downloadFile(undefined, filePath)).rejects.toThrow();
+	});
+
+	it('Throws error when url is null', async () => {
+		expect(downloadFile(null, filePath)).rejects.toThrow();
+	});
+
+	it('Throws error when file path is undefined', async () => {
+		expect(downloadFile(url, undefined)).rejects.toThrow();
+	});
+
+	it('Throws error when file path is null', async () => {
+		expect(downloadFile(url, null)).rejects.toThrow();
 	});
 });
