@@ -33,7 +33,7 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('Returns proper response when url does only have owner', async () => {
+	it('Returns proper response when url only have owner', async () => {
 		const response = getRepoInfoFromURL('http://example.com/Somebody');
 		expect(response).toMatchObject({
 			owner: 'Somebody',
@@ -51,6 +51,14 @@ describe('Test getRepoInfoFromURL method', () => {
 
 	it('Returns proper response when url is undefined', async () => {
 		const response = getRepoInfoFromURL();
+		expect(response).toMatchObject({
+			owner: undefined,
+			repo: undefined,
+		});
+	});
+
+	it('Returns proper response when url is null', async () => {
+		const response = getRepoInfoFromURL(null);
 		expect(response).toMatchObject({
 			owner: undefined,
 			repo: undefined,
@@ -154,7 +162,12 @@ describe('Test filterMetaConfigFilesByNetwork method', () => {
 	});
 
 	it('Returns empty array when network and files are undefined', async () => {
-		const response = await filterMetaConfigFilesByNetwork();
+		const response = await filterMetaConfigFilesByNetwork(undefined, undefined);
+		expect(response).toEqual([]);
+	});
+
+	it('Returns empty array when network and files are null', async () => {
+		const response = await filterMetaConfigFilesByNetwork(null, null);
 		expect(response).toEqual([]);
 	});
 });

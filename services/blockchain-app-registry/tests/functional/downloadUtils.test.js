@@ -26,7 +26,6 @@ afterEach(async () => rmdir(dirPath));
 describe('Test downloadAndExtractTarball method', () => {
 	it('Downloads and extracts correctly when url and data directory is valid', async () => {
 		await downloadAndExtractTarball(url, dirPath);
-
 		expect(await exists(`${dirPath}/lisk-service-0.6.4`)).toEqual(true);
 	});
 
