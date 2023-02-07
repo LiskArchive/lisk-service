@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.setTimeout(50000);
 const { resolve, dirname } = require('path');
 
 const {
@@ -39,8 +38,13 @@ describe('Functional tests for download utility', () => {
 		await rm(directoryPath, { recursive: true, force: true });
 	});
 
+	afterEach(async () => {
+		await rm(`${directoryPath}/genesis_block.json`);
+		await rm(`${directoryPath}/apiJson.json`);
+	});
+
 	it('should download and extract tar file -> valid url', async () => {
-		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'mainnet');
+		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
 		const filePath = `${directoryPath}/genesis_block.json`;
 		expect(exists(filePath)).resolves.toBe(false);
 		await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
@@ -67,10 +71,10 @@ describe('Functional tests for download utility', () => {
 	});
 
 	it('should download and unzip file -> valid url', async () => {
-		const snapshotUrl = 'https://snapshots.lisk.io/testnet/service.sql.gz';
-		const filePath = `${directoryPath}/service-core-snapshot.sql`;
+		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
+		const filePath = `${directoryPath}/genesis_block.json`;
 		expect(exists(filePath)).resolves.toBe(false);
-		await downloadAndUnzipFile(snapshotUrl, filePath);
+		await downloadAndUnzipFile(genesisBlockUrl, filePath);
 		expect(exists(filePath)).resolves.toBe(true);
 	});
 
@@ -82,7 +86,7 @@ describe('Functional tests for download utility', () => {
 
 	it('should download file -> valid url', async () => {
 		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
-		const filePath = `${directoryPath}/testFile.json`;
+		const filePath = `${directoryPath}/apiJson.json`;
 		expect(exists(filePath)).resolves.toBe(false);
 		await downloadFile(url, directoryPath);
 		expect(exists(filePath)).resolves.toBe(true);
@@ -90,6 +94,6 @@ describe('Functional tests for download utility', () => {
 
 	it('should download file -> invalid url', async () => {
 		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block.json';
-		expect(downloadJSONFile(url, directoryPath)).rejects.toThrow();
+		expect(downloadFile(url, directoryPath)).rejects.toThrow();
 	});
 });
