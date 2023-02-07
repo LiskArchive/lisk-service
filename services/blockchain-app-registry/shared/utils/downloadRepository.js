@@ -93,6 +93,8 @@ const getRepoDownloadURL = async () => {
 };
 
 const getFileDownloadURL = async (file) => {
+	if (!file) return {};
+
 	try {
 		const result = await octokit.request(
 			`GET /repos/${owner}/${repo}/contents/${file}`,
@@ -260,4 +262,7 @@ module.exports = {
 	getCommitInfo,
 	getUniqueNetworkAppDirPairs,
 	filterMetaConfigFilesByNetwork,
+	getFileDownloadURL,
+	getDiff,
+	buildEventPayload,
 };

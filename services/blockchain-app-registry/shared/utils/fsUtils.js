@@ -51,17 +51,26 @@ const mkdir = async (directoryPath, options = { recursive: true }) => {
 	);
 };
 
-const rmdir = async (directoryPath, options = { recursive: true }) => {
+const rmdir = async (directoryPath, options = { recursive: true }) => new Promise((resolve) => {
 	logger.debug(`Removing directory: ${directoryPath}`);
-	await fs.rmdir(
+	fs.rm(
 		directoryPath,
-		options,
+		{
+			...options,
+			recursive: true,
+		},
 		(err) => {
-			if (err) logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
-			else logger.debug(`Successfully removed directory: ${directoryPath}`);
+			if (err) {
+				logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
+				resolve(false);
+			}
+			else {
+				resolve(true);
+				logger.debug(`Successfully removed directory: ${directoryPath}`);
+			}
 		},
 	);
-};
+});
 
 const read = (filePath) => new Promise((resolve, reject) => {
 	fs.readFile(filePath, 'utf8', (err, data) => {
