@@ -45,7 +45,7 @@ describe('test getByPattern method', () => {
 		await keyValueTable.set(KEY_2, VALUE_2);
 	});
 
-	it('should return a list for partial match of same case pattern', async () => {
+	it('should return correct response for partial match of same case pattern', async () => {
 		// Set and check key
 		const response = await keyValueTable.getByPattern('KEY');
 		expect(response).toEqual([
@@ -60,7 +60,7 @@ describe('test getByPattern method', () => {
 		]);
 	});
 
-	it('should a list for partial match of case insensitive pattern', async () => {
+	it('should return correct response for partial match of case insensitive pattern', async () => {
 		const response = await keyValueTable.getByPattern('kEy');
 		expect(response).toEqual([
 			{
@@ -74,7 +74,7 @@ describe('test getByPattern method', () => {
 		]);
 	});
 
-	it('should return a list for partial match of second key', async () => {
+	it('should return correct response for partial match of second key', async () => {
 		const response = await keyValueTable.getByPattern('2');
 		expect(response).toEqual([
 			{
@@ -87,18 +87,16 @@ describe('test getByPattern method', () => {
 
 describe('test delete method', () => {
 	it('should return undefined after deleting key', async () => {
-		// Set key and check
 		await keyValueTable.set(KEY_1, VALUE_1);
 		const responseBefore = await keyValueTable.get(KEY_1);
 		expect(responseBefore).toEqual(VALUE_1);
 
-		// Delete key and check
 		await keyValueTable.delete(KEY_1);
 		const responseAfter = await keyValueTable.get(KEY_1);
 		expect(responseAfter).toEqual(undefined);
 	});
 
-	it('should return correct response after deleting non-existing key', async () => {
+	it('should return undefined after deleting non-existing key', async () => {
 		const responseBefore = await keyValueTable.get(KEY_1);
 		expect(responseBefore).toEqual(undefined);
 
