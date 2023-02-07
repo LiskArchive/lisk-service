@@ -16,8 +16,8 @@
 const { getRepoInfoFromURL } = require('../../shared/utils/downloadRepository');
 const config = require('../../config');
 
-describe('Test getRepoInfoFromURL method', () => {
-	it('Returns proper response when url is valid', async () => {
+describe('test getRepoInfoFromURL method', () => {
+	it('should return proper response when url is valid', async () => {
 		const response = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 		expect(response).toMatchObject({
 			owner: 'LiskHQ',
@@ -25,7 +25,7 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('Returns proper response when url does not have owner or repo', async () => {
+	it('should return proper response when url does not have owner or repo', async () => {
 		const response = getRepoInfoFromURL('http://example.com');
 		expect(response).toMatchObject({
 			owner: undefined,
@@ -33,7 +33,7 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('Returns proper response when url does only have owner', async () => {
+	it('should return proper response when url does only have owner', async () => {
 		const response = getRepoInfoFromURL('http://example.com/Somebody');
 		expect(response).toMatchObject({
 			owner: 'Somebody',
@@ -41,7 +41,7 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('Returns proper response when url is empty string', async () => {
+	it('should return proper response when url is empty string', async () => {
 		const response = getRepoInfoFromURL('');
 		expect(response).toMatchObject({
 			owner: undefined,
@@ -49,7 +49,7 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('Returns proper response when url is undefined', async () => {
+	it('should return proper response when url is undefined', async () => {
 		const response = getRepoInfoFromURL();
 		expect(response).toMatchObject({
 			owner: undefined,

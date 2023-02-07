@@ -25,12 +25,13 @@ afterEach(async () => {
 	await keyValueTable.delete(KEY_2);
 });
 
-describe('Test set and get methods', () => {
-	it('Sets and updates value correctly', async () => {
+describe('test set and get methods', () => {
+	it('should set and update value correctly', async () => {
 		// Set and check key
 		await keyValueTable.set(KEY_1, VALUE_1);
 		const response = await keyValueTable.get(KEY_1);
 		expect(response).toBe(VALUE_1);
+
 		// Update and check key
 		await keyValueTable.set(KEY_1, VALUE_2);
 		const response2 = await keyValueTable.get(KEY_1);
@@ -38,13 +39,13 @@ describe('Test set and get methods', () => {
 	});
 });
 
-describe('Test getByPattern method', () => {
+describe('test getByPattern method', () => {
 	beforeEach(async () => {
 		await keyValueTable.set(KEY_1, VALUE_1);
 		await keyValueTable.set(KEY_2, VALUE_2);
 	});
 
-	it('Returns correct response for partial match of same case pattern', async () => {
+	it('should return a list for partial match of same case pattern', async () => {
 		// Set and check key
 		const response = await keyValueTable.getByPattern('KEY');
 		expect(response).toEqual([
@@ -59,7 +60,7 @@ describe('Test getByPattern method', () => {
 		]);
 	});
 
-	it('Returns correct response for partial match of case insensitive pattern', async () => {
+	it('should a list for partial match of case insensitive pattern', async () => {
 		const response = await keyValueTable.getByPattern('kEy');
 		expect(response).toEqual([
 			{
@@ -73,7 +74,7 @@ describe('Test getByPattern method', () => {
 		]);
 	});
 
-	it('Returns correct response for partial match of second key', async () => {
+	it('should return a list for partial match of second key', async () => {
 		const response = await keyValueTable.getByPattern('2');
 		expect(response).toEqual([
 			{
@@ -84,18 +85,20 @@ describe('Test getByPattern method', () => {
 	});
 });
 
-describe('Test delete method', () => {
-	it('Returns undefined after deleting key', async () => {
+describe('test delete method', () => {
+	it('should return undefined after deleting key', async () => {
+		// Set key and check
 		await keyValueTable.set(KEY_1, VALUE_1);
 		const responseBefore = await keyValueTable.get(KEY_1);
 		expect(responseBefore).toEqual(VALUE_1);
 
+		// Delete key and check
 		await keyValueTable.delete(KEY_1);
 		const responseAfter = await keyValueTable.get(KEY_1);
 		expect(responseAfter).toEqual(undefined);
 	});
 
-	it('Returns correct response after deleting non-existing key', async () => {
+	it('should return correct response after deleting non-existing key', async () => {
 		const responseBefore = await keyValueTable.get(KEY_1);
 		expect(responseBefore).toEqual(undefined);
 
