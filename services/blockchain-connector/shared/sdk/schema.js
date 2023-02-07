@@ -13,6 +13,8 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
+
 let schemas;
 let metadata;
 
@@ -38,13 +40,15 @@ const getTransactionParamsSchema = (transaction) => {
 
 const setMetadata = (_metadata) => metadata = _metadata;
 
-const getBlockAssetDataSchemaByModule = (module) => {
-	const moduleMetadata = metadata.modules.find(m => m.name === module);
+const getBlockAssetDataSchemaByModule = (_module) => {
+	const moduleMetadata = metadata.modules.find(m => m.name === _module);
 	const [{ data: schema } = {}] = moduleMetadata.assets;
 	return schema;
 };
 
 const getDataSchemaByEventName = (eventName) => {
+	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === eventName) return schemas.standardEvent;
+
 	// TODO: Optimize
 	for (let i = 0; i < metadata.modules.length; i++) {
 		const module = metadata.modules[i];

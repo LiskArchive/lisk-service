@@ -1,27 +1,30 @@
+##### Stage 1
+
 FROM node:16-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk python2 git libtool autoconf automake
-RUN adduser -D builder
+RUN adduser -D builder && \
+    mkdir /home/builder/build && \
+    chown -R builder:builder /home/builder/
 
 USER builder
-RUN mkdir /home/builder/build
 WORKDIR /home/builder/build
 
 COPY ./package-lock.json ./package.json ./
 RUN npm ci
 
 
+##### Stage 2
+
 FROM node:16-alpine
 
-RUN apk add --no-cache curl
-RUN adduser -D lisk
-
-COPY ./ /home/lisk/lisk-service/export/
-RUN chown -R lisk:lisk /home/lisk/
-RUN mkdir -p /home/lisk/lisk-service/export/data
-RUN chown -R  lisk:lisk /home/lisk/lisk-service/export/data
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/export/node_modules/
+RUN mkdir -p /home/lisk/lisk-service/export/data && \
+    adduser -D lisk && \
+    chown -R lisk:lisk /home/lisk/
 
 USER lisk
 WORKDIR /home/lisk/lisk-service/export
+
+COPY ./ .
+COPY --from=builder /home/builder/build/node_modules/ ./node_modules/
+
 CMD ["node", "app.js"]

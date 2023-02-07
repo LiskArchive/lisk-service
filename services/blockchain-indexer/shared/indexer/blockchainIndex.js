@@ -105,15 +105,37 @@ const getTransactionExecutionStatus = (tx, events) => {
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
 	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
+
+	// TODO: Temporary patch work
+	if ('success' in txExecResultEvent.data) return txExecResultEvent.data.success ? 'success' : 'fail';
 	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
 };
+
+// TODO: Move this require to top
+// const { KV_STORE_KEY } = require('../constants');
+// const EVENT_NAME = Object.freeze({
+// 	LOCKED: 'locked',
+// 	UNLOCKED: 'unlocked',
+// });
+
+// const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
+// 	Object.entries(tokenIDLockedAmountChangeMap),
+// 	async ([tokenID, lockedAmountChange]) => {
+// 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
+// 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+// 		const newLockedAmount = curLockedAmount + lockedAmountChange;
+
+// 		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
+// 	},
+// 	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
+// );
 
 const indexBlock = async job => {
 	const { block } = job.data;
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection();
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
@@ -195,6 +217,25 @@ const indexBlock = async job => {
 					}, dbTrx);
 				}
 			}
+
+			// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+			// // Calculate locked amount change and update in key_value_store table for affected tokens
+			// const tokenIDLockedAmountChangeMap = {};
+			// events.forEach(event => {
+			// 	const { data: eventData } = event;
+			// 	// Initialize map entry with BigInt
+			// 	if ([EVENT_NAME.LOCKED, EVENT_NAME.UNLOCKED].includes(event.name)
+			// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+			// 	}
+
+			// 	if (event.name === EVENT_NAME.LOCKED) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
+			// 	} else if (event.name === EVENT_NAME.UNLOCKED) {
+			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
+			// 	}
+			// });
+			// await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 		}
 
 		const blockToIndex = {
@@ -211,7 +252,7 @@ const indexBlock = async job => {
 		await rollbackDbTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}`);
 
-		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+		if (['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e))) {
 			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
@@ -234,7 +275,7 @@ const deleteIndexedBlocks = async job => {
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection();
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	try {
@@ -273,6 +314,30 @@ const deleteIndexedBlocks = async job => {
 				}
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
+
+				// TODO: Update events fetching logic
+				// const events = await getEventsByHeight(block.height);
+				// if (events.length) {
+				// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
+				// // Calculate locked amount change and update in key_value_store table for affected tokens
+				// const tokenIDLockedAmountChangeMap = {};
+				// events.forEach(event => {
+				// 	const { data: eventData } = event;
+				// 	// Initialize map entry with BigInt
+				// 	if ([EVENT_NAME.LOCKED, EVENT_NAME.UNLOCKED].includes(event.name)
+				// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap) {
+				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+				// 	}
+
+				// 	// Negate amount to reverse the affect
+				// 	if (event.name === EVENT_NAME.LOCKED) {
+				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
+				// 	} else if (event.name === EVENT_NAME.UNLOCKED) {
+				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
+				// 	}
+				// });
+				// await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+				// }
 			});
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
@@ -288,7 +353,7 @@ const deleteIndexedBlocks = async job => {
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
+		logger.warn(`Error occurred while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
@@ -297,6 +362,12 @@ const deleteIndexedBlocks = async job => {
 const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 1);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+
+const getLiveIndexingJobCount = async () => {
+	const { queue: bullQueue } = indexBlocksQueue;
+	const count = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+	return count;
+};
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
@@ -458,4 +529,5 @@ module.exports = {
 	deleteBlock,
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
+	getLiveIndexingJobCount,
 };

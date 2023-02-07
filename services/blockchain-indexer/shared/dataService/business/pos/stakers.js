@@ -25,20 +25,22 @@ const stakesIndexSchema = require('../../../database/schema/stakes');
 const {
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
+	getAccountsTable,
 	getLisk32AddressFromPublicKey,
 } = require('../../../utils/accountUtils');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getStakesIndex = () => getTableInstance(
+const getStakesTable = () => getTableInstance(
 	stakesIndexSchema.tableName,
 	stakesIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getStakers = async params => {
-	const stakesTable = await getStakesIndex();
-	const stakers = {
+	const stakesTable = await getStakesTable();
+	const accountsTable = await getAccountsTable();
+	const stakersResponse = {
 		data: { stakers: [] },
 		meta: {
 			validator: {},
@@ -53,16 +55,20 @@ const getStakers = async params => {
 		params = remParams;
 
 		params.validatorAddress = address;
-		stakers.meta.validator.address = address;
+		stakersResponse.meta.validator.address = address;
 	}
 
 	if (params.publicKey) {
 		const { publicKey, ...remParams } = params;
 		params = remParams;
 
-		params.validatorAddress = getLisk32AddressFromPublicKey(publicKey);
-		stakers.meta.validator.address = params.validatorAddress;
-		stakers.meta.validator.publicKey = publicKey;
+		const address = getLisk32AddressFromPublicKey(publicKey);
+		// TODO: Remove once gateway param pairings check is updated
+		if (params.validatorAddress && params.validatorAddress !== address) return stakersResponse;
+
+		params.validatorAddress = address;
+		stakersResponse.meta.validator.address = params.validatorAddress;
+		stakersResponse.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
 		await updateAccountPublicKey(publicKey);
@@ -72,19 +78,45 @@ const getStakers = async params => {
 		const { name, ...remParams } = params;
 		params = remParams;
 
-		const { address } = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
+		const { address } = await getIndexedAccountInfo({ name }, ['address']);
+		// TODO: Remove once gateway param pairings check is updated
+		if (params.validatorAddress && params.validatorAddress !== address) return stakersResponse;
+
 		params.validatorAddress = address;
-		stakers.meta.validator.name = name;
+		stakersResponse.meta.validator.name = name;
 	}
 
 	// If validatorAddress is unavailable, return empty response
-	if (!params.validatorAddress) return stakers;
+	if (!params.validatorAddress) return stakersResponse;
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ numStakers }] = await stakesTable.rawQuery(`SELECT COUNT(stakerAddress) as numStakers from ${stakesIndexSchema.tableName} WHERE validatorAddress='${params.validatorAddress}'`);
+	// Search param is used to filter stakers by name. Prepare list of valid staker addresses
+	// for the given search (staker name) param
+	const stakerAddressNameMap = {};
+	const stakerAddressQueryFilter = {};
+	if (params.search) {
+		const stakerAccountsInfo = await accountsTable.find(
+			{
+				search: {
+					property: 'name',
+					pattern: params.search,
+				},
+			},
+			['name', 'address'],
+		);
 
-	const resultSet = await stakesTable.find(
+		stakerAccountsInfo.forEach(accountInfo => {
+			stakerAddressNameMap[accountInfo.address] = accountInfo.name;
+		});
+		stakerAddressQueryFilter.whereIn = {
+			property: 'stakerAddress',
+			values: Object.keys(stakerAddressNameMap),
+		};
+	}
+
+	// Fetch list of stakes
+	const stakes = await stakesTable.find(
 		{
+			...stakerAddressQueryFilter,
 			validatorAddress: params.validatorAddress,
 			limit: params.limit,
 			offset: params.offset,
@@ -93,36 +125,45 @@ const getStakers = async params => {
 		},
 		['stakerAddress', 'amount'],
 	);
-	if (resultSet.length) stakers.data.stakers = resultSet;
 
-	stakers.data.stakers = await BluebirdPromise.map(
-		stakers.data.stakers,
+	// Populate stakers name and prepare response
+	stakersResponse.data.stakers = await BluebirdPromise.map(
+		stakes,
 		async stake => {
-			const { name = null } = await getIndexedAccountInfo({ address: stake.stakerAddress, limit: 1 }, ['name']);
+			// Try to use cached staker name. Query DB if not found.
+			let stakerName = stakerAddressNameMap[stake.stakerAddress];
+			if (!stakerName) {
+				const accountInfo = await getIndexedAccountInfo({ address: stake.stakerAddress }, ['name']);
+				stakerName = accountInfo.name;
+			}
+
 			return {
 				address: stake.stakerAddress,
 				amount: stake.amount,
-				name,
+				name: stakerName,
 			};
 		},
-		{ concurrency: stakers.data.stakers.length },
+		{ concurrency: stakes.length },
 	);
 
 	const validatorAccountInfo = await getIndexedAccountInfo(
-		{ address: params.validatorAddress, limit: 1 },
+		{ address: params.validatorAddress },
 		['name', 'publicKey'],
 	);
-	stakers.meta.validator = {
-		address: params.validatorAddress,
-		name: validatorAccountInfo.name || null,
-		publicKey: validatorAccountInfo.publicKey || null,
+	stakersResponse.meta.validator = {
+		address: stakersResponse.meta.validator.address || params.validatorAddress,
+		name: stakersResponse.meta.validator.name || validatorAccountInfo.name,
+		publicKey: stakersResponse.meta.validator.publicKey || validatorAccountInfo.publicKey || null,
 	};
 
-	stakers.meta.count = stakers.data.stakers.length;
-	stakers.meta.offset = params.offset;
-	stakers.meta.total = numStakers;
+	stakersResponse.meta.count = stakersResponse.data.stakers.length;
+	stakersResponse.meta.offset = params.offset;
+	stakersResponse.meta.total = await stakesTable.count({
+		...stakerAddressQueryFilter,
+		validatorAddress: params.validatorAddress,
+	});
 
-	return stakers;
+	return stakersResponse;
 };
 
 module.exports = {

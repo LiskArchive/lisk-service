@@ -31,8 +31,10 @@ const endpoint = `${baseUrlV3}/pos/stakes`;
 
 describe('Stakes API', () => {
 	let refStaker;
+	let refValidator;
 	let maxNumberSentStakes;
 	beforeAll(async () => {
+		let refValidatorAddress;
 		const posConstants = await api.get(`${baseUrlV3}/pos/constants`);
 		maxNumberSentStakes = posConstants.data.maxNumberSentStakes;
 
@@ -40,27 +42,40 @@ describe('Stakes API', () => {
 			// eslint-disable-next-line no-await-in-loop
 			const { data: [stakeTx] = [] } = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
 			if (stakeTx) {
+				const { params: { stakes: [stake] } } = stakeTx;
+				refValidatorAddress = stake.validatorAddress;
 				refStaker = stakeTx.sender;
 			}
 		} while (!refStaker);
+		const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
+		[refValidator] = validatorsResponse.data;
 	});
 
 	describe(`GET ${endpoint}`, () => {
-		it('Returns list of sent stakes when requested for known staker address', async () => {
+		it('Returns list of stakes when requested for known staker address', async () => {
 			const response = await api.get(`${endpoint}?address=${refStaker.address}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
 		});
 
-		it('Returns list of sent stakes when requested for known staker name', async () => {
-			const response = await api.get(`${endpoint}?name=${refStaker.name}`);
+		it('Returns list of stakes when requested with search param (exact staker name)', async () => {
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.name}`);
+			expect(response).toMap(stakesResponseSchema);
+			expect(response.data.stakes.length).toBe(1);
+			expect(response.data.stakes[0].address).toBe(refValidator.address);
+		});
+
+		it('Returns list of stakes when requested with search param (partial staker name)', async () => {
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.name[0]}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+			expect(response.data.stakes.some(staker => staker.address === refValidator.address))
+				.toBe(true);
 		});
 
-		it('Returns list of sent stakes when requested for known staker publicKey', async () => {
+		it('Returns list of stakes when requested for known staker publicKey', async () => {
 			const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);

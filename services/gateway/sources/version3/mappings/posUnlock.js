@@ -23,6 +23,6 @@ module.exports = {
 		tokenID: '=,string',
 		unstakeHeight: '=,number',
 		expectedUnlockableHeight: '=,number',
-		unlockable: '=,boolean',
+		isLocked: '=,boolean',
 	}],
 };

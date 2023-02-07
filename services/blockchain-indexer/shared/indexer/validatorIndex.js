@@ -39,7 +39,7 @@ const getStakesTable = () => getTableInstance(
 
 const indexValidatorCommissionInfo = async (genesisBlock) => {
 	const commissionsTable = await getCommissionsTable();
-	const { validators } = (genesisBlock.assets.find(asset => asset.module === 'pos')).data;
+	const { validators } = (genesisBlock.assets.find(asset => asset.module === MODULE.POS)).data;
 	const commissionInfo = validators.map(validator => ({
 		address: validator.address,
 		height: genesisBlock.height,
@@ -52,7 +52,7 @@ const indexStakersInfo = async (genesisBlock) => {
 	const stakesTable = await getStakesTable();
 	const { stakers } = (genesisBlock.assets.find(asset => asset.module === MODULE.POS)).data;
 	const stakestoIndex = [];
-	await stakers.forEach(async staker => staker.sentStakes.forEach(stake => {
+	await stakers.forEach(async staker => staker.stakes.forEach(stake => {
 		stakestoIndex.push({
 			stakerAddress: staker.address,
 			validatorAddress: stake.validatorAddress,

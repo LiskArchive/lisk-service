@@ -48,10 +48,10 @@ describe('get.pos.unlocks', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('Returns unlocks when requested for existing account by address and isUnlockable = true', async () => {
+	it('Returns unlocks when requested for existing account by address and isLocked = false', async () => {
 		const response = await getUnlocks({
 			address: refTransaction.sender.address,
-			isUnlockable: true,
+			isLocked: false,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -59,15 +59,15 @@ describe('get.pos.unlocks', () => {
 		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 		result.data.pendingUnlocks.forEach(entry => {
-			expect(entry.unlockable).toBe(true);
+			expect(entry.isLocked).toBe(false);
 		});
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('Returns unlocks when requested for existing account by address and isUnlockable = false', async () => {
+	it('Returns unlocks when requested for existing account by address and isLocked = true', async () => {
 		const response = await getUnlocks({
 			address: refTransaction.sender.address,
-			isUnlockable: false,
+			isLocked: true,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -75,7 +75,7 @@ describe('get.pos.unlocks', () => {
 		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 		result.data.pendingUnlocks.forEach(entry => {
-			expect(entry.unlockable).toBe(false);
+			expect(entry.isLocked).toBe(true);
 		});
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -92,11 +92,11 @@ describe('get.pos.unlocks', () => {
 		}
 	});
 
-	it('Returns unlocks when requested for existing account by publicKey and isUnlockable = true', async () => {
+	it('Returns unlocks when requested for existing account by publicKey and isLocked = false', async () => {
 		if (refTransaction.sender.publicKey) {
 			const response = await getUnlocks({
 				publicKey: refTransaction.sender.publicKey,
-				isUnlockable: true,
+				isLocked: false,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -104,17 +104,17 @@ describe('get.pos.unlocks', () => {
 			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
-				expect(entry.unlockable).toBe(true);
+				expect(entry.isLocked).toBe(false);
 			});
 			expect(result.meta).toMap(metaSchema);
 		}
 	});
 
-	it('Returns unlocks when requested for existing account by publicKey and isUnlockable = false', async () => {
+	it('Returns unlocks when requested for existing account by publicKey and isLocked = true', async () => {
 		if (refTransaction.sender.publicKey) {
 			const response = await getUnlocks({
 				publicKey: refTransaction.sender.publicKey,
-				isUnlockable: false,
+				isLocked: true,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -122,7 +122,7 @@ describe('get.pos.unlocks', () => {
 			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
-				expect(entry.unlockable).toBe(false);
+				expect(entry.isLocked).toBe(true);
 			});
 			expect(result.meta).toMap(metaSchema);
 		}
@@ -140,11 +140,11 @@ describe('get.pos.unlocks', () => {
 		}
 	});
 
-	it('Returns unlocks when requested for existing account by name and isUnlockable = true', async () => {
+	it('Returns unlocks when requested for existing account by name and isLocked = false', async () => {
 		if (refTransaction.sender.name) {
 			const response = await getUnlocks({
 				name: refTransaction.sender.name,
-				isUnlockable: true,
+				isLocked: false,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -152,17 +152,17 @@ describe('get.pos.unlocks', () => {
 			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
-				expect(entry.unlockable).toBe(true);
+				expect(entry.isLocked).toBe(false);
 			});
 			expect(result.meta).toMap(metaSchema);
 		}
 	});
 
-	it('Returns unlocks when requested for existing account by name and isUnlockable = false', async () => {
+	it('Returns unlocks when requested for existing account by name and isLocked = true', async () => {
 		if (refTransaction.sender.name) {
 			const response = await getUnlocks({
 				name: refTransaction.sender.name,
-				isUnlockable: false,
+				isLocked: true,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -170,7 +170,7 @@ describe('get.pos.unlocks', () => {
 			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
-				expect(entry.unlockable).toBe(false);
+				expect(entry.isLocked).toBe(true);
 			});
 			expect(result.meta).toMap(metaSchema);
 		}

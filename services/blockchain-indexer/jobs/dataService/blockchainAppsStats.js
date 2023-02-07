@@ -28,7 +28,7 @@ module.exports = [
 			logger.debug('Initializing blockchain apps statistics cache...');
 			try {
 				await reloadBlockchainAppsStats();
-				logger.info('Successfully initialized blockchain apps statistics cache');
+				logger.info('Successfully initialized blockchain apps statistics cache.');
 			} catch (err) {
 				logger.warn(`Initializing blockchain apps statistics cache failed due to: ${err.message}`);
 			}
@@ -38,7 +38,7 @@ module.exports = [
 			try {
 				await reloadBlockchainAppsStats();
 			} catch (err) {
-				logger.warn(`Reloading blockchain apps statistics cachee failed due to: ${err.message}`);
+				logger.warn(`Reloading blockchain apps statistics cache failed due to: ${err.message}`);
 			}
 		},
 	},

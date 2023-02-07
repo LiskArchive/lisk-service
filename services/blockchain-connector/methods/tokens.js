@@ -14,11 +14,13 @@
  *
  */
 const {
+	tokenHasUserAccount,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenBalance,
 	getTokenBalances,
+	getTokenInitializationFees,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -52,5 +54,20 @@ module.exports = [
 		controller: async () => getTotalSupply(),
 		params: {},
 	},
-
+	{
+		name: 'tokenHasUserAccount',
+		controller: async ({ address, tokenID }) => tokenHasUserAccount({
+			address,
+			tokenID,
+		}),
+		params: {
+			address: { optional: false, type: 'string' },
+			tokenID: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getTokenInitializationFees',
+		controller: async () => getTokenInitializationFees(),
+		params: {},
+	},
 ];

@@ -32,15 +32,22 @@ const filterApis = (requiredApis, availableApis) => {
 	return filteredApis;
 };
 
-module.exports = filterApis(config.api.ws, {
-	'/rpc-v3': () => registerApi(['http-version3', 'http-exports'], { ...defaultConfig }),
-	'/rpc-test': () => registerApi('http-test', { ...defaultConfig }),
-	'/blockchain': () => ({
-		events: {
-			call: {
-				mappingPolicy: 'restrict',
-				aliases: {},
+const getSocketNamespaces = (registeredModuleNames) => filterApis(
+	config.api.ws,
+	{
+		'/rpc-v3': () => registerApi(['http-version3', 'http-exports'], { ...defaultConfig }, registeredModuleNames),
+		'/rpc-test': () => registerApi('http-test', { ...defaultConfig }, registeredModuleNames),
+		'/blockchain': () => ({
+			events: {
+				call: {
+					mappingPolicy: 'restrict',
+					aliases: {},
+				},
 			},
-		},
-	}),
-});
+		}),
+	},
+);
+
+module.exports = {
+	getSocketNamespaces,
+};

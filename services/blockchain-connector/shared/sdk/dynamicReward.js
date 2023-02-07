@@ -24,6 +24,7 @@ const { getRegisteredModules } = require('./endpoints_1');
 const logger = Logger();
 
 let registeredRewardModule;
+let rewardTokenID;
 
 const MODULE = {
 	DYNAMIC_REWARD: 'dynamicReward',
@@ -38,9 +39,10 @@ const cacheRegisteredRewardModule = async () => {
 
 const getRewardTokenID = async () => {
 	try {
-		// TODO: Update endpoint once exposed by SDK
-		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7834
-		const rewardTokenID = await invokeEndpoint(`${registeredRewardModule}_getRewardTokenID`);
+		if (!rewardTokenID) {
+			const response = await invokeEndpoint(`${registeredRewardModule}_getRewardTokenID`);
+			rewardTokenID = response.tokenID;
+		}
 		return rewardTokenID;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -68,9 +70,7 @@ const getInflationRate = async () => {
 
 const getDefaultRewardAtHeight = async height => {
 	try {
-		// TODO: Update endpoint once exposed by SDK
-		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7865
-		const defaultRewardResponse = await invokeEndpoint(`${registeredRewardModule}_getDefaultRewardAtHeight`);
+		const defaultRewardResponse = await invokeEndpoint(`${registeredRewardModule}_getDefaultRewardAtHeight`, { height });
 		return defaultRewardResponse;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

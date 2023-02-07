@@ -32,16 +32,18 @@ const {
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const getAccountsTable = () => getTableInstance(
 	accountsTableSchema.tableName,
 	accountsTableSchema,
-	config.endpoints.mysql,
+	MYSQL_ENDPOINT,
 );
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
 		const accountsTable = await getAccountsTable();
-		const [account = {}] = await accountsTable.find(params, columns);
+		const [account = {}] = await accountsTable.find({ limit: 1, ...params }, columns);
 		return account;
 	}
 	return {};
@@ -79,4 +81,5 @@ module.exports = {
 	getLisk32Address,
 	updateAccountPublicKey,
 	getHexAddress,
+	getAccountsTable,
 };

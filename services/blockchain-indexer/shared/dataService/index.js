@@ -62,8 +62,10 @@ const {
 } = require('./peers');
 
 const {
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 } = require('./token');
 
 const {
@@ -85,6 +87,7 @@ const { getEvents } = require('./events');
 const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
 const { getNetworkStatus } = require('./network');
+const { getIndexStatus } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
@@ -114,8 +117,10 @@ module.exports = {
 	getPeersStatistics,
 
 	// Token
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 
 	// Transactions
 	getTransactions,
@@ -141,6 +146,9 @@ module.exports = {
 
 	// Network
 	getNetworkStatus,
+
+	// Index Status
+	getIndexStatus,
 
 	// Legacy
 	getLegacyAccountInfo,

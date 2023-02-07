@@ -118,7 +118,7 @@ const newBlockListener = async () => {
 			Signals.get('newFeeEstimate').dispatch(feeEstimate);
 		}
 	} catch (err) {
-		logger.error(`Error occured when processing 'calculateFeeEstimate' event:\n${err.stack}.`);
+		logger.error(`Error occurred when processing 'calculateFeeEstimate' event:\n${err.stack}.`);
 	}
 };
 

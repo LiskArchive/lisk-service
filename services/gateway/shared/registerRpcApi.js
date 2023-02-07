@@ -16,6 +16,7 @@
 const {
 	Utils,
 	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST, SERVICE_UNAVAILABLE } },
+	Logger,
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
@@ -24,9 +25,10 @@ const path = require('path');
 const mapper = require('./customMapper');
 const { validate } = require('./paramValidator');
 
+const logger = Logger();
 const apiMeta = [];
 
-const configureApi = (apiNames, apiPrefix) => {
+const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
@@ -35,10 +37,26 @@ const configureApi = (apiNames, apiPrefix) => {
 		return curlyBracketsToColon(dropSlash(url));
 	};
 	if (typeof apiNames === 'string') apiNames = [apiNames];
-	apiNames.forEach(apiName => Object.assign(
-		allMethods,
-		Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
-	));
+	apiNames.forEach(apiName => {
+		// Assign common endpoints
+		Object.assign(
+			allMethods,
+			Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
+		);
+
+		// Assign registered application module specific endpoints
+		registeredModuleNames.forEach(moduleName => {
+			const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
+			try {
+				Object.assign(
+					allMethods,
+					Utils.requireAllJs(path.resolve(__dirname, dirPath)),
+				);
+			} catch (err) {
+				logger.warn(`Moleculer method definitions (RPC endpoints) missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`);
+			}
+		});
+	});
 
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
@@ -115,8 +133,12 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
-const registerApi = (apiNames, config) => {
-	const { aliases, whitelist, methodPaths } = configureApi(apiNames, config.path);
+const registerApi = (apiNames, config, registeredModuleNames) => {
+	const { aliases, whitelist, methodPaths } = configureApi(
+		apiNames,
+		config.path,
+		registeredModuleNames,
+	);
 
 	const transformRequest = (apiPath, params) => {
 		try {

@@ -26,6 +26,12 @@ const getPosConstants = async () => {
 	};
 };
 
+const getPosTokenID = async () => {
+	const { data: { posTokenID } } = await getPosConstants();
+	return posTokenID;
+};
+
 module.exports = {
 	getPosConstants,
+	getPosTokenID,
 };

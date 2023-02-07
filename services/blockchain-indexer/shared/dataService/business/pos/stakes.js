@@ -26,7 +26,7 @@ const { requestConnector } = require('../../../utils/request');
 const normalizeStake = stake => parseToJSONCompatObj(stake);
 
 const getStakes = async params => {
-	const stakesReponse = {
+	const stakesResponse = {
 		data: {
 			stakes: [],
 		},
@@ -44,32 +44,54 @@ const getStakes = async params => {
 		params.address = getLisk32AddressFromPublicKey(params.publicKey);
 	}
 
-	const response = await requestConnector('getStaker', { address: params.address });
-	stakesReponse.data.stakes = await BluebirdPromise.map(
-		response.sentStakes,
-		async sentStake => {
-			const stake = normalizeStake(sentStake);
-			const { name = null } = await getIndexedAccountInfo({ address: stake.validatorAddress, limit: 1 }, ['name']);
-			return {
-				address: stake.validatorAddress,
-				amount: stake.amount,
-				name,
-			};
+	const stakerInfo = await requestConnector('getStaker', { address: params.address });
+
+	// Filter stakes by user specified search param (validator name) and add to response
+	const accountInfoQueryFilter = {};
+	if (params.search) {
+		accountInfoQueryFilter.search = {
+			property: 'name',
+			pattern: params.search,
+		};
+	}
+
+	await BluebirdPromise.map(
+		stakerInfo.stakes,
+		async stake => {
+			const normalizedStake = normalizeStake(stake);
+			// Get validator name filtered by user specified search param
+			const { name: validatorName = null } = await getIndexedAccountInfo(
+				{
+					...accountInfoQueryFilter,
+					address: normalizedStake.validatorAddress,
+					isValidator: true,
+				},
+				['name'],
+			);
+
+			// Add validator to response
+			if (validatorName) {
+				stakesResponse.data.stakes.push({
+					address: normalizedStake.validatorAddress,
+					amount: normalizedStake.amount,
+					name: validatorName,
+				});
+			}
 		},
-		{ concurrency: response.sentStakes.length },
+		{ concurrency: stakerInfo.stakes.length },
 	);
 
 	// Populate staker account name
-	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
-	stakesReponse.meta.staker = {
+	const accountInfo = await getIndexedAccountInfo({ address: params.address }, ['name']);
+	stakesResponse.meta.staker = {
 		address: params.address,
 		name: accountInfo.name || null,
 		publicKey: accountInfo.publicKey || null,
 	};
 
-	stakesReponse.meta.count = stakesReponse.data.stakes.length;
+	stakesResponse.meta.count = stakesResponse.data.stakes.length;
 
-	return stakesReponse;
+	return stakesResponse;
 };
 
 module.exports = {

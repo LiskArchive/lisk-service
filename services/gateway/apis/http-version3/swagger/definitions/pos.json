@@ -3,14 +3,14 @@
 		"type": "object",
 		"required": [
 			"name",
-			"totalStakeReceived",
+			"totalStake",
 			"selfStake",
 			"validatorWeight",
 			"address",
 			"lastGeneratedHeight",
 			"status",
 			"isBanned",
-			"pomHeights",
+			"reportMisbehaviorHeights",
 			"punishmentPeriods",
 			"consecutiveMissedBlocks",
 			"commission",
@@ -24,7 +24,7 @@
 				"example": "genesis_84",
 				"description": "Validator name."
 			},
-			"totalStakeReceived": {
+			"totalStake": {
 				"type": "string",
 				"example": "109000000000",
 				"description": "Total stakes received in `posTokenID`."
@@ -37,13 +37,19 @@
 			"validatorWeight": {
 				"type": "string",
 				"example": "109000000000",
-				"description": "Validator weight. Minimum of (10 * selfStake) or totalStakeReceived."
+				"description": "Validator weight. Minimum of (10 * selfStake) or totalStake."
 			},
 			"address": {
 				"type": "string",
 				"format": "address",
 				"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
 				"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+			},
+			"publicKey": {
+				"type": "string",
+				"format": "publicKey",
+				"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+				"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
 			},
 			"lastGeneratedHeight": {
 				"type": "integer",
@@ -60,7 +66,7 @@
 				"example": false,
 				"description": "A boolean flag indicating if the validator is banned."
 			},
-			"pomHeights": {
+			"reportMisbehaviorHeights": {
 				"type": "array",
 				"items": {
 					"type": "number",
@@ -283,7 +289,7 @@
 						"tokenID",
 						"unstakeHeight",
 						"expectedUnlockableHeight",
-						"unlockable"
+						"isLocked"
 					],
 					"properties": {
 						"validatorAddress": {
@@ -311,10 +317,10 @@
 							"example": "270000",
 							"description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
 						},
-						"unlockable": {
+						"isLocked": {
 							"type": "boolean",
 							"example": true,
-							"description": "A boolean flag indicating if the corresponding (locked) staked amount is available to be unlocked."
+							"description": "A boolean flag indicating if the corresponding (previously) un-staked amount is available to be unlocked. When `isLocked: false`, the amount be unlocked with a `pos:unlock` transaction."
 						}
 					}
 				}
@@ -413,7 +419,7 @@
 		],
 		"properties": {
 			"data": {
-				"description": "List of sent stakes for the queried staker.",
+				"description": "List of stakes for the queried staker.",
 				"type": "object",
 				"properties": {
 					"stakes": {

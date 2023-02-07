@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-fee-estimator",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.6",
   "description": "Lisk Service Fee Estimator",
   "keywords": [
     "lisk",
@@ -29,11 +29,11 @@
     "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-codec": "0.3.0-alpha.5",
-    "@liskhq/lisk-cryptography": "4.0.0-alpha.4",
-    "@liskhq/lisk-transactions": "6.0.0-alpha.5",
+    "@liskhq/lisk-codec": "0.3.0-alpha.7",
+    "@liskhq/lisk-cryptography": "4.0.0-alpha.6",
+    "@liskhq/lisk-transactions": "6.0.0-alpha.10",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/a7345a5fb7e4ca9d2fe971613af223e2cd354f73/framework/dist/lisk-service-framework-1.4.9.tgz"
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/91a641edc62f4829105c49280b0bfa80aad5f732/framework/dist/lisk-service-framework-1.4.11.tgz"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

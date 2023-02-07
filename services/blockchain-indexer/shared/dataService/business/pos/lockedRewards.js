@@ -30,10 +30,12 @@ const validatorsTableSchema = require('../../../database/schema/validators');
 
 const { getRewardTokenID } = require('../dynamicReward');
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const getValidatorsTable = () => getTableInstance(
 	validatorsTableSchema.tableName,
 	validatorsTableSchema,
-	config.endpoints.mysql,
+	MYSQL_ENDPOINT,
 );
 
 const getPosLockedRewards = async params => {
@@ -70,7 +72,7 @@ const getPosLockedRewards = async params => {
 	if (!address || !tokenID) {
 		return response;
 	}
-	const { reward } = await requestConnector('getPosLockedRewards', { tokenID, address });
+	const { reward } = await requestConnector('getPosLockedReward', { tokenID, address });
 	response.data.push({
 		reward,
 		tokenID,

@@ -25,7 +25,7 @@ const {
 	getNodeInfo,
 	getSystemMetadata,
 } = require('./endpoints_1');
-const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
+const { timeoutMessage, getApiClient, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
 const getConnectedPeers = async () => {
@@ -263,7 +263,6 @@ const getGenerators = async () => {
 
 module.exports = {
 	invokeEndpoint,
-	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,

@@ -45,24 +45,24 @@ describe('PoS Unlocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('Returns unlocks when requested for existing account by address and isUnlockable = true', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&isUnlockable=true`);
+		it('Returns unlocks when requested for existing account by address and isLocked = false', async () => {
+			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&isLocked=false`);
 			expect(response.data).toMap(unlockSchema);
 			expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			response.data.pendingUnlocks.forEach(entry => {
-				expect(entry.unlockable).toBe(true);
+				expect(entry.isLocked).toBe(false);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('Returns unlocks when requested for existing account by address and isUnlockable = false', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&isUnlockable=false`);
+		it('Returns unlocks when requested for existing account by address and isLocked = true', async () => {
+			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&isLocked=true`);
 			expect(response.data).toMap(unlockSchema);
 			expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			response.data.pendingUnlocks.forEach(entry => {
-				expect(entry.unlockable).toBe(false);
+				expect(entry.isLocked).toBe(true);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -77,27 +77,27 @@ describe('PoS Unlocks API', () => {
 			}
 		});
 
-		it('Returns unlocks when requested for existing account by publicKey and isUnlockable = true', async () => {
+		it('Returns unlocks when requested for existing account by publicKey and isLocked = false', async () => {
 			if (refTransaction.sender.publicKey) {
-				const response = await api.get(`${endpoint}?publicKey=${refTransaction.sender.publicKey}&isUnlockable=true`);
+				const response = await api.get(`${endpoint}?publicKey=${refTransaction.sender.publicKey}&isLocked=false`);
 				expect(response.data).toMap(unlockSchema);
 				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 				response.data.pendingUnlocks.forEach(entry => {
-					expect(entry.unlockable).toBe(true);
+					expect(entry.isLocked).toBe(false);
 				});
 				expect(response.meta).toMap(metaSchema);
 			}
 		});
 
-		it('Returns unlocks when requested for existing account by publicKey and isUnlockable = false', async () => {
+		it('Returns unlocks when requested for existing account by publicKey and isLocked = true', async () => {
 			if (refTransaction.sender.publicKey) {
-				const response = await api.get(`${endpoint}?publicKey=${refTransaction.sender.publicKey}&isUnlockable=false`);
+				const response = await api.get(`${endpoint}?publicKey=${refTransaction.sender.publicKey}&isLocked=true`);
 				expect(response.data).toMap(unlockSchema);
 				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 				response.data.pendingUnlocks.forEach(entry => {
-					expect(entry.unlockable).toBe(false);
+					expect(entry.isLocked).toBe(true);
 				});
 				expect(response.meta).toMap(metaSchema);
 			}
@@ -113,27 +113,27 @@ describe('PoS Unlocks API', () => {
 			}
 		});
 
-		it('Returns unlocks when requested for existing account by name and isUnlockable = true', async () => {
+		it('Returns unlocks when requested for existing account by name and isLocked = false', async () => {
 			if (refTransaction.sender.name) {
-				const response = await api.get(`${endpoint}?name=${refTransaction.sender.name}&isUnlockable=true`);
+				const response = await api.get(`${endpoint}?name=${refTransaction.sender.name}&isLocked=false`);
 				expect(response.data).toMap(unlockSchema);
 				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 				response.data.pendingUnlocks.forEach(entry => {
-					expect(entry.unlockable).toBe(true);
+					expect(entry.isLocked).toBe(false);
 				});
 				expect(response.meta).toMap(metaSchema);
 			}
 		});
 
-		it('Returns unlocks when requested for existing account by name and isUnlockable = false', async () => {
+		it('Returns unlocks when requested for existing account by name and isLocked = true', async () => {
 			if (refTransaction.sender.name) {
-				const response = await api.get(`${endpoint}?name=${refTransaction.sender.name}&isUnlockable=false`);
+				const response = await api.get(`${endpoint}?name=${refTransaction.sender.name}&isLocked=true`);
 				expect(response.data).toMap(unlockSchema);
 				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 				response.data.pendingUnlocks.forEach(entry => {
-					expect(entry.unlockable).toBe(false);
+					expect(entry.isLocked).toBe(true);
 				});
 				expect(response.meta).toMap(metaSchema);
 			}

@@ -17,7 +17,6 @@ const {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
-	getPeersStatistics,
 } = require('./controllers/peers');
 
 module.exports = [
@@ -42,11 +41,6 @@ module.exports = [
 	{
 		name: 'peers.disconnected',
 		controller: getDisconnectedPeers,
-		params: {},
-	},
-	{
-		name: 'peers.statistics',
-		controller: getPeersStatistics,
 		params: {},
 	},
 ];

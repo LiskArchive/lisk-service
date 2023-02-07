@@ -43,15 +43,21 @@ const {
 } = require('./pendingTransactions');
 
 const {
+	getPeersStatistics,
+} = require('./peers');
+
+const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
 const {
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
-} = require('./tokens');
+	getTokenConstants,
+} = require('./token');
 
 const {
 	getPosValidators,
@@ -116,8 +122,10 @@ module.exports = {
 	reloadBlockchainAppsStats,
 
 	// Token
+	tokenHasUserAccount,
 	getTokens,
 	getTokensSummary,
+	getTokenConstants,
 
 	// PoS
 	getPosValidators,
@@ -143,6 +151,9 @@ module.exports = {
 	// Validator
 	getValidator,
 	validateBLSKey,
+
+	// Peers
+	getPeersStatistics,
 
 	getInflationRate,
 	getDefaultRewardAtHeight,

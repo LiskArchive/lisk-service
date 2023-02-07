@@ -22,7 +22,7 @@ module.exports = {
 		address: '=,string',
 		name: '=,string',
 		publicKey: '=,string',
-		isUnlockable: '=,boolean',
+		isLocked: '=,boolean',
 		limit: '=,number',
 		offset: '=,number',
 	},

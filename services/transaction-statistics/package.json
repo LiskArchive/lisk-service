@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-transaction-statistics",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.6",
   "description": "Lisk Service Transaction Statistics",
   "keywords": [
     "lisk",
@@ -31,7 +31,7 @@
   "dependencies": {
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/a7345a5fb7e4ca9d2fe971613af223e2cd354f73/framework/dist/lisk-service-framework-1.4.9.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/91a641edc62f4829105c49280b0bfa80aad5f732/framework/dist/lisk-service-framework-1.4.11.tgz",
     "moment": "^2.29.4"
   },
   "devDependencies": {

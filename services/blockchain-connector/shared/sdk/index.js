@@ -24,7 +24,6 @@ const {
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -57,11 +56,13 @@ const {
 } = require('./peers');
 
 const {
+	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+	getTokenInitializationFees,
 } = require('./tokens');
 
 const {
@@ -71,7 +72,7 @@ const {
 	getPosConstants,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
-	getPosLockedRewards,
+	getPosLockedReward,
 	getStaker,
 } = require('./pos');
 
@@ -88,9 +89,13 @@ const {
 	cacheFeeConstants,
 } = require('./fee');
 
-const { getAuthAccount } = require('./auth');
+const {
+	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
+} = require('./auth');
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
+const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
 const { getValidator, validateBLSKey } = require('./validators');
 const { refreshNetworkStatus, getNetworkStatus } = require('./network');
@@ -122,7 +127,6 @@ module.exports = {
 	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
-	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -151,11 +155,13 @@ module.exports = {
 	getPeersStatistics,
 
 	// Tokens
+	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
+	getTokenInitializationFees,
 
 	// PoS
 	getAllPosValidators,
@@ -164,7 +170,7 @@ module.exports = {
 	getPosConstants,
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
-	getPosLockedRewards,
+	getPosLockedReward,
 	getStaker,
 
 	// Reward
@@ -179,12 +185,16 @@ module.exports = {
 
 	// Auth
 	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
 
 	// Legacy
 	getLegacyAccount,
 
 	// Events
 	getEventsByHeight,
+
+	// Invoke
+	invokeEndpointProxy,
 
 	// Schema
 	setSchemas,
