@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,21 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+import Joi from 'joi';
 
-const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
-const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
-const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const NAME = /^[\w!@$&.]{3,20}$/;
-const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
-const MAINCHAIN_ID = /^[a-fA-F0-9]{2}000000$/;
+const invokeMetaResponseSchema = {
+	endpoint: Joi.string().required(),
+	params: Joi.object().optional(),
+};
+
+const errorSchema = {
+	message: Joi.string().required(),
+};
+
+const invokeResponseSchema = {
+	data: Joi.object().required(),
+	meta: Joi.object(invokeMetaResponseSchema).required(),
+};
 
 module.exports = {
-	ADDRESS_LISK32,
-	BLS_KEY,
-	PROOF_OF_POSSESSION,
-	PUBLIC_KEY,
-	NAME,
-	TOKEN_ID,
-	MAINCHAIN_ID,
+	invokeResponseSchema: Joi.object(invokeResponseSchema).required(),
+	errorSchema: Joi.object(errorSchema).required(),
 };

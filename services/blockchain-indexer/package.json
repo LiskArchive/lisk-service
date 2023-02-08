@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-blockchain-indexer",
-  "version": "0.7.0-alpha.5",
+  "version": "0.7.0-alpha.6",
   "description": "Lisk Service Blockchain Indexer",
   "keywords": [
     "lisk",
@@ -26,7 +26,7 @@
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
     "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {

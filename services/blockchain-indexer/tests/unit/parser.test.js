@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -28,7 +28,7 @@ const {
 	liskTransactionAssets,
 } = require('../constants/parser');
 
-describe('Unit tests for parse utilities', () => {
+describe('Test parse utilities', () => {
 	describe('parseToJSONCompatObj', () => {
 		it('should parse buffer', async () => {
 			const bufferData = Buffer.from('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hex');

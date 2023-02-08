@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,24 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../config');
-const { api } = require('../../helpers/api');
+const config = require('../../../config');
+const { api } = require('../../../helpers/api');
 
 const {
 	badRequestSchema,
-} = require('../../schemas/httpGenerics.schema');
+} = require('../../../schemas/httpGenerics.schema');
 
 const {
-	statusSchema,
-} = require('../../schemas/gateway/status.schema');
+	specResponseSchema,
+} = require('../../../schemas/api_v3/spec.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const endpoint = `${baseUrl}/api/status`;
+const baseUrlV3 = `${baseUrl}/api/v3`;
+const endpoint = `${baseUrlV3}/spec`;
 
-describe('Status API', () => {
-	it('Report status -> 200 OK', async () => {
+describe('Swagger spec API', () => {
+	it('return swagger specifications -> 200 OK', async () => {
 		const response = await api.get(endpoint);
-		expect(response).toMap(statusSchema);
+		expect(response).toMap(specResponseSchema);
 	});
 
 	it('params not supported -> 400 BAD_REQUEST', async () => {
