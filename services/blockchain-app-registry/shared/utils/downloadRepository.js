@@ -39,8 +39,8 @@ const COMMIT_HASH_UNTIL_LAST_SYNC = 'commitHashUntilLastSync';
 
 const octokit = new Octokit({ auth: config.gitHub.accessToken });
 
-const getRepoInfoFromURL = (url) => {
-	const [, , , owner, repo] = (url || '').split('/');
+const getRepoInfoFromURL = (url = '') => {
+	const [, , , owner, repo] = url.split('/');
 	return { owner, repo };
 };
 
