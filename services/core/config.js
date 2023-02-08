@@ -76,6 +76,7 @@ config.transactionStatistics = {
 
 config.ttl = {
 	affectedByNewBlocks: 1000,
+	accountsCache: Number(process.env.ACCOUNTS_CACHE_EXPIRY_SECONDS || 5 * 60) * 1000,
 };
 
 config.feeEstimates = {
