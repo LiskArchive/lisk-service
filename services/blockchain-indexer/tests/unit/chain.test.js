@@ -17,25 +17,25 @@ const dataService = require('../../shared/dataService');
 const { isMainchain } = require('../../shared/chain');
 
 describe('Unit tests for chain -> isMainchain method', () => {
-    it('should return false -> undefined chainID', async () => {
-        jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: undefined } });
-        const result = await isMainchain();
-        expect(typeof result).toBe('boolean');
-        expect(result).toBe(false);
-    });
+	it('should return false -> undefined chainID', async () => {
+		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: undefined } });
+		const result = await isMainchain();
+		expect(typeof result).toBe('boolean');
+		expect(result).toBe(false);
+	});
 
-    it('should return false -> null chainID', async () => {
-        jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: null } });
-        const result = await isMainchain();
-        expect(typeof result).toBe('boolean');
-        expect(result).toBe(false);
-    });
+	it('should return false -> null chainID', async () => {
+		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: null } });
+		const result = await isMainchain();
+		expect(typeof result).toBe('boolean');
+		expect(result).toBe(false);
+	});
 
-    it('should return true -> valid mainchain chainID', async () => {
-        jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000000' } });
-        const result = await isMainchain();
-        expect(typeof result).toBe('boolean');
-        expect(result).toBe(true);
-    });
+	it('should return true -> valid mainchain chainID', async () => {
+		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000000' } });
+		const result = await isMainchain();
+		expect(typeof result).toBe('boolean');
+		expect(result).toBe(true);
+	});
 });
 
