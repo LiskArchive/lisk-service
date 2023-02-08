@@ -27,12 +27,12 @@ const {
 	buildEventPayload,
 	syncWithRemoteRepo,
 	downloadRepositoryToFS,
-} = require('../../shared/utils/downloadRepository');
+} = require('../../../../shared/utils/downloadRepository');
 
-const keyValueTable = require('../../shared/database/mysqlKVStore');
-const { KV_STORE_KEY } = require('../../shared/constants');
-const config = require('../../config');
-const { exists, rmdir } = require('../../shared/utils/fsUtils');
+const keyValueTable = require('../../../../shared/database/mysqlKVStore');
+const { KV_STORE_KEY } = require('../../../../shared/constants');
+const config = require('../../../../config');
+const { exists, rmdir } = require('../../../../shared/utils/fsUtils');
 
 describe('Test getLatestCommitHash method', () => {
 	it('should return correct latest commit hash info', async () => {
