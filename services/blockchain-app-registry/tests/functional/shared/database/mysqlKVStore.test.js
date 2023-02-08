@@ -43,7 +43,7 @@ afterEach(async () => {
 	await keyValueTable.delete(KEY_2);
 });
 
-describe('test set and get methods', () => {
+describe('Test set and get methods', () => {
 	it('should set and update value correctly', async () => {
 		// Set and check key
 		await keyValueTable.set(KEY_1, VALUE_1);
@@ -91,7 +91,7 @@ describe('test set and get methods', () => {
 	});
 });
 
-describe('test getByPattern method', () => {
+describe('Test getByPattern method', () => {
 	beforeEach(async () => {
 		await keyValueTable.set(KEY_1, VALUE_1);
 		await keyValueTable.set(KEY_2, VALUE_2);
@@ -137,7 +137,7 @@ describe('test getByPattern method', () => {
 	});
 });
 
-describe('test delete method', () => {
+describe('Test delete method', () => {
 	it('should return undefined after deleting key', async () => {
 		await keyValueTable.set(KEY_1, VALUE_1);
 		const responseBefore = await keyValueTable.get(KEY_1);
