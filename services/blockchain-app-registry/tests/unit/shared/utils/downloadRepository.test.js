@@ -16,7 +16,7 @@
 const { getRepoInfoFromURL } = require('../../../../shared/utils/downloadRepository');
 const config = require('../../../../config');
 
-describe('test getRepoInfoFromURL method', () => {
+describe('Test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {
 		const response = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 		expect(response).toMatchObject({
