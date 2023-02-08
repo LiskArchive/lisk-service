@@ -20,7 +20,7 @@ const genesisBlockFilePath = resolve(`${dirname(__dirname)}/constants/genesis_bl
 const checksumFilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json.SHA256`);
 const invalidChecksumFilePath = resolve(`${dirname(__dirname)}/constants/invalid_genesis_block.json.SHA256`);
 
-describe('Unit test for download utility -> verifyFileChecksum method', () => {
+describe('Test verifyFileChecksum method', () => {
 	it('should return true in case of valid checksum', async () => {
 		const result = await verifyFileChecksum(genesisBlockFilePath, checksumFilePath);
 		expect(result).toEqual(true);

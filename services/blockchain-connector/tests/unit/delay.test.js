@@ -15,8 +15,8 @@
  */
 const delay = require('../../shared/utils/delay');
 
-describe('Unit test for delay utility', () => {
-	it('should add default delay', async () => {
+describe('Test delay method', () => {
+	it('should delay even without any arguments', async () => {
 		const startTime = Date.now();
 		await delay();
 		const endTime = Date.now();

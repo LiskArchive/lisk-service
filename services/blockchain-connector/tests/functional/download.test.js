@@ -43,7 +43,7 @@ describe('Functional tests for download utility', () => {
 		await rm(`${testDir}/apiJson.json`);
 	});
 
-	describe('Test for downloadAndExtractTarball method', () => {
+	describe('Test downloadAndExtractTarball method', () => {
 		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
 		it('should download and extract tar file -> valid url', async () => {
 			const filePath = `${testDir}/genesis_block.json`;
@@ -70,7 +70,7 @@ describe('Functional tests for download utility', () => {
 		});
 	});
 
-	describe('Test for downloadJSONFile method', () => {
+	describe('Test downloadJSONFile method', () => {
 		it('should download JSON file -> valid url', async () => {
 			const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 			const filePath = `${testDir}/apiJson.json`;
@@ -101,7 +101,7 @@ describe('Functional tests for download utility', () => {
 		});
 	});
 
-	describe('Test for downloadAndUnzipFile method', () => {
+	describe('Test downloadAndUnzipFile method', () => {
 		it('should download and unzip file -> valid url', async () => {
 			const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
 			const filePath = `${testDir}/genesis_block.json`;
@@ -132,7 +132,7 @@ describe('Functional tests for download utility', () => {
 		});
 	});
 
-	describe('Test for downloadFile method', () => {
+	describe('Test downloadFile method', () => {
 		it('should download file -> valid url', async () => {
 			const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 			const filePath = `${testDir}/apiJson.json`;

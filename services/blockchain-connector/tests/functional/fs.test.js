@@ -25,7 +25,7 @@ const {
 
 const { genesisBlock } = require('../constants/blocks');
 
-describe('Unit tests for filesystem utilities', () => {
+describe('Tests filesystem utilities', () => {
 	const testDir = resolve(`${dirname(__dirname)}/testDir`);
 	const JsonfilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json`);
 	const tarFilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json.tar.gz`);
