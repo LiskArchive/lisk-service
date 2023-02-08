@@ -79,9 +79,9 @@ const getByPattern = async (pattern) => {
 	return formattedResult;
 };
 
-const deleteEntry = async (key) => {
+const deleteEntry = async (key, dbTrx) => {
 	const keyValueTable = await getKeyValueTable();
-	return keyValueTable.deleteByPrimaryKey([key]);
+	return keyValueTable.deleteByPrimaryKey([key], dbTrx);
 };
 
 module.exports = {

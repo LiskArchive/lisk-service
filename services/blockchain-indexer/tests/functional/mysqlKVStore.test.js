@@ -13,12 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	MySQL: {
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
+	},
+} = require('lisk-service-framework');
+
+const config = require('../../config');
 const keyValueTable = require('../../shared/database/mysqlKVStore');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const KEY_1 = 'KEY_1';
 const KEY_2 = 'KEY_2';
 const VALUE_1 = 'VALUE_1';
 const VALUE_2 = 'VALUE_2';
+
+let dbConnection;
+
+beforeAll(async () => {
+	dbConnection = await getDbConnection(MYSQL_ENDPOINT);
+});
 
 afterEach(async () => {
 	await keyValueTable.delete(KEY_1);
@@ -36,6 +54,40 @@ describe('test set and get methods', () => {
 		await keyValueTable.set(KEY_1, VALUE_2);
 		const response2 = await keyValueTable.get(KEY_1);
 		expect(response2).toBe(VALUE_2);
+	});
+
+	it('should set value once transaction is committed', async () => {
+		// Check key is not defined
+		const responseBefore = await keyValueTable.get(KEY_1);
+		expect(responseBefore).toBe(undefined);
+
+		// Create transaction and set key
+		const dbTrx = await startDbTransaction(dbConnection);
+		await keyValueTable.set(KEY_1, VALUE_1, dbTrx);
+		const responseBeforeCommit = await keyValueTable.get(KEY_1);
+		expect(responseBeforeCommit).toBe(undefined);
+
+		// Commit transaction and check key
+		await commitDbTransaction(dbTrx);
+		const responseAfterCommit = await keyValueTable.get(KEY_1);
+		expect(responseAfterCommit).toBe(VALUE_1);
+	});
+
+	it('should not set value once transaction is rolled-back', async () => {
+		// Check key is not defined
+		const responseBefore = await keyValueTable.get(KEY_1);
+		expect(responseBefore).toBe(undefined);
+
+		// Create transaction and set key
+		const dbTrx = await startDbTransaction(dbConnection);
+		await keyValueTable.set(KEY_1, VALUE_1, dbTrx);
+		const responseBeforeRollback = await keyValueTable.get(KEY_1);
+		expect(responseBeforeRollback).toBe(undefined);
+
+		// Commit transaction and check key
+		await rollbackDbTransaction(dbTrx);
+		const responseAfterRollback = await keyValueTable.get(KEY_1);
+		expect(responseAfterRollback).toBe(undefined);
 	});
 });
 
@@ -103,5 +155,41 @@ describe('test delete method', () => {
 		await keyValueTable.delete(KEY_1);
 		const responseAfter = await keyValueTable.get(KEY_1);
 		expect(responseAfter).toEqual(undefined);
+	});
+
+	it('should delete key only when transaction is committed', async () => {
+		// Set key
+		await keyValueTable.set(KEY_1, VALUE_1);
+		const responseBefore = await keyValueTable.get(KEY_1);
+		expect(responseBefore).toEqual(VALUE_1);
+
+		// Create transaction and delete key
+		const dbTrx = await startDbTransaction(dbConnection);
+		await keyValueTable.delete(KEY_1, dbTrx);
+		const responseBeforeCommit = await keyValueTable.get(KEY_1);
+		expect(responseBeforeCommit).toEqual(VALUE_1);
+
+		// Commit transaction
+		await commitDbTransaction(dbTrx);
+		const responseAfterCommit = await keyValueTable.get(KEY_1);
+		expect(responseAfterCommit).toEqual(undefined);
+	});
+
+	it('should not delete key only when transaction is rolled-back', async () => {
+		// Set key
+		await keyValueTable.set(KEY_1, VALUE_1);
+		const responseBefore = await keyValueTable.get(KEY_1);
+		expect(responseBefore).toEqual(VALUE_1);
+
+		// Create transaction and delete key
+		const dbTrx = await startDbTransaction(dbConnection);
+		await keyValueTable.delete(KEY_1, dbTrx);
+		const responseBeforeRollback = await keyValueTable.get(KEY_1);
+		expect(responseBeforeRollback).toEqual(VALUE_1);
+
+		// Rollback transaction
+		await rollbackDbTransaction(dbTrx);
+		const responseAfterRollback = await keyValueTable.get(KEY_1);
+		expect(responseAfterRollback).toEqual(VALUE_1);
 	});
 });
