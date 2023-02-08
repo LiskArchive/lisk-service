@@ -212,6 +212,7 @@ const syncWithRemoteRepo = async () => {
 			);
 
 			await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+
 			if (filesChanged.length) {
 				const eventPayload = await buildEventPayload(filesChanged);
 				Signals.get('metadataUpdated').dispatch(eventPayload);

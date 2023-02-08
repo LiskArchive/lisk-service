@@ -16,7 +16,7 @@
 const {
 	dropDuplicates,
 	range,
-} = require('../../shared/utils/arrayUtils');
+} = require('../../../../shared/utils/arrayUtils');
 
 describe('Unit tests for array utilities', () => {
 	describe('Test \'range\'', () => {

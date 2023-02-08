@@ -15,10 +15,14 @@
  */
 const {
 	Exceptions: { ValidationException },
+	Utils,
 } = require('lisk-service-framework');
 
 const normalizeRangeParam = (params, property) => {
-	if (!params || typeof params !== 'object') return params;
+	if (!params || !Utils.isObject(params)) return params;
+
+	const EMPTY_STRING = '';
+
 	// Create a copy to avoid implicit parameter modification
 	const propBetweens = Array.isArray(params.propBetweens) ? [...params.propBetweens] : [];
 
@@ -31,9 +35,9 @@ const normalizeRangeParam = (params, property) => {
 		if (Number.isNaN(from) || Number.isNaN(to)) throw new ValidationException(`Invalid (non-numeric) '${property}' range values supplied: ${params[property]}.`);
 		if (fromStr && toStr && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
 
-		if (fromStr === '') {
+		if (fromStr === EMPTY_STRING) {
 			propBetweens.push({ property, to });
-		} else if (toStr === '') {
+		} else if (toStr === EMPTY_STRING) {
 			propBetweens.push({ property, from });
 		} else {
 			propBetweens.push({ property, from, to });

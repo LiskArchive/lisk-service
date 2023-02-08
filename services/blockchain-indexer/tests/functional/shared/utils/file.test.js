@@ -18,7 +18,7 @@ const fs = require('fs');
 const {
 	getAllDirectories,
 	getAllJSFiles,
-} = require('../../shared/utils/file');
+} = require('../../../../shared/utils/file');
 
 // Utility functions for the tests
 const mkdir = async (dirPath) => fs.promises.mkdir(
