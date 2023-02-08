@@ -31,6 +31,8 @@ describe('Unit tests for chain -> isMainchain method', () => {
 		expect(result).toBe(false);
 	});
 
+	// TODO: Include more negative testcases with invalid chainID and sidechain chainIDs
+
 	it('should return true -> valid mainchain chainID', async () => {
 		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000000' } });
 		const result = await isMainchain();
