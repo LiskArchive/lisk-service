@@ -16,7 +16,7 @@
 const dataService = require('../../shared/dataService');
 const { isMainchain } = require('../../shared/chain');
 
-describe('Unit tests for chain -> isMainchain method', () => {
+describe('Test isMainchain method', () => {
 	it('should return false -> undefined chainID', async () => {
 		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: undefined } });
 		const result = await isMainchain();

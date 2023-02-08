@@ -20,7 +20,7 @@ const {
 	expectedTransaction,
 } = require('../constants/transactions');
 
-describe('Unit tests for transaction utilities', () => {
+describe('Test normalizeTransaction method', () => {
 	it('should return normalizedTransaction -> valid tx', async () => {
 		const normalizedTransaction = await normalizeTransaction(inputTransaction);
 		expect(Object.getOwnPropertyNames(normalizedTransaction).length).toBeGreaterThan(0);
