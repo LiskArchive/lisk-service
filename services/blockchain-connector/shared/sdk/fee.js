@@ -31,7 +31,7 @@ const cacheFeeTokenID = async () => {
 		const response = await invokeEndpoint('fee_getFeeTokenID');
 		if (response.error) throw response.error;
 
-		feeTokenID = response;
+		feeTokenID = response.tokenID;
 		logger.info(`Updated feeTokenID to ${feeTokenID}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -48,7 +48,7 @@ const cacheMinFeePerByte = async () => {
 		const response = await invokeEndpoint('fee_getMinFeePerByte');
 		if (response.error) throw response.error;
 
-		minFeePerByte = response;
+		minFeePerByte = response.minFeePerByte;
 		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
