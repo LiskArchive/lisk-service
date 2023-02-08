@@ -61,7 +61,6 @@ config.queue = {
 	},
 };
 
-// TODO: Update betanet chainID once determined
 config.networks = [
 	{
 		networkName: 'mainnet',
@@ -76,7 +75,7 @@ config.networks = [
 	},
 	{
 		networkName: 'betanet',
-		chainID: '',
+		chainID: '02000000',
 		serviceUrl: 'https://betanet-service.lisk.com',
 	},
 ];

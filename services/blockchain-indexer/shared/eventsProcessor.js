@@ -66,7 +66,7 @@ const deleteBlockProcessor = async (block) => {
 };
 
 const newRoundProcessor = async () => {
-	logger.debug('Performing updates on new round');
+	logger.debug('Performing updates on new round.');
 	await reloadValidatorCache();
 	await reloadGeneratorsCache();
 	const limit = await getNumberOfGenerators();
@@ -77,7 +77,7 @@ const newRoundProcessor = async () => {
 
 const initEventsProcess = async () => {
 	eventsQueue.process(async (job) => {
-		logger.debug('Subscribed to the events from coordinator');
+		logger.debug('Subscribed to the events from coordinator.');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
@@ -86,7 +86,9 @@ const initEventsProcess = async () => {
 		} else if (isDeleteBlock) {
 			const { blockHeader } = job.data;
 			await deleteBlockProcessor(blockHeader);
-		} else if (isNewRound) await newRoundProcessor();
+		} else if (isNewRound) {
+			await newRoundProcessor();
+		}
 	});
 };
 

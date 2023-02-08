@@ -51,8 +51,8 @@
                 ],
                 "properties": {
                     "lastUpdate": {
-                        "type": "string",
-                        "example": "1616008148",
+                        "type": "integer",
+                        "example": 1616008148,
                         "description": "Timestamp of the block for which the estimates were last calculated."
                     },
                     "lastBlockHeight": {

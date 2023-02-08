@@ -27,32 +27,34 @@ let minFeePerByte;
 
 const cacheFeeTokenID = async () => {
 	try {
-		logger.trace('Attemping to update feeTokenID.');
+		logger.trace('Attempting to update feeTokenID.');
 		const response = await invokeEndpoint('fee_getFeeTokenID');
 		if (response.error) throw response.error;
 
-		feeTokenID = response;
+		feeTokenID = response.tokenID;
 		logger.info(`Updated feeTokenID to ${feeTokenID}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'cacheFeeTokenID\'.');
 		}
+		logger.warn(`Error occurred when calling 'cacheFeeTokenID':\n${err.stack}`);
 		throw err;
 	}
 };
 
 const cacheMinFeePerByte = async () => {
 	try {
-		logger.trace('Attemping to update minFeePerByte.');
+		logger.trace('Attempting to update minFeePerByte.');
 		const response = await invokeEndpoint('fee_getMinFeePerByte');
 		if (response.error) throw response.error;
 
-		minFeePerByte = response;
+		minFeePerByte = response.minFeePerByte;
 		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'cacheMinFeePerByte\'.');
 		}
+		logger.warn(`Error occurred when calling 'cacheMinFeePerByte':\n${err.stack}`);
 		throw err;
 	}
 };
