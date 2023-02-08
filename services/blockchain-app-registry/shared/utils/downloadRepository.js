@@ -26,7 +26,7 @@ const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
 
-const keyValueDB = require('../database/mysqlKVStore');
+const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
@@ -39,7 +39,7 @@ const COMMIT_HASH_UNTIL_LAST_SYNC = 'commitHashUntilLastSync';
 
 const octokit = new Octokit({ auth: config.gitHub.accessToken });
 
-const getRepoInfoFromURL = (url) => {
+const getRepoInfoFromURL = (url = '') => {
 	const [, , , owner, repo] = url.split('/');
 	return { owner, repo };
 };
@@ -67,7 +67,7 @@ const getLatestCommitHash = async () => {
 };
 
 const getCommitInfo = async () => {
-	const lastSyncedCommitHash = await keyValueDB.get(COMMIT_HASH_UNTIL_LAST_SYNC);
+	const lastSyncedCommitHash = await keyValueTable.get(COMMIT_HASH_UNTIL_LAST_SYNC);
 	const latestCommitHash = await getLatestCommitHash();
 	return { lastSyncedCommitHash, latestCommitHash };
 };
@@ -210,7 +210,7 @@ const syncWithRemoteRepo = async () => {
 				{ concurrency: filesChanged.length },
 			);
 
-			await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+			await keyValueTable.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 			if (filesChanged.length) {
 				const eventPayload = await buildEventPayload(filesChanged);
 				Signals.get('metadataUpdated').dispatch(eventPayload);
@@ -246,7 +246,7 @@ const downloadRepositoryToFS = async () => {
 		await rename(oldDir, appDirPath);
 
 		const latestCommitHash = await getLatestCommitHash();
-		await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+		await keyValueTable.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 	}
 };
 
