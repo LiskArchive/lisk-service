@@ -34,15 +34,15 @@ const { KV_STORE_KEY } = require('../../shared/constants');
 const config = require('../../config');
 const { exists, rmdir } = require('../../shared/utils/fsUtils');
 
-describe('Test getLatestCommitHash method', () => {
-	it('Returns correct latest commit hash info', async () => {
+describe('test getLatestCommitHash method', () => {
+	it('should return correct latest commit hash info', async () => {
 		const response = await getLatestCommitHash();
 		expect(typeof response).toEqual('string');
 		expect(response).toMatch(/^[a-f0-9]{40}$/);
 	});
 });
 
-describe('Test getCommitInfo method', () => {
+describe('test getCommitInfo method', () => {
 	const lastSyncedCommitHash = 'ec938b74bcb8208c95d8e4edc8c8a0961d1aaaaa';
 	beforeAll(async () => keyValueTable.set(
 		KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
@@ -50,7 +50,7 @@ describe('Test getCommitInfo method', () => {
 	));
 	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
 
-	it('Returns correct commit info', async () => {
+	it('should return correct commit info', async () => {
 		const response = await getCommitInfo();
 		expect(Object.keys(response)).toEqual(['lastSyncedCommitHash', 'latestCommitHash']);
 		expect(response.lastSyncedCommitHash).toEqual(lastSyncedCommitHash);
@@ -58,37 +58,37 @@ describe('Test getCommitInfo method', () => {
 	});
 });
 
-describe('Test getRepoDownloadURL method', () => {
-	it('Returns correct repository download url info', async () => {
+describe('test getRepoDownloadURL method', () => {
+	it('should return correct repository download url info', async () => {
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(/^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main\?token=\w*$/);
 	});
 });
 
-describe('Test getFileDownloadURL method', () => {
-	it('Returns correct file download info when file is valid', async () => {
+describe('test getFileDownloadURL method', () => {
+	it('should return correct file download info when file is valid', async () => {
 		const response = await getFileDownloadURL('devnet/Enevti/nativetokens.json');
 		/* eslint-disable-next-line no-useless-escape */
 		expect(response.url).toMatch(new RegExp(`^https:\/\/\\w*.github.com\/repos\/LiskHQ\/${config.gitHub.appRegistryRepoName}\/contents\/devnet\/Enevti\/nativetokens.json\\?owner=LiskHQ&repo=${config.gitHub.appRegistryRepoName}&ref=${config.gitHub.branch}$`));
 	});
 
-	it('Throws error when file is invalid', async () => {
+	it('should throw error when file is invalid', async () => {
 		expect(async () => getFileDownloadURL('devnet/Enevti/invalid_file')).rejects.toThrow();
 	});
 
-	it('Returns empty object when file is undefined', async () => {
+	it('should return empty object when file is undefined', async () => {
 		const response = await getFileDownloadURL();
 		expect(response).toEqual({});
 	});
 
-	it('Returns empty object when file is null', async () => {
+	it('should return empty object when file is null', async () => {
 		const response = await getFileDownloadURL(null);
 		expect(response).toEqual({});
 	});
 });
 
-describe('Test getDiff method', () => {
-	it('Returns list of file differences between two commits when commits are valid', async () => {
+describe('test getDiff method', () => {
+	it('should return list of file differences between two commits when commits are valid', async () => {
 		const response = await getDiff('838464896420410dcbade293980fe42ca95931d0', '5ca021f84cdcdb3b28d3766cf675d942887327c3');
 		const fileNames = response.data.files.map(file => file.filename);
 		expect(fileNames).toEqual([
@@ -98,29 +98,33 @@ describe('Test getDiff method', () => {
 		]);
 	});
 
-	it('Throws error when both commits are invalid', async () => {
+	it('should throw error when both commits are invalid', async () => {
 		expect(() => getDiff('aaaa64896420410dcbade293980fe42ca95931d0', 'bbbb21f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
 	});
 
-	it('Throws error when lastSyncedCommitHash is invalid', async () => {
+	it('should throw error when lastSyncedCommitHash is invalid', async () => {
 		expect(() => getDiff('aaaa64896420410dcbade293980fe42ca95931d0', '5ca021f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
 	});
 
-	it('Throws error when both latestCommitHash is invalid', async () => {
+	it('should throw error when both latestCommitHash is invalid', async () => {
 		expect(() => getDiff('838464896420410dcbade293980fe42ca95931d0', 'bbbb21f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
 	});
 
-	it('Throws error when both commits are undefined', async () => {
+	it('should throw error when one or both commits are undefined', async () => {
+		expect(() => getDiff('838464896420410dcbade293980fe42ca95931d0', undefined)).rejects.toThrow();
+		expect(() => getDiff(undefined, '5ca021f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
 		expect(() => getDiff(undefined, undefined)).rejects.toThrow();
 	});
 
-	it('Throws error when both commits are null', async () => {
+	it('should throw error when one or both commits are null', async () => {
+		expect(() => getDiff('838464896420410dcbade293980fe42ca95931d0', null)).rejects.toThrow();
+		expect(() => getDiff(null, '5ca021f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
 		expect(() => getDiff(null, null)).rejects.toThrow();
 	});
 });
 
-describe('Test buildEventPayload method', () => {
-	it('Returns event payload when called with a list of changed files', async () => {
+describe('test buildEventPayload method', () => {
+	it('should return event payload when called with a list of changed files', async () => {
 		const changedFiles = [
 			'alphanet/Lisk/nativetokens.json',
 			'betanet/Lisk/nativetokens.json',
@@ -138,7 +142,7 @@ describe('Test buildEventPayload method', () => {
 		});
 	});
 
-	it('Returns event payload when called with empty changed files', async () => {
+	it('should return event payload when called with empty changed files', async () => {
 		const response = await buildEventPayload([]);
 		expect(response).toEqual({
 			alphanet: [],
@@ -149,7 +153,7 @@ describe('Test buildEventPayload method', () => {
 		});
 	});
 
-	it('Returns event payload when called with undefined changed files', async () => {
+	it('should return event payload when called with undefined changed files', async () => {
 		const response = await buildEventPayload(undefined);
 		expect(response).toEqual({
 			alphanet: [],
@@ -160,7 +164,7 @@ describe('Test buildEventPayload method', () => {
 		});
 	});
 
-	it('Returns event payload when called with null changed files', async () => {
+	it('should return event payload when called with null changed files', async () => {
 		const response = await buildEventPayload(null);
 		expect(response).toEqual({
 			alphanet: [],
@@ -172,10 +176,34 @@ describe('Test buildEventPayload method', () => {
 	});
 });
 
-describe('Test syncWithRemoteRepo method', () => {
+describe('test downloadRepositoryToFS method', () => {
+	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
+
+	it('should download repository correctly for first time', async () => {
+		await rmdir(config.dataDir);
+		await downloadRepositoryToFS();
+		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
+	});
+
+	it('should update repository correctly when repository is already downloaded before', async () => {
+		const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
+
+		await rmdir(enevtiAppJsonFilePath);
+		await keyValueTable.set(
+			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
+			lastSyncedCommitHash,
+		);
+		await downloadRepositoryToFS();
+		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
+		await keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
+	});
+});
+
+describe('test syncWithRemoteRepo method', () => {
 	const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
 	beforeAll(async () => {
+		// Set last sync commit hash in db and remove existing file
 		await keyValueTable.set(
 			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
 			lastSyncedCommitHash,
@@ -184,29 +212,8 @@ describe('Test syncWithRemoteRepo method', () => {
 	});
 	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
 
-	it('Syncs repository upto latest commit', async () => {
+	it('should sync repository upto latest commit', async () => {
 		await syncWithRemoteRepo();
-		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
-	});
-});
-
-describe('Test downloadRepositoryToFS method', () => {
-	const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
-	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
-
-	it('Downloads repository correctly for first time', async () => {
-		await rmdir(config.dataDir);
-		await downloadRepositoryToFS();
-		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
-	});
-
-	it('Updates repository correctly when repository is already downloaded before', async () => {
-		await rmdir(enevtiAppJsonFilePath);
-		await keyValueTable.set(
-			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
-			lastSyncedCommitHash,
-		);
-		await downloadRepositoryToFS();
 		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
 	});
 });

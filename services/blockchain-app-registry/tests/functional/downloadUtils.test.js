@@ -23,38 +23,46 @@ beforeEach(async () => mkdir(dirPath));
 
 afterEach(async () => rmdir(dirPath));
 
-describe('Test downloadAndExtractTarball method', () => {
-	it('Downloads and extracts correctly when url and data directory is valid', async () => {
+describe('test downloadAndExtractTarball method', () => {
+	it('should download and extract correctly when url and data directory is valid', async () => {
 		await downloadAndExtractTarball(url, dirPath);
 		expect(await exists(`${dirPath}/lisk-service-0.6.4`)).toEqual(true);
 	});
 
-	it('Throws error when url is invalid', async () => {
+	it('should throw error when url is invalid', async () => {
 		expect(downloadAndExtractTarball(`${url}/invalid_file`, dirPath)).rejects.toThrow();
 	});
 
-	it('Throws error when url is undefined', async () => {
+	it('should throw error when url is undefined', async () => {
 		expect(downloadAndExtractTarball(undefined, dirPath)).rejects.toThrow();
 	});
 
-	it('Throws error when url is null', async () => {
+	it('should throw error when url is null', async () => {
 		expect(downloadAndExtractTarball(null, dirPath)).rejects.toThrow();
 	});
 
-	it('Throws error when dirPath is undefined', async () => {
+	it('should throw error when dirPath is undefined', async () => {
 		expect(downloadAndExtractTarball(url, undefined)).rejects.toThrow();
 	});
 
-	it('Throws error when dirPath is null', async () => {
+	it('should throw error when dirPath is null', async () => {
 		expect(downloadAndExtractTarball(url, null)).rejects.toThrow();
+	});
+
+	it('should throw error when both url and dirPath are undefined', async () => {
+		expect(downloadAndExtractTarball(undefined, undefined)).rejects.toThrow();
+	});
+
+	it('should throw error when both url and dirPath are null', async () => {
+		expect(downloadAndExtractTarball(null, null)).rejects.toThrow();
 	});
 });
 
-describe('Test downloadFile method', () => {
+describe('test downloadFile method', () => {
 	const fileUrl = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
 	const filePath = `${dirPath}/test.json`;
 
-	it('Downloads file for a correct url and file path', async () => {
+	it('should download file for a correct url and file path', async () => {
 		await mkdir(dirPath);
 		await downloadFile(fileUrl, filePath);
 
@@ -62,23 +70,31 @@ describe('Test downloadFile method', () => {
 		await rmdir(filePath);
 	});
 
-	it('Throws error when url is invalid', async () => {
+	it('should throw error when url is invalid', async () => {
 		expect(downloadFile(`${fileUrl}/invalid_file`, filePath)).rejects.toThrow();
 	});
 
-	it('Throws error when url is undefined', async () => {
+	it('should throw error when url is undefined', async () => {
 		expect(downloadFile(undefined, filePath)).rejects.toThrow();
 	});
 
-	it('Throws error when url is null', async () => {
+	it('should throw error when url is null', async () => {
 		expect(downloadFile(null, filePath)).rejects.toThrow();
 	});
 
-	it('Throws error when file path is undefined', async () => {
+	it('should throw error when file path is undefined', async () => {
 		expect(downloadFile(url, undefined)).rejects.toThrow();
 	});
 
-	it('Throws error when file path is null', async () => {
+	it('should throw error when file path is null', async () => {
 		expect(downloadFile(url, null)).rejects.toThrow();
+	});
+
+	it('should throw error when both url and file path are undefined', async () => {
+		expect(downloadFile(undefined, undefined)).rejects.toThrow();
+	});
+
+	it('should throw error when both url and file path are null', async () => {
+		expect(downloadFile(null, null)).rejects.toThrow();
 	});
 });

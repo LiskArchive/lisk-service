@@ -50,14 +50,14 @@ describe('test getRepoInfoFromURL method', () => {
 	});
 
 	it('should return proper response when url is undefined', async () => {
-		const response = getRepoInfoFromURL();
+		const response = getRepoInfoFromURL(undefined);
 		expect(response).toMatchObject({
 			owner: undefined,
 			repo: undefined,
 		});
 	});
 
-	it('Returns proper response when url is null', async () => {
+	it('should return proper response when url is null', async () => {
 		const response = getRepoInfoFromURL(null);
 		expect(response).toMatchObject({
 			owner: undefined,
@@ -66,8 +66,8 @@ describe('test getRepoInfoFromURL method', () => {
 	});
 });
 
-describe('Test getUniqueNetworkAppDirPairs method', () => {
-	it('Returns unique pairs when files has duplicate', async () => {
+describe('test getUniqueNetworkAppDirPairs method', () => {
+	it('should return unique pairs when files has duplicate', async () => {
 		const response = await getUniqueNetworkAppDirPairs([
 			'mainnet/dir1',
 			'devnet/dir2/some/text',
@@ -85,7 +85,7 @@ describe('Test getUniqueNetworkAppDirPairs method', () => {
 		]);
 	});
 
-	it('Returns proper response when files are unique', async () => {
+	it('should return proper response when files are unique', async () => {
 		const response = await getUniqueNetworkAppDirPairs([
 			'devnet/dir2',
 			'mainnet/dir1/extra/text',
@@ -102,71 +102,70 @@ describe('Test getUniqueNetworkAppDirPairs method', () => {
 		]);
 	});
 
-	it('Returns empty response when files is empty array', async () => {
+	it('should return empty response when files is empty array', async () => {
 		const response = await getUniqueNetworkAppDirPairs([]);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty response when files is null', async () => {
+	it('should return empty response when files is null', async () => {
 		const response = await getUniqueNetworkAppDirPairs(null);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty response when files is undefined', async () => {
+	it('should return empty response when files is undefined', async () => {
 		const response = await getUniqueNetworkAppDirPairs(undefined);
 		expect(response).toEqual([]);
 	});
 });
 
-describe('Test filterMetaConfigFilesByNetwork method', () => {
-	it('Returns filtered files by network when files has many networks', async () => {
+describe('test filterMetaConfigFilesByNetwork method', () => {
+	it('should return filtered files by network when files has many networks', async () => {
+		const mainnetFiles = [
+			`mainnet/dir1/extra/${config.FILENAME.APP_JSON}`,
+			`mainnet/dir1/extra/${config.FILENAME.NATIVETOKENS_JSON}`,
+		];
 		const files = [
 			'mainnet/dir1/filename.txt',
 			'devnet/dir2/some/text.txt',
-			`mainnet/dir1/extra/${config.FILENAME.APP_JSON}`,
-			`mainnet/dir1/extra/${config.FILENAME.NATIVETOKENS_JSON}`,
+			...mainnetFiles,
 			'devnet/dir2/some/text.txt',
 			`devnet/dir1/extra/${config.FILENAME.APP_JSON}`,
 		];
 		const response = await filterMetaConfigFilesByNetwork('mainnet', files);
-		expect(response).toEqual([
-			`mainnet/dir1/extra/${config.FILENAME.APP_JSON}`,
-			`mainnet/dir1/extra/${config.FILENAME.NATIVETOKENS_JSON}`,
-		]);
+		expect(response).toEqual(mainnetFiles);
 	});
 
-	it('Returns empty array when files is empty', async () => {
-		const files = [];
-		const response = await filterMetaConfigFilesByNetwork('mainnet', files);
+	it('should return empty array when files is empty', async () => {
+		const response = await filterMetaConfigFilesByNetwork('mainnet', []);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty array when files is null', async () => {
+	it('should return empty array when files is null', async () => {
 		const response = await filterMetaConfigFilesByNetwork('mainnet', null);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty array when files is undefined', async () => {
+	it('should return empty array when files is undefined', async () => {
 		const response = await filterMetaConfigFilesByNetwork('mainnet', undefined);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty array when network is undefined', async () => {
+	it('should return empty array when network is undefined', async () => {
 		const response = await filterMetaConfigFilesByNetwork(undefined, []);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty array when network is null', async () => {
+	it('should return empty array when network is null', async () => {
 		const response = await filterMetaConfigFilesByNetwork(null, []);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty array when network and files are undefined', async () => {
+	it('should return empty array when network and files are undefined', async () => {
 		const response = await filterMetaConfigFilesByNetwork(undefined, undefined);
 		expect(response).toEqual([]);
 	});
 
-	it('Returns empty array when network and files are null', async () => {
+	it('should return empty array when network and files are null', async () => {
 		const response = await filterMetaConfigFilesByNetwork(null, null);
 		expect(response).toEqual([]);
 	});
