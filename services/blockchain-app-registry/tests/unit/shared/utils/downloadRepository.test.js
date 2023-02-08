@@ -66,7 +66,7 @@ describe('Test getRepoInfoFromURL method', () => {
 	});
 });
 
-describe('test getUniqueNetworkAppDirPairs method', () => {
+describe('Test getUniqueNetworkAppDirPairs method', () => {
 	it('should return unique pairs when files has duplicate', async () => {
 		const response = await getUniqueNetworkAppDirPairs([
 			'mainnet/dir1',
@@ -118,7 +118,7 @@ describe('test getUniqueNetworkAppDirPairs method', () => {
 	});
 });
 
-describe('test filterMetaConfigFilesByNetwork method', () => {
+describe('Test filterMetaConfigFilesByNetwork method', () => {
 	it('should return filtered files by network when files has many networks', async () => {
 		const mainnetFiles = [
 			`mainnet/dir1/extra/${config.FILENAME.APP_JSON}`,

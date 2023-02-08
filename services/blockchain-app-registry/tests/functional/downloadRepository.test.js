@@ -34,7 +34,7 @@ const { KV_STORE_KEY } = require('../../shared/constants');
 const config = require('../../config');
 const { exists, rmdir } = require('../../shared/utils/fsUtils');
 
-describe('test getLatestCommitHash method', () => {
+describe('Test getLatestCommitHash method', () => {
 	it('should return correct latest commit hash info', async () => {
 		const response = await getLatestCommitHash();
 		expect(typeof response).toEqual('string');
@@ -42,7 +42,7 @@ describe('test getLatestCommitHash method', () => {
 	});
 });
 
-describe('test getCommitInfo method', () => {
+describe('Test getCommitInfo method', () => {
 	const lastSyncedCommitHash = 'ec938b74bcb8208c95d8e4edc8c8a0961d1aaaaa';
 	beforeAll(async () => keyValueTable.set(
 		KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
@@ -58,14 +58,14 @@ describe('test getCommitInfo method', () => {
 	});
 });
 
-describe('test getRepoDownloadURL method', () => {
+describe('Test getRepoDownloadURL method', () => {
 	it('should return correct repository download url info', async () => {
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(/^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main\?token=\w*$/);
 	});
 });
 
-describe('test getFileDownloadURL method', () => {
+describe('Test getFileDownloadURL method', () => {
 	it('should return correct file download info when file is valid', async () => {
 		const response = await getFileDownloadURL('devnet/Enevti/nativetokens.json');
 		/* eslint-disable-next-line no-useless-escape */
@@ -87,7 +87,7 @@ describe('test getFileDownloadURL method', () => {
 	});
 });
 
-describe('test getDiff method', () => {
+describe('Test getDiff method', () => {
 	it('should return list of file differences between two commits when commits are valid', async () => {
 		const response = await getDiff('838464896420410dcbade293980fe42ca95931d0', '5ca021f84cdcdb3b28d3766cf675d942887327c3');
 		const fileNames = response.data.files.map(file => file.filename);
@@ -123,7 +123,7 @@ describe('test getDiff method', () => {
 	});
 });
 
-describe('test buildEventPayload method', () => {
+describe('Test buildEventPayload method', () => {
 	it('should return event payload when called with a list of changed files', async () => {
 		const changedFiles = [
 			'alphanet/Lisk/nativetokens.json',
@@ -176,7 +176,7 @@ describe('test buildEventPayload method', () => {
 	});
 });
 
-describe('test downloadRepositoryToFS method', () => {
+describe('Test downloadRepositoryToFS method', () => {
 	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
 
 	it('should download repository correctly for first time', async () => {
@@ -199,7 +199,7 @@ describe('test downloadRepositoryToFS method', () => {
 	});
 });
 
-describe('test syncWithRemoteRepo method', () => {
+describe('Test syncWithRemoteRepo method', () => {
 	const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
 	beforeAll(async () => {

@@ -23,7 +23,7 @@ beforeEach(async () => mkdir(dirPath));
 
 afterEach(async () => rmdir(dirPath));
 
-describe('test downloadAndExtractTarball method', () => {
+describe('Test downloadAndExtractTarball method', () => {
 	it('should download and extract correctly when url and data directory is valid', async () => {
 		await downloadAndExtractTarball(url, dirPath);
 		expect(await exists(`${dirPath}/lisk-service-0.6.4`)).toEqual(true);
@@ -58,7 +58,7 @@ describe('test downloadAndExtractTarball method', () => {
 	});
 });
 
-describe('test downloadFile method', () => {
+describe('Test downloadFile method', () => {
 	const fileUrl = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
 	const filePath = `${dirPath}/test.json`;
 
