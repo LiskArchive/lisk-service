@@ -133,7 +133,11 @@ const getAccountsFromCore = async (params) => {
 
 		await BluebirdPromise.map(
 			accounts.data,
-			async account => accountsCache.set(account.address, JSON.stringify(account)),
+			async account => accountsCache.set(
+				account.address,
+				JSON.stringify(account),
+				config.ttl.accountsCache,
+			),
 			{ concurrency: accounts.data.length },
 		);
 		Signals.get('updateAccountState').dispatch(params.addresses || [params.address]);

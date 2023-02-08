@@ -35,7 +35,7 @@
     "bluebird": "^3.7.2",
     "bull": "^3.29.2",
     "json2csv": "^5.0.6",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/f401073c992ec9c2eca045664082353857cceebd/framework/dist/lisk-service-framework-1.4.3.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/2fbc65f49ae5c5aaa3689667051dbd4082b8c25a/framework/dist/lisk-service-framework-1.4.10.tgz",
     "moment": "^2.29.4",
     "moment-range": "^4.0.2",
     "minio": "^7.0.21",

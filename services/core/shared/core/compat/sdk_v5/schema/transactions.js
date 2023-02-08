@@ -30,6 +30,7 @@ module.exports = {
 		size: { type: 'integer' },
 		fee: { type: 'bigInteger' },
 		minFee: { type: 'bigInteger' },
+		index: { type: 'integer', null: false },
 	},
 	indexes: {
 		height: { type: 'range' },

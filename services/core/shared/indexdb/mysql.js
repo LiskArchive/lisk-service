@@ -91,7 +91,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
+		.filter(key => !['sort', 'order', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -229,6 +229,12 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			query.whereNotNull(sortProp);
 		}
 
+		if (params.order) {
+			const [orderColumn, orderDirection] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+			query.select(orderColumn).orderBy(orderColumn, orderDirection);
+		}
+
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
@@ -328,6 +334,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		if (params.sort) {
 			const [sortProp] = params.sort.split(':');
 			query.whereNotNull(sortProp);
+		}
+
+		if (params.order) {
+			const [orderColumn] = params.order.split(':');
+			query.whereNotNull(orderColumn);
 		}
 
 		if (params.whereIn) {

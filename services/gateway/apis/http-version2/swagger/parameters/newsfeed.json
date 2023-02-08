@@ -3,6 +3,7 @@
         "name": "source",
         "in": "query",
         "description": "Source name",
-        "type": "string"
+        "type": "string",
+        "minLength": 1
     }
 }

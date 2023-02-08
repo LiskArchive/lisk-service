@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-framework",
-  "version": "1.4.3",
+  "version": "1.4.10",
   "description": "Lisk Service Framework",
   "keywords": [
     "lisk",
@@ -19,8 +19,8 @@
   "private": true,
   "main": "index.js",
   "engines": {
-    "node": ">=16.14.0 <=16",
-    "npm": ">=8.3.1"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "release:github": "npm pack && mv lisk-service-framework-$npm_package_version.tgz ./dist/lisk-service-framework-$npm_package_version.tgz",
@@ -41,7 +41,7 @@
     "json-colorizer": "^2.2.2",
     "keyv": "^4.0.3",
     "keyv-lru": "^3.0.4",
-    "knex": "^2.0.0",
+    "knex": "^2.4.0",
     "log4js": "^6.5.2",
     "moleculer": "^0.14.21",
     "moleculer-web": "^0.10.4",

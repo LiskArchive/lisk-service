@@ -73,9 +73,10 @@ const getTransactionIndexingInfo = async (blocks) => {
 	const publicKeysToIndex = [];
 	const recipientAddressesToIndex = [];
 	const txnMultiArray = blocks.map(block => {
-		const transactions = block.payload.map(tx => {
+		const transactions = block.payload.map((tx, index) => {
 			const [{ id }] = availableLiskModuleAssets
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			tx.index = index;
 			tx.height = block.height;
 			tx.blockId = block.id;
 			tx.moduleAssetId = id;
