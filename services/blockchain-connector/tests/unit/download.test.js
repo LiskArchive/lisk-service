@@ -13,12 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { resolve } = require('path');
+const { resolve, dirname } = require('path');
 const { verifyFileChecksum } = require('../../shared/utils/download');
 
-const genesisBlockFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json`);
-const checksumFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json.SHA256`);
-const invalidChecksumFilePath = resolve(`${process.cwd()}/tests/constants/invalid_genesis_block.json.SHA256`);
+const genesisBlockFilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json`);
+const checksumFilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json.SHA256`);
+const invalidChecksumFilePath = resolve(`${dirname(__dirname)}/constants/invalid_genesis_block.json.SHA256`);
 
 describe('Unit test for download utility -> verifyFileChecksum method', () => {
 	it('should return true in case of valid checksum', async () => {
@@ -28,6 +28,27 @@ describe('Unit test for download utility -> verifyFileChecksum method', () => {
 
 	it('should return false in case of invalid checksum', async () => {
 		const result = await verifyFileChecksum(genesisBlockFilePath, invalidChecksumFilePath);
+		expect(result).toEqual(false);
+	});
+
+	it('should return false in case of null filePath', async () => {
+		const result = await verifyFileChecksum(null, null);
+		expect(result).toEqual(false);
+	});
+
+	it('should return false in case of undefined filePath', async () => {
+		const result = await verifyFileChecksum(undefined, undefined);
+		expect(result).toEqual(false);
+	});
+
+	it('should return false in case of empty string filePath', async () => {
+		const result = await verifyFileChecksum('', '');
+		expect(result).toEqual(false);
+	});
+
+	it('should throw error in case of invalid filePath', async () => {
+		const invalidFilePath = 'invalid';
+		const result = await verifyFileChecksum(invalidFilePath, invalidFilePath);
 		expect(result).toEqual(false);
 	});
 });

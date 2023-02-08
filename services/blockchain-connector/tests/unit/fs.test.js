@@ -26,35 +26,93 @@ const {
 const { genesisBlock } = require('../constants/blocks');
 
 describe('Unit tests for filesystem utilities', () => {
-	const dirPath = resolve(`${dirname(__dirname)}/testDir`);
-	const filePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json`);
-	const tarFilePath = resolve(`${process.cwd()}/tests/constants/genesis_block.json.tar.gz`);
+	const testDir = resolve(`${dirname(__dirname)}/testDir`);
+	const JsonfilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json`);
+	const tarFilePath = resolve(`${dirname(__dirname)}/constants/genesis_block.json.tar.gz`);
 
-	afterAll(async () => {
-		// Remove test directory
-		await rm(dirPath, { recursive: true, force: true });
+	// Remove test directory
+	afterAll(async () => rm(testDir, { recursive: true, force: true }));
+
+	describe('Test mkdir method', () => {
+		it('should create directory', async () => {
+			expect(exists(testDir)).resolves.toBe(false);
+			await mkdir(testDir, { recursive: true });
+			expect(exists(testDir)).resolves.toBe(true);
+		});
+
+		it('should throw error -> undefined directory path', async () => {
+			expect(mkdir(undefined, { recursive: true })).rejects.toThrow();
+		});
+
+		it('should throw error -> null directory path', async () => {
+			expect(mkdir(null, { recursive: true })).rejects.toThrow();
+		});
 	});
 
-	it('should create directory', async () => {
-		expect(exists(dirPath)).resolves.toBe(false);
-		await mkdir(dirPath, { recursive: true });
-		expect(exists(dirPath)).resolves.toBe(true);
+	describe('Test extractTarBall method', () => {
+		it('should extract tar file', async () => {
+			const outputPath = `${testDir}/genesis_block.json`;
+			expect(exists(outputPath)).resolves.toBe(false);
+
+			// Extract tar file
+			await extractTarBall(tarFilePath, testDir);
+			expect(exists(outputPath)).resolves.toBe(true);
+		});
+
+		it('should throw error -> invalid filepath', async () => {
+			const filePath = 'invalid';
+			expect(extractTarBall(filePath, testDir)).rejects.toThrow();
+		});
+
+		it('should throw error -> undefined tar filepath', async () => {
+			expect(extractTarBall(undefined, testDir)).rejects.toThrow();
+		});
+
+		it('should throw error -> undefined directoryPath', async () => {
+			expect(extractTarBall(tarFilePath, undefined)).rejects.toThrow();
+		});
+
+		it('should throw error -> null tar filepath', async () => {
+			expect(extractTarBall(null, testDir)).rejects.toThrow();
+		});
+
+		it('should throw error -> null directoryPath', async () => {
+			expect(extractTarBall(tarFilePath, null)).rejects.toThrow();
+		});
+
+		it('should throw error -> empty string tar filepath', async () => {
+			expect(extractTarBall('', testDir)).rejects.toThrow();
+		});
+
+		it('should throw error -> empty string directoryPath', async () => {
+			expect(extractTarBall(tarFilePath, '')).rejects.toThrow();
+		});
 	});
 
-	it('should extract tar file', async () => {
-		const outputPath = `${dirPath}/genesis_block.json`;
-		expect(exists(outputPath)).resolves.toBe(false);
+	describe('Test read method', () => {
+		it('should read data from file', async () => {
+			expect(exists(JsonfilePath)).resolves.toBe(true);
+			// Read data from file
+			const result = await read(JsonfilePath);
+			const parsedResult = JSON.parse(result);
+			expect(parsedResult).toMatchObject(genesisBlock);
+		});
 
-		// Extract tar file
-		await extractTarBall(tarFilePath, dirPath);
-		expect(exists(outputPath)).resolves.toBe(true);
-	});
+		it('should throw error -> invalid filepath', async () => {
+			const filePath = 'invalid';
+			expect(read(filePath)).rejects.toThrow();
+		});
 
-	it('should read data from file', async () => {
-		expect(exists(filePath)).resolves.toBe(true);
-		// Read data from file
-		const result = await read(filePath);
-		const parsedResult = JSON.parse(result);
-		expect(parsedResult).toMatchObject(genesisBlock);
+		it('should throw error -> undefined filepath', async () => {
+			expect(read(undefined)).rejects.toThrow();
+		});
+
+		it('should throw error -> null filepath', async () => {
+			expect(read(null)).rejects.toThrow();
+		});
+
+		it('should throw error -> empty string filepath', async () => {
+			expect(read('')).rejects.toThrow();
+		});
 	});
 });

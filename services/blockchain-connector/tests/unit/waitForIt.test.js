@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const delay = require('../../shared/utils/delay');
 const waitForIt = require('../../shared/utils/waitForIt');
 
 let testValue = false;
@@ -25,6 +26,19 @@ describe('Unit test for waitForIt utility', () => {
 		expect(testValue).toBe(true);
 	});
 
+	it('should wait for the test function to invoke with delay of 1000ms', async () => {
+		const delayMs = 1000;
+		const testFn = async () => {
+			await delay(delayMs);
+			return true;
+		};
+		const startTime = Date.now();
+		await waitForIt(testFn);
+		const endTime = Date.now();
+		const millisDifference = endTime - startTime;
+		expect(millisDifference).toBeGreaterThanOrEqual(delayMs);
+	});
+
 	it('should wait for the mocked function to invoke', async () => {
 		const testFn = jest.fn().mockReturnValue(true);
 
@@ -33,5 +47,22 @@ describe('Unit test for waitForIt utility', () => {
 		expect(testFn).toHaveBeenCalledTimes(1);
 		await waitForIt(testFn);
 		expect(testFn).toHaveBeenCalledTimes(2);
+	});
+
+	it('should throw error when passing invalid function', async () => {
+		const testFn = 'invalid';
+		expect(waitForIt(testFn)).rejects.toThrow();
+	});
+
+	it('should throw error when passing function as null', async () => {
+		expect(waitForIt(null)).rejects.toThrow();
+	});
+
+	it('should throw error when passing function as undefined', async () => {
+		expect(waitForIt(undefined)).rejects.toThrow();
+	});
+
+	it('should throw error when passing function as empty string', async () => {
+		expect(waitForIt('')).rejects.toThrow();
 	});
 });

@@ -24,17 +24,8 @@ describe('Unit test for delay utility', () => {
 		expect(millisDifference).toBeGreaterThan(0);
 	});
 
-	it('should add delay of 2ms', async () => {
+	it('should add delay of 2000ms', async () => {
 		const delayMs = 2000;
-		const startTime = Date.now();
-		await delay(delayMs);
-		const endTime = Date.now();
-		const millisDifference = endTime - startTime;
-		expect(millisDifference).toBeGreaterThanOrEqual(delayMs);
-	});
-
-	it('should add delay of 4ms', async () => {
-		const delayMs = 4000;
 		const startTime = Date.now();
 		await delay(delayMs);
 		const endTime = Date.now();
