@@ -22,8 +22,8 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const config = require('../../config');
-const keyValueTable = require('../../shared/database/mysqlKVStore');
+const config = require('../../../../config');
+const keyValueTable = require('../../../../shared/database/mysqlKVStore');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 

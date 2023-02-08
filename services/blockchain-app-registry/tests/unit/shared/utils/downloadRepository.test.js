@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRepoInfoFromURL } = require('../../shared/utils/downloadRepository');
-const config = require('../../config');
+const { getRepoInfoFromURL } = require('../../../../shared/utils/downloadRepository');
+const config = require('../../../../config');
 
 describe('test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {

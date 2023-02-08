@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { formatValue } = require('../../shared/database/mysqlKVStore');
+const { formatValue } = require('../../../../shared/database/mysqlKVStore');
 
 describe('unit tests for mysqlKVStore', () => {
 	describe('unit tests for formatValue', () => {

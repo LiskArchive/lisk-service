@@ -17,7 +17,7 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { normalizeRangeParam } = require('../../shared/utils/paramUtils');
+const { normalizeRangeParam } = require('../../../../shared/utils/paramUtils');
 
 describe('Test normalizeRangeParam method', () => {
 	it('should return undefined when the params is undefined', async () => {
