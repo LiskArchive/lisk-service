@@ -137,18 +137,18 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	}
 };
 
-const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
-	const filesUpdated = (filesChanged || []).filter(
+const filterMetaConfigFilesByNetwork = async (network, filesChanged = []) => {
+	const filesUpdated = filesChanged.filter(
 		file => file.startsWith(network)
 			&& (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
 	);
 	return filesUpdated;
 };
 
-const getUniqueNetworkAppDirPairs = async (files) => {
+const getUniqueNetworkAppDirPairs = async (files = []) => {
 	const map = new Map();
 
-	(files || []).forEach(file => {
+	files.forEach(file => {
 		const [network, appDirName] = file.split('/');
 		const updatedAppDir = `${network}/${appDirName}`;
 		map.set(updatedAppDir, { network, appDirName });
