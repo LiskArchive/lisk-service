@@ -112,7 +112,6 @@ const getFileDownloadURL = async (file) => {
 	}
 };
 
-// TODO: Update implementation to handle undefined lastSyncedCommitHash
 const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	const url = `GET /repos/${owner}/${repo}/compare/${lastSyncedCommitHash}...${latestCommitHash}`;
 	try {
