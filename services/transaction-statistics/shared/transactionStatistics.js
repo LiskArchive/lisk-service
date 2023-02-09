@@ -220,4 +220,7 @@ module.exports = {
 	getDistributionByType,
 	getDistributionByAmount,
 	getTransactionsStatistics,
+
+	// For functional tests
+	getSelector,
 };
