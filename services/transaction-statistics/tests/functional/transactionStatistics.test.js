@@ -42,7 +42,7 @@ const getDBInstance = () => getTableInstance(
 
 jest.mock('../../shared/utils/request');
 
-const validInterval = ['day', 'month'];
+const validIntervals = ['day', 'month'];
 
 describe('Tests transactionStatistics', () => {
 	const testTokenID = 'ffffffffffffffff';
@@ -70,7 +70,7 @@ describe('Tests transactionStatistics', () => {
 	afterEach(() => jest.clearAllMocks());
 
 	describe('Test getSelector method', () => {
-		validInterval.forEach(interval => {
+		validIntervals.forEach(interval => {
 			it(`should return correct response with valid params ->  ${interval} interval`, async () => {
 				const params = {
 					dateTo: moment().endOf(interval),
@@ -147,16 +147,55 @@ describe('Tests transactionStatistics', () => {
 	});
 
 	describe('Test getStatsTimeline method', () => {
-		validInterval.forEach(interval => {
-			it(`should return correct response with valid params -> ${interval} interval`, async () => {
+		validIntervals.forEach(interval => {
+			it(`should return correct response with valid params -> interval: 1 ${interval}`, async () => {
+				const limit = 1;
+				const offset = 0;
+
 				const params = {
 					dataFormat: DATE_FORMAT.DAY,
 					dateTo: moment()
 						.endOf(interval)
-						.subtract(0, interval),
-					dateFrom: moment(moment().startOf(interval).subtract(0, interval))
+						.subtract(offset, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(offset, interval))
 						.startOf(interval)
-						.subtract(0, interval),
+						.subtract(limit - 1, interval),
+					tokenIDs: [testTokenID],
+				};
+
+				const result = await getStatsTimeline(params);
+				expect(typeof result).toBe('object');
+				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+				Object.keys(result).forEach(key => {
+					expect(result[key]).toBeInstanceOf(Array);
+					expect(result[key].length).toBeGreaterThanOrEqual(1);
+					if (result[key].length) {
+						result[key].forEach(timeline => {
+							expect(typeof timeline).toBe('object');
+							if (key === testTokenID) {
+								expect(timeline).toMatchObject({
+									timestamp: testData.date,
+									transactionCount: testData.count,
+									volume: Number(testData.volume),
+								});
+							}
+						});
+					}
+				});
+			});
+
+			it(`should return correct response with valid params -> interval: 10 ${interval}`, async () => {
+				const limit = 10;
+				const offset = 0;
+
+				const params = {
+					dataFormat: DATE_FORMAT.DAY,
+					dateTo: moment()
+						.endOf(interval)
+						.subtract(offset, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(offset, interval))
+						.startOf(interval)
+						.subtract(limit - 1, interval),
 					tokenIDs: [testTokenID],
 				};
 
@@ -205,16 +244,47 @@ describe('Tests transactionStatistics', () => {
 	});
 
 	describe('Test getDistributionByAmount method', () => {
-		validInterval.forEach(interval => {
-			it(`should return correct response with valid params -> ${interval} interval`, async () => {
+		validIntervals.forEach(interval => {
+			it(`should return correct response with valid params -> interval: 1 ${interval}`, async () => {
+				const limit = 1;
+				const offset = 0;
+
 				const params = {
 					dataFormat: DATE_FORMAT.DAY,
 					dateTo: moment()
 						.endOf(interval)
-						.subtract(0, interval),
-					dateFrom: moment(moment().startOf(interval).subtract(0, interval))
+						.subtract(offset, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(offset, interval))
 						.startOf(interval)
-						.subtract(0, interval),
+						.subtract(limit - 1, interval),
+					tokenIDs: [testTokenID],
+				};
+
+				const result = await getDistributionByAmount(params);
+				expect(typeof result).toBe('object');
+				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+				Object.keys(result).forEach(key => {
+					expect(typeof result[key]).toBe('object');
+					if (key === testTokenID) {
+						expect(result[key]).toMatchObject({
+							[testData.amount_range]: testData.count,
+						});
+					}
+				});
+			});
+
+			it(`should return correct response with valid params -> interval: 10 ${interval}`, async () => {
+				const limit = 10;
+				const offset = 0;
+
+				const params = {
+					dataFormat: DATE_FORMAT.DAY,
+					dateTo: moment()
+						.endOf(interval)
+						.subtract(offset, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(offset, interval))
+						.startOf(interval)
+						.subtract(limit - 1, interval),
 					tokenIDs: [testTokenID],
 				};
 
@@ -255,16 +325,39 @@ describe('Tests transactionStatistics', () => {
 	});
 
 	describe('Test getDistributionByType method', () => {
-		validInterval.forEach(interval => {
-			it(`should return correct response with valid params -> ${interval} interval`, async () => {
+		validIntervals.forEach(interval => {
+			it(`should return correct response with valid params -> interval: 1 ${interval}`, async () => {
+				const limit = 1;
+				const offset = 0;
+
 				const params = {
 					dataFormat: DATE_FORMAT.DAY,
 					dateTo: moment()
 						.endOf(interval)
-						.subtract(0, interval),
-					dateFrom: moment(moment().startOf(interval).subtract(0, interval))
+						.subtract(offset, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(offset, interval))
 						.startOf(interval)
-						.subtract(0, interval),
+						.subtract(limit - 1, interval),
+					tokenIDs: [testTokenID],
+				};
+
+				const result = await getDistributionByType(params);
+				expect(typeof result).toBe('object');
+				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+			});
+
+			it(`should return correct response with valid params -> interval: 10 ${interval}`, async () => {
+				const limit = 10;
+				const offset = 0;
+
+				const params = {
+					dataFormat: DATE_FORMAT.DAY,
+					dateTo: moment()
+						.endOf(interval)
+						.subtract(offset, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(offset, interval))
+						.startOf(interval)
+						.subtract(limit - 1, interval),
 					tokenIDs: [testTokenID],
 				};
 
