@@ -17,7 +17,6 @@
 jest.setTimeout(15000);
 
 const path = require('path');
-
 const {
 	getRepoDownloadURL,
 	getLatestCommitHash,
@@ -35,6 +34,7 @@ const config = require('../../../../config');
 const { exists, rmdir } = require('../../../../shared/utils/fsUtils');
 
 const commitHashRegex = /^[a-f0-9]{40}$/;
+const enevtiAppFilePath = path.resolve(`${config.dataDir}/app-registry/devnet/Enevti/app.json`);
 
 describe('Test getLatestCommitHash method', () => {
 	it('should return correct latest commit hash info', async () => {
@@ -80,14 +80,12 @@ describe('Test getFileDownloadURL method', () => {
 		expect(async () => getFileDownloadURL('devnet/Enevti/invalid_file')).rejects.toThrow();
 	});
 
-	it('should return empty object when file is undefined', async () => {
-		const response = await getFileDownloadURL();
-		expect(response).toEqual({});
+	it('should throw error when file is undefined', async () => {
+		expect(async () => getFileDownloadURL(undefined)).rejects.toThrow();
 	});
 
-	it('should return empty object when file is null', async () => {
-		const response = await getFileDownloadURL(null);
-		expect(response).toEqual({});
+	it('should throw error when file is null', async () => {
+		expect(async () => getFileDownloadURL(null)).rejects.toThrow();
 	});
 });
 
@@ -181,43 +179,43 @@ describe('Test buildEventPayload method', () => {
 });
 
 describe('Test downloadRepositoryToFS method', () => {
-	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
-
 	it('should download repository correctly for first time', async () => {
 		await rmdir(config.dataDir);
+		expect(await exists(enevtiAppFilePath)).toEqual(false);
 		await downloadRepositoryToFS();
-		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
+		expect(await exists(enevtiAppFilePath)).toEqual(true);
 	});
 
 	it('should update repository correctly when repository is already downloaded before', async () => {
 		const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 
-		await rmdir(enevtiAppJsonFilePath);
+		await rmdir(enevtiAppFilePath);
+		expect(await exists(enevtiAppFilePath)).toEqual(false);
 		await keyValueTable.set(
 			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
 			lastSyncedCommitHash,
 		);
 		await downloadRepositoryToFS();
-		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
+		expect(await exists(enevtiAppFilePath)).toEqual(true);
 		await keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 	});
 });
 
 describe('Test syncWithRemoteRepo method', () => {
 	const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
-	const enevtiAppJsonFilePath = path.resolve(`${__dirname}/../../data/app-registry/devnet/Enevti/app.json`);
 	beforeAll(async () => {
 		// Set last sync commit hash in db and remove existing file
 		await keyValueTable.set(
 			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
 			lastSyncedCommitHash,
 		);
-		await rmdir(enevtiAppJsonFilePath);
+		await rmdir(enevtiAppFilePath);
 	});
 	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
 
 	it('should sync repository upto latest commit', async () => {
+		expect(await exists(enevtiAppFilePath)).toEqual(false);
 		await syncWithRemoteRepo();
-		expect(await exists(enevtiAppJsonFilePath)).toEqual(true);
+		expect(await exists(enevtiAppFilePath)).toEqual(true);
 	});
 });

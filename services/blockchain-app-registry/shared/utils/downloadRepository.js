@@ -93,8 +93,6 @@ const getRepoDownloadURL = async () => {
 };
 
 const getFileDownloadURL = async (file) => {
-	if (!file) return {};
-
 	try {
 		const result = await octokit.request(
 			`GET /repos/${owner}/${repo}/contents/${file}`,
@@ -137,18 +135,20 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	}
 };
 
-const filterMetaConfigFilesByNetwork = async (network, filesChanged = []) => {
-	const filesUpdated = filesChanged.filter(
+const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
+	const filesChangedInput = filesChanged || [];
+	const filesUpdated = filesChangedInput.filter(
 		file => file.startsWith(network)
 			&& (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
 	);
 	return filesUpdated;
 };
 
-const getUniqueNetworkAppDirPairs = async (files = []) => {
+const getUniqueNetworkAppDirPairs = async (files) => {
+	const filesInput = files || [];
 	const map = new Map();
 
-	files.forEach(file => {
+	filesInput.forEach(file => {
 		const [network, appDirName] = file.split('/');
 		const updatedAppDir = `${network}/${appDirName}`;
 		map.set(updatedAppDir, { network, appDirName });

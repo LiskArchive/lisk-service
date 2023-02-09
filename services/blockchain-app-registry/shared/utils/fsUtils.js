@@ -62,11 +62,11 @@ const rmdir = async (directoryPath, options = { recursive: true }) => new Promis
 		(err) => {
 			if (err) {
 				logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
-				resolve(false);
-			} else {
-				resolve(true);
-				logger.debug(`Successfully removed directory: ${directoryPath}`);
+				return resolve(false);
 			}
+
+			logger.debug(`Successfully removed directory: ${directoryPath}`);
+			return resolve(true);
 		},
 	);
 });
