@@ -34,11 +34,13 @@ const { KV_STORE_KEY } = require('../../../../shared/constants');
 const config = require('../../../../config');
 const { exists, rmdir } = require('../../../../shared/utils/fsUtils');
 
+const commitHashRegex = /^[a-f0-9]{40}$/;
+
 describe('Test getLatestCommitHash method', () => {
 	it('should return correct latest commit hash info', async () => {
 		const response = await getLatestCommitHash();
 		expect(typeof response).toEqual('string');
-		expect(response).toMatch(/^[a-f0-9]{40}$/);
+		expect(response).toMatch(commitHashRegex);
 	});
 });
 
@@ -54,22 +56,24 @@ describe('Test getCommitInfo method', () => {
 		const response = await getCommitInfo();
 		expect(Object.keys(response)).toEqual(['lastSyncedCommitHash', 'latestCommitHash']);
 		expect(response.lastSyncedCommitHash).toEqual(lastSyncedCommitHash);
-		expect(response.latestCommitHash).toMatch(/^[a-f0-9]{40}$/);
+		expect(response.latestCommitHash).toMatch(commitHashRegex);
 	});
 });
 
 describe('Test getRepoDownloadURL method', () => {
 	it('should return correct repository download url info', async () => {
+		const repoUrlRegex = /^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main\?token=\w*$/;
 		const response = await getRepoDownloadURL();
-		expect(response.url).toMatch(/^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main\?token=\w*$/);
+		expect(response.url).toMatch(repoUrlRegex);
 	});
 });
 
 describe('Test getFileDownloadURL method', () => {
 	it('should return correct file download info when file is valid', async () => {
-		const response = await getFileDownloadURL('devnet/Enevti/nativetokens.json');
 		/* eslint-disable-next-line no-useless-escape */
-		expect(response.url).toMatch(new RegExp(`^https:\/\/\\w*.github.com\/repos\/LiskHQ\/${config.gitHub.appRegistryRepoName}\/contents\/devnet\/Enevti\/nativetokens.json\\?owner=LiskHQ&repo=${config.gitHub.appRegistryRepoName}&ref=${config.gitHub.branch}$`));
+		const fileUrlRegex = new RegExp(`^https:\/\/\\w*.github.com\/repos\/LiskHQ\/${config.gitHub.appRegistryRepoName}\/contents\/devnet\/Enevti\/nativetokens.json\\?owner=LiskHQ&repo=${config.gitHub.appRegistryRepoName}&ref=${config.gitHub.branch}$`);
+		const response = await getFileDownloadURL('devnet/Enevti/nativetokens.json');
+		expect(response.url).toMatch(fileUrlRegex);
 	});
 
 	it('should throw error when file is invalid', async () => {
