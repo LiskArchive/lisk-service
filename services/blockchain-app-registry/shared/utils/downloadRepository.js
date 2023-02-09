@@ -40,7 +40,8 @@ const logger = Logger();
 const octokit = new Octokit({ auth: config.gitHub.accessToken });
 
 const getRepoInfoFromURL = (url) => {
-	const [, , , owner, repo] = (url || '').split('/');
+	const urlInput = url || '';
+	const [, , , owner, repo] = urlInput.split('/');
 	return { owner, repo };
 };
 
