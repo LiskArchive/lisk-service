@@ -15,93 +15,110 @@
  */
 const moment = require('moment');
 
+const {
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
+
 const { networkStatus } = require('../constants/networkStatus');
 const { DATE_FORMAT } = require('../../shared/utils/constants');
 const request = require('../../shared/utils/request');
 const {
 	getSelector,
+	getStatsTimeline,
+	getDistributionByAmount,
+	getDistributionByType,
 } = require('../../shared/transactionStatistics');
+
+const txStatisticsIndexSchema = require('../../shared/database/schemas/transactionStatistics');
+const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getDBInstance = () => getTableInstance(
+	txStatisticsIndexSchema.tableName,
+	txStatisticsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 jest.mock('../../shared/utils/request');
 
+const validInterval = ['day', 'month'];
+
 describe('Tests transactionStatistics', () => {
-	describe('getSelector', () => {
-		afterAll(() => jest.clearAllMocks());
+	const testTokenID = 'ffffffffffffffff';
+	let testData;
+	let db;
 
-		jest.spyOn(request, 'requestIndexer').mockReturnValue(networkStatus);
-		it('should return correct response with valid params ->  day interval', async () => {
-			const params = {
-				dataFormat: DATE_FORMAT.DAY,
-				dateTo: moment().utc().endOf(this.dataFormat),
-				dateFrom: moment(moment().utc().endOf(this.dataFormat)).startOf(this.dataFormat),
-				tokenIDs: ['0400000000000000'],
-			};
-			const result = await getSelector(params);
-			expect(typeof result).toBe('object');
-			expect(result).toMatchObject({
-				sort: 'date:desc',
-				limit: (networkStatus.data.moduleCommands.length + 1) * 366,
-				propBetweens: [{
-					property: 'date',
-					from: params.dateFrom.unix(),
-					to: params.dateTo.unix(),
-				}],
+	beforeAll(async () => {
+		testData = {
+			id: 'testEntry',
+			amount_range: '0_0',
+			moduleCommand: 'token:transfer',
+			tokenID: 'ffffffffffffffff',
+			count: 10,
+			date: Math.floor(Date.now() / 1000),
+			volume: BigInt('100'),
+		};
+
+		db = await getDBInstance();
+		await db.upsert(testData);
+	});
+
+	afterAll(async () => db.deleteByPrimaryKey(testData.id));
+
+	jest.spyOn(request, 'requestIndexer').mockReturnValue(networkStatus);
+	afterEach(() => jest.clearAllMocks());
+
+	describe('Test getSelector method', () => {
+		validInterval.forEach(interval => {
+			it(`should return correct response with valid params ->  ${interval} interval`, async () => {
+				const params = {
+					dateTo: moment().endOf(interval),
+					dateFrom: moment().startOf(interval),
+				};
+				const result = await getSelector(params);
+				expect(typeof result).toBe('object');
+				expect(result).toMatchObject({
+					sort: 'date:desc',
+					limit: (networkStatus.data.moduleCommands.length + 1) * 366,
+					propBetweens: [{
+						property: 'date',
+						from: params.dateFrom.unix(),
+						to: params.dateTo.unix(),
+					}],
+				});
 			});
-		});
 
-		it('should return correct response with valid params -> month interval', async () => {
-			const params = {
-				dataFormat: DATE_FORMAT.MONTH,
-				dateTo: moment().utc().endOf(this.dataFormat),
-				dateFrom: moment(moment().utc().endOf(this.dataFormat)).startOf(this.dataFormat),
-				tokenIDs: ['0400000000000000'],
-			};
-			const result = await getSelector(params);
-			expect(typeof result).toBe('object');
-			expect(result).toMatchObject({
-				sort: 'date:desc',
-				limit: (networkStatus.data.moduleCommands.length + 1) * 366,
-				propBetweens: [{
-					property: 'date',
-					from: params.dateFrom.unix(),
-					to: params.dateTo.unix(),
-				}],
+			it(`should return proper response -> ${interval} interval with only dateFrom`, async () => {
+				const params = {
+					dateFrom: moment().startOf(interval),
+				};
+				const result = await getSelector(params);
+				expect(typeof result).toBe('object');
+				expect(result).toMatchObject({
+					sort: 'date:desc',
+					limit: (networkStatus.data.moduleCommands.length + 1) * 366,
+					propBetweens: [{
+						property: 'date',
+						from: params.dateFrom.unix(),
+					}],
+				});
 			});
-		});
 
-		it('should return proper response -> day interval with only dateFrom', async () => {
-			const params = {
-				dataFormat: DATE_FORMAT.MONTH,
-				dateFrom: moment().utc().endOf(this.dataFormat),
-				tokenIDs: ['0400000000000000'],
-			};
-			const result = await getSelector(params);
-			expect(typeof result).toBe('object');
-			expect(result).toMatchObject({
-				sort: 'date:desc',
-				limit: (networkStatus.data.moduleCommands.length + 1) * 366,
-				propBetweens: [{
-					property: 'date',
-					from: params.dateFrom.unix(),
-				}],
-			});
-		});
-
-		it('should return proper response -> day interval with only dateTo', async () => {
-			const params = {
-				dataFormat: DATE_FORMAT.MONTH,
-				dateTo: moment().utc().endOf(this.dataFormat),
-				tokenIDs: ['0400000000000000'],
-			};
-			const result = await getSelector(params);
-			expect(typeof result).toBe('object');
-			expect(result).toMatchObject({
-				sort: 'date:desc',
-				limit: (networkStatus.data.moduleCommands.length + 1) * 366,
-				propBetweens: [{
-					property: 'date',
-					to: params.dateTo.unix(),
-				}],
+			it(`should return proper response -> ${interval} interval with only dateTo`, async () => {
+				const params = {
+					dateTo: moment().startOf(interval),
+				};
+				const result = await getSelector(params);
+				expect(typeof result).toBe('object');
+				expect(result).toMatchObject({
+					sort: 'date:desc',
+					limit: (networkStatus.data.moduleCommands.length + 1) * 366,
+					propBetweens: [{
+						property: 'date',
+						to: params.dateTo.unix(),
+					}],
+				});
 			});
 		});
 
@@ -126,6 +143,147 @@ describe('Tests transactionStatistics', () => {
 
 		it('should throw error in case of null params', async () => {
 			expect(getSelector(null)).rejects.toThrow();
+		});
+	});
+
+	describe('Test getStatsTimeline method', () => {
+		validInterval.forEach(interval => {
+			it(`should return correct response with valid params -> ${interval} interval`, async () => {
+				const params = {
+					dataFormat: DATE_FORMAT.DAY,
+					dateTo: moment()
+						.endOf(interval)
+						.subtract(0, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(0, interval))
+						.startOf(interval)
+						.subtract(0, interval),
+					tokenIDs: [testTokenID],
+				};
+
+				const result = await getStatsTimeline(params);
+				expect(typeof result).toBe('object');
+				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+				Object.keys(result).forEach(key => {
+					expect(result[key]).toBeInstanceOf(Array);
+					expect(result[key].length).toBeGreaterThanOrEqual(1);
+					if (result[key].length) {
+						result[key].forEach(timeline => {
+							expect(typeof timeline).toBe('object');
+							if (key === testTokenID) {
+								expect(timeline).toMatchObject({
+									timestamp: testData.date,
+									transactionCount: testData.count,
+									volume: Number(testData.volume),
+								});
+							}
+						});
+					}
+				});
+			});
+		});
+
+		it('should throw error in case of invalid params', async () => {
+			const invalidParams = {
+				dataFormat: DATE_FORMAT.MONTH,
+				dateTo: moment().endOf(),
+				dateFrom: moment().startOf(),
+			};
+			expect(getStatsTimeline(invalidParams)).rejects.toThrow();
+		});
+
+		it('should throw error in case of no params', async () => {
+			expect(getStatsTimeline()).rejects.toThrow();
+		});
+
+		it('should throw error in case of undefined params', async () => {
+			expect(getStatsTimeline(undefined)).rejects.toThrow();
+		});
+
+		it('should throw error in case of null params', async () => {
+			expect(getStatsTimeline(null)).rejects.toThrow();
+		});
+	});
+
+	describe('Test getDistributionByAmount method', () => {
+		validInterval.forEach(interval => {
+			it(`should return correct response with valid params -> ${interval} interval`, async () => {
+				const params = {
+					dataFormat: DATE_FORMAT.DAY,
+					dateTo: moment()
+						.endOf(interval)
+						.subtract(0, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(0, interval))
+						.startOf(interval)
+						.subtract(0, interval),
+					tokenIDs: [testTokenID],
+				};
+
+				const result = await getDistributionByAmount(params);
+				expect(typeof result).toBe('object');
+				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+				Object.keys(result).forEach(key => {
+					expect(typeof result[key]).toBe('object');
+					if (key === testTokenID) {
+						expect(result[key]).toMatchObject({
+							[testData.amount_range]: testData.count,
+						});
+					}
+				});
+			});
+		});
+
+		it('should throw error in case of invalid params', async () => {
+			const invalidParams = {
+				dataFormat: DATE_FORMAT.MONTH,
+				dateTo: moment().endOf(),
+				dateFrom: moment().startOf(),
+			};
+			expect(getDistributionByAmount(invalidParams)).rejects.toThrow();
+		});
+
+		it('should throw error in case of no params', async () => {
+			expect(getDistributionByAmount()).rejects.toThrow();
+		});
+
+		it('should throw error in case of undefined params', async () => {
+			expect(getDistributionByAmount(undefined)).rejects.toThrow();
+		});
+
+		it('should throw error in case of null params', async () => {
+			expect(getDistributionByAmount(null)).rejects.toThrow();
+		});
+	});
+
+	describe('Test getDistributionByType method', () => {
+		validInterval.forEach(interval => {
+			it(`should return correct response with valid params -> ${interval} interval`, async () => {
+				const params = {
+					dataFormat: DATE_FORMAT.DAY,
+					dateTo: moment()
+						.endOf(interval)
+						.subtract(0, interval),
+					dateFrom: moment(moment().startOf(interval).subtract(0, interval))
+						.startOf(interval)
+						.subtract(0, interval),
+					tokenIDs: [testTokenID],
+				};
+
+				const result = await getDistributionByType(params);
+				expect(typeof result).toBe('object');
+				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+			});
+		});
+
+		it('should throw error in case of no params', async () => {
+			expect(getDistributionByType()).rejects.toThrow();
+		});
+
+		it('should throw error in case of undefined params', async () => {
+			expect(getDistributionByType(undefined)).rejects.toThrow();
+		});
+
+		it('should throw error in case of null params', async () => {
+			expect(getDistributionByType(null)).rejects.toThrow();
 		});
 	});
 });
