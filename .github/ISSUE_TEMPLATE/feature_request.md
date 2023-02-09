@@ -1,9 +1,12 @@
 ---
+
 name: Feature request
 about: Propose an idea for new improvements/features
 title: ''
-labels: 'type: enhancement, type: feature proposal'
+labels: 'type: improvement'
 assignees: ''
+projects: 'Lisk Service Version 0.7.0'
+status: 'Backlog'
 
 ---
 
@@ -16,3 +19,4 @@ Please describe what functionality is needed
 Please describe why it is needed
 
 ### Additional Information
+
