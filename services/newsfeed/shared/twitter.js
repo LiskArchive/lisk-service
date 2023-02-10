@@ -35,8 +35,6 @@ const safeRef = (obj, path) => {
 };
 
 const getTweetText = (obj) => {
-	if (!obj) return null;
-
 	let tweetText = obj.text;
 	if (obj.is_quote_status && obj.quoted_status) {
 		// Append original quoted status to the re-tweet text
@@ -46,8 +44,6 @@ const getTweetText = (obj) => {
 };
 
 const tweetUrl = (obj) => {
-	if (!obj) return undefined;
-
 	let url;
 	if (obj.retweeted_status) {
 		url = safeRef(obj, 'retweeted_status.entities.urls.0.url');
@@ -62,12 +58,9 @@ const tweetUrl = (obj) => {
 	return url;
 };
 
-const getImageUrl = (obj) => {
-	if (obj && obj.entities.media && obj.entities.media[0] && obj.entities.media[0].media_url_https) {
-		return obj.entities.media[0].media_url_https;
-	}
-	return undefined;
-};
+const getImageUrl = ({ entities }) => (
+	entities.media && entities.media[0] && entities.media[0].media_url_https
+);
 
 const tweetMapper = obj => ({
 	...obj,

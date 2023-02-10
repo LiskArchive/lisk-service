@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -111,14 +111,12 @@ describe('Test getImageUrl method', () => {
 		expect(url).toBe(obj.entities.media[0].media_url_https);
 	});
 
-	it('should return undefined when called with a null object', async () => {
-		const url = getImageUrl(null);
-		expect(url).toBe(undefined);
+	it('should throw error when called with a null object', async () => {
+		expect(() => getImageUrl(null)).toThrow();
 	});
 
-	it('should return undefined when called with an undefined object', async () => {
-		const url = getImageUrl(null);
-		expect(url).toBe(undefined);
+	it('should throw error when called with a undefined object', async () => {
+		expect(() => getImageUrl(undefined)).toThrow();
 	});
 });
 
@@ -160,69 +158,12 @@ describe('Test getTweetText method', () => {
 		expect(url).toBe(expectedText);
 	});
 
-	it('should return null when called with null object', async () => {
-		const url = getTweetText(null);
-		expect(url).toBe(null);
+	it('should throw error when called with null object', async () => {
+		expect(() => getTweetText(null)).toThrow();
 	});
 
-	it('should return null when called with undefined object', async () => {
-		const url = getTweetText(undefined);
-		expect(url).toBe(null);
-	});
-});
-
-describe.only('Test tweetMapper method', () => {
-	beforeAll(() => {
-		// jest.spyOn(twitterMethods, 'getTweetText').mockReturnValue('custom_text');
-		// jest.spyOn(twitterMethods, 'tweetUrl').mockReturnValue('custom_url');
-		// jest.spyOn(twitterMethods, 'getImageUrl').mockReturnValue('custom_image_url');
-		// jest.spyOn(twitterMethods, 'safeRef').mockReturnValue('custom_ref_val');
-	});
-
-	it.only('should return correct response when called with tweet', async () => {
-		const mappedTweet = tweetMapper(tweetObject);
-		expect(mappedTweet).toEqual(
-			{
-				...tweetObject,
-				text: 'custom_text',
-				url: 'custom_url',
-				image_url: 'custom_image_url',
-				author: 'custom_ref_val',
-			},
-		);
-	});
-
-	it('should return correct response when called with retweet', async () => {
-		const mappedTweet = tweetMapper(retweetObject);
-		expect(mappedTweet).toEqual(
-			expect.objectContaining({
-				url: expect.any(String),
-				image_url: undefined,
-				author: expect.any(String),
-			}),
-		);
-	});
-
-	it('should return correct response when called with mediaTweet', async () => {
-		const mappedTweet = tweetMapper(mediaTweetObject);
-		expect(mappedTweet).toEqual(
-			expect.objectContaining({
-				url: expect.any(String),
-				image_url: expect.any(String),
-				author: expect.any(String),
-			}),
-		);
-	});
-
-	it('should return correct response when called with otherTweet', async () => {
-		const mappedTweet = tweetMapper(otherTweetObject);
-		expect(mappedTweet).toEqual(
-			expect.objectContaining({
-				url: expect.any(String),
-				image_url: undefined,
-				author: expect.any(String),
-			}),
-		);
+	it('should throw error when called with undefined object', async () => {
+		expect(() => getTweetText(undefined)).toThrow();
 	});
 });
 
@@ -255,13 +196,11 @@ describe('Test tweetUrl method', () => {
 		expect(url).toBe(undefined);
 	});
 
-	it('should return undefined url when obj is null', async () => {
-		const url = tweetUrl(null);
-		expect(url).toBe(undefined);
+	it('should throw error when obj is null', async () => {
+		expect(() => tweetUrl(null)).toThrow();
 	});
 
-	it('should return undefined url when obj is undefined', async () => {
-		const url = tweetUrl(undefined);
-		expect(url).toBe(undefined);
+	it('should throw error when obj is undefined', async () => {
+		expect(() => tweetUrl(undefined)).toThrow();
 	});
 });

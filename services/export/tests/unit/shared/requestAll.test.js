@@ -16,7 +16,7 @@
 const requestAll = require('../../../shared/requestAll');
 
 describe('Test requestAll method', () => {
-	const func = (params) => ({
+	const func = async (params) => ({
 		data: [params],
 		meta: {
 			total: 1000,
@@ -60,7 +60,7 @@ describe('Test requestAll method', () => {
 				limit: singleRequestLimit,
 			},
 		];
-		const func2 = (params) => ({
+		const func2 = async (params) => ({
 			data: [params],
 			meta: {
 				total: singleRequestLimit - 1,
