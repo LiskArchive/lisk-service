@@ -18,14 +18,14 @@ const {
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
-} = require('../../shared/helpers/transaction');
+} = require('../../../../shared/helpers/transaction');
 
 const {
 	lsk,
 	beddows,
 	lskInBeddows,
 	transactions,
-} = require('../constants/transaction');
+} = require('../../../constants/transaction');
 
 describe('Transaction utils', () => {
 	describe('Validate beddows to LSK conversion', () => {

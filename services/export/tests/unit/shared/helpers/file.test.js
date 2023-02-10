@@ -23,11 +23,11 @@ const {
 	list,
 	purge,
 	exists,
-} = require('../../shared/helpers/file');
+} = require('../../../../shared/helpers/file');
 
 const {
 	dynamicFieldsCustomDelimiter,
-} = require('../constants/csv');
+} = require('../../../constants/csv');
 
 describe('Test filesystem interface', () => {
 	let dirPath;

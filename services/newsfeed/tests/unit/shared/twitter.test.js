@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const twitterMethods = require('../../shared/twitter');
+const twitterMethods = require('../../../shared/twitter');
 
 const {
 	safeRef,
@@ -28,7 +28,7 @@ const {
 	retweetObject,
 	mediaTweetObject,
 	otherTweetObject,
-} = require('../constants/newsfeed');
+} = require('../../constants/newsfeed');
 
 describe('Test safeRef method', () => {
 	it('should return correct response when called with tweet', async () => {
