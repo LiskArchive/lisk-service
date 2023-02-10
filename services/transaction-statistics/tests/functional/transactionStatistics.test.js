@@ -50,10 +50,11 @@ describe('Tests transactionStatistics', () => {
 	let db;
 
 	beforeAll(async () => {
+		jest.spyOn(request, 'requestIndexer').mockReturnValue(networkStatus);
 		testData = {
 			id: 'testEntry',
 			amount_range: '0_0',
-			moduleCommand: 'token:transfer',
+			moduleCommand: 'test:stats',
 			tokenID: 'ffffffffffffffff',
 			count: 10,
 			date: Math.floor(Date.now() / 1000),
@@ -64,10 +65,10 @@ describe('Tests transactionStatistics', () => {
 		await db.upsert(testData);
 	});
 
-	afterAll(async () => db.deleteByPrimaryKey(testData.id));
-
-	jest.spyOn(request, 'requestIndexer').mockReturnValue(networkStatus);
-	afterEach(() => jest.clearAllMocks());
+	afterAll(async () => {
+		await db.deleteByPrimaryKey(testData.id);
+		await jest.clearAllMocks();
+	});
 
 	describe('Test getSelector method', () => {
 		validIntervals.forEach(interval => {
@@ -190,14 +191,16 @@ describe('Tests transactionStatistics', () => {
 					if (result[key].length) {
 						result[key].forEach(timeline => {
 							expect(typeof timeline).toBe('object');
-							// if (key === testTokenID) {
-							// 	expect(timeline).toMatchObject({
-							// 		timestamp: testData.date,
-							// 		transactionCount: testData.count,
-							// 		volume: Number(testData.volume),
-							// 		date: moment.unix(testData.date).format(dateFormat),
-							// 	});
-							// }
+							if (key === testTokenID) {
+								const formattedDate = moment.unix(testData.date).format(dateFormat);
+								const testDataEntry = result[key].find(entry => entry.date === formattedDate);
+								expect(testDataEntry).toMatchObject({
+									timestamp: Date.parse(formattedDate) / 1000,
+									transactionCount: testData.count,
+									volume: Number(testData.volume),
+									date: formattedDate,
+								});
+							}
 						});
 					}
 				});
@@ -228,14 +231,16 @@ describe('Tests transactionStatistics', () => {
 					if (result[key].length) {
 						result[key].forEach(timeline => {
 							expect(typeof timeline).toBe('object');
-							// if (key === testTokenID) {
-							// 	expect(timeline).toMatchObject({
-							// 		timestamp: testData.date,
-							// 		transactionCount: testData.count,
-							// 		volume: Number(testData.volume),
-							// 		date: moment.unix(testData.date).format(dateFormat),
-							// 	});
-							// }
+							if (key === testTokenID) {
+								const formattedDate = moment.unix(testData.date).format(dateFormat);
+								const testDataEntry = result[key].find(entry => entry.date === formattedDate);
+								expect(testDataEntry).toMatchObject({
+									timestamp: Date.parse(formattedDate) / 1000,
+									transactionCount: testData.count,
+									volume: Number(testData.volume),
+									date: formattedDate,
+								});
+							}
 						});
 					}
 				});
@@ -367,7 +372,9 @@ describe('Tests transactionStatistics', () => {
 
 				const result = await getDistributionByType(params);
 				expect(typeof result).toBe('object');
-				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+				expect(result).toEqual(expect.objectContaining({
+					[testData.moduleCommand]: testData.count,
+				}));
 			});
 
 			it(`should return correct response with valid params -> interval: 10 ${interval}`, async () => {
@@ -388,7 +395,9 @@ describe('Tests transactionStatistics', () => {
 
 				const result = await getDistributionByType(params);
 				expect(typeof result).toBe('object');
-				expect(Object.getOwnPropertyNames(result).length).toBeGreaterThanOrEqual(1);
+				expect(result).toEqual(expect.objectContaining({
+					[testData.moduleCommand]: testData.count,
+				}));
 			});
 		});
 
