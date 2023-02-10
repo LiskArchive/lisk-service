@@ -24,35 +24,40 @@ const client = new Twitter({
 	access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
 });
 
+// Returns the nested property if available, unless returns null
 const safeRef = (obj, path) => {
 	try {
-		return path.split('.').reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, obj);
+		if (!path || path === '') return obj;
+		return path.split('.').reduce((interimObj, key) => (interimObj && interimObj[key]) ? interimObj[key] : null, obj);
 	} catch (e) {
 		return null;
 	}
 };
 
-const getTweetText = (o) => {
-	let tweetText = o.text;
+const getTweetText = (obj) => {
+	if (!obj) return null;
 
-	if (o.is_quote_status && o.quoted_status) {
+	let tweetText = obj.text;
+	if (obj.is_quote_status && obj.quoted_status) {
 		// Append original quoted status to the re-tweet text
-		tweetText = `${o.text}\n\nQuoted status by ${o.quoted_status.user.name} (@${o.quoted_status.user.screen_name}): ${o.quoted_status.text}`;
+		tweetText = `${obj.text}\n\nQuoted status by ${obj.quoted_status.user.name} (@${obj.quoted_status.user.screen_name}): ${obj.quoted_status.text}`;
 	}
 	return tweetText;
 };
 
-const tweetUrl = (o) => {
+const tweetUrl = (obj) => {
+	if (!obj) return undefined;
+
 	let url;
-	if (o.retweeted_status) {
-		url = safeRef(o, 'retweeted_status.entities.urls.0.url');
-	} else if (o.extended_entities) {
-		url = safeRef(o, 'extended_entities.media.0.url');
-	} else if (o.entities) {
-		url = safeRef(o, 'entities.urls.0.url');
+	if (obj.retweeted_status) {
+		url = safeRef(obj, 'retweeted_status.entities.urls.0.url');
+	} else if (obj.extended_entities) {
+		url = safeRef(obj, 'extended_entities.media.0.url');
+	} else if (obj.entities) {
+		url = safeRef(obj, 'entities.urls.0.url');
 	}
-	if (!url && o.id_str) {
-		url = `https://twitter.com/i/web/status/${o.id_str}`;
+	if (!url && obj.id_str) {
+		url = `https://twitter.com/i/web/status/${obj.id_str}`;
 	}
 	return url;
 };
@@ -91,4 +96,7 @@ module.exports = {
 	getImageUrl,
 	tweetMapper,
 	getData,
+
+	// For testing
+	getTweetText,
 };
