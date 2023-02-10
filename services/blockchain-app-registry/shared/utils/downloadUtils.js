@@ -28,6 +28,11 @@ const logger = Logger();
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
+	if (!url || !directoryPath) {
+		reject(new Error(`Invalid url or directoryPath. url: ${url} directoryPath:${directoryPath}`));
+		return;
+	}
+
 	logger.info(`Downloading and extracting file from ${url} to ${directoryPath}.`);
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
@@ -46,15 +51,20 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 	});
 });
 
-const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
+const downloadFile = (url, filePath) => new Promise((resolve, reject) => {
+	if (!url || !filePath) {
+		reject(new Error(`Invalid url or filePath. url: ${url} filePath:${filePath}`));
+		return;
+	}
+
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
-			const writeStream = fs.createWriteStream(dirPath);
+			const writeStream = fs.createWriteStream(filePath);
 			response.pipe(writeStream);
 			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
-				resolve();
+				setTimeout(resolve, 100); // Since the promise resolves earlier than expected
 			});
 		} else {
 			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;

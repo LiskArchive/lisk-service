@@ -63,7 +63,7 @@ config.gitHub = {
 	get appRegistryRepoName() { return this.appRegistryRepo.split('/').pop(); },
 };
 
-config.dataDir = `${process.cwd()}/data`;
+config.dataDir = `${__dirname}/data`;
 
 config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 
