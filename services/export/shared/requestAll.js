@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
+/* 	Executes a function until it returns at least limit amount or data or runs out of data
+	and returns the appended result
+*/
 const requestAll = async (fn, params, limit) => {
 	if (typeof fn !== 'function') return null;
 

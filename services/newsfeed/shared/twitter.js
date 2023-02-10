@@ -27,7 +27,7 @@ const client = new Twitter({
 // Returns the nested property if available, unless returns null
 const safeRef = (obj, path) => {
 	try {
-		if (!path || path === '') return obj;
+		if (!path) return obj;
 		return path.split('.').reduce((interimObj, key) => (interimObj && interimObj[key]) ? interimObj[key] : null, obj);
 	} catch (e) {
 		return null;
@@ -62,16 +62,19 @@ const tweetUrl = (obj) => {
 	return url;
 };
 
-const getImageUrl = ({ entities }) => (
-	entities.media && entities.media[0] && entities.media[0].media_url_https
-);
+const getImageUrl = (obj) => {
+	if (obj && obj.entities.media && obj.entities.media[0] && obj.entities.media[0].media_url_https) {
+		return obj.entities.media[0].media_url_https;
+	}
+	return undefined;
+};
 
-const tweetMapper = o => ({
-	...o,
-	text: getTweetText(o),
-	url: tweetUrl(o),
-	image_url: getImageUrl(o),
-	author: safeRef(o, 'user.screen_name'),
+const tweetMapper = obj => ({
+	...obj,
+	text: getTweetText(obj),
+	url: tweetUrl(obj),
+	image_url: getImageUrl(obj),
+	author: safeRef(obj, 'user.screen_name'),
 });
 
 const getData = () => new Promise((resolve, reject) => {
