@@ -18,6 +18,7 @@ const moment = require('moment');
 
 const {
 	MySQL: { getTableInstance },
+	Utils: { isEmptyObject },
 } = require('lisk-service-framework');
 
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
@@ -37,20 +38,25 @@ const getDBInstance = () => getTableInstance(
 );
 
 const getSelector = async (params) => {
-	const result = { property: 'date' };
-	if (params.dateFrom) result.from = params.dateFrom.unix();
-	if (params.dateTo) result.to = params.dateTo.unix();
-
 	if (!numTrxTypes) {
 		const networkStatus = await requestIndexer('network.status');
 		numTrxTypes = networkStatus.data.moduleCommands.length;
 	}
 
+	// max supported limit of days * #transaction types + 1 (for the default type: 'any')
+	const limit = params.limit || 366 * (numTrxTypes + 1);
+	const sort = 'date:desc';
+
+	if (isEmptyObject(params)) return { sort, limit };
+
+	const result = { property: 'date' };
+	if (params.dateFrom) result.from = params.dateFrom.unix();
+	if (params.dateTo) result.to = params.dateTo.unix();
+
 	return {
 		propBetweens: [result],
-		sort: 'date:desc',
-		// max supported limit of days * #transaction types + 1 (for the default type: 'any')
-		limit: params.limit || 366 * (numTrxTypes + 1),
+		sort,
+		limit,
 	};
 };
 

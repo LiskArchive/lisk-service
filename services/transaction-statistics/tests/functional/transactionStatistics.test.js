@@ -46,6 +46,12 @@ const validIntervals = ['day', 'month'];
 
 describe('Tests transactionStatistics', () => {
 	const testTokenID = 'ffffffffffffffff';
+	// Invalid params because missing tokenIDs
+	const invalidParams = {
+		dateFormat: DATE_FORMAT.MONTH,
+		dateTo: moment().endOf(),
+		dateFrom: moment().startOf(),
+	};
 	let testData;
 	let db;
 
@@ -131,7 +137,7 @@ describe('Tests transactionStatistics', () => {
 				expect(typeof result).toBe('object');
 				expect(result).toMatchObject({
 					sort: 'date:desc',
-					limit: 10,
+					limit: params.limit,
 					propBetweens: [{
 						property: 'date',
 						to: params.dateTo.unix(),
@@ -147,7 +153,6 @@ describe('Tests transactionStatistics', () => {
 			expect(result).toMatchObject({
 				sort: 'date:desc',
 				limit: (networkStatus.data.moduleCommands.length + 1) * 366,
-				propBetweens: [{ property: 'date' }],
 			});
 		});
 
@@ -248,11 +253,6 @@ describe('Tests transactionStatistics', () => {
 		});
 
 		it('should throw error in case of invalid params', async () => {
-			const invalidParams = {
-				dateFormat: DATE_FORMAT.MONTH,
-				dateTo: moment().endOf(),
-				dateFrom: moment().startOf(),
-			};
 			expect(getStatsTimeline(invalidParams)).rejects.toThrow();
 		});
 
@@ -331,11 +331,6 @@ describe('Tests transactionStatistics', () => {
 		});
 
 		it('should throw error in case of invalid params', async () => {
-			const invalidParams = {
-				dateFormat: DATE_FORMAT.MONTH,
-				dateTo: moment().endOf(),
-				dateFrom: moment().startOf(),
-			};
 			expect(getDistributionByAmount(invalidParams)).rejects.toThrow();
 		});
 
