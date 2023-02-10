@@ -83,15 +83,11 @@ describe('Test requestAll method', () => {
 		expect(response).toEqual(expectedResponse);
 	});
 
-	it('should return null if passed function is null', async () => {
-		const singleRequestLimit = 50;
-		const response = await requestAll(null, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
-		expect(response).toEqual(null);
+	it('should throw error if passed function is null', async () => {
+		expect(async () => requestAll(null, { limit: 50, extra_param: 'extra_value' }, 20)).rejects.toThrow();
 	});
 
-	it('should return null if passed function is undefined', async () => {
-		const singleRequestLimit = 50;
-		const response = await requestAll(undefined, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
-		expect(response).toEqual(null);
+	it('should throw error if passed function is undefined', async () => {
+		expect(async () => requestAll(undefined, { limit: 50, extra_param: 'extra_value' }, 20)).rejects.toThrow();
 	});
 });

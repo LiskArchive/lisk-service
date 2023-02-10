@@ -17,8 +17,6 @@
 	and returns the appended result
 */
 const requestAll = async (fn, params, limit) => {
-	if (typeof fn !== 'function') return null;
-
 	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn({
