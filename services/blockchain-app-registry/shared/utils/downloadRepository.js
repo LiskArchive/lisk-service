@@ -31,16 +31,17 @@ const { indexMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
 
+const { KV_STORE_KEY } = require('../constants');
+
 const { FILENAME } = config;
 
 const logger = Logger();
 
-const COMMIT_HASH_UNTIL_LAST_SYNC = 'commitHashUntilLastSync';
-
 const octokit = new Octokit({ auth: config.gitHub.accessToken });
 
-const getRepoInfoFromURL = (url = '') => {
-	const [, , , owner, repo] = url.split('/');
+const getRepoInfoFromURL = (url) => {
+	const urlInput = url || '';
+	const [, , , owner, repo] = urlInput.split('/');
 	return { owner, repo };
 };
 
@@ -67,7 +68,7 @@ const getLatestCommitHash = async () => {
 };
 
 const getCommitInfo = async () => {
-	const lastSyncedCommitHash = await keyValueTable.get(COMMIT_HASH_UNTIL_LAST_SYNC);
+	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 	const latestCommitHash = await getLatestCommitHash();
 	return { lastSyncedCommitHash, latestCommitHash };
 };
@@ -113,9 +114,10 @@ const getFileDownloadURL = async (file) => {
 };
 
 const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
+	const url = `GET /repos/${owner}/${repo}/compare/${lastSyncedCommitHash}...${latestCommitHash}`;
 	try {
 		const result = await octokit.request(
-			`GET /repos/${owner}/${repo}/compare/${lastSyncedCommitHash}...${latestCommitHash}`,
+			url,
 			{
 				owner,
 				repo,
@@ -127,13 +129,15 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to get diff due to: ${errorMsg}`);
+		logger.warn(`URL invocation failed: ${url}.`);
+		logger.error(`Unable to get diff due to: ${errorMsg}.`);
 		throw error;
 	}
 };
 
 const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
-	const filesUpdated = filesChanged.filter(
+	const filesChangedInput = filesChanged || [];
+	const filesUpdated = filesChangedInput.filter(
 		file => file.startsWith(network)
 			&& (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
 	);
@@ -141,19 +145,16 @@ const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
 };
 
 const getUniqueNetworkAppDirPairs = async (files) => {
-	const updatedAppDirs = files.map(file => {
+	const filesInput = files || [];
+	const map = new Map();
+
+	filesInput.forEach(file => {
 		const [network, appDirName] = file.split('/');
 		const updatedAppDir = `${network}/${appDirName}`;
-		return updatedAppDir;
+		map.set(updatedAppDir, { network, appDirName });
 	});
 
-	const uniqueAppDirs = [...new Set(updatedAppDirs)];
-	const updatedNetworkAppDirs = uniqueAppDirs.map(dirPath => {
-		const [network, appDirName] = dirPath.split('/');
-		return { network, appDirName };
-	});
-
-	return updatedNetworkAppDirs;
+	return [...map.values()];
 };
 
 const buildEventPayload = async (allFilesModified) => {
@@ -210,7 +211,8 @@ const syncWithRemoteRepo = async () => {
 				{ concurrency: filesChanged.length },
 			);
 
-			await keyValueTable.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+			await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+
 			if (filesChanged.length) {
 				const eventPayload = await buildEventPayload(filesChanged);
 				Signals.get('metadataUpdated').dispatch(eventPayload);
@@ -246,7 +248,7 @@ const downloadRepositoryToFS = async () => {
 		await rename(oldDir, appDirPath);
 
 		const latestCommitHash = await getLatestCommitHash();
-		await keyValueTable.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 	}
 };
 
@@ -254,4 +256,14 @@ module.exports = {
 	downloadRepositoryToFS,
 	getRepoInfoFromURL,
 	syncWithRemoteRepo,
+
+	// For testing
+	getRepoDownloadURL,
+	getLatestCommitHash,
+	getCommitInfo,
+	getUniqueNetworkAppDirPairs,
+	filterMetaConfigFilesByNetwork,
+	getFileDownloadURL,
+	getDiff,
+	buildEventPayload,
 };
