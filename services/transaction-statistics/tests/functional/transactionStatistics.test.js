@@ -193,6 +193,7 @@ describe('Tests transactionStatistics', () => {
 				Object.keys(result).forEach(key => {
 					expect(result[key]).toBeInstanceOf(Array);
 					expect(result[key].length).toBeGreaterThanOrEqual(1);
+					expect(result[key].length).toBeLessThanOrEqual(limit);
 					if (result[key].length) {
 						result[key].forEach(timeline => {
 							expect(typeof timeline).toBe('object');
@@ -233,6 +234,7 @@ describe('Tests transactionStatistics', () => {
 				Object.keys(result).forEach(key => {
 					expect(result[key]).toBeInstanceOf(Array);
 					expect(result[key].length).toBeGreaterThanOrEqual(1);
+					expect(result[key].length).toBeLessThanOrEqual(limit);
 					if (result[key].length) {
 						result[key].forEach(timeline => {
 							expect(typeof timeline).toBe('object');
