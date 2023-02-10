@@ -66,15 +66,15 @@ describe('Test tweetMapper method', () => {
 		});
 	});
 
-	it('should throw error when called with otherTweet', async () => {
+	it('should throw error when called with empty object', async () => {
 		expect(() => tweetMapper({})).toThrow();
 	});
 
-	it('should throw error when called with null otherTweet', async () => {
+	it('should throw error when called with null object', async () => {
 		expect(() => tweetMapper(null)).toThrow();
 	});
 
-	it('should throw error when called with undefined otherTweet', async () => {
+	it('should throw error when called with undefined object', async () => {
 		expect(() => tweetMapper()).toThrow();
 	});
 });

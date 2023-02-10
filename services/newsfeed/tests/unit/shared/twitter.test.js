@@ -19,7 +19,6 @@ const {
 	safeRef,
 	getImageUrl,
 	getTweetText,
-	tweetMapper,
 	tweetUrl,
 } = twitterMethods;
 
@@ -55,14 +54,14 @@ describe('Test safeRef method', () => {
 		expect(result).toBe(null);
 	});
 
-	it('should return obj response when called with null path', async () => {
+	it('should return null response when called with null path', async () => {
 		const result = safeRef(tweetObject, null);
-		expect(result).toEqual(tweetObject);
+		expect(result).toEqual(null);
 	});
 
-	it('should return obj response when called with undefined path', async () => {
+	it('should return null response when called with undefined path', async () => {
 		const result = safeRef(tweetObject, undefined);
-		expect(result).toEqual(tweetObject);
+		expect(result).toEqual(null);
 	});
 
 	it('should return obj response when called with null obj', async () => {

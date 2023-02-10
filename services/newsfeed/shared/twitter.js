@@ -27,7 +27,6 @@ const client = new Twitter({
 // Returns the nested property if available, unless returns null
 const safeRef = (obj, path) => {
 	try {
-		if (!path) return obj;
 		return path.split('.').reduce((interimObj, key) => (interimObj && interimObj[key]) ? interimObj[key] : null, obj);
 	} catch (e) {
 		return null;
