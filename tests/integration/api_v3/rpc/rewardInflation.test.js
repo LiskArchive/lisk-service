@@ -37,7 +37,7 @@ describe('Test get.reward.inflation', () => {
 		latestBlockHeight = response.result.data.height;
 	});
 
-	it('should return current inflation rate when called with block height=1', async () => {
+	it('should return current inflation rate when called with latest block height', async () => {
 		const response = await getRewardInflation({ height: latestBlockHeight });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
