@@ -54,11 +54,11 @@ const getDisconnectedPeers = async () => {
 
 const getForgingStatus = async () => {
 	try {
-		const forgingStatus = await invokeEndpoint('generator_getForgingStatus');
+		const forgingStatus = await invokeEndpoint('generator_getStatus');
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getForgingStatus\'.');
+			throw new TimeoutException('Request timed out when calling \'getStatus\'.');
 		}
 		throw err;
 	}
@@ -67,11 +67,11 @@ const getForgingStatus = async () => {
 const updateForgingStatus = async (config) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('generator_updateForgingStatus', { ...config });
+		const response = await apiClient._channel.invoke('generator_updateStatus', { ...config });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'updateForgingStatus\'.');
+			throw new TimeoutException('Request timed out when calling \'updateStatus\'.');
 		}
 		throw err;
 	}

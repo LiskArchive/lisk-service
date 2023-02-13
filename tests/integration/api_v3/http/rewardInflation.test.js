@@ -29,15 +29,20 @@ const {
 
 const endpoint = `${baseUrlV3}/reward/inflation`;
 
-describe('Reward Inflation API', () => {
+describe('Test Reward Inflation API', () => {
 	describe(`GET ${endpoint}`, () => {
-		it('Returns current inflation rate', async () => {
-			const response = await api.get(endpoint);
+		it('should return current inflation rate when called with block height=1', async () => {
+			const response = await api.get(`${endpoint}?height=1`);
 			expect(response).toMap(rewardInflationResponseSchema);
 		});
 
-		it('Invalid request param -> bad request', async () => {
+		it('invalid request param -> bad request', async () => {
 			const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('no request param -> bad request', async () => {
+			const response = await api.get(endpoint, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});

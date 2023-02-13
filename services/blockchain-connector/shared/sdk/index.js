@@ -78,7 +78,7 @@ const {
 
 const {
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	cacheRegisteredRewardModule,
 } = require('./dynamicReward');
@@ -175,7 +175,7 @@ module.exports = {
 
 	// Reward
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 
 	// Fee

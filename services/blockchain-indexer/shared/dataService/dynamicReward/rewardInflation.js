@@ -15,11 +15,11 @@
  */
 const business = require('../business');
 
-const getInflationRate = async () => {
-	const response = await business.getInflationRate();
+const getAnnualInflation = async (height) => {
+	const response = await business.getAnnualInflation(height);
 	return response;
 };
 
 module.exports = {
-	getInflationRate,
+	getAnnualInflation,
 };

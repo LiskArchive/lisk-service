@@ -22,6 +22,9 @@ module.exports = {
 	swaggerApiPath: '/reward/inflation',
 	rpcMethod: 'get.reward.inflation',
 	tags: ['Reward'],
+	params: {
+		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
+	},
 	get schema() {
 		const rewardInflationSchema = {};
 		rewardInflationSchema[this.swaggerApiPath] = { get: {} };
