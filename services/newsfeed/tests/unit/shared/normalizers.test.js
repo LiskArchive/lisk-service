@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { normalizeData, normalizeFunctions } = require('../../shared/normalizers');
-const { drupalData } = require('../constants/newsfeed');
-const { newsfeedArticleSchema } = require('../schemas/newsfeedArticle.schema');
-const config = require('../../config');
+const { normalizeData, normalizeFunctions } = require('../../../shared/normalizers');
+const { drupalData } = require('../../constants/newsfeed');
+const { newsfeedArticleSchema } = require('../../schemas/newsfeedArticle.schema');
+const config = require('../../../config');
 
 const encodedHtmlContent = 'Decode known &quot;HTML special characters&quot; with the htmlEntities&apos;s &lt;decode&gt; method &amp; test your implementation successfully.';
 const expectedDecodedOutput = 'Decode known "HTML special characters" with the htmlEntities\'s <decode> method & test your implementation successfully.';

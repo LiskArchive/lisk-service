@@ -16,13 +16,13 @@
 const {
 	dateFromTimestamp,
 	timeFromTimestamp,
-} = require('../../shared/helpers/time');
+} = require('../../../../shared/helpers/time');
 
 const {
 	timestamp,
 	expectedDate,
 	expectedTime,
-} = require('../constants/time');
+} = require('../../../constants/time');
 
 describe('Time utils', () => {
 	it('returns ISO format UTC Date from unix timestamp', async () => {

@@ -17,12 +17,12 @@ const {
 	validateLisk32Address,
 	validatePublicKey,
 	getLisk32AddressFromPublicKey,
-} = require('../../shared/helpers/account');
+} = require('../../../../shared/helpers/account');
 
 const {
 	valid,
 	invalid,
-} = require('../constants/account');
+} = require('../../../constants/account');
 
 describe('Account utils', () => {
 	describe('Validate address', () => {

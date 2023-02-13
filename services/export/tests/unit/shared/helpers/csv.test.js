@@ -15,14 +15,14 @@
  */
 const {
 	parseJsonToCsv,
-} = require('../../shared/helpers/csv');
+} = require('../../../../shared/helpers/csv');
 
 const {
 	dynamicFields,
 	dynamicFieldsCustomDelimiter,
 	dynamicFieldsJsonList,
 	dynamicFieldsJsonListCustomDelimiter,
-} = require('../constants/csv');
+} = require('../../../constants/csv');
 
 describe('CSV utils', () => {
 	it('returns CSV from JSON', async () => {
