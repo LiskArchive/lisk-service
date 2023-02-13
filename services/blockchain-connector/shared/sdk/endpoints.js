@@ -52,26 +52,26 @@ const getDisconnectedPeers = async () => {
 	}
 };
 
-const getForgingStatus = async () => {
+const getGeneratorStatus = async () => {
 	try {
 		const forgingStatus = await invokeEndpoint('generator_getStatus');
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getStatus\'.');
+			throw new TimeoutException('Request timed out when calling \'getGeneratorStatus\'.');
 		}
 		throw err;
 	}
 };
 
-const updateForgingStatus = async (config) => {
+const updateGeneratorStatus = async (config) => {
 	try {
 		const apiClient = await getApiClient();
 		const response = await apiClient._channel.invoke('generator_updateStatus', { ...config });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'updateStatus\'.');
+			throw new TimeoutException('Request timed out when calling \'updateGeneratorStatus\'.');
 		}
 		throw err;
 	}
@@ -271,8 +271,8 @@ module.exports = {
 	getSystemMetadata,
 	getConnectedPeers,
 	getDisconnectedPeers,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getLastBlock,
 	getBlockByID,
 	getBlocksByIDs,

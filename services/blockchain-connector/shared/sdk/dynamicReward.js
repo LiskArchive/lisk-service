@@ -55,8 +55,8 @@ const getRewardTokenID = async () => {
 
 const getAnnualInflation = async (height) => {
 	try {
-		const inflationRate = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, { height });
-		return inflationRate;
+		const annualInflation = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, { height });
+		return annualInflation;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getAnnualInflation' with block height:${height}.`);

@@ -22,8 +22,8 @@ const {
 
 const {
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -125,8 +125,8 @@ module.exports = {
 
 	// Endpoints
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
