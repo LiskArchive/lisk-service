@@ -16,13 +16,13 @@
 const { requestConnector } = require('../../../utils/request');
 
 const getAnnualInflation = async (params) => {
-	const rewardInflation = {
+	const annualInflation = {
 		data: {},
 		meta: {},
 	};
 
-	rewardInflation.data = await requestConnector('getAnnualInflation', { height: params.height });
-	return rewardInflation;
+	annualInflation.data = await requestConnector('getAnnualInflation', { height: params.height });
+	return annualInflation;
 };
 
 module.exports = {

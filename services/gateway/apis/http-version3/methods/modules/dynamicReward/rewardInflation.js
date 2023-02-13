@@ -15,7 +15,7 @@
  */
 const rewardInflationSource = require('../../../../../sources/version3/rewardInflation');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
-const { response, getSwaggerDescription } = require('../../../../../shared/utils');
+const { response, getSwaggerDescription, transformParams } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -34,6 +34,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns inflation rate.',
 		});
+		rewardInflationSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
 		rewardInflationSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns current inflation rate.',
