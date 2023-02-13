@@ -15,6 +15,12 @@
  */
 const requestAll = require('../../../shared/requestAll');
 
+const getResponseOfLength = (n, singleRequestLimit) => new Array(n).fill().map((e, i) => ({
+	extra_param: 'extra_value',
+	offset: singleRequestLimit * i,
+	limit: singleRequestLimit,
+}));
+
 describe('Test requestAll method', () => {
 	const func = async (params) => ({
 		data: [params],
@@ -25,41 +31,14 @@ describe('Test requestAll method', () => {
 
 	it('should call passed function multiple times when total limit > single response limit', async () => {
 		const singleRequestLimit = 5;
-		const expectedResponse = [
-			{
-				extra_param: 'extra_value',
-				offset: singleRequestLimit * 0,
-				limit: singleRequestLimit,
-			},
-			{
-				extra_param: 'extra_value',
-				offset: singleRequestLimit * 1,
-				limit: singleRequestLimit,
-			},
-			{
-				extra_param: 'extra_value',
-				offset: singleRequestLimit * 2,
-				limit: singleRequestLimit,
-			},
-			{
-				extra_param: 'extra_value',
-				offset: singleRequestLimit * 3,
-				limit: singleRequestLimit,
-			},
-		];
+		const expectedResponse = getResponseOfLength(4, singleRequestLimit);
 		const response = await requestAll(func, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
 		expect(response).toEqual(expectedResponse);
 	});
 
 	it('should call passed function only once when total limit > single response limit but function return total < single response limit', async () => {
 		const singleRequestLimit = 50;
-		const expectedResponse = [
-			{
-				extra_param: 'extra_value',
-				offset: 0,
-				limit: singleRequestLimit,
-			},
-		];
+		const expectedResponse = getResponseOfLength(1, singleRequestLimit);
 		const func2 = async (params) => ({
 			data: [params],
 			meta: {
@@ -72,13 +51,7 @@ describe('Test requestAll method', () => {
 
 	it('should call passed function only once when total limit < single response limit', async () => {
 		const singleRequestLimit = 50;
-		const expectedResponse = [
-			{
-				extra_param: 'extra_value',
-				offset: 0,
-				limit: singleRequestLimit,
-			},
-		];
+		const expectedResponse = getResponseOfLength(1, singleRequestLimit);
 		const response = await requestAll(func, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
 		expect(response).toEqual(expectedResponse);
 	});

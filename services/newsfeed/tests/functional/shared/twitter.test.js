@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { tweetMapper } = require('../../../shared/twitter');
+const { tweetMapper, tweetUrl } = require('../../../shared/twitter');
 const {
 	tweetObject,
 	retweetObject,
@@ -76,5 +76,40 @@ describe('Test tweetMapper method', () => {
 
 	it('should throw error when called with undefined object', async () => {
 		expect(() => tweetMapper()).toThrow();
+	});
+});
+
+describe('Test tweetUrl method', () => {
+	it('should return correct url when called with tweet', async () => {
+		const url = tweetUrl(tweetObject);
+		expect(url).toBe(tweetObject.entities.urls[0].url);
+	});
+
+	it('should return correct url when called with retweet', async () => {
+		const url = tweetUrl(retweetObject);
+		expect(url).toBe(retweetObject.retweeted_status.entities.urls[0].url);
+	});
+
+	it('should return correct url when called with mediaTweet', async () => {
+		const url = tweetUrl(mediaTweetObject);
+		expect(url).toBe(mediaTweetObject.extended_entities.media[0].url);
+	});
+
+	it('should return correct url when called with other tweet', async () => {
+		const url = tweetUrl(otherTweetObject);
+		expect(url).toBe(`https://twitter.com/i/web/status/${otherTweetObject.id_str}`);
+	});
+
+	it('should return undefined url when obj is empty', async () => {
+		const url = tweetUrl({});
+		expect(url).toBe(undefined);
+	});
+
+	it('should throw error when obj is null', async () => {
+		expect(() => tweetUrl(null)).toThrow();
+	});
+
+	it('should throw error when obj is undefined', async () => {
+		expect(() => tweetUrl(undefined)).toThrow();
 	});
 });
