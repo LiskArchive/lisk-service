@@ -13,7 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	MySQL: {
+		getTableInstance,
+	},
+} = require('lisk-service-framework');
 const config = require('../../config');
+
+const eventsTableSchema = require('../database/schema/events');
+const eventTopicsTableSchema = require('../database/schema/eventTopics');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getEventsTable = () => getTableInstance(
+	eventsTableSchema.tableName,
+	eventsTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getEventTopicsTable = () => getTableInstance(
+	eventTopicsTableSchema.tableName,
+	eventTopicsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
@@ -30,7 +52,7 @@ const getEventsInfoToIndex = async (block, events) => {
 			index: event.index,
 		};
 
-		if (config.db.isPersistEvents) {
+		if (!block.isFinal || config.db.isPersistEvents) {
 			eventInfo.eventStr = JSON.stringify(event);
 		}
 
@@ -52,6 +74,21 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
+const deleteEventsTillBlockHeight = async (blockHeight, dbTrx) => {
+	const eventsTable = await getEventsTable();
+	const eventTopicsTable = await getEventTopicsTable();
+	const queryParams = {
+		propBetweens: [{
+			property: 'height',
+			lowerThan: blockHeight + 1,
+		}],
+		limit: 1000,
+	};
+	await eventTopicsTable.delete(queryParams, dbTrx);
+	await eventsTable.delete(queryParams, dbTrx);
+};
+
 module.exports = {
 	getEventsInfoToIndex,
+	deleteEventsTillBlockHeight,
 };
