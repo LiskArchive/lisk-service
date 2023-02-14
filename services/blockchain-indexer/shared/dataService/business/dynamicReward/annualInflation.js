@@ -15,18 +15,16 @@
  */
 const { requestConnector } = require('../../../utils/request');
 
-const getInflationRate = async () => {
-	const rewardInflation = {
+const getAnnualInflation = async (params) => {
+	const annualInflation = {
 		data: {},
 		meta: {},
 	};
 
-	// TODO: Refactor implementation once given endpoint is exposed from SDK
-	// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7799
-	rewardInflation.data = await requestConnector('getInflationRate');
-	return rewardInflation;
+	annualInflation.data = await requestConnector('getAnnualInflation', { height: params.height });
+	return annualInflation;
 };
 
 module.exports = {
-	getInflationRate,
+	getAnnualInflation,
 };

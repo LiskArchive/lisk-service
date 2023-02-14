@@ -15,13 +15,16 @@
  */
 const rewardInflationSource = require('../../../../../sources/version3/rewardInflation');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
-const { response, getSwaggerDescription } = require('../../../../../shared/utils');
+const { response, getSwaggerDescription, transformParams } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/reward/inflation',
 	rpcMethod: 'get.reward.inflation',
 	tags: ['Reward'],
+	params: {
+		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
+	},
 	get schema() {
 		const rewardInflationSchema = {};
 		rewardInflationSchema[this.swaggerApiPath] = { get: {} };
@@ -31,6 +34,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns inflation rate.',
 		});
+		rewardInflationSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
 		rewardInflationSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns current inflation rate.',

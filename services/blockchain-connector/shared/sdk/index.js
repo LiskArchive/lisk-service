@@ -22,8 +22,8 @@ const {
 
 const {
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -78,7 +78,7 @@ const {
 
 const {
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	cacheRegisteredRewardModule,
 } = require('./dynamicReward');
@@ -125,8 +125,8 @@ module.exports = {
 
 	// Endpoints
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -175,7 +175,7 @@ module.exports = {
 
 	// Reward
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 
 	// Fee

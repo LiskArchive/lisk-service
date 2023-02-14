@@ -74,7 +74,7 @@ const {
 
 const {
 	getDefaultRewardAtHeight,
-	getInflationRate,
+	getAnnualInflation,
 	getRewardConstants,
 } = require('./dynamicReward');
 
@@ -155,7 +155,7 @@ module.exports = {
 	// Peers
 	getPeersStatistics,
 
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
 };
