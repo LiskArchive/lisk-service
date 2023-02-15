@@ -50,7 +50,7 @@ const {
 
 const {
 	getDefaultRewardAtHeight,
-	getInflationRate,
+	getAnnualInflation,
 	getRewardConstants,
 } = require('./dynamicReward');
 
@@ -174,7 +174,7 @@ module.exports = {
 	getPosLockedRewards,
 	getEventsByHeight,
 
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
 };

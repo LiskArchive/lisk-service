@@ -17,9 +17,8 @@ import Joi from 'joi';
 import regex from './regex';
 
 const data = {
-	// TODO: Verify and update the schema
-	tokenID: Joi.string().pattern(regex.TOKEN_ID).optional(),
-	rate: Joi.string().required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	rate: Joi.string().pattern(regex.FLOATING_POINT).required(),
 };
 
 const meta = {};

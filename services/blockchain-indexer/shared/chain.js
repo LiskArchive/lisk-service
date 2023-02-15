@@ -23,7 +23,7 @@ const isMainchain = async () => {
 		const networkStatus = (await dataService.getNetworkStatus()).data;
 		chainID = networkStatus.chainID;
 	}
-	return chainID.match(regex.MAINCHAIN_ID);
+	return regex.MAINCHAIN_ID.test(chainID);
 };
 
 module.exports = {

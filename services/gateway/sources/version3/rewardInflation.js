@@ -15,8 +15,10 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.reward.inflation',
-	params: {},
+	method: 'indexer.reward.annualInflation',
+	params: {
+		height: '=,number',
+	},
 	definition: {
 		data: {
 			tokenID: '=,string',

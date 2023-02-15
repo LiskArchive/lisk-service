@@ -53,17 +53,15 @@ const getRewardTokenID = async () => {
 	}
 };
 
-const getInflationRate = async () => {
+const getAnnualInflation = async (height) => {
 	try {
-		// TODO: Update endpoint once exposed by SDK
-		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7799
-		const inflationRate = await invokeEndpoint(`${registeredRewardModule}_getInflationRate`);
-		return inflationRate;
+		const annualInflation = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, { height });
+		return annualInflation;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getInflationRate\'.');
+			throw new TimeoutException(`Request timed out when calling 'getAnnualInflation' with block height:${height}.`);
 		}
-		logger.warn(`Error returned when invoking '${registeredRewardModule}_getInflationRate'.\n${err.stack}`);
+		logger.warn(`Error returned when invoking '${registeredRewardModule}_getAnnualInflation' with block height:${height}.\n${err.stack}`);
 		throw err;
 	}
 };
@@ -83,7 +81,7 @@ const getDefaultRewardAtHeight = async height => {
 
 module.exports = {
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	cacheRegisteredRewardModule,
 };

@@ -27,18 +27,30 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getRewardInflation = async () => request(wsRpcUrl, 'get.reward.inflation');
+const getRewardInflation = async (params) => request(wsRpcUrl, 'get.reward.inflation', params);
 
-describe('get.reward.inflation', () => {
-	it('Returns current inflation rate', async () => {
-		const response = await getRewardInflation();
+let latestBlockHeight;
+
+describe('Test get.reward.inflation', () => {
+	beforeAll(async () => {
+		const response = await request(wsRpcUrl, 'get.network.status');
+		latestBlockHeight = response.result.data.height;
+	});
+
+	it('should return current inflation rate when called with latest block height', async () => {
+		const response = await getRewardInflation({ height: latestBlockHeight });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(rewardInflationResponseSchema);
 	});
 
-	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
-		const response = getRewardInflation().catch(e => e);
+	it('should return INVALID_PARAMS (-32602) when called with unsupported param', async () => {
+		const response = await getRewardInflation({ invalidParam: 'invalidParam' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return INVALID_PARAMS (-32602) when called without param', async () => {
+		const response = await getRewardInflation();
 		expect(response).toMap(invalidParamsSchema);
 	});
 });
