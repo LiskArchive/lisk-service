@@ -84,7 +84,6 @@ const deleteEventsTillBlockHeight = async (blockHeight, dbTrx) => {
 			property: 'height',
 			lowerThan: blockHeight + 1,
 		}],
-		limit: 1000,
 	};
 	await eventTopicsTable.delete(queryParams, dbTrx);
 	await eventsTable.delete(queryParams, dbTrx);

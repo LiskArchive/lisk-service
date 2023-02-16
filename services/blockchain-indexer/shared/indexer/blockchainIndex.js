@@ -221,7 +221,6 @@ const indexBlock = async job => {
 				}
 			}
 
-			// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
 			// Calculate locked amount change and update in key_value_store table for affected tokens
 			const tokenIDLockedAmountChangeMap = {};
 			events.forEach(event => {
