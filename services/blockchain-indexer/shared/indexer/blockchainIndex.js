@@ -97,6 +97,7 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const { KV_STORE_KEY } = require('../constants');
+const { getEventsFromCache } = require('../dataService/business/events');
 
 const EVENT_NAME = Object.freeze({
 	LOCK: 'lock',
@@ -121,6 +122,8 @@ const getTransactionExecutionStatus = (tx, events) => {
 const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),
 	async ([tokenID, lockedAmountChange]) => {
+		if (lockedAmountChange === BigInt(0)) return;
+
 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 		const newLockedAmount = curLockedAmount + lockedAmountChange;
@@ -230,16 +233,16 @@ const indexBlock = async job => {
 				}
 
 				if (event.name === EVENT_NAME.LOCK) {
-					tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
+					tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
 				} else if (event.name === EVENT_NAME.UNLOCK) {
-					tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
+					tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
 				}
 			});
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 		}
 
 		// Delete events of finalized blocks unless required to persist
-		if (!config.isPersistEvents) {
+		if (!config.db.isPersistEvents) {
 			const finalizedBlockHeight = await getFinalizedHeight();
 			await deleteEventsTillBlockHeight(finalizedBlockHeight, dbTrx);
 		}
@@ -321,28 +324,26 @@ const deleteIndexedBlocks = async job => {
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 
-				// TODO: Update events fetching logic
-				const events = await getEventsByHeight(block.height);
+				const events = await getEventsFromCache(block.height);
 				if (events.length) {
-				// TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
 				// Calculate locked amount change and update in key_value_store table for affected tokens
-				const tokenIDLockedAmountChangeMap = {};
-				events.forEach(event => {
-					const { data: eventData } = event;
-					// Initialize map entry with BigInt
-					if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
+					const tokenIDLockedAmountChangeMap = {};
+					events.forEach(event => {
+						const { data: eventData } = event;
+						// Initialize map entry with BigInt
+						if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
 						&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
-						tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
-					}
+							tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+						}
 
-					// Negate amount to reverse the affect
-					if (event.name === EVENT_NAME.LOCK) {
-						tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
-					} else if (event.name === EVENT_NAME.UNLOCK) {
-						tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
-					}
-				});
-				await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+						// Negate amount to reverse the affect
+						if (event.name === EVENT_NAME.LOCK) {
+							tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
+						} else if (event.name === EVENT_NAME.UNLOCK) {
+							tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
+						}
+					});
+					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 				}
 			});
 
@@ -382,7 +383,7 @@ const indexNewBlock = async block => {
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
-	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
+	if (!blockInfo || !blockInfo.isFinal) {
 		// Index if doesn't exist, or update if it isn't set to final
 		await indexBlocksQueue.add({ block });
 

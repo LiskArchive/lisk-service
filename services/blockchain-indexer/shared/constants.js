@@ -23,7 +23,7 @@ let systemMetadata;
 let finalizedHeight;
 
 const updateFinalizedHeight = async () => {
-	const { finalizedHeight: latestFinalizedHeight = {} } = await requestConnector('getNetworkStatus');
+	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus') || {};
 	finalizedHeight = latestFinalizedHeight;
 };
 

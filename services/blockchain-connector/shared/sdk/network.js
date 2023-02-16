@@ -39,6 +39,11 @@ const refreshNetworkStatus = async () => {
 			logger.warn(`Error occurred while refreshing network status:\n${err.stack}`);
 		}
 	};
+
+	if (!networkStatus) {
+		await refreshNetworkStatusListener();
+	}
+
 	Signals.get('chainNewBlock').add(refreshNetworkStatusListener);
 };
 

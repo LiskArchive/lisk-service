@@ -75,6 +75,8 @@ const getEventsInfoToIndex = async (block, events) => {
 };
 
 const deleteEventsTillBlockHeight = async (blockHeight, dbTrx) => {
+	if (blockHeight === undefined || Number.isNaN(blockHeight)) return;
+
 	const eventsTable = await getEventsTable();
 	const eventTopicsTable = await getEventTopicsTable();
 	const queryParams = {
