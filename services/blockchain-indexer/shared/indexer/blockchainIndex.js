@@ -321,12 +321,9 @@ const deleteIndexedBlocks = async job => {
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 
-				// Invalidate cached events of this block
-				await deleteEventsFromCache(block.height);
-
+				// Calculate locked amount change from events and update in key_value_store table
 				const events = await getEventsByHeight(block.height);
 				if (events.length) {
-				// Calculate locked amount change and update in key_value_store table for affected tokens
 					const tokenIDLockedAmountChangeMap = {};
 					events.forEach(event => {
 						const { data: eventData } = event;
@@ -345,6 +342,10 @@ const deleteIndexedBlocks = async job => {
 					});
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 				}
+
+				// Invalidate cached events of this block
+				// This must be done after processing all event related calculations
+				await deleteEventsFromCache(block.height);
 			});
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
