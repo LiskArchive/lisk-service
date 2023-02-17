@@ -97,7 +97,6 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const { KV_STORE_KEY } = require('../constants');
-const { getEventsFromCache } = require('../dataService/business/events');
 
 const EVENT_NAME = Object.freeze({
 	LOCK: 'lock',
@@ -321,7 +320,7 @@ const deleteIndexedBlocks = async job => {
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 
-				const events = await getEventsFromCache(block.height);
+				const events = await getEventsByHeight(block.height);
 				if (events.length) {
 				// Calculate locked amount change and update in key_value_store table for affected tokens
 					const tokenIDLockedAmountChangeMap = {};

@@ -53,12 +53,12 @@ const getEventTopicsTable = () => getTableInstance(
 
 const eventCache = CacheLRU('events');
 
-const getEventsByHeight = async (height) => {
+const getEventsByHeightFromNode = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
 };
 
-const getEventsFromCache = async (height) => {
+const getEventsByHeight = async (height) => {
 	// Get from cache
 	const cachedEvents = await eventCache.get(height);
 	if (cachedEvents) return JSON.parse(cachedEvents);
@@ -74,7 +74,7 @@ const getEventsFromCache = async (height) => {
 	}
 
 	// Get from node
-	const eventsFromNode = await getEventsByHeight(height);
+	const eventsFromNode = await getEventsByHeightFromNode(height);
 	await eventCache.set(height, JSON.stringify(eventsFromNode));
 	return eventsFromNode;
 };
@@ -158,7 +158,7 @@ const getEvents = async (params) => {
 				if (eventStr) event = JSON.parse(eventStr);
 			}
 			if (!event) {
-				const eventsFromCache = await getEventsFromCache(height);
+				const eventsFromCache = await getEventsByHeight(height);
 				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
@@ -186,5 +186,4 @@ const getEvents = async (params) => {
 module.exports = {
 	getEvents,
 	getEventsByHeight,
-	getEventsFromCache,
 };

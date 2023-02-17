@@ -82,7 +82,7 @@ const deleteEventsTillBlockHeight = async (blockHeight, dbTrx) => {
 	const queryParams = {
 		propBetweens: [{
 			property: 'height',
-			lowerThan: blockHeight + 1,
+			to: blockHeight,
 		}],
 		limit: 10000,
 	};
