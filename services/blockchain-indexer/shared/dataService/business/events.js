@@ -60,10 +60,10 @@ const getEventsByHeight = async (height) => {
 
 const getEventsFromCache = async (height) => {
 	// Get from cache
-	const cacheEvents = await eventCache.get(height);
-	if (cacheEvents) return JSON.parse(cacheEvents);
+	const cachedEvents = await eventCache.get(height);
+	if (cachedEvents) return JSON.parse(cachedEvents);
 
-	// Get from db
+	// Get from DB
 	const eventsTable = await getEventsTable();
 	const dbEventStrs = await eventsTable.find({ height }, ['eventStr']);
 

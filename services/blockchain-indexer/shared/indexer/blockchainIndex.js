@@ -122,8 +122,6 @@ const getTransactionExecutionStatus = (tx, events) => {
 const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),
 	async ([tokenID, lockedAmountChange]) => {
-		if (lockedAmountChange === BigInt(0)) return;
-
 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 		const newLockedAmount = curLockedAmount + lockedAmountChange;
@@ -335,7 +333,7 @@ const deleteIndexedBlocks = async job => {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 						}
 
-						// Negate amount to reverse the affect
+						// Negate amount to reverse the effect
 						if (event.name === EVENT_NAME.LOCK) {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
 						} else if (event.name === EVENT_NAME.UNLOCK) {
