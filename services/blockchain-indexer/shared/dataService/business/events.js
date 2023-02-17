@@ -79,6 +79,8 @@ const getEventsByHeight = async (height) => {
 	return eventsFromNode;
 };
 
+const deleteEventsFromCache = async (height) => eventCache.delete(height);
+
 const getEvents = async (params) => {
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
@@ -186,4 +188,5 @@ const getEvents = async (params) => {
 module.exports = {
 	getEvents,
 	getEventsByHeight,
+	deleteEventsFromCache,
 };

@@ -35,6 +35,7 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactions,
 	getEventsByHeight,
+	deleteEventsFromCache,
 } = require('../dataService');
 
 const {
@@ -319,6 +320,9 @@ const deleteIndexedBlocks = async job => {
 				}
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
+
+				// Invalidate cached events of this block
+				await deleteEventsFromCache(block.height);
 
 				const events = await getEventsByHeight(block.height);
 				if (events.length) {

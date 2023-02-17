@@ -26,6 +26,7 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getEventsByHeight,
+	deleteEventsFromCache,
 } = require('./business');
 
 const {
@@ -173,6 +174,7 @@ module.exports = {
 	normalizeTransaction,
 	getPosLockedRewards,
 	getEventsByHeight,
+	deleteEventsFromCache,
 
 	getAnnualInflation,
 	getDefaultRewardAtHeight,
