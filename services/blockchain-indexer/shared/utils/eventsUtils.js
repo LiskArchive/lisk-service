@@ -74,7 +74,7 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
-const deleteEventsTillBlockHeight = async (blockHeight, dbTrx) => {
+const deleteEventsTillHeight = async (blockHeight, dbTrx) => {
 	const eventsTable = await getEventsTable();
 	const eventTopicsTable = await getEventTopicsTable();
 	const queryParams = {
@@ -90,5 +90,5 @@ const deleteEventsTillBlockHeight = async (blockHeight, dbTrx) => {
 
 module.exports = {
 	getEventsInfoToIndex,
-	deleteEventsTillBlockHeight,
+	deleteEventsTillHeight,
 };

@@ -44,7 +44,7 @@ const {
 
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
-const { getEventsInfoToIndex, deleteEventsTillBlockHeight } = require('../utils/eventsUtils');
+const { getEventsInfoToIndex, deleteEventsTillHeight } = require('../utils/eventsUtils');
 const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
 const {
@@ -238,10 +238,10 @@ const indexBlock = async job => {
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 		}
 
-		// Delete events of finalized blocks unless required to persist
+		// Delete events of finalized blocks when persistence is disabled
 		if (!config.db.isPersistEvents) {
 			const finalizedBlockHeight = await getFinalizedHeight();
-			await deleteEventsTillBlockHeight(finalizedBlockHeight, dbTrx);
+			await deleteEventsTillHeight(finalizedBlockHeight, dbTrx);
 		}
 
 		const blockToIndex = {
@@ -329,7 +329,7 @@ const deleteIndexedBlocks = async job => {
 						const { data: eventData } = event;
 						// Initialize map entry with BigInt
 						if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
-						&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
+							&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 						}
 
