@@ -384,6 +384,8 @@ const indexNewBlock = async block => {
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
+	// Schedule indexing of incoming block if it is not indexed before
+	// Or the indexed block is not final yet (chain fork)
 	if (!blockInfo || !blockInfo.isFinal) {
 		// Index if doesn't exist, or update if it isn't set to final
 		await indexBlocksQueue.add({ block });
