@@ -25,9 +25,9 @@ const {
 
 const config = require('../../../config');
 
-const blocksIndexSchema = require('../../database/schema/blocks');
-const eventsIndexSchema = require('../../database/schema/events');
-const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
+const blocksTableSchema = require('../../database/schema/blocks');
+const eventsTableSchema = require('../../database/schema/events');
+const eventTopicsTableSchema = require('../../database/schema/eventTopics');
 
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
@@ -35,43 +35,56 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema.tableName,
-	blocksIndexSchema,
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
 	MYSQL_ENDPOINT,
 );
-const getEventsIndex = () => getTableInstance(
-	eventsIndexSchema.tableName,
-	eventsIndexSchema,
+const getEventsTable = () => getTableInstance(
+	eventsTableSchema.tableName,
+	eventsTableSchema,
 	MYSQL_ENDPOINT,
 );
-const getEventTopicsIndex = () => getTableInstance(
-	eventTopicsIndexSchema.tableName,
-	eventTopicsIndexSchema,
+const getEventTopicsTable = () => getTableInstance(
+	eventTopicsTableSchema.tableName,
+	eventTopicsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const eventCache = CacheLRU('events');
 
-const getEventsByHeight = async (height) => {
+const getEventsByHeightFromNode = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
 };
 
-const getEventsFromCache = async (height) => {
-	const events = await eventCache.get(height);
-	if (!events) {
-		const eventFromNode = await getEventsByHeight(height);
-		await eventCache.set(height, JSON.stringify(eventFromNode));
-		return eventFromNode;
+const getEventsByHeight = async (height) => {
+	// Get from cache
+	const cachedEvents = await eventCache.get(height);
+	if (cachedEvents) return JSON.parse(cachedEvents);
+
+	// Get from DB
+	const eventsTable = await getEventsTable();
+	const dbEventStrs = await eventsTable.find({ height }, ['eventStr']);
+
+	if (dbEventStrs.length) {
+		const dbEvents = dbEventStrs.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+		await eventCache.set(height, JSON.stringify(dbEvents));
+		return dbEvents;
 	}
-	return JSON.parse(events);
+
+	// Get from node
+	const eventsFromNode = await getEventsByHeightFromNode(height);
+	await eventCache.set(height, JSON.stringify(eventsFromNode));
+	return eventsFromNode;
 };
 
+const deleteEventsFromCache = async (height) => eventCache.delete(height);
+
 const getEvents = async (params) => {
-	const blocksTable = await getBlocksIndex();
-	const eventsTable = await getEventsIndex();
-	const eventTopicsTable = await getEventTopicsIndex();
+	const blocksTable = await getBlocksTable();
+	const eventsTable = await getEventsTable();
+	const eventTopicsTable = await getEventTopicsTable();
 
 	const events = {
 		data: [],
@@ -147,7 +160,7 @@ const getEvents = async (params) => {
 				if (eventStr) event = JSON.parse(eventStr);
 			}
 			if (!event) {
-				const eventsFromCache = await getEventsFromCache(height);
+				const eventsFromCache = await getEventsByHeight(height);
 				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
@@ -175,4 +188,5 @@ const getEvents = async (params) => {
 module.exports = {
 	getEvents,
 	getEventsByHeight,
+	deleteEventsFromCache,
 };

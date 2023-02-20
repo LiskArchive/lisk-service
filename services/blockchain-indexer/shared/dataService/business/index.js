@@ -82,7 +82,11 @@ const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
 const { getLegacyAccountInfo } = require('./legacy');
 const { postTransactions } = require('./postTransactions');
-const { getEvents, getEventsByHeight } = require('./events');
+const {
+	getEvents,
+	getEventsByHeight,
+	deleteEventsFromCache,
+} = require('./events');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { getValidator, validateBLSKey } = require('./validator');
 
@@ -115,6 +119,7 @@ module.exports = {
 	// Events
 	getEvents,
 	getEventsByHeight,
+	deleteEventsFromCache,
 
 	// Interoperability
 	getBlockchainApps,
