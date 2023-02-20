@@ -53,7 +53,7 @@ const getEventsInfoToIndex = async (block, events) => {
 		};
 
 		// Store whole event when persistence is enabled or block is not finalized yet
-		// Storing events of non-finalized blocks is required to fetch events of dropped blocks
+		// Storing event of non-finalized block is required to fetch events of a dropped block
 		if (!block.isFinal || config.db.isPersistEvents) {
 			eventInfo.eventStr = JSON.stringify(event);
 		}
