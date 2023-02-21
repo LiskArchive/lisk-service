@@ -48,7 +48,7 @@ const getCommissionIndexingInfo = (blockHeader, tx) => {
 	return newCommissionEntry;
 };
 
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const commissionsTable = await getCommissionsTable();
 
 	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
@@ -58,7 +58,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
 };
 
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const commissionsTable = await getCommissionsTable();
 
 	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);

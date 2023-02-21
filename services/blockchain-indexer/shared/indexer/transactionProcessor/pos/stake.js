@@ -112,7 +112,7 @@ const updateTotalSelfStake = async (changeAmount, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);
@@ -137,7 +137,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);

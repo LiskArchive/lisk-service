@@ -36,7 +36,7 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'registerSidechain';
 
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
@@ -53,7 +53,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Indexed sidechain (${tx.params.chainID}) registration information.`);
 };
 
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting sidechain (${tx.params.chainID}) registration information.`);

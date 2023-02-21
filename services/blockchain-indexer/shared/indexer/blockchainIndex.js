@@ -167,7 +167,7 @@ const indexBlock = async job => {
 					await transactionsTable.upsert(tx, dbTrx);
 
 					// Invoke 'applyTransaction' to execute command specific processing logic
-					await applyTransaction(blockHeader, tx, dbTrx);
+					await applyTransaction(blockHeader, tx, events, dbTrx);
 				},
 				{ concurrency: block.transactions.length },
 			);
@@ -290,6 +290,7 @@ const deleteIndexedBlocks = async job => {
 			async block => {
 				let forkedTransactions;
 				const transactionsTable = await getTransactionsTable();
+				const events = await getEventsByHeight(block.height);
 
 				if (block.transactions && block.transactions.length) {
 					const { transactions, assets, ...blockHeader } = block;
@@ -298,7 +299,7 @@ const deleteIndexedBlocks = async job => {
 						transactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
-							await revertTransaction(blockHeader, tx, dbTrx);
+							await revertTransaction(blockHeader, tx, events, dbTrx);
 							const normalizedTransaction = await normalizeTransaction(tx);
 							return normalizedTransaction;
 						},
@@ -322,7 +323,6 @@ const deleteIndexedBlocks = async job => {
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 
 				// Calculate locked amount change from events and update in key_value_store table
-				const events = await getEventsByHeight(block.height);
 				if (events.length) {
 					const tokenIDLockedAmountChangeMap = {};
 					events.forEach(event => {

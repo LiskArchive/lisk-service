@@ -37,7 +37,7 @@ const getBlockchainAppsTable = () => getTableInstance(
 const COMMAND_NAME = 'registerMainchain';
 
 // TODO: Needs work
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
@@ -55,7 +55,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting mainchain (${tx.params.chainID}) registration information.`);

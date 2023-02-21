@@ -34,7 +34,7 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'submitSidechainCrossChainUpdate';
 
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
@@ -53,7 +53,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
