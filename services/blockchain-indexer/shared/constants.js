@@ -101,13 +101,30 @@ const PATTERN_ANY_LOCAL_ID = '*'.repeat(LENGTH_LOCAL_ID);
 
 const MAX_COMMISSION = BigInt('10000');
 
-const KV_STORE_KEY = {
+const KV_STORE_KEY = Object.freeze({
 	PREFIX: {
 		TOTAL_LOCKED: 'total_locked_',
 		TOTAL_STAKED: 'total_staked_',
 		TOTAL_SELF_STAKED: 'total_self_staked_',
 	},
-};
+});
+
+const CHAIN_STATUS = Object.freeze({
+	REGISTERED: 'registered',
+	ACTIVE: 'active',
+	TERMINATED: 'terminated',
+});
+
+const EVENT_NAME = Object.freeze({
+	LOCK: 'lock',
+	UNLOCK: 'unlock',
+	CCM_SEND_SUCCESS: 'ccmSendSuccess',
+});
+
+const TRANSACTION_STATUS = Object.freeze({
+	SUCCESS: 'success',
+	FAIL: 'fail',
+});
 
 module.exports = {
 	updateFinalizedHeight,
@@ -128,4 +145,7 @@ module.exports = {
 	COMMAND,
 	MAX_COMMISSION,
 	KV_STORE_KEY,
+	CHAIN_STATUS,
+	EVENT_NAME,
+	TRANSACTION_STATUS,
 };

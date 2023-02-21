@@ -26,6 +26,8 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { CHAIN_STATUS, TRANSACTION_STATUS, EVENT_NAME } = require('../../../constants');
+const { keyExistsInArrayOfObjects } = require('../../../utils/arrayUtils');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -38,13 +40,17 @@ const COMMAND_NAME = 'registerMainchain';
 
 // TODO: Needs work
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS
+		|| !keyExistsInArrayOfObjects(events, EVENT_NAME.CCM_SEND_SUCCESS)) {
+		return;
+	}
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.ownChainID,
 		name: tx.params.ownName,
-		state: '', // TODO: Set init state from events
+		state: CHAIN_STATUS.REGISTERED,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

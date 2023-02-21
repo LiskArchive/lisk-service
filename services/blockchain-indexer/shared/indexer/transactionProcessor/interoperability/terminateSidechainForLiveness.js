@@ -18,11 +18,13 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
+const { TRANSACTION_STATUS, EVENT_NAME, CHAIN_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { keyExistsInArrayOfObjects } = require('../../../utils/arrayUtils');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -35,13 +37,17 @@ const COMMAND_NAME = 'terminateSidechainForLiveness';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS
+		|| !keyExistsInArrayOfObjects(events, EVENT_NAME.CCM_SEND_SUCCESS)) {
+		return;
+	}
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
-		state: 'terminated', // TODO: Update chain status from events
+		state: CHAIN_STATUS.TERMINATED,
 	};
 
 	logger.trace(`Updating chain ${chainID} state.`);

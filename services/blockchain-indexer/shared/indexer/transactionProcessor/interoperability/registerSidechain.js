@@ -26,6 +26,8 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { CHAIN_STATUS, TRANSACTION_STATUS, EVENT_NAME } = require('../../../constants');
+const { keyExistsInArrayOfObjects } = require('../../../utils/arrayUtils');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -37,13 +39,17 @@ const getBlockchainAppsTable = () => getTableInstance(
 const COMMAND_NAME = 'registerSidechain';
 
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS
+		|| !keyExistsInArrayOfObjects(events, EVENT_NAME.CCM_SEND_SUCCESS)) {
+		return;
+	}
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.chainID,
 		name: tx.params.name,
-		state: '', // TODO: Set init state from events
+		state: CHAIN_STATUS.REGISTERED,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
