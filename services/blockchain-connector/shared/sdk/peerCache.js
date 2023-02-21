@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const {
+	Logger,
+	Signals,
+	Utils: { isObject },
+} = require('lisk-service-framework');
 const endpoints = require('./endpoints');
 const GeoService = require('../geolocation');
-const { parseToJSONCompatObj } = require('../utils/parser');
 
 const logger = Logger();
 
@@ -42,11 +45,15 @@ const get = (type = 'peers') => new Promise((resolve) => {
 });
 
 const refactorPeer = (orgPeer, state) => {
-	const { ipAddress, options: { height } = {}, ...peer } = orgPeer;
+	const { chainID, ipAddress, options: { height } = {}, ...peer } = orgPeer;
+	// TODO: Update implementation once SDK fixes issue: https://github.com/LiskHQ/lisk-sdk/issues/8173
+	peer.chainID = isObject(chainID)
+		? Buffer.from(chainID.data).toString('hex')
+		: chainID;
 	peer.state = state;
 	peer.height = height;
 	peer.ip = ipAddress;
-	return parseToJSONCompatObj(peer);
+	return peer;
 };
 
 const addLocation = async (ipaddress) => {
