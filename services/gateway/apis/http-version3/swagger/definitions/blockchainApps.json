@@ -38,8 +38,8 @@
 				"description": "Last certificate height"
 			},
 			"lastUpdated": {
-				"type": "string",
-				"example": "1616008148",
+				"type": "integer",
+				"example": 1616008148,
 				"description": "timestamp"
 			}
 		}
