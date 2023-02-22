@@ -39,10 +39,8 @@ const getBlockchainAppsTable = () => getTableInstance(
 const COMMAND_NAME = 'registerSidechain';
 
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS
-		|| !keyExistsInArrayOfObjects(events, EVENT_NAME.CCM_SEND_SUCCESS)) {
-		return;
-	}
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);

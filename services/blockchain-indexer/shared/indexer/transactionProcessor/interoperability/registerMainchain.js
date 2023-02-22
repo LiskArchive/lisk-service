@@ -40,10 +40,8 @@ const COMMAND_NAME = 'registerMainchain';
 
 // TODO: Needs work
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS
-		|| !keyExistsInArrayOfObjects(events, EVENT_NAME.CCM_SEND_SUCCESS)) {
-		return;
-	}
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
