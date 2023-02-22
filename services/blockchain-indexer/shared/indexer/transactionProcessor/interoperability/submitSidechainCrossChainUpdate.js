@@ -19,13 +19,13 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
-const { CHAIN_STATUS, TRANSACTION_STATUS, EVENT_NAME } = require('../../../constants');
+const { CHAIN_STATUS, TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { keyExistsInArrayOfObjects } = require('../../../utils/arrayUtils');
+const { getChainAccount } = require('../../../dataService');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -40,6 +40,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.sendingChainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
@@ -47,7 +49,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		state: CHAIN_STATUS.ACTIVE,
+		state: chainStatus,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

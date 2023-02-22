@@ -44,27 +44,8 @@ const sortComparator = (sortParam) => {
 	return comparator;
 };
 
-const isKeyExistInObject = (obj, path) => {
-	const pathKeys = path.split('.');
-	let interimObj = obj;
-
-	for (let idx = 0; idx < pathKeys.length; idx++) {
-		const key = pathKeys[idx];
-
-		if (!(key in interimObj)) return false;
-		interimObj = interimObj[key];
-	}
-
-	return true;
-};
-
-const keyExistsInArrayOfObjects = async (arr, keyStr) => arr.some(
-	obj => isKeyExistInObject(obj, keyStr),
-);
-
 module.exports = {
 	dropDuplicates,
-	keyExistsInArrayOfObjects,
 	range,
 	sortComparator,
 };

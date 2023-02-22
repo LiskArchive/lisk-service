@@ -18,13 +18,13 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
-const { TRANSACTION_STATUS, EVENT_NAME, CHAIN_STATUS } = require('../../../constants');
+const { TRANSACTION_STATUS, CHAIN_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { keyExistsInArrayOfObjects } = require('../../../utils/arrayUtils');
+const { getChainAccount } = require('../../../dataService');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -40,12 +40,14 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.chainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
 
 	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
-		state: CHAIN_STATUS.TERMINATED,
+		state: chainStatus,
 	};
 
 	logger.trace(`Updating chain ${chainID} state.`);

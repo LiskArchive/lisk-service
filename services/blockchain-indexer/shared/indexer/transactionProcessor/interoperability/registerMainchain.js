@@ -26,8 +26,8 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { CHAIN_STATUS, TRANSACTION_STATUS, EVENT_NAME } = require('../../../constants');
-const { keyExistsInArrayOfObjects } = require('../../../utils/arrayUtils');
+const { CHAIN_STATUS, TRANSACTION_STATUS } = require('../../../constants');
+const { getChainAccount } = require('../../../dataService');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -43,12 +43,14 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.ownChainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
 
 	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.ownChainID,
 		name: tx.params.ownName,
-		state: CHAIN_STATUS.REGISTERED,
+		state: chainStatus,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

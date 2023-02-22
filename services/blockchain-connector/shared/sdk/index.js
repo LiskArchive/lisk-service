@@ -93,6 +93,11 @@ const {
 	getAuthAccount,
 	getAuthMultiSigRegMsgSchema,
 } = require('./auth');
+
+const {
+	getChainAccount,
+} = require('./interoperability');
+
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
@@ -186,6 +191,9 @@ module.exports = {
 	// Auth
 	getAuthAccount,
 	getAuthMultiSigRegMsgSchema,
+
+	// Interoperability
+	getChainAccount,
 
 	// Legacy
 	getLegacyAccount,

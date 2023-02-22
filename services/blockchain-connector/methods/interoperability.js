@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,13 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getBlockchainApps } = require('./blockchainApps');
-const { getChainAccount } = require('./chainAccount');
-const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
-
-module.exports = {
-	getBlockchainApps,
+const {
 	getChainAccount,
-	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
-};
+} = require('../shared/sdk');
+
+const regex = require('../shared/utils/regex');
+
+module.exports = [
+	{
+		name: 'getChainAccount',
+		controller: async ({ chainID }) => getChainAccount({ chainID }),
+		params: {
+			chainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
+		},
+	},
+];
