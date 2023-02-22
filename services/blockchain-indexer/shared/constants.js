@@ -116,12 +116,6 @@ const CHAIN_STATUS = Object.freeze({
 	2: 'terminated',
 });
 
-const EVENT_NAME = Object.freeze({
-	LOCK: 'lock',
-	UNLOCK: 'unlock',
-	CCM_SEND_SUCCESS: 'ccmSendSuccess',
-});
-
 const TRANSACTION_STATUS = Object.freeze({
 	SUCCESS: 'success',
 	FAIL: 'fail',
@@ -147,6 +141,5 @@ module.exports = {
 	MAX_COMMISSION,
 	KV_STORE_KEY,
 	CHAIN_STATUS,
-	EVENT_NAME,
 	TRANSACTION_STATUS,
 };

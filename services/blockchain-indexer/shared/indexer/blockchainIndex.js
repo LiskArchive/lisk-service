@@ -52,7 +52,6 @@ const {
 	getCurrentHeight,
 	getGenesisHeight,
 	TRANSACTION_STATUS,
-	EVENT_NAME,
 } = require('../constants');
 
 const config = require('../../config');
@@ -102,6 +101,11 @@ const getValidatorsTable = () => getTableInstance(
 const { KV_STORE_KEY } = require('../constants');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
+
+const EVENT_NAME = Object.freeze({
+	LOCK: 'lock',
+	UNLOCK: 'unlock',
+});
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
