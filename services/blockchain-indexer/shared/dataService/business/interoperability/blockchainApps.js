@@ -64,7 +64,7 @@ const getBlockchainApps = async (params) => {
 		const { state, ...remParams } = params;
 		params = remParams;
 		params.whereIn.push({
-			property: 'state',
+			property: 'status',
 			values: state.split(','),
 		});
 	}
