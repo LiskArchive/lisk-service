@@ -49,7 +49,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		state: chainStatus,
+		status: chainStatus,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
@@ -68,7 +68,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// TODO: Remove the last value (keep oldest if 2 values exist): state, lastUpdated, lastCertHeight
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		state: '',
+		status: '',
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

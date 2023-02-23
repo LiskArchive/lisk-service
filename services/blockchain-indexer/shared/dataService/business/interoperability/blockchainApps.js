@@ -19,17 +19,17 @@ const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
+const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
-const getBlockchainAppsIndex = () => getTableInstance(
-	blockchainAppsIndexSchema.tableName,
-	blockchainAppsIndexSchema,
+const getBlockchainAppsTable = () => getTableInstance(
+	blockchainAppsTableSchema.tableName,
+	blockchainAppsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getBlockchainApps = async (params) => {
 	// TODO: Update implementation when interoperability_getOwnChainAccount is available
-	const blockchainAppsDB = await getBlockchainAppsIndex();
+	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const blockchainAppsInfo = {
 		data: [],
@@ -69,12 +69,23 @@ const getBlockchainApps = async (params) => {
 		});
 	}
 
-	const total = await blockchainAppsDB.count(params);
+	const total = await blockchainAppsTable.count(params);
 
-	blockchainAppsInfo.data = await blockchainAppsDB.find(
+	const dbBlockchainApps = await blockchainAppsTable.find(
 		{ ...params, limit: params.limit || total },
-		Object.getOwnPropertyNames(blockchainAppsIndexSchema.schema),
+		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
 	);
+
+	// Convert status to state
+	blockchainAppsInfo.data = dbBlockchainApps.map(
+		blockchainApp => {
+			const { status, ...remBlockchainApp } = blockchainApp;
+
+			return {
+				...remBlockchainApp,
+				state: status,
+			};
+		});
 
 	blockchainAppsInfo.meta = {
 		count: blockchainAppsInfo.data.length,

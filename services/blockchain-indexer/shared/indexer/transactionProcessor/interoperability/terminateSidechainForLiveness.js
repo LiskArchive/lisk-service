@@ -47,7 +47,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
-		state: chainStatus,
+		status: chainStatus,
 	};
 
 	logger.trace(`Updating chain ${chainID} state.`);
@@ -62,7 +62,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
-		state: '', // TODO: Remove `terminated` from CSV
+		status: '', // TODO: Remove `terminated` from CSV
 	};
 
 	logger.trace(`Reverting chain ${chainID} state.`);

@@ -50,7 +50,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const appInfo = {
 		chainID: tx.params.ownChainID,
 		name: tx.params.ownName,
-		state: chainStatus,
+		status: chainStatus,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
