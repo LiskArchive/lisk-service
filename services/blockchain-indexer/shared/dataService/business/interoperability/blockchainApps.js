@@ -71,21 +71,10 @@ const getBlockchainApps = async (params) => {
 
 	const total = await blockchainAppsTable.count(params);
 
-	const dbBlockchainApps = await blockchainAppsTable.find(
+	blockchainAppsInfo.data = await blockchainAppsTable.find(
 		{ ...params, limit: params.limit || total },
 		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
 	);
-
-	// Convert status to state
-	blockchainAppsInfo.data = dbBlockchainApps.map(
-		blockchainApp => {
-			const { status, ...remBlockchainApp } = blockchainApp;
-
-			return {
-				...remBlockchainApp,
-				state: status,
-			};
-		});
 
 	blockchainAppsInfo.meta = {
 		count: blockchainAppsInfo.data.length,
