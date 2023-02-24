@@ -19,11 +19,11 @@ pipeline {
 				ENABLE_HTTP_API='http-status,http-version3'
 				ENABLE_WS_API='blockchain,rpc-v3'
 				// Mainnet node URL
-				LISK_CORE_WS='ws://host.docker.internal:8080'
+				LISK_APP_WS='ws://host.docker.internal:7887'
 				USE_LISK_IPC_CLIENT='false'
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
 				ENABLE_FEE_ESTIMATOR_QUICK='true'
-				GITHUB_ACCESS_TOKEN: ''
+				GITHUB_ACCESS_TOKEN=
 			}
 			steps {
 				ansiColor('xterm') {

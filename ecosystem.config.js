@@ -45,6 +45,7 @@ module.exports = {
 				HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
 				ENABLE_HTTP_CACHE_CONTROL: 'true',
 				ENABLE_REQUEST_CACHING: 'true',
+				GATEWAY_DEPENDENCIES: 'indexer,connector',
 			},
 		},
 		{
