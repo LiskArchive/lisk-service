@@ -17,11 +17,11 @@ pipeline {
 			environment {
 				ENABLE_HTTP_API='http-status,http-version3,http-exports'
 				ENABLE_WS_API='blockchain,rpc-v3'
-				LISK_CORE_WS='ws://host.docker.internal:8080'
-				USE_LISK_IPC_CLIENT='true'
-				ENABLE_TRANSACTION_STATS='true'
+				LISK_APP_WS='ws://host.docker.internal:7887'
+				USE_LISK_IPC_CLIENT='false'
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
 				ENABLE_FEE_ESTIMATOR_QUICK='true'
+				GITHUB_ACCESS_TOKEN: ''
 			}
 			steps {
 				ansiColor('xterm') {
