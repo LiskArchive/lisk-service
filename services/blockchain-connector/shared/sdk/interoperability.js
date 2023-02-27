@@ -22,15 +22,15 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
-const getChainAccount = async (params) => {
+const getChainAccount = async (chainID) => {
 	try {
-		const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID: params.chainID });
+		const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID });
 		return chainAccount;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getChainAccount\'.');
 		}
-		logger.warn(`Error returned when invoking 'interoperability_getChainAccount' with chainID: ${params.chainID}.\n${err.stack}`);
+		logger.warn(`Error returned when invoking 'interoperability_getChainAccount' with chainID: ${chainID}.\n${err.stack}`);
 		throw err;
 	}
 };

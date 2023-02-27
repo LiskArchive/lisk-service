@@ -22,7 +22,7 @@ const regex = require('../shared/utils/regex');
 module.exports = [
 	{
 		name: 'getChainAccount',
-		controller: async ({ chainID }) => getChainAccount({ chainID }),
+		controller: async ({ chainID }) => getChainAccount(chainID),
 		params: {
 			chainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
 		},
