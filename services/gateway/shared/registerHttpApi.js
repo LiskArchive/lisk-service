@@ -107,8 +107,9 @@ const typeMappings = {
 	string_boolean: (input) => String(input).toLowerCase() === 'true',
 };
 
-const convertType = (item, type) => {
-	const typeMatch = `${(typeof item)}_${type}`;
+const convertType = (item, toType) => {
+	const fromType = typeof item === 'object' && item.constructor.name === 'Array' ? 'array' : typeof item;
+	const typeMatch = `${fromType}_${toType}`;
 	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
 	return item;
 };
@@ -118,7 +119,6 @@ const mapParam = (source, originalKey, mappingKey) => {
 		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
 		return { key: mappingKey, value: source[originalKey] };
 	}
-	// logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
 	return {};
 };
 
@@ -254,4 +254,12 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 	};
 };
 
-module.exports = registerApi;
+module.exports = {
+	registerApi,
+
+	// For testing
+	convertType,
+	mapParam,
+	mapParamWithType,
+	transformParams,
+};
