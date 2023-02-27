@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const LENGTH_CHAIN_ID = 8;
+const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
 
 const KV_STORE_KEY = {
 	COMMIT_HASH_UNTIL_LAST_SYNC: 'commitHashUntilLastSync',

@@ -24,10 +24,10 @@
         "format": "id",
         "minLength": 8
     },
-    "blockchainAppState": {
-        "name": "state",
+    "blockchainAppStatus": {
+        "name": "status",
         "in": "query",
-        "description": "State of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'active', 'terminated'.",
+        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'active', 'terminated'.",
         "type": "string"
     },
     "network": {
