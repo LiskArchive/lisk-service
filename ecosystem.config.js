@@ -67,8 +67,7 @@ module.exports = {
 				ENABLE_REBUILD_INDEX_AT_INIT: 'false',
 				GITHUB_APP_REGISTRY_REPO: 'https://github.com/LiskHQ/app-registry',
 				GITHUB_APP_REGISTRY_REPO_BRANCH: 'main',
-				// GITHUB_ACCESS_TOKEN: '',
-				// DEFAULT_APPS: '',
+				GITHUB_ACCESS_TOKEN: '',
 			},
 		},
 		{

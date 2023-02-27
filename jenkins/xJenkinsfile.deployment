@@ -21,7 +21,7 @@ pipeline {
 				USE_LISK_IPC_CLIENT='false'
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
 				ENABLE_FEE_ESTIMATOR_QUICK='true'
-				GITHUB_ACCESS_TOKEN=
+				GITHUB_ACCESS_TOKEN=''
 			}
 			steps {
 				ansiColor('xterm') {
