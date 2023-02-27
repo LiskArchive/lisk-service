@@ -59,7 +59,7 @@
     "search": {
         "in": "query",
         "name": "search",
-        "description": "Search query. Supports both partial and full text search.",
+        "description": "Search query. Supports both partial and full case-insensitive text search.",
         "type": "string",
         "minLength": 1
     }

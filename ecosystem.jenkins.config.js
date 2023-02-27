@@ -32,18 +32,19 @@ module.exports = {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/3',
+				ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
+				ENABLE_WS_API: 'blockchain,rpc-v3',
+				GATEWAY_DEPENDENCIES: 'indexer,connector',
 				WS_RATE_LIMIT_ENABLE: 'false',
 				WS_RATE_LIMIT_CONNECTIONS: 5,
 				WS_RATE_LIMIT_DURATION: 1, // in seconds
+				ENABLE_REQUEST_CACHING: 'true',
+				JSON_RPC_STRICT_MODE: 'false',
 				HTTP_RATE_LIMIT_ENABLE: 'true',
 				HTTP_RATE_LIMIT_CONNECTIONS: 200,
-				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds,
-				ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
-				ENABLE_WS_API: 'blockchain,rpc-v3',
+				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 				HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
 				ENABLE_HTTP_CACHE_CONTROL: 'true',
-				ENABLE_REQUEST_CACHING: 'true',
-				GATEWAY_DEPENDENCIES: 'indexer,connector',
 			},
 		},
 		{
@@ -150,11 +151,6 @@ module.exports = {
 				SERVICE_FEE_ESTIMATOR_CACHE: 'redis://localhost:6379/1',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
-				FEE_EST_COLD_START_BATCH_SIZE: 1,
-				FEE_EST_DEFAULT_START_BLOCK_HEIGHT: 1,
-				FEE_EST_EMA_BATCH_SIZE: 20,
-				FEE_EST_EMA_DECAY_RATE: 0.5,
-				FEE_EST_WAVG_DECAY_PERCENTAGE: 10
 			},
 		},
 		{
