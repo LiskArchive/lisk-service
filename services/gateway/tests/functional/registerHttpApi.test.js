@@ -92,11 +92,11 @@ describe.only('Test transformParams method', () => {
 	});
 
 	it('should throw error when called null params', async () => {
-        expect(() => transformParams(null, specs)).toThrow();
-    });
+		expect(() => transformParams(null, specs)).toThrow();
+	});
 
-    it('should return mapped object when called with undefined params', async () => {
-        const response = transformParams(undefined, specs);
+	it('should return mapped object when called with undefined params', async () => {
+		const response = transformParams(undefined, specs);
 		expect(response).toEqual({
 			new_key_str: undefined,
 			key_bool: undefined,
@@ -106,11 +106,11 @@ describe.only('Test transformParams method', () => {
 		});
 	});
 
-    it('should throw error when called with null specs', async () => {
-        expect(() => transformParams(params, null)).toThrow();
+	it('should throw error when called with null specs', async () => {
+		expect(() => transformParams(params, null)).toThrow();
 	});
 
-    it('should throw error object when called with undefined specs', async () => {
-        expect(() => transformParams(params, undefined)).toThrow();
+	it('should throw error object when called with undefined specs', async () => {
+		expect(() => transformParams(params, undefined)).toThrow();
 	});
 });
