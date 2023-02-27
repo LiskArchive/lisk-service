@@ -39,12 +39,17 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'registerMainchain';
 
+const getChainStatus = async chainID => {
+	const { status: chainStatusInt } = await getChainAccount({ chainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	return chainStatus;
+};
+
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.ownChainID });
-	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	const chainStatus = await getChainStatus(tx.params.ownChainID);
 
 	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
@@ -75,4 +80,5 @@ module.exports = {
 	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
+	getChainStatus,
 };

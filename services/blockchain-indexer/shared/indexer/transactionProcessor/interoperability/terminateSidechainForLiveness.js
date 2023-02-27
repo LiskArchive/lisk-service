@@ -18,13 +18,13 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
-const { TRANSACTION_STATUS, CHAIN_STATUS } = require('../../../constants');
+const { TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { getChainAccount } = require('../../../dataService');
+const { getChainStatus } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -40,8 +40,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.chainID });
-	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	const chainStatus = await getChainStatus(tx.params.chainID);
 
 	const { chainID } = tx.params;
 	const appInfo = {
@@ -61,8 +60,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const { chainID } = tx.params;
-	const { status: chainStatusInt } = await getChainAccount({ chainID });
-	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	const chainStatus = await getChainStatus(chainID);
 	const appInfo = {
 		chainID,
 		status: chainStatus,

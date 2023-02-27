@@ -27,8 +27,7 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { TRANSACTION_STATUS } = require('../../../constants');
-const { getChainAccount } = require('../../../dataService');
-const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
+const { getChainStatus } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -43,8 +42,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.chainID });
-	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	const chainStatus = await getChainStatus(tx.params.chainID);
 
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
 	const appInfo = {

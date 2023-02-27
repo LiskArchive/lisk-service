@@ -25,8 +25,7 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { getChainAccount } = require('../../../dataService');
-const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
+const { getChainStatus } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -41,8 +40,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.sendingChainID });
-	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	const chainStatus = await getChainStatus(tx.params.sendingChainID);
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
@@ -65,8 +63,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.sendingChainID });
-	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	const chainStatus = await getChainStatus(tx.params.sendingChainID);
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
 		status: chainStatus,
