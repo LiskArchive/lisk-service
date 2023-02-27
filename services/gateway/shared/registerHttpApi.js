@@ -29,15 +29,13 @@ const { validate, dropEmptyProps } = require('./paramValidator');
 const logger = Logger();
 const apiMeta = [];
 
+const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
+const dropOneSlashAtBeginning = str => str.replace(/^\//, '');
+const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
+
 const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
-	const transformPath = url => {
-		const dropSlash = str => str.replace(/^\//, '');
-		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
-
-		return curlyBracketsToColon(dropSlash(url));
-	};
-
+	const transformPath = url => curlyBracketsToColon(dropOneSlashAtBeginning(url));
 	// Populate allMethods from the js files under apis directory
 	if (typeof apiNames === 'string') apiNames = [apiNames];
 	apiNames.forEach(apiName => {
@@ -72,8 +70,6 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const whitelist = Object.keys(methods).reduce((acc, key) => [
 		...acc, methods[key].source.method,
 	], []);
-
-	const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
 
 	const aliases = Object.keys(methods).reduce((acc, key) => ({
 		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
@@ -262,4 +258,7 @@ module.exports = {
 	mapParam,
 	mapParamWithType,
 	transformParams,
+	getMethodName,
+	dropOneSlashAtBeginning,
+	curlyBracketsToColon,
 };

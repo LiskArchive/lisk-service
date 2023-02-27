@@ -63,7 +63,7 @@ describe('Test mapParamWithType method', () => {
 	});
 });
 
-describe.only('Test transformParams method', () => {
+describe('Test transformParams method', () => {
 	const params = {
 		key_str: 'val_str',
 		key_bool: true,
