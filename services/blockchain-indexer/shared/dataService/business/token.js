@@ -26,7 +26,7 @@ const { getAddressByName } = require('../../utils/validatorUtils');
 const {
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,
-	PATTERN_ANY_LOCAL_ID,
+	PATTERN_ANY_CHAIN_TOKEN_ID,
 } = require('../../constants');
 
 let moduleConstants = {};
@@ -87,7 +87,7 @@ const getTokensSummary = async () => {
 	supportedTokenIDs.forEach(tokenID => {
 		if (tokenID === PATTERN_ANY_TOKEN_ID) {
 			supportedTokens.isSupportAllToken = true;
-		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_LOCAL_ID) {
+		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_CHAIN_TOKEN_ID) {
 			supportedTokens.patternTokenIDs.push(tokenID);
 		} else {
 			supportedTokens.exactTokenIDs.push(tokenID);

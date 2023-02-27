@@ -94,11 +94,10 @@ const COMMAND = {
 	STAKE: 'stake',
 };
 
-// TODO: Remove LENGTH_LOCAL_ID and PATTERN_ANY_LOCAL_ID
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
-const LENGTH_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const LENGTH_TOKEN_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const PATTERN_ANY_TOKEN_ID = '*';
-const PATTERN_ANY_LOCAL_ID = '*'.repeat(LENGTH_LOCAL_ID);
+const PATTERN_ANY_CHAIN_TOKEN_ID = '*'.repeat(LENGTH_TOKEN_LOCAL_ID);
 
 const MAX_COMMISSION = BigInt('10000');
 
@@ -127,9 +126,8 @@ module.exports = {
 	getSystemMetadata,
 
 	LENGTH_CHAIN_ID,
-	LENGTH_LOCAL_ID,
 	PATTERN_ANY_TOKEN_ID,
-	PATTERN_ANY_LOCAL_ID,
+	PATTERN_ANY_CHAIN_TOKEN_ID,
 	MODULE,
 	COMMAND,
 	MAX_COMMISSION,
