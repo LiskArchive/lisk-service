@@ -19,6 +19,13 @@ const APP_STATE = {
 	TERMINATED: 'terminated',
 };
 
+const CHAIN_STATUS = Object.freeze({
+	0: 'registered',
+	1: 'active',
+	2: 'terminated',
+});
+
 module.exports = {
 	APP_STATE,
+	CHAIN_STATUS,
 };

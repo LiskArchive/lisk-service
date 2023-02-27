@@ -26,8 +26,9 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { CHAIN_STATUS, TRANSACTION_STATUS } = require('../../../constants');
+const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainAccount } = require('../../../dataService');
+const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -38,7 +39,6 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'registerMainchain';
 
-// TODO: Needs work
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
@@ -62,6 +62,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting mainchain (${tx.params.chainID}) registration information.`);

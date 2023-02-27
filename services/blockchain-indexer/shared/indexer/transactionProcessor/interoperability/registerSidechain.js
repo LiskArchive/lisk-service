@@ -26,8 +26,9 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { CHAIN_STATUS, TRANSACTION_STATUS } = require('../../../constants');
+const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainAccount } = require('../../../dataService');
+const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -60,6 +61,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting sidechain (${tx.params.chainID}) registration information.`);

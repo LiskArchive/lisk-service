@@ -19,13 +19,14 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
-const { CHAIN_STATUS, TRANSACTION_STATUS } = require('../../../constants');
+const { TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { getChainAccount } = require('../../../dataService');
+const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -45,8 +46,6 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
-	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
 		status: chainStatus,
@@ -60,15 +59,17 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
-	// TODO: Remove the last value (keep oldest if 2 values exist): state, lastUpdated, lastCertHeight
+	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.sendingChainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		status: '',
+		status: chainStatus,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

@@ -43,7 +43,6 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const { status: chainStatusInt } = await getChainAccount({ chainID: tx.params.chainID });
 	const chainStatus = CHAIN_STATUS[chainStatusInt];
 
-	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
@@ -57,12 +56,16 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const { chainID } = tx.params;
+	const { status: chainStatusInt } = await getChainAccount({ chainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
 	const appInfo = {
 		chainID,
-		status: '', // TODO: Remove `terminated` from CSV
+		status: chainStatus,
 	};
 
 	logger.trace(`Reverting chain ${chainID} state.`);

@@ -16,7 +16,7 @@
 module.exports = {
 	name: '=,string',
 	chainID: '=,string',
-	state: 'status,string',
+	status: '=,string',
 	address: '=,string',
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
