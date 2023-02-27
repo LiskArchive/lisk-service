@@ -13,12 +13,13 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const APP_STATE = {
+const APP_STATUS = {
 	ACTIVE: 'active',
 	REGISTERED: 'registered',
 	TERMINATED: 'terminated',
 };
 
+// TODO: Update values from sdk once this is settled: https://github.com/LiskHQ/discussions/discussions/101
 const CHAIN_STATUS = Object.freeze({
 	0: 'registered',
 	1: 'active',
@@ -26,6 +27,6 @@ const CHAIN_STATUS = Object.freeze({
 });
 
 module.exports = {
-	APP_STATE,
+	APP_STATUS,
 	CHAIN_STATUS,
 };

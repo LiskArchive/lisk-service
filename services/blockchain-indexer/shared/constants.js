@@ -109,8 +109,6 @@ const KV_STORE_KEY = Object.freeze({
 	},
 });
 
-// TODO: Update values from sdk once this is settled: https://github.com/LiskHQ/discussions/discussions/101
-
 const TRANSACTION_STATUS = Object.freeze({
 	SUCCESS: 'success',
 	FAIL: 'fail',
