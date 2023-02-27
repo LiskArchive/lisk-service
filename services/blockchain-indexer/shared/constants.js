@@ -94,6 +94,7 @@ const COMMAND = {
 	STAKE: 'stake',
 };
 
+// TODO: Remove LENGTH_LOCAL_ID and PATTERN_ANY_LOCAL_ID
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const LENGTH_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const PATTERN_ANY_TOKEN_ID = '*';

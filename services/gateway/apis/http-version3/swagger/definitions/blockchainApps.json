@@ -23,7 +23,7 @@
 			"status": {
 				"type": "string",
 				"example": "active",
-				"description": "Current status of the application"
+				"description": "Current status of the application."
 			},
 			"address": {
 				"type": "string",
