@@ -19,14 +19,14 @@ module.exports = {
 	schema: {
 		chainID: { type: 'string' },
 		name: { type: 'string' },
-		state: { type: 'string' },
+		status: { type: 'string' },
 		address: { type: 'string' },
 		lastUpdated: { type: 'string' },
 		lastCertificateHeight: { type: 'string' },
 	},
 	indexes: {
 		chainID: { type: 'key' },
-		state: { type: 'key' },
+		status: { type: 'key' },
 		name: { type: 'key' },
 	},
 	purge: {},

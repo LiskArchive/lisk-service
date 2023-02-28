@@ -17,11 +17,16 @@ const { HTTP } = require('lisk-service-framework');
 const dataService = require('../../../shared/dataService');
 const { isMainchain } = require('../../../shared/chain');
 const config = require('../../../config');
+const { LENGTH_CHAIN_ID } = require('../../../shared/constants');
 
 const resolveMainchainServiceURL = async () => {
+	if (config.endpoints.mainchainServiceUrl) return config.endpoints.mainchainServiceUrl;
+
 	const { chainID } = await dataService.getNetworkStatus();
+	const networkID = chainID.substring(0, 2);
+	const mainchainID = networkID.padEnd(LENGTH_CHAIN_ID, '0');
 	const [{ serviceURL } = {}] = config.networks.LISK
-		.filter(networkInfo => networkInfo.chainID === chainID);
+		.filter(networkInfo => networkInfo.chainID === mainchainID);
 	return serviceURL;
 };
 

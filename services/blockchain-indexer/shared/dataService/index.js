@@ -26,6 +26,7 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getEventsByHeight,
+	deleteEventsFromCache,
 } = require('./business');
 
 const {
@@ -80,6 +81,7 @@ const {
 const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
+	getChainAccount,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
@@ -133,6 +135,7 @@ module.exports = {
 	// Interoperability
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
+	getChainAccount,
 	reloadBlockchainAppsStats,
 
 	// Events
@@ -173,6 +176,7 @@ module.exports = {
 	normalizeTransaction,
 	getPosLockedRewards,
 	getEventsByHeight,
+	deleteEventsFromCache,
 
 	getAnnualInflation,
 	getDefaultRewardAtHeight,

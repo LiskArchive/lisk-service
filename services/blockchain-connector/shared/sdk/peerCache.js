@@ -13,8 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
-const actions = require('./endpoints');
+const {
+	Logger,
+	Signals,
+	Utils: { isObject },
+} = require('lisk-service-framework');
+const endpoints = require('./endpoints');
 const GeoService = require('../geolocation');
 
 const logger = Logger();
@@ -41,7 +45,11 @@ const get = (type = 'peers') => new Promise((resolve) => {
 });
 
 const refactorPeer = (orgPeer, state) => {
-	const { ipAddress, options: { height } = {}, ...peer } = orgPeer;
+	const { chainID, ipAddress, options: { height } = {}, ...peer } = orgPeer;
+	// TODO: Update implementation once SDK fixes issue: https://github.com/LiskHQ/lisk-sdk/issues/8173
+	peer.chainID = isObject(chainID)
+		? Buffer.from(chainID.data).toString('hex')
+		: chainID;
 	peer.state = state;
 	peer.height = height;
 	peer.ip = ipAddress;
@@ -58,11 +66,11 @@ const addLocation = async (ipaddress) => {
 };
 
 const getPeers = async () => {
-	const connectedPeers = await actions.getConnectedPeers();
+	const connectedPeers = await endpoints.getConnectedPeers();
 	connectedPeers.data = connectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
 
-	const disconnectedPeers = await actions.getDisconnectedPeers();
+	const disconnectedPeers = await endpoints.getDisconnectedPeers();
 	disconnectedPeers.data = disconnectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
 

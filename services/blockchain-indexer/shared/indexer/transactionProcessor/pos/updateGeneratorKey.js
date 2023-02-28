@@ -44,7 +44,7 @@ const getValidatorsTable = () => getTableInstance(
 const COMMAND_NAME = 'updateGeneratorKey';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const accountsTable = await getAccountsTable();
 	const validatorsTable = await getValidatorsTable();
 
@@ -65,7 +65,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const validatorsTable = await getValidatorsTable();
 
 	const validator = {
