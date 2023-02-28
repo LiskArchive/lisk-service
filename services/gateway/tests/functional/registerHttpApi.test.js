@@ -13,7 +13,44 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { mapParamWithType, transformParams, transformRequest, transformResponse } = require('../../shared/registerHttpApi');
+const {
+	mapParamWithType,
+	transformParams,
+	transformRequest,
+	transformResponse,
+	registerApi,
+	transformPath,
+} = require('../../shared/registerHttpApi');
+
+describe('Test transformPath method', () => {
+	it('should return converted string when called with a string having curly braces and `/` in beginning', async () => {
+		const response = transformPath('//url/{param1}/{param2}');
+		expect(response).toEqual('/url/:param1/:param2');
+	});
+
+	it('should return converted string when called with a string having curly braces', async () => {
+		const response = transformPath('url/{param1}/{param2}');
+		expect(response).toEqual('url/:param1/:param2');
+	});
+
+	it('should return original string when called with a string which does not have curly braces', async () => {
+		const response = transformPath('url/param1/param2');
+		expect(response).toEqual('url/param1/param2');
+	});
+
+	it('should return empty string when called with empty string', async () => {
+		const response = transformPath('');
+		expect(response).toEqual('');
+	});
+
+	it('should throw when called with null', async () => {
+		expect(() => transformPath(null)).toThrow();
+	});
+
+	it('should throw when called with undefined', async () => {
+		expect(() => transformPath(undefined)).toThrow();
+	});
+});
 
 describe('Test mapParamWithType method', () => {
 	const source = {
@@ -91,7 +128,7 @@ describe('Test transformParams method', () => {
 		});
 	});
 
-	it('should throw error when called null params', async () => {
+	it('should throw error when called with null params', async () => {
 		expect(() => transformParams(null, specs)).toThrow();
 	});
 
@@ -417,5 +454,129 @@ describe('Test transformResponse method', () => {
 	it('should return undefined null when called with undefined methodDef and data', async () => {
 		const response = await transformResponse(undefined, undefined);
 		expect(response).toEqual(undefined);
+	});
+});
+
+describe('Test transformResponse method', () => {
+	const apiNames = ['http-version3', 'http-exports'];
+	const config = {
+		whitelist: [],
+		aliases: {},
+	};
+	const registeredModuleNames = ['fee', 'interoperability', 'legacy', 'pos', 'random', 'token', 'validators'];
+	const expectedResponse = {
+		whitelist: [
+			'indexer.blocks.assets',
+			'indexer.blockchain.apps',
+			'app-registry.blockchain.apps.meta.list',
+			'app-registry.blockchain.apps.meta',
+			'indexer.blockchain.apps.statistics',
+			'app-registry.blockchain.apps.meta.tokens',
+			'indexer.blocks',
+			'indexer.events',
+			'fees.estimates',
+			'indexer.generators',
+			'indexer.index.status',
+			'connector.invokeEndpoint',
+			'market.prices',
+			'indexer.network.statistics',
+			'indexer.network.status',
+			'newsfeed.articles',
+			'indexer.peers',
+			'indexer.transactions.post',
+			'indexer.schemas',
+			'gateway.spec',
+			'indexer.transactions',
+			'indexer.transactions.dryrun',
+			'statistics.transactions.statistics',
+			'indexer.legacy',
+			'indexer.pos.rewards.claimable',
+			'indexer.pos.constants',
+			'indexer.pos.rewards.locked',
+			'indexer.pos.stakers',
+			'indexer.pos.stakes',
+			'indexer.pos.unlocks',
+			'indexer.pos.validators',
+			'indexer.token.account.exists',
+			'indexer.token.constants',
+			'indexer.tokens',
+			'indexer.tokens.summary',
+			'indexer.validator',
+			'indexer.validateBLSKey',
+			'export.transactions.csv',
+			'export.transactions.schedule',
+		],
+		aliases: {
+			'GET blocks/assets': 'indexer.blocks.assets',
+			'GET blockchain/apps': 'indexer.blockchain.apps',
+			'GET blockchain/apps/meta/list': 'app-registry.blockchain.apps.meta.list',
+			'GET blockchain/apps/meta': 'app-registry.blockchain.apps.meta',
+			'GET blockchain/apps/statistics': 'indexer.blockchain.apps.statistics',
+			'GET blockchain/apps/meta/tokens': 'app-registry.blockchain.apps.meta.tokens',
+			'GET blocks': 'indexer.blocks',
+			'GET events': 'indexer.events',
+			'GET fees': 'fees.estimates',
+			'GET generators': 'indexer.generators',
+			'GET index/status': 'indexer.index.status',
+			'POST invoke': 'connector.invokeEndpoint',
+			'GET market/prices': 'market.prices',
+			'GET network/statistics': 'indexer.network.statistics',
+			'GET network/status': 'indexer.network.status',
+			'GET newsfeed': 'newsfeed.articles',
+			'GET peers': 'indexer.peers',
+			'POST transactions': 'indexer.transactions.post',
+			'GET schemas': 'indexer.schemas',
+			'GET spec': 'gateway.spec',
+			'GET transactions': 'indexer.transactions',
+			'POST transactions/dryrun': 'indexer.transactions.dryrun',
+			'GET transactions/statistics': 'statistics.transactions.statistics',
+			'GET legacy': 'indexer.legacy',
+			'GET pos/rewards/claimable': 'indexer.pos.rewards.claimable',
+			'GET pos/constants': 'indexer.pos.constants',
+			'GET pos/rewards/locked': 'indexer.pos.rewards.locked',
+			'GET pos/stakers': 'indexer.pos.stakers',
+			'GET pos/stakes': 'indexer.pos.stakes',
+			'GET pos/unlocks': 'indexer.pos.unlocks',
+			'GET pos/validators': 'indexer.pos.validators',
+			'GET token/account/exists': 'indexer.token.account.exists',
+			'GET token/constants': 'indexer.token.constants',
+			'GET tokens': 'indexer.tokens',
+			'GET tokens/summary': 'indexer.tokens.summary',
+			'GET validator': 'indexer.validator',
+			'POST validator/validateBLSKey': 'indexer.validateBLSKey',
+			'GET export/download': 'export.transactions.csv',
+			'GET export/transactions': 'export.transactions.schedule',
+		},
+	};
+
+	it('should return correct api info when called with valid inputs', async () => {
+		const response = await registerApi(apiNames, config, registeredModuleNames);
+		expect(response).toEqual({
+			onBeforeCall: response.onBeforeCall,
+			onAfterCall: response.onAfterCall,
+			...expectedResponse,
+		});
+		expect(typeof response.onBeforeCall).toEqual('function');
+		expect(typeof response.onAfterCall).toEqual('function');
+	});
+
+	it('should throw when called with null apiNames or config or registeredModuleNames', async () => {
+		expect(() => registerApi(null, config, registeredModuleNames)).toThrow();
+		expect(() => registerApi(apiNames, null, registeredModuleNames)).toThrow();
+		expect(() => registerApi(apiNames, config, null)).toThrow();
+	});
+
+	it('should throw when called with null inputs', async () => {
+		expect(() => registerApi(null, null, null)).toThrow();
+	});
+
+	it('should throw when called with undefined apiNames or config or registeredModuleNames', async () => {
+		expect(() => registerApi(undefined, config, registeredModuleNames)).toThrow();
+		expect(() => registerApi(apiNames, undefined, registeredModuleNames)).toThrow();
+		expect(() => registerApi(apiNames, config, undefined)).toThrow();
+	});
+
+	it('should throw when called with undefined inputs', async () => {
+		expect(() => registerApi(undefined, undefined, undefined)).toThrow();
 	});
 });

@@ -32,10 +32,10 @@ const apiMeta = [];
 const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
 const dropOneSlashAtBeginning = str => str.replace(/^\//, '');
 const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
+const transformPath = url => curlyBracketsToColon(dropOneSlashAtBeginning(url));
 
 const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
-	const transformPath = url => curlyBracketsToColon(dropOneSlashAtBeginning(url));
 	// Populate allMethods from the js files under apis directory
 	if (typeof apiNames === 'string') apiNames = [apiNames];
 	apiNames.forEach(apiName => {
@@ -256,6 +256,7 @@ module.exports = {
 	registerApi,
 
 	// For testing
+	transformPath,
 	convertType,
 	mapParam,
 	mapParamWithType,
