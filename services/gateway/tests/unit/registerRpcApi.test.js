@@ -14,12 +14,61 @@
  *
  */
 const {
-	convertType,
-	mapParam,
-	getMethodName,
 	dropOneSlashAtBeginning,
 	curlyBracketsToColon,
-} = require('../../shared/registerHttpApi');
+	convertType,
+	mapParam,
+} = require('../../shared/registerRpcApi');
+
+describe('Test dropOneSlashAtBeginning method', () => {
+	it('should return string without first `/` when called with a string having `/` in beginning', async () => {
+		const response = dropOneSlashAtBeginning('//url//param');
+		expect(response).toEqual('/url//param');
+	});
+
+	it('should return passed string when called with a string which does not have `/` in beginning', async () => {
+		const response = dropOneSlashAtBeginning('url//param');
+		expect(response).toEqual('url//param');
+	});
+
+	it('should return empty string when called with empty string', async () => {
+		const response = dropOneSlashAtBeginning('');
+		expect(response).toEqual('');
+	});
+
+	it('should throw when called with null', async () => {
+		expect(() => dropOneSlashAtBeginning(null)).toThrow();
+	});
+
+	it('should throw when called with undefined', async () => {
+		expect(() => dropOneSlashAtBeginning(undefined)).toThrow();
+	});
+});
+
+describe('Test curlyBracketsToColon method', () => {
+	it('should converted string when called with a string having curly braces', async () => {
+		const response = curlyBracketsToColon('url/{param1}/{param2}');
+		expect(response).toEqual('url/:param1/:param2');
+	});
+
+	it('should original string when called with a string which does not have curly braces', async () => {
+		const response = curlyBracketsToColon('url/param1/param2');
+		expect(response).toEqual('url/param1/param2');
+	});
+
+	it('should empty string when called with empty string', async () => {
+		const response = curlyBracketsToColon('');
+		expect(response).toEqual('');
+	});
+
+	it('should throw when called with null', async () => {
+		expect(() => curlyBracketsToColon(null)).toThrow();
+	});
+
+	it('should throw when called with undefined', async () => {
+		expect(() => curlyBracketsToColon(undefined)).toThrow();
+	});
+});
 
 describe('Test convertType method', () => {
 	it('should return number when called to convert string to number', async () => {
@@ -107,80 +156,5 @@ describe('Test mapParam method', () => {
 
 		// Undefined
 		expect(() => mapParam(null, 'originalKey', 'mappingKey')).toThrow();
-	});
-});
-
-describe('Test getMethodName method', () => {
-	it('should return POST when called with httpMethod:POST', async () => {
-		const response = getMethodName({ httpMethod: 'POST' });
-		expect(response).toEqual('POST');
-	});
-
-	it('should return GET when called with httpMethod:GET', async () => {
-		const response = getMethodName({ httpMethod: 'GET' });
-		expect(response).toEqual('GET');
-	});
-
-	it('should return GET when called with when empty object', async () => {
-		const response = getMethodName({});
-		expect(response).toEqual('GET');
-	});
-
-	it('should throw when called with null', async () => {
-		expect(() => getMethodName(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => getMethodName(undefined)).toThrow();
-	});
-});
-
-describe('Test dropOneSlashAtBeginning method', () => {
-	it('should return string without first `/` when called with a string having `/` in beginning', async () => {
-		const response = dropOneSlashAtBeginning('//url//param');
-		expect(response).toEqual('/url//param');
-	});
-
-	it('should return passed string when called with a string which does not have `/` in beginning', async () => {
-		const response = dropOneSlashAtBeginning('url//param');
-		expect(response).toEqual('url//param');
-	});
-
-	it('should return empty string when called with empty string', async () => {
-		const response = dropOneSlashAtBeginning('');
-		expect(response).toEqual('');
-	});
-
-	it('should throw when called with null', async () => {
-		expect(() => dropOneSlashAtBeginning(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => dropOneSlashAtBeginning(undefined)).toThrow();
-	});
-});
-
-describe('Test curlyBracketsToColon method', () => {
-	it('should converted string when called with a string having curly braces', async () => {
-		const response = curlyBracketsToColon('url/{param1}/{param2}');
-		expect(response).toEqual('url/:param1/:param2');
-	});
-
-	it('should original string when called with a string which does not have curly braces', async () => {
-		const response = curlyBracketsToColon('url/param1/param2');
-		expect(response).toEqual('url/param1/param2');
-	});
-
-	it('should empty string when called with empty string', async () => {
-		const response = curlyBracketsToColon('');
-		expect(response).toEqual('');
-	});
-
-	it('should throw when called with null', async () => {
-		expect(() => curlyBracketsToColon(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => curlyBracketsToColon(undefined)).toThrow();
 	});
 });

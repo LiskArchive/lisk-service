@@ -28,14 +28,12 @@ const { validate } = require('./paramValidator');
 const logger = Logger();
 const apiMeta = [];
 
+const dropOneSlashAtBeginning = str => str.replace(/^\//, '');
+const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
+const transformPath = url => curlyBracketsToColon(dropOneSlashAtBeginning(url));
+
 const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
-	const transformPath = url => {
-		const dropSlash = str => str.replace(/^\//, '');
-		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
-
-		return curlyBracketsToColon(dropSlash(url));
-	};
 	if (typeof apiNames === 'string') apiNames = [apiNames];
 	apiNames.forEach(apiName => {
 		// Assign common endpoints
@@ -100,10 +98,12 @@ const typeMappings = {
 	string_number: (input) => Number(input),
 	number_string: (input) => String(input),
 	array_string: (input) => input.join(','),
+	string_boolean: (input) => String(input).toLowerCase() === 'true',
 };
 
-const convertType = (item, type) => {
-	const typeMatch = `${(typeof item)}_${type}`;
+const convertType = (item, toType) => {
+	const fromType = typeof item === 'object' && item.constructor.name === 'Array' ? 'array' : typeof item;
+	const typeMatch = `${fromType}_${toType}`;
 	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
 	return item;
 };
@@ -133,29 +133,29 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
+const transformRequest = (methodDef, params) => {
+	try {
+		const paramDef = methodDef.source.params;
+		const transformedParams = transformParams(params, paramDef);
+		return transformedParams;
+	} catch (e) { return params; }
+};
+
+const transformResponse = async (methodDef, data) => {
+	if (!methodDef) return data;
+	const transformedData = await mapper(data, methodDef.source.definition);
+	return {
+		...methodDef.envelope,
+		...transformedData,
+	};
+};
+
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const { aliases, whitelist, methodPaths } = configureApi(
 		apiNames,
 		config.path,
 		registeredModuleNames,
 	);
-
-	const transformRequest = (apiPath, params) => {
-		try {
-			const paramDef = methodPaths[apiPath].source.params;
-			const transformedParams = transformParams(params, paramDef);
-			return transformedParams;
-		} catch (e) { return params; }
-	};
-
-	const transformResponse = async (apiPath, data) => {
-		if (!methodPaths[apiPath]) return data;
-		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
-		return {
-			...methodPaths[apiPath].envelope,
-			...transformedData,
-		};
-	};
 
 	return {
 		events: {
@@ -193,7 +193,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
-					request.params = transformRequest(request.method, paramReport.valid);
+					request.params = transformRequest(methodPaths[request.method], paramReport.valid);
 				},
 
 				onAfterCall: async (ctx, socket, req, data) => {
@@ -202,11 +202,24 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 						if (data.status === 'SERVICE_UNAVAILABLE') throw new MoleculerClientError({ code: SERVICE_UNAVAILABLE[0], message: data.data.error });
 					}
 
-					return transformResponse(req.method, data);
+					return transformResponse(methodPaths[req.method], data);
 				},
 			},
 		},
 	};
 };
 
-module.exports = registerApi;
+module.exports = {
+	registerApi,
+
+	// For testing
+	transformPath,
+	dropOneSlashAtBeginning,
+	curlyBracketsToColon,
+	convertType,
+	mapParam,
+	mapParamWithType,
+	transformParams,
+	transformRequest,
+	transformResponse,
+};
