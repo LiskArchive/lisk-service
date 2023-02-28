@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { mapParamWithType, transformParams } = require('../../shared/registerHttpApi');
+const { mapParamWithType, transformParams, transformRequest, transformResponse } = require('../../shared/registerHttpApi');
 
 describe('Test mapParamWithType method', () => {
 	const source = {
@@ -112,5 +112,310 @@ describe('Test transformParams method', () => {
 
 	it('should throw error object when called with undefined specs', async () => {
 		expect(() => transformParams(params, undefined)).toThrow();
+	});
+});
+
+describe('Test transformRequest method', () => {
+	const params = {
+		tokenName: 'Lisk,Lis,Lik',
+		tokenIDParam: '0300000000000000,0400000000000000',
+		network: 'devnet,alphanet',
+		limit: 10,
+		offset: 0,
+		sort: 'chainName:asc',
+	};
+
+	const methodDef = {
+		source: {
+			params: {
+				chainName: '=,string',
+				chainID: '=,string',
+				tokenName: '=,string',
+				tokenID: 'tokenIDParam,string', // Should fetch value from tokenIDParam and map with tokenID key
+				network: '=,string',
+				search: '=,string',
+				offset: '=,number',
+				limit: '=,number',
+				sort: '=,string',
+			},
+		},
+	};
+
+	it('should return correctly mapped params when called with valid params and methodDef', async () => {
+		const response = transformRequest(methodDef, params);
+		expect(response).toEqual({
+			chainID: undefined,
+			chainName: undefined,
+			limit: 10,
+			network: 'devnet,alphanet',
+			offset: 0,
+			search: undefined,
+			sort: 'chainName:asc',
+			tokenID: '0300000000000000,0400000000000000',
+			tokenName: 'Lisk,Lis,Lik',
+		});
+	});
+
+	it('should return params when called with null methodDef', async () => {
+		const response = transformRequest(null, params);
+		expect(response).toEqual(params);
+	});
+
+	it('should return null when called with null params', async () => {
+		const response = transformRequest(methodDef, null);
+		expect(response).toEqual(null);
+	});
+
+	it('should return params when called with undefined methodDef', async () => {
+		const response = transformRequest(undefined, params);
+		expect(response).toEqual(params);
+	});
+
+	it('should return all keys with undefined value when called with undefined params', async () => {
+		const response = transformRequest(methodDef, undefined);
+		expect(response).toEqual({
+			chainID: undefined,
+			chainName: undefined,
+			limit: undefined,
+			network: undefined,
+			offset: undefined,
+			search: undefined,
+			sort: undefined,
+			tokenID: undefined,
+			tokenName: undefined,
+		});
+	});
+
+	it('should return null when called with null methodDef and params', async () => {
+		const response = transformRequest(null, null);
+		expect(response).toEqual(null);
+	});
+
+	it('should return undefined null when called with undefined methodDef and params', async () => {
+		const response = transformRequest(undefined, undefined);
+		expect(response).toEqual(undefined);
+	});
+});
+
+describe('Test transformResponse method', () => {
+	const methodDef = {
+		source: {
+			definition: {
+				data: [
+					'data',
+					{
+						chainID: '=,string',
+						chainName: '=,string',
+						tokenID: '=,string',
+						tokenName: '=,string',
+						networkType: 'network,string',
+						description: '=,string',
+						logo: {
+							png: '=,string',
+							svg: '=,string',
+						},
+						symbol: '=,string',
+						displayDenom: '=,string',
+						baseDenom: '=,string',
+						denomUnits: [
+							'denomUnits',
+							{
+								denom: '=,string',
+								decimals: '=,number',
+								aliases: '=',
+							},
+						],
+						customNumber: 'otherName,number', // Should use value of otherName key and covert to number
+					},
+				],
+				meta: {
+					count: '=,number',
+					offset: '=,number',
+					total: '=,number',
+				},
+				links: {},
+			},
+		},
+		data: [],
+		meta: {},
+	};
+
+	const data = {
+		data: [
+			{
+				tokenID: '0300000000000000',
+				tokenName: 'Lisk',
+				description: 'Default token for the entire Lisk ecosystem',
+				denomUnits: [
+					{
+						denom: 'beddows',
+						decimals: 0,
+						aliases: [
+							'Beddows',
+						],
+					},
+					{
+						denom: 'lsk',
+						decimals: 8,
+						aliases: [
+							'Lisk',
+						],
+					},
+				],
+				baseDenom: 'beddows',
+				displayDenom: 'lsk',
+				symbol: 'LSK',
+				logo: {
+					png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
+					svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
+				},
+				chainID: '03000000',
+				chainName: 'Lisk',
+				network: 'alphanet',
+				otherName: '123',
+			},
+			{
+				tokenID: '0400000000000000',
+				tokenName: 'Lisk',
+				description: 'Default token for the entire Lisk ecosystem',
+				denomUnits: [
+					{
+						denom: 'beddows',
+						decimals: 0,
+						aliases: [
+							'Beddows',
+						],
+					},
+					{
+						denom: 'lsk',
+						decimals: 8,
+						aliases: [
+							'Lisk',
+						],
+					},
+				],
+				baseDenom: 'beddows',
+				displayDenom: 'lsk',
+				symbol: 'LSK',
+				logo: {
+					png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
+					svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
+				},
+				chainID: '04000000',
+				chainName: 'Lisk',
+				network: 'devnet',
+				otherName: '456',
+			},
+		],
+		meta: {
+			count: 2,
+			offset: 0,
+			total: 5,
+		},
+	};
+
+	it('should return correctly mapped data when called with valid methodDef and data', async () => {
+		const response = await transformResponse(methodDef, data);
+		expect(response).toEqual({
+			data: [
+				{
+					chainID: '03000000',
+					chainName: 'Lisk',
+					tokenID: '0300000000000000',
+					tokenName: 'Lisk',
+					networkType: 'alphanet',
+					description: 'Default token for the entire Lisk ecosystem',
+					logo: {
+						png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
+						svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
+					},
+					symbol: 'LSK',
+					displayDenom: 'lsk',
+					baseDenom: 'beddows',
+					denomUnits: [
+						{
+							denom: 'beddows',
+							decimals: 0,
+							aliases: [
+								'Beddows',
+							],
+						},
+						{
+							denom: 'lsk',
+							decimals: 8,
+							aliases: [
+								'Lisk',
+							],
+						},
+					],
+					customNumber: 123,
+				},
+				{
+					chainID: '04000000',
+					chainName: 'Lisk',
+					tokenID: '0400000000000000',
+					tokenName: 'Lisk',
+					networkType: 'devnet',
+					description: 'Default token for the entire Lisk ecosystem',
+					logo: {
+						png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
+						svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
+					},
+					symbol: 'LSK',
+					displayDenom: 'lsk',
+					baseDenom: 'beddows',
+					denomUnits: [
+						{
+							denom: 'beddows',
+							decimals: 0,
+							aliases: [
+								'Beddows',
+							],
+						},
+						{
+							denom: 'lsk',
+							decimals: 8,
+							aliases: [
+								'Lisk',
+							],
+						},
+					],
+					customNumber: 456,
+				},
+			],
+			meta: {
+				count: 2,
+				offset: 0,
+				total: 5,
+			},
+		});
+	});
+
+	it('should return data when called with null methodDef', async () => {
+		const response = await transformResponse(null, data);
+		expect(response).toEqual(data);
+	});
+
+	it('should throw when called with null data', async () => {
+		expect(() => transformResponse(methodDef, null)).rejects.toThrow();
+	});
+
+	it('should return data when called with undefined methodDef', async () => {
+		const response = await transformResponse(undefined, data);
+		expect(response).toEqual(data);
+	});
+
+	it('should throw when called with undefined data', async () => {
+		expect(() => transformResponse(methodDef, undefined)).rejects.toThrow();
+	});
+
+	it('should return null when called with null methodDef and data', async () => {
+		const response = await transformResponse(null, null);
+		expect(response).toEqual(null);
+	});
+
+	it('should return undefined null when called with undefined methodDef and data', async () => {
+		const response = await transformResponse(undefined, undefined);
+		expect(response).toEqual(undefined);
 	});
 });

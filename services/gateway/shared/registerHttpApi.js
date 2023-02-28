@@ -110,6 +110,7 @@ const convertType = (item, toType) => {
 	return item;
 };
 
+// Returns an object with mappingKey as key
 const mapParam = (source, originalKey, mappingKey) => {
 	if (mappingKey) {
 		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
@@ -118,6 +119,7 @@ const mapParam = (source, originalKey, mappingKey) => {
 	return {};
 };
 
+// Returns an object with mappingKey as key and type-casted value
 const mapParamWithType = (source, originalSetup, mappingKey) => {
 	const [originalKey, type] = originalSetup.split(',');
 	const mapObject = mapParam(source, originalKey, mappingKey);
@@ -134,29 +136,29 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
+const transformRequest = (methodDef, params) => {
+	try {
+		const paramDef = methodDef.source.params;
+		const transformedParams = transformParams(params, paramDef);
+		return transformedParams;
+	} catch (e) { return params; }
+};
+
+const transformResponse = async (methodDef, data) => {
+	if (!methodDef) return data;
+	const transformedData = await mapper(data, methodDef.source.definition);
+	return {
+		...methodDef.envelope,
+		...transformedData,
+	};
+};
+
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const { aliases, whitelist, methodPaths } = configureApi(
 		apiNames,
 		config.path,
 		registeredModuleNames,
 	);
-
-	const transformRequest = (apiPath, params) => {
-		try {
-			const paramDef = methodPaths[apiPath].source.params;
-			const transformedParams = transformParams(params, paramDef);
-			return transformedParams;
-		} catch (e) { return params; }
-	};
-
-	const transformResponse = async (apiPath, data) => {
-		if (!methodPaths[apiPath]) return data;
-		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
-		return {
-			...methodPaths[apiPath].envelope,
-			...transformedData,
-		};
-	};
 
 	return {
 		...config,
@@ -206,7 +208,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 				throw new ValidationException('Request param validation error.');
 			}
 
-			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));
+			const params = transformRequest(methodPaths[routeAlias], dropEmptyProps(paramReport.valid));
 			req.$params = params;
 		},
 
@@ -244,8 +246,8 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 					};
 				}
 			}
-
-			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);
+			const apiPath = `${req.method.toUpperCase()} ${req.$alias.path}`;
+			return transformResponse(methodPaths[apiPath], data);
 		},
 	};
 };
@@ -261,4 +263,6 @@ module.exports = {
 	getMethodName,
 	dropOneSlashAtBeginning,
 	curlyBracketsToColon,
+	transformRequest,
+	transformResponse,
 };
