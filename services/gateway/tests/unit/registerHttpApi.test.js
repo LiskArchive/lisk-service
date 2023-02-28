@@ -67,7 +67,7 @@ describe('Test mapParam method', () => {
 		});
 	});
 
-	it('should return value of mapping key when originalKey is not `=`', async () => {
+	it('should return value of original key when originalKey is not `=`', async () => {
 		const response = mapParam(source, 'originalKey', 'mappingKey');
 		expect(response).toEqual({
 			key: 'mappingKey',
@@ -161,17 +161,17 @@ describe('Test dropOneSlashAtBeginning method', () => {
 });
 
 describe('Test curlyBracketsToColon method', () => {
-	it('should converted string when called with a string having curly braces', async () => {
+	it('should return converted string when called with a string having curly braces', async () => {
 		const response = curlyBracketsToColon('url/{param1}/{param2}');
 		expect(response).toEqual('url/:param1/:param2');
 	});
 
-	it('should original string when called with a string which does not have curly braces', async () => {
+	it('should return original string when called with a string which does not have curly braces', async () => {
 		const response = curlyBracketsToColon('url/param1/param2');
 		expect(response).toEqual('url/param1/param2');
 	});
 
-	it('should empty string when called with empty string', async () => {
+	it('should return empty string when called with empty string', async () => {
 		const response = curlyBracketsToColon('');
 		expect(response).toEqual('');
 	});

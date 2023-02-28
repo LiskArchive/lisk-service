@@ -87,7 +87,7 @@ describe('Test mapParamWithType method', () => {
 		expect(() => mapParamWithType(source, undefined, 'new_key')).toThrow();
 	});
 
-	it('should return undefined value when mappingKey is null or undefined', async () => {
+	it('should return empty object when mappingKey is null or undefined', async () => {
 		const originalSetup = 'key_number';
 		// Null
 		const response = mapParamWithType(source, originalSetup, null);
@@ -131,7 +131,7 @@ describe('Test transformParams method', () => {
 		expect(() => transformParams(null, specs)).toThrow();
 	});
 
-	it('should return mapped object when called with undefined params', async () => {
+	it('should return object of undefined values when called with undefined params', async () => {
 		const response = transformParams(undefined, specs);
 		expect(response).toEqual({
 			new_key_str: undefined,
