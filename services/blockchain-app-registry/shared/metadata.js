@@ -146,7 +146,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.isDefault !== false) {
 		const defaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: true },
-			['network', 'appDirName'],
+			['network', 'appDirName', 'isDefault'],
 		);
 		blockchainAppsMetadata.data = defaultApps;
 	}
@@ -154,7 +154,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.isDefault !== true && blockchainAppsMetadata.data.length < params.limit) {
 		const nonDefaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: false },
-			['network', 'appDirName'],
+			['network', 'appDirName', 'isDefault'],
 		);
 
 		blockchainAppsMetadata.data.push(...nonDefaultApps);
@@ -166,6 +166,7 @@ const getBlockchainAppsMetadata = async (params) => {
 			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
 			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
 			const chainMeta = JSON.parse(chainMetaString);
+			chainMeta.isDefault = appMetadata.isDefault;
 			return chainMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
