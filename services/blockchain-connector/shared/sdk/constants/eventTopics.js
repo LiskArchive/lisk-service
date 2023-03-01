@@ -114,13 +114,13 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 		[EVENT_NAME_RELAYER_FEE_PROCESSED]: ['defaultTopic', 'relayerAddress'],
 	},
 	[MODULE_NAME_INTEROPERABILITY]: {
-		[EVENT_NAME_INVALID_REGISTRATION_SIGNATURE]: ['chainID'],
-		[EVENT_NAME_CHAIN_ACCOUNT_UPDATED]: ['sendingChainID'],
-		[EVENT_NAME_CCM_SENT_SUCCESS]: ['sendingChainID', 'receivingChainID', 'sentCCMID'],
-		[EVENT_NAME_CCM_SENT_FAILED]: [],
-		[EVENT_NAME_CCM_PROCESSED]: ['sendingChainID', 'receivingChainID', 'ccmID'],
-		[EVENT_NAME_TERMINATED_STATE_CREATED]: ['chainID'],
-		[EVENT_NAME_TERMINATED_OUTBOX_CREATED]: ['chainID'],
+		[EVENT_NAME_INVALID_REGISTRATION_SIGNATURE]: ['transactionID', 'chainID'],
+		[EVENT_NAME_CHAIN_ACCOUNT_UPDATED]: ['transactionID', 'sendingChainID'],
+		[EVENT_NAME_CCM_SENT_SUCCESS]: ['transactionID', 'sendingChainID', 'receivingChainID', 'sentCCMID'],
+		[EVENT_NAME_CCM_SENT_FAILED]: ['transactionID'],
+		[EVENT_NAME_CCM_PROCESSED]: ['transactionID', 'sendingChainID', 'receivingChainID', 'ccmID'],
+		[EVENT_NAME_TERMINATED_STATE_CREATED]: ['transactionID', 'chainID'],
+		[EVENT_NAME_TERMINATED_OUTBOX_CREATED]: ['transactionID', 'chainID'],
 	},
 	[MODULE_NAME_POS]: {
 		[EVENT_NAME_VALIDATOR_REGISTERED]: ['transactionID', 'validatorAddress'],
@@ -137,8 +137,8 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 		[EVENT_NAME_REWARD_MINTED]: ['defaultTopic', 'generatorAddress'],
 	},
 	[MODULE_NAME_LEGACY]: {
-		[EVENT_NAME_ACCOUNT_RECLAIMED]: ['legacyAddress', 'newAddress'],
-		[EVENT_NAME_KEYS_REGISTERED]: ['validatorAddress', 'generatorKey', 'blsKey'],
+		[EVENT_NAME_ACCOUNT_RECLAIMED]: ['transactionID', 'legacyAddress', 'newAddress'],
+		[EVENT_NAME_KEYS_REGISTERED]: ['transactionID', 'validatorAddress', 'generatorKey', 'blsKey'],
 	},
 };
 

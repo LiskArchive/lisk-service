@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,20 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNumberOfGenesisAccounts, getGenesisAccounts } = require('../shared/sdk/genesisBlock');
+const {
+	getChainAccount,
+} = require('../shared/sdk');
+
+const regex = require('../shared/utils/regex');
 
 module.exports = [
 	{
-		name: 'getNumberOfGenesisAccounts',
-		controller: getNumberOfGenesisAccounts,
-		params: {},
-	},
-	{
-		name: 'getGenesisAccounts',
-		controller: async ({ limit, offset }) => getGenesisAccounts(limit, offset),
+		name: 'getChainAccount',
+		controller: async ({ chainID }) => getChainAccount(chainID),
 		params: {
-			limit: { optional: true, type: 'number', min: 1, max: 100, default: 100 },
-			offset: { optional: true, type: 'number', min: 0, default: 0 },
+			chainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
 		},
 	},
 ];

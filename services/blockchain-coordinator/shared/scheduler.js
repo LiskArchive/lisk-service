@@ -25,8 +25,6 @@ const logger = Logger();
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
-	// isGenesisAccountsIndexed,
-	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
@@ -92,13 +90,6 @@ const scheduleValidatorsIndexing = async (validators) => {
 	logger.info('Finished scheduling of validators indexing');
 };
 
-// const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
-// 	await Promise.all(accountAddressesToIndex
-// 		.map(async (address) => accountIndexQueue.add({ address })),
-// 	);
-// 	logger.info('Finished scheduling of genesis accounts indexing.');
-// };
-
 const initIndexingScheduler = async () => {
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
@@ -124,15 +115,6 @@ const initIndexingScheduler = async () => {
 	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
 		await scheduleBlocksIndexing(missingBlocksByHeight);
 	}
-
-	// Schedule genesis accounts indexing
-	// const isGenesisAccountsAlreadyIndexed = await isGenesisAccountsIndexed();
-	// if (!isGenesisAccountsAlreadyIndexed) {
-	// 	const genesisAccountAddresses = await getGenesisAccountAddresses();
-	// 	if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
-	// 		await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
-	// 	}
-	// }
 };
 
 const scheduleMissingBlocksIndexing = async () => {

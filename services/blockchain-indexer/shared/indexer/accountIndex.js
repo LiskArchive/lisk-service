@@ -13,13 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
 const Redis = require('ioredis');
 
 const {
 	Queue,
-	CacheRedis,
-	Logger,
 	MySQL: { getTableInstance },
 	Signals,
 } = require('lisk-service-framework');
@@ -29,10 +26,7 @@ const {
 	getAccountsByPublicKey2,
 } = require('../dataService');
 
-const { requestConnector } = require('../utils/request');
-
 const config = require('../../config');
-const keyValueTable = require('../database/mysqlKVStore');
 
 const redis = new Redis(config.endpoints.cache);
 
@@ -45,13 +39,6 @@ const getAccountIndex = () => getTableInstance(
 	accountsIndexSchema,
 	MYSQL_ENDPOINT,
 );
-
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
-
-// Key constants for the KV-store
-const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
-
-const logger = Logger();
 
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;
@@ -102,64 +89,6 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
-const getNumberOfGenesisAccounts = async () => requestConnector('getNumberOfGenesisAccounts');
-
-const getGenesisAccounts = async () => {
-	let genesisAccounts = [];
-	const PAGE_SIZE = 100;
-	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
-
-	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		const accounts = await requestConnector('getGenesisAccounts', { limit: PAGE_SIZE, offset: i * PAGE_SIZE });
-		genesisAccounts = genesisAccounts.concat(accounts);
-	}
-	return genesisAccounts;
-};
-
-const getGenesisAccountAddresses = async (includeLegacy = false) => {
-	const accounts = await getGenesisAccounts();
-	const filteredAccounts = accounts.filter(a => includeLegacy || a.address.length === 40);
-	const genesisAccountAddresses = filteredAccounts.map(account => account.address);
-	return genesisAccountAddresses;
-};
-
-const buildLegacyAccountCache = async () => {
-	// Cache the legacy account reclaim balance information
-	const genesisAccounts = await getGenesisAccounts();
-	const unregisteredAccounts = genesisAccounts.filter(a => a.address.length !== 40);
-
-	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
-	logger.info('Starting to cache legacy account reclaim balance information');
-	await BluebirdPromise.map(
-		unregisteredAccounts,
-		async account => {
-			const legacyAccountInfo = {
-				address: account.address,
-				balance: account.token.balance,
-			};
-			await legacyAccountCache.set(account.address, JSON.stringify(legacyAccountInfo));
-		},
-		{ concurrency: 1000 },
-	);
-	logger.info('Finished caching legacy account reclaim balance information');
-};
-
-const isGenesisAccountsIndexed = async () => {
-	const isIndexed = await keyValueTable.get(isGenesisAccountIndexingFinished);
-	if (!isIndexed) {
-		const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
-		const accountsTable = await getAccountIndex();
-		const count = await accountsTable.count();
-		if (count >= numOfGenesisAccounts) {
-			await keyValueTable.set(isGenesisAccountIndexingFinished, true);
-			return true;
-		}
-		return false;
-	}
-	return true;
-};
-
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
 const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
@@ -179,9 +108,6 @@ module.exports = {
 	indexAccountByAddress,
 	indexAccountWithData,
 	triggerAccountUpdates,
-	buildLegacyAccountCache,
-	isGenesisAccountsIndexed,
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
-	getGenesisAccountAddresses,
 };

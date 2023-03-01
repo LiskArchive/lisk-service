@@ -29,7 +29,7 @@ const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_u
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
 const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
 const NETWORK_CSV = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
-const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
+const APPLICATION_STATUS = /^\b(?:registered|active|terminated|,)+\b$/;
 const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const CHAIN_ID_CSV = /^\b[a-fA-F0-9,]{8,}\b$/;
@@ -57,7 +57,7 @@ module.exports = {
 	INTERVAL,
 	CHAINID_RANGE,
 	NETWORK_CSV,
-	APPLICATION_STATE,
+	APPLICATION_STATUS,
 	MODULE_COMMAND,
 	CHAIN_ID,
 	CHAIN_ID_CSV,

@@ -14,10 +14,12 @@
  *
  */
 const { getBlockchainApps } = require('./blockchainApps');
+const { getChainAccount } = require('./chainAccount');
 const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
 
 module.exports = {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
+	getChainAccount,
 	reloadBlockchainAppsStats,
 };

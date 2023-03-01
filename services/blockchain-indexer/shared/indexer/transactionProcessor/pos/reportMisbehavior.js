@@ -24,13 +24,13 @@ const logger = Logger();
 const COMMAND_NAME = 'reportMisbehavior';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.debug('Reloading validators cache on reportMisbehavior transaction.');
 	await reloadValidatorCache();
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.debug('Reloading validators cache on reversal of reportMisbehavior transaction.');
 	await reloadValidatorCache();
 };

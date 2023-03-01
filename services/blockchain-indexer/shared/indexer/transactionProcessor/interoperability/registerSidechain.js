@@ -26,6 +26,8 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { TRANSACTION_STATUS } = require('../../../constants');
+const { getChainStatus } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -36,14 +38,17 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'registerSidechain';
 
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const chainStatus = await getChainStatus(tx.params.chainID);
 
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.chainID,
 		name: tx.params.name,
-		state: '', // TODO: Set init state from events
+		status: chainStatus,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
@@ -53,7 +58,9 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Indexed sidechain (${tx.params.chainID}) registration information.`);
 };
 
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting sidechain (${tx.params.chainID}) registration information.`);

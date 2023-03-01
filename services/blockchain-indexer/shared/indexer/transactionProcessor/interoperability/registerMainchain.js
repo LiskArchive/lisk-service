@@ -26,6 +26,9 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { TRANSACTION_STATUS } = require('../../../constants');
+const { getChainAccount } = require('../../../dataService');
+const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -36,15 +39,23 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'registerMainchain';
 
-// TODO: Needs work
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const getChainStatus = async chainID => {
+	const { status: chainStatusInt } = await getChainAccount({ chainID });
+	const chainStatus = CHAIN_STATUS[chainStatusInt];
+	return chainStatus;
+};
+
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const chainStatus = await getChainStatus(tx.params.ownChainID);
 
 	logger.trace(`Indexing mainchain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.ownChainID,
 		name: tx.params.ownName,
-		state: '', // TODO: Set init state from events
+		status: chainStatus,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
@@ -55,7 +66,9 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting mainchain (${tx.params.chainID}) registration information.`);
@@ -67,4 +80,5 @@ module.exports = {
 	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
+	getChainStatus,
 };

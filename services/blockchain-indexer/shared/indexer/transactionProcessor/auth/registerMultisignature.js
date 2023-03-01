@@ -58,7 +58,7 @@ const resolveMultisignatureMemberships = (tx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const multisignatureTable = await getMultisignatureTable();
 
 	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
@@ -68,7 +68,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const multisignatureTable = await getMultisignatureTable();
 
 	const multisignatureInfo = resolveMultisignatureMemberships(tx);
