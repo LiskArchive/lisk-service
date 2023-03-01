@@ -51,6 +51,27 @@ describe('Test convertType method', () => {
 		expect(typeof response).toEqual('boolean');
 		expect(response).toEqual(true);
 	});
+
+	it('should return param type when called with null item', async () => {
+		expect(() => convertType(null, 'object')).toThrow();
+	});
+
+	it('should return param type when called with undefined item', async () => {
+		const response = convertType(undefined, 'string');
+		expect(response).toEqual(undefined);
+	});
+
+	it('should return passed item when called with null toType', async () => {
+		const item = 'str';
+		const response = convertType(item, 'string');
+		expect(response).toEqual(item);
+	});
+
+	it('should return passed item when called with undefined toType', async () => {
+		const item = 'str';
+		const response = convertType(item, 'string');
+		expect(response).toEqual(item);
+	});
 });
 
 describe('Test mapParam method', () => {
@@ -76,37 +97,30 @@ describe('Test mapParam method', () => {
 	});
 
 	it('should return empty object when mappingKey is null or undefined', async () => {
-		// Null
-		const response = mapParam(source, 'originalKey', null);
-		expect(response).toEqual({});
-
-		// Undefined
-		const response2 = mapParam(source, 'originalKey', null);
-		expect(response2).toEqual({});
+		[null, undefined].forEach(
+			mappingKey => {
+				const response = mapParam(source, 'originalKey', mappingKey);
+				expect(response).toEqual({});
+			},
+		);
 	});
 
 	it('should return undefined value when originalKey is null or undefined', async () => {
-		// Null
-		const response = mapParam(source, null, 'mappingKey');
-		expect(response).toEqual({
-			key: 'mappingKey',
-			value: undefined,
-		});
-
-		// Undefined
-		const response2 = mapParam(source, undefined, 'mappingKey');
-		expect(response2).toEqual({
-			key: 'mappingKey',
-			value: undefined,
-		});
+		[null, undefined].forEach(
+			originalKey => {
+				const response = mapParam(source, originalKey, 'mappingKey');
+				expect(response).toEqual({
+					key: 'mappingKey',
+					value: undefined,
+				});
+			},
+		);
 	});
 
 	it('should throw error when source is null or undefined', async () => {
-		// Null
-		expect(() => mapParam(null, 'originalKey', 'mappingKey')).toThrow();
-
-		// Undefined
-		expect(() => mapParam(null, 'originalKey', 'mappingKey')).toThrow();
+		[null, undefined].forEach(
+			sourceParam => expect(() => mapParam(sourceParam, 'originalKey', 'mappingKey')).toThrow(),
+		);
 	});
 });
 
@@ -126,12 +140,10 @@ describe('Test getMethodName method', () => {
 		expect(response).toEqual('GET');
 	});
 
-	it('should throw when called with null', async () => {
-		expect(() => getMethodName(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => getMethodName(undefined)).toThrow();
+	it('should throw when called with null or undefined', async () => {
+		[null, undefined].forEach(
+			param => expect(() => getMethodName(param)).toThrow(),
+		);
 	});
 });
 
@@ -151,12 +163,10 @@ describe('Test dropOneSlashAtBeginning method', () => {
 		expect(response).toEqual('');
 	});
 
-	it('should throw when called with null', async () => {
-		expect(() => dropOneSlashAtBeginning(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => dropOneSlashAtBeginning(undefined)).toThrow();
+	it('should throw when called with null or undefined', async () => {
+		[null, undefined].forEach(
+			param => expect(() => dropOneSlashAtBeginning(param)).toThrow(),
+		);
 	});
 });
 
@@ -176,11 +186,9 @@ describe('Test curlyBracketsToColon method', () => {
 		expect(response).toEqual('');
 	});
 
-	it('should throw when called with null', async () => {
-		expect(() => curlyBracketsToColon(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => curlyBracketsToColon(undefined)).toThrow();
+	it('should throw when called with null or undefined', async () => {
+		[null, undefined].forEach(
+			param => expect(() => curlyBracketsToColon(param)).toThrow(),
+		);
 	});
 });

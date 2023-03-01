@@ -42,12 +42,10 @@ describe('Test transformPath method', () => {
 		expect(response).toEqual('');
 	});
 
-	it('should throw when called with null', async () => {
-		expect(() => transformPath(null)).toThrow();
-	});
-
-	it('should throw when called with undefined', async () => {
-		expect(() => transformPath(undefined)).toThrow();
+	it('should throw when called with null or undefined ', async () => {
+		[null, undefined].forEach(
+			param => expect(() => transformPath(param)).toThrow(),
+		);
 	});
 });
 
@@ -67,35 +65,41 @@ describe('Test mapParamWithType method', () => {
 		});
 	});
 
-	it('should returns converted & mapped value when called with type string', async () => {
-		const originalSetup = 'key_number';
-		const response = mapParamWithType(source, `${originalSetup},string`, 'new_key');
+	it('should return converted & mapped value when called with type string', async () => {
+		const originalSetupKey = 'key_number';
+		const mappingKey = 'new_key';
+		const response = mapParamWithType(source, `${originalSetupKey},string`, mappingKey);
 		expect(response).toEqual({
-			key: 'new_key',
-			value: String(source[originalSetup]),
+			key: mappingKey,
+			value: String(source[originalSetupKey]),
 		});
 	});
 
 	it('should throw error when source is null or undefined', async () => {
 		const originalSetup = 'key_number';
-		expect(() => mapParamWithType(null, originalSetup, 'new_key')).toThrow();
-		expect(() => mapParamWithType(undefined, originalSetup, 'new_key')).toThrow();
+		const mappingKey = 'new_key';
+		[null, undefined].forEach(
+			sourceParam => expect(
+				() => mapParamWithType(sourceParam, originalSetup, mappingKey),
+			).toThrow(),
+		);
 	});
 
-	it('should return throw error when originalSetup is null or undefined', async () => {
-		expect(() => mapParamWithType(source, null, 'new_key')).toThrow();
-		expect(() => mapParamWithType(source, undefined, 'new_key')).toThrow();
+	it('should throw error when originalSetup is null or undefined', async () => {
+		const mappingKey = 'new_key';
+		[null, undefined].forEach(
+			originalSetup => expect(() => mapParamWithType(source, originalSetup, mappingKey)).toThrow(),
+		);
 	});
 
 	it('should return empty object when mappingKey is null or undefined', async () => {
 		const originalSetup = 'key_number';
-		// Null
-		const response = mapParamWithType(source, originalSetup, null);
-		expect(response).toEqual({});
-
-		// Undefined
-		const response2 = mapParamWithType(source, originalSetup, undefined);
-		expect(response2).toEqual({});
+		[null, undefined].forEach(
+			mappingKey => {
+				const response = mapParamWithType(source, originalSetup, mappingKey);
+				expect(response).toEqual({});
+			},
+		);
 	});
 });
 
@@ -142,12 +146,10 @@ describe('Test transformParams method', () => {
 		});
 	});
 
-	it('should throw error when called with null specs', async () => {
-		expect(() => transformParams(params, null)).toThrow();
-	});
-
-	it('should throw error object when called with undefined specs', async () => {
-		expect(() => transformParams(params, undefined)).toThrow();
+	it('should throw error when called with null or undefined specs', async () => {
+		[null, undefined].forEach(
+			specsParam => expect(() => transformParams(params, specsParam)).toThrow(),
+		);
 	});
 });
 
@@ -427,22 +429,19 @@ describe('Test transformResponse method', () => {
 		});
 	});
 
-	it('should return data when called with null methodDef', async () => {
-		const response = await transformResponse(null, data);
-		expect(response).toEqual(data);
+	it('should return data when called with null or undefined methodDef', async () => {
+		[null, undefined].forEach(
+			async methodDefParam => {
+				const response = await transformResponse(methodDefParam, data);
+				expect(response).toEqual(data);
+			},
+		);
 	});
 
-	it('should throw when called with null data', async () => {
-		expect(() => transformResponse(methodDef, null)).rejects.toThrow();
-	});
-
-	it('should return data when called with undefined methodDef', async () => {
-		const response = await transformResponse(undefined, data);
-		expect(response).toEqual(data);
-	});
-
-	it('should throw when called with undefined data', async () => {
-		expect(() => transformResponse(methodDef, undefined)).rejects.toThrow();
+	it('should throw when called with null or undefined data', async () => {
+		[null, undefined].forEach(
+			dataParam => expect(() => transformResponse(methodDef, dataParam)).rejects.toThrow(),
+		);
 	});
 
 	it('should return null when called with null methodDef and data', async () => {
