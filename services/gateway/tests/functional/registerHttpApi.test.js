@@ -21,6 +21,19 @@ const {
 	registerApi,
 	transformPath,
 } = require('../../shared/registerHttpApi');
+const {
+	expectedResponseForRegisterApi,
+	methodDefForTransformResponse,
+	dataForTransformResponse,
+	expectedResponseForTransformResponse,
+	paramsForTransformRequest,
+	methodDefForTransformRequest,
+	expectedResponseForTransformRequest,
+	sourceForMapParamWithType,
+	paramsForTransformParams,
+	specsForTransformParams,
+	expectedResponseForTransformParams,
+} = require('../constants/registerApi');
 
 describe('Test transformPath method', () => {
 	it('should return converted string when called with a string having curly braces and `/` in beginning', async () => {
@@ -51,11 +64,7 @@ describe('Test transformPath method', () => {
 });
 
 describe('Test mapParamWithType method', () => {
-	const source = {
-		key_str: 'val_str',
-		key_bool: true,
-		key_number: 123,
-	};
+	const source = sourceForMapParamWithType;
 
 	it('should return mapped value when called with valid params', async () => {
 		const originalSetup = 'key_number';
@@ -105,31 +114,12 @@ describe('Test mapParamWithType method', () => {
 });
 
 describe('Test transformParams method', () => {
-	const params = {
-		key_str: 'val_str',
-		key_bool: true,
-		key_number: 123,
-		obj: { key: 'value' },
-		arr: [1, 2, 3],
-	};
-
-	const specs = {
-		new_key_str: 'key_str, string',
-		key_bool: '=,boolean',
-		str_from_number: 'key_number,string',
-		obj: '=',
-		arr: '=',
-	};
+	const params = paramsForTransformParams;
+	const specs = specsForTransformParams;
 
 	it('should return mapped object when called with valid params', async () => {
 		const response = transformParams(params, specs);
-		expect(response).toEqual({
-			new_key_str: 'val_str',
-			key_bool: true,
-			str_from_number: '123',
-			obj: { key: 'value' },
-			arr: [1, 2, 3],
-		});
+		expect(response).toEqual(expectedResponseForTransformParams);
 	});
 
 	it('should throw error when called with null params', async () => {
@@ -155,44 +145,12 @@ describe('Test transformParams method', () => {
 });
 
 describe('Test transformRequest method', () => {
-	const params = {
-		tokenName: 'Lisk,Lis,Lik',
-		tokenIDParam: '0300000000000000,0400000000000000',
-		network: 'devnet,alphanet',
-		limit: 10,
-		offset: 0,
-		sort: 'chainName:asc',
-	};
-
-	const methodDef = {
-		source: {
-			params: {
-				chainName: '=,string',
-				chainID: '=,string',
-				tokenName: '=,string',
-				tokenID: 'tokenIDParam,string', // Should fetch value from tokenIDParam and map with tokenID key
-				network: '=,string',
-				search: '=,string',
-				offset: '=,number',
-				limit: '=,number',
-				sort: '=,string',
-			},
-		},
-	};
+	const params = paramsForTransformRequest;
+	const methodDef = methodDefForTransformRequest;
 
 	it('should return correctly mapped params when called with valid params and methodDef', async () => {
 		const response = transformRequest(methodDef, params);
-		expect(response).toEqual({
-			chainID: undefined,
-			chainName: undefined,
-			limit: 10,
-			network: 'devnet,alphanet',
-			offset: 0,
-			search: undefined,
-			sort: 'chainName:asc',
-			tokenID: '0300000000000000,0400000000000000',
-			tokenName: 'Lisk,Lis,Lik',
-		});
+		expect(response).toEqual(expectedResponseForTransformRequest);
 	});
 
 	it('should return params when called with null methodDef', async () => {
@@ -237,197 +195,12 @@ describe('Test transformRequest method', () => {
 });
 
 describe('Test transformResponse method', () => {
-	const methodDef = {
-		source: {
-			definition: {
-				data: [
-					'data',
-					{
-						chainID: '=,string',
-						chainName: '=,string',
-						tokenID: '=,string',
-						tokenName: '=,string',
-						networkType: 'network,string',
-						description: '=,string',
-						logo: {
-							png: '=,string',
-							svg: '=,string',
-						},
-						symbol: '=,string',
-						displayDenom: '=,string',
-						baseDenom: '=,string',
-						denomUnits: [
-							'denomUnits',
-							{
-								denom: '=,string',
-								decimals: '=,number',
-								aliases: '=',
-							},
-						],
-						customNumber: 'otherName,number', // Should use value of otherName key and covert to number
-					},
-				],
-				meta: {
-					count: '=,number',
-					offset: '=,number',
-					total: '=,number',
-				},
-				links: {},
-			},
-		},
-		data: [],
-		meta: {},
-	};
-
-	const data = {
-		data: [
-			{
-				tokenID: '0300000000000000',
-				tokenName: 'Lisk',
-				description: 'Default token for the entire Lisk ecosystem',
-				denomUnits: [
-					{
-						denom: 'beddows',
-						decimals: 0,
-						aliases: [
-							'Beddows',
-						],
-					},
-					{
-						denom: 'lsk',
-						decimals: 8,
-						aliases: [
-							'Lisk',
-						],
-					},
-				],
-				baseDenom: 'beddows',
-				displayDenom: 'lsk',
-				symbol: 'LSK',
-				logo: {
-					png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
-					svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
-				},
-				chainID: '03000000',
-				chainName: 'Lisk',
-				network: 'alphanet',
-				otherName: '123',
-			},
-			{
-				tokenID: '0400000000000000',
-				tokenName: 'Lisk',
-				description: 'Default token for the entire Lisk ecosystem',
-				denomUnits: [
-					{
-						denom: 'beddows',
-						decimals: 0,
-						aliases: [
-							'Beddows',
-						],
-					},
-					{
-						denom: 'lsk',
-						decimals: 8,
-						aliases: [
-							'Lisk',
-						],
-					},
-				],
-				baseDenom: 'beddows',
-				displayDenom: 'lsk',
-				symbol: 'LSK',
-				logo: {
-					png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
-					svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
-				},
-				chainID: '04000000',
-				chainName: 'Lisk',
-				network: 'devnet',
-				otherName: '456',
-			},
-		],
-		meta: {
-			count: 2,
-			offset: 0,
-			total: 5,
-		},
-	};
+	const methodDef = methodDefForTransformResponse;
+	const data = dataForTransformResponse;
 
 	it('should return correctly mapped data when called with valid methodDef and data', async () => {
 		const response = await transformResponse(methodDef, data);
-		expect(response).toEqual({
-			data: [
-				{
-					chainID: '03000000',
-					chainName: 'Lisk',
-					tokenID: '0300000000000000',
-					tokenName: 'Lisk',
-					networkType: 'alphanet',
-					description: 'Default token for the entire Lisk ecosystem',
-					logo: {
-						png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
-						svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
-					},
-					symbol: 'LSK',
-					displayDenom: 'lsk',
-					baseDenom: 'beddows',
-					denomUnits: [
-						{
-							denom: 'beddows',
-							decimals: 0,
-							aliases: [
-								'Beddows',
-							],
-						},
-						{
-							denom: 'lsk',
-							decimals: 8,
-							aliases: [
-								'Lisk',
-							],
-						},
-					],
-					customNumber: 123,
-				},
-				{
-					chainID: '04000000',
-					chainName: 'Lisk',
-					tokenID: '0400000000000000',
-					tokenName: 'Lisk',
-					networkType: 'devnet',
-					description: 'Default token for the entire Lisk ecosystem',
-					logo: {
-						png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
-						svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
-					},
-					symbol: 'LSK',
-					displayDenom: 'lsk',
-					baseDenom: 'beddows',
-					denomUnits: [
-						{
-							denom: 'beddows',
-							decimals: 0,
-							aliases: [
-								'Beddows',
-							],
-						},
-						{
-							denom: 'lsk',
-							decimals: 8,
-							aliases: [
-								'Lisk',
-							],
-						},
-					],
-					customNumber: 456,
-				},
-			],
-			meta: {
-				count: 2,
-				offset: 0,
-				total: 5,
-			},
-		});
+		expect(response).toEqual(expectedResponseForTransformResponse);
 	});
 
 	it('should return data when called with null or undefined methodDef', async () => {
@@ -463,97 +236,13 @@ describe('Test registerApi method', () => {
 		aliases: {},
 	};
 	const registeredModuleNames = ['fee', 'interoperability', 'legacy', 'pos', 'random', 'token', 'validators'];
-	const expectedResponse = {
-		whitelist: [
-			'indexer.blocks.assets',
-			'indexer.blockchain.apps',
-			'app-registry.blockchain.apps.meta.list',
-			'app-registry.blockchain.apps.meta',
-			'indexer.blockchain.apps.statistics',
-			'app-registry.blockchain.apps.meta.tokens',
-			'indexer.blocks',
-			'indexer.events',
-			'fees.estimates',
-			'indexer.generators',
-			'indexer.index.status',
-			'connector.invokeEndpoint',
-			'market.prices',
-			'indexer.network.statistics',
-			'indexer.network.status',
-			'newsfeed.articles',
-			'indexer.peers',
-			'indexer.transactions.post',
-			'indexer.schemas',
-			'gateway.spec',
-			'indexer.transactions',
-			'indexer.transactions.dryrun',
-			'statistics.transactions.statistics',
-			'indexer.legacy',
-			'indexer.pos.rewards.claimable',
-			'indexer.pos.constants',
-			'indexer.pos.rewards.locked',
-			'indexer.pos.stakers',
-			'indexer.pos.stakes',
-			'indexer.pos.unlocks',
-			'indexer.pos.validators',
-			'indexer.token.account.exists',
-			'indexer.token.constants',
-			'indexer.tokens',
-			'indexer.tokens.summary',
-			'indexer.validator',
-			'indexer.validateBLSKey',
-			'export.transactions.csv',
-			'export.transactions.schedule',
-		],
-		aliases: {
-			'GET blocks/assets': 'indexer.blocks.assets',
-			'GET blockchain/apps': 'indexer.blockchain.apps',
-			'GET blockchain/apps/meta/list': 'app-registry.blockchain.apps.meta.list',
-			'GET blockchain/apps/meta': 'app-registry.blockchain.apps.meta',
-			'GET blockchain/apps/statistics': 'indexer.blockchain.apps.statistics',
-			'GET blockchain/apps/meta/tokens': 'app-registry.blockchain.apps.meta.tokens',
-			'GET blocks': 'indexer.blocks',
-			'GET events': 'indexer.events',
-			'GET fees': 'fees.estimates',
-			'GET generators': 'indexer.generators',
-			'GET index/status': 'indexer.index.status',
-			'POST invoke': 'connector.invokeEndpoint',
-			'GET market/prices': 'market.prices',
-			'GET network/statistics': 'indexer.network.statistics',
-			'GET network/status': 'indexer.network.status',
-			'GET newsfeed': 'newsfeed.articles',
-			'GET peers': 'indexer.peers',
-			'POST transactions': 'indexer.transactions.post',
-			'GET schemas': 'indexer.schemas',
-			'GET spec': 'gateway.spec',
-			'GET transactions': 'indexer.transactions',
-			'POST transactions/dryrun': 'indexer.transactions.dryrun',
-			'GET transactions/statistics': 'statistics.transactions.statistics',
-			'GET legacy': 'indexer.legacy',
-			'GET pos/rewards/claimable': 'indexer.pos.rewards.claimable',
-			'GET pos/constants': 'indexer.pos.constants',
-			'GET pos/rewards/locked': 'indexer.pos.rewards.locked',
-			'GET pos/stakers': 'indexer.pos.stakers',
-			'GET pos/stakes': 'indexer.pos.stakes',
-			'GET pos/unlocks': 'indexer.pos.unlocks',
-			'GET pos/validators': 'indexer.pos.validators',
-			'GET token/account/exists': 'indexer.token.account.exists',
-			'GET token/constants': 'indexer.token.constants',
-			'GET tokens': 'indexer.tokens',
-			'GET tokens/summary': 'indexer.tokens.summary',
-			'GET validator': 'indexer.validator',
-			'POST validator/validateBLSKey': 'indexer.validateBLSKey',
-			'GET export/download': 'export.transactions.csv',
-			'GET export/transactions': 'export.transactions.schedule',
-		},
-	};
 
 	it('should return correct api info when called with valid inputs', async () => {
 		const response = await registerApi(apiNames, config, registeredModuleNames);
 		expect(response).toEqual({
 			onBeforeCall: response.onBeforeCall,
 			onAfterCall: response.onAfterCall,
-			...expectedResponse,
+			...expectedResponseForRegisterApi,
 		});
 		expect(typeof response.onBeforeCall).toEqual('function');
 		expect(typeof response.onAfterCall).toEqual('function');

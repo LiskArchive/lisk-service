@@ -20,6 +20,7 @@ const {
 	dropOneSlashAtBeginning,
 	curlyBracketsToColon,
 } = require('../../shared/registerHttpApi');
+const { sourceForMapParam } = require('../constants/registerApi');
 
 describe('Test convertType method', () => {
 	it('should return number when called to convert string to number', async () => {
@@ -75,10 +76,7 @@ describe('Test convertType method', () => {
 });
 
 describe('Test mapParam method', () => {
-	const source = {
-		originalKey: 'originalValue',
-		mappingKey: 'mappingValue',
-	};
+	const source = sourceForMapParam;
 
 	it('should return value of mapping key when originalKey is `=`', async () => {
 		const response = mapParam(source, '=', 'mappingKey');
