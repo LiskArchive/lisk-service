@@ -66,6 +66,13 @@ const getBlocks = async (params = {}) => {
 	};
 
 	const response = await getBlocksFromServer(params);
+
+	// Remove assets from block
+	response.data = response.data.map(block => {
+		const { assets, ...remBlock } = block;
+		return remBlock;
+	});
+
 	if (response.data) blocksResponse.data = response.data;
 	if (response.meta) blocksResponse.meta = response.meta;
 

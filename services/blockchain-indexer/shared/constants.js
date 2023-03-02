@@ -17,10 +17,12 @@ const { requestConnector } = require('./utils/request');
 
 let genesisConfig;
 let genesisHeight;
+let genesisBlockUrl;
 let moduleCommands;
 let registeredModules;
 let systemMetadata;
 let finalizedHeight;
+let chainID;
 
 const updateFinalizedHeight = async () => {
 	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
@@ -39,6 +41,21 @@ const getGenesisHeight = async () => {
 		genesisHeight = await requestConnector('getGenesisHeight');
 	}
 	return genesisHeight;
+};
+
+const getGenesisBlockUrl = async () => {
+	if (!genesisBlockUrl) {
+		genesisBlockUrl = await requestConnector('getGenesisBlockUrl');
+	}
+	return genesisBlockUrl;
+};
+
+const getChainID = async () => {
+	if (!chainID) {
+		const networkStatus = await requestConnector('getNetworkStatus');
+		chainID = networkStatus.chainID;
+	}
+	return chainID;
 };
 
 const getCurrentHeight = async () => {
@@ -84,6 +101,12 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
+const getBlockAssetDataSchemaByModule = async (moduleName) => {
+	const metadata = await getSystemMetadata();
+	const module = metadata.modules.find(metaData => metaData.name === moduleName);
+	return module.assets[0].data;
+};
+
 const MODULE = {
 	POS: 'pos',
 	AUTH: 'auth',
@@ -120,10 +143,13 @@ module.exports = {
 	getCurrentHeight,
 	getGenesisConfig,
 	getGenesisHeight,
+	getGenesisBlockUrl,
+	getChainID,
 	getAvailableModuleCommands,
 	resolveModuleCommands,
 	getRegisteredModules,
 	getSystemMetadata,
+	getBlockAssetDataSchemaByModule,
 
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,

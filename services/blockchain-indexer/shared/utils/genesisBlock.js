@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,26 +13,33 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Logger,
+} = require('lisk-service-framework');
+
+const { codec } = require('@liskhq/lisk-codec');
+
+const BluebirdPromise = require('bluebird');
+
 const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
 
-const { Logger } = require('lisk-service-framework');
+const Bluebird = require('bluebird');
+const { exists, mkdir, extractTarBall, rm } = require('./file');
+const {
+	getGenesisBlockUrl,
+	getChainID,
+	getBlockAssetDataSchemaByModule,
+} = require('../constants');
+const { downloadFile, verifyFileChecksum } = require('./download');
+const { parseToJSONCompatObj } = require('./parser');
 
-const { getNodeInfo } = require('./endpoints_1');
-const { exists, mkdir, rm, extractTarBall } = require('../utils/fs');
-const { downloadFile, verifyFileChecksum } = require('../utils/download');
-
-const config = require('../../config');
-
-const logger = Logger();
-
-let readStream;
-let genesisBlockUrl;
-let genesisBlockFilePath;
 let genesisBlock = { header: {} };
 
+const logger = Logger();
 const parseStream = json.createParseStream();
+let _genesisBlockFilePath;
 
 const setGenesisBlock = (block) => genesisBlock = block;
 
@@ -40,50 +47,18 @@ const getGenesisBlock = () => genesisBlock;
 
 const getGenesisBlockId = () => genesisBlock.header.id;
 
-const loadConfig = async () => {
-	const nodeInfo = await getNodeInfo();
-	const { chainID } = nodeInfo;
-
-	if (config.genesisBlockUrl !== config.constants.GENESIS_BLOCK_URL_DEFAULT) {
-		genesisBlockUrl = config.genesisBlockUrl;
-		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
-
-		genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
-		logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
-	} else {
-		// Check if current node is running Lisk Core
-		const [networkConfig] = config.networks.LISK.filter(c => chainID === c.chainID);
-		if (networkConfig) {
-			logger.info(`Found config for ${networkConfig.name} (${chainID})`);
-
-			genesisBlockUrl = networkConfig.genesisBlockUrl;
-			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
-
-			genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
-			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
-		} else {
-			logger.info(`Network is neither defined in the config, nor in the environment variable (${chainID})`);
-			return;
-		}
+const getGenesisBlockFilePath = async () => {
+	if (!_genesisBlockFilePath) {
+		const chainID = await getChainID();
+		_genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
 	}
-
-	if (genesisBlockUrl) {
-		// If file exists, already create a read stream
-		if (await exists(genesisBlockFilePath)) {
-			readStream = fs.createReadStream(genesisBlockFilePath);
-		}
-	}
-};
-
-const getGenesisBlockUrl = async () => {
-	if (!genesisBlockUrl) {
-		await loadConfig();
-	}
-	return genesisBlockUrl;
+	return _genesisBlockFilePath;
 };
 
 // eslint-disable-next-line consistent-return
 const downloadAndValidateGenesisBlock = async (retries = 2) => {
+	const genesisBlockFilePath = await getGenesisBlockFilePath();
+	const genesisBlockUrl = await getGenesisBlockUrl();
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	const genesisFileName = genesisBlockUrl.substring(genesisBlockUrl.lastIndexOf('/') + 1);
 	const genesisFilePath = `${directoryPath}/${genesisFileName}`;
@@ -123,27 +98,66 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 	process.exit(1);
 };
 
+const formatGenesisBlock = async (block) => {
+	const blockHeader = block.header;
+
+	const blockAssets = await BluebirdPromise.map(
+		block.assets,
+		async (asset) => {
+			const assetModule = asset.module;
+			const blockAssetDataSchema = await getBlockAssetDataSchemaByModule(assetModule);
+			const formattedAssetData = blockAssetDataSchema
+				? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+				: asset.data;
+
+			if (!blockAssetDataSchema) {
+				// TODO: Remove this after all asset schemas are exposed
+				console.error(`Block asset schema missing for module ${assetModule}.`);
+				logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+			}
+
+			const formattedBlockAsset = {
+				module: assetModule,
+				data: formattedAssetData,
+			};
+			return formattedBlockAsset;
+		},
+		{ concurrency: block.assets.length },
+	);
+
+	// Genesis block does not have any transactions
+	const blockTransactions = [];
+
+	const formattedBlock = {
+		header: blockHeader,
+		assets: blockAssets,
+		transactions: blockTransactions,
+	};
+	return parseToJSONCompatObj(formattedBlock);
+};
+
 const getGenesisBlockFromFS = async () => {
-	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
+	const genesisBlockFilePath = await getGenesisBlockFilePath();
+
 	if (!getGenesisBlockId()) {
 		if (!(await exists(genesisBlockFilePath))) {
 			await downloadAndValidateGenesisBlock();
-			readStream = fs.createReadStream(genesisBlockFilePath);
 		}
+		const readStream = fs.createReadStream(genesisBlockFilePath);
 
 		const block = await new Promise((resolve, reject) => {
 			readStream.pipe(parseStream.on('data', (data) => resolve(data)));
 			parseStream.on('error', (err) => reject(err));
 		});
 
-		if (!getGenesisBlockId()) setGenesisBlock(block);
+		const formattedBlock = await formatGenesisBlock(block);
+
+		if (!getGenesisBlockId()) setGenesisBlock(formattedBlock);
 	}
 
 	return getGenesisBlock();
 };
 
 module.exports = {
-	getGenesisBlockId,
 	getGenesisBlockFromFS,
-	getGenesisBlockUrl,
 };
