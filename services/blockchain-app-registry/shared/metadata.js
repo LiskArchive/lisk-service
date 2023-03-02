@@ -24,12 +24,15 @@ const {
 	LENGTH_CHAIN_ID,
 } = require('./constants');
 const { read } = require('./utils/fsUtils');
+const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const DEFAULT_STATUS = 'unregistered';
 
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema.tableName,
@@ -167,6 +170,8 @@ const getBlockchainAppsMetadata = async (params) => {
 			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
 			const chainMeta = JSON.parse(chainMetaString);
 			chainMeta.isDefault = appMetadata.isDefault;
+			const [blockchainApp] = (await requestIndexer('blockchain.apps', { name: chainMeta.chainName })).data;
+			chainMeta.status = blockchainApp ? blockchainApp.status : DEFAULT_STATUS;
 			return chainMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
