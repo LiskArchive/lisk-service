@@ -19,7 +19,16 @@ const KV_STORE_KEY = {
 	COMMIT_HASH_UNTIL_LAST_SYNC: 'commitHashUntilLastSync',
 };
 
+const KNOWN_LISK_NETWORKS = ['00000000', '01000000', '02000000', '03000000', '04000000'];
+
+const APP_STATUS = {
+	DEFAULT: 'unregistered',
+	ACTIVE: 'active',
+};
+
 module.exports = {
 	LENGTH_CHAIN_ID,
 	KV_STORE_KEY,
+	KNOWN_LISK_NETWORKS,
+	APP_STATUS,
 };

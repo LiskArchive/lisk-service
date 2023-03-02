@@ -22,6 +22,8 @@ const {
 
 const {
 	LENGTH_CHAIN_ID,
+	KNOWN_LISK_NETWORKS,
+	APP_STATUS,
 } = require('./constants');
 const { read } = require('./utils/fsUtils');
 const { requestIndexer } = require('./utils/request');
@@ -31,8 +33,6 @@ const applicationMetadataIndexSchema = require('./database/schema/application_me
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-
-const DEFAULT_STATUS = 'unregistered';
 
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema.tableName,
@@ -170,8 +170,12 @@ const getBlockchainAppsMetadata = async (params) => {
 			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
 			const chainMeta = JSON.parse(chainMetaString);
 			chainMeta.isDefault = appMetadata.isDefault;
+
 			const [blockchainApp] = (await requestIndexer('blockchain.apps', { name: chainMeta.chainName })).data;
-			chainMeta.status = blockchainApp ? blockchainApp.status : DEFAULT_STATUS;
+			chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
+			if (KNOWN_LISK_NETWORKS.includes(chainMeta.chainID)) {
+				chainMeta.status = APP_STATUS.ACTIVE;
+			}
 			return chainMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
