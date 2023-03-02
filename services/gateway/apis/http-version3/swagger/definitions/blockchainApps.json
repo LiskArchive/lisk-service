@@ -163,7 +163,8 @@
 			"logo",
 			"backgroundColor",
 			"serviceURLs",
-			"explorers"
+			"explorers",
+			"isDefault"
 		],
 		"properties": {
 			"chainName": {

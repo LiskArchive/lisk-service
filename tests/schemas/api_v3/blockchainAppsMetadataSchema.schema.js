@@ -40,7 +40,7 @@ const blockchainAppMetadataSchema = {
 	chainName: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.string().required(),
 	networkType: Joi.string().pattern(regex.NETWORK).required(),
-	isDefault: Joi.boolean().optional(),
+	isDefault: Joi.boolean().required(),
 	title: Joi.string().optional(),
 	description: Joi.string().optional(),
 	genesisURL: Joi.string().required(),
