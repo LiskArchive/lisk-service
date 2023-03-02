@@ -25,7 +25,6 @@ const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
 
-const Bluebird = require('bluebird');
 const { exists, mkdir, extractTarBall, rm } = require('./file');
 const {
 	getGenesisBlockUrl,
