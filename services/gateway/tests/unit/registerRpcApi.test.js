@@ -37,7 +37,7 @@ describe('Test dropOneSlashAtBeginning method', () => {
 		expect(response).toEqual('');
 	});
 
-	it('should throw when called with null or undefined', async () => {
+	it('should throw error when called with null or undefined', async () => {
 		[null, undefined].forEach(
 			param => expect(() => dropOneSlashAtBeginning(param)).toThrow(),
 		);
@@ -60,7 +60,7 @@ describe('Test curlyBracketsToColon method', () => {
 		expect(response).toEqual('');
 	});
 
-	it('should throw when called with null or undefined', async () => {
+	it('should throw error when called with null or undefined', async () => {
 		[null, undefined].forEach(
 			param => expect(() => curlyBracketsToColon(param)).toThrow(),
 		);
@@ -98,7 +98,7 @@ describe('Test convertType method', () => {
 		expect(response).toEqual(true);
 	});
 
-	it('should return param type when called with null item', async () => {
+	it('should throw error when called with null item', async () => {
 		expect(() => convertType(null, 'object')).toThrow();
 	});
 
@@ -109,13 +109,13 @@ describe('Test convertType method', () => {
 
 	it('should return passed item when called with null toType', async () => {
 		const item = 'str';
-		const response = convertType(item, 'string');
+		const response = convertType(item, null);
 		expect(response).toEqual(item);
 	});
 
 	it('should return passed item when called with undefined toType', async () => {
 		const item = 'str';
-		const response = convertType(item, 'string');
+		const response = convertType(item, undefined);
 		expect(response).toEqual(item);
 	});
 });

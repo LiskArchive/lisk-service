@@ -56,7 +56,7 @@ describe('Test transformPath method', () => {
 		expect(response).toEqual('');
 	});
 
-	it('should throw when called with null or undefined ', async () => {
+	it('should throw error when called with null or undefined ', async () => {
 		[null, undefined].forEach(
 			param => expect(() => transformPath(param)).toThrow(),
 		);
@@ -68,9 +68,10 @@ describe('Test mapParamWithType method', () => {
 
 	it('should return mapped value when called with valid params', async () => {
 		const originalSetup = 'key_number';
-		const response = mapParamWithType(source, originalSetup, 'new_key');
+		const mappingKey = 'new_key';
+		const response = mapParamWithType(source, originalSetup, mappingKey);
 		expect(response).toEqual({
-			key: 'new_key',
+			key: mappingKey,
 			value: source[originalSetup],
 		});
 	});
@@ -158,14 +159,14 @@ describe('Test transformRequest method', () => {
 		expect(response).toEqual(params);
 	});
 
-	it('should return null when called with null params', async () => {
-		const response = transformRequest(methodDef, null);
-		expect(response).toEqual(null);
-	});
-
 	it('should return params when called with undefined methodDef', async () => {
 		const response = transformRequest(undefined, params);
 		expect(response).toEqual(params);
+	});
+
+	it('should return null when called with null params', async () => {
+		const response = transformRequest(methodDef, null);
+		expect(response).toEqual(null);
 	});
 
 	it('should return all keys with undefined value when called with undefined params', async () => {
@@ -212,7 +213,7 @@ describe('Test transformResponse method', () => {
 		);
 	});
 
-	it('should throw when called with null or undefined data', async () => {
+	it('should throw error when called with null or undefined data', async () => {
 		[null, undefined].forEach(
 			dataParam => expect(() => transformResponse(methodDef, dataParam)).rejects.toThrow(),
 		);
@@ -248,23 +249,23 @@ describe('Test registerApi method', () => {
 		expect(typeof response.onAfterCall).toEqual('function');
 	});
 
-	it('should throw when called with null apiNames or config or registeredModuleNames', async () => {
+	it('should throw error when called with null apiNames or config or registeredModuleNames', async () => {
 		expect(() => registerApi(null, config, registeredModuleNames)).toThrow();
 		expect(() => registerApi(apiNames, null, registeredModuleNames)).toThrow();
 		expect(() => registerApi(apiNames, config, null)).toThrow();
 	});
 
-	it('should throw when called with null inputs', async () => {
+	it('should throw error when called with null inputs', async () => {
 		expect(() => registerApi(null, null, null)).toThrow();
 	});
 
-	it('should throw when called with undefined apiNames or config or registeredModuleNames', async () => {
+	it('should throw error when called with undefined apiNames or config or registeredModuleNames', async () => {
 		expect(() => registerApi(undefined, config, registeredModuleNames)).toThrow();
 		expect(() => registerApi(apiNames, undefined, registeredModuleNames)).toThrow();
 		expect(() => registerApi(apiNames, config, undefined)).toThrow();
 	});
 
-	it('should throw when called with undefined inputs', async () => {
+	it('should throw error when called with undefined inputs', async () => {
 		expect(() => registerApi(undefined, undefined, undefined)).toThrow();
 	});
 });
