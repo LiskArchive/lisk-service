@@ -26,6 +26,12 @@ const getBlocks = async params => {
 	try {
 		const response = await dataService.getBlocks(params);
 
+		// Remove assets from block
+		response.data = response.data.map(block => {
+			const { assets, ...remBlock } = block;
+			return remBlock;
+		});
+
 		return {
 			data: response.data,
 			meta: response.meta,
