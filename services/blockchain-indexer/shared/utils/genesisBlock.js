@@ -157,6 +157,14 @@ const getGenesisBlockFromFS = async () => {
 	return getGenesisBlock();
 };
 
+const loadAndGetGenesisBlockId = async () => {
+	if (!getGenesisBlockId()) {
+		await getGenesisBlockFromFS();
+	}
+	return getGenesisBlockId();
+};
+
 module.exports = {
 	getGenesisBlockFromFS,
+	loadAndGetGenesisBlockId,
 };

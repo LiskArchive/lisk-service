@@ -37,7 +37,7 @@ const { normalizeTransaction } = require('../../utils/transactionsUtils');
 const { getNameByAddress } = require('../../utils/validatorUtils');
 
 const config = require('../../../config');
-const { getGenesisBlockFromFS } = require('../../utils/genesisBlock');
+const { getGenesisBlockFromFS, loadAndGetGenesisBlockId } = require('../../utils/genesisBlock');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -135,14 +135,36 @@ const getBlockByHeight = async (height) => {
 	return normalizeBlock(blockResponse);
 };
 
-const getBlockByID = async id => {
-	const response = await requestConnector('getBlockByID', { id });
-	return normalizeBlock(response);
+const getBlockByID = async (id, skipNormalization = false) => {
+	let blockResponse;
+
+	if (id === await loadAndGetGenesisBlockId()) {
+		try {
+			blockResponse = await getGenesisBlockFromFS();
+		} catch (err) {
+			logger.warn(`Failed to download genesis block for id: ${id}, requesting from connector.\nError:${err.stack}.`);
+		}
+	}
+
+	if (!blockResponse) blockResponse = await requestConnector('getBlockByID', { id });
+
+	return skipNormalization ? blockResponse : normalizeBlock(blockResponse);
 };
 
 const getBlocksByIDs = async ids => {
-	const response = await requestConnector('getBlocksByIDs', { ids });
-	return normalizeBlocks(response);
+	// Filter genesis block id to be loaded locally
+	const genesisBlockID = await loadAndGetGenesisBlockId();
+	const genesisBlockIndex = ids.indexOf(genesisBlockID);
+	const blockIdsWithoutGenesis = ids.filter(id => id !== genesisBlockID);
+
+	const BlocksResponse = await requestConnector('getBlocksByIDs', { ids: blockIdsWithoutGenesis });
+
+	if (genesisBlockIndex !== -1) {
+		const genesisBlock = await getBlockByID(genesisBlockID, true);
+		BlocksResponse.splice(genesisBlockIndex, 0, genesisBlock);
+	}
+
+	return normalizeBlocks(BlocksResponse);
 };
 
 const getLastBlock = async () => {
@@ -270,13 +292,13 @@ const getBlocksAssets = async (params) => {
 
 	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
 	const total = await blocksTable.count(params);
-	const blocksFromDB = await blocksTable.find(params, ['height']);
+	const blocksFromDB = await blocksTable.find(params, ['id']);
 
-	logger.debug(`Requesting blockchain application for blocks with heights: ${blocksFromDB.map(b => b.height).join(', ')}`);
+	logger.debug(`Requesting blockchain application for blocks with IDs: ${blocksFromDB.map(b => b.id).join(', ')}`);
 	blockAssets.data = await BluebirdPromise.map(
 		blocksFromDB,
 		async (blockFromDB) => {
-			const block = await getBlockByHeight(blockFromDB.height);
+			const block = await getBlockByID(blockFromDB.id);
 
 			return {
 				block: {
