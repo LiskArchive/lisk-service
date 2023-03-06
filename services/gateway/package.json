@@ -22,7 +22,8 @@
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "echo \"Error: Please run integration tests with lisk-service-template enabled to test the Gateway features\" && exit 1",
-    "watch": "supervisor -w . -i ./node_modules app.js"
+    "watch": "supervisor -w . -i ./node_modules app.js",
+    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit"
   },
   "engines": {
     "node": ">=16.15.0 <=16",

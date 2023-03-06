@@ -22,15 +22,11 @@ const {
 const { MoleculerClientError } = require('moleculer').Errors;
 const path = require('path');
 
-const mapper = require('./customMapper');
+const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate } = require('./paramValidator');
 
 const logger = Logger();
 const apiMeta = [];
-
-const dropOneSlashAtBeginning = str => str.replace(/^\//, '');
-const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
-const transformPath = url => curlyBracketsToColon(dropOneSlashAtBeginning(url));
 
 const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
@@ -94,62 +90,6 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	return { aliases, whitelist, methodPaths };
 };
 
-const typeMappings = {
-	string_number: (input) => Number(input),
-	number_string: (input) => String(input),
-	array_string: (input) => input.join(','),
-	string_boolean: (input) => String(input).toLowerCase() === 'true',
-};
-
-const convertType = (item, toType) => {
-	const fromType = typeof item === 'object' && item.constructor.name === 'Array' ? 'array' : typeof item;
-	const typeMatch = `${fromType}_${toType}`;
-	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
-	return item;
-};
-
-const mapParam = (source, originalKey, mappingKey) => {
-	if (mappingKey) {
-		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
-		return { key: mappingKey, value: source[originalKey] };
-	}
-	// logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
-	return {};
-};
-
-const mapParamWithType = (source, originalSetup, mappingKey) => {
-	const [originalKey, type] = originalSetup.split(',');
-	const mapObject = mapParam(source, originalKey, mappingKey);
-	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
-	return mapObject;
-};
-
-const transformParams = (params = {}, specs) => {
-	const output = {};
-	Object.keys(specs).forEach((specParam) => {
-		const result = mapParamWithType(params, specs[specParam], specParam);
-		if (result.key) output[result.key] = result.value;
-	});
-	return output;
-};
-
-const transformRequest = (methodDef, params) => {
-	try {
-		const paramDef = methodDef.source.params;
-		const transformedParams = transformParams(params, paramDef);
-		return transformedParams;
-	} catch (e) { return params; }
-};
-
-const transformResponse = async (methodDef, data) => {
-	if (!methodDef) return data;
-	const transformedData = await mapper(data, methodDef.source.definition);
-	return {
-		...methodDef.envelope,
-		...transformedData,
-	};
-};
-
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const { aliases, whitelist, methodPaths } = configureApi(
 		apiNames,
@@ -211,15 +151,4 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 
 module.exports = {
 	registerApi,
-
-	// For testing
-	transformPath,
-	dropOneSlashAtBeginning,
-	curlyBracketsToColon,
-	convertType,
-	mapParam,
-	mapParamWithType,
-	transformParams,
-	transformRequest,
-	transformResponse,
 };

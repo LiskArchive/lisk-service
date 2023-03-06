@@ -13,7 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const expectedResponseForRegisterApi = {
+// TODO: Expected response for registerApi method should be dynamically constructed
+const expectedResponseForRegisterHttpApi = {
 	whitelist: [
 		'indexer.blocks.assets',
 		'indexer.blockchain.apps',
@@ -95,6 +96,93 @@ const expectedResponseForRegisterApi = {
 		'POST validator/validateBLSKey': 'indexer.validateBLSKey',
 		'GET export/download': 'export.transactions.csv',
 		'GET export/transactions': 'export.transactions.schedule',
+	},
+};
+
+// TODO: Expected response for registerApi method should be dynamically constructed
+const expectedResponseForRegisterRpcApi = {
+	events: {
+		request: {
+			whitelist: [
+				'indexer.blocks.assets',
+				'indexer.blockchain.apps',
+				'app-registry.blockchain.apps.meta.list',
+				'app-registry.blockchain.apps.meta',
+				'indexer.blockchain.apps.statistics',
+				'app-registry.blockchain.apps.meta.tokens',
+				'indexer.blocks',
+				'indexer.events',
+				'fees.estimates',
+				'indexer.generators',
+				'indexer.index.status',
+				'connector.invokeEndpoint',
+				'market.prices',
+				'indexer.network.statistics',
+				'indexer.network.status',
+				'newsfeed.articles',
+				'indexer.peers',
+				'indexer.transactions.post',
+				'indexer.schemas',
+				'indexer.transactions',
+				'indexer.transactions.dryrun',
+				'statistics.transactions.statistics',
+				'indexer.legacy',
+				'indexer.pos.rewards.claimable',
+				'indexer.pos.constants',
+				'indexer.pos.rewards.locked',
+				'indexer.pos.stakers',
+				'indexer.pos.stakes',
+				'indexer.pos.unlocks',
+				'indexer.pos.validators',
+				'indexer.token.account.exists',
+				'indexer.token.constants',
+				'indexer.tokens',
+				'indexer.tokens.summary',
+				'indexer.validator',
+				'indexer.validateBLSKey',
+				'export.transactions.schedule',
+			],
+			aliases: {
+				'get.blocks.assets': 'indexer.blocks.assets',
+				'get.blockchain.apps': 'indexer.blockchain.apps',
+				'get.blockchain.apps.meta.list': 'app-registry.blockchain.apps.meta.list',
+				'get.blockchain.apps.meta': 'app-registry.blockchain.apps.meta',
+				'get.blockchain.apps.statistics': 'indexer.blockchain.apps.statistics',
+				'get.blockchain.apps.meta.tokens': 'app-registry.blockchain.apps.meta.tokens',
+				'get.blocks': 'indexer.blocks',
+				'get.events': 'indexer.events',
+				'get.fees': 'fees.estimates',
+				'get.generators': 'indexer.generators',
+				'get.index.status': 'indexer.index.status',
+				'post.invoke': 'connector.invokeEndpoint',
+				'get.market.prices': 'market.prices',
+				'get.network.statistics': 'indexer.network.statistics',
+				'get.network.status': 'indexer.network.status',
+				'get.newsfeed': 'newsfeed.articles',
+				'get.peers': 'indexer.peers',
+				'post.transactions': 'indexer.transactions.post',
+				'get.schemas': 'indexer.schemas',
+				'get.transactions': 'indexer.transactions',
+				'post.transactions.dryrun': 'indexer.transactions.dryrun',
+				'get.transactions.statistics': 'statistics.transactions.statistics',
+				'get.legacy': 'indexer.legacy',
+				'get.pos.rewards.claimable': 'indexer.pos.rewards.claimable',
+				'get.pos.constants': 'indexer.pos.constants',
+				'get.pos.rewards.locked': 'indexer.pos.rewards.locked',
+				'get.pos.stakers': 'indexer.pos.stakers',
+				'get.pos.stakes': 'indexer.pos.stakes',
+				'get.pos.unlocks': 'indexer.pos.unlocks',
+				'get.pos.validators': 'indexer.pos.validators',
+				'get.token.account.exists': 'indexer.token.account.exists',
+				'get.token.constants': 'indexer.token.constants',
+				'get.tokens': 'indexer.tokens',
+				'get.tokens.summary': 'indexer.tokens.summary',
+				'get.validator': 'indexer.validator',
+				'post.validator.validateBLSKey': 'indexer.validateBLSKey',
+				'get.export.transactions': 'export.transactions.schedule',
+			},
+			mappingPolicy: 'restrict',
+		},
 	},
 };
 
@@ -361,7 +449,8 @@ const sourceForMapParam = {
 };
 
 module.exports = {
-	expectedResponseForRegisterApi,
+	expectedResponseForRegisterHttpApi,
+	expectedResponseForRegisterRpcApi,
 
 	methodDefForTransformResponse,
 	dataForTransformResponse,
