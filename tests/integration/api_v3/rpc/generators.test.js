@@ -29,7 +29,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
-const getDPoSConstants = async () => request(wsRpcUrl, 'get.dpos.constants');
+const getPoSConstants = async () => request(wsRpcUrl, 'get.pos.constants');
 
 const STATUS = {
 	ACTIVE: 'active',
@@ -37,13 +37,13 @@ const STATUS = {
 };
 
 describe('Generators API', () => {
-	let numberActiveDelegates;
-	let numberStandbyDelegates;
+	let numberActiveValidators;
+	let numberStandbyValidators;
 	beforeAll(async () => {
-		const response = await getDPoSConstants();
+		const response = await getPoSConstants();
 		const constants = response.result.data;
-		numberActiveDelegates = constants.numberActiveDelegates;
-		numberStandbyDelegates = constants.numberStandbyDelegates;
+		numberActiveValidators = constants.numberActiveValidators;
+		numberStandbyValidators = constants.numberStandbyValidators;
 	});
 
 	describe('GET /generators', () => {
@@ -60,7 +60,7 @@ describe('Generators API', () => {
 		});
 
 		it('returns generators list with limit=103 -> ok', async () => {
-			const response = await getGenerators();
+			const response = await getGenerators({ limit: 103 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -69,10 +69,12 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(103);
 			result.data.map(generator => expect(generator).toMap(generatorSchema));
 
-			const activeGenerators = result.data.map(generator => generator.status === STATUS.ACTIVE);
-			const standbyGenerators = result.data.map(generator => generator.status === STATUS.STANDBY);
-			expect(activeGenerators.length).toEqual(numberActiveDelegates);
-			expect(standbyGenerators.length).toEqual(numberStandbyDelegates);
+			const activeGenerators = result.data
+				.filter(generator => generator.status === STATUS.ACTIVE);
+			const standbyGenerators = result.data
+				.filter(generator => generator.status === STATUS.STANDBY);
+			expect(activeGenerators.length).toEqual(numberActiveValidators);
+			expect(standbyGenerators.length).toEqual(numberStandbyValidators);
 
 			expect(result.meta).toMap(metaSchema);
 		});

@@ -35,12 +35,12 @@ const STATUS = {
 };
 
 describe('Generators API', () => {
-	let numberActiveDelegates;
-	let numberStandbyDelegates;
+	let numberActiveValidators;
+	let numberStandbyValidators;
 	beforeAll(async () => {
-		const response = (await api.get(`${endpoint}/dpos/constants`)).data;
-		numberActiveDelegates = response.numberActiveDelegates;
-		numberStandbyDelegates = response.numberStandbyDelegates;
+		const response = (await api.get(`${endpoint}/pos/constants`)).data;
+		numberActiveValidators = response.numberActiveValidators;
+		numberStandbyValidators = response.numberStandbyValidators;
 	});
 
 	describe('GET /generators', () => {
@@ -62,10 +62,12 @@ describe('Generators API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(103);
 			response.data.map(generator => expect(generator).toMap(generatorSchema));
 
-			const activeGenerators = response.data.map(generator => generator.status === STATUS.ACTIVE);
-			const standbyGenerators = response.data.map(generator => generator.status === STATUS.STANDBY);
-			expect(activeGenerators.length).toEqual(numberActiveDelegates);
-			expect(standbyGenerators.length).toEqual(numberStandbyDelegates);
+			const activeGenerators = response.data
+				.filter(generator => generator.status === STATUS.ACTIVE);
+			const standbyGenerators = response.data
+				.filter(generator => generator.status === STATUS.STANDBY);
+			expect(activeGenerators.length).toEqual(numberActiveValidators);
+			expect(standbyGenerators.length).toEqual(numberStandbyValidators);
 
 			expect(response.meta).toMap(metaSchema);
 		});
