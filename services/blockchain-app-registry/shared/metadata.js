@@ -20,11 +20,8 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const {
-	LENGTH_CHAIN_ID,
-	KNOWN_LISK_NETWORKS,
-	APP_STATUS,
-} = require('./constants');
+const { LENGTH_CHAIN_ID } = require('./constants');
+const { isMainchain } = require('./chain');
 const { read } = require('./utils/fsUtils');
 const { requestIndexer } = require('./utils/request');
 
@@ -33,6 +30,15 @@ const applicationMetadataIndexSchema = require('./database/schema/application_me
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const APP_STATUS = {
+	DEFAULT: 'unregistered',
+	ACTIVE: 'active',
+};
+
+const mainchainIDs = Object
+	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
+	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema.tableName,
@@ -173,7 +179,9 @@ const getBlockchainAppsMetadata = async (params) => {
 
 			const [blockchainApp] = (await requestIndexer('blockchain.apps', { name: chainMeta.chainName })).data;
 			chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
-			if (KNOWN_LISK_NETWORKS.includes(chainMeta.chainID)) {
+
+			if (await isMainchain()
+				&& mainchainIDs.includes(chainMeta.chainID)) {
 				chainMeta.status = APP_STATUS.ACTIVE;
 			}
 			return chainMeta;

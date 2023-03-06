@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,13 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const regex = require('./utils/regex');
+const { requestIndexer } = require('./utils/request');
 
-const KV_STORE_KEY = {
-	COMMIT_HASH_UNTIL_LAST_SYNC: 'commitHashUntilLastSync',
+let chainID;
+
+const isMainchain = async () => {
+	if (!chainID) {
+		const networkStatus = (await requestIndexer('network.status')).data;
+		chainID = networkStatus.chainID;
+	}
+	return regex.MAINCHAIN_ID.test(chainID);
 };
 
 module.exports = {
-	LENGTH_CHAIN_ID,
-	KV_STORE_KEY,
+	isMainchain,
 };
