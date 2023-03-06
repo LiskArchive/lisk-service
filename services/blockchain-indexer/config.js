@@ -100,6 +100,11 @@ config.networks = Object.freeze({
 			chainID: '03000000',
 			serviceURL: 'https://alphanet-service.liskdev.net',
 		},
+		{
+			name: 'devnet',
+			chainID: '04000000',
+			serviceURL: 'http://devnet-service.liskdev.net:9901',
+		},
 	],
 });
 

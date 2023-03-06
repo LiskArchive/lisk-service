@@ -181,6 +181,11 @@
 				"type": "string",
 				"example": "Lisk blockchain application"
 			},
+			"status": {
+				"type": "string",
+				"example": "active",
+				"description": "Current status of the application."
+			},
 			"description": {
 				"type": "string",
 				"example": "Lisk is a blockchain application platform"

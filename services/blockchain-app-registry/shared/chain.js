@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,26 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blockchainApp = require('./mappings/blockchainApp');
+const regex = require('./utils/regex');
+const { requestIndexer } = require('./utils/request');
+
+let chainID;
+
+const isMainchain = async () => {
+	if (!chainID) {
+		const networkStatus = (await requestIndexer('network.status')).data;
+		chainID = networkStatus.chainID;
+	}
+	return regex.MAINCHAIN_ID.test(chainID);
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.blockchain.apps',
-	params: {
-		chainID: '=,string',
-		name: '=,string',
-		search: '=,string',
-		status: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-	},
-	definition: {
-		data: ['data', blockchainApp],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	isMainchain,
 };
