@@ -36,7 +36,7 @@ const APP_STATUS = {
 	ACTIVE: 'active',
 };
 
-const mainchainIDs = Object
+const knownMainchainIDs = Object
 	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
@@ -177,13 +177,14 @@ const getBlockchainAppsMetadata = async (params) => {
 			const chainMeta = JSON.parse(chainMetaString);
 			chainMeta.isDefault = appMetadata.isDefault;
 
-			const [blockchainApp] = (await requestIndexer('blockchain.apps', { name: chainMeta.chainName })).data;
-			chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
-
 			if (await isMainchain()
-				&& mainchainIDs.includes(chainMeta.chainID)) {
+				&& knownMainchainIDs.includes(chainMeta.chainID)) {
 				chainMeta.status = APP_STATUS.ACTIVE;
+			} else {
+				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: chainMeta.chainID })).data;
+				chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
 			}
+
 			return chainMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
