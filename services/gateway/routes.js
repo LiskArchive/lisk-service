@@ -14,7 +14,7 @@
  *
  */
 const config = require('./config');
-const registerApi = require('./shared/registerHttpApi');
+const { registerApi } = require('./shared/registerHttpApi');
 
 const defaultConfig = {
 	whitelist: [

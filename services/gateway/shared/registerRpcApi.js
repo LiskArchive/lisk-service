@@ -22,7 +22,7 @@ const {
 const { MoleculerClientError } = require('moleculer').Errors;
 const path = require('path');
 
-const mapper = require('./customMapper');
+const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate } = require('./paramValidator');
 
 const logger = Logger();
@@ -30,12 +30,6 @@ const apiMeta = [];
 
 const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
-	const transformPath = url => {
-		const dropSlash = str => str.replace(/^\//, '');
-		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
-
-		return curlyBracketsToColon(dropSlash(url));
-	};
 	if (typeof apiNames === 'string') apiNames = [apiNames];
 	apiNames.forEach(apiName => {
 		// Assign common endpoints
@@ -96,66 +90,12 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	return { aliases, whitelist, methodPaths };
 };
 
-const typeMappings = {
-	string_number: (input) => Number(input),
-	number_string: (input) => String(input),
-	array_string: (input) => input.join(','),
-};
-
-const convertType = (item, type) => {
-	const typeMatch = `${(typeof item)}_${type}`;
-	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
-	return item;
-};
-
-const mapParam = (source, originalKey, mappingKey) => {
-	if (mappingKey) {
-		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
-		return { key: mappingKey, value: source[originalKey] };
-	}
-	// logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
-	return {};
-};
-
-const mapParamWithType = (source, originalSetup, mappingKey) => {
-	const [originalKey, type] = originalSetup.split(',');
-	const mapObject = mapParam(source, originalKey, mappingKey);
-	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
-	return mapObject;
-};
-
-const transformParams = (params = {}, specs) => {
-	const output = {};
-	Object.keys(specs).forEach((specParam) => {
-		const result = mapParamWithType(params, specs[specParam], specParam);
-		if (result.key) output[result.key] = result.value;
-	});
-	return output;
-};
-
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const { aliases, whitelist, methodPaths } = configureApi(
 		apiNames,
 		config.path,
 		registeredModuleNames,
 	);
-
-	const transformRequest = (apiPath, params) => {
-		try {
-			const paramDef = methodPaths[apiPath].source.params;
-			const transformedParams = transformParams(params, paramDef);
-			return transformedParams;
-		} catch (e) { return params; }
-	};
-
-	const transformResponse = async (apiPath, data) => {
-		if (!methodPaths[apiPath]) return data;
-		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
-		return {
-			...methodPaths[apiPath].envelope,
-			...transformedData,
-		};
-	};
 
 	return {
 		events: {
@@ -193,7 +133,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
-					request.params = transformRequest(request.method, paramReport.valid);
+					request.params = transformRequest(methodPaths[request.method], paramReport.valid);
 				},
 
 				onAfterCall: async (ctx, socket, req, data) => {
@@ -202,11 +142,13 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 						if (data.status === 'SERVICE_UNAVAILABLE') throw new MoleculerClientError({ code: SERVICE_UNAVAILABLE[0], message: data.data.error });
 					}
 
-					return transformResponse(req.method, data);
+					return transformResponse(methodPaths[req.method], data);
 				},
 			},
 		},
 	};
 };
 
-module.exports = registerApi;
+module.exports = {
+	registerApi,
+};
