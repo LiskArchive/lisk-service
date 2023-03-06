@@ -44,9 +44,9 @@ const mapParam = (source, originalKey, mappingKey) => {
 
 // Returns an object with mappingKey as key and type-casted value
 const mapParamWithType = (source, originalSetup, mappingKey) => {
-	const [originalKey, type] = originalSetup.split(',');
+	const [originalKey, dataType] = originalSetup.split(',');
 	const mapObject = mapParam(source, originalKey, mappingKey);
-	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
+	if (typeof dataType === 'string') return { key: mappingKey, value: convertType(mapObject.value, dataType) };
 	return mapObject;
 };
 
@@ -64,7 +64,9 @@ const transformRequest = (methodDef, params) => {
 		const paramDef = methodDef.source.params;
 		const transformedParams = transformParams(params, paramDef);
 		return transformedParams;
-	} catch (e) { return params; }
+	} catch (e) {
+		return params;
+	}
 };
 
 const transformResponse = async (methodDef, data) => {

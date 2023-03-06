@@ -389,4 +389,3 @@ describe('Test API utilities', () => {
 		});
 	});
 });
-
