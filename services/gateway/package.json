@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-gateway",
-  "version": "0.7.0-alpha.8",
+  "version": "0.7.0-alpha.9",
   "description": "Lisk Service Gateway",
   "keywords": [
     "lisk",
@@ -21,7 +21,8 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
-    "test": "echo \"Error: Please run integration tests with lisk-service-template enabled to test the Gateway features\" && exit 1",
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "engines": {
@@ -37,5 +38,8 @@
     "moment": "^2.29.4",
     "rate-limiter-flexible": "^2.2.4",
     "socket.io": "^4.4.1"
+  },
+  "devDependencies": {
+    "jest": "^27.3.0"
   }
 }

@@ -23,21 +23,16 @@ const {
 
 const path = require('path');
 const gatewayConfig = require('../config');
-const mapper = require('./customMapper');
+const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const logger = Logger();
 const apiMeta = [];
 
+const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
+
 const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	const allMethods = {};
-	const transformPath = url => {
-		const dropSlash = str => str.replace(/^\//, '');
-		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
-
-		return curlyBracketsToColon(dropSlash(url));
-	};
-
 	// Populate allMethods from the js files under apis directory
 	if (typeof apiNames === 'string') apiNames = [apiNames];
 	apiNames.forEach(apiName => {
@@ -73,8 +68,6 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 		...acc, methods[key].source.method,
 	], []);
 
-	const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
-
 	const aliases = Object.keys(methods).reduce((acc, key) => ({
 		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
 	}), {});
@@ -100,67 +93,12 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 	return { aliases, whitelist, methodPaths };
 };
 
-const typeMappings = {
-	string_number: (input) => Number(input),
-	number_string: (input) => String(input),
-	array_string: (input) => input.join(','),
-	string_boolean: (input) => String(input).toLowerCase() === 'true',
-};
-
-const convertType = (item, type) => {
-	const typeMatch = `${(typeof item)}_${type}`;
-	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
-	return item;
-};
-
-const mapParam = (source, originalKey, mappingKey) => {
-	if (mappingKey) {
-		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
-		return { key: mappingKey, value: source[originalKey] };
-	}
-	// logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
-	return {};
-};
-
-const mapParamWithType = (source, originalSetup, mappingKey) => {
-	const [originalKey, type] = originalSetup.split(',');
-	const mapObject = mapParam(source, originalKey, mappingKey);
-	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
-	return mapObject;
-};
-
-const transformParams = (params = {}, specs) => {
-	const output = {};
-	Object.keys(specs).forEach((specParam) => {
-		const result = mapParamWithType(params, specs[specParam], specParam);
-		if (result.key) output[result.key] = result.value;
-	});
-	return output;
-};
-
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const { aliases, whitelist, methodPaths } = configureApi(
 		apiNames,
 		config.path,
 		registeredModuleNames,
 	);
-
-	const transformRequest = (apiPath, params) => {
-		try {
-			const paramDef = methodPaths[apiPath].source.params;
-			const transformedParams = transformParams(params, paramDef);
-			return transformedParams;
-		} catch (e) { return params; }
-	};
-
-	const transformResponse = async (apiPath, data) => {
-		if (!methodPaths[apiPath]) return data;
-		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
-		return {
-			...methodPaths[apiPath].envelope,
-			...transformedData,
-		};
-	};
 
 	return {
 		...config,
@@ -210,7 +148,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 				throw new ValidationException('Request param validation error.');
 			}
 
-			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));
+			const params = transformRequest(methodPaths[routeAlias], dropEmptyProps(paramReport.valid));
 			req.$params = params;
 		},
 
@@ -248,10 +186,15 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 					};
 				}
 			}
-
-			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);
+			const apiPath = `${req.method.toUpperCase()} ${req.$alias.path}`;
+			return transformResponse(methodPaths[apiPath], data);
 		},
 	};
 };
 
-module.exports = registerApi;
+module.exports = {
+	registerApi,
+
+	// For testing
+	getMethodName,
+};

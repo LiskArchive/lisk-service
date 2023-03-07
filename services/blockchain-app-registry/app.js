@@ -43,6 +43,9 @@ const app = Microservice({
 	timeout: config.brokerTimeout,
 	packageJson,
 	logger: loggerConf,
+	dependencies: [
+		'indexer',
+	],
 });
 
 setAppContext(app);

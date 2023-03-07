@@ -163,7 +163,8 @@
 			"logo",
 			"backgroundColor",
 			"serviceURLs",
-			"explorers"
+			"explorers",
+			"isDefault"
 		],
 		"properties": {
 			"chainName": {
@@ -179,6 +180,11 @@
 			"title": {
 				"type": "string",
 				"example": "Lisk blockchain application"
+			},
+			"status": {
+				"type": "string",
+				"example": "active",
+				"description": "Current status of the application."
 			},
 			"description": {
 				"type": "string",

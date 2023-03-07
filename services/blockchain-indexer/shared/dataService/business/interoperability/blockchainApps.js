@@ -60,12 +60,12 @@ const getBlockchainApps = async (params) => {
 		};
 	}
 
-	if (params.state) {
-		const { state, ...remParams } = params;
+	if (params.status) {
+		const { status, ...remParams } = params;
 		params = remParams;
 		params.whereIn.push({
 			property: 'status',
-			values: state.split(','),
+			values: status.split(','),
 		});
 	}
 

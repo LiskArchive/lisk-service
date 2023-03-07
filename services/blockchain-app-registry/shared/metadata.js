@@ -20,16 +20,25 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const {
-	LENGTH_CHAIN_ID,
-} = require('./constants');
+const { LENGTH_CHAIN_ID } = require('./constants');
+const { isMainchain } = require('./chain');
 const { read } = require('./utils/fsUtils');
+const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const APP_STATUS = {
+	DEFAULT: 'unregistered',
+	ACTIVE: 'active',
+};
+
+const knownMainchainIDs = Object
+	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
+	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema.tableName,
@@ -146,7 +155,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.isDefault !== false) {
 		const defaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: true },
-			['network', 'appDirName'],
+			['network', 'appDirName', 'isDefault'],
 		);
 		blockchainAppsMetadata.data = defaultApps;
 	}
@@ -154,7 +163,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.isDefault !== true && blockchainAppsMetadata.data.length < params.limit) {
 		const nonDefaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: false },
-			['network', 'appDirName'],
+			['network', 'appDirName', 'isDefault'],
 		);
 
 		blockchainAppsMetadata.data.push(...nonDefaultApps);
@@ -166,6 +175,16 @@ const getBlockchainAppsMetadata = async (params) => {
 			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
 			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
 			const chainMeta = JSON.parse(chainMetaString);
+			chainMeta.isDefault = appMetadata.isDefault;
+
+			if (await isMainchain()
+				&& knownMainchainIDs.includes(chainMeta.chainID)) {
+				chainMeta.status = APP_STATUS.ACTIVE;
+			} else {
+				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: chainMeta.chainID })).data;
+				chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
+			}
+
 			return chainMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
