@@ -20,6 +20,7 @@ const path = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
+const { formatBlock } = require('./formatter');
 const { exists, mkdir, rm, extractTarBall } = require('../utils/fs');
 const { downloadFile, verifyFileChecksum } = require('../utils/download');
 
@@ -129,7 +130,8 @@ const getGenesisBlockFromFS = async () => {
 			parseStream.on('error', (err) => reject(err));
 		});
 
-		if (!getGenesisBlockId()) setGenesisBlock(block);
+		const formattedBlock = await formatBlock(block);
+		if (!getGenesisBlockId()) setGenesisBlock(formattedBlock);
 	}
 
 	return getGenesisBlock();

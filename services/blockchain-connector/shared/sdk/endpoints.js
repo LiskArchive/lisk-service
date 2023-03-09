@@ -89,10 +89,10 @@ const getLastBlock = async () => {
 	}
 };
 
-const getBlockByHeight = async (height) => {
+const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 	try {
 		if (Number(height) === await getGenesisHeight()) {
-			return getGenesisBlock();
+			return getGenesisBlock(includeGenesisAssets);
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
@@ -133,11 +133,11 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 	}
 };
 
-const getBlockByID = async (id) => {
+const getBlockByID = async (id, includeGenesisAssets = false) => {
 	try {
 		// File based Genesis block handling
 		if (id === await getGenesisBlockID()) {
-			return getGenesisBlock();
+			return getGenesisBlock(includeGenesisAssets);
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });

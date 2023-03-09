@@ -25,7 +25,7 @@ module.exports = {
 		eventStr: { type: 'text' },
 	},
 	indexes: {
-		height: {},
+		height: { type: 'range' },
 	},
 	purge: {},
 };

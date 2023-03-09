@@ -19,6 +19,8 @@ const {
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+const { MODULE_NAME_POS } = require('./constants/names');
+const { getBlockByHeight } = require('./endpoints');
 
 const logger = Logger();
 
@@ -127,6 +129,34 @@ const getPosLockedReward = async ({ address, tokenID }) => {
 	}
 };
 
+const getPoSGenesisStakers = async (height) => {
+	try {
+		const block = await getBlockByHeight(height, true);
+		const { stakers = [] } = (block.assets
+			.find(asset => asset.module === MODULE_NAME_POS)).data;
+		return stakers;
+	} catch (error) {
+		if (error.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getPoSGenesisStakers\'.');
+		}
+		throw error;
+	}
+};
+
+const getPoSGenesisValidators = async (height) => {
+	try {
+		const block = await getBlockByHeight(height, true);
+		const { validators = [] } = (block.assets
+			.find(asset => asset.module === MODULE_NAME_POS)).data;
+		return validators;
+	} catch (error) {
+		if (error.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getPoSGenesisValidators\'.');
+		}
+		throw error;
+	}
+};
+
 module.exports = {
 	getPosValidator,
 	getAllPosValidators,
@@ -136,4 +166,6 @@ module.exports = {
 	getStaker,
 	getPosClaimableRewards,
 	getPosPendingUnlocks,
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
 };

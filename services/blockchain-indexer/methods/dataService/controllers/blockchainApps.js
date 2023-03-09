@@ -22,7 +22,8 @@ const { LENGTH_CHAIN_ID } = require('../../../shared/constants');
 const resolveMainchainServiceURL = async () => {
 	if (config.endpoints.mainchainServiceUrl) return config.endpoints.mainchainServiceUrl;
 
-	const { chainID } = await dataService.getNetworkStatus();
+	const netStatus = await dataService.getNetworkStatus();
+	const { chainID } = netStatus.data;
 	const networkID = chainID.substring(0, 2);
 	const mainchainID = networkID.padEnd(LENGTH_CHAIN_ID, '0');
 	const [{ serviceURL } = {}] = config.networks.LISK
@@ -39,7 +40,7 @@ const getBlockchainApps = async (params) => {
 	// Redirect call to the mainchain service
 	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`;
-	const response = HTTP.request(
+	const { data: response } = await HTTP.request(
 		blockchainAppsEndpoint,
 		params,
 	);
