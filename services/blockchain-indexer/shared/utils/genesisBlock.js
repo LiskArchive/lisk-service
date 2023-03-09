@@ -13,13 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Logger,
+} = require('lisk-service-framework');
+
+const { codec } = require('@liskhq/lisk-codec');
+
+const BluebirdPromise = require('bluebird');
+
 const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
-const BluebirdPromise = require('bluebird');
-
-const logger = require('lisk-service-framework').Logger();
-const { codec } = require('@liskhq/lisk-codec');
 
 const { exists, mkdir, extractTarBall, rm } = require('./file');
 const {
@@ -32,6 +36,7 @@ const { parseToJSONCompatObj } = require('./parser');
 
 let genesisBlock = { header: {} };
 
+const logger = Logger();
 const parseStream = json.createParseStream();
 let _genesisBlockFilePath;
 
@@ -87,8 +92,8 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
-	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}.`);
-	logger.fatal('Exiting the application.');
+	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}`);
+	logger.fatal('Exiting the application');
 	process.exit(1);
 };
 

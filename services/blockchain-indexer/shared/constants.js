@@ -103,8 +103,8 @@ const getSystemMetadata = async () => {
 
 const getBlockAssetDataSchemaByModule = async (moduleName) => {
 	const metadata = await getSystemMetadata();
-	const [asset = {}] = (metadata.modules.find(metaData => metaData.name === moduleName)).assets;
-	return asset.data;
+	const module = metadata.modules.find(metaData => metaData.name === moduleName);
+	return module.assets[0].data;
 };
 
 const MODULE = {
