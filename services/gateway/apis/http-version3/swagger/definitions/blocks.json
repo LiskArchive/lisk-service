@@ -189,8 +189,7 @@
         "type": "object",
         "required": [
             "block",
-            "moduleID",
-            "data"
+            "assets"
         ],
         "properties": {
             "block": {
@@ -210,16 +209,27 @@
                     }
                 }
             },
-            "moduleID": {
-                "type": "string",
-                "format": "id",
-                "minLength": 1,
-                "maxLength": 4294967295,
-                "example": "2",
-                "description": "Module ID"
-            },
-            "data": {
-                "type": "object"
+            "assets": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "module": {
+                            "type": "string",
+                            "example": "random",
+                            "description": "Name of the blockchain module associated with the assets."
+                        },
+                        "data": {
+                            "type": "object",
+                            "properties": {
+                                "seedReveal": {
+                                    "type": "string",
+                                    "example": "c555338417025a5b2b9278304f8a96be"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
