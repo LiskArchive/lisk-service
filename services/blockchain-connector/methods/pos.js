@@ -24,6 +24,11 @@ const {
 	getStaker,
 } = require('../shared/sdk');
 
+const {
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
+} = require('../shared/sdk/genesisBlock');
+
 module.exports = [
 	{
 		name: 'getPosValidator',
@@ -77,5 +82,15 @@ module.exports = [
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: false, type: 'string' },
 		},
+	},
+	{
+		name: 'getPoSGenesisStakers',
+		controller: async () => getPoSGenesisStakers(),
+		params: {},
+	},
+	{
+		name: 'getPoSGenesisValidators',
+		controller: async () => getPoSGenesisValidators(),
+		params: {},
 	},
 ];
