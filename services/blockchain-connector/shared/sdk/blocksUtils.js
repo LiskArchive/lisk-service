@@ -75,13 +75,6 @@ const loadConfig = async () => {
 	}
 };
 
-const getGenesisBlockUrl = async () => {
-	if (!genesisBlockUrl) {
-		await loadConfig();
-	}
-	return genesisBlockUrl;
-};
-
 // eslint-disable-next-line consistent-return
 const downloadAndValidateGenesisBlock = async (retries = 2) => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
@@ -145,5 +138,4 @@ const getGenesisBlockFromFS = async () => {
 module.exports = {
 	getGenesisBlockId,
 	getGenesisBlockFromFS,
-	getGenesisBlockUrl,
 };

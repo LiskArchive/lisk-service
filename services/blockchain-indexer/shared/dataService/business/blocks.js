@@ -26,7 +26,7 @@ const {
 const logger = Logger();
 
 // const { getEventsByHeight } = require('./events');
-const { getFinalizedHeight, getGenesisHeight } = require('../../constants');
+const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo } = require('../../utils/accountUtils');
@@ -37,7 +37,6 @@ const { normalizeTransaction } = require('../../utils/transactionsUtils');
 const { getNameByAddress } = require('../../utils/validatorUtils');
 
 const config = require('../../../config');
-const { getGenesisBlockFromFS } = require('../../utils/genesisBlock');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -104,7 +103,7 @@ const normalizeBlock = async (originalblock) => {
 
 		return parseToJSONCompatObj(block);
 	} catch (error) {
-		logger.error(`Error occurred when normalizing block at height ${originalblock.header.height}, id: ${originalblock.header.id}:\n${error.stack}`);
+		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}, id: ${originalblock.header.id}:\n${error.stack}`);
 		throw error;
 	}
 };
@@ -120,19 +119,8 @@ const normalizeBlocks = async (blocks) => {
 };
 
 const getBlockByHeight = async (height) => {
-	let blockResponse;
-
-	if (Number(height) === await getGenesisHeight()) {
-		try {
-			blockResponse = await getGenesisBlockFromFS();
-		} catch (err) {
-			logger.warn(`Failed to download genesis block for height: ${height}, requesting from connector.\nError:${err.stack}.`);
-		}
-	}
-
-	if (!blockResponse) blockResponse = await requestConnector('getBlockByHeight', { height });
-
-	return normalizeBlock(blockResponse);
+	const response = await requestConnector('getBlockByHeight', { height });
+	return normalizeBlock(response);
 };
 
 const getBlockByID = async id => {
@@ -270,13 +258,13 @@ const getBlocksAssets = async (params) => {
 
 	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
 	const total = await blocksTable.count(params);
-	const blocksFromDB = await blocksTable.find(params, ['height']);
+	const blocksFromDB = await blocksTable.find(params, ['id']);
 
-	logger.debug(`Requesting blockchain application for blocks with heights: ${blocksFromDB.map(b => b.height).join(', ')}`);
+	logger.debug(`Requesting blockchain application for blocks with IDs: ${blocksFromDB.map(b => b.id).join(', ')}`);
 	blockAssets.data = await BluebirdPromise.map(
 		blocksFromDB,
 		async (blockFromDB) => {
-			const block = await getBlockByHeight(blockFromDB.height);
+			const block = await getBlockByID(blockFromDB.id);
 
 			return {
 				block: {

@@ -21,8 +21,6 @@ const {
 	getBlocksByHeightBetween,
 } = require('../shared/sdk');
 
-const { getGenesisBlockUrl } = require('../shared/sdk/blocksUtils');
-
 const {
 	getGenesisHeight,
 	getGenesisBlockID,
@@ -68,11 +66,6 @@ module.exports = [
 	{
 		name: 'getGenesisHeight',
 		controller: getGenesisHeight,
-		params: {},
-	},
-	{
-		name: 'getGenesisBlockUrl',
-		controller: getGenesisBlockUrl,
 		params: {},
 	},
 	{
