@@ -44,7 +44,7 @@ module.exports = {
 		blockAssetSchema[this.swaggerApiPath].get.summary = 'Requests block assets data.';
 		blockAssetSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns block assets data. Block assets are always returned empty for genesis height.',
+			description: 'Returns block assets data. Assets are always returned empty for the genesis height.',
 		});
 		blockAssetSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
 		blockAssetSchema[this.swaggerApiPath].get.responses = {

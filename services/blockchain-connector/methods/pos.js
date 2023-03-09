@@ -22,12 +22,9 @@ const {
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
 	getStaker,
-} = require('../shared/sdk');
-
-const {
 	getPoSGenesisStakers,
 	getPoSGenesisValidators,
-} = require('../shared/sdk/genesisBlock');
+} = require('../shared/sdk');
 
 module.exports = [
 	{
@@ -85,12 +82,16 @@ module.exports = [
 	},
 	{
 		name: 'getPoSGenesisStakers',
-		controller: async () => getPoSGenesisStakers(),
-		params: {},
+		controller: async ({ height }) => getPoSGenesisStakers(height),
+		params: {
+			height: { optional: false, type: 'number' },
+		},
 	},
 	{
 		name: 'getPoSGenesisValidators',
-		controller: async () => getPoSGenesisValidators(),
-		params: {},
+		controller: async ({ height }) => getPoSGenesisValidators(height),
+		params: {
+			height: { optional: false, type: 'number' },
+		},
 	},
 ];

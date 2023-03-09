@@ -20,8 +20,6 @@ const {
 
 const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
-const { formatBlock } = require('./formatter');
-const { MODULE_NAME_POS } = require('./constants/names');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const config = require('../../config');
@@ -41,11 +39,14 @@ const getGenesisHeight = async () => {
 	return genesisHeight;
 };
 
-const getGenesisBlock = async () => {
+const getGenesisBlock = async (isIncludeAssets = false) => {
 	try {
 		const block = await getGenesisBlockFromFS();
 		// Filter out assets from genesis block and assign empty array
-		return { header: block.header, transactions: block.transactions, assets: [] };
+		return {
+			...block,
+			assets: isIncludeAssets ? block.assets : [],
+		};
 	} catch (_) {
 		logger.debug('Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.');
 	}
@@ -84,41 +85,9 @@ const getGenesisConfig = async () => {
 	}
 };
 
-const getPoSGenesisStakers = async () => {
-	try {
-		const block = await getGenesisBlockFromFS();
-		const formattedBlock = await formatBlock(block);
-		const { stakers = [] } = (formattedBlock.assets
-			.find(asset => asset.module === MODULE_NAME_POS)).data;
-		return stakers;
-	} catch (error) {
-		if (error.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPoSGenesisStakers\'.');
-		}
-		throw error;
-	}
-};
-
-const getPoSGenesisValidators = async () => {
-	try {
-		const block = await getGenesisBlockFromFS();
-		const formattedBlock = await formatBlock(block);
-		const { validators = [] } = (formattedBlock.assets
-			.find(asset => asset.module === MODULE_NAME_POS)).data;
-		return validators;
-	} catch (error) {
-		if (error.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPoSGenesisValidators\'.');
-		}
-		throw error;
-	}
-};
-
 module.exports = {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
-	getPoSGenesisStakers,
-	getPoSGenesisValidators,
 };

@@ -37,14 +37,16 @@ const httpTest = new RegExp('http:*');
 
 const getFromHttp = ip => new Promise((resolve, reject) => {
 	if (httpTest.test(freegeoAddress)) {
-		requestLib(`${freegeoAddress}/${ip}`).then(body => {
-			let jsonContent;
-			if (typeof body === 'string') jsonContent = JSON.parse(body);
-			else jsonContent = body;
-			return resolve(jsonContent);
-		}).catch(err => {
-			reject(err);
-		});
+		requestLib(`${freegeoAddress}/${ip}`)
+			.then(body => {
+				let jsonContent;
+				if (typeof body === 'string') jsonContent = JSON.parse(body);
+				else jsonContent = body;
+				return resolve(jsonContent);
+			})
+			.catch(err => {
+				reject(err);
+			});
 	}
 });
 
