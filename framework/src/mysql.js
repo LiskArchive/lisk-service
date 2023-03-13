@@ -116,7 +116,8 @@ const mapRowsBySchema = async (rawRows, schema) => {
 		const row = {};
 		Object.keys(schema).forEach(o => {
 			const val = item[o];
-			if (val || val === 0 || val === false) row[o] = getValue(cast(val, schema[o].type));
+			const valType = schema[o].type;
+			row[o] = getValue(cast(val, valType));
 		});
 		rows.push(row);
 	});
