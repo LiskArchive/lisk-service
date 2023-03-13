@@ -13,27 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const Bluebird = require('bluebird');
 const {
 	MySQL: {
 		getTableInstance,
 	},
 } = require('lisk-service-framework');
+
+const { getGenesisHeight } = require('../constants');
+const keyValueTable = require('../database/mysqlKVStore');
+const eventsTableSchema = require('../database/schema/events');
 const config = require('../../config');
 
-const eventsTableSchema = require('../database/schema/events');
-const eventTopicsTableSchema = require('../database/schema/eventTopics');
-
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 
 const getEventsTable = () => getTableInstance(
 	eventsTableSchema.tableName,
 	eventsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getEventTopicsTable = () => getTableInstance(
-	eventTopicsTableSchema.tableName,
-	eventTopicsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -78,16 +76,29 @@ const getEventsInfoToIndex = async (block, events) => {
 
 const deleteEventsTillHeight = async (blockHeight, dbTrx) => {
 	const eventsTable = await getEventsTable();
-	const eventTopicsTable = await getEventTopicsTable();
+	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
+
 	const queryParams = {
 		propBetweens: [{
 			property: 'height',
+			from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
 			to: blockHeight,
 		}],
-		limit: 10000,
 	};
-	await eventTopicsTable.delete(queryParams, dbTrx);
-	await eventsTable.delete(queryParams, dbTrx);
+
+	const events = await eventsTable.find(queryParams, ['id']);
+	const eventsToUpdate = await Bluebird.map(
+		events,
+		async event => ({
+			...event,
+			eventStr: null,
+		}),
+	);
+	if (eventsToUpdate.length) {
+		await eventsTable.upsert(eventsToUpdate, dbTrx);
+	}
+
+	await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, blockHeight, dbTrx);
 };
 
 module.exports = {
