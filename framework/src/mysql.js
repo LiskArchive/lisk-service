@@ -115,10 +115,10 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	const rows = [];
 	rawRows.forEach(item => {
 		const row = {};
-		Object.keys(schema).forEach(o => {
-			const val = item[o];
-			const valType = schema[o].type;
-			if (`${o}` in item) row[o] = getValue(cast(val, valType));
+		Object.keys(schema).forEach(column => {
+			const val = item[column];
+			const valType = schema[column].type;
+			if (`${column}` in item) row[column] = getValue(cast(val, valType));
 		});
 		rows.push(row);
 	});
