@@ -25,8 +25,9 @@ const init = async () => {
 		await downloadRepositoryToFS();
 		await indexAllBlockchainAppsMeta();
 	} catch (error) {
-		let errorMsg = error.message;
-		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		const errorMsg = Array.isArray(error)
+			? error.map(e => e.message).join('\n')
+			: error.message;
 		logger.error(`Unable to initialize metadata information due to: ${errorMsg}`);
 	}
 };
