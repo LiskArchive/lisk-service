@@ -14,8 +14,13 @@
  *
  */
 const {
+	Logger,
 	MySQL: {
 		getTableInstance,
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
 	},
 } = require('lisk-service-framework');
 const config = require('../../config');
@@ -26,6 +31,7 @@ const keyValueTable = require('../database/mysqlKVStore');
 const eventsTableSchema = require('../database/schema/events');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 
@@ -74,29 +80,41 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
-const deleteEventsTillFinalizedHeight = async () => {
+const deleteEventStrTillFinalizedHeight = async () => {
 	const eventsTable = await getEventsTable();
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
 	const toHeight = await getFinalizedHeight();
 
-	const queryParams = {
-		propBetweens: [{
-			property: 'height',
-			from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
-			to: toHeight,
-		}],
-	};
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDbTransaction(connection);
+	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
 
-	await eventsTable.update({ where: queryParams, updates: { eventStr: null } });
-	await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight);
+	try {
+		const queryParams = {
+			propBetweens: [{
+				property: 'height',
+				from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
+				to: toHeight,
+			}],
+		};
+
+		await eventsTable.update({ where: queryParams, updates: { eventStr: null } }, dbTrx);
+		await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight, dbTrx);
+
+		await commitDbTransaction(dbTrx);
+		logger.debug(`Committed MySQL transaction to delete serialized events until height ${toHeight}.`);
+	} catch (_) {
+		await rollbackDbTransaction(dbTrx);
+		logger.debug(`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`);
+	}
 };
 
 module.exports = {
 	getEventsInfoToIndex,
-	deleteEventsTillFinalizedHeight,
+	deleteEventStrTillFinalizedHeight,
 };
 
 module.exports = {
 	getEventsInfoToIndex,
-	deleteEventsTillFinalizedHeight,
+	deleteEventStrTillFinalizedHeight,
 };

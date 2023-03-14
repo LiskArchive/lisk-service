@@ -205,20 +205,18 @@ describe('Test MySQL', () => {
 		});
 
 		it('Update method', async () => {
-			await testTable.upsert([{ ...emptyBlock, size: 50 }]);
-			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
-			expect(retrievedBlock.size).toBe(50);
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock.timestamp).toBe(emptyBlock.timestamp);
 
 			const params = {
-				where: { id: emptyBlock.id },
-				updates: { size: 100 }
+				where: { height: emptyBlock.height },
+				updates: { timestamp: emptyBlock.timestamp + 1000 }
 			}
 
 			await testTable.update(params);
 
-			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
-			expect(retrievedBlock1.id).toBe(emptyBlock.id);
-			expect(retrievedBlock1.size).toBe(100);
+			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock1.timestamp).toBe(params.updates.timestamp);
 		});
 	});
 
@@ -395,17 +393,22 @@ describe('Test MySQL', () => {
 		});
 
 		it('Update method', async () => {
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock.timestamp).toBe(emptyBlock.timestamp);
+
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
+
 			const params = {
-				where: { id: emptyBlock.id },
-				updates: { size: 100 }
+				where: { height: emptyBlock.height },
+				updates: { timestamp: emptyBlock.timestamp + 1000 }
 			}
+
 			await testTable.update(params, trx);
 			await commitDbTransaction(trx);
-			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
-			expect(retrievedBlock.id).toBe(emptyBlock.id);
-			expect(retrievedBlock.size).toBe(100);
+
+			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock1.timestamp).toBe(params.updates.timestamp);
 		});
 	});
 
