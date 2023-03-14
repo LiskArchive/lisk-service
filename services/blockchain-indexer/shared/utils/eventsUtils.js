@@ -13,17 +13,32 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Bluebird = require('bluebird');
+/*
+ * LiskHQ/lisk-service
+ * Copyright © 2022 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
 const {
 	MySQL: {
 		getTableInstance,
 	},
 } = require('lisk-service-framework');
+const config = require('../../config');
 
-const { getGenesisHeight } = require('../constants');
+const { getFinalizedHeight, getGenesisHeight } = require('../constants');
+
 const keyValueTable = require('../database/mysqlKVStore');
 const eventsTableSchema = require('../database/schema/events');
-const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -74,34 +89,29 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
-const deleteEventsTillHeight = async (blockHeight, dbTrx) => {
+const deleteEventsTillFinalizedHeight = async () => {
 	const eventsTable = await getEventsTable();
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
+	const toHeight = await getFinalizedHeight();
 
 	const queryParams = {
 		propBetweens: [{
 			property: 'height',
 			from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
-			to: blockHeight,
+			to: toHeight,
 		}],
 	};
 
-	const events = await eventsTable.find(queryParams, ['id']);
-	const eventsToUpdate = await Bluebird.map(
-		events,
-		async event => ({
-			...event,
-			eventStr: null,
-		}),
-	);
-	if (eventsToUpdate.length) {
-		await eventsTable.upsert(eventsToUpdate, dbTrx);
-	}
-
-	await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, blockHeight, dbTrx);
+	await eventsTable.update({ where: queryParams, updates: { eventStr: null } });
+	await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight);
 };
 
 module.exports = {
 	getEventsInfoToIndex,
-	deleteEventsTillHeight,
+	deleteEventsTillFinalizedHeight,
+};
+
+module.exports = {
+	getEventsInfoToIndex,
+	deleteEventsTillFinalizedHeight,
 };
