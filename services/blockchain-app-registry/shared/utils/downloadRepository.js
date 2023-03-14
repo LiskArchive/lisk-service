@@ -24,7 +24,7 @@ const {
 
 const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
-const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
+const { exists, mkdir, getDirectories, rename, rmdir } = require('./fsUtils');
 
 const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile } = require('../metadataIndex');
@@ -229,8 +229,9 @@ const syncWithRemoteRepo = async () => {
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
+	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 
-	if (await exists(appDirPath)) {
+	if (await exists(appDirPath) && lastSyncedCommitHash) {
 		logger.trace('Synchronizing with the remote repository.');
 		await syncWithRemoteRepo();
 		logger.debug('Finished synchronizing with the remote repository successfully.');
@@ -239,6 +240,8 @@ const downloadRepositoryToFS = async () => {
 			logger.trace('Creating data directory.');
 			await mkdir(dataDirectory, { recursive: true });
 			logger.debug('Created data directory successfully.');
+		} else if (await exists(appDirPath)) {
+			await rmdir(appDirPath);
 		}
 
 		const { url } = await getRepoDownloadURL();
