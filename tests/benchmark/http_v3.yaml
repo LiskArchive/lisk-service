@@ -1,0 +1,163 @@
+config:
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/api/v3"
+  phases:
+    - duration: 10
+      arrivalRate: 15
+      name: "Sustained max load of 15 users for 10 seconds"
+  defaults:
+    headers:
+      content-type: "application/json"
+scenarios:
+  - name: "Blocks"
+    flow:
+      - get:
+          url: "/blocks"
+          qs:
+            limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/blocks"
+          qs:
+            limit: 100
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
+          expect:
+            - statusCode: 200
+
+  - name: "Blocks assets"
+    flow:
+      - get:
+          url: "/blocks/assets"
+          qs:
+            limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/blocks/assets"
+          qs:
+            limit: 100
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
+          expect:
+            - statusCode: 200
+
+  - name: "Transactions"
+    flow:
+      - get:
+          url: "/transactions"
+          qs:
+            limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+
+  - name: "Transactions statistics"
+    flow:
+      - get:
+          url: "/transactions/statistics"
+          qs:
+            limit: 30
+            interval: day
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+  - name: "Transactions statistics"
+    flow:
+      - get:
+          url: "/transactions/statistics"
+          qs:
+            limit: 30
+            interval: month
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+
+  - name: "Events"
+    flow:
+      - get:
+          url: "/events"
+          response:
+            match:
+              json: "$.meta.count"
+              value: 10
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/events"
+          qs:
+            limit: 20
+          response:
+            match:
+              json: "$.meta.count"
+              value: 20
+          expect:
+            - statusCode: 200
+
+  - name: "Validators"
+    flow:
+      - get:
+          url: "/pos/validators"
+          qs:
+            limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/pos/validators"
+          qs:
+            limit: 103
+          response:
+            match:
+              json: "$.meta.count"
+              value: 103
+          expect:
+            - statusCode: 200
+  - name: "Generators"
+    flow:
+      - get:
+          url: "/generators"
+          qs:
+            limit: 30
+            isDelegate: true
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/generators"
+          qs:
+            limit: 103
+            isDelegate: true
+          response:
+            match:
+              json: "$.meta.count"
+              value: 103
+          expect:
+            - statusCode: 200
