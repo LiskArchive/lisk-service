@@ -24,10 +24,10 @@ const {
 
 const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
-const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
+const { exists, mkdir, getDirectories, rename, rmdir } = require('./fsUtils');
 
 const keyValueTable = require('../database/mysqlKVStore');
-const { indexMetadataFromFile } = require('../metadataIndex');
+const { indexMetadataFromFile, deleteIndexedMetadataOfFile } = require('../metadataIndex');
 
 const config = require('../../config');
 
@@ -38,6 +38,16 @@ const { FILENAME } = config;
 const logger = Logger();
 
 const octokit = new Octokit({ auth: config.gitHub.accessToken });
+
+const GITHUB_FILE_STATUS = Object.freeze({
+	ADDED: 'added',
+	REMOVED: 'removed',
+	MODIFIED: 'modified',
+	RENAMED: 'renamed',
+	COPIED: 'copied',
+	CHANGED: 'changed',
+	UNCHANGED: 'unchanged',
+});
 
 const getRepoInfoFromURL = (url) => {
 	const urlInput = url || '';
@@ -180,6 +190,10 @@ const buildEventPayload = async (allFilesModified) => {
 	return eventPayload;
 };
 
+const isMetadataFile = (filePath) => (
+	filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON)
+);
+
 const syncWithRemoteRepo = async () => {
 	try {
 		const dataDirectory = config.dataDir;
@@ -192,29 +206,54 @@ const syncWithRemoteRepo = async () => {
 		} else {
 			const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
 			// TODO: Add a check to filter out non-blockchain apps related files
-			const filesChanged = diffInfo.data.files.map(file => file.filename);
+			// Sorting is necessary to ensure app.json is downloaded before nativetokens.json file
+			// Otherwise the indexing may fail as token metadata indexing is dependant on app metadata
+			const modifiedFiles = diffInfo.data.files.sort();
+
+			const fileUpdatedStatuses = [
+				GITHUB_FILE_STATUS.REMOVED,
+				GITHUB_FILE_STATUS.MODIFIED,
+				GITHUB_FILE_STATUS.CHANGED,
+			];
 
 			await BluebirdPromise.map(
-				filesChanged,
-				async file => {
-					const result = await getFileDownloadURL(file);
-					const filePath = path.join(appDirPath, file);
-					await downloadFile(result.data.download_url, filePath);
-					logger.debug(`Successfully downloaded: ${file}`);
+				modifiedFiles,
+				async modifiedFile => {
+					const remoteFilePath = modifiedFile.filename;
+					const localFilePath = path.join(appDirPath, remoteFilePath);
 
-					if (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)) {
-						const [network, appName, filename] = file.split('/').slice(-3);
+					// Delete indexed information if a meta file is updated/deleted
+					if (isMetadataFile(remoteFilePath) && fileUpdatedStatuses.includes(modifiedFile.status)) {
+						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
+						await deleteIndexedMetadataOfFile(network, appName, filename);
+					}
+
+					// Skip download and indexing for deleted file
+					if (modifiedFile.status === GITHUB_FILE_STATUS.REMOVED) {
+						rmdir(localFilePath, { recursive: false });
+						return;
+					}
+
+					// Download latest filePath
+					const result = await getFileDownloadURL(remoteFilePath);
+					await downloadFile(result.data.download_url, localFilePath);
+					logger.debug(`Successfully downloaded: ${localFilePath}`);
+
+					// Update db with latest file information
+					if (isMetadataFile(remoteFilePath)) {
+						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
 						await indexMetadataFromFile(network, appName, filename);
 						logger.debug('Successfully updated the database with the latest changes');
 					}
 				},
-				{ concurrency: filesChanged.length },
+				{ concurrency: modifiedFiles.length },
 			);
 
 			await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 
-			if (filesChanged.length) {
-				const eventPayload = await buildEventPayload(filesChanged);
+			if (modifiedFiles.length) {
+				const modifiedFileNames = diffInfo.data.files.map(file => file.filename);
+				const eventPayload = await buildEventPayload(modifiedFileNames);
 				Signals.get('metadataUpdated').dispatch(eventPayload);
 			}
 		}

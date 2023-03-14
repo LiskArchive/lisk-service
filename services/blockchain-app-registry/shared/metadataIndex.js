@@ -124,6 +124,73 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 	logger.info(`Finished indexing metadata information for the app: ${app} (${network}).`);
 };
 
+const deleteChainMeta = async (chainMeta, dbTrx) => {
+	const applicationMetadataTable = await getApplicationMetadataIndex();
+
+	const chainMetaParams = {
+		network: chainMeta.networkType,
+		chainName: chainMeta.chainName,
+	};
+
+	await applicationMetadataTable.delete(chainMetaParams, dbTrx);
+};
+
+const deleteTokensMeta = async (tokenMeta, dbTrx) => {
+	const tokenMetadataTable = await getTokenMetadataIndex();
+
+	await BluebirdPromise.map(
+		tokenMeta.localIDs,
+		async (localID) => {
+			const queryParams = {
+				network: tokenMeta.network,
+				chainName: tokenMeta.chainName,
+				localID,
+			};
+			await tokenMetadataTable.delete(queryParams, dbTrx);
+		},
+		{ concurrency: tokenMeta.localIDs.length },
+	);
+};
+
+const deleteIndexedMetadataOfFile = async (network, app, filename = null, dbTrx) => {
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
+	logger.debug(`Deleting metadata information for the app: ${app} (${network}).`);
+
+	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
+
+	const appPathInClonedRepo = `${dataDir}/${repo}/${network}/${app}`;
+	logger.trace('Reading chain information.');
+	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
+	const chainMeta = { ...JSON.parse(chainMetaString) };
+
+	if (filename === FILENAME.APP_JSON || filename === null) {
+		logger.debug(`Deleting chain information for the app: ${app} (${network}).`);
+		await deleteChainMeta(chainMeta, dbTrx);
+		logger.debug(`Deleted chain information for the app: ${app} (${network}).`);
+	}
+
+	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
+		logger.trace('Reading tokens information');
+		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
+		const { tokens } = JSON.parse(tokenMetaString);
+		const localIDs = tokens.map(
+			token => token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
+		);
+
+		const tokenMeta = {
+			localIDs,
+			chainName: chainMeta.chainName,
+			network,
+		};
+
+		logger.debug(`Deleting tokens information for the app: ${app} (${network}).`);
+		await deleteTokensMeta(tokenMeta, dbTrx);
+		logger.debug(`Deleted tokens information for the app: ${app} (${network}).`);
+	}
+	logger.info(`Finished Deleting metadata information for the app: ${app} (${network}).`);
+};
+
 const indexAllBlockchainAppsMeta = async () => {
 	const dataDirectory = config.dataDir;
 	const repo = config.gitHub.appRegistryRepoName;
@@ -174,4 +241,5 @@ const indexAllBlockchainAppsMeta = async () => {
 module.exports = {
 	indexAllBlockchainAppsMeta,
 	indexMetadataFromFile,
+	deleteIndexedMetadataOfFile,
 };
