@@ -35,14 +35,18 @@ const NUM_REQUEST_RETRIES = 5;
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let lastApiClientLivelinessCheck = 0;
 let isClientAlive = false;
 let isInstantiating = false;
 
 const checkIsClientAlive = async () => {
 	if (config.isUseLiskIPCClient) {
-		await clientCache._channel.invoke('system_getNodeInfo')
-			.then(() => { isClientAlive = true; })
-			.catch(() => { isClientAlive = false; });
+		if (Date.now() - lastApiClientLivelinessCheck > 1000) {
+			await clientCache._channel.invoke('system_getNodeInfo')
+				.then(() => { isClientAlive = true; })
+				.catch(() => { isClientAlive = false; })
+				.finally(() => { if (isClientAlive) lastApiClientLivelinessCheck = Date.now(); });
+		}
 	} else {
 		isClientAlive = clientCache._channel.isAlive;
 	}

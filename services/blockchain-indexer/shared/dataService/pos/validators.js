@@ -92,7 +92,7 @@ const computeValidatorStatus = async () => {
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
-	const lastestBlock = getLastBlock();
+	const latestBlock = getLastBlock();
 	const generatorsList = await business.getGenerators();
 
 	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));
@@ -110,8 +110,8 @@ const computeValidatorStatus = async () => {
 
 	const verifyIfPunished = (validator) => {
 		const isPunished = validator.punishmentPeriods.some(
-			punishmentPeriod => punishmentPeriod.start <= lastestBlock.height
-				&& lastestBlock.height <= punishmentPeriod.end,
+			punishmentPeriod => punishmentPeriod.start <= latestBlock.height
+				&& latestBlock.height <= punishmentPeriod.end,
 		);
 		return isPunished;
 	};
