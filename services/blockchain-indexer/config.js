@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
 	jobs: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 	db: {},
 };
 

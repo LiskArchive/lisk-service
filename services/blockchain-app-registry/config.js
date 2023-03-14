@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {};
 
 // Moleculer broker config
@@ -26,13 +28,17 @@ config.endpoints = {};
 config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 // Logging
-config.log = {};
+config.log = {
+	name: packageJson.name,
+	version: packageJson.version,
+};
+
 /**
  * log.level - Limits the importance of log messages for console and stdout outputs
  *             One fo the following in that order:
  *               TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK
  */
-config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
+config.log.level = process.env.SERVICE_LOG_LEVEL || 'debug';
 
 /*
  * True / False outputs

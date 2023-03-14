@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {};
 
 // Moleculer broker config
@@ -27,7 +29,10 @@ config.endpoints.redis = process.env.SERVICE_EXPORT_REDIS || 'redis://localhost:
 config.endpoints.volatileRedis = process.env.SERVICE_EXPORT_REDIS_VOLATILE || 'redis://localhost:6379/4';
 
 // Logging
-config.log = {};
+config.log = {
+	name: packageJson.name,
+	version: packageJson.version,
+};
 /**
  * log.level - Limits the importance of log messages for console and stdout outputs
  *             One fo the following in that order:
