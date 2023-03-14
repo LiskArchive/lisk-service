@@ -38,7 +38,7 @@ config.log = {
  *             One fo the following in that order:
  *               TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK
  */
-config.log.level = process.env.SERVICE_LOG_LEVEL || 'debug';
+config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 
 /*
  * True / False outputs
