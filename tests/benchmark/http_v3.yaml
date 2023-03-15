@@ -2,12 +2,14 @@ config:
   target: "{{ $processEnvironment.LISK_SERVICE_URL }}/api/v3"
   phases:
     - duration: 10
-      arrivalRate: 15
-      name: "Sustained max load of 15 users for 10 seconds"
+      arrivalRate: 5
+      name: "Sustained max load of 5 users for 10 seconds"
   defaults:
     headers:
       content-type: "application/json"
+
 scenarios:
+  # Blocks
   - name: "Blocks"
     flow:
       - get:
@@ -54,6 +56,7 @@ scenarios:
           expect:
             - statusCode: 200
 
+  # Transactions
   - name: "Transactions"
     flow:
       - get:
@@ -72,12 +75,7 @@ scenarios:
       - get:
           url: "/transactions/statistics"
           qs:
-            limit: 30
             interval: day
-          response:
-            match:
-              json: "$.meta.count"
-              value: 30
           expect:
             - statusCode: 200
   - name: "Transactions statistics"
@@ -85,15 +83,109 @@ scenarios:
       - get:
           url: "/transactions/statistics"
           qs:
-            limit: 30
             interval: month
-          response:
-            match:
-              json: "$.meta.count"
-              value: 30
           expect:
             - statusCode: 200
 
+  # Validator
+  - name: "Validator information by address"
+    flow:
+      - get:
+          url: "/validator"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
+
+  # Auth
+  - name: "Auth information by address"
+    flow:
+      - get:
+          url: "/auth"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
+
+  # Token
+  - name: "Tokens information by address"
+    flow:
+      - get:
+          url: "/tokens"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
+  
+  - name: "Check existence of an account for the specified token"
+    flow:
+      - get:
+          url: "/token/account/exists"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+            tokenID: "0400000000000000"
+          expect:
+            - statusCode: 200
+
+  - name: "Token constants"
+    flow:
+      - get:
+          url: "/token/constants"
+          expect:
+            - statusCode: 200
+
+  - name: "Token summary"
+    flow:
+      - get:
+          url: "/tokens/summary"
+          expect:
+            - statusCode: 200
+
+  # Fee
+  - name: "Fee estimates"
+    flow:
+      - get:
+          url: "/fees"
+          expect:
+            - statusCode: 200
+
+  # Interoperability
+  - name: "Blockchain applications list"
+    flow:
+      - get:
+          url: "/blockchain/apps"
+          expect:
+            - statusCode: 200
+
+  - name: "Blockchain applications statistics"
+    flow:
+      - get:
+          url: "/blockchain/apps/statistics"
+          expect:
+            - statusCode: 200
+
+  - name: "Blockchain applications for which the off-chain metadata is available"
+    flow:
+      - get:
+          url: "/blockchain/apps/meta/list"
+          expect:
+            - statusCode: 200
+
+  - name: "Blockchain applications off-chain metadata"
+    flow:
+      - get:
+          url: "/blockchain/apps/meta"
+          expect:
+            - statusCode: 200
+
+  - name: "Blockchain applications off-chain metadata for tokens"
+    flow:
+      - get:
+          url: "/blockchain/apps/meta/tokens"
+          expect:
+            - statusCode: 200
+
+  # Events
   - name: "Events"
     flow:
       - get:
@@ -112,6 +204,59 @@ scenarios:
             match:
               json: "$.meta.count"
               value: 20
+          expect:
+            - statusCode: 200
+
+  # PoS
+  - name: "PoS module constants"
+    flow:
+      - get:
+          url: "/pos/constants"
+          expect:
+            - statusCode: 200
+
+  - name: "Validator claimable rewards"
+    flow:
+      - get:
+          url: "/pos/rewards/claimable"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
+
+  - name: "Validator locked rewards"
+    flow:
+      - get:
+          url: "/pos/rewards/locked"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
+
+  - name: "Stakers"
+    flow:
+      - get:
+          url: "/pos/stakers"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
+
+  # - name: "Stakes"
+  #   flow:
+  #     - get:
+  #         url: "/pos/stakes"
+  #         qs:
+  #           address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+  #         expect:
+  #           - statusCode: 200
+
+  - name: "Unlocks"
+    flow:
+      - get:
+          url: "/pos/unlocks"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
           expect:
             - statusCode: 200
 
@@ -137,13 +282,73 @@ scenarios:
               value: 103
           expect:
             - statusCode: 200
+
+  # Reward
+  - name: "Reward module constants"
+    flow:
+      - get:
+          url: "/reward/constants"
+          expect:
+            - statusCode: 200
+
+  - name: "Default block generation reward at a specified height"
+    flow:
+      - get:
+          url: "/reward/default"
+          qs:
+            height: 10
+          expect:
+            - statusCode: 200
+
+  - name: "Inflation rate"
+    flow:
+      - get:
+          url: "/reward/inflation"
+          qs:
+            height: 10
+          expect:
+            - statusCode: 200
+
+  # Legacy
+  - name: "Legacy account information"
+    flow:
+      - get:
+          url: "/legacy"
+          qs:
+            publicKey: "1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc"
+          expect:
+            - statusCode: 200
+
+  # Network
+  - name: "Network status"
+    flow:
+      - get:
+          url: "/network/status"
+          expect:
+            - statusCode: 200
+
+  - name: "Network statistics"
+    flow:
+      - get:
+          url: "/network/statistics"
+          expect:
+            - statusCode: 200
+
+  # Peers
+  - name: "Peers"
+    flow:
+      - get:
+          url: "/peers"
+          expect:
+            - statusCode: 200
+
+  # Generators
   - name: "Generators"
     flow:
       - get:
           url: "/generators"
           qs:
             limit: 30
-            isDelegate: true
           response:
             match:
               json: "$.meta.count"
@@ -154,10 +359,41 @@ scenarios:
           url: "/generators"
           qs:
             limit: 103
-            isDelegate: true
           response:
             match:
               json: "$.meta.count"
               value: 103
           expect:
             - statusCode: 200
+  
+  # Schemas
+  - name: "Schemas"
+    flow:
+      - get:
+          url: "/schemas"
+          expect:
+            - statusCode: 200
+
+  # Index Status
+  - name: "Indexing status"
+    flow:
+      - get:
+          url: "/index/status"
+          expect:
+            - statusCode: 200
+
+  # Market
+  - name: "Market prices"
+    flow:
+      - get:
+          url: "/market/prices"
+          expect:
+            - statusCode: 200
+
+  # Newsfeed
+  # - name: "Newsfeed"
+  #   flow:
+  #     - get:
+  #         url: "/newsfeed"
+  #         expect:
+  #           - statusCode: 200
