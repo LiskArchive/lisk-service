@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
 	jobs: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 	db: {},
 };
 
@@ -103,7 +108,7 @@ config.networks = Object.freeze({
 		{
 			name: 'devnet',
 			chainID: '04000000',
-			serviceURL: 'http://devnet-service.liskdev.net:9901',
+			serviceURL: process.env.DEVNET_MAINCHAIN_URL || 'http://devnet-service.liskdev.net:9901',
 		},
 	],
 });

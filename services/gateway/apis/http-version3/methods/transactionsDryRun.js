@@ -40,7 +40,7 @@ module.exports = {
 				},
 			},
 		],
-		isSkipVerify: { optional: true, type: 'boolean', default: false },
+		skipVerify: { optional: true, type: 'boolean', default: false },
 	},
 	get schema() {
 		const dryRunTransactionSchema = {};

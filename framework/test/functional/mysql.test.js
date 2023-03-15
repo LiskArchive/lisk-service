@@ -203,6 +203,21 @@ describe('Test MySQL', () => {
 			const distinctResult = await testTable.find({ distinct: 'id' }, 'id');
 			expect(result.length).toBeGreaterThan(distinctResult.length);
 		});
+
+		it('Update method', async () => {
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock.timestamp).toBe(emptyBlock.timestamp);
+
+			const params = {
+				where: { height: emptyBlock.height },
+				updates: { timestamp: emptyBlock.timestamp + 1000 }
+			}
+
+			await testTable.update(params);
+
+			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock1.timestamp).toBe(params.updates.timestamp);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
@@ -375,6 +390,25 @@ describe('Test MySQL', () => {
 			const result = await testTable.find();
 			const distinctResult = await testTable.find({ distinct: 'id' }, 'id');
 			expect(result.length).toBeGreaterThan(distinctResult.length);
+		});
+
+		it('Update method', async () => {
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock.timestamp).toBe(emptyBlock.timestamp);
+
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+
+			const params = {
+				where: { height: emptyBlock.height },
+				updates: { timestamp: emptyBlock.timestamp + 1000 }
+			}
+
+			await testTable.update(params, trx);
+			await commitDbTransaction(trx);
+
+			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock1.timestamp).toBe(params.updates.timestamp);
 		});
 	});
 

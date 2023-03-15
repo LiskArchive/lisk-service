@@ -18,7 +18,7 @@ module.exports = {
 	method: 'indexer.transactions.dryrun',
 	params: {
 		transaction: '=',
-		isSkipVerify: '=,boolean',
+		skipVerify: '=,boolean',
 	},
 	definition: {
 		data: '=',

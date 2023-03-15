@@ -357,7 +357,7 @@
 	"dryrunTransactionParamEnvelope": {
 		"type": "object",
 		"properties": {
-			"isSkipVerify": {
+			"skipVerify": {
 				"type": "boolean",
 				"description": "A boolean indicator to skip transaction verification.",
 				"example": "false",
