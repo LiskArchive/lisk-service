@@ -21,6 +21,6 @@ module.exports = {
 	},
 	assets: ['assets', {
 		module: '=,string',
-		data: '=', // TODO: Update data schema once confirmed from sdk
+		data: '=',
 	}],
 };

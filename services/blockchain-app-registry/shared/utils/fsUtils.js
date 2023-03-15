@@ -136,7 +136,7 @@ const rename = async (oldName, newName) => {
 		if (err) {
 			logger.error('Error while renaming resource:', err.message);
 		} else {
-			logger.debug('Successfully renamed');
+			logger.debug('Successfully renamed.');
 		}
 	});
 };

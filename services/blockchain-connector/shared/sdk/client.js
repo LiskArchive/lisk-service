@@ -28,10 +28,10 @@ const logger = Logger();
 // Constants
 const timeoutMessage = 'Response not received in';
 const liskAddress = config.endpoints.liskWs;
-const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
-const RETRY_INTERVAL = 500; // ms
 const NUM_REQUEST_RETRIES = 5;
-const LIVENESS_CHECK_THRESHOLD_IN_MS = 1000; // in ms
+const RETRY_INTERVAL = 500; // ms
+const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
+const LIVELINESS_CHECK_THRESHOLD_IN_MS = 1000; // in ms
 
 // Caching and flags
 let clientCache;
@@ -42,7 +42,7 @@ let isInstantiating = false;
 
 const checkIsClientAlive = async () => {
 	if (config.isUseLiskIPCClient) {
-		if (Date.now() - lastApiClientLivelinessCheck > LIVENESS_CHECK_THRESHOLD_IN_MS) {
+		if (Date.now() - lastApiClientLivelinessCheck > LIVELINESS_CHECK_THRESHOLD_IN_MS) {
 			await clientCache._channel.invoke('system_getNodeInfo')
 				.then(() => { isClientAlive = true; })
 				.catch(() => { isClientAlive = false; })

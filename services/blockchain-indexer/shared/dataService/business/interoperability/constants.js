@@ -19,7 +19,7 @@ const APP_STATUS = {
 	TERMINATED: 'terminated',
 };
 
-// TODO: Update values from sdk once this is settled: https://github.com/LiskHQ/discussions/discussions/101
+// TODO: Update values from SDK once the discussion is concluded: https://github.com/LiskHQ/discussions/discussions/101
 const CHAIN_STATUS = Object.freeze({
 	0: 'registered',
 	1: 'active',

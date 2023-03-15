@@ -51,7 +51,6 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		...tx.params,
 	};
 
-	// TODO: Remove this information?
 	// Update the account balance
 	const account = { address: tx.recipientAddress };
 	logger.trace(`Updating account index for the account with address ${account.address}.`);

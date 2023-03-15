@@ -50,14 +50,14 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
 
-const normalizeBlock = async (originalblock) => {
+const normalizeBlock = async (originalBlock) => {
 	try {
 		const blocksTable = await getBlocksIndex();
 
 		const block = {
-			...originalblock.header,
-			transactions: originalblock.transactions,
-			assets: originalblock.assets,
+			...originalBlock.header,
+			transactions: originalBlock.transactions,
+			assets: originalBlock.assets,
 		};
 
 		if (block.generatorAddress) {
@@ -78,11 +78,14 @@ const normalizeBlock = async (originalblock) => {
 		block.isFinal = block.height <= (await getFinalizedHeight());
 		block.numberOfTransactions = block.transactions.length;
 		block.numberOfAssets = block.assets.length;
-		const [{ numberOfEvents, reward } = {}] = await blocksTable.find({ height: block.height }, ['numberOfEvents', 'reward']);
+		const [{ numberOfEvents, reward } = {}] = await blocksTable.find(
+			{ height: block.height },
+			['numberOfEvents', 'reward'],
+		);
 		block.numberOfEvents = numberOfEvents;
 
 		block.size = 0;
-		// TODO: get reward value from block event
+		// TODO: Get reward value from block event
 		block.totalForged = BigInt(reward || '0');
 		block.totalBurnt = BigInt('0');
 		block.networkFee = BigInt('0');
@@ -103,7 +106,7 @@ const normalizeBlock = async (originalblock) => {
 
 		return parseToJSONCompatObj(block);
 	} catch (error) {
-		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}, id: ${originalblock.header.id}:\n${error.stack}`);
+		logger.error(`Error occurred when normalizing block at height ${originalBlock.header.height}, id: ${originalBlock.header.id}:\n${error.stack}`);
 		throw error;
 	}
 };

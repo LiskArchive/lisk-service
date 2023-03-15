@@ -87,9 +87,9 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_APP_WS: 'ws://localhost:5001',
 				GEOIP_JSON: 'https://geoip.lisk.com/json',
-				USE_LISK_IPC_CLIENT: 'true', // TODO: Revert this change once issue https://github.com/LiskHQ/lisk-sdk/issues/7141 is fixed
-				LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
-				ENABLE_TESTING_MODE: 'false',
+				USE_LISK_IPC_CLIENT: 'true',
+				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				// ENABLE_TESTING_MODE: 'false',
 			},
 		},
 		{

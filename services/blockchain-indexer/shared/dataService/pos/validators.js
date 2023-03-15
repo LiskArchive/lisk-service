@@ -74,7 +74,6 @@ const validatorComparator = (a, b) => {
 	return a.hexAddress.localeCompare(b.hexAddress, 'en');
 };
 
-// TODO: Remove code after SDK returns rank
 const computeValidatorRank = async () => {
 	validatorList
 		.map(validator => ({ ...validator, hexAddress: getHexAddress(validator.address) }))
@@ -141,10 +140,6 @@ const computeValidatorStatus = async () => {
 
 const loadAllPosValidators = async () => {
 	try {
-		// TODO: Enable with Lisk SDK v6.0.0-alpha.8
-		// Ref: https://github.com/LiskHQ/lisk-sdk/issues/7870
-		// // Fetch all the validators sorted by stake
-		// validatorList = await business.getPosValidatorsByStake({ limit: -1 });
 		validatorList = await business.getAllPosValidators();
 
 		// Cache and index all the necessary information
@@ -172,7 +167,6 @@ const reloadValidatorCache = async () => {
 	if (!await business.isPosModuleRegistered()) return;
 
 	await loadAllPosValidators();
-	// TODO: Remove rank computation after Lisk SDK v6.0.0-alpha.8
 	await computeValidatorRank();
 	await computeValidatorStatus();
 };
@@ -250,7 +244,6 @@ const getPosValidators = async params => {
 		{ concurrency: validators.data.length },
 	);
 
-	// TODO: Remove after Lisk SDK v6.0.0-alpha.8
 	if (validators.data.every(validator => !validator.rank)) await computeValidatorRank();
 
 	// Assign the total count

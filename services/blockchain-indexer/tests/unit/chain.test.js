@@ -31,13 +31,25 @@ describe('Test isMainchain method', () => {
 		expect(result).toBe(false);
 	});
 
-	// TODO: Include more negative testcases with invalid chainID and sidechain chainIDs
-
 	it('should return true -> valid mainchain chainID', async () => {
 		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000000' } });
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(true);
 	});
-});
 
+	// TODO: Fix the following negative test cases
+	xit('should return false -> valid sidechain chainID', async () => {
+		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000001' } });
+		const result = await isMainchain();
+		expect(typeof result).toBe('boolean');
+		expect(result).toBe(false);
+	});
+
+	xit('should return false -> invalid chainID', async () => {
+		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: 'xy000000' } });
+		const result = await isMainchain();
+		expect(typeof result).toBe('boolean');
+		expect(result).toBe(false);
+	});
+});

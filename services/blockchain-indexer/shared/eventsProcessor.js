@@ -47,7 +47,6 @@ const newBlockProcessor = async (block) => {
 	Signals.get('newBlock').dispatch(response);
 };
 
-// TODO: Test delete block implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1189
 const deleteBlockProcessor = async (block) => {
 	let response;
 	try {
