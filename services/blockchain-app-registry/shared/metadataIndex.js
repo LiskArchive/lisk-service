@@ -108,7 +108,7 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 	}
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
-		logger.trace('Reading tokens information');
+		logger.trace('Reading tokens information.');
 		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
@@ -171,7 +171,7 @@ const deleteIndexedMetadataOfFile = async (network, app, filename = null, dbTrx)
 	}
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
-		logger.trace('Reading tokens information');
+		logger.trace('Reading tokens information.');
 		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
 		const { tokens } = JSON.parse(tokenMetaString);
 		const localIDs = tokens.map(
@@ -224,7 +224,7 @@ const indexAllBlockchainAppsMeta = async () => {
 									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
-									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
+									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}.`);
 								}
 							}
 						},

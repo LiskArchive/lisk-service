@@ -72,7 +72,7 @@ const getLatestCommitHash = async () => {
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to get latest commit hash due to: ${errorMsg}`);
+		logger.error(`Unable to get latest commit hash due to: ${errorMsg}.`);
 		throw error;
 	}
 };
@@ -98,7 +98,7 @@ const getRepoDownloadURL = async () => {
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to access the repository due to: ${errorMsg}`);
+		logger.error(`Unable to access the repository due to: ${errorMsg}.`);
 		throw error;
 	}
 };
@@ -118,7 +118,7 @@ const getFileDownloadURL = async (file) => {
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to access the file due to: ${errorMsg}`);
+		logger.error(`Unable to access the file due to: ${errorMsg}.`);
 		throw error;
 	}
 };
@@ -202,7 +202,7 @@ const syncWithRemoteRepo = async () => {
 		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
 
 		if (lastSyncedCommitHash === latestCommitHash) {
-			logger.info('Database is already up-to-date');
+			logger.info('Database is already up-to-date.');
 		} else {
 			const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
 			// TODO: Add a check to filter out non-blockchain apps related files
@@ -237,13 +237,13 @@ const syncWithRemoteRepo = async () => {
 					// Download latest filePath
 					const result = await getFileDownloadURL(remoteFilePath);
 					await downloadFile(result.data.download_url, localFilePath);
-					logger.debug(`Successfully downloaded: ${localFilePath}`);
+					logger.debug(`Successfully downloaded: ${localFilePath}.`);
 
 					// Update db with latest file information
 					if (isMetadataFile(remoteFilePath)) {
 						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
 						await indexMetadataFromFile(network, appName, filename);
-						logger.debug('Successfully updated the database with the latest changes');
+						logger.debug('Successfully updated the database with the latest changes.');
 					}
 				},
 				{ concurrency: modifiedFiles.length },
@@ -260,7 +260,7 @@ const syncWithRemoteRepo = async () => {
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to sync changes due to: ${errorMsg}`);
+		logger.error(`Unable to sync changes due to: ${errorMsg}.`);
 		throw error;
 	}
 };
