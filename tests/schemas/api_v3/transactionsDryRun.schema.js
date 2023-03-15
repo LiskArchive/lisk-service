@@ -17,6 +17,12 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
+const transactionExecutionResult = {
+	INVALID: -1,
+	FAIL: 0,
+	OK: 1,
+};
+
 const event = {
 	data: Joi.object().required(),
 	index: Joi.number().integer().min(0).required(),
@@ -28,15 +34,15 @@ const event = {
 };
 
 const dryrunTransactionSuccessResponseSchema = {
-	result: Joi.number().integer().valid(1).required(),
+	result: Joi.number().integer().valid(transactionExecutionResult.OK).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 const dryrunTransactionFailResponseSchema = {
-	result: Joi.number().integer().valid(0).required(),
+	result: Joi.number().integer().valid(transactionExecutionResult.FAIL).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 const dryrunTransactionInvalidResponseSchema = {
-	result: Joi.number().integer().valid(-1).required(),
+	result: Joi.number().integer().valid(transactionExecutionResult.INVALID).required(),
 	events: Joi.array().length(0).required(),
 	errorMessage: Joi.string().required(),
 };

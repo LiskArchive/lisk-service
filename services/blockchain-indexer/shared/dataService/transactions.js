@@ -31,16 +31,16 @@ const isIncludePendingTransactions = (executionStatus) => {
 };
 
 const getPendingTransactions = async params => {
-	const pendingtransactions = {
+	const pendingTransactions = {
 		data: [],
 		meta: {},
 	};
 
 	const response = await dataService.getPendingTransactions(params);
-	if (response.data) pendingtransactions.data = response.data;
-	if (response.meta) pendingtransactions.meta = response.meta;
+	if (response.data) pendingTransactions.data = response.data;
+	if (response.meta) pendingTransactions.meta = response.meta;
 
-	return pendingtransactions;
+	return pendingTransactions;
 };
 
 const mergeTransactions = async (params) => {

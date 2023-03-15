@@ -103,7 +103,7 @@ config.networks = Object.freeze({
 		{
 			name: 'devnet',
 			chainID: '04000000',
-			serviceURL: 'http://devnet-service.liskdev.net:9901',
+			serviceURL: process.env.DEVNET_MAINCHAIN_URL || 'http://devnet-service.liskdev.net:9901',
 		},
 	],
 });
