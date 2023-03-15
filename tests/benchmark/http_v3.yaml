@@ -108,7 +108,7 @@ scenarios:
             - statusCode: 200
 
   # Token
-  - name: "Tokens information by address"
+  - name: "Tokens information"
     flow:
       - get:
           url: "/tokens"
@@ -134,7 +134,7 @@ scenarios:
           expect:
             - statusCode: 200
 
-  - name: "Token summary"
+  - name: "Tokens summary"
     flow:
       - get:
           url: "/tokens/summary"
