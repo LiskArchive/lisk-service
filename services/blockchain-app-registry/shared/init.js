@@ -13,14 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const logger = require('lisk-service-framework').Logger();
+
 const { initDatabase } = require('./database/index');
 const { indexAllBlockchainAppsMeta } = require('./metadataIndex');
 const { downloadRepositoryToFS } = require('./utils/downloadRepository');
 
 const init = async () => {
-	await initDatabase();
-	await downloadRepositoryToFS();
-	await indexAllBlockchainAppsMeta();
+	try {
+		await initDatabase();
+		await downloadRepositoryToFS();
+		await indexAllBlockchainAppsMeta();
+	} catch (error) {
+		const errorMsg = Array.isArray(error)
+			? error.map(e => e.message).join('\n')
+			: error.message;
+		logger.error(`Unable to initialize metadata information due to: ${errorMsg}`);
+	}
 };
 
 module.exports = {

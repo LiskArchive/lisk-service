@@ -20,19 +20,12 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { setAppContext } = require('./shared/csvExport');
-
 const config = require('./config');
+
+LoggerConfig(config.log);
+
 const packageJson = require('./package.json');
-
-// Configure logger
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
+const { setAppContext } = require('./shared/csvExport');
 
 const logger = Logger();
 
@@ -42,7 +35,7 @@ const app = Microservice({
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
-	logger: loggerConf,
+	logger: config.log,
 });
 
 setAppContext(app);

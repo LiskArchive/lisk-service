@@ -21,18 +21,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+
+LoggerConfig(config.log);
+
 const packageJson = require('./package.json');
 
 const newsFeedStore = require('./shared/newsfeed');
-
-// Configure logger
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -42,7 +36,7 @@ const app = Microservice({
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
-	logger: loggerConf,
+	logger: config.log,
 });
 
 newsFeedStore.getNewsFeedTable().then(() => {

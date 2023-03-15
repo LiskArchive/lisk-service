@@ -21,17 +21,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+
+LoggerConfig(config.log);
+
 const packageJson = require('./package.json');
 const nodeStatus = require('./shared/nodeStatus');
 const { init } = require('./shared/sdk');
-
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -39,7 +34,7 @@ const app = Microservice({
 	name: 'connector',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
-	logger: loggerConf,
+	logger: config.log,
 });
 
 nodeStatus.waitForNode().then(async () => {
