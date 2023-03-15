@@ -22,8 +22,6 @@ const {
 	Logger,
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
-const path = require('path');
-const { mkdir } = require('./fsUtils');
 
 const logger = Logger();
 
@@ -59,24 +57,21 @@ const downloadFile = (url, filePath) => new Promise((resolve, reject) => {
 		return;
 	}
 
-	const dirPath = path.dirname(filePath);
-	mkdir(dirPath, { recursive: true }).then(() => {
-		getHTTPProtocolByURL(url).get(url, (response) => {
-			if (response.statusCode === 200) {
-				const writeStream = fs.createWriteStream(filePath);
-				response.pipe(writeStream);
-				response.on('error', async (err) => reject(new Error(err)));
-				response.on('end', async () => {
-					logger.info('File downloaded successfully.');
-					setTimeout(resolve, 100); // Since the promise resolves earlier than expected
-				});
-			} else {
-				const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage}).`;
-				logger.error(errMessage);
-				if (response.statusCode === 404) reject(new NotFoundException(errMessage));
-				reject(new Error(errMessage));
-			}
-		});
+	getHTTPProtocolByURL(url).get(url, (response) => {
+		if (response.statusCode === 200) {
+			const writeStream = fs.createWriteStream(filePath);
+			response.pipe(writeStream);
+			response.on('error', async (err) => reject(new Error(err)));
+			response.on('end', async () => {
+				logger.info('File downloaded successfully.');
+				setTimeout(resolve, 100); // Since the promise resolves earlier than expected
+			});
+		} else {
+			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage}).`;
+			logger.error(errMessage);
+			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
+			reject(new Error(errMessage));
+		}
 	});
 });
 

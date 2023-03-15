@@ -150,7 +150,7 @@ const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 	);
 };
 
-const deleteIndexedMetadataOfFile = async (network, app, filename = null, dbTrx) => {
+const deleteIndexedMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 	const { dataDir } = config;
 	const repo = config.gitHub.appRegistryRepoName;
 	logger.debug(`Deleting metadata information for the app: ${app} (${network}).`);
@@ -221,7 +221,7 @@ const indexAllBlockchainAppsMeta = async () => {
 									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
-									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}.`);
+									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
 								}
 							}
 						},
@@ -238,5 +238,5 @@ const indexAllBlockchainAppsMeta = async () => {
 module.exports = {
 	indexAllBlockchainAppsMeta,
 	indexMetadataFromFile,
-	deleteIndexedMetadataOfFile,
+	deleteIndexedMetadataFromFile,
 };

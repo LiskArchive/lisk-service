@@ -51,7 +51,7 @@ const mkdir = async (directoryPath, options = { recursive: true }) => {
 	);
 };
 
-const rmdir = async (directoryPath, options = { recursive: true }) => new Promise((resolve) => {
+const rm = async (directoryPath, options) => new Promise((resolve) => {
 	logger.debug(`Removing directory: ${directoryPath}`);
 	fs.rm(
 		directoryPath,
@@ -70,6 +70,10 @@ const rmdir = async (directoryPath, options = { recursive: true }) => new Promis
 		},
 	);
 });
+
+const rmdir = async (directoryPath, options = { recursive: true }) => (
+	rm(directoryPath, { ...options, recursive: true })
+);
 
 const read = (filePath) => new Promise((resolve, reject) => {
 	fs.readFile(filePath, 'utf8', (err, data) => {
@@ -144,6 +148,7 @@ const rename = async (oldName, newName) => {
 module.exports = {
 	exists,
 	mkdir,
+	rm,
 	rmdir,
 	getDirectories,
 	read,

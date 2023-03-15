@@ -24,10 +24,10 @@ const {
 
 const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
-const { exists, mkdir, getDirectories, rename, rmdir } = require('./fsUtils');
+const { exists, mkdir, getDirectories, rename, rmdir, rm } = require('./fsUtils');
 
 const keyValueTable = require('../database/mysqlKVStore');
-const { indexMetadataFromFile, deleteIndexedMetadataOfFile } = require('../metadataIndex');
+const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
 
@@ -208,7 +208,7 @@ const syncWithRemoteRepo = async () => {
 			// TODO: Add a check to filter out non-blockchain apps related files
 			// Sorting is necessary to ensure app.json is downloaded before nativetokens.json file
 			// Otherwise the indexing may fail as token metadata indexing is dependant on app metadata
-			const modifiedFiles = diffInfo.data.files.sort();
+			const modifiedFiles = diffInfo.data.files;
 
 			const fileUpdatedStatuses = [
 				GITHUB_FILE_STATUS.REMOVED,
@@ -225,16 +225,19 @@ const syncWithRemoteRepo = async () => {
 					// Delete indexed information if a meta file is updated/deleted
 					if (isMetadataFile(remoteFilePath) && fileUpdatedStatuses.includes(modifiedFile.status)) {
 						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
-						await deleteIndexedMetadataOfFile(network, appName, filename);
+						await deleteIndexedMetadataFromFile(network, appName, filename);
 					}
 
 					// Skip download and indexing for deleted file
 					if (modifiedFile.status === GITHUB_FILE_STATUS.REMOVED) {
-						rmdir(localFilePath, { recursive: false });
+						await rm(localFilePath);
 						return;
 					}
 
-					// Download latest filePath
+					// Create directory and download latest file
+					const dirPath = path.dirname(localFilePath);
+					await mkdir(dirPath, { recursive: true });
+
 					const result = await getFileDownloadURL(remoteFilePath);
 					await downloadFile(result.data.download_url, localFilePath);
 					logger.debug(`Successfully downloaded: ${localFilePath}.`);
