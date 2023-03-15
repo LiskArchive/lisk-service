@@ -33,8 +33,7 @@ const testData = {
 	network: 'mainnet',
 };
 
-// TODO: Enable test cases with the next issue
-xdescribe('Test filesystem util methods', () => {
+describe('Test filesystem util methods', () => {
 	const dirPath = `${path.dirname(__dirname)}/testDir`;
 	const filePath = `${dirPath}/chain.json`;
 

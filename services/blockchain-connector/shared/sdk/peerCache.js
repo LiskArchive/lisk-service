@@ -46,7 +46,6 @@ const get = (type = 'peers') => new Promise((resolve) => {
 
 const refactorPeer = (orgPeer, state) => {
 	const { chainID, ipAddress, options: { height } = {}, ...peer } = orgPeer;
-	// TODO: Update implementation once SDK fixes issue: https://github.com/LiskHQ/lisk-sdk/issues/8173
 	peer.chainID = isObject(chainID)
 		? Buffer.from(chainID.data).toString('hex')
 		: chainID;
@@ -56,9 +55,9 @@ const refactorPeer = (orgPeer, state) => {
 	return peer;
 };
 
-const addLocation = async (ipaddress) => {
+const addLocation = async (ipAddress) => {
 	try {
-		const result = await GeoService.requestData(ipaddress);
+		const result = await GeoService.requestData(ipAddress);
 		return result;
 	} catch (e) {
 		return {};

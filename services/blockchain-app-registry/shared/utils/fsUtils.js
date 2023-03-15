@@ -20,48 +20,63 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const stats = filePath => new Promise((resolve, reject) => {
-	fs.stat(filePath, (err, stat) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		return resolve(stat);
-	});
-});
+const stats = async (filePath) => new Promise((resolve, reject) => {
+	fs.stat(
+		filePath,
+		(err, stat) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
 
-const exists = filePath => new Promise((resolve) => {
-	fs.access(filePath, (err) => {
-		if (err) {
-			return resolve(false);
-		}
-		return resolve(true);
-	});
-});
-
-const mkdir = async (directoryPath, options = { recursive: true }) => {
-	logger.debug(`Creating directory: ${directoryPath}`);
-	await fs.mkdir(
-		directoryPath,
-		options,
-		(err) => {
-			if (err) logger.error(`Error when creating directory: ${directoryPath}\n`, err.message);
-			else logger.debug(`Successfully created directory: ${directoryPath}`);
+			return resolve(stat);
 		},
 	);
-};
+});
 
-const rmdir = async (directoryPath, options = { recursive: true }) => new Promise((resolve) => {
-	logger.debug(`Removing directory: ${directoryPath}`);
-	fs.rm(
-		directoryPath,
-		{
-			...options,
-			recursive: true,
-		},
+const exists = async (resourcePath) => new Promise((resolve) => {
+	logger.trace(`Checking if resource exists: ${resourcePath}.`);
+	fs.access(
+		resourcePath,
 		(err) => {
 			if (err) {
-				logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
+				logger.trace(`Error when checking if resource exists: ${resourcePath}.\n`, err);
+				return resolve(false);
+			}
+
+			logger.trace(`Successfully validated that resource exists: ${resourcePath}.`);
+			return resolve(true);
+		},
+	);
+});
+
+const mkdir = async (directoryPath, options = { recursive: true }) => new Promise(
+	(resolve, reject) => {
+		logger.trace(`Creating directory: ${directoryPath}.`);
+		fs.mkdir(
+			directoryPath,
+			options,
+			(err) => {
+				if (err) {
+					logger.error(`Error when creating directory: ${directoryPath}.\n`, err);
+					return reject(err);
+				}
+
+				logger.debug(`Successfully created directory: ${directoryPath}.`);
+				return resolve();
+			},
+		);
+	},
+);
+
+const rmdir = async (directoryPath, options = { recursive: true }) => new Promise((resolve) => {
+	logger.trace(`Removing directory: ${directoryPath}.`);
+	fs.rm(
+		directoryPath,
+		{ ...options, recursive: true },
+		(err) => {
+			if (err) {
+				logger.error(`Error when removing directory: ${directoryPath}.\n`, err);
 				return resolve(false);
 			}
 
@@ -71,75 +86,93 @@ const rmdir = async (directoryPath, options = { recursive: true }) => new Promis
 	);
 });
 
-const read = (filePath) => new Promise((resolve, reject) => {
+const read = async (filePath) => new Promise((resolve, reject) => {
+	logger.trace(`Reading file: ${filePath}.`);
 	fs.readFile(filePath, 'utf8', (err, data) => {
 		if (err) {
-			logger.error(err);
+			logger.error(`Error when reading file: ${filePath}.\n`, err);
 			return reject(err);
 		}
+
+		logger.trace(`Successfully read contents from file: ${filePath}.`);
 		return resolve(data);
 	});
 });
 
-const write = (filePath, content) => new Promise((resolve, reject) => {
+const write = async (filePath, content) => new Promise((resolve, reject) => {
+	logger.trace(`Writing to file: ${filePath}.`);
 	fs.writeFile(filePath, content, (err) => {
 		if (err) {
-			logger.error(err);
+			logger.error(`Error when writing to file: ${filePath}.\n`, err);
 			return reject(err);
 		}
+
+		logger.trace(`Successfully wrote contents to file: ${filePath}.`);
 		return resolve();
 	});
 });
 
-const getDirectories = (directoryPath, options = { withFileTypes: true }) => new Promise(
+const getDirectories = async (directoryPath, options = { withFileTypes: true }) => new Promise(
 	(resolve, reject) => {
-		fs.readdir(directoryPath, options, async (err, dirs) => {
-			if (err) {
-				logger.error(err);
-				return reject(err);
-			}
+		logger.trace(`Reading sub-directories in: ${directoryPath}.`);
+		fs.readdir(
+			directoryPath,
+			options,
+			async (err, dirs) => {
+				if (err) {
+					logger.error(`Error when reading directory: ${directoryPath}.\n`, err);
+					return reject(err);
+				}
 
-			const subDirsWithTime = [];
-			const subDirectories = dirs.filter((subDir) => subDir.isDirectory());
-			for (let i = 0; i < subDirectories.length; i++) {
-				const fullSubDirPath = path.join(directoryPath, subDirectories[i].name);
-				// eslint-disable-next-line no-await-in-loop
-				const stat = await stats(fullSubDirPath);
-				subDirsWithTime.push({ name: fullSubDirPath, time: stat.ctime.getTime() });
-			}
+				const subDirsWithTime = [];
+				const subDirectories = dirs.filter((subDir) => subDir.isDirectory());
+				for (let i = 0; i < subDirectories.length; i++) {
+					const fullSubDirPath = path.join(directoryPath, subDirectories[i].name);
+					// eslint-disable-next-line no-await-in-loop
+					const stat = await stats(fullSubDirPath);
+					subDirsWithTime.push({ name: fullSubDirPath, time: stat.ctime.getTime() });
+				}
 
-			const sortedDirs = subDirsWithTime
-				.sort((a, b) => b.time - a.time)
-				.map(file => file.name);
+				const sortedDirs = subDirsWithTime
+					.sort((a, b) => b.time - a.time)
+					.map(file => file.name);
 
-			return resolve(sortedDirs);
-		});
-	});
+				logger.trace(`Successfully read sub-directories in directory: ${directoryPath}.`);
+				return resolve(sortedDirs);
+			},
+		);
+	},
+);
 
-const getFiles = (directoryPath, options = { withFileTypes: true }) => new Promise(
+const getFiles = async (directoryPath, options = { withFileTypes: true }) => new Promise(
 	(resolve, reject) => {
+		logger.trace(`Reading files in directory: ${directoryPath}.`);
 		fs.readdir(directoryPath, options, (err, files) => {
 			if (err) {
-				logger.error(err);
+				logger.error(`Error when files in directory: ${directoryPath}.\n`, err);
 				return reject(err);
 			}
 			const filesInDirectory = files
 				.filter((file) => file.isFile())
 				.map((file) => path.join(directoryPath, file.name));
 
+			logger.trace(`Successfully read files in directory: ${directoryPath}.`);
 			return resolve(filesInDirectory);
 		});
 	});
 
-const rename = async (oldName, newName) => {
-	await fs.rename(oldName, newName, (err) => {
+const rename = async (oldName, newName) => new Promise((resolve, reject) => {
+	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
+	fs.rename(oldName, newName, (err) => {
 		if (err) {
-			logger.error('Error while renaming resource:', err.message);
-		} else {
-			logger.debug('Successfully renamed.');
+			logger.error(`Error while renaming resource: ${oldName} to ${newName}.\n`, err);
+			return reject(err);
 		}
+
+		logger.trace(`Successfully renamed resource: ${oldName} to ${newName}.`);
+		return resolve();
 	});
-};
+});
 
 module.exports = {
 	exists,
