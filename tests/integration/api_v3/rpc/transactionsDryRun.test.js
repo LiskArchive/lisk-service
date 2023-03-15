@@ -98,7 +98,7 @@ describe('Method post.transactions.dryrun', () => {
 		const response = await postDryrunTransaction(
 			{
 				transaction: TRANSACTION_OBJECT_VALID,
-				isSkipVerify: true,
+				skipVerify: true,
 			},
 		);
 		expect(response).toMap(jsonRpcEnvelopeSchema);

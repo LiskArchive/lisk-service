@@ -25,7 +25,7 @@ const {
 	getNodeInfo,
 	getSystemMetadata,
 } = require('./endpoints_1');
-const { timeoutMessage, getApiClient, invokeEndpoint } = require('./client');
+const { timeoutMessage, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
 const getConnectedPeers = async () => {
@@ -66,8 +66,7 @@ const getGeneratorStatus = async () => {
 
 const updateGeneratorStatus = async (config) => {
 	try {
-		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('generator_updateStatus', { ...config });
+		const response = await invokeEndpoint('generator_updateStatus', { ...config });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -225,8 +224,7 @@ const getTransactionsFromPool = async () => {
 
 const postTransaction = async (transaction) => {
 	try {
-		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('txpool_postTransaction', { transaction });
+		const response = await invokeEndpoint('txpool_postTransaction', { transaction });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -238,8 +236,7 @@ const postTransaction = async (transaction) => {
 
 const dryRunTransaction = async ({ transaction, skipVerify }) => {
 	try {
-		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction, skipVerify });
+		const response = await invokeEndpoint('txpool_dryRunTransaction', { transaction, skipVerify });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

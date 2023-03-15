@@ -22,17 +22,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+
+LoggerConfig(config.log);
+
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/utils/request');
 const { init } = require('./shared/scheduler');
-
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -40,7 +35,7 @@ const app = Microservice({
 	name: 'coordinator',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
-	logger: loggerConf,
+	logger: config.log,
 	events: {
 		chainNewBlock: async (payload) => {
 			logger.debug('Received a \'chainNewBlock\' event from connecter.');
