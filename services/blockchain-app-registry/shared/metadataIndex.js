@@ -126,7 +126,6 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 
 const deleteChainMeta = async (chainMeta, dbTrx) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
-
 	const chainMetaParams = {
 		network: chainMeta.networkType,
 		chainName: chainMeta.chainName,
@@ -137,7 +136,6 @@ const deleteChainMeta = async (chainMeta, dbTrx) => {
 
 const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 	const tokenMetadataTable = await getTokenMetadataIndex();
-
 	await BluebirdPromise.map(
 		tokenMeta.localIDs,
 		async (localID) => {
@@ -177,7 +175,6 @@ const deleteIndexedMetadataOfFile = async (network, app, filename = null, dbTrx)
 		const localIDs = tokens.map(
 			token => token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
 		);
-
 		const tokenMeta = {
 			localIDs,
 			chainName: chainMeta.chainName,

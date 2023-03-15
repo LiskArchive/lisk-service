@@ -239,7 +239,7 @@ const syncWithRemoteRepo = async () => {
 					await downloadFile(result.data.download_url, localFilePath);
 					logger.debug(`Successfully downloaded: ${localFilePath}.`);
 
-					// Update db with latest file information
+					// Update db with latest metadata file information
 					if (isMetadataFile(remoteFilePath)) {
 						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
 						await indexMetadataFromFile(network, appName, filename);
