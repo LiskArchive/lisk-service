@@ -73,7 +73,7 @@ const rm = async (deletePath, options) => new Promise((resolve) => {
 	logger.trace(`Removing directory: ${deletePath}.`);
 	fs.rm(
 		deletePath,
-		{ ...options, recursive: true },
+		options,
 		(err) => {
 			if (err) {
 				logger.error(`Error when removing file/directory: ${deletePath}.\n`, err);

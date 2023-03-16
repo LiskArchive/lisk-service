@@ -176,9 +176,9 @@ const getUniqueNetworkAppDirPairs = async (files) => {
 
 const buildEventPayload = async (allFilesModified) => {
 	const eventPayload = {};
-
 	const { supportedNetworks } = config;
 	const numSupportedNetworks = supportedNetworks.length;
+
 	for (let index = 0; index < numSupportedNetworks; index++) {
 		/* eslint-disable no-await-in-loop */
 		const networkType = supportedNetworks[index];
@@ -229,7 +229,6 @@ const groupFilesByNetworkAndApp = (fileInfos) => {
 
 		groupedFiles[network][appName].push(fileInfo);
 	});
-
 	return groupedFiles;
 };
 
@@ -245,7 +244,6 @@ const getModifiedFileNames = (groupedFiles) => {
 			appFiles.forEach(file => fileNames.push(file.filename));
 		});
 	});
-
 	return fileNames;
 };
 
@@ -253,7 +251,6 @@ const syncWithRemoteRepo = async () => {
 	try {
 		const dataDirectory = config.dataDir;
 		const appDirPath = path.join(dataDirectory, repo);
-
 		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
 
 		// Skip if there is no new commit
@@ -267,7 +264,6 @@ const syncWithRemoteRepo = async () => {
 			GITHUB_FILE_STATUS.MODIFIED,
 			GITHUB_FILE_STATUS.CHANGED,
 		];
-
 		const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
 		const groupedFiles = groupFilesByNetworkAndApp(diffInfo.data.files);
 		const connection = await getDbConnection(MYSQL_ENDPOINT);
@@ -317,8 +313,7 @@ const syncWithRemoteRepo = async () => {
 
 							// Update db with latest metadata file information
 							await indexMetadataFromFile(networkName, appName, fileName, dbTrx);
-							logger.debug('Successfully updated the database with the latest changes.');
-
+							logger.debug(`Successfully updated the database with the latest changes of file: ${remoteFilePath}.`);
 							/* eslint-enable no-await-in-loop */
 						}
 

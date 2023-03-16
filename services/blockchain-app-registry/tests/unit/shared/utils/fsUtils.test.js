@@ -98,13 +98,13 @@ describe('Test filesystem util methods', () => {
 
 describe('Test rm method', () => {
 	const dirPath = `${__dirname}/temp`;
-	const filePath = `${dirPath}/temp.txt`;
 
 	beforeEach(() => mkdir(dirPath));
 	afterAll(() => rmdir(dirPath));
 
 	it('should delete file when called with existing file', async () => {
 		// Create file and check existance
+		const filePath = `${dirPath}/temp.txt`;
 		await fsPromises.writeFile(filePath, 'Hello content!');
 		expect(await exists(filePath)).toEqual(true);
 
@@ -118,14 +118,14 @@ describe('Test rm method', () => {
 		const nonExistingFile = 'sdfsd/werwerwe/sdfsdfs.txt';
 		expect(await exists(nonExistingFile)).toEqual(false);
 
-		const response = await rm(filePath);
+		const response = await rm(nonExistingFile);
 		expect(response).toEqual(false);
 		expect(await exists(nonExistingFile)).toEqual(false);
 	});
 
 	it('should return false when called with a directory path', async () => {
 		expect(await exists(dirPath)).toEqual(true);
-		const response = await rm(filePath);
+		const response = await rm(dirPath);
 		expect(response).toEqual(false);
 		expect(await exists(dirPath)).toEqual(true);
 	});
