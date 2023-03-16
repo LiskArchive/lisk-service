@@ -69,18 +69,18 @@ const mkdir = async (directoryPath, options = { recursive: true }) => new Promis
 	},
 );
 
-const rm = async (directoryPath, options) => new Promise((resolve) => {
-	logger.trace(`Removing directory: ${directoryPath}.`);
+const rm = async (deletePath, options) => new Promise((resolve) => {
+	logger.trace(`Removing directory: ${deletePath}.`);
 	fs.rm(
-		directoryPath,
+		deletePath,
 		{ ...options, recursive: true },
 		(err) => {
 			if (err) {
-				logger.error(`Error when removing directory: ${directoryPath}.\n`, err);
+				logger.error(`Error when removing file/directory: ${deletePath}.\n`, err);
 				return resolve(false);
 			}
 
-			logger.debug(`Successfully removed directory: ${directoryPath}`);
+			logger.debug(`Successfully removed file/directory: ${deletePath}`);
 			return resolve(true);
 		},
 	);
