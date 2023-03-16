@@ -19,6 +19,11 @@ const { Octokit } = require('octokit');
 
 const {
 	Logger,
+	MySQL: {
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+	},
 	Signals,
 } = require('lisk-service-framework');
 
@@ -48,6 +53,8 @@ const GITHUB_FILE_STATUS = Object.freeze({
 	CHANGED: 'changed',
 	UNCHANGED: 'unchanged',
 });
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getRepoInfoFromURL = (url) => {
 	const urlInput = url || '';
@@ -194,6 +201,54 @@ const isMetadataFile = (filePath) => (
 	filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON)
 );
 
+/* Sorts the passed array and groups files by the network and app. Returns following structure:
+{
+	network: {
+		app: [
+			file,
+		]
+	}
+}
+*/
+const groupFilesByNetworkAndApp = (fileInfos) => {
+	// Stores an map of networkName
+	const groupedFiles = {};
+
+	// Sorting is necessary to ensure app.json is processed before nativetokens.json file
+	// Otherwise the indexing may fail as token metadata indexing is dependant on app metadata
+	fileInfos.sort((first, second) => first.filename.localeCompare(second.filename));
+
+	fileInfos.forEach(fileInfo => {
+		const [network, appName, fileName] = fileInfo.filename.split('/').slice(-3);
+
+		// Only process metadata files
+		if (!isMetadataFile(fileName)) return;
+
+		if (!(network in groupedFiles)) groupedFiles[network] = {};
+		if (!(appName in groupedFiles[network])) groupedFiles[network][appName] = [];
+
+		groupedFiles[network][appName].push(fileInfo);
+	});
+
+	return groupedFiles;
+};
+
+const getModifiedFileNames = (groupedFiles) => {
+	const fileNames = [];
+
+	Object.keys(groupedFiles).forEach(network => {
+		const appsInNetwork = groupedFiles[network];
+
+		Object.keys(appsInNetwork).forEach(appName => {
+			const appFiles = appsInNetwork[appName];
+
+			appFiles.forEach(file => fileNames.push(file.filename));
+		});
+	});
+
+	return fileNames;
+};
+
 const syncWithRemoteRepo = async () => {
 	try {
 		const dataDirectory = config.dataDir;
@@ -201,64 +256,92 @@ const syncWithRemoteRepo = async () => {
 
 		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
 
+		// Skip if there is no new commit
 		if (lastSyncedCommitHash === latestCommitHash) {
 			logger.info('Database is already up-to-date.');
-		} else {
-			const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
-			// TODO: Add a check to filter out non-blockchain apps related files
-			// Sorting is necessary to ensure app.json is downloaded before nativetokens.json file
-			// Otherwise the indexing may fail as token metadata indexing is dependant on app metadata
-			const modifiedFiles = diffInfo.data.files;
+			return;
+		}
 
-			const fileUpdatedStatuses = [
-				GITHUB_FILE_STATUS.REMOVED,
-				GITHUB_FILE_STATUS.MODIFIED,
-				GITHUB_FILE_STATUS.CHANGED,
-			];
+		const fileUpdatedStatuses = [
+			GITHUB_FILE_STATUS.REMOVED,
+			GITHUB_FILE_STATUS.MODIFIED,
+			GITHUB_FILE_STATUS.CHANGED,
+		];
 
-			await BluebirdPromise.map(
-				modifiedFiles,
-				async modifiedFile => {
-					const remoteFilePath = modifiedFile.filename;
-					const localFilePath = path.join(appDirPath, remoteFilePath);
+		const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
+		const groupedFiles = groupFilesByNetworkAndApp(diffInfo.data.files);
+		const connection = await getDbConnection(MYSQL_ENDPOINT);
 
-					// Delete indexed information if a meta file is updated/deleted
-					if (isMetadataFile(remoteFilePath) && fileUpdatedStatuses.includes(modifiedFile.status)) {
-						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
-						await deleteIndexedMetadataFromFile(network, appName, filename);
-					}
+		await BluebirdPromise.map(
+			Object.keys(groupedFiles),
+			async (networkName) => {
+				const appsInNetwork = groupedFiles[networkName];
 
-					// Skip download and indexing for deleted file
-					if (modifiedFile.status === GITHUB_FILE_STATUS.REMOVED) {
-						await rm(localFilePath);
-						return;
-					}
+				await BluebirdPromise.map(
+					Object.keys(appsInNetwork),
+					async (appName) => {
+						const appFiles = appsInNetwork[appName];
+						const dbTrx = await startDbTransaction(connection);
+						const filesToBeDeleted = [];
 
-					// Create directory and download latest file
-					const dirPath = path.dirname(localFilePath);
-					await mkdir(dirPath, { recursive: true });
+						// Process files in an app. This must be processed sequentially.
+						// Because indexing of nativetokens.json dependant on app.json
+						// eslint-disable-next-line no-restricted-syntax
+						for (const modifiedFile of appFiles) {
+							/* eslint-disable no-await-in-loop */
+							const remoteFilePath = modifiedFile.filename;
+							const localFilePath = path.join(appDirPath, remoteFilePath);
+							const [fileName] = remoteFilePath.split('/').slice(-1);
 
-					const result = await getFileDownloadURL(remoteFilePath);
-					await downloadFile(result.data.download_url, localFilePath);
-					logger.debug(`Successfully downloaded: ${localFilePath}.`);
+							// Delete indexed information if a meta file is updated/deleted
+							if (fileUpdatedStatuses.includes(modifiedFile.status)) {
+								await deleteIndexedMetadataFromFile(networkName, appName, fileName, dbTrx);
+							}
 
-					// Update db with latest metadata file information
-					if (isMetadataFile(remoteFilePath)) {
-						const [network, appName, filename] = remoteFilePath.split('/').slice(-3);
-						await indexMetadataFromFile(network, appName, filename);
-						logger.debug('Successfully updated the database with the latest changes.');
-					}
-				},
-				{ concurrency: modifiedFiles.length },
-			);
+							// Skip download and indexing for deleted file.
+							// The file should be deleted only after processing of the app is done.
+							// As app.json file is required to delete indexed info of nativetokens.json
+							if (modifiedFile.status === GITHUB_FILE_STATUS.REMOVED) {
+								filesToBeDeleted.push(localFilePath);
+								// eslint-disable-next-line no-continue
+								continue;
+							}
 
-			await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+							// Create directory and download latest file
+							const dirPath = path.dirname(localFilePath);
+							await mkdir(dirPath, { recursive: true });
 
-			if (modifiedFiles.length) {
-				const modifiedFileNames = diffInfo.data.files.map(file => file.filename);
-				const eventPayload = await buildEventPayload(modifiedFileNames);
-				Signals.get('metadataUpdated').dispatch(eventPayload);
-			}
+							const result = await getFileDownloadURL(remoteFilePath);
+							await downloadFile(result.data.download_url, localFilePath);
+							logger.debug(`Successfully downloaded: ${localFilePath}.`);
+
+							// Update db with latest metadata file information
+							await indexMetadataFromFile(networkName, appName, fileName, dbTrx);
+							logger.debug('Successfully updated the database with the latest changes.');
+
+							/* eslint-enable no-await-in-loop */
+						}
+
+						// Delete files which are removed from remote
+						await BluebirdPromise.map(
+							filesToBeDeleted,
+							async (filePath) => rm(filePath),
+							{ concurrency: filesToBeDeleted.length },
+						);
+						await commitDbTransaction(dbTrx);
+					},
+					{ concurrency: Object.keys(appsInNetwork).length },
+				);
+			},
+			{ concurrency: Object.keys(groupedFiles).length },
+		);
+
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+
+		if (Object.keys(groupedFiles).length) {
+			const modifiedFileNames = getModifiedFileNames(groupedFiles);
+			const eventPayload = await buildEventPayload(modifiedFileNames);
+			Signals.get('metadataUpdated').dispatch(eventPayload);
 		}
 	} catch (error) {
 		let errorMsg = error.message;
