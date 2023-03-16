@@ -211,7 +211,7 @@ const isMetadataFile = (filePath) => (
 }
 */
 const groupFilesByNetworkAndApp = (fileInfos) => {
-	// Stores an map of networkName
+	// Stores an map of {networkName} -> {appName} -> [files]
 	const groupedFiles = {};
 
 	// Sorting is necessary to ensure app.json is processed before nativetokens.json file
@@ -226,7 +226,6 @@ const groupFilesByNetworkAndApp = (fileInfos) => {
 
 		if (!(network in groupedFiles)) groupedFiles[network] = {};
 		if (!(appName in groupedFiles[network])) groupedFiles[network][appName] = [];
-
 		groupedFiles[network][appName].push(fileInfo);
 	});
 	return groupedFiles;
@@ -240,7 +239,6 @@ const getModifiedFileNames = (groupedFiles) => {
 
 		Object.keys(appsInNetwork).forEach(appName => {
 			const appFiles = appsInNetwork[appName];
-
 			appFiles.forEach(file => fileNames.push(file.filename));
 		});
 	});

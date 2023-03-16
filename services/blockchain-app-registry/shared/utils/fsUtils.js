@@ -86,7 +86,7 @@ const rm = async (deletePath, options) => new Promise((resolve) => {
 	);
 });
 
-const rmdir = async (directoryPath, options = { recursive: true }) => rm(
+const rmdir = async (directoryPath, options) => rm(
 	directoryPath,
 	{ ...options, recursive: true },
 );
