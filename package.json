@@ -27,7 +27,8 @@
     "start": "pm2 start ecosystem.core3.config.js",
     "stop": "pm2 delete ecosystem.core3.config.js",
     "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
-    "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\""
+    "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
+    "test:coverage": "jest --coverage=true --verbose --forceExit"
   },
   "dependencies": {},
   "devDependencies": {
