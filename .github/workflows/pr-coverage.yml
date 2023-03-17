@@ -11,21 +11,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
       - name: Install dependencies
-        run: |
-          npm ci
-          cd ./framework && npm ci
-          cd ./services/blockchain-app-registry && npm ci
-          cd ./services/blockchain-connector && npm ci
-          cd ./services/blockchain-coordinator && npm ci
-          cd ./services/blockchain-indexer && npm ci
-          cd ./services/transaction-statistics && npm ci
-          cd ./services/fee-estimator && npm ci
-          cd ./services/market && npm ci
-          cd ./services/newsfeed && npm ci
-          cd ./services/gateway && npm ci
-          cd ./services/export && npm ci
-          cd ./services/template && npm ci
-          cd ./tests && npm ci
+        run: make build-local
       - name: Check test coverage
         run: npm run test:coverage
       - name: Upload coverage to Codecov
