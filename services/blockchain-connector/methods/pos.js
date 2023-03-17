@@ -22,6 +22,8 @@ const {
 	getPosPendingUnlocks,
 	getPosClaimableRewards,
 	getStaker,
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -76,6 +78,20 @@ module.exports = [
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'getPoSGenesisStakers',
+		controller: async ({ height }) => getPoSGenesisStakers(height),
+		params: {
+			height: { optional: false, type: 'number' },
+		},
+	},
+	{
+		name: 'getPoSGenesisValidators',
+		controller: async ({ height }) => getPoSGenesisValidators(height),
+		params: {
+			height: { optional: false, type: 'number' },
 		},
 	},
 ];

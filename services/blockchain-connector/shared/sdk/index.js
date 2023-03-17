@@ -74,6 +74,8 @@ const {
 	getPosClaimableRewards,
 	getPosLockedReward,
 	getStaker,
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
 } = require('./pos');
 
 const {
@@ -177,6 +179,8 @@ module.exports = {
 	getPosClaimableRewards,
 	getPosLockedReward,
 	getStaker,
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
 
 	// Reward
 	getRewardTokenID,

@@ -81,6 +81,7 @@ const createDbConnection = async connEndpoint => {
 };
 
 const cast = (val, type) => {
+	if (typeof val === 'undefined') return null;
 	if (type === 'number') return Number(val);
 	if (type === 'integer') return Number(val);
 	if (type === 'string') return String(val);
@@ -114,9 +115,10 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	const rows = [];
 	rawRows.forEach(item => {
 		const row = {};
-		Object.keys(schema).forEach(o => {
-			const val = item[o];
-			if (val || val === 0 || val === false) row[o] = getValue(cast(val, schema[o].type));
+		Object.keys(schema).forEach(column => {
+			const val = item[column];
+			const valType = schema[column].type;
+			if (`${column}` in item) row[column] = getValue(cast(val, valType));
 		});
 		rows.push(row);
 	});
@@ -368,6 +370,27 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		return query;
 	};
 
+	const update = async (params, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const { where, updates } = params;
+		const query = queryBuilder({ ...where }, tableConfig.primaryKey, trx).update({ ...updates });
+		if (isDefaultTrx) return query
+			.then(async result => {
+				await trx.commit();
+				return result;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+		return query;
+	};
+
 	const count = async (params = {}) => {
 		const trx = await createDefaultTransaction(knex);
 		const query = knex(tableName).transacting(trx);
@@ -530,6 +553,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		find,
 		delete: deleteByParams,
 		deleteByPrimaryKey,
+		update,
 		count,
 		rawQuery,
 		increment,

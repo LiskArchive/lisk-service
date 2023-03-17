@@ -20,6 +20,7 @@ const {
 
 const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
+
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const config = require('../../config');
 
@@ -38,10 +39,14 @@ const getGenesisHeight = async () => {
 	return genesisHeight;
 };
 
-const getGenesisBlock = async () => {
+const getGenesisBlock = async (isIncludeAssets = false) => {
 	try {
 		const block = await getGenesisBlockFromFS();
-		return block;
+		// Filter out assets from genesis block and assign empty array
+		return {
+			...block,
+			assets: isIncludeAssets ? block.assets : [],
+		};
 	} catch (_) {
 		logger.debug('Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.');
 	}

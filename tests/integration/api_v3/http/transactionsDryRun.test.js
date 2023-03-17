@@ -77,7 +77,7 @@ describe('Post dryrun transactions API', () => {
 	it('Post dryrun transaction succesfully with only transaction skipping verification', async () => {
 		const response = await api.post(
 			endpoint,
-			{ transaction: TRANSACTION_OBJECT_VALID, isSkipVerify: true },
+			{ transaction: TRANSACTION_OBJECT_VALID, skipVerify: true },
 		);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);

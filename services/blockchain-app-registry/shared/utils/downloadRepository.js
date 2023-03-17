@@ -24,7 +24,7 @@ const {
 
 const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
-const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
+const { exists, mkdir, getDirectories, rename, rmdir } = require('./fsUtils');
 
 const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile } = require('../metadataIndex');
@@ -229,16 +229,20 @@ const syncWithRemoteRepo = async () => {
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
+	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 
-	if (await exists(appDirPath)) {
+	if (lastSyncedCommitHash && await exists(appDirPath)) {
 		logger.trace('Synchronizing with the remote repository.');
 		await syncWithRemoteRepo();
-		logger.debug('Finished synchronizing with the remote repository successfully.');
+		logger.info('Finished synchronizing with the remote repository successfully.');
 	} else {
 		if (!(await exists(dataDirectory))) {
-			logger.trace('Creating data directory.');
+			logger.trace(`Creating data directory: ${dataDirectory}.`);
 			await mkdir(dataDirectory, { recursive: true });
-			logger.debug('Created data directory successfully.');
+			logger.info(`Created data directory successfully: ${dataDirectory}.`);
+		} else if (await exists(appDirPath)) {
+			// When lastSyncedCommitHash doesn't exist, clear the local copy and clone the repo again
+			await rmdir(appDirPath);
 		}
 
 		const { url } = await getRepoDownloadURL();
