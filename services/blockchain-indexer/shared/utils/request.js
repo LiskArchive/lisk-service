@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Utils } = require('lisk-service-framework');
 
 let app;
 
@@ -22,7 +23,7 @@ const getAppContext = () => app;
 
 const requestRpc = async (service, method, params = {}) => {
 	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
-	if (data.error) throw new Error(data.error.message);
+	if (Utils.isObject(data) && data.error) throw new Error(data.error.message);
 	return data;
 };
 

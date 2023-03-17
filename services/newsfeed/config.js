@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const getDrupalConfig = require('./config_drupal');
 const getTwitterConfig = require('./config_twitter');
 
@@ -55,7 +57,10 @@ config.sources = {
 };
 
 // Logging
-config.log = {};
+config.log = {
+	name: packageJson.name,
+	version: packageJson.version,
+};
 /**
  * log.level - Limits the importance of log messages for console and stdout outputs
  *             One fo the following in that order:

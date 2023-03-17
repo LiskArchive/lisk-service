@@ -20,6 +20,7 @@ module.exports = {
 	description: '=,string',
 	networkType: '=,string',
 	isDefault: '=,boolean',
+	status: '=,string',
 	genesisURL: '=,string',
 	projectPage: '=,string',
 	appPage: '=,string',

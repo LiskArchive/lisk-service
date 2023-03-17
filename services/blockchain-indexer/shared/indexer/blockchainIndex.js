@@ -35,6 +35,7 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactions,
 	getEventsByHeight,
+	deleteEventsFromCache,
 } = require('../dataService');
 
 const {
@@ -50,6 +51,7 @@ const {
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisHeight,
+	TRANSACTION_STATUS,
 } = require('../constants');
 
 const config = require('../../config');
@@ -96,7 +98,14 @@ const getValidatorsTable = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const { KV_STORE_KEY } = require('../constants');
+
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
+
+const EVENT_NAME = Object.freeze({
+	LOCK: 'lock',
+	UNLOCK: 'unlock',
+});
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -105,27 +114,23 @@ const getTransactionExecutionStatus = (tx, events) => {
 	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
 	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
-	return txExecResultEvent.data.data === '0801' ? 'success' : 'fail';
+
+	// TODO: Temporary patch work
+	if ('success' in txExecResultEvent.data) return txExecResultEvent.data.success ? TRANSACTION_STATUS.SUCCESS : TRANSACTION_STATUS.FAIL;
+	return txExecResultEvent.data.data === '0801' ? TRANSACTION_STATUS.SUCCESS : TRANSACTION_STATUS.FAIL;
 };
 
-// TODO: Move this require to top
-// const { KV_STORE_KEY } = require('../constants');
-// const EVENT_NAME = Object.freeze({
-// 	LOCKED: 'locked',
-// 	UNLOCKED: 'unlocked',
-// });
+const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
+	Object.entries(tokenIDLockedAmountChangeMap),
+	async ([tokenID, lockedAmountChange]) => {
+		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
+		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
+		const newLockedAmount = curLockedAmount + lockedAmountChange;
 
-// const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
-// 	Object.entries(tokenIDLockedAmountChangeMap),
-// 	async ([tokenID, lockedAmountChange]) => {
-// 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
-// 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
-// 		const newLockedAmount = curLockedAmount + lockedAmountChange;
-
-// 		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
-// 	},
-// 	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
-// );
+		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
+	},
+	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
+);
 
 const indexBlock = async job => {
 	const { block } = job.data;
@@ -163,7 +168,7 @@ const indexBlock = async job => {
 					await transactionsTable.upsert(tx, dbTrx);
 
 					// Invoke 'applyTransaction' to execute command specific processing logic
-					await applyTransaction(blockHeader, tx, dbTrx);
+					await applyTransaction(blockHeader, tx, events, dbTrx);
 				},
 				{ concurrency: block.transactions.length },
 			);
@@ -215,24 +220,23 @@ const indexBlock = async job => {
 				}
 			}
 
-			// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
-			// // Calculate locked amount change and update in key_value_store table for affected tokens
-			// const tokenIDLockedAmountChangeMap = {};
-			// events.forEach(event => {
-			// 	const { data: eventData } = event;
-			// 	// Initialize map entry with BigInt
-			// 	if ([EVENT_NAME.LOCKED, EVENT_NAME.UNLOCKED].includes(event.name)
-			// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
-			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
-			// 	}
+			// Calculate locked amount change and update in key_value_store table for affected tokens
+			const tokenIDLockedAmountChangeMap = {};
+			events.forEach(event => {
+				const { data: eventData } = event;
+				// Initialize map entry with BigInt
+				if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
+					&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
+					tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+				}
 
-			// 	if (event.name === EVENT_NAME.LOCKED) {
-			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
-			// 	} else if (event.name === EVENT_NAME.UNLOCKED) {
-			// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
-			// 	}
-			// });
-			// await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+				if (event.name === EVENT_NAME.LOCK) {
+					tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
+				} else if (event.name === EVENT_NAME.UNLOCK) {
+					tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
+				}
+			});
+			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 		}
 
 		const blockToIndex = {
@@ -255,7 +259,7 @@ const indexBlock = async job => {
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while indexing block ${block.id} at height ${block.height}. Will retry later.`);
+		logger.warn(`Error occurred while indexing block ${block.id} at height ${block.height}. Will retry later.`);
 		logger.warn(error.stack);
 		throw error;
 	}
@@ -281,6 +285,7 @@ const deleteIndexedBlocks = async job => {
 			async block => {
 				let forkedTransactions;
 				const transactionsTable = await getTransactionsTable();
+				const events = await getEventsByHeight(block.height);
 
 				if (block.transactions && block.transactions.length) {
 					const { transactions, assets, ...blockHeader } = block;
@@ -289,7 +294,7 @@ const deleteIndexedBlocks = async job => {
 						transactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
-							await revertTransaction(blockHeader, tx, dbTrx);
+							await revertTransaction(blockHeader, tx, events, dbTrx);
 							const normalizedTransaction = await normalizeTransaction(tx);
 							return normalizedTransaction;
 						},
@@ -312,29 +317,30 @@ const deleteIndexedBlocks = async job => {
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 
-				// TODO: Update events fetching logic
-				// const events = await getEventsByHeight(block.height);
-				// if (events.length) {
-				// // TODO: Verify and enable it once pos:validatorStaked schema is exposed from SDK
-				// // Calculate locked amount change and update in key_value_store table for affected tokens
-				// const tokenIDLockedAmountChangeMap = {};
-				// events.forEach(event => {
-				// 	const { data: eventData } = event;
-				// 	// Initialize map entry with BigInt
-				// 	if ([EVENT_NAME.LOCKED, EVENT_NAME.UNLOCKED].includes(event.name)
-				// 		&& !(eventData.tokenID in tokenIDLockedAmountChangeMap) {
-				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
-				// 	}
+				// Calculate locked amount change from events and update in key_value_store table
+				if (events.length) {
+					const tokenIDLockedAmountChangeMap = {};
+					events.forEach(event => {
+						const { data: eventData } = event;
+						// Initialize map entry with BigInt
+						if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
+							&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
+							tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+						}
 
-				// 	// Negate amount to reverse the affect
-				// 	if (event.name === EVENT_NAME.LOCKED) {
-				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] -= eventData.amount;
-				// 	} else if (event.name === EVENT_NAME.UNLOCKED) {
-				// 		tokenIDLockedAmountChangeMap[eventData.tokenID] += eventData.amount;
-				// 	}
-				// });
-				// await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
-				// }
+						// Negate amount to reverse the effect
+						if (event.name === EVENT_NAME.LOCK) {
+							tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
+						} else if (event.name === EVENT_NAME.UNLOCK) {
+							tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
+						}
+					});
+					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+				}
+
+				// Invalidate cached events of this block
+				// This must be done after processing all event related calculations
+				await deleteEventsFromCache(block.height);
 			});
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
@@ -350,7 +356,7 @@ const deleteIndexedBlocks = async job => {
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
+		logger.warn(`Error occurred while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
@@ -360,6 +366,12 @@ const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', index
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
+const getLiveIndexingJobCount = async () => {
+	const { queue: bullQueue } = indexBlocksQueue;
+	const count = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+	return count;
+};
+
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
 const indexNewBlock = async block => {
@@ -367,7 +379,9 @@ const indexNewBlock = async block => {
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
-	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
+	// Schedule indexing of incoming block if it is not indexed before
+	// Or the indexed block is not final yet (chain fork)
+	if (!blockInfo || !blockInfo.isFinal) {
 		// Index if doesn't exist, or update if it isn't set to final
 		await indexBlocksQueue.add({ block });
 
@@ -383,7 +397,6 @@ const indexNewBlock = async block => {
 
 		if (blockInfo && blockInfo.id !== block.id) {
 			// Fork detected
-
 			const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, ['height']);
 			const blocksToRemove = await blocksTable.find({
 				propBetweens: [{
@@ -520,4 +533,5 @@ module.exports = {
 	deleteBlock,
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
+	getLiveIndexingJobCount,
 };

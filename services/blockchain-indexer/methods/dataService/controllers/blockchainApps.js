@@ -17,11 +17,17 @@ const { HTTP } = require('lisk-service-framework');
 const dataService = require('../../../shared/dataService');
 const { isMainchain } = require('../../../shared/chain');
 const config = require('../../../config');
+const { LENGTH_CHAIN_ID } = require('../../../shared/constants');
 
 const resolveMainchainServiceURL = async () => {
-	const { chainID } = await dataService.getNetworkStatus();
+	if (config.endpoints.mainchainServiceUrl) return config.endpoints.mainchainServiceUrl;
+
+	const netStatus = await dataService.getNetworkStatus();
+	const { chainID } = netStatus.data;
+	const networkID = chainID.substring(0, 2);
+	const mainchainID = networkID.padEnd(LENGTH_CHAIN_ID, '0');
 	const [{ serviceURL } = {}] = config.networks.LISK
-		.filter(networkInfo => networkInfo.chainID === chainID);
+		.filter(networkInfo => networkInfo.chainID === mainchainID);
 	return serviceURL;
 };
 
@@ -34,7 +40,7 @@ const getBlockchainApps = async (params) => {
 	// Redirect call to the mainchain service
 	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`;
-	const response = HTTP.request(
+	const { data: response } = await HTTP.request(
 		blockchainAppsEndpoint,
 		params,
 	);

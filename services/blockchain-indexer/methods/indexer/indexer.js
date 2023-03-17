@@ -21,12 +21,6 @@ const {
 } = require('../../shared/indexer/blockchainIndex');
 
 const {
-	buildLegacyAccountCache,
-	getGenesisAccountAddresses,
-	isGenesisAccountsIndexed,
-} = require('../../shared/indexer/accountIndex');
-
-const {
 	getCurrentHeight,
 	getGenesisHeight,
 } = require('../../shared/constants');
@@ -43,23 +37,6 @@ module.exports = [
 	{
 		name: 'isGenesisBlockIndexed',
 		controller: isGenesisBlockIndexed,
-		params: {},
-	},
-	{
-		name: 'getGenesisAccountAddresses',
-		controller: async ({ includeLegacy }) => getGenesisAccountAddresses(includeLegacy),
-		params: {
-			includeLegacy: { optional: true, type: 'boolean', defaultValue: false },
-		},
-	},
-	{
-		name: 'isGenesisAccountsIndexed',
-		controller: isGenesisAccountsIndexed,
-		params: {},
-	},
-	{
-		name: 'buildLegacyAccountCache',
-		controller: buildLegacyAccountCache,
 		params: {},
 	},
 	{

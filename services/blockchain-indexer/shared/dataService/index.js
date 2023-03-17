@@ -26,6 +26,7 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getEventsByHeight,
+	deleteEventsFromCache,
 } = require('./business');
 
 const {
@@ -50,7 +51,7 @@ const {
 
 const {
 	getDefaultRewardAtHeight,
-	getInflationRate,
+	getAnnualInflation,
 	getRewardConstants,
 } = require('./dynamicReward');
 
@@ -80,6 +81,7 @@ const {
 const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
+	getChainAccount,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
@@ -87,6 +89,7 @@ const { getEvents } = require('./events');
 const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
 const { getNetworkStatus } = require('./network');
+const { getIndexStatus } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
@@ -132,6 +135,7 @@ module.exports = {
 	// Interoperability
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
+	getChainAccount,
 	reloadBlockchainAppsStats,
 
 	// Events
@@ -145,6 +149,9 @@ module.exports = {
 
 	// Network
 	getNetworkStatus,
+
+	// Index Status
+	getIndexStatus,
 
 	// Legacy
 	getLegacyAccountInfo,
@@ -169,8 +176,9 @@ module.exports = {
 	normalizeTransaction,
 	getPosLockedRewards,
 	getEventsByHeight,
+	deleteEventsFromCache,
 
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
 };

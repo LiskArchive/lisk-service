@@ -26,6 +26,7 @@ module.exports = {
 	},
 	indexes: {
 		topic: { type: 'key' },
+		height: { type: 'range' },
 	},
 	purge: {},
 };

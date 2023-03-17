@@ -13,9 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	api: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 };
 
 /**
@@ -77,9 +82,6 @@ config.api.versions = {
  */
 config.api.httpCacheControlDirectives = String(process.env.HTTP_CACHE_CONTROL_DIRECTIVES || 'public, max-age=10');
 config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE_CONTROL).toLowerCase() === 'true');
-
-// Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
-config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 
 // configuration for websocket rate limit
 config.websocket = {

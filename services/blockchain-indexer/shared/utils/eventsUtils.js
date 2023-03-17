@@ -13,7 +13,33 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Logger,
+	MySQL: {
+		getTableInstance,
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
+	},
+} = require('lisk-service-framework');
 const config = require('../../config');
+
+const { getFinalizedHeight, getGenesisHeight } = require('../constants');
+
+const keyValueTable = require('../database/mysqlKVStore');
+const eventsTableSchema = require('../database/schema/events');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const logger = Logger();
+
+const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
+
+const getEventsTable = () => getTableInstance(
+	eventsTableSchema.tableName,
+	eventsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
@@ -30,7 +56,9 @@ const getEventsInfoToIndex = async (block, events) => {
 			index: event.index,
 		};
 
-		if (config.db.isPersistEvents) {
+		// Store whole event when persistence is enabled or block is not finalized yet
+		// Storing event of non-finalized block is required to fetch events of a dropped block
+		if (!block.isFinal || config.db.isPersistEvents) {
 			eventInfo.eventStr = JSON.stringify(event);
 		}
 
@@ -52,6 +80,41 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
+const deleteEventStrTillFinalizedHeight = async () => {
+	const eventsTable = await getEventsTable();
+	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
+	const toHeight = await getFinalizedHeight();
+
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDbTransaction(connection);
+	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
+
+	try {
+		const queryParams = {
+			propBetweens: [{
+				property: 'height',
+				from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
+				to: toHeight,
+			}],
+		};
+
+		await eventsTable.update({ where: queryParams, updates: { eventStr: null } }, dbTrx);
+		await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight, dbTrx);
+
+		await commitDbTransaction(dbTrx);
+		logger.debug(`Committed MySQL transaction to delete serialized events until height ${toHeight}.`);
+	} catch (_) {
+		await rollbackDbTransaction(dbTrx);
+		logger.debug(`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`);
+	}
+};
+
 module.exports = {
 	getEventsInfoToIndex,
+	deleteEventStrTillFinalizedHeight,
+};
+
+module.exports = {
+	getEventsInfoToIndex,
+	deleteEventStrTillFinalizedHeight,
 };

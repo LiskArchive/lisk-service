@@ -13,9 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 };
 
 /**
@@ -61,7 +66,6 @@ config.queue = {
 	},
 };
 
-// TODO: Update betanet chainID once determined
 config.networks = [
 	{
 		networkName: 'mainnet',
@@ -76,7 +80,7 @@ config.networks = [
 	},
 	{
 		networkName: 'betanet',
-		chainID: '',
+		chainID: '02000000',
 		serviceUrl: 'https://betanet-service.lisk.com',
 	},
 ];

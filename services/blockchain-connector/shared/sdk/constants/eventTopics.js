@@ -80,8 +80,8 @@ const COMMAND_EXECUTION_RESULT_TOPICS = ['transactionID'];
 // TODO: Remove when SDK exposes topics information in metadata
 const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	[MODULE_NAME_AUTH]: {
-		[EVENT_NAME_MULTISIGNATURE_REGISTERED]: ['senderAddress'],
-		[EVENT_NAME_INVALID_SIGNATURE]: ['senderAddress'],
+		[EVENT_NAME_MULTISIGNATURE_REGISTERED]: ['transactionID', 'senderAddress'],
+		[EVENT_NAME_INVALID_SIGNATURE]: ['transactionID', 'senderAddress'],
 	},
 	[MODULE_NAME_VALIDATORS]: {
 		[EVENT_NAME_GENERATOR_KEY_REGISTRATION]: ['defaultTopic', 'validatorAddress'],
@@ -111,24 +111,24 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	[MODULE_NAME_FEE]: {
 		[EVENT_NAME_FEE_PROCESSED]: ['defaultTopic', 'senderAddress', 'generatorAddress'],
 		[EVENT_NAME_INSUFFICIENT_FEE]: [],
-		[EVENT_NAME_RELAYER_FEE_PROCESSED]: ['defaultTopic', 'relayerAddress'],
+		[EVENT_NAME_RELAYER_FEE_PROCESSED]: ['transactionID', 'ccmID', 'relayerAddress'],
 	},
 	[MODULE_NAME_INTEROPERABILITY]: {
-		[EVENT_NAME_INVALID_REGISTRATION_SIGNATURE]: ['chainID'],
-		[EVENT_NAME_CHAIN_ACCOUNT_UPDATED]: ['sendingChainID'],
-		[EVENT_NAME_CCM_SENT_SUCCESS]: ['sendingChainID', 'receivingChainID', 'sentCCMID'],
-		[EVENT_NAME_CCM_SENT_FAILED]: [],
-		[EVENT_NAME_CCM_PROCESSED]: ['sendingChainID', 'receivingChainID', 'ccmID'],
-		[EVENT_NAME_TERMINATED_STATE_CREATED]: ['chainID'],
-		[EVENT_NAME_TERMINATED_OUTBOX_CREATED]: ['chainID'],
+		[EVENT_NAME_INVALID_REGISTRATION_SIGNATURE]: ['transactionID', 'chainID'],
+		[EVENT_NAME_CHAIN_ACCOUNT_UPDATED]: ['transactionID', 'sendingChainID'],
+		[EVENT_NAME_CCM_SENT_SUCCESS]: ['transactionID', 'sendingChainID', 'receivingChainID', 'sentCCMID'],
+		[EVENT_NAME_CCM_SENT_FAILED]: ['transactionID'],
+		[EVENT_NAME_CCM_PROCESSED]: ['transactionID', 'sendingChainID', 'receivingChainID', 'ccmID'],
+		[EVENT_NAME_TERMINATED_STATE_CREATED]: ['transactionID', 'chainID'],
+		[EVENT_NAME_TERMINATED_OUTBOX_CREATED]: ['transactionID', 'chainID'],
 	},
 	[MODULE_NAME_POS]: {
-		[EVENT_NAME_VALIDATOR_REGISTERED]: ['validatorAddress'],
-		[EVENT_NAME_VALIDATOR_STAKED]: ['stakerAddress', 'validatorAddress'],
-		[EVENT_NAME_VALIDATOR_PUNISHED]: ['validatorAddress'],
-		[EVENT_NAME_VALIDATOR_BANNED]: ['validatorAddress'],
-		[EVENT_NAME_COMMISSION_CHANGE]: ['validatorAddress'],
-		[EVENT_NAME_REWARDS_ASSIGNED]: ['stakerAddress'],
+		[EVENT_NAME_VALIDATOR_REGISTERED]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_VALIDATOR_STAKED]: ['transactionID', 'stakerAddress', 'validatorAddress'],
+		[EVENT_NAME_VALIDATOR_PUNISHED]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_VALIDATOR_BANNED]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_COMMISSION_CHANGE]: ['transactionID', 'validatorAddress'],
+		[EVENT_NAME_REWARDS_ASSIGNED]: ['transactionID', 'stakerAddress'],
 	},
 	[MODULE_NAME_RANDOM]: {
 		// No events defined in LIP
@@ -137,8 +137,8 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 		[EVENT_NAME_REWARD_MINTED]: ['defaultTopic', 'generatorAddress'],
 	},
 	[MODULE_NAME_LEGACY]: {
-		[EVENT_NAME_ACCOUNT_RECLAIMED]: ['legacyAddress', 'newAddress'],
-		[EVENT_NAME_KEYS_REGISTERED]: ['validatorAddress', 'generatorKey', 'blsKey'],
+		[EVENT_NAME_ACCOUNT_RECLAIMED]: ['transactionID', 'legacyAddress', 'newAddress'],
+		[EVENT_NAME_KEYS_REGISTERED]: ['transactionID', 'validatorAddress', 'generatorKey', 'blsKey'],
 	},
 };
 

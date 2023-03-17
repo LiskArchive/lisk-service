@@ -22,8 +22,8 @@ const {
 
 const {
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -74,11 +74,13 @@ const {
 	getPosClaimableRewards,
 	getPosLockedReward,
 	getStaker,
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
 } = require('./pos');
 
 const {
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	cacheRegisteredRewardModule,
 } = require('./dynamicReward');
@@ -89,7 +91,15 @@ const {
 	cacheFeeConstants,
 } = require('./fee');
 
-const { getAuthAccount } = require('./auth');
+const {
+	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
+} = require('./auth');
+
+const {
+	getChainAccount,
+} = require('./interoperability');
+
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
@@ -122,8 +132,8 @@ module.exports = {
 
 	// Endpoints
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -169,10 +179,12 @@ module.exports = {
 	getPosClaimableRewards,
 	getPosLockedReward,
 	getStaker,
+	getPoSGenesisStakers,
+	getPoSGenesisValidators,
 
 	// Reward
 	getRewardTokenID,
-	getInflationRate,
+	getAnnualInflation,
 	getDefaultRewardAtHeight,
 
 	// Fee
@@ -182,6 +194,10 @@ module.exports = {
 
 	// Auth
 	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
+
+	// Interoperability
+	getChainAccount,
 
 	// Legacy
 	getLegacyAccount,

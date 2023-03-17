@@ -41,7 +41,7 @@ const getEntityTable = () => getTableInstance(
 export const COMMAND_NAME = 'command';
 
 // Implement the custom logic in the 'applyTransaction' method and export it
-export const applyTransaction = async (blockHeader, tx, dbTrx) => {
+export const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const entityTable = await getEntityTable();
 
 	const entityTableEntry = { ...tx };
@@ -55,7 +55,7 @@ export const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 // Implement the custom logic in the 'revertTransaction' method and export it
 // This logic is executed to revert the effect of 'applyTransaction' method in case of deleteBlock
-export const revertTransaction = async (blockHeader, tx, dbTrx) => {
+export const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const entityTable = await getEntityTable();
 
 	const entityTableEntry = { ...tx };

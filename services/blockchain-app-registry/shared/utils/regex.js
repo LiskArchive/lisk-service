@@ -30,7 +30,9 @@
  *
  */
 const NETWORK = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
+const MAINCHAIN_ID = /^[a-fA-F0-9]{2}000000$/;
 
 module.exports = {
 	NETWORK,
+	MAINCHAIN_ID,
 };

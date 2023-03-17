@@ -14,7 +14,8 @@
  *
  */
 const { Logger, Signals } = require('lisk-service-framework');
-const actions = require('./endpoints');
+
+const endpoints = require('./endpoints');
 const GeoService = require('../geolocation');
 
 const logger = Logger();
@@ -48,9 +49,9 @@ const refactorPeer = (orgPeer, state) => {
 	return peer;
 };
 
-const addLocation = async (ipaddress) => {
+const addLocation = async (ipAddress) => {
 	try {
-		const result = await GeoService.requestData(ipaddress);
+		const result = await GeoService.requestData(ipAddress);
 		return result;
 	} catch (e) {
 		return {};
@@ -58,11 +59,11 @@ const addLocation = async (ipaddress) => {
 };
 
 const getPeers = async () => {
-	const connectedPeers = await actions.getConnectedPeers();
+	const connectedPeers = await endpoints.getConnectedPeers();
 	connectedPeers.data = connectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
 
-	const disconnectedPeers = await actions.getDisconnectedPeers();
+	const disconnectedPeers = await endpoints.getDisconnectedPeers();
 	disconnectedPeers.data = disconnectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
 

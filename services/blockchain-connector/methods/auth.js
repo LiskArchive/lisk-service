@@ -15,6 +15,7 @@
  */
 const {
 	getAuthAccount,
+	getAuthMultiSigRegMsgSchema,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -24,5 +25,10 @@ module.exports = [
 		params: {
 			address: { optional: false, type: 'string' },
 		},
+	},
+	{
+		name: 'getAuthMultiSigRegMsgSchema',
+		controller: async () => getAuthMultiSigRegMsgSchema(),
+		params: {},
 	},
 ];

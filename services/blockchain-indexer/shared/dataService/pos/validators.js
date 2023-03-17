@@ -92,7 +92,7 @@ const computeValidatorStatus = async () => {
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
-	const lastestBlock = getLastBlock();
+	const latestBlock = getLastBlock();
 	const generatorsList = await business.getGenerators();
 
 	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));
@@ -110,8 +110,8 @@ const computeValidatorStatus = async () => {
 
 	const verifyIfPunished = (validator) => {
 		const isPunished = validator.punishmentPeriods.some(
-			punishmentPeriod => punishmentPeriod.start <= lastestBlock.height
-				&& lastestBlock.height <= punishmentPeriod.end,
+			punishmentPeriod => punishmentPeriod.start <= latestBlock.height
+				&& latestBlock.height <= punishmentPeriod.end,
 		);
 		return isPunished;
 	};
@@ -276,63 +276,70 @@ const updateValidatorListEveryBlock = () => {
 	const updateValidatorCacheListener = async (eventType, data) => {
 		const updatedValidatorAddresses = [];
 		const [block] = data.data;
-		if (block && block.transactions && Array.isArray(block.transactions)) {
-			block.transactions.forEach(tx => {
-				if (tx.module === MODULE.POS) {
-					if (tx.command === COMMAND.REGISTER_VALIDATOR) {
-						updatedValidatorAddresses
-							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.command === COMMAND.STAKE) {
-						// TODO: Verify
-						tx.params.stakes
-							.forEach(stake => updatedValidatorAddresses.push(stake.validatorAddress));
-					}
-				}
-			});
-
-			// TODO: Validate the logic if there is need to update validator cache on (un-)stake tx
-			if (updatedValidatorAddresses.length) {
-				const updatedValidatorAccounts = await business
-					.getPosValidators({ addresses: updatedValidatorAddresses });
-
-				updatedValidatorAccounts.forEach(validator => {
-					const validatorIndex = validatorList.findIndex(acc => acc.address === validator.address);
-
-					if (eventType === EVENT_DELETE_BLOCK && validatorIndex !== -1) {
-						// Remove validator from list when deleteBlock event contains validator registration tx
-						validatorList.splice(validatorIndex, 1);
-					} else if (validatorIndex === -1) {
-						// Append to validator list on newBlock event, if missing
-						validatorList.push(validator);
-					} else {
-						// Re-assign the current validator status before updating the validatorList
-						// Validator status can change only at the beginning of a new round
-						const { status } = validatorList[validatorIndex];
-						validatorList[validatorIndex] = { ...validator, status };
+		try {
+			if (block && block.transactions && Array.isArray(block.transactions)) {
+				block.transactions.forEach(tx => {
+					if (tx.module === MODULE.POS) {
+						if (tx.command === COMMAND.REGISTER_VALIDATOR) {
+							updatedValidatorAddresses
+								.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
+						} else if (tx.command === COMMAND.STAKE) {
+							// TODO: Verify
+							tx.params.stakes
+								.forEach(stake => updatedValidatorAddresses.push(stake.validatorAddress));
+						}
 					}
 				});
 
-				// Rank is impacted only when a validator gets (un-)voted
-				await computeValidatorRank();
-			}
+				// TODO: Validate the logic if there is need to update validator cache on (un-)stake tx
+				if (updatedValidatorAddresses.length) {
+					const updatedValidatorAccounts = await business
+						.getPosValidators({ addresses: updatedValidatorAddresses });
 
-			// Update validator cache with generatedBlocks and rewards
-			const validatorIndex = validatorList.findIndex(acc => acc.address === block.generatorAddress);
-			if (validatorList[validatorIndex]
-				&& Object.getOwnPropertyNames(validatorList[validatorIndex]).length) {
-				// TODO: Update
-				if (
-					validatorList[validatorIndex].generatedBlocks && validatorList[validatorIndex].rewards
-				) {
-					validatorList[validatorIndex].generatedBlocks = eventType === EVENT_NEW_BLOCK
-						? validatorList[validatorIndex].generatedBlocks + 1
-						: validatorList[validatorIndex].generatedBlocks - 1;
+					updatedValidatorAccounts.forEach(validator => {
+						const validatorIndex = validatorList
+							.findIndex(acc => acc.address === validator.address);
 
-					validatorList[validatorIndex].rewards = eventType === EVENT_NEW_BLOCK
-						? (BigInt(validatorList[validatorIndex].rewards) + BigInt(block.reward)).toString()
-						: (BigInt(validatorList[validatorIndex].rewards) - BigInt(block.reward)).toString();
+						if (eventType === EVENT_DELETE_BLOCK && validatorIndex !== -1) {
+							// Remove validator from list when
+							// deleteBlock event contains validator registration tx
+							validatorList.splice(validatorIndex, 1);
+						} else if (validatorIndex === -1) {
+							// Append to validator list on newBlock event, if missing
+							validatorList.push(validator);
+						} else {
+							// Re-assign the current validator status before updating the validatorList
+							// Validator status can change only at the beginning of a new round
+							const { status } = validatorList[validatorIndex];
+							validatorList[validatorIndex] = { ...validator, status };
+						}
+					});
+
+					// Rank is impacted only when a validator gets (un-)voted
+					await computeValidatorRank();
+				}
+
+				// Update validator cache with generatedBlocks and rewards
+				const validatorIndex = validatorList
+					.findIndex(acc => acc.address === block.generatorAddress);
+				if (validatorList[validatorIndex]
+					&& Object.getOwnPropertyNames(validatorList[validatorIndex]).length) {
+					// TODO: Update
+					if (
+						validatorList[validatorIndex].generatedBlocks && validatorList[validatorIndex].rewards
+					) {
+						validatorList[validatorIndex].generatedBlocks = eventType === EVENT_NEW_BLOCK
+							? validatorList[validatorIndex].generatedBlocks + 1
+							: validatorList[validatorIndex].generatedBlocks - 1;
+
+						validatorList[validatorIndex].rewards = eventType === EVENT_NEW_BLOCK
+							? (BigInt(validatorList[validatorIndex].rewards) + BigInt(block.reward)).toString()
+							: (BigInt(validatorList[validatorIndex].rewards) - BigInt(block.reward)).toString();
+					}
 				}
 			}
+		} catch (err) {
+			logger.warn(`Unable to update the validator cache due to:\n${err.stack}`);
 		}
 	};
 

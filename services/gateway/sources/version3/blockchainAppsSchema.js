@@ -22,7 +22,7 @@ module.exports = {
 		chainID: '=,string',
 		name: '=,string',
 		search: '=,string',
-		state: '=,string',
+		status: '=,string',
 		offset: '=,number',
 		limit: '=,number',
 	},

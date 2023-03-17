@@ -22,12 +22,15 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
+const config = require('./config');
+
+LoggerConfig(config.log);
+
 const SocketIOService = require('./shared/moleculer-io');
 
 const ApiService = Libs['moleculer-web'];
 const { methods } = require('./shared/moleculer-web/methods');
 
-const config = require('./config');
 const { getHttpRoutes } = require('./routes');
 const { getSocketNamespaces } = require('./namespaces');
 const packageJson = require('./package.json');
@@ -44,15 +47,8 @@ const { definition: transactionsDefinition } = require('./sources/version3/trans
 
 const { host, port } = config;
 
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
-
 const logger = Logger();
+
 const MODULE = {
 	DYNAMIC_REWARD: 'dynamicReward',
 	REWARD: 'reward',
@@ -62,7 +58,7 @@ const defaultBrokerConfig = {
 	name: 'gateway',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
-	logger: loggerConf,
+	logger: config.log,
 	dependencies: config.brokerDependencies,
 };
 

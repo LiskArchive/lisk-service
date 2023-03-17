@@ -14,23 +14,30 @@
  *
  */
 const { requestConnector } = require('../../utils/request');
+const { getAuthMultiSigRegMsgSchema } = require('./auth');
 
 let allSchemas;
 
 const getSchemasFromNode = async () => {
 	const systemMetadata = await requestConnector('getSystemMetadata');
 	const schemas = await requestConnector('getSchema');
-	return { schemas, systemMetadata };
+	const messageSchemas = [];
+
+	const authMultiSigRegMsgSchema = await getAuthMultiSigRegMsgSchema();
+	if (authMultiSigRegMsgSchema) messageSchemas.push(authMultiSigRegMsgSchema);
+
+	return { schemas, systemMetadata, messageSchemas };
 };
 
 const getAllSchemas = async () => {
 	if (!allSchemas) {
+		allSchemas = {};
 		const schemas = await getSchemasFromNode();
 
+		// Process systemMetadata schemas
 		const commandsParamsSchemas = [];
 		const assetsSchemas = [];
 		const eventsSchemas = [];
-
 		schemas.systemMetadata.modules.forEach(module => {
 			module.events.forEach(event => {
 				const formattedEvents = {
@@ -58,15 +65,17 @@ const getAllSchemas = async () => {
 				commandsParamsSchemas.push(formattedTxParams);
 			});
 		});
-
-		allSchemas = {};
-		Object.entries(schemas.schemas).forEach(([entity, schema]) => allSchemas[entity] = { schema });
-
 		Object.assign(allSchemas, {
 			assets: assetsSchemas,
 			commands: commandsParamsSchemas,
 			events: eventsSchemas,
 		});
+
+		// Assign generic schemas
+		Object.entries(schemas.schemas).forEach(([entity, schema]) => allSchemas[entity] = { schema });
+
+		// Assign messages schemas
+		Object.assign(allSchemas, { messages: schemas.messageSchemas });
 	}
 
 	return allSchemas;

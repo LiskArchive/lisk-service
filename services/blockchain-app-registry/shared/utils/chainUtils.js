@@ -31,9 +31,8 @@ const getApplicationMetadataIndex = () => getTableInstance(
 
 const resolveChainNameByNetworkAppDir = async (network, appDirName) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
-	const EMPTY_STRING = '';
-	const [{ chainName = EMPTY_STRING } = {}] = await applicationMetadataTable.find({ network, appDirName }, ['chainName']);
-	return chainName.filter(n => n !== EMPTY_STRING);
+	const [{ chainName = '' } = {}] = await applicationMetadataTable.find({ network, appDirName }, ['chainName']);
+	return chainName;
 };
 
 module.exports = {

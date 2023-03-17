@@ -66,7 +66,7 @@ module.exports = [
 		controller: dryRunTransactions,
 		params: {
 			transaction: { optional: false, type: 'any' },
-			isSkipVerify: { optional: true, type: 'boolean', default: false },
+			skipVerify: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];

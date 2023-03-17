@@ -59,7 +59,7 @@ const buildModuleCommandProcessorMap = async () => {
 	return Promise.all(promises);
 };
 
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.module)) throw Error(`No processors implemented for transactions related to module: ${tx.module}`);
@@ -68,10 +68,10 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	if (!moduleCommandProcessorMap.has(`apply_${tx.command}`)) throw Error(`No applyTransaction hook implemented for transactions with module: ${tx.module} and command: ${tx.command}`);
 	const transactionProcessor = moduleCommandProcessorMap.get(`apply_${tx.command}`);
 
-	return transactionProcessor(blockHeader, tx, dbTrx);
+	return transactionProcessor(blockHeader, tx, events, dbTrx);
 };
 
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.module)) throw Error(`No processors implemented for transactions related to module: ${tx.module}`);
@@ -80,7 +80,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	if (!moduleCommandProcessorMap.has(`revert_${tx.command}`)) throw Error(`No revertTransaction hook implemented for transactions with module: ${tx.module} and command: ${tx.command}`);
 	const transactionProcessor = moduleCommandProcessorMap.get(`revert_${tx.command}`);
 
-	return transactionProcessor(blockHeader, tx, dbTrx);
+	return transactionProcessor(blockHeader, tx, events, dbTrx);
 };
 
 module.exports = {

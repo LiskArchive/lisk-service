@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {};
 
 // Moleculer broker config
@@ -26,7 +28,11 @@ config.endpoints = {};
 config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 // Logging
-config.log = {};
+config.log = {
+	name: packageJson.name,
+	version: packageJson.version,
+};
+
 /**
  * log.level - Limits the importance of log messages for console and stdout outputs
  *             One fo the following in that order:
@@ -63,7 +69,7 @@ config.gitHub = {
 	get appRegistryRepoName() { return this.appRegistryRepo.split('/').pop(); },
 };
 
-config.dataDir = `${process.cwd()}/data`;
+config.dataDir = `${__dirname}/data`;
 
 config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 

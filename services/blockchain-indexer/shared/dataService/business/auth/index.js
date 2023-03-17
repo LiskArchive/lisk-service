@@ -14,7 +14,9 @@
  *
  */
 const { getAuthAccountInfo } = require('./accountInfo');
+const { getAuthMultiSigRegMsgSchema } = require('./multiSigRegMsgSchema');
 
 module.exports = {
 	getAuthAccountInfo,
+	getAuthMultiSigRegMsgSchema,
 };

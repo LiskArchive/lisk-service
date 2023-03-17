@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
 	jobs: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 	db: {},
 };
 
@@ -33,6 +38,7 @@ config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://loc
 config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
 config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL;
 
 /**
  * LOGGING
@@ -97,7 +103,12 @@ config.networks = Object.freeze({
 		{
 			name: 'alphanet',
 			chainID: '03000000',
-			serviceURL: 'https://alphanet-service.lisk.com',
+			serviceURL: 'https://alphanet-service.liskdev.net',
+		},
+		{
+			name: 'devnet',
+			chainID: '04000000',
+			serviceURL: process.env.DEVNET_MAINCHAIN_URL || 'http://devnet-service.liskdev.net:9901',
 		},
 	],
 });

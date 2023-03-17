@@ -109,7 +109,7 @@ const performLastBlockUpdate = async (newBlock) => {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
 		await setLastBlock(newBlock);
 	} catch (err) {
-		logger.error(`Error occured when performing last block update:\n${err.stack}`);
+		logger.error(`Error occurred when performing last block update:\n${err.stack}`);
 	}
 };
 

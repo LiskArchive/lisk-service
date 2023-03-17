@@ -20,10 +20,10 @@
 				"example": "00000000",
 				"description": "Chain ID of the blockchain application."
 			},
-			"state": {
+			"status": {
 				"type": "string",
 				"example": "active",
-				"description": "Current state of the application"
+				"description": "Current status of the application."
 			},
 			"address": {
 				"type": "string",
@@ -38,8 +38,8 @@
 				"description": "Last certificate height"
 			},
 			"lastUpdated": {
-				"type": "string",
-				"example": "1616008148",
+				"type": "integer",
+				"example": 1616008148,
 				"description": "timestamp"
 			}
 		}
@@ -163,7 +163,8 @@
 			"logo",
 			"backgroundColor",
 			"serviceURLs",
-			"explorers"
+			"explorers",
+			"isDefault"
 		],
 		"properties": {
 			"chainName": {
@@ -179,6 +180,11 @@
 			"title": {
 				"type": "string",
 				"example": "Lisk blockchain application"
+			},
+			"status": {
+				"type": "string",
+				"example": "active",
+				"description": "Current status of the application."
 			},
 			"description": {
 				"type": "string",

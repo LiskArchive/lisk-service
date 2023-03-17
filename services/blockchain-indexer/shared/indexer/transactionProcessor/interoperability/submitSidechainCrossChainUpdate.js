@@ -19,11 +19,13 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
+const { TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { getChainStatus } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -34,16 +36,17 @@ const getBlockchainAppsTable = () => getTableInstance(
 // Command specific constants
 const COMMAND_NAME = 'submitSidechainCrossChainUpdate';
 
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const chainStatus = await getChainStatus(tx.params.sendingChainID);
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
-	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		state: '', // TODO: Update chain status from events
+		status: chainStatus,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
@@ -53,16 +56,17 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
-	// TODO: Remove the last value (keep oldest if 2 values exist): state, lastUpdated, lastCertHeight
+	const chainStatus = await getChainStatus(tx.params.sendingChainID);
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		state: '',
+		status: chainStatus,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

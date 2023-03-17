@@ -18,11 +18,13 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
+const { TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { getChainStatus } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -34,14 +36,16 @@ const getBlockchainAppsTable = () => getTableInstance(
 const COMMAND_NAME = 'terminateSidechainForLiveness';
 
 // eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	const blockchainAppsTable = await getBlockchainAppsTable();
+const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
-	// TODO: Store as CSV (latest 2): state, lastUpdated, lastCertHeight
+	const blockchainAppsTable = await getBlockchainAppsTable();
+	const chainStatus = await getChainStatus(tx.params.chainID);
+
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
-		state: 'terminated', // TODO: Update chain status from events
+		status: chainStatus,
 	};
 
 	logger.trace(`Updating chain ${chainID} state.`);
@@ -50,13 +54,16 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, dbTrx) => {
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const { chainID } = tx.params;
+	const chainStatus = await getChainStatus(chainID);
 	const appInfo = {
 		chainID,
-		state: '', // TODO: Remove `terminated` from CSV
+		status: chainStatus,
 	};
 
 	logger.trace(`Reverting chain ${chainID} state.`);

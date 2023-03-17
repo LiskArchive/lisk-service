@@ -2,7 +2,7 @@
     "executionStatus": {
         "name": "executionStatus",
         "in": "query",
-        "description": "Retrieve pending transactions",
+        "description": "Retrieve pending transactions.\nAccepted values: pending, success, fail.",
         "type": "string",
         "minLength": 1
     },
@@ -19,7 +19,7 @@
         "name": "dryrunTransaction",
         "in": "body",
         "required": true,
-        "description": "The request body can contain two properties:\n- transaction (required): Binary payload or a transaction object\n- isSkipVerify (optional, default: false): A boolean indicator to skip the transaction verification",
+        "description": "The request body can contain two properties:\n- transaction (required): Binary payload or a transaction object\n- skipVerify (optional, default: false): A boolean indicator to skip the transaction verification",
         "schema": {
             "$ref": "#/definitions/dryrunTransactionParamEnvelope"
         }

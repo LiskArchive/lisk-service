@@ -25,7 +25,7 @@ const {
 	getNodeInfo,
 	getSystemMetadata,
 } = require('./endpoints_1');
-const { timeoutMessage, getApiClient, invokeEndpoint } = require('./client');
+const { timeoutMessage, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
 const getConnectedPeers = async () => {
@@ -52,26 +52,25 @@ const getDisconnectedPeers = async () => {
 	}
 };
 
-const getForgingStatus = async () => {
+const getGeneratorStatus = async () => {
 	try {
-		const forgingStatus = await invokeEndpoint('generator_getForgingStatus');
+		const forgingStatus = await invokeEndpoint('generator_getStatus');
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getForgingStatus\'.');
+			throw new TimeoutException('Request timed out when calling \'getGeneratorStatus\'.');
 		}
 		throw err;
 	}
 };
 
-const updateForgingStatus = async (config) => {
+const updateGeneratorStatus = async (config) => {
 	try {
-		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('generator_updateForgingStatus', { ...config });
+		const response = await invokeEndpoint('generator_updateStatus', { ...config });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'updateForgingStatus\'.');
+			throw new TimeoutException('Request timed out when calling \'updateGeneratorStatus\'.');
 		}
 		throw err;
 	}
@@ -89,10 +88,10 @@ const getLastBlock = async () => {
 	}
 };
 
-const getBlockByHeight = async (height) => {
+const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 	try {
 		if (Number(height) === await getGenesisHeight()) {
-			return getGenesisBlock();
+			return getGenesisBlock(includeGenesisAssets);
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
@@ -133,11 +132,11 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 	}
 };
 
-const getBlockByID = async (id) => {
+const getBlockByID = async (id, includeGenesisAssets = false) => {
 	try {
 		// File based Genesis block handling
 		if (id === await getGenesisBlockID()) {
-			return getGenesisBlock();
+			return getGenesisBlock(includeGenesisAssets);
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
@@ -225,8 +224,7 @@ const getTransactionsFromPool = async () => {
 
 const postTransaction = async (transaction) => {
 	try {
-		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('txpool_postTransaction', { transaction });
+		const response = await invokeEndpoint('txpool_postTransaction', { transaction });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -238,8 +236,7 @@ const postTransaction = async (transaction) => {
 
 const dryRunTransaction = async ({ transaction, skipVerify }) => {
 	try {
-		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('txpool_dryRunTransaction', { transaction, skipVerify });
+		const response = await invokeEndpoint('txpool_dryRunTransaction', { transaction, skipVerify });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -271,8 +268,8 @@ module.exports = {
 	getSystemMetadata,
 	getConnectedPeers,
 	getDisconnectedPeers,
-	getForgingStatus,
-	updateForgingStatus,
+	getGeneratorStatus,
+	updateGeneratorStatus,
 	getLastBlock,
 	getBlockByID,
 	getBlocksByIDs,

@@ -34,7 +34,7 @@ const blockchainAppsStatsSchema = {
 const blockchainAppSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.number().integer().min(1).required(),
-	state: Joi.string().valid(...validStatuses).required(),
+	status: Joi.string().valid(...validStatuses).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	lastCertificateHeight: Joi.number().integer().min(0).required(),
 	lastUpdated: Joi.number()

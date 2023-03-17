@@ -35,11 +35,13 @@ const TOKEN_ID_PATTERN = /^[a-fA-F0-9]{8}[*]{8}$/;
 const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
 const DIGITS = /^\d+$/;
 const POSITIVE_DIGITS = /^[1-9]+\d*$/;
+const FLOATING_POINT = /^[0-9]+(\.[0-9]+)?$/;
 const VOTE_WEIGHT = /^\b[1-9]\d*000000000\b$/;
 const HEX = /^\b[0-9a-fA-F]+\b$/;
 const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
 const EMPTY_STRING = /^$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
+const SWAGGER_RESPONSE_KEY = /^([0-9]{3})$|^(default)$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -63,10 +65,12 @@ module.exports = {
 	CHAIN_ID,
 	DURATION,
 	DIGITS,
+	FLOATING_POINT,
 	VOTE_WEIGHT,
 	HEX,
 	TOPIC,
 	EMPTY_STRING,
 	POSITIVE_DIGITS,
 	POS_VALIDATOR_STATUS,
+	SWAGGER_RESPONSE_KEY,
 };
