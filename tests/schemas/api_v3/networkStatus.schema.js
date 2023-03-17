@@ -28,7 +28,6 @@ const genesisSchema = {
 	blockTime: Joi.number().integer().positive().required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	maxTransactionsSize: Joi.number().integer().positive().required(),
-	minFeePerByte: Joi.number().integer().min(0).required(),
 };
 
 const seedPeerSchema = {

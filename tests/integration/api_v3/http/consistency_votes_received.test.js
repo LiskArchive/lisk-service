@@ -28,21 +28,21 @@ for (let i = 1; i < baseUrls.length; i++) {
 	xdescribe('Votes Received', () => {
 		const endpoint0 = `${baseUrl0}/api/v3`;
 		const endpoint1 = `${baseUrl1}/api/v3`;
-		const forgersEndpoint0 = `${endpoint0}/forgers?limit=103`;
-		const votesReceivedEndpoint0 = `${endpoint0}/votes_received`;
-		const votesReceivedEndpoint1 = `${endpoint1}/votes_received`;
+		const generatorsEndpoint0 = `${endpoint0}/pos/validators?limit=103`;
+		const stakersEndpoint0 = `${endpoint0}/pos/stakers`;
+		const stakersEndpoint1 = `${endpoint1}/pos/stakers`;
 
 		it(`Comparing data on ${baseUrl0} against ${baseUrl1}`, async () => {
 			console.info(`Server: ${baseUrl0} against ${baseUrl1}`);
-			const response = await api.get(forgersEndpoint0);
-			const delegateNames = response.data.map(({ username }) => username);
+			const response = await api.get(generatorsEndpoint0);
+			const validatorsNames = response.data.map(({ name }) => name);
 
-			for (let j = 0; j < delegateNames.length; j++) {
+			for (let j = 0; j < validatorsNames.length; j++) {
 				/* eslint-disable no-await-in-loop */
-				const n = delegateNames[j];
+				const n = validatorsNames[j];
 
-				const { meta: { total: total0 } } = await api.get(`${votesReceivedEndpoint0}?limit=1&username=${n}`);
-				const { meta: { total: total1 } } = await api.get(`${votesReceivedEndpoint1}?limit=1&username=${n}`);
+				const { meta: { total: total0 } } = await api.get(`${stakersEndpoint0}?limit=1&name=${n}`);
+				const { meta: { total: total1 } } = await api.get(`${stakersEndpoint1}?limit=1&name=${n}`);
 
 				try {
 					expect(total0).toBe(total1);
@@ -57,8 +57,8 @@ for (let i = 1; i < baseUrls.length; i++) {
 				const limit = 100;
 
 				for (let offset = 0; offset * limit < total0 + limit; offset++) {
-					const result0 = await api.get(`${votesReceivedEndpoint0}?offset=${offset * limit}&limit=${limit}&username=${n}`);
-					const result1 = await api.get(`${votesReceivedEndpoint1}?offset=${offset * limit}&limit=${limit}&username=${n}`);
+					const result0 = await api.get(`${stakersEndpoint0}?offset=${offset * limit}&limit=${limit}&name=${n}`);
+					const result1 = await api.get(`${stakersEndpoint1}?offset=${offset * limit}&limit=${limit}&name=${n}`);
 
 					votes0.push(result0.data);
 					votes1.push(result1.data);
@@ -67,7 +67,7 @@ for (let i = 1; i < baseUrls.length; i++) {
 				try {
 					expect(votes0.flat()).toEqual(votes1.flat());
 				} catch (e) {
-					console.error(`Votes mismatch for delegate: ${n}`);
+					console.error(`stakes mismatch for validator: ${n}`);
 					// console.error(e);
 					// throw e;
 				}

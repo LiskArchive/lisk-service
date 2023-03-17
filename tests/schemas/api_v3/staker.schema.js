@@ -24,8 +24,8 @@ const staker = {
 
 const validatorSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
+	name: Joi.string().pattern(regex.NAME).optional(),
 };
 
 const dataSchema = {

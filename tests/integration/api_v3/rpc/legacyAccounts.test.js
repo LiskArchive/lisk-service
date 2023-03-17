@@ -35,7 +35,7 @@ const getLegacyAccountInfo = async (params) => request(wsRpcUrl, 'get.legacy', p
 describe('get.legacy', () => {
 	// TODO: Enable when legacy account public key is available on test blockchain
 	xit('returns legacy account info', async () => {
-		const response = await getLegacyAccountInfo({ publicKey: '' });
+		const response = await getLegacyAccountInfo({ publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc' });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(legacyAccountsSchema);
 		expect(response.meta).toMap(legacyAccountsMetaSchema);

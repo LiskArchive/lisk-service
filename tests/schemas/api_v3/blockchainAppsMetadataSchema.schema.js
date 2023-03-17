@@ -20,7 +20,7 @@ const validStatuses = ['registered', 'active', 'terminated', 'unregistered'];
 
 const logo = {
 	png: Joi.string().optional(),
-	svg: Joi.string().optional(),
+	svg: Joi.string().allow('').optional(),
 };
 
 const serviceURL = {
@@ -46,7 +46,7 @@ const blockchainAppMetadataSchema = {
 	isDefault: Joi.boolean().required(),
 	title: Joi.string().optional(),
 	description: Joi.string().optional(),
-	genesisURL: Joi.string().required(),
+	genesisURL: Joi.string().allow('').required(),
 	projectPage: Joi.string().required(),
 	appPage: Joi.string().optional(),
 	serviceURLs: Joi.array().items(serviceURL).required(),

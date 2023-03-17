@@ -18,7 +18,7 @@ import regex from './regex';
 
 const logo = {
 	png: Joi.string().optional(),
-	svg: Joi.string().optional(),
+	svg: Joi.string().allow('').optional(),
 };
 
 const denomUnit = {

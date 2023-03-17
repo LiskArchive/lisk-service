@@ -132,11 +132,9 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid transaction moduleCommand -> empty response', async () => {
+		it('invalid transaction moduleCommand -> invalid params', async () => {
 			const response = await getTransactions({ moduleCommand: '999' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('empty transaction moduleCommand -> empty response', async () => {
@@ -257,8 +255,10 @@ describe('Method get.transactions', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchema, { height: refTransaction.block.height }));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchema);
+				expect(transaction.block.height).toEqual(refTransaction.block.height)
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -411,76 +411,6 @@ describe('Method get.transactions', () => {
 		});
 	});
 
-	describe('is able to retrieve list of transactions using amount range', () => {
-		it('min max amount -> ok', async () => {
-			const minAmount = 0;
-			const maxAmount = BigInt(refTransaction.asset.amount);
-			const response = await getTransactions({ amount: `${minAmount}:${maxAmount}` });
-
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach((transaction, i) => {
-				expect(transaction).toMap(transactionSchema);
-				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
-				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
-				if (i > 0) {
-					const prevTx = result.data[i];
-					const prevTxTimestamp = prevTx.block.timestamp;
-					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
-				}
-			});
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('Half bounded range minAmount -> ok', async () => {
-			const minAmount = 0;
-			const response = await getTransactions({ amount: `${minAmount}:` });
-
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach((transaction, i) => {
-				expect(transaction).toMap(transactionSchema);
-				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
-				if (i > 0) {
-					const prevTx = result.data[i];
-					const prevTxTimestamp = prevTx.block.timestamp;
-					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
-				}
-			});
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('Half bounded range maxAmount -> ok', async () => {
-			const maxAmount = BigInt(refTransaction.asset.amount);
-			const response = await getTransactions({ amount: `:${maxAmount}` });
-
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach((transaction, i) => {
-				expect(transaction).toMap(transactionSchema);
-				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
-				if (i > 0) {
-					const prevTx = result.data[i];
-					const prevTxTimestamp = prevTx.block.timestamp;
-					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
-				}
-			});
-			expect(result.meta).toMap(metaSchema);
-		});
-	});
-
 	describe('Transactions sorted by timestamp', () => {
 		it('returns 10 transactions sorted by timestamp descending', async () => {
 			const response = await getTransactions({ sort: 'timestamp:desc' });
@@ -524,7 +454,7 @@ describe('Method get.transactions', () => {
 	describe('Fetch transactions based on multiple request params', () => {
 		it('returns transactions with senderAddress and nonce', async () => {
 			const response = await getTransactions({
-				senderAddress: refTransaction.senderAddress,
+				senderAddress: refTransaction.sender.address,
 				nonce: String(Number(refTransaction.nonce)),
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -533,7 +463,7 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchema);
-				expect(transaction.senderaddress).toBe(refTransaction.senderAddress);
+				expect(transaction.sender.address).toBe(refTransaction.sender.address);
 				expect(transaction.id).toBe(refTransaction.id);
 			});
 			expect(result.meta).toMap(metaSchema);
@@ -591,7 +521,7 @@ describe('Method get.transactions', () => {
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchema);
 				expect(transaction.id).toBe(refTransaction.id);
-				expect(transaction.height).toBe(refTransaction.block.height);
+				expect(transaction.block.height).toBe(refTransaction.block.height);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});

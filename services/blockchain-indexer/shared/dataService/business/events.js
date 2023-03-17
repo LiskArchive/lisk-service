@@ -140,7 +140,7 @@ const getEvents = async (params) => {
 
 	const response = await eventTopicsTable.find(
 		{ ...params, distinct: 'eventID' },
-		['eventID'],
+		['eventID', 'height', 'index'],
 	);
 
 	const eventIDs = response.map(entry => entry.eventID);
@@ -148,6 +148,7 @@ const getEvents = async (params) => {
 		{
 			whereIn: { property: 'id', values: eventIDs },
 			order: params.order,
+			sort: params.sort.replace('timestamp', 'height')
 		},
 		['eventStr', 'height', 'index'],
 	);

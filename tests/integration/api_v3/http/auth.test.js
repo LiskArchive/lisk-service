@@ -38,7 +38,7 @@ describe('Auth accounts API', () => {
 	});
 
 	it('retrieves auth account info -> ok', async () => {
-		const response = await api.get(`endpoint?address=${refTransaction.sender.address}`);
+		const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`);
 		expect(response).toMap(goodRequestSchemaForAuth);
 		expect(response.data).toMap(authAccountInfoSchema);
 		expect(response.meta).toMap(authAccountMetaSchema);
