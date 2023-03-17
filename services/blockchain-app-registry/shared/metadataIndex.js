@@ -121,7 +121,7 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 		await indexTokensMeta(tokenMeta, dbTrx);
 		logger.debug(`Indexed tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished indexing metadata information for the app: ${app} (${network}).`);
+	logger.info(`Finished indexing metadata information for the app: ${app} (${network}) file: ${filename}.`);
 };
 
 const deleteChainMeta = async (chainMeta, dbTrx) => {
