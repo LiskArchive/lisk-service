@@ -111,7 +111,7 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	[MODULE_NAME_FEE]: {
 		[EVENT_NAME_FEE_PROCESSED]: ['defaultTopic', 'senderAddress', 'generatorAddress'],
 		[EVENT_NAME_INSUFFICIENT_FEE]: [],
-		[EVENT_NAME_RELAYER_FEE_PROCESSED]: ['defaultTopic', 'relayerAddress'],
+		[EVENT_NAME_RELAYER_FEE_PROCESSED]: ['transactionID', 'ccmID', 'relayerAddress'],
 	},
 	[MODULE_NAME_INTEROPERABILITY]: {
 		[EVENT_NAME_INVALID_REGISTRATION_SIGNATURE]: ['transactionID', 'chainID'],
