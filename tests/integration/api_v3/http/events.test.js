@@ -121,7 +121,7 @@ describe('Events API', () => {
 			const response = await api.get(`${endpoint}?transactionID=41287`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(0);
+			expect(response.data.length).toEqual(0);
 		});
 
 		it('long invalid transactionID -> 400', async () => {

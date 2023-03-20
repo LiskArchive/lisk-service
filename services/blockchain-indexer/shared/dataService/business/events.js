@@ -143,7 +143,7 @@ const getEvents = async (params) => {
 
 	const response = await eventTopicsTable.find(
 		{ ...params, distinct: 'eventID' },
-		['eventID', 'height', 'index'],
+		['eventID'],
 	);
 
 	const eventIDs = response.map(entry => entry.eventID);

@@ -242,14 +242,14 @@ scenarios:
           expect:
             - statusCode: 200
 
-  # - name: "Stakes"
-  #   flow:
-  #     - get:
-  #         url: "/pos/stakes"
-  #         qs:
-  #           address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
-  #         expect:
-  #           - statusCode: 200
+  - name: "Stakes"
+    flow:
+      - get:
+          url: "/pos/stakes"
+          qs:
+            address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
+          expect:
+            - statusCode: 200
 
   - name: "Unlocks"
     flow:
@@ -391,9 +391,9 @@ scenarios:
             - statusCode: 200
 
   # Newsfeed
-  # - name: "Newsfeed"
-  #   flow:
-  #     - get:
-  #         url: "/newsfeed"
-  #         expect:
-  #           - statusCode: 200
+  - name: "Newsfeed"
+    flow:
+      - get:
+          url: "/newsfeed"
+          expect:
+            - statusCode: 200
