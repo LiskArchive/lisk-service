@@ -32,6 +32,7 @@ const cast = {
 	base64: input => (input ? (Buffer.from(input)).toString('base64') : undefined),
 };
 
+// Safely retrieves value of a nested key inside an object. Return undefined if not found
 const resolvePath = (obj, path) => {
 	try {
 		const test = (subObj, prop) => (subObj && subObj[prop] !== undefined);
@@ -100,4 +101,11 @@ const map = (data, def) => {
 	return {};
 };
 
-module.exports = map;
+module.exports = {
+	mapper: map,
+
+	// For testing
+	resolvePath,
+	mapObject,
+	mapArray,
+};
