@@ -156,7 +156,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid blockID -> 200 OK', async () => {
+		it('invalid blockID -> 400 OK', async () => {
 			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
@@ -193,7 +193,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> 200', async () => {
+		it('invalid height -> 400', async () => {
 			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
