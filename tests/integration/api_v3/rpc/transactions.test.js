@@ -257,7 +257,7 @@ describe('Method get.transactions', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchema);
-				expect(transaction.block.height).toEqual(refTransaction.block.height)
+				expect(transaction.block.height).toEqual(refTransaction.block.height);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});

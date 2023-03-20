@@ -148,7 +148,7 @@ const getEvents = async (params) => {
 		{
 			whereIn: { property: 'id', values: eventIDs },
 			order: params.order,
-			sort: params.sort.replace('timestamp', 'height')
+			sort: params.sort.replace('timestamp', 'height'),
 		},
 		['eventStr', 'height', 'index'],
 	);

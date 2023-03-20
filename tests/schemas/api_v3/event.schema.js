@@ -22,7 +22,7 @@ const getCurrentTime = () => Math.floor(Date.now() / 1000);
 const block = {
 	id: Joi.string().pattern(regex.HASH_SHA256)
 		.required(),
-	height: Joi.number().integer().min(1).required(),
+	height: Joi.number().integer().min(0).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
 		.required(),
 };

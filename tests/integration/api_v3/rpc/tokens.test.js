@@ -43,7 +43,7 @@ describe('get.tokens', () => {
 		[refValidator] = result.data;
 
 		const networkStatus = await getNetworkStatus();
-		currTokenID = networkStatus.result.data.chainID.substring(0, 2).padEnd(16, '0');;;
+		currTokenID = networkStatus.result.data.chainID.substring(0, 2).padEnd(16, '0');
 	});
 
 	it('returns tokens info when call with address', async () => {
