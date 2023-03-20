@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../shared/dataService');
-const { isMainchain } = require('../../shared/chain');
+const dataService = require('../../../shared/dataService');
+const { isMainchain } = require('../../../shared/chain');
 
 describe('Test isMainchain method', () => {
 	it('should return false -> undefined chainID', async () => {

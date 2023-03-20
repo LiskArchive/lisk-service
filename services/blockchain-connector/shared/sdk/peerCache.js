@@ -13,11 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Signals,
-	Utils: { isObject },
-} = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
+
 const endpoints = require('./endpoints');
 const GeoService = require('../geolocation');
 
@@ -45,10 +42,7 @@ const get = (type = 'peers') => new Promise((resolve) => {
 });
 
 const refactorPeer = (orgPeer, state) => {
-	const { chainID, ipAddress, options: { height } = {}, ...peer } = orgPeer;
-	peer.chainID = isObject(chainID)
-		? Buffer.from(chainID.data).toString('hex')
-		: chainID;
+	const { ipAddress, options: { height } = {}, ...peer } = orgPeer;
 	peer.state = state;
 	peer.height = height;
 	peer.ip = ipAddress;
