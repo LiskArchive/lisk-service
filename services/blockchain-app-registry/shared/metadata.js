@@ -249,7 +249,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 			if (!('network' in params)) {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
-				networkSet.push(network);
+				networkSet.add(network);
 			}
 
 			return [chainID, localID];

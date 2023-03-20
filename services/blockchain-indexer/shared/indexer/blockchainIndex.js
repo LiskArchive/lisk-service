@@ -43,7 +43,7 @@ const {
 } = require('../utils/arrayUtils');
 
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
-const { normalizeTransaction } = require('../utils/transactionsUtils');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactionsUtils');
 const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
@@ -53,7 +53,6 @@ const {
 	getGenesisHeight,
 	EVENT,
 	MODULE,
-	TRANSACTION_STATUS,
 } = require('../constants');
 
 const config = require('../../config');
@@ -105,15 +104,6 @@ const { KV_STORE_KEY } = require('../constants');
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
-
-const getTransactionExecutionStatus = (tx, events) => {
-	const expectedEventName = `${tx.module}:${EVENT.COMMAND_EXECUTION_RESULT}`;
-	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
-	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
-	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
-
-	return txExecResultEvent.data.success ? TRANSACTION_STATUS.SUCCESS : TRANSACTION_STATUS.FAIL;
-};
 
 const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),

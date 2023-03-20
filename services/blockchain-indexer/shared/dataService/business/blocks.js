@@ -85,7 +85,7 @@ const normalizeBlock = async (originalBlock) => {
 		block.numberOfEvents = numberOfEvents;
 
 		block.size = 0;
-		// TODO: Get reward value from block event
+		block.reward = reward;
 		block.totalForged = BigInt(reward || '0');
 		block.totalBurnt = BigInt('0');
 		block.networkFee = BigInt('0');

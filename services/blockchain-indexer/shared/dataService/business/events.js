@@ -63,14 +63,17 @@ const getEventsByHeight = async (height) => {
 	const cachedEvents = await eventCache.get(height);
 	if (cachedEvents) return JSON.parse(cachedEvents);
 
-	// Get from DB
-	const eventsTable = await getEventsTable();
-	const dbEventStrs = await eventsTable.find({ height }, ['eventStr']);
+	// Get from DB only when isPersistEvents is enabled
+	if (config.isPersistEvents) {
+		const eventsTable = await getEventsTable();
+		const dbEventStrs = await eventsTable.find({ height }, ['eventStr']);
 
-	if (dbEventStrs.length) {
-		const dbEvents = dbEventStrs.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
-		await eventCache.set(height, JSON.stringify(dbEvents));
-		return dbEvents;
+		if (dbEventStrs.length) {
+			const dbEvents = dbEventStrs
+				.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+			await eventCache.set(height, JSON.stringify(dbEvents));
+			return dbEvents;
+		}
 	}
 
 	// Get from node
