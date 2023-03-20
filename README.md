@@ -8,7 +8,7 @@
 [![DeepScan grade](https://deepscan.io/api/teams/6759/projects/8870/branches/113510/badge/grade.svg)](https://deepscan.io/dashboard/#view=project&tid=6759&pid=8870&bid=113510)
 ![GitHub issues](https://img.shields.io/github/issues-raw/liskhq/lisk-service)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/liskhq/lisk-service)
-![Jenkins Coverage](https://img.shields.io/jenkins/coverage/cobertura?jobUrl=https://jenkins.lisk.com/job/lisk-service/job/development)
+[![Code coverage](https://codecov.io/gh/LiskHQ/lisk-service/branch/development/graph/badge.svg?token=987H7T2C3K)](https://codecov.io/gh/LiskHQ/lisk-service)
 
 Lisk Service is a web application that allows interaction with various blockchain networks based on Lisk and Bitcoin protocols.
 
