@@ -23,11 +23,10 @@ const binance = require('./sources/binance');
 const bittrex = require('./sources/bittrex');
 const exchangeratesapi = require('./sources/exchangeratesapi');
 const kraken = require('./sources/kraken');
+const { formatCalculatedRate } = require('../utils/priceUpdater');
 
 const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
 const logger = Logger();
-
-const supportedFiatCurrencies = config.market.supportedFiatCurrencies.split(',');
 
 const targetPairs = config.market.targetPairs.split(',');
 
@@ -39,12 +38,6 @@ const getRawPricesBySource = async () => ({
 	exchangeratesapi: await exchangeratesapi.getFromCache(),
 	kraken: await kraken.getFromCache(),
 });
-
-const formatCalculatedRate = (targetCurrency, rate) => String(
-	supportedFiatCurrencies.includes(targetCurrency)
-		? Number(rate).toFixed(4) // To fiat - 4 significant digits
-		: Number(rate).toFixed(8), // To crypto - 8 significant digits
-);
 
 const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) => {
 	const finalPrices = {};
@@ -126,7 +119,6 @@ const updatePrices = async () => {
 
 module.exports = {
 	targetPairs,
-	formatCalculatedRate,
 	calcTargetPairPrices,
 	updatePrices,
 };
