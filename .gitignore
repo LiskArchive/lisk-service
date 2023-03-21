@@ -80,3 +80,6 @@ docker/graylog/data*
 
 # Legacy configs
 *.old
+
+# Test coverage file
+.coverage

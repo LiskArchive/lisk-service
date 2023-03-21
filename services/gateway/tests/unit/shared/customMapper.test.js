@@ -137,13 +137,13 @@ describe('Test mapArray method', () => {
 		expect(response).toEqual(expectedResponse);
 	});
 
-	it('should throw error mapped array when called with null rootObj or definition', async () => {
+	it('should throw error when called with null rootObj or definition', async () => {
 		expect(() => mapArray(null, mapObjectDefinition)).toThrow();
 		expect(() => mapArray(rootObj, null)).toThrow();
 		expect(() => mapArray(null, null)).toThrow();
 	});
 
-	it('should throw error mapped array when called with undefined rootObj or definition', async () => {
+	it('should throw error when called with undefined rootObj or definition', async () => {
 		expect(() => mapArray(undefined, mapObjectDefinition)).toThrow();
 		expect(() => mapArray(rootObj, undefined)).toThrow();
 		expect(() => mapArray(undefined, undefined)).toThrow();
@@ -160,19 +160,22 @@ describe('Test mapper method', () => {
 		const definition = [mapObjectDefinition];
 		const expectedResponse = [mapObjectExpectedResponse];
 
-		const response = mapArray(rootObj, definition);
+		const response = mapper(rootObj, definition);
 		expect(response).toEqual(expectedResponse);
 	});
 
-	it('should throw error mapped array when called with null data or def', async () => {
-		expect(() => mapArray(null, mapObjectDefinition)).toThrow();
-		expect(() => mapArray(rootObj, null)).toThrow();
-		expect(() => mapArray(null, null)).toThrow();
+	it('should throw error when called with null or undefined data', async () => {
+		expect(() => mapper(null, mapObjectDefinition)).toThrow();
+		expect(() => mapper(undefined, mapObjectDefinition)).toThrow();
 	});
 
-	it('should throw error mapped array when called with undefined data or def', async () => {
-		expect(() => mapArray(undefined, mapObjectDefinition)).toThrow();
-		expect(() => mapArray(rootObj, undefined)).toThrow();
-		expect(() => mapArray(undefined, undefined)).toThrow();
+	it('should return empty object when called with null or undefined def', async () => {
+		expect(mapper(rootObj, null)).toEqual({});
+		expect(mapper(rootObj, undefined)).toEqual({});
+	});
+
+	it('should return empty object when both data and def are null or undefined', async () => {
+		expect(mapper(null, null)).toEqual({});
+		expect(mapper(undefined, undefined)).toEqual({});
 	});
 });

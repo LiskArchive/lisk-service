@@ -99,4 +99,7 @@ const genDocs = async (ctx, registeredModuleNames) => {
 
 module.exports = {
 	genDocs,
+
+	// For testing
+	createApiDocs,
 };
