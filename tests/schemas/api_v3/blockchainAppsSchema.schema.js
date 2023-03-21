@@ -16,6 +16,7 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const EMPTY_STRING = '';
 const validStatuses = ['registered', 'active', 'terminated', 'any'];
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
@@ -29,9 +30,9 @@ const blockchainAppsStatsSchema = {
 	registered: Joi.number().integer().min(0).required(),
 	active: Joi.number().integer().min(0).required(),
 	terminated: Joi.number().integer().min(0).required(),
-	totalSupplyLSK: Joi.string().allow('').required(),
-	stakedLSK: Joi.string().allow('').required(),
-	inflationRate: Joi.string().allow('').required(),
+	totalSupplyLSK: Joi.string().allow(EMPTY_STRING).required(),
+	stakedLSK: Joi.string().allow(EMPTY_STRING).required(),
+	inflationRate: Joi.string().allow(EMPTY_STRING).required(),
 };
 
 const blockchainAppSchema = {

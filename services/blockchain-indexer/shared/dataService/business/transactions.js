@@ -235,11 +235,11 @@ const getTransactionsByBlockID = async blockID => {
 				['executionStatus'],
 			);
 
-			if (!indexedTxInfo.executionStatus) {
+			if (indexedTxInfo.executionStatus) {
+				transaction.executionStatus = indexedTxInfo.executionStatus;
+			} else {
 				const events = await getEventsByHeight(block.height);
 				transaction.executionStatus = await getTransactionExecutionStatus(transaction, events);
-			} else {
-				transaction.executionStatus = indexedTxInfo.executionStatus;
 			}
 
 			return transaction;

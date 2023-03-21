@@ -16,6 +16,8 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const EMPTY_STRING = '';
+
 const generator = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
@@ -24,8 +26,8 @@ const generator = {
 
 const aggregateCommit = {
 	height: Joi.number().integer().min(0).required(),
-	aggregationBits: Joi.string().allow('').required(),
-	certificateSignature: Joi.string().allow('').required(),
+	aggregationBits: Joi.string().allow(EMPTY_STRING).required(),
+	certificateSignature: Joi.string().allow(EMPTY_STRING).required(),
 };
 
 const blockSchema = {
