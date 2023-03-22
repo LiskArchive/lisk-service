@@ -1,28 +1,24 @@
-# Lisk Service HTTP API Documentation
+# Lisk Service API Documentation
 
-The Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media.
+Lisk Service is a middleware web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing the market data, and interacting with social media.
 
-The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller microservices. The overall strategy is to provide one microservice for one specific purpose.
+The main focus of this project is to provide data to Lisk blockchain users by serving them in a standardized JSON format and exposing a public RESTful API. The project is split into several smaller components each focused on serving a single specific purpose.
 
-As a pure backend project, it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.
+As a pure backend project, it is designed to meet the requirements of the frontend developers, especially Lisk Desktop and Lisk Mobile.
 
 The API can be accessed at `https://service.lisk.com`.
-
-It is also possible to access the `testnet` network at `https://testnet-service.lisk.com`.
+It is also possible to access the Testnet network at `https://testnet-service.lisk.com`.
 
 The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.
 
 ## Table of Contents
 
 - [Lisk Service HTTP API Documentation](#lisk-service-http-api-documentation)
+  - [API Status and Readiness](#api-status-and-readiness)
+  - [Base URL](#base-url)
+  - [Endpoint logic](#endpoint-logic)
   - [Response format](#response-format)
-  - [The Date Format](#the-date-format)
 - [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
-  - [Accounts](#accounts)
-    - [Account & delegate search](#account--delegate-search)
-    - [Sent votes](#sent-votes)
-    - [Received votes](#received-votes)
-    - [Round forgers](#round-forgers)
   - [Blocks](#blocks)
     - [Block search](#block-search)
   - [Transactions](#transactions)
@@ -40,392 +36,51 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [News Feed Aggregator](#news-feed-aggregator)
   - [Account History Export](#account-history-export)
 
+## API Status and Readiness
+
+Lisk Service offers `/status` and `/ready` endpoints to check the current deployment and a high-level service readiness statuses respectively. These endpoints must be queried without the [base URL](#base-url).
+<br/>*Example*: https://service.lisk.com/api/status, https://service.lisk.com/api/ready
+
+## Base URL
+
+The base URL for the Lisk Service v3 API is `/api/v3`. All the RESTful endpoints specified below follow the base URL.
+<br/>*Example*: https://service.lisk.com/api/v3/spec
+
+The WS-RPC endpoints however are available to query under the `/rpc-v3` namespace.
+<br/>*Example*: https://service.lisk.com/api/rpc-v3
+
+## Endpoint Logic
+
+The logic of the endpoints are as follows:
+The structure is always based on `/<root_entity or module>/<object>/<properties>`.
+
 ## Response format
 
 All responses are returned in the JSON format - `application/json`.
 
 Each API request has the following structure:
 
-```
+```jsonc
 {
   "data": {}, // Contains the requested data
   "meta": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`
-  "links": {} // Contains links to connected API calls from here, e.g. pagination links
 }
 ```
 
-## The Date Format
+And, the error responses adhere to the following structure:
 
-is different to the original Lisk Core API, as all timestamps used by the Lisk Service are now in the UNIX timestamp format. The blockchain dates are always expressed as integers, and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>", // Contains the error message
+}
+```
 
 # Lisk Blockchain-related Endpoints
 
-## Accounts
-
-### Account & delegate search
-
-Retrieves account details based on criteria defined by params.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP `/api/v2/accounts`
-- RPC `get.accounts`
-
-#### Request parameters
-
-Make the version 2 API able to retrieve data by those criteria.
-
-| Parameter | Type             | Validation                                                 | Default        | Comment                                |
-| --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      | Resolves new and old address system    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
-| username  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                 | *(empty)*      |
-| isDelegate | Boolean         | `true` or `false`                                          | *(empty)*      |
-| status    | String           | `active`, `standby`, `banned`, `punished`, `non-eligible`              | *(empty)*      | Multiple choice possible i.e. `active,banned`
-| search    | String           |                                  | *(empty)*      |
-| limit     | Number           | `<1;100>`                                                  | 10             |
-| offset    | Number           | `<0;+Inf>`                                                 | 0              |
-| sort      | Array of strings | `["balance:asc", "balance:desc", "rank:asc", "rank:desc"]` | `balance:desc` | Rank is dedicated to delegate accounts |
-
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": {
-    "summary": {
-      "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-      "legacyAddress": "2841524825665420181L",
-      "balance": "151146419900",
-      "username": "liberspirita",
-      "publicKey": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-      "isMigrated": true,
-      "isDelegate": true,
-      "isMultisignature": true,
-    },
-    "knowledge": {
-      "owner": "Genesis Account",
-      "description": ""
-    },
-    "token": {
-      "balance": "151146419900"
-    },
-    "sequence": {
-      "nonce": "11"
-    },
-    "keys": {
-      "numberOfSignatures": 0,
-      "mandatoryKeys": [],
-      "optionalKeys": [],
-      "members": [
-        {
-          "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "publicKey": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-          "isMandatory": true,
-        }
-      ],
-      "memberships": [
-        {
-          "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "publicKey": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-          "username": "genesis_51",
-        }
-      ],
-    },
-    "dpos": {
-      "delegate": {
-        "username": "liberspirita",
-        "pomHeights": [
-          { "start": 123, "end": 456 },
-          { "start": 789, "end": 1050 }
-        ],
-        "consecutiveMissedBlocks": 0,
-        "lastForgedHeight": 68115,
-        "isBanned": false,
-        "voteWeight": "201000000000",
-        "totalVotesReceived": "201000000000",
-      },
-      "sentVotes": [
-        {
-          "delegateAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "amount": "102000000000"
-        },
-        {
-          "delegateAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "amount": "95000000000"
-        }
-      ],
-      "unlocking": [
-        {
-          "delegateAddress": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-          "amount": "150000000",
-          "height": {
-            "start": "10",
-            "end": "2010"
-          }
-        }
-      ],
-      "legacy": {
-        "address": "2841524825665420181L", // legacyAddress
-        "balance": "234500000" // Reclaimable balance
-      }
-    }
-  },
-  "meta": {
-    "count": 1,
-    "offset": 0
-  },
-  "links": {}
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "Account <account_id> not found."
-}
-
-```
-
-#### Examples
-
-Get address with certain Lisk account ID
-```
-https://service.lisk.com/api/v2/accounts?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
-```
-
-Get all delegates
-```
-https://service.lisk.com/api/v2/accounts?isDelegate=true
-```
-
-
-### Sent votes
-
-Retrieves votes for a single account based on address, public key, or delegate name.
-
-#### Endpoints
-
-- `HTTP /api/v2/votes_sent`
-- `RPC get.votes_sent`
-
-#### Request parameters
-
-
-| Parameter | Type   | Validation                                              | Default   | Comment                          |
-| --------- | ------ | ------------------------------------------------------- | --------- | -------------------------------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`       | *(empty)* | Resolves only new address system |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
-| username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
-
-#### Response example
-
-200 OK
-
-Make the version 2 API able to retrieve data by those criteria.
-
-```jsonc
-{
-  "data": {
-    "account": {
-      "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-      "username": "genesis_56",
-      "votesUsed": 10
-    },
-    "votes": [
-      {
-        "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-        "amount": 1081560729258, // = voteWeight
-        "username": "liskhq"
-      }
-    ]
-  },
-  "meta": {
-    "count": 10,
-    "offset": 0,
-    "total": 10 // = votesUsed
-  },
-  "links": {}
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-
-```
-
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "Account <account_id> not found."
-}
-
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v2/votes_sent?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
-```
-
-### Received votes
-
-#### Endpoints
-
-- `HTTP /api/v2/votes_received`
-- `RPC get.votes_received`
-
-#### Request parameters
-
-| Parameter | Type   | Validation                                              | Default   | Comment                          |
-| --------- | ------ | ------------------------------------------------------- | --------- | -------------------------------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`       | *(empty)* | Resolves only new address system |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
-| username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
-| aggregate | Boolean |                                                        | false     |
-| limit     | Number | `<1;100>`                                               | 10        |
-| offset    | Number | `<0;+Inf>`                                              | 0         |
-
-#### Response example
-
-200 OK
-
-Make the version 2 API able to retrieve data by those criteria.
-
-```jsonc
-{
-  "data": {
-    "account": {
-      "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-      "username": "genesis_56",
-      "votesUsed": 10
-    },
-    "votes": [
-      {
-        "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-        "amount": 1081560729258, // = voteWeight
-        "username": "liskhq"
-      }
-    ]
-  },
-  "meta": {
-    "count": 10,
-    "offset": 0,
-    "total": 10 // = votesUsed
-  },
-  "links": {}
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-
-```
-
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "Account <account_id> not found."
-}
-
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v2/votes_received?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
-```
-
-
-### Round forgers
-
-Retrieves next forgers with details in the current round.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP `/api/v2/forgers`
-- RPC `get.forgers`
-
-#### Request parameters
-
-| Parameter | Type   | Validation | Default | Comment |
-| --------- | ------ | ---------- | ------- | ------- |
-| limit     | Number | <1;103>    | 10      |
-| offset    | Number | <0;+Inf>   | 0       |
-
-
-#### Response example
-
-200 OK
-
-Make the version 2 API able to retrieve data by those criteria.
-
-```jsonc
-{
-  "data": [
-    {
-      "username": "genesis_51",
-      "totalVotesReceived": "1006000000000",
-      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
-      "minActiveHeight": 27605,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1607521557
-    },
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 20,
-    "total": 103
-  },
-  "links": {}
-}
-
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-
-#### Examples
-
-Get 20 items, skip first 50
-
-```
-https://service.lisk.com/api/v2/forgers?limit=20&offset=50
-```
-
 ## Blocks
 
-### Block search
+### Block Search
 
 Retrieves block details based on criteria defined by params.
 
@@ -433,24 +88,20 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v2/blocks`
+- HTTP GET `/api/v3/blocks`
 - RPC `get.blocks`
 
 #### Request parameters
 
-Make the version 2 API able to retrieve data by those criteria.
-
-| Parameter          | Type             | Validation                                                        | Default     | Comment                                          |
-| ------------------ | ---------------- | ----------------------------------------------------------------- | ----------- | ------------------------------------------------ |
-| blockId            | String           | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                  | *(empty)*   |
-| height             | String           | `/[0-9]+/` and `/[0-9]+:[0-9]+/`                                  | *(empty)*   | Can be expressed as an interval ie. `1:20`       |
-| generatorAddress   | String           | `/^lsk[a-hjkm-z2-9]{38}$/` and `/^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*   | Resolves new and old address system              |
-| generatorPublicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                        | *(empty)*   |
-| generatorUsername  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                        | *(empty)*   |
-| timestamp          | String           | `/^[0-9]+$/` and `/^[0-9]+:[0-9]+$/`                              | *(empty)*   | Can be expressed as interval ie. `100000:200000` |
-| limit              | Number           | `<1;100>`                                                         | 10          |
-| offset             | Number           | `<0;+Inf>`                                                        | 0           |
-| sort               | Array of Strings | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval ie. `100000:200000` |
+| generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
 
 #### Response example
 
@@ -460,33 +111,43 @@ Make the version 2 API able to retrieve data by those criteria.
 {
   "data": [
     {
-      "id": "1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e",
-      "height": 8344448,
+      "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
       "version": 0,
+      "height": 8344448,
       "timestamp": 85944650,
-      "generatorAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-      "generatorPublicKey": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
-      "generatorUsername": "genesis_13",
-      "transactionRoot": "4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2",
-      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
-      "previousBlockId": "15918760246746894806",
-      "numberOfTransactions": 15,
-      "totalFee": "15000000",
-      "reward": "50000000",
+      "previousBlockId": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
+      "generator": {
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "name": "genesis_3",
+        "publicKey": "32ddb97e8d7e607a14fef8449c2a2180cd74a51f67b04a50a4b1917d3ca8a52e"
+      },
+      "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assetsRoot": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+      "stateRoot": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
+      "maxHeightGenerated": 559421,
+      "maxHeightPrevoted": 559434,
+      "validatorsHash": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
+      "aggregateCommit": {
+        "height": 166,
+        "aggregationBits": "ffffffffffffffffffffffff1f",
+        "certificateSignature": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
+      },
+      "numberOfTransactions": 10,
+      "numberOfAssets": 10,
+      "numberOfEvents": 10,
+      "totalBurnt": "0",
+      "networkFee": "15000000",
       "totalForged": "65000000",
-      "totalBurnt": "10000000",
-      "isFinal": true,
-      "maxHeightPreviouslyForged": 68636,
-      "maxHeightPrevoted": 68707,
-      "seedReveal": "4021e5048af4c9f64ff2e12780af21f4"
+      "reward": "50000000",
+      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
+      "isFinal": true
     }
   ],
   "meta": {
-    "count": 100,
-    "offset": 25,
-    "total": 43749
-  },
-  "links": {}
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
 }
 ```
 
@@ -498,24 +159,90 @@ Make the version 2 API able to retrieve data by those criteria.
 }
 ```
 
-404 Not Found
+#### Examples
+
+Get blocks by blockID
+```
+https://service.lisk.com/api/v3/blocks?blockID=01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b
+```
+
+Get blocks by height
+```
+https://service.lisk.com/api/v3/blocks?height=9
+```
+
+### Block Assets Search
+
+Retrieves block assets based on criteria defined by params.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blocks/assets`
+- RPC `get.blocks.assets`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval ie. `100000:200000` |
+| module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "block": {
+        "id": "f7b2066f73a71b1cbfd777e2c172a29f1b59017d3b0e6c22a11bec7318050bed",
+        "height": 172124,
+        "timestamp": 1679483460
+      },
+      "assets": [
+        {
+          "module": "random",
+          "data": {
+            "seedReveal": "3648ce33294fcf4a062bd2e2e90557d2"
+          }
+        }
+      ]
+    },
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 0,
+    "total": 172125
+  }
+}
+```
+
+400 Bad Request
 ```jsonc
 {
   "error": true,
-  "message": "Block <block_id> not found."
+  "message": "Unknown input parameter(s): <param_name>"
 }
 ```
 
 #### Examples
 
-Get blocks by block ID
+Get block assets by block ID
 ```
-https://service.lisk.com/api/v2/blocks?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
+https://service.lisk.com/api/v3/blocks/assets?blockID=f7b2066f73a71b1cbfd777e2c172a29f1b59017d3b0e6c22a11bec7318050bed
 ```
 
 Get blocks by height
 ```
-https://service.lisk.com/api/v2/blocks?height=9
+https://service.lisk.com/api/v3/block/assets?height=9
 ```
 
 ## Transactions
@@ -528,84 +255,75 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v2/transactions`
+- HTTP GET `/api/v3/transactions`
 - RPC `get.transactions`
 
 #### Request parameters
 
-| Parameter          | Type    | Validation                                                         | Default        | Comment                                                        |
-| ------------------ | ------- | ------------------------------------------------------------------ | -------------- | -------------------------------------------------------------- |
-| transactionId      | String  | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                   | *(empty)*      |
-| moduleAssetId      | String  | `ModuleId:AssetId/[0-9]+:[0-9]+/`                                  | *(empty)*      | Transfer transaction: moduleID = 2,assetID = 0                 |
-| moduleAssetName    | String  | `ModuleName:AssetName/[a-z]+:[a-z]+/`                              | *(empty)*      | Transfer transaction: moduleName = token, assetName = transfer |
-| senderAddress      | String  | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`                  | *(empty)*      |
-| senderPublicKey    | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
-| senderUsername     | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
-| recipientAddress   | String  | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`                  | *(empty)*      |
-| recipientPublicKey | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
-| recipientUsername  | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
-| amount             | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
-| timestamp          | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
-| blockId             | String  | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                  | *(empty)*      | Block ID
-| height             | String  |                                                                    | *(empty)*      | Block height
-| search             | String  |                                                                    | *(empty)*      | Wildcard search
-| data               | String  |                                                                    | *(empty)*      | Wildcard search                       |
-| includePending     | Boolean |                                                                    | false          |
-| nonce              | String  | `/^\d+$/`                                                          | *(empty)*      | In conjunction with senderAddress                              |
-| limit              | Number  | `<1;100>`                                                          | 10             |
-| offset             | Number  | `<0;+Inf>`                                                         | 0              |
-| sort               | String  | `["amount:asc", "amount:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |
-
-
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| transactionID | String | `/^\b([A-Fa-f0-9]){1,64}\b$/` | *(empty)* |  |
+| moduleCommand | String | `/^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/` | *(empty)* |  |
+| senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
+| recipientAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
+| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
+| executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
+| nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision. |
 
 #### Response example
 
 200 OK
 
-Make the version 2 API able to retrieve data by those criteria.
-
 ```jsonc
 {
   "data": [
     {
-      "id": "222675625422353767",
-      "operationId": "2:0",
-      "operationName": "token:transfer",
-      "fee": "1000000",
-      "nonce": "0",
-      "block": { // optional
-        "id": "6258354802676165798",
-        "height": 8350681,
-        "timestamp": 28227090,
-      },
+      "id": "65c28137c130c6609a67fccfcd9d0f7c3df3577324f8d33134326d653ded613f",
+      "moduleCommand": "token:transfer",
+      "nonce": "1",
+      "fee": "5166000",
+      "minFee": "165000",
+      "size": 166,
       "sender": {
-        "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-        "publicKey": "2ca9a7...c23079",
-        "username": "genesis_51",
+        "address": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+        "publicKey": "475697e34ae02b394721020d38677a072dbd5c03d61c1c8fdd6563eb66160fa3",
+        "name": "genesis_0"
       },
-      "signatures": [ "72c9b2...36c60a" ],
-      "confirmations": 0,
-      "asset": {     // Depends on operation
-        "amount": "150000000",
+      "params": {
+        "tokenID": "0400000100000000",
+        "amount": "10000000000",
+        "recipientAddress": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
+        "data": ""
+      },
+      "block": {
+        "id": "ebb1ba587a1e8385a2aac1317edcb872c05b2b07df6560fabd0f0d23d7d6a0df",
+        "height": 122721,
+        "timestamp": 1678989430,
+        "isFinal": true
+      },
+      "meta": {
         "recipient": {
-          "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "publicKey": "2ca9a7...c23079",
-          "username": "genesis_49",
-        },
-        "data": "message"
+          "address": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
+          "publicKey": null,
+          "name": null
+        }
       },
-      "relays": 0,
-      "isPending": false
-    }
+      "executionStatus": "success",
+      "index": 0
+    },
   ],
   "meta": {
-    "count": 100,
-    "offset": 25,
-    "total": 43749
-  },
-  "links": {}
+    "count": 1,
+    "offset": 0,
+    "total": 306
+  }
 }
-
 ```
 
 400 Bad Request
@@ -617,29 +335,18 @@ Make the version 2 API able to retrieve data by those criteria.
 }
 ```
 
-404 Not Found
-
-```jsonc
-{
-  "error": true,
-  "message": "Transaction <transaction_id> not found."
-}
-
-```
-
 #### Examples
 
-Get transaction by transaction ID
+Get transaction by transactionID
 
 ```
-https://service.lisk.com/api/v2/transactions?transactionId=222675625422353767
+https://service.lisk.com/api/v3/transactions?transactionID=65c28137c130c6609a67fccfcd9d0f7c3df3577324f8d33134326d653ded613f
 ```
 
 Get last 25 transactions for account `lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu`
 
 ```
-https://service.lisk.com/api/v2/transactions?senderAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
-https://service.lisk.com/api/v2/transactions?recipientAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+https://service.lisk.com/api/v3/transactions?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
 ### Transaction broadcast
@@ -648,7 +355,7 @@ Sends encoded transaction to the network node.
 
 #### Endpoints
 
-- HTTP POST `/api/v2/transactions​`
+- HTTP POST `/api/v3/transactions​`
 - RPC `post.transactions`
 
 
@@ -656,10 +363,12 @@ Sends encoded transaction to the network node.
 
 No params required.
 
-Payload:
+Request payload:
 
 ```jsonc
-{"transaction":"08021000180d2080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32270880c2d72f12144fd8cc4e27a3489b57ed986efe3d327d3de40d921a0a73656e6420746f6b656e3a4069242925e0e377906364fe6c2eed67f419dfc1a757f73e848ff2f1ff97477f90263487d20aedf538edffe2ce5b3e7601a8528e5cd63845272e9d79c294a6590a"}
+{
+  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
+}
 ```
 
 #### Response example
@@ -668,8 +377,8 @@ Payload:
 
 ```jsonc
 {
-  "message": "Transaction payload was successfully passed to the network node"
-  "transactionId": "123456789"
+  "message": "Transaction payload was successfully passed to the network node.",
+  "transactionID": "bfd3521aeddd586f43931b6972b5771e9919e18f2cc91e940a15eacb588ecc6c"
 }
 ```
 
@@ -677,18 +386,113 @@ Payload:
 ```jsonc
 {
   "error": true,
-  "message": "Transaction payload was rejected by the network node"
+  "message": "Transaction payload was rejected by the network node."
 }
-
 ```
 
 500 Internal Server Error
 ```jsonc
 {
   "error": true,
-  "message": "Unable to reach the network node"
+  "message": "Unable to reach the network node."
 }
+```
 
+### Transaction dryrun
+
+Sends decoded/encoded transactions to the network node.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/transactions/dryrun​`
+- RPC `post.transactions.dryrun`
+
+
+#### Request parameters
+
+No params required.
+
+Request payload:
+
+```jsonc
+{
+  "skipVerify": false,
+  "transaction": {
+    "module": "token",
+    "command": "transfer",
+    "fee": "100000000",
+    "nonce": "0",
+    "senderPublicKey": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
+    "signatures": [
+      "48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
+    ],
+    "params": {
+      "recipientAddress": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
+      "amount": "10000000000",
+      "tokenID": "0000000000000000",
+      "data": "Token transfer tx"
+    }
+  }
+}
+```
+
+or
+
+```jsonc
+{
+  "skipVerify": false,
+  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
+}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "result": 1,
+    "status": "ok",
+    "events": [
+      {
+        "data": {
+          "senderAddress": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+          "tokenID": "0000000000000000",
+          "amount": "100003490",
+          "recipientAddress": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99"
+        },
+        "index": 0,
+        "module": "token",
+        "name": "transferEvent",
+        "topics": [
+          "86afcdd640846bf41525481938653ee942be3fac1ecbcff08e98f9aeda3a9583",
+          "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+          "0000000000000000",
+          "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99"
+        ],
+        "height": 10
+      }
+    ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+500 Internal Server Error
+```jsonc
+{
+  "error": true,
+  "message": "Unable to reach a network node."
+}
 ```
 
 ### Transaction statistics
@@ -699,47 +503,56 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v2/transactions​/statistics​/{interval}`
+- HTTP GET `/api/v3/transactions​/statistics​`
 - RPC `get.transactions.statistics​`
 
 
 #### Request parameters
 
 
-| Parameter | Validation         | Default | Comment        |
-| --------- | ------------------ | ------- | -------------- |
-| interval  | `["day", "month"]` | (empty) | Required field |
-| limit     | <1;100>            | 10      |
-| offset    | <0;+Inf>           | 0       |
-
-
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| interval | Enum | `["day", "month"]` | *(empty)* | Required field |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
 
 #### Response example
 
 200 OK
 
 ```jsonc
-  {
-    "data": {
-      "timeline": [
+{
+  "data": {
+    "distributionByType": {
+      "token:transfer": 1
+    },
+    "distributionByAmount": {
+      "0000000100000000": {
+        "1_10": 1
+      }
+    },
+    "timeline": {
+      "0000000100000000": [
         {
           "timestamp": 1556100060,
           "date": "2019-11-27",
-          "transactionCount": "14447177193385",
+          "transactionCount": 14447177193385,
           "volume": "14447177193385"
         }
-      ],
-      "distributionByOperation": {},
-      "distributionByAmount": {}
-    },
-    "meta": {
-      "count": 100,
-      "offset": 25,
-      "total": 43749
-    },
-    "links": {}
+      ]
+    }
+  },
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 100,
+    "duration": {
+      "format": "YYYY-MM",
+      "from": "2021-12",
+      "to": "2022-09"
+    }
   }
-
+}
 ```
 
 400 Bad Request
@@ -748,16 +561,14 @@ _Supports pagination._
   "error": true,
   "message": "Unknown input parameter(s): <param_name>"
 }
-
 ```
 
 503 Service Unavailable
 ```jsonc
 {
   "error": true,
-  "message": "Service is not ready yet"
+  "message": "Service is not ready yet."
 }
-
 ```
 
 #### Examples
@@ -765,55 +576,76 @@ _Supports pagination._
 Get transaction statistics for the past 7 days.
 
 ```
-https://service.lisk.com/api/v2/transactions​/statistics​/days&limit=7`
+https://service.lisk.com/api/v3/transactions​/statistics​?interval=day&limit=7`
 ```
 
 Get transaction statistics for the past 12 months.
 
 ```
-https://service.lisk.com/api/v2/transactions​/statistics​/months&limit=12`
+https://service.lisk.com/api/v3/transactions​/statistics​?interval=month&limit=12`
 ```
 
-### Transaction schema
+## Events
 
-Retrieves transaction schema for certain transaction payloads.
+### Event Search
+
+Retrieves blockchain events based on criteria defined by params.
+
+_Supports pagination._
+
 
 #### Endpoints
 
-- `HTTP /api/v2/transactions/schemas`
-- `RPC get.transactions.schemas`
+- HTTP GET `/api/v3/events`
+- RPC `get.events`
 
 #### Request parameters
 
-
-| Parameter       | Type   | Validation                             | Default   | Comment                                                        |
-| --------------- | ------ | -------------------------------------- | --------- | -------------------------------------------------------------- |
-| moduleAssetId   | String | `ModuleId:AssetId /[0-9]+:[0-9]+/`     | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0                 |
-| moduleAssetName | String | `ModuleName:AssetName /[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer |
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| transactionID | String | `/^\b([A-Fa-f0-9]){1,64}\b$/` | *(empty)* |  |
+| senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
+| topic | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Can be expressed as a CSV |
+| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval ie. `100000:200000` |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision. |
 
 #### Response example
 
 200 OK
 
-Make the version 2 API able to retrieve data by those criteria.
-
 ```jsonc
 {
   "data": [
     {
-      "moduleAssetId": "2:0",
-      "moduleAssetName": "token:transfer",
-      "schema": {
-        ...
+      "id": "382b22c19980774b3c53504fd2e82995cec1354534051d50e48dd537db964a73",
+      "module": "dynamicReward",
+      "name": "rewardMinted",
+      "data": {
+        "amount": "100000000",
+        "reduction": 0
+      },
+      "topics": [
+        "03",
+        "lsksod8bj35gmndy94yehxm25nybg5os6ycysejsm"
+      ],
+      "index": 0,
+      "block": {
+        "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+        "height": 8350681,
+        "timestamp": 1613323667
       }
-    },
+    }
   ],
   "meta": {
     "count": 10,
-    "offset": 0,
-    "total": 10
-  },
-  "links": {}
+    "offset": 10,
+    "total": 400
+  }
 }
 ```
 
@@ -823,35 +655,321 @@ Make the version 2 API able to retrieve data by those criteria.
   "error": true,
   "message": "Unknown input parameter(s): <param_name>"
 }
-
-```
-
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "The entity <moduleAssetId/moduleAssetName> not found."
-}
-
 ```
 
 #### Examples
 
-Get transaction schema for the transfer transaction type.
-
+Get events by blockID
 ```
-https://service.lisk.com/api/v2/transactions​/schemas?moduleAssetId=2:0`
-
-https://service.lisk.com/api/v2/transactions​/schemas?moduleAssetName=token:transfer`
+https://service.lisk.com/api/v3/events?blockID=01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b
 ```
 
-### Dynamic fees
+Get events by topic
+```
+https://service.lisk.com/api/v3/events?topic=lsksod8bj35gmndy94yehxm25nybg5os6ycysejsm
+```
+
+## Auth
+
+### Auth Details
+
+Retrieves user-specific details form the Auth module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/auth`
+- RPC `get.auth`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
+<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "nonce": "1",
+    "numberOfReqSignatures": 1,
+    "mandatoryKeys": [
+      "689b9a40aa11cbc8327d5eeebed9a1052940730f9c34cffb33ae591131141349"
+    ],
+    "optionalKeys": [
+      "478842a844914f18a1c620a6494bf9931d0a862e96212bf5fc6f3ca18658febe"
+    ]
+  },
+  "meta": {
+    "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+    "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+    "name": "genesis_84"
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get auth details by address
+```
+https://service.lisk.com/api/v3/auth?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+## Validator
+
+### Validator Details
+
+Retrieves user-specific details form the Validator module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/validator`
+- RPC `get.validator`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
+<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "generatorKey": "4f3034d6704e8a38098083695822a3da",
+    "blsKey": "3c95f7931d61909ff092375fc8ad2bc35e393b62d5cca902",
+    "proofOfPossession": "96c5b026b1030eb73e5dfd9bfe78b0fb35e6bc7add5793fdca3d3e6a1dacb77390e998178b89f80ab8892212838bd5b2"
+  },
+  "meta": {
+    "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+    "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+    "name": "genesis_84"
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get auth details by address
+```
+https://service.lisk.com/api/v3/validator?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+### Validate BLS Key
+
+Validates a BLS key against its corresponding Proof of Possession.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP POST `/api/v3/validator/validateBLSKey`
+- RPC `get.validator.validateBLSKey`
+
+#### Request parameters
+
+No params required.
+
+Request payload:
+
+```jsonc
+{
+  "blsKey": "b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81",
+  "proofOfPossession": "88bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26"
+}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "isValid": true
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+## Token
+
+### Token Account Exists
+
+Validates if an entry exists in the Token sub-store for the specified address.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/token/account/exists`
+- RPC `get.token.account.exists`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
+<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "isExists": true
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get token account exists by address
+```
+https://service.lisk.com/api/v3/token/account/exists?tokenID=0400000000000000&address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+### Token Constants
+
+Retrieves module constants from the Token module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/token/constants`
+- RPC `get.token.constants`
+
+#### Request parameters
+
+No params required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "extraCommandFees": {
+      "userAccountInitializationFee": "5000000",
+      "escrowAccountInitializationFee": "5000000"
+    }
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get module constants from Token module
+```
+https://service.lisk.com/api/v3/token/constants
+```
+
+### Token Account Exists
+
+Validates if an entry exists in the Token sub-store for the specified address.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/token/account/exists`
+- RPC `get.token.account.exists`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
+<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "isExists": true
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get token account exists by address
+```
+https://service.lisk.com/api/v3/token/account/exists?tokenID=0400000000000000&address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+## Dynamic fees
 
 Requests transaction fee estimates per byte.
 
 #### Endpoints
 
-- HTTP `/api/v2/fees`
+- HTTP `/api/v3/fees`
 - RPC `get.fees`
 
 
@@ -862,7 +980,6 @@ No params required.
 #### Response example
 
 200 OK
-
 
 ```jsonc
 {
@@ -900,8 +1017,69 @@ No params required.
 #### Examples
 
 ```
-https://service.lisk.com/api/v2/fees
+https://service.lisk.com/api/v3/fees
 ```
+
+
+
+
+## Dynamic fees
+
+Requests transaction fee estimates per byte.
+
+#### Endpoints
+
+- HTTP `/api/v3/fees`
+- RPC `get.fees`
+
+
+#### Request parameters
+
+No params required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "feeEstimatePerByte": {
+      "low": 0,
+      "medium": 1000,
+      "high": 2000
+    },
+    "baseFeeById": {
+      "2:0": "1000000000"
+    },
+    "baseFeeByName": {
+      "token:transfer": "1000000000"
+    },
+    "minFeePerByte": 1000,
+  },
+  "meta": {
+    "lastUpdate": 123456789,
+    "lastBlockHeight": 25,
+    "lastBlockId": 1354568
+  },
+  "links": {}
+}
+```
+
+503 Service Unavailable
+```jsonc
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/fees
+```
+
 
 
 ## Network
@@ -914,7 +1092,7 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v2/peers`
+- HTTP `/api/v3/peers`
 - RPC `get.peers`
 
 #### Request parameters
@@ -987,7 +1165,7 @@ _Supports pagination._
 Get hosts with certain IP
 
 ```
-https://service.lisk.com/api/v2/peers?ip=210.239.23.62
+https://service.lisk.com/api/v3/peers?ip=210.239.23.62
 ```
 
 ### Network status
@@ -996,7 +1174,7 @@ Retrieves network details and constants such as network height, fees, reward amo
 
 #### Endpoints
 
-- HTTP `/api/v2/network/status`
+- HTTP `/api/v3/network/status`
 - RPC `get.network.status`
 
 
@@ -1057,7 +1235,7 @@ No params required.
 #### Examples
 
 ```
-https://service.lisk.com/api/v2/network/status`
+https://service.lisk.com/api/v3/network/status`
 ```
 
 ### Network statistics
@@ -1066,7 +1244,7 @@ Retrieves network statistics such as number of peers, node versions, heights etc
 
 #### Endpoints
 
-- HTTP `/api/v2/network/statistics`
+- HTTP `/api/v3/network/statistics`
 - RPC `get.network.statistics​`
 
 #### Request parameters
@@ -1109,7 +1287,7 @@ No params required.
 #### Examples
 
 ```
-https://service.lisk.com/api/v2/network/statistics`
+https://service.lisk.com/api/v3/network/statistics`
 ```
 
 # Off-chain Features
@@ -1120,7 +1298,7 @@ Retrieves current market prices.
 
 #### Endpoints
 
-- HTTP `/api/v2/market/prices`
+- HTTP `/api/v3/market/prices`
 - RPC `get.market.prices`
 
 #### Request parameters
@@ -1166,7 +1344,7 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v2/newsfeed`
+- HTTP `/api/v3/newsfeed`
 - RPC `get.newsfeed`
 
 #### Request parameters
@@ -1236,7 +1414,7 @@ Returns transaction history export scheduling information
 
 #### Endpoints
 
-- HTTP `/api/v2/transactions/export`
+- HTTP `/api/v3/transactions/export`
 - RPC `get.transactions.export`
 
 #### Request parameters
@@ -1272,7 +1450,7 @@ File is ready to export
     "address": "lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt",
     "interval": "2021-03-16:2021-12-06",
     "fileName": "transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv",
-    "fileUrl": "/api/v2/exports/transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv"
+    "fileUrl": "/api/v3/exports/transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv"
   },
   "meta": {
     "ready": true
@@ -1303,7 +1481,7 @@ File retrieval
 
 #### Endpoints
 
-- HTTP `/api/v2/exports/{filename}`
+- HTTP `/api/v3/exports/{filename}`
 - RPC `Not Applicable`
 
 #### Request parameters
