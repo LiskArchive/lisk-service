@@ -43,7 +43,7 @@ const {
 } = require('../utils/arrayUtils');
 
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
-const { normalizeTransaction } = require('../utils/transactionsUtils');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactionsUtils');
 const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
 
@@ -51,7 +51,8 @@ const {
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisHeight,
-	TRANSACTION_STATUS,
+	EVENT,
+	MODULE,
 } = require('../constants');
 
 const config = require('../../config');
@@ -102,23 +103,7 @@ const { KV_STORE_KEY } = require('../constants');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
-const EVENT_NAME = Object.freeze({
-	LOCK: 'lock',
-	UNLOCK: 'unlock',
-});
-
 const validateBlock = (block) => !!block && block.height >= 0;
-
-const getTransactionExecutionStatus = (tx, events) => {
-	const expectedEventName = `${tx.module}:commandExecutionResult`;
-	const commandExecResultEvents = events.filter(e => `${e.module}:${e.name}` === expectedEventName);
-	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
-	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
-
-	// TODO: Temporary patch work
-	if ('success' in txExecResultEvent.data) return txExecResultEvent.data.success ? TRANSACTION_STATUS.SUCCESS : TRANSACTION_STATUS.FAIL;
-	return txExecResultEvent.data.data === '0801' ? TRANSACTION_STATUS.SUCCESS : TRANSACTION_STATUS.FAIL;
-};
 
 const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),
@@ -196,8 +181,10 @@ const indexBlock = async job => {
 			await eventTopicsTable.upsert(eventTopicsInfo, dbTrx);
 
 			// Update the generator's rewards
-			// TODO: Create constants
-			const blockRewardEvent = events.find(e => ['reward', 'dynamicReward'].includes(e.module) && e.name === 'rewardMinted');
+			const blockRewardEvent = events.find(
+				e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
+					&& e.name === EVENT.REWARD_MINTED,
+			);
 			if (blockRewardEvent) {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
 
@@ -225,14 +212,14 @@ const indexBlock = async job => {
 			events.forEach(event => {
 				const { data: eventData } = event;
 				// Initialize map entry with BigInt
-				if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
+				if ([EVENT.LOCK, EVENT.UNLOCK].includes(event.name)
 					&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
 					tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 				}
 
-				if (event.name === EVENT_NAME.LOCK) {
+				if (event.name === EVENT.LOCK) {
 					tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
-				} else if (event.name === EVENT_NAME.UNLOCK) {
+				} else if (event.name === EVENT.UNLOCK) {
 					tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
 				}
 			});
@@ -323,15 +310,15 @@ const deleteIndexedBlocks = async job => {
 					events.forEach(event => {
 						const { data: eventData } = event;
 						// Initialize map entry with BigInt
-						if ([EVENT_NAME.LOCK, EVENT_NAME.UNLOCK].includes(event.name)
+						if ([EVENT.LOCK, EVENT.UNLOCK].includes(event.name)
 							&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)) {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 						}
 
 						// Negate amount to reverse the effect
-						if (event.name === EVENT_NAME.LOCK) {
+						if (event.name === EVENT.LOCK) {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
-						} else if (event.name === EVENT_NAME.UNLOCK) {
+						} else if (event.name === EVENT.UNLOCK) {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
 						}
 					});

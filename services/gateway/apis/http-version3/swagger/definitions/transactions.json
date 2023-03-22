@@ -430,13 +430,21 @@
 	},
 	"dryTransactionWithEnvelope": {
 		"type": "object",
+		"required": [
+			"data",
+			"meta"
+		],
 		"properties": {
 			"data": {
 				"type": "object",
+				"required": [
+					"result",
+					"events"
+				],
 				"properties": {
-					"success": {
-						"type": "boolean",
-						"example": true
+					"result": {
+						"type": "integer",
+						"example": 1
 					},
 					"events": {
 						"type": "array",
@@ -498,22 +506,17 @@
 								}
 							}
 						}
+					},
+					"errorMessage": {
+						"type": "string",
+						"example": "Failed to validate signature '6de57983d8b61a9f7a303f70541fe6f7f1f2d8a12390cefb522ec53c698ed5888432b0179ed12e6624a89b68b0f1c600c2aa568d18885b13ec8dd189a7d2c208' for transaction with id '3f8e0c25154a18d1abf114e2f63a0bd0e56f8a0114b6207381cd32c061452cd1'",
+						"description": "Available only when result is -1."
 					}
 				}
 			},
 			"meta": {
 				"type": "object",
-				"properties": {
-					"params": {
-						"type": "object",
-						"properties": {
-							"transaction": {
-								"type": "string",
-								"example": "0a05746f6b656e12087472616e7366657218002080c2d72f2a20a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f032270a0800000000000000001080c2d72f1a1474e3ba5ade3e94451bd4de9d19917c8e6eff624d22003a40639d43851b1277a059903f3eca7e98b083148a60838ad2380296d3989781b6e0f848fbbb2694885d2f447d7cb59dde3306f202d85ba7b36922f5035933879c09"
-							}
-						}
-					}
-				}
+				"properties": {}
 			}
 		}
 	}

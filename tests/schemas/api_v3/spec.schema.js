@@ -198,7 +198,7 @@ const nonBodyParameter = Joi.alternatives(
 	Joi.object(pathParameterSubSchema).optional(),
 ).optional();
 
-const paramter = Joi.alternatives(bodyParameter, nonBodyParameter.optional()).optional();
+const parameter = Joi.alternatives(bodyParameter, nonBodyParameter.optional()).optional();
 
 // TODO: Enable when swagger response key is mapped as per schema
 // const responseKey = Joi.string().pattern(regex.SWAGGER_RESPONSE_KEY).min(1).required();
@@ -212,7 +212,7 @@ const pathEntries = {
 	tags: Joi.array().items(Joi.string().required()).optional(),
 	summary: Joi.string().optional(),
 	description: Joi.string().optional(),
-	parameters: Joi.array().items(Joi.alternatives(paramter, jsonReference)).optional(),
+	parameters: Joi.array().items(Joi.alternatives(parameter, jsonReference)).optional(),
 	responses: Joi.object().pattern(responseKey, responseEntry).optional(),
 	operationId: Joi.string().optional(),
 	deprecated: Joi.boolean().optional(),
@@ -232,7 +232,7 @@ const path = {
 	options: Joi.object(pathEntries).optional(),
 	head: Joi.object(pathEntries).optional(),
 	patch: Joi.object(pathEntries).optional(),
-	parameters: Joi.array().items(Joi.alternatives(paramter, jsonReference)).optional(),
+	parameters: Joi.array().items(Joi.alternatives(parameter, jsonReference)).optional(),
 };
 
 const pathKey = Joi.string().required();
