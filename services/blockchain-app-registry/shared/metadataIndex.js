@@ -92,7 +92,7 @@ const indexChainMeta = async (chainMeta, dbTrx) => {
 // Given filepath of app.json or nativetokens.json, indexes the information in DB
 const indexMetadataFromFile = async (filePath, dbTrx) => {
 	const [network, app, filename] = filePath.split('/').slice(-3);
-	logger.debug(`Indexing metadata information for the app: ${app} (${network}).`);
+	logger.debug(`Indexing metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
@@ -160,7 +160,7 @@ const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 
 const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 	const [network, app, filename] = filePath.split('/').slice(-3);
-	logger.debug(`Deleting metadata information for the app: ${app} (${network}).`);
+	logger.debug(`Deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 

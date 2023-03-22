@@ -258,7 +258,7 @@ const syncWithRemoteRepo = async () => {
 		}
 
 		// Create a temp dir in respective repo dir to download files and move after processing app
-		// This helps to avoid partially update an app's files when DB update was not successful
+		// This helps to avoid partially updating an app's files when DB update was not successful
 		// Ex: app.json(v2) is downloaded but indexing failed and transaction was not committed
 		// Next time, the job will fail to delete app.json(v1) info as it was replaced by app.json(v2)
 		const TEMP_DOWNLOAD_DIR_NAME = 'temp-downloads';
@@ -318,7 +318,7 @@ const syncWithRemoteRepo = async () => {
 							await downloadFile(result.data.download_url, tempFilePath);
 							logger.debug(`Successfully downloaded: ${tempFilePath}.`);
 
-							// Update db with latest metadata file information
+							// Update DB with latest metadata file information
 							await indexMetadataFromFile(tempFilePath, dbTrx);
 							logger.debug(`Successfully updated the database with the latest changes of file: ${remoteFilePath}.`);
 
