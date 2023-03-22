@@ -123,6 +123,12 @@ const EVENT = Object.freeze({
 	REWARD_MINTED: 'rewardMinted',
 });
 
+const TRANSACTION_VERIFY_RESULT = {
+	INVALID: -1,
+	PENDING: 0,
+	OK: 1,
+};
+
 module.exports = {
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -143,4 +149,5 @@ module.exports = {
 	MAX_COMMISSION,
 	KV_STORE_KEY,
 	TRANSACTION_STATUS,
+	TRANSACTION_VERIFY_RESULT,
 };
