@@ -29,7 +29,8 @@ const dryRunTransactions = async params => {
 		...response,
 		status: Object
 			.keys(TRANSACTION_VERIFY_RESULT)
-			.find(e => TRANSACTION_VERIFY_RESULT[e] === response.result),
+			.find(e => TRANSACTION_VERIFY_RESULT[e] === response.result)
+			.toLowerCase(),
 	};
 	dryRunTransactionsRes.meta = {};
 
