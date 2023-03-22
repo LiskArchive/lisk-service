@@ -30,7 +30,7 @@ const {
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
-const { getDirectories, read, getFiles } = require('./utils/fsUtils');
+const { getDirectories, read, getFiles, exists } = require('./utils/fsUtils');
 
 const config = require('../config');
 const constants = require('./constants');
@@ -89,16 +89,24 @@ const indexChainMeta = async (chainMeta, dbTrx) => {
 	await applicationMetadataTable.upsert(chainMetaToIndex, dbTrx);
 };
 
-const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
+// Given filepath of app.json or nativetokens.json, indexes the information in DB
+const indexMetadataFromFile = async (filePath, dbTrx) => {
+	const [network, app, filename] = filePath.split('/').slice(-3);
 	logger.debug(`Indexing metadata information for the app: ${app} (${network}).`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
-	const appPathInClonedRepo = `${dataDir}/${repo}/${network}/${app}`;
+	// While processing nativetokens.json in sync job, newly downloaded app.json will be present
+	// in the temp download directory. Read from this file if present to fetch updated information.
+	// Otherwise read the previously downloaded app.json path.
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
+	const oldAppJsonPath = `${dataDir}/${repo}/${network}/${app}/${FILENAME.APP_JSON}`;
+	const downloadedAppJsonPath = `${path.dirname(filePath)}/${FILENAME.APP_JSON}`;
+	const appJsonPath = await exists(downloadedAppJsonPath) ? downloadedAppJsonPath : oldAppJsonPath;
+
 	logger.trace('Reading chain information.');
-	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
+	const chainMetaString = await read(appJsonPath);
 	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
@@ -109,7 +117,7 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
 		logger.trace('Reading tokens information.');
-		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
+		const tokenMetaString = await read(filePath);
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
 			chainName: chainMeta.chainName,
@@ -150,14 +158,13 @@ const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 	);
 };
 
-const deleteIndexedMetadataFromFile = async (network, app, filename = null, dbTrx) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
+const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
+	const [network, app, filename] = filePath.split('/').slice(-3);
 	logger.debug(`Deleting metadata information for the app: ${app} (${network}).`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
-	const appPathInClonedRepo = `${dataDir}/${repo}/${network}/${app}`;
+	const appPathInClonedRepo = path.dirname(filePath);
 	logger.trace('Reading chain information.');
 	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
 	const chainMeta = { ...JSON.parse(chainMetaString) };
@@ -170,7 +177,7 @@ const deleteIndexedMetadataFromFile = async (network, app, filename = null, dbTr
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
 		logger.trace('Reading tokens information.');
-		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
+		const tokenMetaString = await read(filePath);
 		const { tokens } = JSON.parse(tokenMetaString);
 		const localIDs = tokens.map(
 			token => token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
@@ -185,7 +192,7 @@ const deleteIndexedMetadataFromFile = async (network, app, filename = null, dbTr
 		await deleteTokensMeta(tokenMeta, dbTrx);
 		logger.debug(`Deleted tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished Deleting metadata information for the app: ${app} (${network}).`);
+	logger.info(`Finished Deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 };
 
 const indexAllBlockchainAppsMeta = async () => {
@@ -208,7 +215,7 @@ const indexAllBlockchainAppsMeta = async () => {
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
-							const [appName, filename] = file.split('/').slice(-2);
+							const [filename] = file.split('/').slice(-1);
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
 								const connection = await getDbConnection(MYSQL_ENDPOINT);
@@ -216,7 +223,7 @@ const indexAllBlockchainAppsMeta = async () => {
 
 								try {
 									logger.debug('Created new MySQL transaction to index blockchain metadata information.');
-									await indexMetadataFromFile(network, appName, filename, dbTrx);
+									await indexMetadataFromFile(file, dbTrx);
 									await commitDbTransaction(dbTrx);
 									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
 								} catch (error) {

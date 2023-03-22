@@ -257,6 +257,15 @@ const syncWithRemoteRepo = async () => {
 			return;
 		}
 
+		// Create a temp dir in respective repo dir to download files and move after processing app
+		// This helps to avoid partially update an app's files when DB update was not successful
+		// Ex: app.json(v2) is downloaded but indexing failed and transaction was not committed
+		// Next time, the job will fail to delete app.json(v1) info as it was replaced by app.json(v2)
+		const TEMP_DOWNLOAD_DIR_NAME = 'temp-downloads';
+		const tempDownloadDir = path.join(appDirPath, TEMP_DOWNLOAD_DIR_NAME);
+		if (await exists(tempDownloadDir)) await rmdir(tempDownloadDir);
+		await mkdir(tempDownloadDir);
+
 		const fileUpdatedStatuses = [
 			GITHUB_FILE_STATUS.REMOVED,
 			GITHUB_FILE_STATUS.MODIFIED,
@@ -277,19 +286,18 @@ const syncWithRemoteRepo = async () => {
 						const appFiles = appsInNetwork[appName];
 						const dbTrx = await startDbTransaction(connection);
 						const filesToBeDeleted = [];
+						const filesToBeMoved = [];
 
-						// Process files in an app. This must be processed sequentially.
-						// Because indexing of nativetokens.json dependant on app.json
+						// Should process app files sequentially as nativetokens.json is dependant on app.json
 						// eslint-disable-next-line no-restricted-syntax
 						for (const modifiedFile of appFiles) {
 							/* eslint-disable no-await-in-loop */
 							const remoteFilePath = modifiedFile.filename;
 							const localFilePath = path.join(appDirPath, remoteFilePath);
-							const [fileName] = remoteFilePath.split('/').slice(-1);
 
 							// Delete indexed information if a meta file is updated/deleted
 							if (fileUpdatedStatuses.includes(modifiedFile.status)) {
-								await deleteIndexedMetadataFromFile(networkName, appName, fileName, dbTrx);
+								await deleteIndexedMetadataFromFile(localFilePath, dbTrx);
 							}
 
 							// Skip download and indexing for deleted file.
@@ -302,18 +310,26 @@ const syncWithRemoteRepo = async () => {
 							}
 
 							// Create directory and download latest file
-							const dirPath = path.dirname(localFilePath);
+							const tempFilePath = path.join(tempDownloadDir, remoteFilePath);
+							const dirPath = path.dirname(tempFilePath);
 							await mkdir(dirPath, { recursive: true });
 
 							const result = await getFileDownloadURL(remoteFilePath);
-							await downloadFile(result.data.download_url, localFilePath);
-							logger.debug(`Successfully downloaded: ${localFilePath}.`);
+							await downloadFile(result.data.download_url, tempFilePath);
+							logger.debug(`Successfully downloaded: ${tempFilePath}.`);
 
 							// Update db with latest metadata file information
-							await indexMetadataFromFile(networkName, appName, fileName, dbTrx);
+							await indexMetadataFromFile(tempFilePath, dbTrx);
 							logger.debug(`Successfully updated the database with the latest changes of file: ${remoteFilePath}.`);
+
+							// Schedule files to be moved
+							filesToBeMoved.push({
+								from: tempFilePath,
+								to: localFilePath,
+							});
 							/* eslint-enable no-await-in-loop */
 						}
+						await commitDbTransaction(dbTrx);
 
 						// Delete files which are removed from remote
 						await BluebirdPromise.map(
@@ -321,7 +337,17 @@ const syncWithRemoteRepo = async () => {
 							async (filePath) => rm(filePath),
 							{ concurrency: filesToBeDeleted.length },
 						);
-						await commitDbTransaction(dbTrx);
+
+						// Move downloaded files
+						await BluebirdPromise.map(
+							filesToBeMoved,
+							async (filePathInfo) => {
+								// Create directory to move file
+								await mkdir(path.dirname(filePathInfo.to));
+								await rename(filePathInfo.from, filePathInfo.to);
+							},
+							{ concurrency: filesToBeMoved.length },
+						);
 					},
 					{ concurrency: Object.keys(appsInNetwork).length },
 				);
@@ -330,6 +356,9 @@ const syncWithRemoteRepo = async () => {
 		);
 
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+
+		// Remove temporary file download directory
+		await rmdir(tempDownloadDir);
 
 		if (Object.keys(groupedFiles).length) {
 			const modifiedFileNames = getModifiedFileNames(groupedFiles);
