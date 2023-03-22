@@ -3,7 +3,7 @@ config:
   phases:
     - duration: 10
       arrivalRate: 5
-      name: "Sustained max load of 5 users for 10 seconds"
+      name: "Sustained load of 5 new users each second for duration of 10 seconds (total 50 users)."
   defaults:
     headers:
       content-type: "application/json"
