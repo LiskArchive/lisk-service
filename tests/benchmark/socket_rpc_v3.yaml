@@ -358,11 +358,3 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.market.prices"}
-
-  # Newsfeed
-  - name: "Newsfeed"
-    engine: "socketio"
-    flow:
-      - emit:
-          channel: "request"
-          data: {"method": "get.newsfeed"}
