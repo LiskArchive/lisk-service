@@ -24,7 +24,10 @@ const mapObjectWithProperty = (obj, propName) => Object.keys(obj).reduce((acc, c
 	return acc;
 }, {});
 
+// Returns testedObject keys which are not present in reference
 const objDiff = (reference, testedObject) => Object.keys(testedObject).filter(o => typeof reference[o] === 'undefined');
+
+// Returns arr2 items which are not present in arr1
 const arrDiff = (arr1, arr2) => arr2.filter(x => !arr1.includes(x));
 
 const dropEmptyProps = p => Object.keys(p)
@@ -137,4 +140,8 @@ module.exports = {
 	arrDiff,
 	getTimestamp,
 	dropEmptyProps,
+
+	// For testing
+	mapObjectWithProperty,
+	parseParams,
 };
