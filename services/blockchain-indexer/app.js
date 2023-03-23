@@ -26,14 +26,11 @@ const config = require('./config');
 LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
+
+const { MODULE } = require('./shared/constants');
 const { setAppContext } = require('./shared/utils/request');
 
 const logger = Logger();
-
-const MODULE = {
-	DYNAMIC_REWARD: 'dynamicReward',
-	REWARD: 'reward',
-};
 
 const defaultBrokerConfig = {
 	name: 'indexer',

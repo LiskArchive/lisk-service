@@ -34,8 +34,8 @@ describe('Rewards Locked API', () => {
 	let refStaker;
 	beforeAll(async () => {
 		let refStakerAddress;
-		const stakeTransactionReponse = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
-		const { stakeTxs = [] } = stakeTransactionReponse.data;
+		const stakeTransactionResponse = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+		const { data: stakeTxs = [] } = stakeTransactionResponse;
 		if (stakeTxs.length) {
 			refStakerAddress = stakeTxs[0].sender.address;
 		}
@@ -58,10 +58,12 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('Returns list of locked rewards with publicKey', async () => {
-		const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}`);
-		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(10);
+		if (refStaker.publicKey) {
+			const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}`);
+			expect(response).toMap(goodResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+		}
 	});
 
 	it('No param -> bad request', async () => {

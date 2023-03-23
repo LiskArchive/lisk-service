@@ -31,51 +31,52 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/tokens`;
 
 describe('Tokens API', () => {
-	// TODO: Enable/update when token modules endpoints works
-	xit('retrieves tokens info when call with address-> ok', async () => {
-		const address = '';
-		const response = await api.get(`endpoint?address=${address}`);
+	let refValidator;
+	let currTokenID;
+
+	beforeAll(async () => {
+		const validators = await api.get(`${baseUrlV3}/pos/validators`);
+		[refValidator] = validators.data;
+
+		const networkStatus = await api.get(`${baseUrlV3}/network/status`);
+		currTokenID = networkStatus.data.chainID.substring(0, 2).padEnd(16, '0');
+	});
+	it('retrieves tokens info when call with address-> ok', async () => {
+		const response = await api.get(`${endpoint}?address=${refValidator.address}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		expect(response.data).toMap(tokensSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
 
-	// TODO: Enable/update when token modules endpoints works
-	xit('retrieves token info when call with address and limit 10-> ok', async () => {
-		const address = '';
-		const response = await api.get(`endpoint?address=${address}&limit=10`);
+	it('retrieves token info when call with address and limit 10-> ok', async () => {
+		const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=10`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		expect(response.data).toMap(tokensSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
 
-	// TODO: Enable/update when token modules endpoints works
-	xit('retrieves token info when call with address, limit=10 and offset=1-> ok', async () => {
-		const address = '';
-		const response = await api.get(`endpoint?address=${address}&limit=10&offset=1`);
+	it('retrieves token info when call with address, limit=10 and offset=1-> ok', async () => {
+		const response = await api.get(`${endpoint}?address=${refValidator.address}&limit=10&offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		expect(response.data).toMap(tokensSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
 
-	// TODO: Enable/update when token modules endpoints works
-	xit('retrieves token info when call with address and tokenID-> ok', async () => {
-		const address = '';
-		const tokenID = '';
-		const response = await api.get(`endpoint?address=${address}&tokenID=${tokenID}`);
+	it('retrieves token info when call with address and tokenID-> ok', async () => {
+		const response = await api.get(`${endpoint}?address=${refValidator.address}&tokenID=${currTokenID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
-		expect(response.data).toMap(tokensSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
 

@@ -31,10 +31,9 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/legacy`;
 
 describe('Legacy accounts API', () => {
-	// TODO: Enable when legacy account public key is available on test blockchain
-	xit('retrieves legacy account info -> ok', async () => {
-		const publicKey = '';
-		const response = await api.get(`endpoint?publicKey=${publicKey}`);
+	it('retrieves legacy account info -> ok', async () => {
+		const publicKey = '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc';
+		const response = await api.get(`${endpoint}?publicKey=${publicKey}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(legacyAccountsSchema);
 		expect(response.meta).toMap(legacyAccountsMetaSchema);

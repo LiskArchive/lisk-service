@@ -73,11 +73,11 @@ const getAddressByName = async (name) => {
 
 const calcCommission = async (generatorAddress, reward) => {
 	const commissionsTable = await getCommissionsTable();
-	const [{ commission: currentCommission }] = await commissionsTable
+	const [{ commission: currentCommission } = {}] = await commissionsTable
 		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
 
 	const rewardQ = q96(reward);
-	const currentCommissionQ = q96(BigInt(currentCommission));
+	const currentCommissionQ = q96(BigInt(currentCommission || 0));
 	const commission = (rewardQ.mul(currentCommissionQ)).div(maxCommissionQ);
 	return commission.floor();
 };

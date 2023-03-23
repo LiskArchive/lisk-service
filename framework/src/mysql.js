@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// TODO: Rename all methods to use 'DB' instead of 'Db'
-
 const Logger = require('./logger').get;
 
 const logger = Logger();
@@ -308,7 +306,6 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	};
 
 	const find = async (params = {}, columns) => {
-		// TODO: Add support for IS NULL, IS NOT NULL, LIKE
 		const trx = await createDefaultTransaction(knex);
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);

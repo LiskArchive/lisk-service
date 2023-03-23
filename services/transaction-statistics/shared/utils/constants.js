@@ -38,8 +38,6 @@ const getChainID = async () => {
 
 const resolveGlobalTokenID = (tokenID) => {
 	if (!tokenID) return DB_CONSTANT.UNAVAILABLE;
-
-	// TODO: Remove once chainID is available from network status
 	if (!chainID) return tokenID;
 
 	const localID = tokenID.slice(8);

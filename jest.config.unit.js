@@ -3,7 +3,7 @@
 
 module.exports = {
 	testMatch: [
-		'<rootDir>/services/*/tests/unit/*.test.js',
+		'<rootDir>/services/*/tests/unit/**/*.test.js',
 	],
 	verbose: false,
 	collectCoverage: false,

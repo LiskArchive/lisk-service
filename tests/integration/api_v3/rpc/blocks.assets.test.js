@@ -198,8 +198,8 @@ describe('Method get.blocks.assets', () => {
 
 	describe('is able to retireve block assets within height range', () => {
 		it('return blocks assets with min...max height -> ok', async () => {
-			const minHeight = refBlockAssets.block.height - 10;
-			const maxHeight = refBlockAssets.block.height;
+			const minHeight = refBlockAssets.block.height;
+			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await getBlocksAssets({ height: `${minHeight}:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -218,7 +218,7 @@ describe('Method get.blocks.assets', () => {
 		});
 
 		it('returns blocks assets with min... height -> ok', async () => {
-			const minHeight = refBlockAssets.block.height - 10;
+			const minHeight = refBlockAssets.block.height;
 			const response = await getBlocksAssets({ height: `${minHeight}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -236,7 +236,7 @@ describe('Method get.blocks.assets', () => {
 		});
 
 		it('Breturns blocks assets with ...max height -> ok', async () => {
-			const maxHeight = refBlockAssets.block.height;
+			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await getBlocksAssets({ height: `:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

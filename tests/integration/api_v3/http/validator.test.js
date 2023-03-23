@@ -38,7 +38,7 @@ describe('Validator API', () => {
 	});
 
 	it('retrieves validator info -> ok', async () => {
-		const response = await api.get(`endpoint?address=${refGenerator.address}`);
+		const response = await api.get(`${endpoint}?address=${refGenerator.address}`);
 		expect(response).toMap(goodRequestSchemaForValidator);
 		expect(response.data).toMap(validatorInfoSchema);
 		expect(response.meta).toMap(validatorMetaSchema);

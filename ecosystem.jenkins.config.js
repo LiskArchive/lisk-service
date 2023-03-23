@@ -193,22 +193,5 @@ module.exports = {
 				// EXCHANGERATESAPI_IO_API_KEY: ''
 			},
 		},
-		{
-			name: 'lisk-service-newsfeed',
-			script: 'app.js',
-			cwd: './services/newsfeed',
-			pid_file: './pids/service_newsfeed.pid',
-			out_file: './logs/service_newsfeed.log',
-			error_file: './logs/service_newsfeed.err',
-			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
-			watch: false,
-			kill_timeout: 10000,
-			max_memory_restart: '300M',
-			autorestart: true,
-			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
-			},
-		},
 	],
 };

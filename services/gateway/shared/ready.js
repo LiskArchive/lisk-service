@@ -25,7 +25,6 @@ const currentSvcStatus = {
 	connector: false,
 	fees: false,
 	market: false,
-	newsfeed: false,
 	'app-registry': false,
 	statistics: false,
 };
