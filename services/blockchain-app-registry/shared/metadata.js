@@ -70,6 +70,15 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
+	if (params.network) {
+		const { network, ...remParams } = params;
+		params = remParams;
+		params.whereIn = [{
+			property: 'network',
+			values: network.split(','),
+		}];
+	}
+
 	const limit = params.limit * config.supportedNetworks.length;
 	const defaultApps = await applicationMetadataTable.find(
 		{ ...params, limit, isDefault: true },

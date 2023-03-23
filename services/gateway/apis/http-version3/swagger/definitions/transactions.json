@@ -446,6 +446,11 @@
 						"type": "integer",
 						"example": 1
 					},
+					"status": {
+						"type": "string",
+						"example": "OK",
+						"description": "Transaction verification status."
+					},
 					"events": {
 						"type": "array",
 						"items": {
