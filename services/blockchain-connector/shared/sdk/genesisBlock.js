@@ -31,7 +31,6 @@ let genesisBlockID;
 let genesisConfig;
 
 const getGenesisHeight = async () => {
-	// TODO: Verify if this is correct
 	if (typeof genesisHeight !== 'number') {
 		const nodeInfo = await getNodeInfo();
 		genesisHeight = 'genesisHeight' in nodeInfo ? nodeInfo.genesisHeight : config.genesisHeight;

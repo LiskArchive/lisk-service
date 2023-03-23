@@ -24,27 +24,26 @@ const baseUrls = [config.SERVICE_ENDPOINT];
 for (let i = 0; i < baseUrls.length; i++) {
 	const baseUrl = baseUrls[i];
 
-	xdescribe(`Forgers API on baseUrl: ${baseUrl}`, () => {
+	xdescribe(`Generators API on baseUrl: ${baseUrl}`, () => {
 		const endpoint = `${baseUrl}/api/v3`;
-		const forgersEndpoint = `${endpoint}/forgers?limit=103`;
+		const generatorEndpoint = `${endpoint}/generators?limit=103`;
 		const blockEndpoint = `${endpoint}/blocks?limit=1`;
-		const delegateEndpoint = `${endpoint}/accounts?isDelegate=true&limit=1`;
+		const validatorEndpoint = `${endpoint}/pos/validators?limit=1`;
 
 		it(`Comparing generatedBlocks against total blocks on ${baseUrl}`, async () => {
 			console.info(`Server: ${baseUrl}`);
-			const response = await api.get(forgersEndpoint);
-			const delegateNames = response.data.map(({ username }) => username);
+			const response = await api.get(generatorEndpoint);
+			const validatorAddresses = response.data.map(({ address }) => address);
 
-			for (let j = 0; j < delegateNames.length; j++) {
+			for (let j = 0; j < validatorAddresses.length; j++) {
 				/* eslint-disable no-await-in-loop */
-				const n = delegateNames[j];
-				const { meta: { total } } = await api.get(`${blockEndpoint}&generatorUsername=${n}`);
-				const { data: [{ dpos: { delegate: { generatedBlocks } } }] } = await api.get(`${delegateEndpoint}&username=${n}`);
-
+				const n = validatorAddresses[j];
+				const { meta: { total } } = await api.get(`${blockEndpoint}&generatorAddress=${n}`);
+				const { data: [{ generatedBlocks }] } = await api.get(`${validatorEndpoint}&address=${n}`);
 				try {
 					expect(total).toEqual(generatedBlocks);
 				} catch (e) {
-					console.error(`Mismatch --> delegate: ${n}, blockForged: ${total}, generatedBlocks: ${generatedBlocks}`);
+					console.error(`Mismatch --> validator: ${n}, blockProduced: ${total}, generatedBlocks: ${generatedBlocks}`);
 					// console.error(e);
 					// throw e;
 				}

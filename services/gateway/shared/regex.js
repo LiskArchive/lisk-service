@@ -38,7 +38,7 @@ const TOKEN_ID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
-const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
+const TOPIC = /^\b(?:(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}),?)+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,

@@ -22,7 +22,6 @@ const getPeers = async params => {
 
 	const state = params.state ? params.state.toString().toLowerCase() : undefined;
 
-	// TODO: Verify chainID is returned when endpoint is available from sdk
 	if (state === 'connected') {
 		peers = await requestConnector('getConnectedPeers');
 	} else if (state === 'disconnected') {

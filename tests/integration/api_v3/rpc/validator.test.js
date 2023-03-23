@@ -21,6 +21,7 @@ const {
 
 const {
 	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -42,9 +43,11 @@ describe('get.validator', () => {
 
 	it('returns validator info', async () => {
 		const response = await getValidator({ address: refGenerator.address });
-		expect(response).toMap(goodRequestSchemaForValidator);
-		expect(response.data).toMap(validatorInfoSchema);
-		expect(response.meta).toMap(validatorMetaSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchemaForValidator);
+		expect(result.data).toMap(validatorInfoSchema);
+		expect(result.meta).toMap(validatorMetaSchema);
 	});
 
 	it('invalid address -> invalid params', async () => {

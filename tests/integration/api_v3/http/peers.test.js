@@ -31,10 +31,9 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/peers`;
 
-// TODO: Enable when peers endpoint is available from sdk
-xdescribe('Peers API', () => {
+describe('Peers API', () => {
 	describe('GET /peers', () => {
-		xit('without request params -> ok', async () => {
+		it('without request params -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -44,7 +43,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('empty ip -> ok', async () => {
+		it('empty ip -> ok', async () => {
 			const response = await api.get(`${endpoint}?ip=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -59,7 +58,7 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('valid networkVersion -> ok', async () => {
+		it('valid networkVersion -> ok', async () => {
 			const response = await api.get(`${endpoint}?networkVersion=2.0`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -69,7 +68,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('empty networkVersion -> ok', async () => {
+		it('empty networkVersion -> ok', async () => {
 			const response = await api.get(`${endpoint}?networkVersion=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -91,7 +90,7 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('\'connected\' state -> ok', async () => {
+		it('\'connected\' state -> ok', async () => {
 			const response = await api.get(`${endpoint}?state=connected`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -101,7 +100,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('\'disconnected\' state -> ok', async () => {
+		it('\'disconnected\' state -> ok', async () => {
 			const response = await api.get(`${endpoint}?state=disconnected`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -111,7 +110,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('\'any\' state -> ok', async () => {
+		it('\'any\' state -> ok', async () => {
 			const response = await api.get(`${endpoint}?state=any`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -121,7 +120,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('empty state -> ok', async () => {
+		it('empty state -> ok', async () => {
 			const response = await api.get(`${endpoint}?state=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -141,7 +140,7 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('empty height -> ok', async () => {
+		it('empty height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -163,7 +162,7 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('limit=100 -> ok', async () => {
+		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -173,7 +172,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('empty limit -> ok', async () => {
+		it('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -183,7 +182,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('empty offset -> ok', async () => {
+		it('empty offset -> ok', async () => {
 			const response = await api.get(`${endpoint}?offset=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -200,7 +199,7 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('empty sort -> ok', async () => {
+		it('empty sort -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -228,7 +227,7 @@ xdescribe('Peers API', () => {
 		});
 	});
 
-	xdescribe('Peers sorted by height', () => {
+	describe('Peers sorted by height', () => {
 		it('returns 10 peers sorted by height descending', async () => {
 			const response = await api.get(`${endpoint}?sort=height:desc`);
 			expect(response).toMap(goodRequestSchema);
@@ -264,7 +263,7 @@ xdescribe('Peers API', () => {
 		});
 	});
 
-	xdescribe('Peers sorted by networkVersion', () => {
+	describe('Peers sorted by networkVersion', () => {
 		it('returns 10 peers sorted by networkVersion descending', async () => {
 			const response = await api.get(`${endpoint}?sort=networkVersion:desc`);
 			expect(response).toMap(goodRequestSchema);

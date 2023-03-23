@@ -143,9 +143,7 @@ describe('Test MySQL', () => {
 		it('Increase column value', async () => {
 			await testTable.increment({
 				increment: { timestamp: 5 },
-				where: {
-					id: emptyBlock.id,
-				},
+				where: { id: emptyBlock.id },
 			});
 
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
@@ -311,9 +309,7 @@ describe('Test MySQL', () => {
 			const trx = await startDbTransaction(connection);
 			await testTable.increment({
 				increment: { timestamp: 5 },
-				where: {
-					id: emptyBlock.id,
-				},
+				where: { id: emptyBlock.id },
 			}, trx);
 			await commitDbTransaction(trx);
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
@@ -434,12 +430,10 @@ describe('Test MySQL', () => {
 			await testTable.upsert([{ ...emptyBlock, id: 'rollback' }], trx);
 			await testTable.increment({
 				increment: { size: 100 },
-				where: {
-					id: 'rollback',
-				},
+				where: { id: 'rollback' },
 			}, trx);
 
-			// Assume failure occured, rollback the transaction
+			// Assume failure occurred, rollback the transaction
 			await rollbackDbTransaction(trx);
 
 			// Verify none of the above operations have been committed
@@ -488,7 +482,7 @@ describe('Test MySQL', () => {
 			await testTable.upsert([emptyBlock], trx);
 			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 
-			// Assume failure occured, rollback the transaction
+			// Assume failure occurred, rollback the transaction
 			await rollbackDbTransaction(trx);
 
 			// Perform upsert using rollback transaction

@@ -13,12 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { normalizeTransaction } = require('../../shared/utils/transactionsUtils');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../../shared/utils/transactionsUtils');
 
 const {
 	inputTransaction,
 	expectedTransaction,
 } = require('../constants/transactions');
+
+const {
+	validTx,
+	eventsForValidTx,
+	eventsWithFailStatus,
+} = require('../constants/events');
+
+const TRANSACTION_STATUS = Object.freeze({
+	SUCCESS: 'success',
+	FAIL: 'fail',
+});
 
 describe('Test normalizeTransaction method', () => {
 	it('should return normalizedTransaction -> valid tx', async () => {
@@ -36,3 +47,18 @@ describe('Test normalizeTransaction method', () => {
 	});
 });
 
+describe('Test getTransactionExecutionStatus method', () => {
+	it('should return transaction execution status -> success', async () => {
+		const executionStatus = await getTransactionExecutionStatus(validTx, eventsForValidTx);
+		expect(executionStatus).toBe(TRANSACTION_STATUS.SUCCESS);
+	});
+
+	it('should return transaction execution status -> fail', async () => {
+		const executionStatus = await getTransactionExecutionStatus(validTx, eventsWithFailStatus);
+		expect(executionStatus).toBe(TRANSACTION_STATUS.FAIL);
+	});
+
+	it('should throw error when event is not available for the transaction', async () => {
+		expect(() => getTransactionExecutionStatus(validTx, [])).toThrow();
+	});
+});
