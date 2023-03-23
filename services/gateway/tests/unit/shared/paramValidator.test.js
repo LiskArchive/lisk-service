@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
+/* eslint-disable mocha/max-top-level-suites */
 const {
 	mapObjectWithProperty,
 	objDiff,
@@ -21,6 +21,11 @@ const {
 	dropEmptyProps,
 	parseParams,
 	validate,
+	validateFromParamPairings,
+	checkMissingParams,
+	parseDefaultParams,
+	parseAllParams,
+	looseSpecParams,
 } = require('../../../shared/paramValidator');
 const {
 	mapObjectWithPropertyObj,
@@ -38,6 +43,15 @@ const {
 	validateExpectedParamReport,
 	validateRawInputParamsWithInvalidKey,
 	validateInvalidKeyExpectedResponse,
+	checkMissingParamsRouteParams,
+	checkMissingParamsRequestParams,
+	parseDefaultParamsObj,
+	parseDefaultParamsExpectedResponse,
+	parseAllParamsRouteParams,
+	parseAllParamsRequestParams,
+	parseAllParamsExpectedResponse,
+	looseSpecParamsInput,
+	looseSpecParamsExpectedResponse,
 } = require('../../constants/paramValidator');
 
 describe('Test mapObjectWithProperty method', () => {
@@ -156,12 +170,133 @@ describe('Test parseParams method', () => {
 
 describe('Test validate method', () => {
 	xit('should return expected param report when called with valid rawInputParams and specs', async () => {
-		const response = await validate(validateRawInputParams, validateSpecs);
+		const response = validate(validateRawInputParams, validateSpecs);
 		expect(response).toEqual(validateExpectedParamReport);
 	});
 
-	it('should return expected param report when called with valid rawInputParams and specs', async () => {
-		const response = await validate(validateRawInputParamsWithInvalidKey, validateSpecs);
+	it('should return expected param report when raw input has invalid key', async () => {
+		const response = validate(validateRawInputParamsWithInvalidKey, validateSpecs);
 		expect(response).toEqual(validateInvalidKeyExpectedResponse);
+	});
+});
+
+describe('Test validateFromParamPairings method', () => {
+	const inputParamKeys = ['key1', 'key2', 'key3'];
+	const schemaParamPairings = [
+		['key1', 'key2'],
+	];
+
+	it('should return empty array when inputParamKeys is part of schema paramPairings', async () => {
+		const response = validateFromParamPairings(true, inputParamKeys, schemaParamPairings);
+		expect(response).toEqual([]);
+	});
+
+	it('should return empty array when paramsRequired is false', async () => {
+		const response = validateFromParamPairings(false, inputParamKeys, schemaParamPairings);
+		expect(response).toEqual([]);
+	});
+
+	it('should return schema paramPairings when inputParamKeys is not part of schema paramPairings', async () => {
+		const response = validateFromParamPairings(
+			true,
+			[inputParamKeys[0]],
+			schemaParamPairings,
+		);
+		expect(response).toEqual(schemaParamPairings);
+	});
+
+	it('should return empty array when called with null or undefined paramPairings', async () => {
+		expect(validateFromParamPairings(null, inputParamKeys, schemaParamPairings)).toEqual([]);
+		expect(validateFromParamPairings(undefined, inputParamKeys, schemaParamPairings)).toEqual([]);
+	});
+
+	it('should throw error when called with null inputParamKeys or schemaParamPairings', async () => {
+		expect(() => validateFromParamPairings(true, null, schemaParamPairings)).toThrow();
+		expect(() => validateFromParamPairings(true, inputParamKeys, null)).toThrow();
+		expect(() => validateFromParamPairings(true, null, null)).toThrow();
+	});
+
+	it('should throw error when called with undefined inputParamKeys or schemaParamPairings', async () => {
+		expect(() => validateFromParamPairings(true, undefined, schemaParamPairings)).toThrow();
+		expect(() => validateFromParamPairings(true, inputParamKeys, undefined)).toThrow();
+		expect(() => validateFromParamPairings(true, undefined, undefined)).toThrow();
+	});
+});
+
+describe('Test checkMissingParams method', () => {
+	it('should return empty array when all required params are present in request', async () => {
+		const response = checkMissingParams(
+			checkMissingParamsRouteParams,
+			checkMissingParamsRequestParams,
+		);
+		expect(response).toEqual([]);
+	});
+
+	it('should array of missing keys when required params are missing from requestParams', async () => {
+		const response = checkMissingParams(checkMissingParamsRouteParams, {
+			key1: {
+				key11: 'val11',
+				required: true,
+			},
+		});
+		expect(response).toEqual(['key2']);
+	});
+
+	it('should throw error when called with null routeParams or requestParams)', async () => {
+		expect(() => checkMissingParams(null, checkMissingParamsRequestParams)).toThrow();
+		expect(() => checkMissingParams(checkMissingParamsRouteParams, null)).toThrow();
+		expect(() => checkMissingParams(null, null)).toThrow();
+	});
+
+	it('should throw error when called with undefined routeParams or requestParams)', async () => {
+		expect(() => checkMissingParams(undefined, checkMissingParamsRequestParams)).toThrow();
+		expect(() => checkMissingParams(checkMissingParamsRouteParams, undefined)).toThrow();
+		expect(() => checkMissingParams(undefined, undefined)).toThrow();
+	});
+});
+
+describe('Test parseDefaultParams method', () => {
+	it('should return correctly mapped object when called with valid obj', async () => {
+		const response = await parseDefaultParams(parseDefaultParamsObj);
+		expect(response).toEqual(parseDefaultParamsExpectedResponse);
+	});
+
+	it('should throw error when called with null or undefined obj', async () => {
+		expect(() => parseDefaultParams(null)).toThrow();
+		expect(() => parseDefaultParams(undefined)).toThrow();
+	});
+});
+
+describe('Test parseAllParams method', () => {
+	it('should return correctly parsed object when called with valid routeParams and requestParams', async () => {
+		const response = parseAllParams(
+			parseAllParamsRouteParams,
+			parseAllParamsRequestParams,
+		);
+		expect(response).toEqual(parseAllParamsExpectedResponse);
+	});
+
+	it('should throw error when called with null routeParams or requestParams)', async () => {
+		expect(() => parseAllParams(null, parseAllParamsRequestParams)).toThrow();
+		expect(() => parseAllParams(parseAllParamsRouteParams, null)).toThrow();
+		expect(() => parseAllParams(null, null)).toThrow();
+	});
+
+	it('should throw error when called with undefined routeParams or requestParams)', async () => {
+		expect(() => parseAllParams(undefined, parseAllParamsRequestParams)).toThrow();
+		expect(() => parseAllParams(parseAllParamsRouteParams, undefined)).toThrow();
+		expect(() => parseAllParams(undefined, undefined)).toThrow();
+	});
+});
+
+describe('Test looseSpecParams method', () => {
+	it('should return expected object when called with an object having number and boolean keys', async () => {
+		const response = looseSpecParams(looseSpecParamsInput);
+		expect(response).toEqual(looseSpecParamsExpectedResponse);
+	});
+
+	it('should throw error when called with null or undefined)', async () => {
+		expect(() => looseSpecParams(null)).toThrow();
+		expect(() => looseSpecParams(undefined)).toThrow();
 	});
 });

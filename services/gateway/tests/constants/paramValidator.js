@@ -356,6 +356,123 @@ const validateInvalidKeyExpectedResponse = {
 	],
 };
 
+const checkMissingParamsRouteParams = {
+	key1: {
+		key11: 'val11',
+		required: true,
+	},
+	key2: {
+		required: true,
+		key11: 'val11',
+	},
+	key3: {
+		key31: 'val31',
+	},
+};
+
+const checkMissingParamsRequestParams = {
+	key1: {
+		key11: 'val11',
+	},
+	key2: {
+		required: true,
+		key11: 'val11',
+	},
+	key4: {
+		key41: 'val41',
+	},
+};
+
+const parseDefaultParamsObj = {
+	key1: {
+		key11: 'val11',
+		[mapObjectWithPropertyPropName]: 'default_val_1',
+	},
+	key2: {
+		key22: 'val21',
+		'not-default': 'not_default_val_2',
+	},
+	key3: {
+		key31: {
+			key311: 'val311',
+		},
+		[mapObjectWithPropertyPropName]: 'default_val_3',
+	},
+};
+
+const parseDefaultParamsExpectedResponse = {
+	key1: 'default_val_1',
+	key3: 'default_val_3',
+};
+
+const parseAllParamsRouteParams = {
+	notPresentInRequest: {
+		default: 'default value',
+	},
+	numberType: {
+		type: 'number',
+	},
+	stringType: {
+		type: 'string',
+	},
+	booleanType: {
+		type: 'boolean',
+	},
+};
+const parseAllParamsRequestParams = {
+	numberType: '123',
+	stringType: 'some string',
+	booleanType: true,
+	notPresentInSchema: 'user sent value',
+};
+
+const parseAllParamsExpectedResponse = {
+	notPresentInRequest: 'default value',
+	numberType: 123,
+	stringType: 'some string',
+	booleanType: true,
+};
+
+const looseSpecParamsInput = {
+	booleanKey: {
+		key: true,
+		type: 'boolean',
+	},
+	stringKey: {
+		key: 'value',
+		type: 'string',
+	},
+	numberKey: {
+		key: 123,
+		type: 'number',
+	},
+	objectKey: {
+		key: {},
+		type: 'object',
+	},
+};
+
+const looseSpecParamsExpectedResponse = {
+	booleanKey: {
+		key: true,
+		type: 'boolean',
+		convert: true,
+	},
+	stringKey: {
+		key: 'value',
+		type: 'string',
+	},
+	numberKey: {
+		key: 123,
+		type: 'number',
+		convert: true,
+	},
+	objectKey: {
+		key: {},
+		type: 'object',
+	},
+};
+
 module.exports = {
 	mapObjectWithPropertyPropName,
 	mapObjectWithPropertyObj,
@@ -376,4 +493,17 @@ module.exports = {
 	validateSpecs,
 	validateExpectedParamReport,
 	validateInvalidKeyExpectedResponse,
+
+	checkMissingParamsRequestParams,
+	checkMissingParamsRouteParams,
+
+	parseDefaultParamsObj,
+	parseDefaultParamsExpectedResponse,
+
+	parseAllParamsRouteParams,
+	parseAllParamsRequestParams,
+	parseAllParamsExpectedResponse,
+
+	looseSpecParamsInput,
+	looseSpecParamsExpectedResponse,
 };
