@@ -67,7 +67,6 @@ const getAllPosValidators = async () => {
 	const validators = await BluebirdPromise.map(
 		rawValidators,
 		async validator => {
-			// TODO: Get validatorWeight from SDK directly when available
 			if (validator.isBanned || await verifyIfPunished(validator)) {
 				validator.validatorWeight = BigInt('0');
 			} else {

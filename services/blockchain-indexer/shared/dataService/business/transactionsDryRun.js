@@ -14,6 +14,7 @@
  *
  */
 const { requestConnector } = require('../../utils/request');
+const { TRANSACTION_VERIFY_RESULT } = require('../../constants');
 
 const dryRunTransactions = async params => {
 	const dryRunTransactionsRes = {
@@ -22,7 +23,15 @@ const dryRunTransactions = async params => {
 	};
 	const { transaction, skipVerify } = params;
 
-	dryRunTransactionsRes.data = await requestConnector('dryRunTransaction', { transaction, skipVerify });
+	const response = await requestConnector('dryRunTransaction', { transaction, skipVerify });
+
+	dryRunTransactionsRes.data = {
+		...response,
+		status: Object
+			.keys(TRANSACTION_VERIFY_RESULT)
+			.find(e => TRANSACTION_VERIFY_RESULT[e] === response.result)
+			.toLowerCase(),
+	};
 	dryRunTransactionsRes.meta = {};
 
 	return dryRunTransactionsRes;

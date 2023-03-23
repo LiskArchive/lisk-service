@@ -21,6 +21,7 @@ const {
 } = require('lisk-service-framework');
 
 const { getBlockByID } = require('./blocks');
+const { getEventsByHeight } = require('./events');
 
 const {
 	getLisk32AddressFromPublicKey,
@@ -28,7 +29,7 @@ const {
 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
-const { normalizeTransaction } = require('../../utils/transactionsUtils');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactionsUtils');
 const { getFinalizedHeight } = require('../../constants');
 
 const transactionsIndexSchema = require('../../database/schema/transactions');
@@ -233,7 +234,13 @@ const getTransactionsByBlockID = async blockID => {
 				{ id: transaction.id, limit: 1 },
 				['executionStatus'],
 			);
-			transaction.executionStatus = indexedTxInfo.executionStatus;
+
+			if (indexedTxInfo.executionStatus) {
+				transaction.executionStatus = indexedTxInfo.executionStatus;
+			} else {
+				const events = await getEventsByHeight(block.height);
+				transaction.executionStatus = await getTransactionExecutionStatus(transaction, events);
+			}
 
 			return transaction;
 		},

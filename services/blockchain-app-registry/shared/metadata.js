@@ -70,6 +70,15 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
+	if (params.network) {
+		const { network, ...remParams } = params;
+		params = remParams;
+		params.whereIn = [{
+			property: 'network',
+			values: network.split(','),
+		}];
+	}
+
 	const limit = params.limit * config.supportedNetworks.length;
 	const defaultApps = await applicationMetadataTable.find(
 		{ ...params, limit, isDefault: true },
@@ -88,7 +97,6 @@ const getBlockchainAppsMetaList = async (params) => {
 	blockchainAppsMetaList.data = blockchainAppsMetaList.data
 		.slice(params.offset, params.offset + params.limit);
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
 
 	blockchainAppsMetaList.meta = {
@@ -190,7 +198,6 @@ const getBlockchainAppsMetadata = async (params) => {
 		{ concurrency: blockchainAppsMetadata.data.length },
 	);
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
 
 	blockchainAppsMetadata.meta = {
@@ -251,7 +258,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 			if (!('network' in params)) {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
-				networkSet.push(network);
+				networkSet.add(network);
 			}
 
 			return [chainID, localID];
@@ -312,7 +319,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		{ concurrency: uniqueChainList.length },
 	);
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ total }] = await tokenMetadataTable.rawQuery(`SELECT COUNT(tokenName) as total from ${tokenMetadataIndexSchema.tableName}`);
 
 	blockchainAppsTokenMetadata.meta = {

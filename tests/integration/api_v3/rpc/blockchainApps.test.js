@@ -95,8 +95,8 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications by state', async () => {
-		const response = await getBlockchainApps({ state: 'active' });
+	it('returns list of all blockchain applications by status', async () => {
+		const response = await getBlockchainApps({ status: 'active' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

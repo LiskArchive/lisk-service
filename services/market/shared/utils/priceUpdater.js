@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,16 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNewsfeed } = require('./controllers/newsfeed');
+const config = require('../../config');
 
-module.exports = [
-	{
-		name: 'articles',
-		controller: getNewsfeed,
-		params: {
-			source: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-];
+const supportedFiatCurrencies = config.market.supportedFiatCurrencies.split(',');
+
+const formatCalculatedRate = (targetCurrency, rate) => String(
+	supportedFiatCurrencies.includes(targetCurrency)
+		? Number(rate).toFixed(4) // To fiat - 4 significant digits
+		: Number(rate).toFixed(8), // To crypto - 8 significant digits
+);
+
+module.exports = {
+	formatCalculatedRate,
+};

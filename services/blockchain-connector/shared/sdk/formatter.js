@@ -84,7 +84,7 @@ const formatBlock = (block) => {
 			: asset.data;
 
 		if (!blockAssetDataSchema) {
-			// TODO: Remove this after all asset schemas are exposed
+			// TODO: Remove this after all asset schemas are exposed (before tagging rc.0)
 			console.error(`Block asset schema missing for module ${assetModule}.`);
 			logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
 		}
@@ -119,11 +119,11 @@ const formatEvent = (event) => {
 		: { data: event.data };
 
 	if (!eventDataSchema) {
-		// TODO: Remove this after SDK exposes all event schemas
+		// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)
 		console.error(`Event data schema missing for ${event.module}:${event.name}.`);
 		logger.error(`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`);
 	} else {
-		// TODO: Remove after SDK fixes the address format
+		// TODO: Remove after SDK fixes the address format (before tagging rc.0)
 		Object.keys(eventDataSchema.properties).forEach((prop) => {
 			if (prop.endsWith('Address')) {
 				eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
@@ -132,7 +132,7 @@ const formatEvent = (event) => {
 	}
 
 	const eventTopicMappings = EVENT_TOPIC_MAPPINGS_BY_MODULE[event.module] || {};
-	// TODO: Remove after all transaction types are tested
+	// TODO: Remove after all transaction types are tested (before tagging rc.0)
 	if (!(event.module in EVENT_TOPIC_MAPPINGS_BY_MODULE)) {
 		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE missing for module: ${event.module}.`);
 		console.info(inspect(event));
@@ -142,7 +142,7 @@ const formatEvent = (event) => {
 		? COMMAND_EXECUTION_RESULT_TOPICS
 		: eventTopicMappings[event.name];
 
-	// TODO: Remove after all transaction types are tested
+	// TODO: Remove after all transaction types are tested (before tagging rc.0)
 	if (!topics || topics.length === 0) {
 		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE undefined for event: ${event.name}.`);
 		console.info(inspect(event));

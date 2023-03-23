@@ -19,9 +19,9 @@ const config = require('../../../config');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_INVALID,
-	TRANSACTION_OBJECT_FAIL,
+	TRANSACTION_OBJECT_PENDING,
 	TRANSACTION_ENCODED_VALID,
-	TRANSACTION_ENCODED_FAIL,
+	TRANSACTION_ENCODED_PENDING,
 	TRANSACTION_ENCODED_INVALID,
 } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
@@ -39,7 +39,7 @@ const {
 const {
 	dryrunTransactionSuccessResponseSchema,
 	dryrunTransactionInvalidResponseSchema,
-	dryrunTransactionFailResponseSchema,
+	dryrunTransactionPendingResponseSchema,
 	metaSchema,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
@@ -51,24 +51,24 @@ const postTransaction = async params => request(wsRpcUrl, 'post.transactions', p
 
 describe('Method post.transactions.dryrun', () => {
 	it('Returns proper response (Fail) when transaction string has less than required fee', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_FAIL });
+		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_PENDING });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionFailResponseSchema);
+		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('Returns proper response (Fail) when transaction object has less than required fee', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_FAIL });
+		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionFailResponseSchema);
+		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 

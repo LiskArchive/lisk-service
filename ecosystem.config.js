@@ -87,9 +87,9 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_APP_WS: 'ws://localhost:5001',
 				GEOIP_JSON: 'https://geoip.lisk.com/json',
-				USE_LISK_IPC_CLIENT: 'true', // TODO: Revert this change once issue https://github.com/LiskHQ/lisk-sdk/issues/7141 is fixed
-				LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
-				ENABLE_TESTING_MODE: 'false',
+				USE_LISK_IPC_CLIENT: 'true',
+				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				// ENABLE_TESTING_MODE: 'false',
 			},
 		},
 		{
@@ -193,23 +193,6 @@ module.exports = {
 				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
 				SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''
-			},
-		},
-		{
-			name: 'lisk-service-newsfeed',
-			script: 'app.js',
-			cwd: './services/newsfeed',
-			pid_file: './pids/service_newsfeed.pid',
-			out_file: './logs/service_newsfeed.log',
-			error_file: './logs/service_newsfeed.err',
-			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
-			watch: false,
-			kill_timeout: 10000,
-			max_memory_restart: '300M',
-			autorestart: true,
-			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
 		},
 		{

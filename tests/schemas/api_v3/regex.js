@@ -21,7 +21,6 @@ const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const EVENT_NAME = /^[\w!@$&. ]+$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
-const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const NONCE = /^[0-9]+$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/;
 const FILE_NAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
@@ -54,7 +53,6 @@ module.exports = {
 	SEMVER,
 	EVENT_NAME,
 	NAME,
-	NEWSFEED_SOURCE,
 	NONCE,
 	INTERVAL,
 	FILE_NAME,

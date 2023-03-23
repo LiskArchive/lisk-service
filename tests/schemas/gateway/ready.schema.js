@@ -20,7 +20,6 @@ const services = {
 	connector: Joi.boolean().required(),
 	fees: Joi.boolean().optional(),
 	market: Joi.boolean().optional(),
-	newsfeed: Joi.boolean().optional(),
 	'app-registry': Joi.boolean().optional(),
 	statistics: Joi.boolean().optional(),
 };

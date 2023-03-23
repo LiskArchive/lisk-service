@@ -16,7 +16,7 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const lockedAmount = {
+const lockedBalance = {
 	module: Joi.string().pattern(regex.MODULE).required(),
 	amount: Joi.string().required(),
 };
@@ -31,7 +31,7 @@ const tokensMetaSchema = {
 const tokensSchema = {
 	tokenID: Joi.string().required(),
 	availableBalance: Joi.string().required(),
-	lockedAmount: Joi.array().items(lockedAmount).required(),
+	lockedBalances: Joi.array().items(lockedBalance).required(),
 };
 
 const supportedToken = {

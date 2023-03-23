@@ -1,0 +1,360 @@
+config:
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v3"
+  socketio:
+    transports: ["websocket"]
+  phases:
+    - duration: 15
+      arrivalRate: 50
+scenarios:
+  # Blocks
+  - name: "Blocks"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks", "params": {"limit": 10}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 10
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks", "params": {"limit": 100}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
+  - name: "Blocks assets"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks.assets", "params": {"limit": 10}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 10
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks.assets", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks.assets", "params": {"limit": 100}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
+
+  # Transactions
+  - name: "Transactions"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.transactions", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+  - name: "Transactions statistics"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.transactions.statistics", "params": {interval:'day'}}
+  - name: "Transactions statistics"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.transactions.statistics", "params": {interval:'month'}}
+
+  # Validator
+  - name: "Validator information by address"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.validator", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  # Auth
+  - name: "Auth information by address"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.auth", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  # Token
+  - name: "Tokens information"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.tokens", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  - name: "Check existence of an account for the specified token"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.token.account.exists", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht", "tokenID": "0400000000000000"}}
+
+  - name: "Token constants"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.token.constants"}
+
+  - name: "Tokens summary"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.tokens.summary"}
+
+  # Fees
+  - name: "Fee estimates"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.fees"}
+
+  # Interoperability
+  - name: "Blockchain applications list"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps"}
+
+  - name: "Blockchain applications statistics"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps.statistics"}
+
+  - name: "Blockchain applications for which the off-chain metadata is available"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps.meta.list"}
+
+  - name: "Blockchain applications off-chain metadata"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps.meta"}
+
+  - name: "Blockchain applications off-chain metadata for tokens"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps.meta.tokens"}
+    
+  # Events
+  - name: "Events"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.events", "params": {"limit": 10}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 10
+      - emit:
+          channel: "request"
+          data: {"method": "get.events", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+      - emit:
+          channel: "request"
+          data: {"method": "get.events", "params": {"limit": 100}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
+
+  # PoS
+  - name: "PoS module constants"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.constants"}
+
+  - name: "Validator claimable rewards"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.rewards.claimable", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  - name: "Validator locked rewards"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.rewards.locked", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  - name: "Stakers"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.stakers", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  # - name: "Stakes"
+  #   engine: "socketio"
+  #   flow:
+  #     - emit:
+  #         channel: "request"
+  #         data: {"method": "get.pos.stakes", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  - name: "Unlocks"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.unlocks", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+
+  - name: "Validators"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.validators", "params": {"limit": 10}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 10
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.validators", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.validators", "params": {"limit": 101}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 101
+
+  # Reward
+  - name: "Reward module constants"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.reward.constants"}
+  
+  - name: "Default block generation reward at a specified height"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.reward.default", "params": {"height": 10}}
+
+  - name: "Inflation rate"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.reward.inflation", "params": {"height": 10}}
+
+  # Legacy
+  - name: "Legacy account information"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.legacy", "params": {"publicKey": "1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc"}}
+
+  # Network
+  - name: "Network status"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.network.status"}
+  
+  - name: "Network statistics"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.network.statistics"}
+
+  # Peers
+  - name: "Peers"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.peers"}
+
+  # Generators
+  - name: "Generators"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.generators", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+      - emit:
+          channel: "request"
+          data: {"method": "get.generators", "params": {"limit": 103}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 103
+
+  # Schemas
+  - name: "Schemas"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.schemas"}
+
+  # Index Status
+  - name: "Indexing status"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.index.status"}
+
+  # Market
+  - name: "Market prices"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.market.prices"}

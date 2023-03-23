@@ -21,6 +21,7 @@ const {
 
 const {
 	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -42,9 +43,11 @@ describe('get.auth', () => {
 
 	it('returns auth account info', async () => {
 		const response = await getAuthAccountInfo({ address: refTransaction.sender.address });
-		expect(response).toMap(goodRequestSchemaForAuth);
-		expect(response.data).toMap(authAccountInfoSchema);
-		expect(response.meta).toMap(authAccountMetaSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchemaForAuth);
+		expect(result.data).toMap(authAccountInfoSchema);
+		expect(result.meta).toMap(authAccountMetaSchema);
 	});
 
 	it('invalid address -> invalid params', async () => {

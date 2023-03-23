@@ -20,9 +20,9 @@ const { api } = require('../../../helpers/api');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_INVALID,
-	TRANSACTION_OBJECT_FAIL,
+	TRANSACTION_OBJECT_PENDING,
 	TRANSACTION_ENCODED_VALID,
-	TRANSACTION_ENCODED_FAIL,
+	TRANSACTION_ENCODED_PENDING,
 	TRANSACTION_ENCODED_INVALID,
 } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
@@ -36,7 +36,7 @@ const {
 const {
 	dryrunTransactionSuccessResponseSchema,
 	dryrunTransactionInvalidResponseSchema,
-	dryrunTransactionFailResponseSchema,
+	dryrunTransactionPendingResponseSchema,
 	metaSchema,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
@@ -47,16 +47,16 @@ const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
 	it('Returns proper response (Fail) when transaction object has less than required fee', async () => {
-		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_FAIL });
+		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_PENDING });
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(dryrunTransactionFailResponseSchema);
+		expect(response.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('Returns proper response (Fail) when transaction string has less than required fee', async () => {
-		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_FAIL });
+		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_PENDING });
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(dryrunTransactionFailResponseSchema);
+		expect(response.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(response.meta).toMap(metaSchema);
 	});
 
