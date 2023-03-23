@@ -1,10 +1,7 @@
+// TODO: Verify and remove/update the file
 /api/ready
 /api/status
-/api/exchanges/getCandles?e=bittrex
 /api/v1/market/prices?
-/api/getPriceTicker
-/api/newsfeed?
-/api/newsfeed
 /api/v1/market/prices
 /api/exchanges/getCandles?e=bittrex&d=hour
 /api/v1/blocks?limit=1&address=5fc34084e977b3d2ec5c5451749c013f8a58697c7e4e5228aec3477125c4aeff
