@@ -215,7 +215,7 @@ const indexAllBlockchainAppsMeta = async () => {
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
-							const [filename] = file.split('/').slice(-1);
+							const filename = file.split('/').pop();
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
 								const connection = await getDbConnection(MYSQL_ENDPOINT);
