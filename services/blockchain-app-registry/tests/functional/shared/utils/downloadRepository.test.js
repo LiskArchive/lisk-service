@@ -21,7 +21,7 @@ const {
 	getRepoDownloadURL,
 	getLatestCommitHash,
 	getCommitInfo,
-	getFileDownloadUrl,
+	getFileDownloadURL,
 	getDiff,
 	buildEventPayload,
 	syncWithRemoteRepo,
@@ -68,24 +68,24 @@ describe('Test getRepoDownloadURL method', () => {
 	});
 });
 
-describe('Test getFileDownloadUrl method', () => {
+describe('Test getFileDownloadURL method', () => {
 	it('should return correct file download info when file is valid', async () => {
 		/* eslint-disable-next-line no-useless-escape */
 		const fileUrlRegex = new RegExp(`^https:\/\/\\w*.github.com\/repos\/LiskHQ\/${config.gitHub.appRegistryRepoName}\/contents\/devnet\/Enevti\/nativetokens.json\\?owner=LiskHQ&repo=${config.gitHub.appRegistryRepoName}&ref=${config.gitHub.branch}$`);
-		const response = await getFileDownloadUrl('devnet/Enevti/app.json');
+		const response = await getFileDownloadURL('devnet/Enevti/app.json');
 		expect(response).toMatch(fileUrlRegex);
 	});
 
 	it('should throw error when file is invalid', async () => {
-		expect(async () => getFileDownloadUrl('devnet/Enevti/invalid_file')).rejects.toThrow();
+		expect(async () => getFileDownloadURL('devnet/Enevti/invalid_file')).rejects.toThrow();
 	});
 
 	it('should throw error when file is undefined', async () => {
-		expect(async () => getFileDownloadUrl(undefined)).rejects.toThrow();
+		expect(async () => getFileDownloadURL(undefined)).rejects.toThrow();
 	});
 
 	it('should throw error when file is null', async () => {
-		expect(async () => getFileDownloadUrl(null)).rejects.toThrow();
+		expect(async () => getFileDownloadURL(null)).rejects.toThrow();
 	});
 });
 

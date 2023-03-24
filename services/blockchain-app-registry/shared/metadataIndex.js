@@ -192,7 +192,7 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 		await deleteTokensMeta(tokenMeta, dbTrx);
 		logger.debug(`Deleted tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished Deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
+	logger.info(`Finished deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 };
 
 const indexAllBlockchainAppsMeta = async () => {

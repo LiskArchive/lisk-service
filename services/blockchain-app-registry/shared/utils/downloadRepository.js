@@ -111,7 +111,7 @@ const getRepoDownloadURL = async () => {
 	}
 };
 
-const getFileDownloadUrl = async (file) => {
+const getFileDownloadURL = async (file) => {
 	try {
 		const result = await octokit.request(
 			`GET /repos/${owner}/${repo}/contents/${file}`,
@@ -317,7 +317,7 @@ const syncWithRemoteRepo = async () => {
 							const dirPath = path.dirname(tempFilePath);
 							await mkdir(dirPath, { recursive: true });
 
-							const fileDownloadUrl = await getFileDownloadUrl(remoteFilePath);
+							const fileDownloadUrl = await getFileDownloadURL(remoteFilePath);
 							await downloadFile(fileDownloadUrl, tempFilePath);
 							logger.debug(`Successfully downloaded: ${tempFilePath}.`);
 
@@ -418,7 +418,7 @@ module.exports = {
 	getCommitInfo,
 	getUniqueNetworkAppDirPairs,
 	filterMetaConfigFilesByNetwork,
-	getFileDownloadUrl,
+	getFileDownloadURL,
 	getDiff,
 	buildEventPayload,
 };
