@@ -14,1085 +14,1045 @@
  *
  */
 const createApiDocsExpectedResponse = {
-	'/blocks/assets': {
-		get: {
-			tags: [
-				'Blocks',
-			],
-			summary: 'Requests block assets data.',
-			description: 'Returns block assets data. Assets are always returned empty for the genesis height.\n RPC => get.blocks.assets',
-			parameters: [
-				{
-					$ref: '#/parameters/blockID',
-				},
-				{
-					$ref: '#/parameters/height',
-				},
-				{
-					$ref: '#/parameters/timestamp',
-				},
-				{
-					$ref: '#/parameters/module',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
-					default: 'height:desc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of block assets.',
-					schema: {
-						$ref: '#/definitions/BlocksAssetsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/blockchain/apps': {
-		get: {
-			tags: [
-				'Interoperability',
-			],
-			summary: 'Requests list of blockchain applications',
-			description: 'Returns a list of blockchain applications\n RPC => get.blockchain.apps',
-			parameters: [
-				{
-					$ref: '#/parameters/chainIDCSV',
-				},
-				{
-					$ref: '#/parameters/name',
-				},
-				{
-					$ref: '#/parameters/blockchainAppStatus',
-				},
-				{
-					$ref: '#/parameters/search',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of blockchain applications in the Lisk ecosystem',
-					schema: {
-						$ref: '#/definitions/BlockchainAppsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/blockchain/apps/meta/list': {
-		get: {
-			tags: [
-				'Interoperability',
-			],
-			summary: 'Requests list of blockchain applications for which the off-chain metadata is available',
-			description: 'Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list',
-			parameters: [
-				{
-					$ref: '#/parameters/chainName',
-				},
-				{
-					$ref: '#/parameters/network',
-				},
-				{
-					$ref: '#/parameters/search',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'chainName:asc',
-						'chainName:desc',
-					],
-					default: 'chainName:asc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of blockchain applications for which the off-chain metadata is available',
-					schema: {
-						$ref: '#/definitions/BlockchainAppsMetaListWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/blockchain/apps/meta': {
-		get: {
-			tags: [
-				'Interoperability',
-			],
-			summary: 'Requests blockchain applications off-chain metadata',
-			description: 'Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta',
-			parameters: [
-				{
-					$ref: '#/parameters/chainName',
-				},
-				{
-					$ref: '#/parameters/chainIDCSV',
-				},
-				{
-					$ref: '#/parameters/isDefault',
-				},
-				{
-					$ref: '#/parameters/network',
-				},
-				{
-					$ref: '#/parameters/search',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'chainName:asc',
-						'chainName:desc',
-						'chainID:asc',
-						'chainID:desc',
-					],
-					default: 'chainName:asc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of blockchain applications off-chain metadata',
-					schema: {
-						$ref: '#/definitions/BlockchainAppsMetadataWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/blockchain/apps/statistics': {
-		get: {
-			tags: [
-				'Interoperability',
-			],
-			summary: 'Requests blockchain application statistics',
-			description: 'Returns blockchain applications statistics\n RPC => get.blockchain.apps.statistics',
-			responses: {
-				200: {
-					description: 'Returns statistics for the blockchain applications in the Lisk ecosystem',
-					schema: {
-						$ref: '#/definitions/blockchainAppsStatsEnvelope',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/blockchain/apps/meta/tokens': {
-		get: {
-			tags: [
-				'Interoperability',
-			],
-			summary: 'Requests blockchain applications off-chain metadata for tokens',
-			description: 'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
-			parameters: [
-				{
-					$ref: '#/parameters/chainName',
-				},
-				{
-					$ref: '#/parameters/chainID',
-				},
-				{
-					$ref: '#/parameters/tokenName',
-				},
-				{
-					$ref: '#/parameters/tokenIDCSV',
-				},
-				{
-					$ref: '#/parameters/network',
-				},
-				{
-					$ref: '#/parameters/search',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'chainName:asc',
-						'chainName:desc',
-					],
-					default: 'chainName:asc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of blockchain applications off-chain metadata for tokens',
-					schema: {
-						$ref: '#/definitions/BlockchainAppsTokenMetadataWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/blocks': {
-		get: {
-			tags: [
-				'Blocks',
-			],
-			summary: 'Requests blocks data',
-			description: 'Returns block data\n RPC => get.blocks',
-			parameters: [
-				{
-					$ref: '#/parameters/blockID',
-				},
-				{
-					$ref: '#/parameters/height',
-				},
-				{
-					$ref: '#/parameters/timestamp',
-				},
-				{
-					$ref: '#/parameters/generatorAddress',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
-					default: 'height:desc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of blocks',
-					schema: {
-						$ref: '#/definitions/BlocksWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/events': {
-		get: {
-			tags: [
-				'Events',
-			],
-			summary: 'Requests events data',
-			description: 'Returns events data\n RPC => get.events',
-			parameters: [
-				{
-					$ref: '#/parameters/transactionID',
-				},
-				{
-					$ref: '#/parameters/senderAddress',
-				},
-				{
-					$ref: '#/parameters/topic',
-				},
-				{
-					$ref: '#/parameters/blockID',
-				},
-				{
-					$ref: '#/parameters/height',
-				},
-				{
-					$ref: '#/parameters/timestamp',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
-					default: 'timestamp:desc',
-				},
-				{
-					name: 'order',
-					in: 'query',
-					description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
-					required: false,
-					type: 'string',
-					enum: [
-						'index:asc',
-						'index:desc',
-					],
-					default: 'index:asc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of events',
-					schema: {
-						$ref: '#/definitions/eventsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/fees': {
-		get: {
-			tags: [
-				'Fee',
-			],
-			summary: 'Requests fee estimates',
-			description: 'Returns fee estimates\n RPC => get.fees',
-			responses: {
-				200: {
-					description: 'Returns the fee estimate per byte used for transaction fee calculation',
-					schema: {
-						$ref: '#/definitions/FeeEstimateEnvelope',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/generators': {
-		get: {
-			tags: [
-				'Generators',
-			],
-			summary: 'Requests generators list',
-			description: 'Returns generators list\n RPC => get.generators',
-			parameters: [
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of generators',
-					schema: {
-						$ref: '#/definitions/generatorsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/index/status': {
-		get: {
-			tags: [
-				'Index Status',
-			],
-			summary: 'Requests current indexing status.',
-			description: 'Returns current indexing status.\n RPC => get.index.status',
-			responses: {
-				200: {
-					description: 'Returns the current index status information.',
-					schema: {
-						$ref: '#/definitions/IndexStatus',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/invoke': {
-		post: {
-			tags: [
-				'Proxy',
-			],
-			summary: 'Proxy request to directly invoke application endpoint',
-			description: 'Returns endpoint response from the blockchain application in its original form\n RPC => post.invoke',
-			parameters: [
-				{
-					$ref: '#/parameters/invokeParams',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns endpoint response from the blockchain application in its original form',
-					schema: {
-						$ref: '#/definitions/invokeWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-			},
-		},
-	},
-	'/market/prices': {
-		get: {
-			tags: [
-				'Market',
-			],
-			parameters: [
-
-			],
-			summary: 'Requests market prices',
-			description: 'Returns market prices\n RPC => get.market.prices',
-			responses: {
-				200: {
-					description: 'Returns a list of market prices by currency pairs',
-					schema: {
-						$ref: '#/definitions/MarketPricesWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/network/statistics': {
-		get: {
-			tags: [
-				'Network',
-			],
-			summary: 'Requests network statistics',
-			description: 'Returns network statistics data\n RPC => get.network.statistics',
-			responses: {
-				200: {
-					description: 'Returns the network statistics information',
-					schema: {
-						$ref: '#/definitions/NetworkStatistics',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/network/status': {
-		get: {
-			tags: [
-				'Network',
-			],
-			summary: 'Requests network status',
-			description: 'Returns network status\n RPC => get.network.status',
-			responses: {
-				200: {
-					description: 'Returns the network status information',
-					schema: {
-						$ref: '#/definitions/NetworkStatus',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/newsfeed': {
-		get: {
-			tags: [
-				'Newsfeed',
-			],
-			parameters: [
-				{
-					$ref: '#/parameters/source',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-			],
-			summary: 'Requests Lisk news/blog posts',
-			description: 'Returns Lisk news/blog posts\n RPC => get.newsfeed',
-			responses: {
-				200: {
-					description: 'Returns a list of newsfeed articles',
-					schema: {
-						$ref: '#/definitions/NewsfeedWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/peers': {
-		get: {
-			tags: [
-				'Peers',
-			],
-			summary: 'Requests peers data',
-			description: 'Returns peers data\n RPC => get.peers',
-			parameters: [
-				{
-					$ref: '#/parameters/ip',
-				},
-				{
-					$ref: '#/parameters/networkVersion',
-				},
-				{
-					$ref: '#/parameters/state',
-				},
-				{
-					$ref: '#/parameters/height',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'networkVersion:asc',
-						'networkVersion:desc',
-					],
-					default: 'height:desc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of peer nodes in the network',
-					schema: {
-						$ref: '#/definitions/PeersWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/transactions': {
-		get: {
-			tags: [
-				'Transactions',
-			],
-			summary: 'Requests transactions data',
-			description: 'Returns transactions data\n RPC => get.transactions',
-			parameters: [
-				{
-					$ref: '#/parameters/transactionID',
-				},
-				{
-					$ref: '#/parameters/moduleCommand',
-				},
-				{
-					$ref: '#/parameters/senderAddress',
-				},
-				{
-					$ref: '#/parameters/address',
-				},
-				{
-					$ref: '#/parameters/recipientAddress',
-				},
-				{
-					$ref: '#/parameters/blockID',
-				},
-				{
-					$ref: '#/parameters/height',
-				},
-				{
-					$ref: '#/parameters/timestamp',
-				},
-				{
-					$ref: '#/parameters/executionStatus',
-				},
-				{
-					$ref: '#/parameters/nonce',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					name: 'sort',
-					in: 'query',
-					description: 'Fields to sort results by.',
-					required: false,
-					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
-					default: 'timestamp:desc',
-				},
-				{
-					name: 'order',
-					in: 'query',
-					description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
-					required: false,
-					type: 'string',
-					enum: [
-						'index:asc',
-						'index:desc',
-					],
-					default: 'index:asc',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of transactions',
-					schema: {
-						$ref: '#/definitions/TransactionsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-		post: {
-			tags: [
-				'Transactions',
-			],
-			summary: 'Post transactions',
-			description: 'Post transactions and return transactionID\n RPC => post.transactions',
-			parameters: [
-				{
-					$ref: '#/parameters/transaction',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Broadcast transaction',
-					schema: {
-						$ref: '#/definitions/postTransactionWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequestEnvelope',
-					},
-				},
-				500: {
-					description: 'Internal server error',
-					schema: {
-						$ref: '#/definitions/serverErrorEnvelope',
-					},
-				},
-			},
-		},
-	},
-	'/schemas': {
-		get: {
-			tags: [
-				'Schemas',
-			],
-			summary: 'Requests schemas.',
-			description: 'Returns schemas.\n RPC => get.schemas',
-			responses: {
-				200: {
-					description: 'Returns a list of schemas.',
-					schema: {
-						$ref: '#/definitions/SchemaWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/transactions/dryrun': {
-		post: {
-			tags: [
-				'Transactions',
-			],
-			summary: 'Dry run transactions.',
-			description: 'Dry run transactions.\n RPC => post.transactions.dryrun',
-			parameters: [
-				{
-					$ref: '#/parameters/dryrunTransaction',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Dry run transactions',
-					schema: {
-						$ref: '#/definitions/dryTransactionWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				500: {
-					description: 'Internal server error',
-					schema: {
-						$ref: '#/definitions/serverErrorEnvelope',
-					},
-				},
-			},
-		},
-	},
-	'/transactions/statistics': {
-		get: {
-			tags: [
-				'Transactions',
-			],
-			summary: 'Requests transaction statistics',
-			description: 'Returns transaction statistics\n RPC => get.transactions.statistics',
-			parameters: [
-				{
-					name: 'interval',
-					in: 'query',
-					description: 'interval to query statistics',
-					required: true,
-					type: 'string',
-					enum: [
-						'day',
-						'month',
-					],
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a list of transactions statistics by date or month',
-					schema: {
-						$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/auth': {
-		get: {
-			tags: [
-				'Auth',
-			],
-			summary: 'Requests auth details by address',
-			description: 'Returns auth details by address\n RPC => get.auth',
-			parameters: [
-				{
-					$ref: '#/parameters/address',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Auth details',
-					schema: {
-						$ref: '#/definitions/authWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/validator': {
-		get: {
-			tags: [
-				'Validator',
-			],
-			summary: 'Requests validator information',
-			description: 'Returns validator information\n RPC => get.validator',
-			parameters: [
-				{
-					$ref: '#/parameters/address',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns validator information by address',
-					schema: {
-						$ref: '#/definitions/validatorWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
-	'/validator/validateBLSKey': {
-		post: {
-			tags: [
-				'Validator',
-			],
-			summary: 'Validates a BLS key against its corresponding Proof of Possession.',
-			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validateBLSKey',
-			parameters: [
-				{
-					$ref: '#/parameters/validateBLSKeyParams',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns a boolean representing the validity of the supplied BLS key and Proof of Possession.',
-					schema: {
-						$ref: '#/definitions/blsKeyValidationWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
-			},
-		},
-	},
+    "/blocks/assets":{
+        "get":{
+            "tags":[
+                "Blocks"
+            ],
+            "summary":"Requests block assets data.",
+            "description":"Returns block assets data. Assets are always returned empty for the genesis height.\n RPC => get.blocks.assets",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/blockID"
+                },
+                {
+                    "$ref":"#/parameters/height"
+                },
+                {
+                    "$ref":"#/parameters/timestamp"
+                },
+                {
+                    "$ref":"#/parameters/module"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "height:asc",
+                        "height:desc",
+                        "timestamp:asc",
+                        "timestamp:desc"
+                    ],
+                    "default":"height:desc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of block assets.",
+                    "schema":{
+                        "$ref":"#/definitions/BlocksAssetsWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/blockchain/apps":{
+        "get":{
+            "tags":[
+                "Interoperability"
+            ],
+            "summary":"Requests list of blockchain applications",
+            "description":"Returns a list of blockchain applications\n RPC => get.blockchain.apps",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/chainIDCSV"
+                },
+                {
+                    "$ref":"#/parameters/name"
+                },
+                {
+                    "$ref":"#/parameters/blockchainAppStatus"
+                },
+                {
+                    "$ref":"#/parameters/search"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of blockchain applications in the Lisk ecosystem",
+                    "schema":{
+                        "$ref":"#/definitions/BlockchainAppsWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/blockchain/apps/meta/list":{
+        "get":{
+            "tags":[
+                "Interoperability"
+            ],
+            "summary":"Requests list of blockchain applications for which the off-chain metadata is available",
+            "description":"Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/chainName"
+                },
+                {
+                    "$ref":"#/parameters/network"
+                },
+                {
+                    "$ref":"#/parameters/search"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "chainName:asc",
+                        "chainName:desc"
+                    ],
+                    "default":"chainName:asc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of blockchain applications for which the off-chain metadata is available",
+                    "schema":{
+                        "$ref":"#/definitions/BlockchainAppsMetaListWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/blockchain/apps/meta":{
+        "get":{
+            "tags":[
+                "Interoperability"
+            ],
+            "summary":"Requests blockchain applications off-chain metadata",
+            "description":"Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/chainName"
+                },
+                {
+                    "$ref":"#/parameters/chainIDCSV"
+                },
+                {
+                    "$ref":"#/parameters/isDefault"
+                },
+                {
+                    "$ref":"#/parameters/network"
+                },
+                {
+                    "$ref":"#/parameters/search"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "chainName:asc",
+                        "chainName:desc",
+                        "chainID:asc",
+                        "chainID:desc"
+                    ],
+                    "default":"chainName:asc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of blockchain applications off-chain metadata",
+                    "schema":{
+                        "$ref":"#/definitions/BlockchainAppsMetadataWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/blockchain/apps/statistics":{
+        "get":{
+            "tags":[
+                "Interoperability"
+            ],
+            "summary":"Requests blockchain application statistics",
+            "description":"Returns blockchain applications statistics\n RPC => get.blockchain.apps.statistics",
+            "responses":{
+                "200":{
+                    "description":"Returns statistics for the blockchain applications in the Lisk ecosystem",
+                    "schema":{
+                        "$ref":"#/definitions/blockchainAppsStatsEnvelope"
+                    }
+                },
+                "404":{
+                    "$ref":"#/responses/notFound"
+                }
+            }
+        }
+    },
+    "/blockchain/apps/meta/tokens":{
+        "get":{
+            "tags":[
+                "Interoperability"
+            ],
+            "summary":"Requests blockchain applications off-chain metadata for tokens",
+            "description":"Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/chainName"
+                },
+                {
+                    "$ref":"#/parameters/chainID"
+                },
+                {
+                    "$ref":"#/parameters/tokenName"
+                },
+                {
+                    "$ref":"#/parameters/tokenIDCSV"
+                },
+                {
+                    "$ref":"#/parameters/network"
+                },
+                {
+                    "$ref":"#/parameters/search"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "chainName:asc",
+                        "chainName:desc"
+                    ],
+                    "default":"chainName:asc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of blockchain applications off-chain metadata for tokens",
+                    "schema":{
+                        "$ref":"#/definitions/BlockchainAppsTokenMetadataWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/blocks":{
+        "get":{
+            "tags":[
+                "Blocks"
+            ],
+            "summary":"Requests blocks data",
+            "description":"Returns block data\n RPC => get.blocks",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/blockID"
+                },
+                {
+                    "$ref":"#/parameters/height"
+                },
+                {
+                    "$ref":"#/parameters/timestamp"
+                },
+                {
+                    "$ref":"#/parameters/generatorAddress"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "height:asc",
+                        "height:desc",
+                        "timestamp:asc",
+                        "timestamp:desc"
+                    ],
+                    "default":"height:desc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of blocks",
+                    "schema":{
+                        "$ref":"#/definitions/BlocksWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/events":{
+        "get":{
+            "tags":[
+                "Events"
+            ],
+            "summary":"Requests events data",
+            "description":"Returns events data\n RPC => get.events",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/transactionID"
+                },
+                {
+                    "$ref":"#/parameters/senderAddress"
+                },
+                {
+                    "$ref":"#/parameters/topic"
+                },
+                {
+                    "$ref":"#/parameters/blockID"
+                },
+                {
+                    "$ref":"#/parameters/height"
+                },
+                {
+                    "$ref":"#/parameters/timestamp"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "height:asc",
+                        "height:desc",
+                        "timestamp:asc",
+                        "timestamp:desc"
+                    ],
+                    "default":"timestamp:desc"
+                },
+                {
+                    "name":"order",
+                    "in":"query",
+                    "description":"Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "index:asc",
+                        "index:desc"
+                    ],
+                    "default":"index:asc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of events",
+                    "schema":{
+                        "$ref":"#/definitions/eventsWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/fees":{
+        "get":{
+            "tags":[
+                "Fee"
+            ],
+            "summary":"Requests fee estimates",
+            "description":"Returns fee estimates\n RPC => get.fees",
+            "responses":{
+                "200":{
+                    "description":"Returns the fee estimate per byte used for transaction fee calculation",
+                    "schema":{
+                        "$ref":"#/definitions/FeeEstimateEnvelope"
+                    }
+                },
+                "404":{
+                    "$ref":"#/responses/notFound"
+                }
+            }
+        }
+    },
+    "/generators":{
+        "get":{
+            "tags":[
+                "Generators"
+            ],
+            "summary":"Requests generators list",
+            "description":"Returns generators list\n RPC => get.generators",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of generators",
+                    "schema":{
+                        "$ref":"#/definitions/generatorsWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/index/status":{
+        "get":{
+            "tags":[
+                "Index Status"
+            ],
+            "summary":"Requests current indexing status.",
+            "description":"Returns current indexing status.\n RPC => get.index.status",
+            "responses":{
+                "200":{
+                    "description":"Returns the current index status information.",
+                    "schema":{
+                        "$ref":"#/definitions/IndexStatus"
+                    }
+                },
+                "404":{
+                    "$ref":"#/responses/notFound"
+                }
+            }
+        }
+    },
+    "/invoke":{
+        "post":{
+            "tags":[
+                "Proxy"
+            ],
+            "summary":"Proxy request to directly invoke application endpoint",
+            "description":"Returns endpoint response from the blockchain application in its original form\n RPC => post.invoke",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/invokeParams"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns endpoint response from the blockchain application in its original form",
+                    "schema":{
+                        "$ref":"#/definitions/invokeWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                }
+            }
+        }
+    },
+    "/market/prices":{
+        "get":{
+            "tags":[
+                "Market"
+            ],
+            "parameters":[
+                
+            ],
+            "summary":"Requests market prices",
+            "description":"Returns market prices\n RPC => get.market.prices",
+            "responses":{
+                "200":{
+                    "description":"Returns a list of market prices by currency pairs",
+                    "schema":{
+                        "$ref":"#/definitions/MarketPricesWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/network/statistics":{
+        "get":{
+            "tags":[
+                "Network"
+            ],
+            "summary":"Requests network statistics",
+            "description":"Returns network statistics data\n RPC => get.network.statistics",
+            "responses":{
+                "200":{
+                    "description":"Returns the network statistics information",
+                    "schema":{
+                        "$ref":"#/definitions/NetworkStatistics"
+                    }
+                },
+                "404":{
+                    "$ref":"#/responses/notFound"
+                }
+            }
+        }
+    },
+    "/network/status":{
+        "get":{
+            "tags":[
+                "Network"
+            ],
+            "summary":"Requests network status",
+            "description":"Returns network status\n RPC => get.network.status",
+            "responses":{
+                "200":{
+                    "description":"Returns the network status information",
+                    "schema":{
+                        "$ref":"#/definitions/NetworkStatus"
+                    }
+                },
+                "404":{
+                    "$ref":"#/responses/notFound"
+                }
+            }
+        }
+    },
+    "/peers":{
+        "get":{
+            "tags":[
+                "Peers"
+            ],
+            "summary":"Requests peers data",
+            "description":"Returns peers data\n RPC => get.peers",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/ip"
+                },
+                {
+                    "$ref":"#/parameters/networkVersion"
+                },
+                {
+                    "$ref":"#/parameters/state"
+                },
+                {
+                    "$ref":"#/parameters/height"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "height:asc",
+                        "height:desc",
+                        "networkVersion:asc",
+                        "networkVersion:desc"
+                    ],
+                    "default":"height:desc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of peer nodes in the network",
+                    "schema":{
+                        "$ref":"#/definitions/PeersWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/transactions":{
+        "get":{
+            "tags":[
+                "Transactions"
+            ],
+            "summary":"Requests transactions data",
+            "description":"Returns transactions data\n RPC => get.transactions",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/transactionID"
+                },
+                {
+                    "$ref":"#/parameters/moduleCommand"
+                },
+                {
+                    "$ref":"#/parameters/senderAddress"
+                },
+                {
+                    "$ref":"#/parameters/address"
+                },
+                {
+                    "$ref":"#/parameters/recipientAddress"
+                },
+                {
+                    "$ref":"#/parameters/blockID"
+                },
+                {
+                    "$ref":"#/parameters/height"
+                },
+                {
+                    "$ref":"#/parameters/timestamp"
+                },
+                {
+                    "$ref":"#/parameters/executionStatus"
+                },
+                {
+                    "$ref":"#/parameters/nonce"
+                },
+                {
+                    "$ref":"#/parameters/limit"
+                },
+                {
+                    "$ref":"#/parameters/offset"
+                },
+                {
+                    "name":"sort",
+                    "in":"query",
+                    "description":"Fields to sort results by.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "height:asc",
+                        "height:desc",
+                        "timestamp:asc",
+                        "timestamp:desc"
+                    ],
+                    "default":"timestamp:desc"
+                },
+                {
+                    "name":"order",
+                    "in":"query",
+                    "description":"Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.",
+                    "required":false,
+                    "type":"string",
+                    "enum":[
+                        "index:asc",
+                        "index:desc"
+                    ],
+                    "default":"index:asc"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of transactions",
+                    "schema":{
+                        "$ref":"#/definitions/TransactionsWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        },
+        "post":{
+            "tags":[
+                "Transactions"
+            ],
+            "summary":"Post transactions",
+            "description":"Post transactions and return transactionID\n RPC => post.transactions",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/transaction"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Broadcast transaction",
+                    "schema":{
+                        "$ref":"#/definitions/postTransactionWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequestEnvelope"
+                    }
+                },
+                "500":{
+                    "description":"Internal server error",
+                    "schema":{
+                        "$ref":"#/definitions/serverErrorEnvelope"
+                    }
+                }
+            }
+        }
+    },
+    "/schemas":{
+        "get":{
+            "tags":[
+                "Schemas"
+            ],
+            "summary":"Requests schemas.",
+            "description":"Returns schemas.\n RPC => get.schemas",
+            "responses":{
+                "200":{
+                    "description":"Returns a list of schemas.",
+                    "schema":{
+                        "$ref":"#/definitions/SchemaWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/transactions/dryrun":{
+        "post":{
+            "tags":[
+                "Transactions"
+            ],
+            "summary":"Dry run transactions.",
+            "description":"Dry run transactions.\n RPC => post.transactions.dryrun",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/dryrunTransaction"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Dry run transactions. 'errorMessage' is available only when 'result: -1'.",
+                    "schema":{
+                        "$ref":"#/definitions/dryTransactionWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "500":{
+                    "description":"Internal server error",
+                    "schema":{
+                        "$ref":"#/definitions/serverErrorEnvelope"
+                    }
+                }
+            }
+        }
+    },
+    "/transactions/statistics":{
+        "get":{
+            "tags":[
+                "Transactions"
+            ],
+            "summary":"Requests transaction statistics",
+            "description":"Returns transaction statistics\n RPC => get.transactions.statistics",
+            "parameters":[
+                {
+                    "name":"interval",
+                    "in":"query",
+                    "description":"interval to query statistics",
+                    "required":true,
+                    "type":"string",
+                    "enum":[
+                        "day",
+                        "month"
+                    ]
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a list of transactions statistics by date or month",
+                    "schema":{
+                        "$ref":"#/definitions/TransactionsStatisticsWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/auth":{
+        "get":{
+            "tags":[
+                "Auth"
+            ],
+            "summary":"Requests auth details by address",
+            "description":"Returns auth details by address\n RPC => get.auth",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/address"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Auth details",
+                    "schema":{
+                        "$ref":"#/definitions/authWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/validator":{
+        "get":{
+            "tags":[
+                "Validator"
+            ],
+            "summary":"Requests validator information",
+            "description":"Returns validator information\n RPC => get.validator",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/address"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns validator information by address",
+                    "schema":{
+                        "$ref":"#/definitions/validatorWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    },
+    "/validator/validateBLSKey":{
+        "post":{
+            "tags":[
+                "Validator"
+            ],
+            "summary":"Validates a BLS key against its corresponding Proof of Possession.",
+            "description":"Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validateBLSKey",
+            "parameters":[
+                {
+                    "$ref":"#/parameters/validateBLSKeyParams"
+                }
+            ],
+            "responses":{
+                "200":{
+                    "description":"Returns a boolean representing the validity of the supplied BLS key and Proof of Possession.",
+                    "schema":{
+                        "$ref":"#/definitions/blsKeyValidationWithEnvelope"
+                    }
+                },
+                "400":{
+                    "description":"Bad request",
+                    "schema":{
+                        "$ref":"#/definitions/badRequest"
+                    }
+                },
+                "404":{
+                    "description":"Not found",
+                    "schema":{
+                        "$ref":"#/definitions/notFound"
+                    }
+                }
+            }
+        }
+    }
 };
 
 module.exports = {

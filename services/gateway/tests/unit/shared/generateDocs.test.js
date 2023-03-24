@@ -41,16 +41,16 @@ describe('Test createApiDocs method', () => {
 	});
 
 	it('should throw error mapped array when called with null apiName or apiJsonPaths or registeredModuleNames', async () => {
-		expect(async () => createApiDocs(null, {}, registeredModuleNames)).rejects.toThrow();
-		expect(async () => createApiDocs(apiName, null, registeredModuleNames)).rejects.toThrow();
-		expect(async () => createApiDocs(apiName, {}, null)).rejects.toThrow();
-		expect(async () => createApiDocs(null, null, null)).rejects.toThrow();
+		await expect(() => createApiDocs(null, {}, registeredModuleNames)).rejects.toThrow();
+		await expect(() => createApiDocs(apiName, null, registeredModuleNames)).rejects.toThrow();
+		await expect(() => createApiDocs(apiName, {}, null)).rejects.toThrow();
+		await expect(() => createApiDocs(null, null, null)).rejects.toThrow();
 	});
 
 	it('should throw error mapped array when called with undefined apiName or apiJsonPaths or registeredModuleNames', async () => {
-		expect(async () => createApiDocs(undefined, {}, registeredModuleNames)).rejects.toThrow();
-		expect(() => createApiDocs(apiName, undefined, registeredModuleNames)).rejects.toThrow();
-		expect(async () => createApiDocs(apiName, {}, undefined)).rejects.toThrow();
-		expect(async () => createApiDocs(undefined, undefined, undefined)).rejects.toThrow();
+		await expect(() => createApiDocs(undefined, {}, registeredModuleNames)).rejects.toThrow();
+		await expect(() => createApiDocs(apiName, undefined, registeredModuleNames)).rejects.toThrow();
+		await expect(() => createApiDocs(apiName, {}, undefined)).rejects.toThrow();
+		await expect(() => createApiDocs(undefined, undefined, undefined)).rejects.toThrow();
 	});
 });
