@@ -274,6 +274,10 @@ const syncWithRemoteRepo = async () => {
 		const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
 		const groupedFiles = groupFilesByNetworkAndApp(diffInfo.data.files);
 		const connection = await getDbConnection(MYSQL_ENDPOINT);
+		const dbTrx = await startDbTransaction(connection);
+
+		const filesToBeDeleted = [];
+		const filesToBeMoved = [];
 
 		await BluebirdPromise.map(
 			Object.keys(groupedFiles),
@@ -284,9 +288,6 @@ const syncWithRemoteRepo = async () => {
 					Object.keys(appsInNetwork),
 					async (appName) => {
 						const appFiles = appsInNetwork[appName];
-						const dbTrx = await startDbTransaction(connection);
-						const filesToBeDeleted = [];
-						const filesToBeMoved = [];
 
 						// Should process app files sequentially as nativetokens.json is dependant on app.json
 						// eslint-disable-next-line no-restricted-syntax
@@ -322,32 +323,13 @@ const syncWithRemoteRepo = async () => {
 							await indexMetadataFromFile(tempFilePath, dbTrx);
 							logger.debug(`Successfully updated the database with the latest changes of file: ${remoteFilePath}.`);
 
-							// Schedule files to be moved
+							// Schedule files to be moved once db transaction is committed
 							filesToBeMoved.push({
 								from: tempFilePath,
 								to: localFilePath,
 							});
 							/* eslint-enable no-await-in-loop */
 						}
-						await commitDbTransaction(dbTrx);
-
-						// Delete files which are removed from remote
-						await BluebirdPromise.map(
-							filesToBeDeleted,
-							async (filePath) => rm(filePath),
-							{ concurrency: filesToBeDeleted.length },
-						);
-
-						// Move downloaded files
-						await BluebirdPromise.map(
-							filesToBeMoved,
-							async (filePathInfo) => {
-								// Create directory to move file
-								await mkdir(path.dirname(filePathInfo.to));
-								await mv(filePathInfo.from, filePathInfo.to);
-							},
-							{ concurrency: filesToBeMoved.length },
-						);
 					},
 					{ concurrency: Object.keys(appsInNetwork).length },
 				);
@@ -355,7 +337,26 @@ const syncWithRemoteRepo = async () => {
 			{ concurrency: Object.keys(groupedFiles).length },
 		);
 
-		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
+		await commitDbTransaction(dbTrx);
+
+		// Delete files which are removed from remote
+		await BluebirdPromise.map(
+			filesToBeDeleted,
+			async (filePath) => rm(filePath),
+			{ concurrency: filesToBeDeleted.length },
+		);
+
+		// Move downloaded files
+		await BluebirdPromise.map(
+			filesToBeMoved,
+			async (filePathInfo) => {
+				// Create directory to move file
+				await mkdir(path.dirname(filePathInfo.to));
+				await mv(filePathInfo.from, filePathInfo.to);
+			},
+			{ concurrency: filesToBeMoved.length },
+		);
 
 		// Remove temporary file download directory
 		await rmdir(tempDownloadDir);
