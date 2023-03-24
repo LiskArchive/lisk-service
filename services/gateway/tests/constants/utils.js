@@ -18,14 +18,20 @@ const transformParamsInput = {
 		altSwaggerKey: 'custom swagger key',
 	},
 	sort: {
-		type: 'sort type',
-		enum: 'sort enum',
-		default: 'sort default',
+		type: 'string',
+		enum: [
+			'name:asc',
+			'name:desc',
+		],
+		default: 'name:asc',
 	},
 	order: {
-		type: 'order type',
-		enum: 'order enum',
-		default: 'order default',
+		type: 'string',
+		enum: [
+			'rank:asc',
+			'rank:desc',
+		],
+		default: 'rank:asc',
 	},
 	'custom key': {},
 };
@@ -39,18 +45,24 @@ const transformParamsExpectedResponse = [
 		in: 'query',
 		description: 'Fields to sort results by.',
 		required: false,
-		type: 'sort type',
-		enum: 'sort enum',
-		default: 'sort default',
+		type: 'string',
+		enum: [
+			'name:asc',
+			'name:desc',
+		],
+		default: 'name:asc',
 	},
 	{
 		name: 'order',
 		in: 'query',
 		description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
 		required: false,
-		type: 'order type',
-		enum: 'order enum',
-		default: 'order default',
+		type: 'string',
+		enum: [
+			'rank:asc',
+			'rank:desc',
+		],
+		default: 'rank:asc',
 	},
 	{
 		$ref: '#/parameters/custom key',
