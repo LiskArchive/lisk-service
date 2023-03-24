@@ -181,19 +181,19 @@ const getBlockchainAppsMetadata = async (params) => {
 		blockchainAppsMetadata.data,
 		async (appMetadata) => {
 			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
-			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
-			const chainMeta = JSON.parse(chainMetaString);
-			chainMeta.isDefault = appMetadata.isDefault;
+			const appMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
+			const appMeta = JSON.parse(appMetaString);
+			appMeta.isDefault = appMetadata.isDefault;
 
 			if (await isMainchain()
-				&& knownMainchainIDs.includes(chainMeta.chainID)) {
-				chainMeta.status = APP_STATUS.ACTIVE;
+				&& knownMainchainIDs.includes(appMeta.chainID)) {
+				appMeta.status = APP_STATUS.ACTIVE;
 			} else {
-				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: chainMeta.chainID })).data;
-				chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
+				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: appMeta.chainID })).data;
+				appMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
 			}
 
-			return chainMeta;
+			return appMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
 	);

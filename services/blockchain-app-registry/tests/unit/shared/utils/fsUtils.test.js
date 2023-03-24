@@ -14,6 +14,7 @@
  *
  */
 const path = require('path');
+const fsPromises = require('node:fs/promises');
 
 const {
 	exists,
@@ -25,6 +26,7 @@ const {
 	getFiles,
 	rename,
 	stats,
+	rm,
 } = require('../../../../shared/utils/fsUtils');
 
 const testData = {
@@ -91,5 +93,60 @@ describe('Test filesystem util methods', () => {
 		expect(exists(subDirPathNew)).resolves.toBe(false);
 		await rename(subDirPath, subDirPathNew);
 		expect(exists(subDirPathNew)).resolves.toBe(true);
+	});
+});
+
+describe('Test rm method', () => {
+	const dirPath = `${__dirname}/temp`;
+
+	beforeEach(() => mkdir(dirPath));
+	afterAll(() => rmdir(dirPath));
+
+	it('should delete file when called with existing file', async () => {
+		// Create file and check existance
+		const filePath = `${dirPath}/temp.txt`;
+		await fsPromises.writeFile(filePath, 'Hello content!');
+		expect(await exists(filePath)).toEqual(true);
+
+		// Delete file
+		const response = await rm(filePath);
+		expect(response).toEqual(true);
+		expect(await exists(filePath)).toEqual(false);
+	});
+
+	it('should return false when called with non existing file', async () => {
+		const nonExistingFile = 'sdfsd/werwerwe/sdfsdfs.txt';
+		expect(await exists(nonExistingFile)).toEqual(false);
+
+		const response = await rm(nonExistingFile);
+		expect(response).toEqual(false);
+		expect(await exists(nonExistingFile)).toEqual(false);
+	});
+
+	it('should return false when called with a directory path', async () => {
+		expect(await exists(dirPath)).toEqual(true);
+		const response = await rm(dirPath);
+		expect(response).toEqual(false);
+		expect(await exists(dirPath)).toEqual(true);
+	});
+
+	it('should delete directory when called with a directory path and recursive:true', async () => {
+		expect(await exists(dirPath)).toEqual(true);
+		const response = await rm(dirPath, { recursive: true });
+		expect(response).toEqual(true);
+		expect(await exists(dirPath)).toEqual(false);
+	});
+
+	it('should return false when called with empty string', async () => {
+		const response = await rm('');
+		expect(response).toEqual(false);
+	});
+
+	it('should throw error when called with null', async () => {
+		expect(() => rm(null)).rejects.toThrow();
+	});
+
+	it('should throw error when called with undefined', async () => {
+		expect(() => rm(undefined)).rejects.toThrow();
 	});
 });
