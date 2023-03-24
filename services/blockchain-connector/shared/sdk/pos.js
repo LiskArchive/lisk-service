@@ -96,8 +96,8 @@ const getStaker = async (address) => {
 	try {
 		const staker = await invokeEndpoint('pos_getStaker', { address });
 
-		if (staker.error && regex.STARTER_KEY_NOT_FOUND_ERROR.test(staker.error.message)) {
-			return defaultResponses.STARTER_DEFAULT_RES;
+		if (staker.error && regex.KEY_NOT_EXIST.test(staker.error.message)) {
+			return defaultResponses.POS.GET_STAKER;
 		}
 
 		return staker;

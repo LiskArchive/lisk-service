@@ -29,8 +29,8 @@ const getChainAccount = async (chainID) => {
 		const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID });
 
 		if (chainAccount.error
-			&& regex.CHAIN_ACCOUNT_KEY_NOT_FOUND_ERROR.test(chainAccount.error.message)) {
-			return defaultResponses.CHAIN_ACCOUNT_DEFAULT_RES;
+			&& regex.KEY_NOT_EXIST.test(chainAccount.error.message)) {
+			return defaultResponses.INTEROPERABILITY.GET_CHAIN_ACCOUNT;
 		}
 
 		return chainAccount;
