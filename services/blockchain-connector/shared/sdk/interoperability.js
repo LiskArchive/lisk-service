@@ -19,12 +19,19 @@ const {
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+const regex = require('../utils/regex');
+const defaultResponses = require('./constants/defaultResponses');
 
 const logger = Logger();
 
 const getChainAccount = async (chainID) => {
 	try {
 		const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID });
+
+		if (chainAccount.error && regex.CHAIN_ACCOUNT_KEY_NOT_FOUND_ERROR.test(chainAccount.error.message)) {
+			return defaultResponses.CHAIN_ACCOUNT_DEFAULT_RES;
+		}
+
 		return chainAccount;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
