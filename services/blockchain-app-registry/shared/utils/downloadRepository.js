@@ -23,6 +23,7 @@ const {
 		getDbConnection,
 		startDbTransaction,
 		commitDbTransaction,
+		rollbackDbTransaction,
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -246,6 +247,9 @@ const getModifiedFileNames = (groupedFiles) => {
 };
 
 const syncWithRemoteRepo = async () => {
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDbTransaction(connection);
+
 	try {
 		const dataDirectory = config.dataDir;
 		const appDirPath = path.join(dataDirectory, repo);
@@ -273,8 +277,6 @@ const syncWithRemoteRepo = async () => {
 		];
 		const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
 		const groupedFiles = groupFilesByNetworkAndApp(diffInfo.data.files);
-		const connection = await getDbConnection(MYSQL_ENDPOINT);
-		const dbTrx = await startDbTransaction(connection);
 
 		const filesToBeDeleted = [];
 		const filesToBeMoved = [];
@@ -367,6 +369,7 @@ const syncWithRemoteRepo = async () => {
 			Signals.get('metadataUpdated').dispatch(eventPayload);
 		}
 	} catch (error) {
+		await rollbackDbTransaction(dbTrx);
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
 		logger.error(`Unable to sync changes due to: ${errorMsg}.`);
