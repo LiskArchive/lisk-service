@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const regex = require('../../shared/regex');
+
 const mapObjectWithPropertyPropName = 'default';
 const mapObjectWithPropertyObj = {
 	key1: {
@@ -30,7 +32,6 @@ const mapObjectWithPropertyObj = {
 		[mapObjectWithPropertyPropName]: 'default_val_3',
 	},
 };
-
 const mapObjectWithPropertyExpectedResponse = {
 	key1: 'default_val_1',
 	key3: 'default_val_3',
@@ -106,7 +107,6 @@ const validateRawInputParams = {
 	tokenID: '0300000000000000,0400000000000000',
 	tokenName: 'Lisk,Lis,Lik',
 };
-
 const validateRawInputParamsWithInvalidKey = {
 	...validateRawInputParams,
 	invalidKey: 'invalidValue',
@@ -120,66 +120,18 @@ const validateSpecs = {
 		'Interoperability',
 	],
 	params: {
-		chainName: {
-			optional: true,
-			type: 'string',
-			pattern: {
-
-			},
-		},
-		chainID: {
-			optional: true,
-			type: 'string',
-			pattern: {
-
-			},
-		},
-		tokenName: {
-			optional: true,
-			type: 'string',
-			pattern: {
-
-			},
-		},
-		tokenID: {
-			optional: true,
-			type: 'string',
-			pattern: {
-
-			},
-			altSwaggerKey: 'tokenIDCSV',
-		},
-		network: {
-			optional: true,
-			type: 'string',
-			pattern: {
-
-			},
-		},
-		search: {
-			optional: true,
-			type: 'string',
-		},
-		limit: {
-			optional: true,
-			type: 'number',
-			min: 1,
-			max: 100,
-			default: 10,
-		},
-		offset: {
-			optional: true,
-			type: 'number',
-			min: 0,
-			default: 0,
-		},
+		chainName: { optional: true, type: 'string', pattern: regex.NAME },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID },
+		tokenName: { optional: true, type: 'string', pattern: regex.NAME_CSV },
+		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID_CSV, altSwaggerKey: 'tokenIDCSV' },
+		network: { optional: true, type: 'string', pattern: regex.NETWORK_CSV },
+		search: { optional: true, type: 'string' },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: [
-				'chainName:asc',
-				'chainName:desc',
-			],
+			enum: ['chainName:asc', 'chainName:desc'],
 			default: 'chainName:asc',
 		},
 	},
@@ -312,7 +264,6 @@ const validateSpecs = {
 		},
 	},
 };
-
 const validateExpectedParamReport = {
 	valid: {
 		tokenName: 'Lisk,Lis,Lik',
@@ -335,7 +286,6 @@ const validateExpectedParamReport = {
 
 	],
 };
-
 const validateInvalidKeyExpectedResponse = {
 	valid: {
 		tokenName: 'Lisk,Lis,Lik',
@@ -369,7 +319,6 @@ const checkMissingParamsRouteParams = {
 		key31: 'val31',
 	},
 };
-
 const checkMissingParamsRequestParams = {
 	key1: {
 		key11: 'val11',
@@ -399,7 +348,6 @@ const parseDefaultParamsObj = {
 		[mapObjectWithPropertyPropName]: 'default_val_3',
 	},
 };
-
 const parseDefaultParamsExpectedResponse = {
 	key1: 'default_val_1',
 	key3: 'default_val_3',
@@ -425,7 +373,6 @@ const parseAllParamsRequestParams = {
 	booleanType: true,
 	notPresentInSchema: 'user sent value',
 };
-
 const parseAllParamsExpectedResponse = {
 	notPresentInRequest: 'default value',
 	numberType: 123,
@@ -451,7 +398,6 @@ const looseSpecParamsInput = {
 		type: 'object',
 	},
 };
-
 const looseSpecParamsExpectedResponse = {
 	booleanKey: {
 		key: true,

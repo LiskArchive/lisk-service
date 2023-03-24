@@ -19,7 +19,7 @@ const {
 	mapArray,
 	mapper,
 } = require('../../../shared/customMapper');
-const { rootObj, mapObjectDefinition, mapObjectExpectedResponse } = require('../../constants/customMapper');
+const { rootObj, definitionObj, mapObjectExpectedResponse } = require('../../constants/customMapper');
 
 describe('Test resolvePath method', () => {
 	const obj = {
@@ -30,7 +30,7 @@ describe('Test resolvePath method', () => {
 		},
 	};
 
-	it('should return correct value when called with valid obj and path', async () => {
+	it('should return correct value when called with valid obj and exiting path', async () => {
 		const response = resolvePath(obj, 'key1.key11');
 		expect(response).toEqual(obj.key1.key11);
 	});
@@ -40,61 +40,33 @@ describe('Test resolvePath method', () => {
 		expect(response).toEqual(undefined);
 	});
 
-	it('should return undefined when called with null obj and non-existing path', async () => {
-		const response = resolvePath(null, 'key1.key12.key121');
-		expect(response).toEqual(undefined);
+	it('should return undefined when called with null obj or path', async () => {
+		expect(resolvePath(null, 'key1.key12.key121')).toEqual(undefined);
+		expect(resolvePath(obj, null)).toEqual(undefined);
+		expect(resolvePath(null, null)).toEqual(undefined);
 	});
 
-	it('should return undefined when called with undefined obj and non-existing path', async () => {
-		const response = resolvePath(undefined, 'key1.key12.key121');
-		expect(response).toEqual(undefined);
-	});
-
-	it('should return undefined when called with valid obj and null path', async () => {
-		const response = resolvePath(obj, null);
-		expect(response).toEqual(undefined);
-	});
-
-	it('should return undefined when called with valid obj and undefined path', async () => {
-		const response = resolvePath(obj, undefined);
-		expect(response).toEqual(undefined);
-	});
-
-	it('should return undefined when called with null obj and null path', async () => {
-		const response = resolvePath(null, null);
-		expect(response).toEqual(undefined);
-	});
-
-	it('should return undefined when called with null obj and undefined path', async () => {
-		const response = resolvePath(null, undefined);
-		expect(response).toEqual(undefined);
-	});
-
-	it('should return undefined when called with undefined obj and null path', async () => {
-		const response = resolvePath(undefined, null);
-		expect(response).toEqual(undefined);
-	});
-
-	it('should return undefined when called with undefined obj and undefined path', async () => {
-		const response = resolvePath(undefined, undefined);
-		expect(response).toEqual(undefined);
+	it('should return undefined when called with undefined obj or path', async () => {
+		expect(resolvePath(undefined, 'key1.key12.key121')).toEqual(undefined);
+		expect(resolvePath(obj, undefined)).toEqual(undefined);
+		expect(resolvePath(undefined, undefined)).toEqual(undefined);
 	});
 });
 
 describe('Test mapObject method', () => {
-	it('should return correctly mapped object when called with valid rootObj and mapObjectDefinition', async () => {
-		const response = mapObject(rootObj, mapObjectDefinition);
+	it('should return correctly mapped object when called with valid rootObj and definition', async () => {
+		const response = mapObject(rootObj, definitionObj);
 		expect(response).toEqual(mapObjectExpectedResponse);
 	});
 
-	it('should throw error when called with null rootObj or mapObjectDefinition', async () => {
-		expect(() => mapObject(null, mapObjectDefinition)).toThrow();
+	it('should throw error when called with null rootObj or definition', async () => {
+		expect(() => mapObject(null, definitionObj)).toThrow();
 		expect(() => mapObject(rootObj, null)).toThrow();
 		expect(() => mapObject(null, null)).toThrow();
 	});
 
-	it('should throw error when called with undefined rootObj or mapObjectDefinition', async () => {
-		expect(() => mapObject(undefined, mapObjectDefinition)).toThrow();
+	it('should throw error when called with undefined rootObj or definition', async () => {
+		expect(() => mapObject(undefined, definitionObj)).toThrow();
 		expect(() => mapObject(rootObj, undefined)).toThrow();
 		expect(() => mapObject(undefined, undefined)).toThrow();
 	});
@@ -121,7 +93,7 @@ describe('Test mapArray method', () => {
 	});
 
 	it('should return correctly mapped array when called with valid rootObj and definition array', async () => {
-		const definition = [mapObjectDefinition];
+		const definition = [definitionObj];
 		const expectedResponse = [mapObjectExpectedResponse];
 
 		const response = mapArray(rootObj, definition);
@@ -130,7 +102,7 @@ describe('Test mapArray method', () => {
 
 	it('should return correctly mapped array when called with [string,object] definition array', async () => {
 		const key = 'some key';
-		const definition = [key, mapObjectDefinition];
+		const definition = [key, definitionObj];
 		const expectedResponse = [key, { [key]: mapObjectExpectedResponse.data }];
 
 		const response = mapArray(rootObj, definition);
@@ -138,13 +110,13 @@ describe('Test mapArray method', () => {
 	});
 
 	it('should throw error when called with null rootObj or definition', async () => {
-		expect(() => mapArray(null, mapObjectDefinition)).toThrow();
+		expect(() => mapArray(null, definitionObj)).toThrow();
 		expect(() => mapArray(rootObj, null)).toThrow();
 		expect(() => mapArray(null, null)).toThrow();
 	});
 
 	it('should throw error when called with undefined rootObj or definition', async () => {
-		expect(() => mapArray(undefined, mapObjectDefinition)).toThrow();
+		expect(() => mapArray(undefined, definitionObj)).toThrow();
 		expect(() => mapArray(rootObj, undefined)).toThrow();
 		expect(() => mapArray(undefined, undefined)).toThrow();
 	});
@@ -152,12 +124,12 @@ describe('Test mapArray method', () => {
 
 describe('Test mapper method', () => {
 	it('should return correctly mapped object when called with valid data object and def object', async () => {
-		const response = mapper(rootObj, mapObjectDefinition);
+		const response = mapper(rootObj, definitionObj);
 		expect(response).toEqual(mapObjectExpectedResponse);
 	});
 
 	it('should return correctly mapped array when called with valid data object and def array', async () => {
-		const definition = [mapObjectDefinition];
+		const definition = [definitionObj];
 		const expectedResponse = [mapObjectExpectedResponse];
 
 		const response = mapper(rootObj, definition);
@@ -165,8 +137,8 @@ describe('Test mapper method', () => {
 	});
 
 	it('should throw error when called with null or undefined data', async () => {
-		expect(() => mapper(null, mapObjectDefinition)).toThrow();
-		expect(() => mapper(undefined, mapObjectDefinition)).toThrow();
+		expect(() => mapper(null, definitionObj)).toThrow();
+		expect(() => mapper(undefined, definitionObj)).toThrow();
 	});
 
 	it('should return empty object when called with null or undefined def', async () => {

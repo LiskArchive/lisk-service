@@ -20,7 +20,7 @@ describe('Test createApiDocs method', () => {
 	const registeredModuleNames = ['auth', 'validators'];
 	const apiName = 'http-version3';
 
-	it('should return correctly mapped object when called with valid data object and def object', async () => {
+	it('should return correctly mapped object when called with valid params', async () => {
 		const response = await createApiDocs(apiName, {}, registeredModuleNames);
 		expect(response).toEqual(createApiDocsExpectedResponse);
 	});
@@ -40,14 +40,14 @@ describe('Test createApiDocs method', () => {
 		});
 	});
 
-	it('should throw error mapped array when called with null apiName or apiJsonPaths or registeredModuleNames', async () => {
+	it('should throw error when called with null apiName or apiJsonPaths or registeredModuleNames', async () => {
 		await expect(() => createApiDocs(null, {}, registeredModuleNames)).rejects.toThrow();
 		await expect(() => createApiDocs(apiName, null, registeredModuleNames)).rejects.toThrow();
 		await expect(() => createApiDocs(apiName, {}, null)).rejects.toThrow();
 		await expect(() => createApiDocs(null, null, null)).rejects.toThrow();
 	});
 
-	it('should throw error mapped array when called with undefined apiName or apiJsonPaths or registeredModuleNames', async () => {
+	it('should throw error when called with undefined apiName or apiJsonPaths or registeredModuleNames', async () => {
 		await expect(() => createApiDocs(undefined, {}, registeredModuleNames)).rejects.toThrow();
 		await expect(() => createApiDocs(apiName, undefined, registeredModuleNames)).rejects.toThrow();
 		await expect(() => createApiDocs(apiName, {}, undefined)).rejects.toThrow();

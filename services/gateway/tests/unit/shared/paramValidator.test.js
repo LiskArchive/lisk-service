@@ -119,12 +119,12 @@ describe('Test arrDiff method', () => {
 });
 
 describe('Test dropEmptyProps method', () => {
-	it('should return object without empty props when called an object', async () => {
+	it('should return object without empty props when called with an object', async () => {
 		const response = await dropEmptyProps(dropEmptyPropsInput);
 		expect(response).toEqual(dropEmptyPropsExpectedResponse);
 	});
 
-	it('should throw error when called with not an object', async () => {
+	it('should throw error when called with null or undefined', async () => {
 		expect(() => dropEmptyProps(null)).toThrow();
 		expect(() => dropEmptyProps(undefined)).toThrow();
 	});
@@ -169,7 +169,7 @@ describe('Test parseParams method', () => {
 });
 
 describe('Test validate method', () => {
-	xit('should return expected param report when called with valid rawInputParams and specs', async () => {
+	it('should return expected param report when called with valid rawInputParams and specs', async () => {
 		const response = validate(validateRawInputParams, validateSpecs);
 		expect(response).toEqual(validateExpectedParamReport);
 	});
@@ -177,6 +177,28 @@ describe('Test validate method', () => {
 	it('should return expected param report when raw input has invalid key', async () => {
 		const response = validate(validateRawInputParamsWithInvalidKey, validateSpecs);
 		expect(response).toEqual(validateInvalidKeyExpectedResponse);
+	});
+
+	it('should throw error when called with null rawInputParams or specs', async () => {
+		expect(() => validate(null, validateSpecs)).toThrow();
+		expect(() => validate(validateRawInputParamsWithInvalidKey, null)).toThrow();
+		expect(() => validate(null, null)).toThrow();
+	});
+
+	it('should return param report when called with undefined rawInputParams', async () => {
+		const response = validate(undefined, validateSpecs);
+		expect(response).toEqual({
+			invalid: [],
+			missing: [],
+			required: [],
+			unknown: {},
+			valid: { limit: 10, offset: 0, sort: 'chainName:asc' },
+		});
+	});
+
+	it('should throw error when called with undefined specs', async () => {
+		expect(() => validate(validateRawInputParamsWithInvalidKey, undefined)).toThrow();
+		expect(() => validate(undefined, undefined)).toThrow();
 	});
 });
 
@@ -205,7 +227,7 @@ describe('Test validateFromParamPairings method', () => {
 		expect(response).toEqual(schemaParamPairings);
 	});
 
-	it('should return empty array when called with null or undefined paramPairings', async () => {
+	it('should return empty array when called with null or undefined paramsRequired', async () => {
 		expect(validateFromParamPairings(null, inputParamKeys, schemaParamPairings)).toEqual([]);
 		expect(validateFromParamPairings(undefined, inputParamKeys, schemaParamPairings)).toEqual([]);
 	});

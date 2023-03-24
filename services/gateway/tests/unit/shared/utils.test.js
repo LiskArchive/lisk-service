@@ -65,27 +65,27 @@ describe('Test getSwaggerDescription method', () => {
 });
 
 describe('Test isValidNonEmptyResponse method', () => {
-	it('should return correct description when res.data is non-empty array', async () => {
+	it('should return true when res.data is non-empty array', async () => {
 		const response = isValidNonEmptyResponse({ data: ['1'] });
 		expect(response).toEqual(true);
 	});
 
-	it('should return correct description when res.data is empty array', async () => {
+	it('should return false when res.data is empty array', async () => {
 		const response = isValidNonEmptyResponse({ data: [] });
 		expect(response).toEqual(false);
 	});
 
-	it('should return correct description when res.data is non-empty object', async () => {
+	it('should return true when res.data is non-empty object', async () => {
 		const response = isValidNonEmptyResponse({ data: { key: 'value' } });
 		expect(response).toEqual(true);
 	});
 
-	it('should return correct description when res.data is empty object', async () => {
+	it('should return false when res.data is empty object', async () => {
 		const response = isValidNonEmptyResponse({ data: {} });
 		expect(response).toEqual(false);
 	});
 
-	it('should throw error when called null or undefined res', async () => {
+	it('should throw error when called null or undefined', async () => {
 		expect(() => isValidNonEmptyResponse(null)).toThrow();
 		expect(() => isValidNonEmptyResponse(undefined)).toThrow();
 	});

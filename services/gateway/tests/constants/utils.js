@@ -29,7 +29,6 @@ const transformParamsInput = {
 	},
 	'custom key': {},
 };
-
 const transformParamsExpectedResponse = [
 	{
 		$ref: '#/parameters/custom swagger key',

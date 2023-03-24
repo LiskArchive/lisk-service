@@ -43,7 +43,7 @@ const rootObj = {
 	},
 };
 
-const mapObjectDefinition = {
+const definitionObj = {
 	data: {
 		escrowedAmounts: [
 			'data.escrowedAmounts',
@@ -103,6 +103,6 @@ const mapObjectExpectedResponse = {
 
 module.exports = {
 	rootObj,
-	mapObjectDefinition,
+	definitionObj,
 	mapObjectExpectedResponse,
 };
