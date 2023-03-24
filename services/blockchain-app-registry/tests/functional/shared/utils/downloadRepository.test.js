@@ -26,6 +26,7 @@ const {
 	buildEventPayload,
 	syncWithRemoteRepo,
 	downloadRepositoryToFS,
+	getRepoInfoFromURL,
 } = require('../../../../shared/utils/downloadRepository');
 
 const keyValueTable = require('../../../../shared/database/mysqlKVStore');
@@ -70,9 +71,12 @@ describe('Test getRepoDownloadURL method', () => {
 
 describe('Test getFileDownloadURL method', () => {
 	it('should return correct file download info when file is valid', async () => {
+		const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+		const fileName = 'devnet/Enevti/app.json';
+		const fileUrlRegexStr = `^https://raw.githubusercontent.com/${owner}/${repo}/${config.gitHub.branch}/${fileName}?token=[A-Z0-9]+$`;
+		const fileUrlRegex = new RegExp(fileUrlRegexStr);
 		/* eslint-disable-next-line no-useless-escape */
-		const fileUrlRegex = new RegExp(`^https:\/\/\\w*.github.com\/repos\/LiskHQ\/${config.gitHub.appRegistryRepoName}\/contents\/devnet\/Enevti\/nativetokens.json\\?owner=LiskHQ&repo=${config.gitHub.appRegistryRepoName}&ref=${config.gitHub.branch}$`);
-		const response = await getFileDownloadURL('devnet/Enevti/app.json');
+		const response = await getFileDownloadURL(fileName);
 		expect(response).toMatch(fileUrlRegex);
 	});
 
