@@ -63,7 +63,7 @@ const downloadFile = (url, filePath) => new Promise((resolve, reject) => {
 			response.pipe(writeStream);
 			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
-				logger(`File downloaded successfully to: ${filePath}.`);
+				logger.info(`File downloaded successfully to: ${filePath}.`);
 				setTimeout(resolve, 100); // Since the promise resolves earlier than expected
 			});
 		} else {

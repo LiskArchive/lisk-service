@@ -29,7 +29,7 @@ const {
 
 const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
-const { exists, mkdir, getDirectories, rename, rmdir, rm } = require('./fsUtils');
+const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fsUtils');
 
 const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
@@ -110,7 +110,7 @@ const getRepoDownloadURL = async () => {
 	}
 };
 
-const getFileDownloadURL = async (file) => {
+const getFileDownloadUrl = async (file) => {
 	try {
 		const result = await octokit.request(
 			`GET /repos/${owner}/${repo}/contents/${file}`,
@@ -121,7 +121,7 @@ const getFileDownloadURL = async (file) => {
 			},
 		);
 
-		return result;
+		return result.data.download_url;
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
@@ -314,8 +314,8 @@ const syncWithRemoteRepo = async () => {
 							const dirPath = path.dirname(tempFilePath);
 							await mkdir(dirPath, { recursive: true });
 
-							const result = await getFileDownloadURL(remoteFilePath);
-							await downloadFile(result.data.download_url, tempFilePath);
+							const fileDownloadUrl = await getFileDownloadUrl(remoteFilePath);
+							await downloadFile(fileDownloadUrl, tempFilePath);
 							logger.debug(`Successfully downloaded: ${tempFilePath}.`);
 
 							// Update DB with latest metadata file information
@@ -344,7 +344,7 @@ const syncWithRemoteRepo = async () => {
 							async (filePathInfo) => {
 								// Create directory to move file
 								await mkdir(path.dirname(filePathInfo.to));
-								await rename(filePathInfo.from, filePathInfo.to);
+								await mv(filePathInfo.from, filePathInfo.to);
 							},
 							{ concurrency: filesToBeMoved.length },
 						);
@@ -396,7 +396,7 @@ const downloadRepositoryToFS = async () => {
 		await downloadAndExtractTarball(url, dataDirectory);
 
 		const [oldDir] = await getDirectories(dataDirectory);
-		await rename(oldDir, appDirPath);
+		await mv(oldDir, appDirPath);
 
 		const latestCommitHash = await getLatestCommitHash();
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
@@ -414,7 +414,7 @@ module.exports = {
 	getCommitInfo,
 	getUniqueNetworkAppDirPairs,
 	filterMetaConfigFilesByNetwork,
-	getFileDownloadURL,
+	getFileDownloadUrl,
 	getDiff,
 	buildEventPayload,
 };

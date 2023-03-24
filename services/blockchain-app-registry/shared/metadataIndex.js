@@ -75,18 +75,18 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 	await tokenMetadataTable.upsert(tokenMetaToIndex, dbTrx);
 };
 
-const indexChainMeta = async (chainMeta, dbTrx) => {
+const indexAppMeta = async (appMeta, dbTrx) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 
-	const chainMetaToIndex = {
-		chainID: chainMeta.chainID,
-		chainName: chainMeta.chainName,
-		network: chainMeta.networkType,
-		isDefault: config.defaultApps.some(e => e === chainMeta.chainName),
-		appDirName: chainMeta.appDirName,
+	const appMetaToIndex = {
+		chainID: appMeta.chainID,
+		chainName: appMeta.chainName,
+		network: appMeta.networkType,
+		isDefault: config.defaultApps.some(e => e === appMeta.chainName),
+		appDirName: appMeta.appDirName,
 	};
 
-	await applicationMetadataTable.upsert(chainMetaToIndex, dbTrx);
+	await applicationMetadataTable.upsert(appMetaToIndex, dbTrx);
 };
 
 // Given filepath of app.json or nativetokens.json, indexes the information in DB
@@ -106,12 +106,12 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 	const appJsonPath = await exists(downloadedAppJsonPath) ? downloadedAppJsonPath : oldAppJsonPath;
 
 	logger.trace('Reading chain information.');
-	const chainMetaString = await read(appJsonPath);
-	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
+	const appMetaString = await read(appJsonPath);
+	const appMeta = { ...JSON.parse(appMetaString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
 		logger.debug(`Indexing chain information for the app: ${app} (${network}).`);
-		await indexChainMeta(chainMeta, dbTrx);
+		await indexAppMeta(appMeta, dbTrx);
 		logger.debug(`Indexed chain information for the app: ${app} (${network}).`);
 	}
 
@@ -120,8 +120,8 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 		const tokenMetaString = await read(filePath);
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
-			chainName: chainMeta.chainName,
-			chainID: chainMeta.chainID,
+			chainName: appMeta.chainName,
+			chainID: appMeta.chainID,
 			network,
 		};
 
@@ -132,14 +132,14 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 	logger.info(`Finished indexing metadata information for the app: ${app} (${network}) file: ${filename}.`);
 };
 
-const deleteChainMeta = async (chainMeta, dbTrx) => {
+const deleteAppMeta = async (appMeta, dbTrx) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
-	const chainMetaParams = {
-		network: chainMeta.networkType,
-		chainName: chainMeta.chainName,
+	const appMetaParams = {
+		network: appMeta.networkType,
+		chainName: appMeta.chainName,
 	};
 
-	await applicationMetadataTable.delete(chainMetaParams, dbTrx);
+	await applicationMetadataTable.delete(appMetaParams, dbTrx);
 };
 
 const deleteTokensMeta = async (tokenMeta, dbTrx) => {
@@ -166,12 +166,12 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 
 	const appPathInClonedRepo = path.dirname(filePath);
 	logger.trace('Reading chain information.');
-	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
-	const chainMeta = { ...JSON.parse(chainMetaString) };
+	const appMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
+	const appMeta = { ...JSON.parse(appMetaString) };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
 		logger.debug(`Deleting chain information for the app: ${app} (${network}).`);
-		await deleteChainMeta(chainMeta, dbTrx);
+		await deleteAppMeta(appMeta, dbTrx);
 		logger.debug(`Deleted chain information for the app: ${app} (${network}).`);
 	}
 
@@ -184,7 +184,7 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 		);
 		const tokenMeta = {
 			localIDs,
-			chainName: chainMeta.chainName,
+			chainName: appMeta.chainName,
 			network,
 		};
 

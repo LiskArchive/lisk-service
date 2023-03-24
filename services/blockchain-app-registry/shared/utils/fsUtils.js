@@ -179,6 +179,8 @@ const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	});
 });
 
+const mv = async (source, target) => rename(source, target);
+
 module.exports = {
 	exists,
 	mkdir,
@@ -189,5 +191,6 @@ module.exports = {
 	write,
 	getFiles,
 	rename,
+	mv,
 	stats,
 };
