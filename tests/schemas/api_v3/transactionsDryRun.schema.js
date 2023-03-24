@@ -17,11 +17,13 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
-const transactionExecutionResult = {
+const TRANSACTION_VERIFY_RESULT = {
 	INVALID: -1,
-	FAIL: 0,
+	PENDING: 0,
 	OK: 1,
 };
+
+const TRANSACTION_VERIFY_STATUSES = Object.keys(TRANSACTION_VERIFY_RESULT);
 
 const event = {
 	data: Joi.object().required(),
@@ -34,15 +36,18 @@ const event = {
 };
 
 const dryrunTransactionSuccessResponseSchema = {
-	result: Joi.number().integer().valid(transactionExecutionResult.OK).required(),
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
-const dryrunTransactionFailResponseSchema = {
-	result: Joi.number().integer().valid(transactionExecutionResult.FAIL).required(),
+const dryrunTransactionPendingResponseSchema = {
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.PENDING).required(),
+	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 const dryrunTransactionInvalidResponseSchema = {
-	result: Joi.number().integer().valid(transactionExecutionResult.INVALID).required(),
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.INVALID).required(),
+	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().length(0).required(),
 	errorMessage: Joi.string().required(),
 };
@@ -51,8 +56,8 @@ module.exports = {
 	dryrunTransactionSuccessResponseSchema: Joi.object(
 		dryrunTransactionSuccessResponseSchema,
 	).required(),
-	dryrunTransactionFailResponseSchema: Joi.object(
-		dryrunTransactionFailResponseSchema,
+	dryrunTransactionPendingResponseSchema: Joi.object(
+		dryrunTransactionPendingResponseSchema,
 	).required(),
 	dryrunTransactionInvalidResponseSchema: Joi.object(
 		dryrunTransactionInvalidResponseSchema,

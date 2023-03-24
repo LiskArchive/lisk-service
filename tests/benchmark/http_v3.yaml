@@ -389,11 +389,3 @@ scenarios:
           url: "/market/prices"
           expect:
             - statusCode: 200
-
-  # Newsfeed
-  - name: "Newsfeed"
-    flow:
-      - get:
-          url: "/newsfeed"
-          expect:
-            - statusCode: 200

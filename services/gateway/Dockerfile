@@ -19,7 +19,7 @@ RUN npm ci && \
 
 FROM node:16-alpine
 
-RUN apk add --no-cache curl && \
+RUN apk add --no-cache curl=~7.88.1-r1 && \
     adduser -D lisk
 
 USER lisk

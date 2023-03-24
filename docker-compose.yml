@@ -210,24 +210,6 @@ services:
       - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
     restart: always
 
-  newsfeed:
-    image: lisk/service_newsfeed
-    depends_on:
-      nats:
-        condition: service_started
-      mysql:
-        condition: service_healthy
-    networks:
-      - services_network
-    environment:
-      - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_NEWSFEED_MYSQL=mysql://lisk:password@mysql:3306/newsfeed
-      - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
-      - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
-      - TWITTER_ACCESS_TOKEN_KEY=${TWITTER_ACCESS_TOKEN_KEY}
-      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
-    restart: always
-
   export:
     image: lisk/service_export
     depends_on:
