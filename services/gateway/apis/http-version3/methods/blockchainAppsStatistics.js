@@ -38,9 +38,6 @@ module.exports = {
 					$ref: '#/definitions/blockchainAppsStatsEnvelope',
 				},
 			},
-			404: {
-				$ref: '#/responses/notFound',
-			},
 		};
 		return blockchainAppsStatsSchema;
 	},

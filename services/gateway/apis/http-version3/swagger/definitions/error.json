@@ -24,5 +24,18 @@
                 "example": "Not found"
             }
         }
+    },
+    "serviceUnavailable": {
+        "type": "object",
+        "properties": {
+            "error": {
+                "type": "boolean",
+                "example": true
+            },
+            "message": {
+                "type": "string",
+                "example": "Service Unavailable"
+            }
+        }
     }
 }

@@ -41,11 +41,6 @@ module.exports = {
 			200: {
 				description: 'CSV file',
 			},
-			404: {
-				schema: {
-					$ref: '#/responses/notFound',
-				},
-			},
 		};
 		Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);
 		return exportSchema;
