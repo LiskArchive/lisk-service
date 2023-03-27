@@ -16,9 +16,11 @@
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
+const KEY_NOT_EXIST = /^Key [a-f0-9]+ does not exist\.$/;
 
 module.exports = {
 	BLS_KEY,
 	CHAIN_ID,
 	PROOF_OF_POSSESSION,
+	KEY_NOT_EXIST,
 };
