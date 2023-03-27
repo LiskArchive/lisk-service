@@ -60,7 +60,7 @@ const response = {
 		schema: {
 			$ref: '#/definitions/badRequest',
 		},
-	}
+	},
 };
 
 const requireAllJson = apiName => {
