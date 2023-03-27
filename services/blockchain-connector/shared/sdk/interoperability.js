@@ -20,7 +20,6 @@ const {
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const regex = require('../utils/regex');
-const defaultResponses = require('./constants/defaultResponses');
 
 const logger = Logger();
 
@@ -30,7 +29,11 @@ const getChainAccount = async (chainID) => {
 
 		if (chainAccount.error
 			&& regex.KEY_NOT_EXIST.test(chainAccount.error.message)) {
-			return defaultResponses.INTEROPERABILITY.GET_CHAIN_ACCOUNT;
+			return {
+				lastCertificate: {},
+				name: null,
+				status: null,
+			};
 		}
 
 		return chainAccount;
