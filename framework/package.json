@@ -24,8 +24,8 @@
   },
   "scripts": {
     "release:github": "npm pack && mv lisk-service-framework-$npm_package_version.tgz ./dist/lisk-service-framework-$npm_package_version.tgz",
-    "test:unit": "./node_modules/.bin/jest --config=test/unit.config.js --detectOpenHandles  --forceExit",
-    "test:functional": "./node_modules/.bin/jest --config=test/functional.config.js --detectOpenHandles --forceExit"
+    "test:unit": "./node_modules/.bin/jest --config=tests/unit.config.js --detectOpenHandles  --forceExit",
+    "test:functional": "./node_modules/.bin/jest --config=tests/functional.config.js --detectOpenHandles --forceExit"
   },
   "bin": {
     "moleculer_client": "./bin/moleculer_client.js"
