@@ -526,12 +526,12 @@ _Supports pagination._
       "token:transfer": 1
     },
     "distributionByAmount": {
-      "0000000100000000": {
+      "0000000000000000": {
         "1_10": 1
       }
     },
     "timeline": {
-      "0000000100000000": [
+      "0000000000000000": [
         {
           "timestamp": 1556100060,
           "date": "2019-11-27",
@@ -872,6 +872,66 @@ Get token account exists by address
 https://service.lisk.com/api/v3/token/account/exists?tokenID=0400000000000000&address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
 ```
 
+### Token Balances
+
+Retrieves balances from the Token sub-store for the specified address.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/token/balances`
+- RPC `get.token.balances`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
+<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "tokenID": "0000000000000000",
+    "availableBalance": "1000000000",
+    "lockedBalances": [
+      {
+        "module": "token",
+        "amount": "10000"
+      }
+    ]
+  },
+  "meta": {
+    "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+    "count": 10,
+    "offset": 10,
+    "total": 100
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get token balances by address
+```
+https://service.lisk.com/api/v3/token/balances?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
 ### Token Constants
 
 Retrieves module constants from the Token module.
@@ -911,28 +971,23 @@ No params required.
 
 #### Examples
 
-Get module constants from Token module
+Get module constants from the Token module
 ```
 https://service.lisk.com/api/v3/token/constants
 ```
 
-### Token Account Exists
+### Token Summary
 
-Validates if an entry exists in the Token sub-store for the specified address.
+Retrieves the summary of the Token sub-store state from the Token module.
 
 #### Endpoints
 
-- HTTP GET `/api/v3/token/account/exists`
-- RPC `get.token.account.exists`
+- HTTP GET `/api/v3/token/summary`
+- RPC `get.token.summary`
 
 #### Request parameters
 
-| Parameter | Type | Validation | Default | Comment |
-| --------- | ---- | ---------- | ------- | ------- |
-| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
-<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+No params required.
 
 #### Response example
 
@@ -941,7 +996,30 @@ Validates if an entry exists in the Token sub-store for the specified address.
 ```jsonc
 {
   "data": {
-    "isExists": true
+    "escrowedAmounts": [
+      {
+        "escrowChainID": "00000000",
+        "tokenID": "0000000000000000",
+        "amount": "50000000000"
+      }
+    ],
+    "supportedTokens": [
+      {
+        "isSupportAllTokens": true,
+        "patternTokenIDs": [
+          "00000000******"
+        ],
+        "exactTokenIDs": [
+          "0000000000000000"
+        ]
+      }
+    ],
+    "totalSupply": [
+      {
+        "tokenID": "0000000000000000",
+        "amount": "50000000000"
+      }
+    ]
   },
   "meta": {}
 }
@@ -957,10 +1035,11 @@ Validates if an entry exists in the Token sub-store for the specified address.
 
 #### Examples
 
-Get token account exists by address
+Get module summary from the Token module
 ```
-https://service.lisk.com/api/v3/token/account/exists?tokenID=0400000000000000&address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+https://service.lisk.com/api/v3/token/summary
 ```
+
 
 ## Dynamic fees
 
@@ -968,9 +1047,8 @@ Requests transaction fee estimates per byte.
 
 #### Endpoints
 
-- HTTP `/api/v3/fees`
+- HTTP GET `/api/v3/fees`
 - RPC `get.fees`
-
 
 #### Request parameters
 
@@ -988,20 +1066,22 @@ No params required.
       "medium": 1000,
       "high": 2000
     },
-    "baseFeeById": {
-      "2:0": "1000000000"
-    },
-    "baseFeeByName": {
-      "token:transfer": "1000000000"
-    },
-    "minFeePerByte": 1000,
+    "feeTokenID": "0000000000000000",
+    "minFeePerByte": 1000
   },
   "meta": {
-    "lastUpdate": 123456789,
+    "lastUpdate": 1616008148,
     "lastBlockHeight": 25,
-    "lastBlockId": 1354568
-  },
-  "links": {}
+    "lastBlockID": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b"
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
 }
 ```
 
@@ -1009,7 +1089,7 @@ No params required.
 ```jsonc
 {
   "error": true,
-  "message": "Service is not ready yet"
+  "message": "Service is not ready yet."
 }
 ```
 
@@ -1020,17 +1100,78 @@ https://service.lisk.com/api/v3/fees
 ```
 
 
+## Interoperability
 
+### Interoperable applications (on-chain)
 
-## Dynamic fees
+Retrieves blockchain applications in the current network.
 
-Requests transaction fee estimates per byte.
+_Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v3/fees`
-- RPC `get.fees`
+- HTTP GET `/api/v3/blockchain/apps`
+- RPC `get.blockchain.apps`
 
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "name": "Lisk",
+      "chainID": "00000000",
+      "status": "active",
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "lastCertificateHeight": 160,
+      "lastUpdated": 1616008148
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps
+```
+
+### Interoperable applications (on-chain) - network statistics
+
+Retrieves statistics for the current network blockchain applications.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/statistics`
+- RPC `get.blockchain.apps.statistics`
 
 #### Request parameters
 
@@ -1043,42 +1184,253 @@ No params required.
 ```jsonc
 {
   "data": {
-    "feeEstimatePerByte": {
-      "low": 0,
-      "medium": 1000,
-      "high": 2000
-    },
-    "baseFeeById": {
-      "2:0": "1000000000"
-    },
-    "baseFeeByName": {
-      "token:transfer": "1000000000"
-    },
-    "minFeePerByte": 1000,
+    "registered": 2503,
+    "active": 2328,
+    "terminated": 35,
+    "totalSupplyLSK": "5000000",
+    "stakedLSK": "3000000",
+    "inflationRate": "4.50"
   },
-  "meta": {
-    "lastUpdate": 123456789,
-    "lastBlockHeight": 25,
-    "lastBlockId": 1354568
-  },
-  "links": {}
+  "meta": {}
 }
 ```
 
-503 Service Unavailable
+400 Bad Request
 ```jsonc
 {
   "error": true,
-  "message": "Service is not ready yet"
+  "message": "Unknown input parameter(s): <param_name>"
 }
 ```
 
 #### Examples
 
 ```
-https://service.lisk.com/api/v3/fees
+https://service.lisk.com/api/v3/blockchain/apps/statistics
 ```
 
+### Interoperable applications (off-chain) metadata list
+
+Retrieves a list of blockchain applications for which the metadata exist.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta/list`
+- RPC `get.blockchain.apps.meta.list`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainName": "Lisk",
+      "chainID": "00000000",
+      "networkType": "mainnet"
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta/list
+```
+
+### Interoperable applications (off-chain) metadata details
+
+Retrieves metadata for a list of blockchain applications. The information is used by the wallets.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta`
+- RPC `get.blockchain.apps.meta`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| isDefault | Boolean | `[true, false]` | *(empty)* |  |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainName": "Lisk",
+      "chainID": "00000000",
+      "title": "Lisk blockchain application",
+      "status": "active",
+      "description": "Lisk is a blockchain application platform",
+      "networkType": "mainnet",
+      "isDefault": true,
+      "genesisURL": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
+      "projectPage": "https://lisk.com",
+      "serviceURLs": [
+        {
+          "http": "https://service.lisk.com",
+          "ws": "wss://service.lisk.com"
+        }
+      ],
+      "logo": {
+        "png": "https://downloads.lisk.com/lisk/images/logo.png",
+        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
+      },
+      "appPage": "https://lisk.com",
+      "backgroundColor": "#0981D1",
+      "explorers": [
+        {
+          "url": "https://lisk.observer",
+          "txnPage": "https://lisk.observer/transactions"
+        }
+      ],
+      "appNodes": [
+        {
+          "url": "https://mainnet.lisk.com",
+          "maintainer": "Lightcurve GmbH"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta
+```
+
+### Interoperable application token (off-chain) metadata details
+
+Retrieves the metadata for the tokens supported by the specified blockchain application. The information is used by the wallets.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta/tokens`
+- RPC `get.blockchain.apps.meta.tokens`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| tokenName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Can be expressed as CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[chainName:asc, chainName:desc]` | chainName:asc |  |
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainID": "00000000",
+      "chainName": "Lisk",
+      "tokenID": "Lisk",
+      "tokenName": "00000000",
+      "networkType": "mainnet",
+      "description": "LSK is the utility token of Lisk",
+      "denomUnits": [
+        {
+          "denom": "lsk",
+          "decimals": 8,
+          "aliases": [
+            "LISK"
+          ]
+        }
+      ],
+      "symbol": "LSK",
+      "displayDenom": "LSK",
+      "baseDenom": "beddows",
+      "logo": {
+        "png": "https://downloads.lisk.com/lisk/images/logo.png",
+        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
+      }
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta/tokens
+```
 
 
 ## Network
