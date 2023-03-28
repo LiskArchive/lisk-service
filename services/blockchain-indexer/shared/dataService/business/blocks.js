@@ -100,7 +100,7 @@ const normalizeBlock = async (originalBlock) => {
 
 			return {
 				numberOfEvents: events.length,
-				reward: blockRewardEvent ? blockRewardEvent.data.amount : undefined,
+				reward: blockRewardEvent ? blockRewardEvent.data.amount : null,
 			};
 		})();
 
