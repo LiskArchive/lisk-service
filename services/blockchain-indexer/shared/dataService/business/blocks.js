@@ -25,7 +25,7 @@ const {
 
 const logger = Logger();
 
-// const { getEventsByHeight } = require('./events');
+const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
@@ -78,12 +78,28 @@ const normalizeBlock = async (originalBlock) => {
 		block.isFinal = block.height <= (await getFinalizedHeight());
 		block.numberOfTransactions = block.transactions.length;
 		block.numberOfAssets = block.assets.length;
-		const [{ numberOfEvents, reward } = {}] = await blocksTable.find(
-			{ height: block.height },
-			['numberOfEvents', 'reward'],
-		);
-		block.numberOfEvents = numberOfEvents;
 
+		const { numberOfEvents, reward } = await (async () => {
+			const [dbResponse = {}] = await blocksTable.find(
+				{ height: block.height },
+				['numberOfEvents', 'reward'],
+			);
+
+			const { reward: dbReward } = dbResponse;
+			let eventsCount = dbResponse.numberOfEvents;
+
+			if (typeof eventsCount === 'undefined') {
+				const events = await getEventsByHeight(block.height);
+				eventsCount = events.length;
+			}
+
+			return {
+				numberOfEvents: eventsCount,
+				reward: dbReward,
+			};
+		})();
+
+		block.numberOfEvents = numberOfEvents;
 		block.size = 0;
 		block.reward = reward;
 		block.totalForged = BigInt(reward || '0');
