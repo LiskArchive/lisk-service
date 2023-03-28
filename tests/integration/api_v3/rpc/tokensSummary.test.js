@@ -31,9 +31,9 @@ const {
 } = require('../../../schemas/api_v3/tokensSummary.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensSummaryInfo = async (params) => request(wsRpcUrl, 'get.tokens.summary', params);
+const getTokensSummaryInfo = async (params) => request(wsRpcUrl, 'get.token.summary', params);
 
-describe('get.tokens.summary', () => {
+describe('get.token.summary', () => {
 	it('Retrieves tokens summary', async () => {
 		const response = await getTokensSummaryInfo({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);

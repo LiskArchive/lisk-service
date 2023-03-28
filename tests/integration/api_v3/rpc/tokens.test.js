@@ -30,11 +30,11 @@ const {
 } = require('../../../schemas/api_v3/tokens.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensInfo = async (params) => request(wsRpcUrl, 'get.tokens', params);
+const getTokensInfo = async (params) => request(wsRpcUrl, 'get.token.balances', params);
 const getValidators = async params => request(wsRpcUrl, 'get.pos.validators', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
-describe('get.tokens', () => {
+describe('get.token.balances', () => {
 	let refValidator;
 	let currTokenID;
 
