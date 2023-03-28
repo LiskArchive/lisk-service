@@ -26,7 +26,7 @@ const {
 const logger = Logger();
 
 const { getEventsByHeight } = require('./events');
-const { getFinalizedHeight } = require('../../constants');
+const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo } = require('../../utils/accountUtils');
@@ -80,22 +80,27 @@ const normalizeBlock = async (originalBlock) => {
 		block.numberOfAssets = block.assets.length;
 
 		const { numberOfEvents, reward } = await (async () => {
-			const [dbResponse = {}] = await blocksTable.find(
+			const [dbResponse] = await blocksTable.find(
 				{ height: block.height },
 				['numberOfEvents', 'reward'],
 			);
 
-			const { reward: dbReward } = dbResponse;
-			let eventsCount = dbResponse.numberOfEvents;
-
-			if (typeof eventsCount === 'undefined') {
-				const events = await getEventsByHeight(block.height);
-				eventsCount = events.length;
+			if (dbResponse) {
+				return {
+					numberOfEvents: dbResponse.numberOfEvents,
+					reward: dbResponse.reward,
+				};
 			}
 
+			const events = await getEventsByHeight(block.height);
+			const blockRewardEvent = events.find(
+				e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
+					&& e.name === EVENT.REWARD_MINTED,
+			);
+
 			return {
-				numberOfEvents: eventsCount,
-				reward: dbReward,
+				numberOfEvents: events.length,
+				reward: blockRewardEvent ? blockRewardEvent.data.amount : undefined,
 			};
 		})();
 
