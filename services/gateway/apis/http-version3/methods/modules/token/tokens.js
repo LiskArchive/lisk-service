@@ -20,8 +20,8 @@ const { transformParams, response, getSwaggerDescription } = require('../../../.
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/tokens',
-	rpcMethod: 'get.tokens',
+	swaggerApiPath: '/token/balances',
+	rpcMethod: 'get.token.balances',
 	tags: ['Token'],
 	params: {
 		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },

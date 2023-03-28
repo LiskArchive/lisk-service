@@ -19,8 +19,8 @@ const { transformParams, response, getSwaggerDescription } = require('../../../.
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/tokens/summary',
-	rpcMethod: 'get.tokens.summary',
+	swaggerApiPath: '/token/summary',
+	rpcMethod: 'get.token.summary',
 	tags: ['Token'],
 	params: {},
 	get schema() {

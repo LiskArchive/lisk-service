@@ -28,7 +28,7 @@ const {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/tokens`;
+const endpoint = `${baseUrlV3}/token`;
 
 describe('Tokens API', () => {
 	let refValidator;

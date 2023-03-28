@@ -26,7 +26,7 @@ const {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/tokens/summary`;
+const endpoint = `${baseUrlV3}/token/summary`;
 
 describe('Tokens API', () => {
 	it('Retrieves tokens summary -> ok', async () => {
