@@ -43,7 +43,7 @@ const blockSchema = {
 	signature: Joi.string().allow(EMPTY_STRING).pattern(regex.HASH_SHA512).required(),
 	aggregateCommit: Joi.object(aggregateCommit).required(),
 	isFinal: Joi.boolean().required(),
-	reward: Joi.string().required(),
+	reward: Joi.string().allow(null).required(), // Genesis block does not have reward event
 	networkFee: Joi.string().required(),
 	totalForged: Joi.string().required(),
 	totalBurnt: Joi.string().required(),
@@ -52,7 +52,7 @@ const blockSchema = {
 	validatorsHash: Joi.string().pattern(regex.HASH_SHA256).required(),
 	numberOfTransactions: Joi.number().integer().min(0).required(),
 	numberOfAssets: Joi.number().integer().min(1).required(),
-	numberOfEvents: Joi.number().integer().min(0).required(),
+	numberOfEvents: Joi.number().integer().min(1).required(),
 };
 
 const block = {
