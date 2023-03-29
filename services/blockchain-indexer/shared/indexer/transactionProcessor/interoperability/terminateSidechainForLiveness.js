@@ -40,12 +40,12 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { chainStatus } = await getChainInfo(tx.params.chainID);
+	const chainInfo = await getChainInfo(tx.params.chainID);
 
 	const { chainID } = tx.params;
 	const appInfo = {
 		chainID,
-		status: chainStatus,
+		status: chainInfo.status,
 	};
 
 	logger.trace(`Updating chain ${chainID} state.`);
@@ -60,10 +60,10 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const { chainID } = tx.params;
-	const { chainStatus } = await getChainInfo(chainID);
+	const chainInfo = await getChainInfo(chainID);
 	const appInfo = {
 		chainID,
-		status: chainStatus,
+		status: chainInfo.status,
 	};
 
 	logger.trace(`Reverting chain ${chainID} state.`);

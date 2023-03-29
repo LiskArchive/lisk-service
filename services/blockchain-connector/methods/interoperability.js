@@ -30,7 +30,7 @@ module.exports = [
 	},
 	{
 		name: 'getMainchainID',
-		controller: async ({ chainID }) => getMainchainID(chainID),
+		controller: async () => getMainchainID(),
 		params: {
 			chainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
 		},

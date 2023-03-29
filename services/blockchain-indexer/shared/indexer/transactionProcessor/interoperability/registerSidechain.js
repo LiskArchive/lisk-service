@@ -42,13 +42,13 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { chainStatus } = await getChainInfo(tx.params.chainID);
+	const chainInfo = await getChainInfo(tx.params.chainID);
 
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.chainID,
 		name: tx.params.name,
-		status: chainStatus,
+		status: chainInfo.status,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

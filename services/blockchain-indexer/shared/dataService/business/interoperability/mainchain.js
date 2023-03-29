@@ -16,8 +16,8 @@
 
 const { requestConnector } = require('../../../utils/request');
 
-const getMainchainID = async params => {
-	const response = await requestConnector('getMainchainID', { chainID: params.chainID });
+const getMainchainID = async () => {
+	const response = await requestConnector('getMainchainID');
 	return response;
 };
 

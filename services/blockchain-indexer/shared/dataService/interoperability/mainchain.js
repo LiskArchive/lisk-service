@@ -15,8 +15,8 @@
  */
 const business = require('../business');
 
-const getMainchainID = async params => {
-	const response = await business.getMainchainID(params);
+const getMainchainID = async () => {
+	const response = await business.getMainchainID();
 	return response;
 };
 

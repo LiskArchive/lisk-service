@@ -40,13 +40,13 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const { chainStatus } = await getChainInfo(tx.params.sendingChainID);
+	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		status: chainStatus,
+		status: chainInfo.status,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
@@ -63,10 +63,10 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	const { chainStatus } = await getChainInfo(tx.params.sendingChainID);
+	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
-		status: chainStatus,
+		status: chainInfo.status,
 		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,

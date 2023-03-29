@@ -44,8 +44,8 @@ const getChainInfo = async chainID => {
 	const chainStatusInt = chainAccount.status;
 	const chainStatus = CHAIN_STATUS[chainStatusInt];
 	return {
-		chainName: chainAccount.name,
-		chainStatus,
+		name: chainAccount.name,
+		status: chainStatus,
 	};
 };
 
@@ -53,14 +53,14 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const mainchainID = await getMainchainID({ chainID: tx.params.ownChainID });
-	const { chainName, chainStatus } = await getChainInfo(mainchainID);
+	const mainchainID = await getMainchainID();
+	const mainchainInfo = await getChainInfo(mainchainID);
 
 	logger.trace(`Indexing mainchain (${mainchainID}) registration information.`);
 	const appInfo = {
 		chainID: mainchainID,
-		name: chainName,
-		status: chainStatus,
+		name: mainchainInfo.name,
+		status: mainchainInfo.status,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
@@ -75,7 +75,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const mainchainID = await getMainchainID({ chainID: tx.params.ownChainID });
+	const mainchainID = await getMainchainID();
 
 	logger.trace(`Reverting mainchain (${mainchainID}) registration information.`);
 	await blockchainAppsTable.deleteByPrimaryKey(mainchainID, dbTrx);
