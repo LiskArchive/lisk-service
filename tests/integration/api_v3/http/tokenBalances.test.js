@@ -85,7 +85,7 @@ describe('Tokens API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid request param: TtkenID with NO address -> bad request', async () => {
+	it('invalid request param: TokenID with NO address -> bad request', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
