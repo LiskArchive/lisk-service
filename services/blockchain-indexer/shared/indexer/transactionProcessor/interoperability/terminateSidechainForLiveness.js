@@ -24,7 +24,7 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
-const { getChainStatus } = require('./registerMainchain');
+const { getChainInfo } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
@@ -40,7 +40,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
-	const chainStatus = await getChainStatus(tx.params.chainID);
+	const { chainStatus } = await getChainInfo(tx.params.chainID);
 
 	const { chainID } = tx.params;
 	const appInfo = {
@@ -60,7 +60,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const { chainID } = tx.params;
-	const chainStatus = await getChainStatus(chainID);
+	const { chainStatus } = await getChainInfo(chainID);
 	const appInfo = {
 		chainID,
 		status: chainStatus,

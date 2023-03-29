@@ -46,6 +46,24 @@ const getChainAccount = async (chainID) => {
 	}
 };
 
+const getMainchainID = async (chainID) => {
+	try {
+		// TODO: Remove this and use SDK endpoint once following issue is closed: https://github.com/LiskHQ/lisk-sdk/issues/8309
+		const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
+		const mainchainID = chainID.substring(0, 2).padEnd(LENGTH_CHAIN_ID, '0');
+
+		// const mainchainID = await invokeEndpoint('interoperability_getMainchainID', { chainID });
+		return mainchainID;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getMainchainID\'.');
+		}
+		logger.warn(`Error returned when invoking 'interoperability_getMainchainID' with chainID: ${chainID}.\n${err.stack}`);
+		throw err;
+	}
+};
+
 module.exports = {
 	getChainAccount,
+	getMainchainID,
 };
