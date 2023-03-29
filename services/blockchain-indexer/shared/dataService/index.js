@@ -64,8 +64,8 @@ const {
 
 const {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 } = require('./token');
 
@@ -120,8 +120,8 @@ module.exports = {
 
 	// Token
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 
 	// Transactions

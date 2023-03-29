@@ -25,28 +25,28 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	tokensSummaryResponseSchema,
+	tokenSummaryResponseSchema,
 	goodResponseSchema,
-	tokensSummaryMetaResponseSchema,
-} = require('../../../schemas/api_v3/tokensSummary.schema');
+	tokenSummaryMetaResponseSchema,
+} = require('../../../schemas/api_v3/tokenSummary.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensSummaryInfo = async (params) => request(wsRpcUrl, 'get.tokens.summary', params);
+const gettokenSummaryInfo = async (params) => request(wsRpcUrl, 'get.token.summary', params);
 
-describe('get.tokens.summary', () => {
+describe('get.token.summary', () => {
 	it('Retrieves tokens summary', async () => {
-		const response = await getTokensSummaryInfo({});
+		const response = await gettokenSummaryInfo({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
 		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(tokensSummaryResponseSchema);
-		expect(result.meta).toMap(tokensSummaryMetaResponseSchema);
+		expect(result.data).toMap(tokenSummaryResponseSchema);
+		expect(result.meta).toMap(tokenSummaryMetaResponseSchema);
 	});
 
 	it('Invalid request param -> invalid param', async () => {
-		const response = await getTokensSummaryInfo({ invalidParam: 'invalid' });
+		const response = await gettokenSummaryInfo({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

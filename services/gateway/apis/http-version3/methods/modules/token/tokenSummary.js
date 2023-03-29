@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokensSummarySource = require('../../../../../sources/version3/tokensSummary');
+const tokenSummarySource = require('../../../../../sources/version3/tokenSummary');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/tokens/summary',
-	rpcMethod: 'get.tokens.summary',
+	swaggerApiPath: '/token/summary',
+	rpcMethod: 'get.token.summary',
 	tags: ['Token'],
 	params: {},
 	get schema() {
@@ -44,6 +44,6 @@ module.exports = {
 		Object.assign(tokenSummarySchema[this.swaggerApiPath].get.responses, response);
 		return tokenSummarySchema;
 	},
-	source: tokensSummarySource,
+	source: tokenSummarySource,
 	envelope,
 };
