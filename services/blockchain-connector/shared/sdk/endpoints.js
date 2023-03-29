@@ -27,7 +27,6 @@ const {
 	getNodeInfo,
 	getSystemMetadata,
 } = require('./endpoints_1');
-const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 const {
 	cacheBlocks,
 	getBlockByIDFromCache,
@@ -75,9 +74,9 @@ const getGeneratorStatus = async () => {
 	}
 };
 
-const updateGeneratorStatus = async (config) => {
+const updateGeneratorStatus = async (generatorConfig) => {
 	try {
-		const response = await invokeEndpoint('generator_updateStatus', { ...config });
+		const response = await invokeEndpoint('generator_updateStatus', { ...generatorConfig });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
