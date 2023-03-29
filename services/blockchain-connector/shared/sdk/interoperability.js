@@ -50,7 +50,7 @@ const getMainchainID = async () => {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getMainchainID\'.');
 		}
-		logger.warn(`Error returned when invoking 'interoperability_getMainchainID' with chainID: ${chainID}.\n${err.stack}`);
+		logger.warn(`Error returned when invoking 'interoperability_getMainchainID'.\n${err.stack}`);
 		throw err;
 	}
 };

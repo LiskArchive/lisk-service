@@ -15,10 +15,7 @@
  */
 const business = require('../business');
 
-const getMainchainID = async () => {
-	const response = await business.getMainchainID();
-	return response;
-};
+const getMainchainID = async () => business.getMainchainID();
 
 module.exports = {
 	getMainchainID,
