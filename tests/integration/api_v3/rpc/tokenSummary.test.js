@@ -28,7 +28,7 @@ const {
 	tokensSummaryResponseSchema,
 	goodResponseSchema,
 	tokensSummaryMetaResponseSchema,
-} = require('../../../schemas/api_v3/tokensSummary.schema');
+} = require('../../../schemas/api_v3/tokenSummary.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensSummaryInfo = async (params) => request(wsRpcUrl, 'get.token.summary', params);

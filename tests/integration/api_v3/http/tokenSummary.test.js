@@ -22,7 +22,7 @@ const {
 	tokensSummaryResponseSchema,
 	goodResponseSchema,
 	tokensSummaryMetaResponseSchema,
-} = require('../../../schemas/api_v3/tokensSummary.schema');
+} = require('../../../schemas/api_v3/tokenSummary.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

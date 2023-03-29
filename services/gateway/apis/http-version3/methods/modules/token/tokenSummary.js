@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokensSummarySource = require('../../../../../sources/version3/tokensSummary');
+const tokensSummarySource = require('../../../../../sources/version3/tokenSummary');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 
