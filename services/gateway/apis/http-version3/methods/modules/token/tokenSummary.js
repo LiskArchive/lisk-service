@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokensSummarySource = require('../../../../../sources/version3/tokenSummary');
+const tokenSummarySource = require('../../../../../sources/version3/tokenSummary');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 
@@ -44,6 +44,6 @@ module.exports = {
 		Object.assign(tokenSummarySchema[this.swaggerApiPath].get.responses, response);
 		return tokenSummarySchema;
 	},
-	source: tokensSummarySource,
+	source: tokenSummarySource,
 	envelope,
 };
