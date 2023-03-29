@@ -24,7 +24,7 @@ const regex = require('../../../shared/regex');
 
 module.exports = [
 	{
-		name: 'tokens',
+		name: 'token.balances',
 		controller: getTokens,
 		params: {
 			address: { optional: false, type: 'string' },
@@ -34,7 +34,7 @@ module.exports = [
 		},
 	},
 	{
-		name: 'tokens.summary',
+		name: 'token.summary',
 		controller: getTokensSummary,
 		params: {
 			limit: { optional: true, type: 'number' },

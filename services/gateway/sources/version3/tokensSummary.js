@@ -21,7 +21,7 @@ const {
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.tokens.summary',
+	method: 'indexer.token.summary',
 	params: {
 		offset: '=,number',
 		limit: '=,number',

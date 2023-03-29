@@ -17,7 +17,7 @@ const token = require('./mappings/token');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.tokens',
+	method: 'indexer.token.balances',
 	params: {
 		address: '=,string',
 		tokenID: '=,string',
