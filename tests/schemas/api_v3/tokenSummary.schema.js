@@ -38,21 +38,21 @@ const totalSupply = {
 	amount: Joi.string().pattern(regex.DIGITS).required(),
 };
 
-const tokensSummaryResponseSchema = {
+const tokenSummaryResponseSchema = {
 	escrowedAmounts: Joi.array().items(escrowedAmounts).required(),
 	supportedTokens: Joi.object(supportedTokens).required(),
 	totalSupply: Joi.array().items(totalSupply).required(),
 };
 
-const tokensSummaryMetaResponseSchema = {};
+const tokenSummaryMetaResponseSchema = {};
 
 const goodResponseSchema = {
-	data: Joi.object(tokensSummaryResponseSchema).required(),
-	meta: Joi.object(tokensSummaryMetaResponseSchema).required(),
+	data: Joi.object(tokenSummaryResponseSchema).required(),
+	meta: Joi.object(tokenSummaryMetaResponseSchema).required(),
 };
 
 module.exports = {
-	tokensSummaryResponseSchema: Joi.object(tokensSummaryResponseSchema).required(),
+	tokenSummaryResponseSchema: Joi.object(tokenSummaryResponseSchema).required(),
 	goodResponseSchema: Joi.object(goodResponseSchema).required(),
-	tokensSummaryMetaResponseSchema: Joi.object(tokensSummaryMetaResponseSchema).required(),
+	tokenSummaryMetaResponseSchema: Joi.object(tokenSummaryMetaResponseSchema).required(),
 };

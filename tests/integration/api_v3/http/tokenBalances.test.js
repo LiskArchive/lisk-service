@@ -22,8 +22,8 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	tokensSchema,
-	tokensMetaSchema,
+	tokenBalancesSchema,
+	tokenBalancesMetaSchema,
 } = require('../../../schemas/api_v3/tokenBalances.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -47,8 +47,8 @@ describe('Tokens API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokenBalancesSchema));
+		expect(response.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('retrieves token info when call with address and limit 10-> ok', async () => {
@@ -57,8 +57,8 @@ describe('Tokens API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokenBalancesSchema));
+		expect(response.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('retrieves token info when call with address, limit=10 and offset=1-> ok', async () => {
@@ -67,8 +67,8 @@ describe('Tokens API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokenBalancesSchema));
+		expect(response.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('retrieves token info when call with address and tokenID-> ok', async () => {
@@ -76,8 +76,8 @@ describe('Tokens API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
-		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		response.data.forEach(tokenEntry => expect(tokenEntry).toMap(tokenBalancesSchema));
+		expect(response.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('No address -> bad request', async () => {

@@ -21,14 +21,14 @@ const lockedBalance = {
 	amount: Joi.string().required(),
 };
 
-const tokensMetaSchema = {
+const tokenBalancesMetaSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	count: Joi.number().integer().min(0).required(),
 	offset: Joi.number().integer().min(0).required(),
 	total: Joi.number().integer().min(0).required(),
 };
 
-const tokensSchema = {
+const tokenBalancesSchema = {
 	tokenID: Joi.string().required(),
 	availableBalance: Joi.string().required(),
 	lockedBalances: Joi.array().items(lockedBalance).required(),
@@ -50,8 +50,8 @@ const goodRequestSchemaForSupportedTokens = {
 };
 
 module.exports = {
-	tokensSchema: Joi.object(tokensSchema).required(),
+	tokenBalancesSchema: Joi.object(tokenBalancesSchema).required(),
 	supportedTokensSchema: Joi.object(supportedTokensSchema).required(),
-	tokensMetaSchema: Joi.object(tokensMetaSchema).required(),
+	tokenBalancesMetaSchema: Joi.object(tokenBalancesMetaSchema).required(),
 	goodRequestSchemaForSupportedTokens: Joi.object(goodRequestSchemaForSupportedTokens).required(),
 };

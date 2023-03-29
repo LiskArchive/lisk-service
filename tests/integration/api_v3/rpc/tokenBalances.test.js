@@ -25,8 +25,8 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	tokensSchema,
-	tokensMetaSchema,
+	tokenBalancesSchema,
+	tokenBalancesMetaSchema,
 } = require('../../../schemas/api_v3/tokenBalances.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -53,8 +53,8 @@ describe('get.token.balances', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(result.meta).toMap(tokensMetaSchema);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokenBalancesSchema));
+		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('returns tokens info when call with address and limit=10', async () => {
@@ -64,8 +64,8 @@ describe('get.token.balances', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(result.meta).toMap(tokensMetaSchema);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokenBalancesSchema));
+		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('returns tokens info when call with address, limit=10 and offset=1', async () => {
@@ -75,8 +75,8 @@ describe('get.token.balances', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(result.meta).toMap(tokensMetaSchema);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokenBalancesSchema));
+		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('returns token info when call with address and tokenID', async () => {
@@ -85,8 +85,8 @@ describe('get.token.balances', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
-		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(result.meta).toMap(tokensMetaSchema);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokenBalancesSchema));
+		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
 	it('invalid request param -> invalid param', async () => {
