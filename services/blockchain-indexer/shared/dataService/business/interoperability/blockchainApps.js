@@ -55,7 +55,7 @@ const getBlockchainApps = async (params) => {
 		params = remParams;
 
 		params.search = {
-			property: 'chainName',
+			property: 'name',
 			pattern: search,
 		};
 	}
