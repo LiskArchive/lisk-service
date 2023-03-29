@@ -19,13 +19,13 @@ const {
 
 const dataService = require('../../../shared/dataService');
 
-const getTokens = async params => {
+const getTokenBalances = async params => {
 	try {
 		const tokensInfo = {
 			data: [],
 			meta: {},
 		};
-		const response = await dataService.getTokens(params);
+		const response = await dataService.getTokenBalances(params);
 		if (response.data) tokensInfo.data = response.data;
 		if (response.meta) tokensInfo.meta = response.meta;
 
@@ -38,12 +38,12 @@ const getTokens = async params => {
 	}
 };
 
-const getTokensSummary = async params => {
+const getTokenSummary = async params => {
 	const tokensSummary = {
 		data: {},
 		meta: {},
 	};
-	const response = await dataService.getTokensSummary(params);
+	const response = await dataService.getTokenSummary(params);
 	if (response.data) tokensSummary.data = response.data;
 	if (response.meta) tokensSummary.meta = response.meta;
 
@@ -77,7 +77,7 @@ const getTokenConstants = async () => {
 
 module.exports = {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 };
