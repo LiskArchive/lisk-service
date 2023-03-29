@@ -31,8 +31,17 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainApps = async (params) => request(wsRpcUrl, 'get.blockchain.apps', params);
+const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
+let curChainID;
+
+// TODO: Update test when data is available in blockchain_apps table
 describe('get.blockchain.apps', () => {
+	beforeAll(async () => {
+		const response = await getNetworkStatus();
+		curChainID = response.result.data.chainID;
+	});
+
 	it('returns list of all blockchain applications', async () => {
 		const response = await getBlockchainApps();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -66,35 +75,8 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Enable test case once blockchain app implementation is done
-	xit('returns list of all default blockchain applications', async () => {
-		const response = await getBlockchainApps({ isDefault: true });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(blockchainApp => expect(blockchainApp)
-			.toMap(blockchainAppSchema, { isDefault: true }));
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	// TODO: Enable test case once blockchain app implementation is done
-	xit('returns list of all non-default blockchain applications', async () => {
-		const response = await getBlockchainApps({ isDefault: false });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(blockchainApp => expect(blockchainApp)
-			.toMap(blockchainAppSchema, { isDefault: false }));
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('returns list of all blockchain applications by chainID', async () => {
-		const response = await getBlockchainApps({ chainID: '' });
+	it('returns list of all blockchain applications by chainID', async () => {
+		const response = await getBlockchainApps({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -103,9 +85,18 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('returns list of all blockchain applications by state', async () => {
-		const response = await getBlockchainApps({ state: 'active' });
+	it('returns list of all blockchain applications by CSV chainID', async () => {
+		const response = await getBlockchainApps({ chainID: `00000000,${curChainID}` });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns list of all blockchain applications by status', async () => {
+		const response = await getBlockchainApps({ status: 'active' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -115,8 +106,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	// TODO: Update test case once implementation for indexing blockchain apps is done
-	xit('returns list of all blockchain applications by partial search', async () => {
+	it('returns list of all blockchain applications by partial search', async () => {
 		const response = await getBlockchainApps({ search: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

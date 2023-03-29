@@ -18,7 +18,8 @@ const {
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
-} = require('../shared/sdk/endpoints');
+	dryRunTransaction,
+} = require('../shared/sdk');
 
 module.exports = [
 	{
@@ -45,6 +46,17 @@ module.exports = [
 		controller: async ({ transaction }) => postTransaction(transaction),
 		params: {
 			transaction: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'dryRunTransaction',
+		controller: async ({
+			transaction,
+			skipVerify,
+		}) => dryRunTransaction({ transaction, skipVerify }),
+		params: {
+			transaction: { optional: false, type: 'any' },
+			skipVerify: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];

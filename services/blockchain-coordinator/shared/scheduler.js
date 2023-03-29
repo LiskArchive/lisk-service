@@ -14,10 +14,10 @@
  *
  */
 const MessageQueue = require('bull');
+const BluebirdPromise = require('bluebird');
 
 const {
 	Logger,
-	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -25,8 +25,6 @@ const logger = Logger();
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
-	// isGenesisAccountsIndexed,
-	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
@@ -36,6 +34,7 @@ const {
 
 const {
 	getRegisteredModules,
+	getAllPosValidators,
 } = require('./sources/connector');
 
 const config = require('../config');
@@ -46,11 +45,11 @@ const blockIndexQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-// const accountIndexQueue = new MessageQueue(
-// 	config.queue.accounts.name,
-// 	config.endpoints.messageQueue,
-// 	{ defaultJobOptions: config.queue.defaultJobOptions },
-// );
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
@@ -58,36 +57,48 @@ const getRegisteredModuleAssets = () => registeredLiskModules;
 const scheduleGenesisBlockIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	await blockIndexQueue.add({ height: genesisHeight });
-	logger.info('Finished scheduling of genesis block indexing');
+	logger.info('Finished scheduling of genesis block indexing.');
 };
 
-const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
+const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
 
-	await Promise.all(blockHeights.map(async height => {
-		await blockIndexQueue.add({ height, isNewBlock });
-		logger.debug(`Scheduled indexing for block at height: ${height}`);
-	}));
+	await BluebirdPromise.map(
+		blockHeights,
+		async height => {
+			await blockIndexQueue.add({ height });
+			logger.debug(`Scheduled indexing for block at height: ${height}.`);
+		},
+		{ concurrency: blockHeights.length },
+	);
 };
 
-// const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
-// 	await Promise.all(accountAddressesToIndex
-// 		.map(async (address) => accountIndexQueue.add({ address })),
-// 	);
-// 	logger.info('Finished scheduling of genesis accounts indexing');
-// };
+const scheduleValidatorsIndexing = async (validators) => {
+	await BluebirdPromise.map(
+		validators,
+		async validator => accountIndexQueue.add({
+			account: {
+				...validator,
+				isValidator: true,
+			},
+		}),
+		{ concurrency: validators.length },
+	);
+
+	logger.info('Finished scheduling of validators indexing');
+};
 
 const initIndexingScheduler = async () => {
-	// Schedule indexing new block
-	const newBlockListener = async ({ blockHeader }) => {
-		scheduleBlocksIndexing(blockHeader.height, true);
-	};
-	Signals.get('newBlock').add(newBlockListener);
-
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
+
+	// Get all validators and schedule indexing
+	const { validators } = await getAllPosValidators();
+	if (Array.isArray(validators) && validators.length) {
+		await scheduleValidatorsIndexing(validators);
+	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
 	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
@@ -104,15 +115,6 @@ const initIndexingScheduler = async () => {
 	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
 		await scheduleBlocksIndexing(missingBlocksByHeight);
 	}
-
-	// Schedule genesis accounts indexing
-	// const isGenesisAccountsAlreadyIndexed = await isGenesisAccountsIndexed();
-	// if (!isGenesisAccountsAlreadyIndexed) {
-	// 	const genesisAccountAddresses = await getGenesisAccountAddresses();
-	// 	if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
-	// 		await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
-	// 	}
-	// }
 };
 
 const scheduleMissingBlocksIndexing = async () => {
@@ -135,7 +137,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	try {
 		if (!Array.isArray(missingBlocksByHeight)) {
 			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
-			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}`);
+			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}.`);
 		}
 
 		if (missingBlocksByHeight.length === 0) {
@@ -146,7 +148,7 @@ const scheduleMissingBlocksIndexing = async () => {
 			await scheduleBlocksIndexing(missingBlocksByHeight);
 		}
 	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
+		logger.warn(`Missed blocks indexing failed due to: ${err.message}.`);
 	}
 };
 

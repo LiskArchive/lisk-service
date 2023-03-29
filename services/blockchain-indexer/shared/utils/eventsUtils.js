@@ -13,74 +13,108 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-const { codec } = require('@liskhq/lisk-codec');
 const {
-	utils: { hash },
-} = require('@liskhq/lisk-cryptography');
+	Logger,
+	MySQL: {
+		getTableInstance,
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
+	},
+} = require('lisk-service-framework');
+const config = require('../../config');
 
-const { requestConnector } = require('./request');
+const { getFinalizedHeight, getGenesisHeight } = require('../constants');
 
-let eventSchema;
+const keyValueTable = require('../database/mysqlKVStore');
+const eventsTableSchema = require('../database/schema/events');
 
-const decodeEvent = async (event) => {
-	if (!eventSchema) {
-		const schemas = await requestConnector('getSchema');
-		eventSchema = schemas.event;
-	}
-	const eventID = codec.decode(eventSchema, event);
-	return eventID;
-};
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const logger = Logger();
 
-const encodeEvent = async (event) => {
-	if (!eventSchema) {
-		const schemas = await requestConnector('getSchema');
-		eventSchema = schemas.event;
-	}
-	const eventID = codec.encode(eventSchema, event);
-	return eventID;
-};
+const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 
-const getEventsInfoToIndex = async (blockHeader, events) => {
+const getEventsTable = () => getTableInstance(
+	eventsTableSchema.tableName,
+	eventsTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
 		eventsInfo: [],
 		eventTopicsInfo: [],
 	};
 
-	await BluebirdPromise.map(
-		events,
-		async (event) => {
-			const id = hash(event);
-			const encodedEvent = await encodeEvent(event);
+	events.forEach((event) => {
+		const eventInfo = {
+			id: event.id,
+			name: event.name,
+			module: event.module,
+			height: block.height,
+			index: event.index,
+		};
 
-			const eventInfo = {
-				id,
-				typeID: event.typeID,
-				moduleID: event.moduleID,
-				height: blockHeader.height,
+		// Store whole event when persistence is enabled or block is not finalized yet
+		// Storing event of non-finalized block is required to fetch events of a dropped block
+		if (!block.isFinal || config.db.isPersistEvents) {
+			eventInfo.eventStr = JSON.stringify(event);
+		}
+
+		eventsInfoToIndex.eventsInfo.push(eventInfo);
+
+		event.topics.forEach(topic => {
+			const eventTopicInfo = {
+				tempID: event.id.concat(topic),
+				eventID: event.id,
+				height: block.height,
 				index: event.index,
-				event: encodedEvent,
+				timestamp: block.timestamp,
+				topic,
 			};
-
-			eventsInfoToIndex.eventsInfo.push(eventInfo);
-
-			event.topics.forEach(topic => {
-				eventsInfoToIndex.eventTopicsInfo.push({
-					id,
-					height: blockHeader.height,
-					timestamp: blockHeader.timestamp,
-					topic,
-				});
-			});
-		},
-		{ concurrency: events.length },
-	);
+			eventsInfoToIndex.eventTopicsInfo.push(eventTopicInfo);
+		});
+	});
 
 	return eventsInfoToIndex;
 };
 
+const deleteEventStrTillFinalizedHeight = async () => {
+	const eventsTable = await getEventsTable();
+	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
+	const toHeight = await getFinalizedHeight();
+
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDbTransaction(connection);
+	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
+
+	try {
+		const queryParams = {
+			propBetweens: [{
+				property: 'height',
+				from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
+				to: toHeight,
+			}],
+		};
+
+		await eventsTable.update({ where: queryParams, updates: { eventStr: null } }, dbTrx);
+		await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight, dbTrx);
+
+		await commitDbTransaction(dbTrx);
+		logger.debug(`Committed MySQL transaction to delete serialized events until height ${toHeight}.`);
+	} catch (_) {
+		await rollbackDbTransaction(dbTrx);
+		logger.debug(`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`);
+	}
+};
+
 module.exports = {
-	decodeEvent,
-	encodeEvent,
 	getEventsInfoToIndex,
+	deleteEventStrTillFinalizedHeight,
+};
+
+module.exports = {
+	getEventsInfoToIndex,
+	deleteEventStrTillFinalizedHeight,
 };

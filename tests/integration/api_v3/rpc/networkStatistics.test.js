@@ -21,22 +21,27 @@ const {
 
 const {
 	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	networkStatisticsSchema,
 	goodRequestSchema,
+} = require('../../../schemas/httpGenerics.schema');
+
+const {
+	networkStatisticsSchema,
 } = require('../../../schemas/api_v3/networkStatistics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getNetworkStatistics = async (params) => request(wsRpcUrl, 'get.network.statistics', params);
 
 describe('get.network.statistics', () => {
-	// TODO: Enable when peers endpoint is available from sdk
-	xit('returns network statistics', async () => {
+	it('returns network statistics', async () => {
 		const response = await getNetworkStatistics();
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(networkStatisticsSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
+		expect(result.data).toMap(networkStatisticsSchema);
 	});
 
 	it('invalid request param -> invalid param', async () => {

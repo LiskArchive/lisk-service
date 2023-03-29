@@ -53,11 +53,41 @@
                                 "example": 41
                             }
                         }
+                    },
+                    "totalLocked": {
+                        "type": "array",
+                        "description": "An array representing total of locked tokens.",
+                        "items": {
+                            "$ref": "#/definitions/AmountEntry"
+                        }
+                    },
+                    "totalStaked": {
+                        "description": "An object representing total staked amount for the PoS token ID.",
+                        "$ref": "#/definitions/AmountEntry"
+                    },
+                    "totalSelfStaked": {
+                        "description": "An object representing total self staked amount for the PoS token ID.",
+                        "$ref": "#/definitions/AmountEntry"
                     }
                 }
             },
             "meta": {
                 "type": "object"
+            }
+        }
+    },
+    "AmountEntry": {
+        "type": "object",
+        "properties": {
+            "tokenID": {
+                "type": "string",
+                "description": "Universal ID of the token.",
+                "example":"0000000000000000"
+            },
+            "amount": {
+                "type": "string",
+                "description": "Amount of total token.",
+                "example": "10000000000"
             }
         }
     }

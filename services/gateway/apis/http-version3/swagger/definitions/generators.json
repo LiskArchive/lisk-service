@@ -11,18 +11,23 @@
             "name": {
                 "type": "string",
                 "example": "genesis_84",
-                "description": "Generator name"
+                "description": "Generator name."
             },
             "publicKey": {
                 "type": "string",
                 "format": "publicKey",
                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key."
+                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
             },
             "nextForgingTime": {
                 "type": "integer",
                 "example": 1616058987,
-                "description": "UNIX Timestamp"
+                "description": "UNIX Timestamp."
+            },
+            "status": {
+                "type": "string",
+                "example": "active",
+                "description": "Validator status."
             }
         }
     },
@@ -41,7 +46,7 @@
                 }
             },
             "meta": {
-                "$ref": "#/definitions/Pagination"
+                "$ref": "#/definitions/pagination"
             }
         }
     }

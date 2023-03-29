@@ -21,18 +21,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+
+LoggerConfig(config.log);
+
 const packageJson = require('./package.json');
 const { init } = require('./shared/init');
 const { setAppContext } = require('./shared/utils/request');
-
-// Configure logger
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -42,7 +36,10 @@ const app = Microservice({
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
-	logger: loggerConf,
+	logger: config.log,
+	dependencies: [
+		'indexer',
+	],
 });
 
 setAppContext(app);
@@ -55,9 +52,9 @@ app.addEvents(path.join(__dirname, 'events'));
 // Run the application
 app.run().then(async () => {
 	await init();
-	logger.info(`Service started ${packageJson.name}`);
+	logger.info(`Service started ${packageJson.name}.`);
 }).catch(err => {
-	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(`Could not start the service ${packageJson.name}: ${err.message}`);
 	logger.fatal(err.stack);
 	process.exit(1);
 });

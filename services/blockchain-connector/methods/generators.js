@@ -15,9 +15,9 @@
  */
 const {
 	getGenerators,
-	getForgingStatus,
-	updateForgingStatus,
-} = require('../shared/sdk/endpoints');
+	getGeneratorStatus,
+	updateGeneratorStatus,
+} = require('../shared/sdk');
 
 module.exports = [
 	{
@@ -26,13 +26,13 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getForgingStatus',
-		controller: getForgingStatus,
+		name: 'getGeneratorStatus',
+		controller: getGeneratorStatus,
 		params: {},
 	},
 	{
-		name: 'updateForgingStatus',
-		controller: async (params) => updateForgingStatus(params),
+		name: 'updateGeneratorStatus',
+		controller: async (params) => updateGeneratorStatus(params),
 		params: {
 			address: { optional: false, type: 'string' },
 			password: { optional: false, type: 'string' },

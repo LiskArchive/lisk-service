@@ -49,10 +49,29 @@
                 "example": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
                 "description": "ID of the parent block."
             },
-            "generatorAddress": {
-                "type": "string",
-                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Address of the block generator."
+            "generator": {
+                "type": "object",
+                "required": [
+                    "address",
+                    "name"
+                ],
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                        "description": "Address of the block generator."
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "genesis_3",
+                        "description": "Name of the block generator."
+                    },
+                    "publicKey": {
+                        "type": "string",
+                        "example": "32ddb97e8d7e607a14fef8449c2a2180cd74a51f67b04a50a4b1917d3ca8a52e",
+                        "description": "Public key of the block generator."
+                    }
+                }
             },
             "transactionRoot": {
                 "type": "string",
@@ -87,8 +106,8 @@
                 "type": "object",
                 "properties": {
                     "height": {
-                        "type": "string",
-                        "example": "166"
+                        "type": "number",
+                        "example": 166
                     },
                     "aggregationBits": {
                         "type": "string",
@@ -99,6 +118,21 @@
                         "example": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
                     }
                 }
+            },
+            "numberOfTransactions": {
+                "type": "number",
+                "description": "The number of transactions processed in the block.",
+                "example": 10
+            },
+            "numberOfAssets": {
+                "type": "number",
+                "description": "The number of assets in the block.",
+                "example": 10
+            },
+            "numberOfEvents": {
+                "type": "number",
+                "description": "The number of events in the block.",
+                "example": 10
             },
             "totalBurnt": {
                 "type": "string",
@@ -147,7 +181,7 @@
                 }
             },
             "meta": {
-                "$ref": "#/definitions/Pagination"
+                "$ref": "#/definitions/pagination"
             }
         }
     },
@@ -155,8 +189,7 @@
         "type": "object",
         "required": [
             "block",
-            "moduleID",
-            "data"
+            "assets"
         ],
         "properties": {
             "block": {
@@ -176,16 +209,32 @@
                     }
                 }
             },
-            "moduleID": {
-                "type": "string",
-                "format": "id",
-                "minLength": 1,
-                "maxLength": 4294967295,
-                "example": "2",
-                "description": "Module ID"
-            },
-            "data": {
-                "type": "object"
+            "assets": {
+                "type": "array",
+                "required": [
+                    "module",
+                    "data"
+                ],
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "module": {
+                            "type": "string",
+                            "example": "random",
+                            "description": "Name of the blockchain module associated with the assets."
+                        },
+                        "data": {
+                            "type": "object",
+                            "properties": {
+                                "seedReveal": {
+                                    "type": "string",
+                                    "example": "c555338417025a5b2b9278304f8a96be"
+                                }
+                            },
+                            "description": "The data object schema varies by module. The exact schema can be found from the `/schemas` endpoint."
+                        }
+                    }
+                }
             }
         }
     },
@@ -204,7 +253,7 @@
                 }
             },
             "meta": {
-                "$ref": "#/definitions/Pagination"
+                "$ref": "#/definitions/pagination"
             }
         }
     }

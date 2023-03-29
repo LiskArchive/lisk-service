@@ -16,6 +16,7 @@
 const blockAssetsSource = require('../../../sources/version3/blockAssets');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -23,12 +24,12 @@ module.exports = {
 	rpcMethod: 'get.blocks.assets',
 	tags: ['Blocks'],
 	params: {
-		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: /^([1-9]|[A-Fa-f0-9]){1,64}$/ },
-		height: { optional: true, type: 'string', min: 0, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
-		timestamp: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
-		moduleID: { optional: true, type: 'string', min: 1, max: 4294967295, pattern: /[0-9]+/ },
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
+		height: { optional: true, type: 'string', min: 0, pattern: regex.HEIGHT_RANGE },
+		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
+		module: { optional: true, type: 'string', min: 1, pattern: regex.MODULE },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
 			optional: true,
 			type: 'string',
@@ -40,15 +41,15 @@ module.exports = {
 		const blockAssetSchema = {};
 		blockAssetSchema[this.swaggerApiPath] = { get: {} };
 		blockAssetSchema[this.swaggerApiPath].get.tags = this.tags;
-		blockAssetSchema[this.swaggerApiPath].get.summary = 'Requests block assets data';
+		blockAssetSchema[this.swaggerApiPath].get.summary = 'Requests block assets data.';
 		blockAssetSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns block assets data',
+			description: 'Returns block assets data. Assets are always returned empty for the genesis height.',
 		});
 		blockAssetSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
 		blockAssetSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of block assets',
+				description: 'Returns a list of block assets.',
 				schema: {
 					$ref: '#/definitions/BlocksAssetsWithEnvelope',
 				},

@@ -20,10 +20,9 @@ module.exports = {
 	method: 'indexer.blockchain.apps',
 	params: {
 		chainID: '=,string',
-		isDefault: '=,boolean',
-		chainName: '=,string',
+		name: '=,string',
 		search: '=,string',
-		state: '=,string',
+		status: '=,string',
 		offset: '=,number',
 		limit: '=,number',
 	},

@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {};
 
 // Moleculer broker config
@@ -26,7 +28,11 @@ config.endpoints = {};
 config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 // Logging
-config.log = {};
+config.log = {
+	name: packageJson.name,
+	version: packageJson.version,
+};
+
 /**
  * log.level - Limits the importance of log messages for console and stdout outputs
  *             One fo the following in that order:
@@ -63,15 +69,9 @@ config.gitHub = {
 	get appRegistryRepoName() { return this.appRegistryRepo.split('/').pop(); },
 };
 
-config.dataDir = `${process.cwd()}/data`;
+config.dataDir = `${__dirname}/data`;
 
-config.serviceURL = {
-	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
-	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
-	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
-};
-
-config.supportedNetworks = ['mainnet', 'testnet', 'betanet'];
+config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 
 const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
@@ -81,6 +81,14 @@ config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
 config.FILENAME = Object.freeze({
 	APP_JSON: 'app.json',
 	NATIVETOKENS_JSON: 'nativetokens.json',
+});
+
+config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
+	'00': 'mainnet',
+	'01': 'testnet',
+	'02': 'betanet',
+	'03': 'alphanet',
+	'04': 'devnet',
 });
 
 module.exports = config;

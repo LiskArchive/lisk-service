@@ -13,27 +13,44 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const BluebirdPromise = require('bluebird');
+
 const {
 	Logger,
 	MySQL: { getTableInstance },
 	Signals,
+	Utils,
 } = require('lisk-service-framework');
 
-const logger = Logger();
+const {
+	indexValidatorCommissionInfo,
+	indexStakersInfo,
+} = require('./validatorIndex');
 
 const {
 	getCurrentHeight,
 	getGenesisHeight,
+	updateFinalizedHeight,
 } = require('../constants');
 
-const blocksIndexSchema = require('../database/schema/blocks');
+const {
+	getBlockByHeight,
+} = require('../dataService');
+
+const logger = Logger();
+
+const blocksTableSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
@@ -41,11 +58,11 @@ const getIndexReadyStatus = () => isIndexReady;
 
 const getIndexStats = async () => {
 	try {
-		const blocksDB = await getBlocksIndex();
+		const blocksTable = await getBlocksTable();
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+		const numBlocksIndexed = await blocksTable.count();
+		const [lastIndexedBlock = {}] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, ['height']);
 		const chainLength = currentChainHeight - genesisHeight + 1;
 		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
@@ -80,13 +97,16 @@ const checkIndexReadiness = async () => {
 };
 
 const reportIndexStatus = async () => {
+	const indexStats = await getIndexStats();
 	const {
 		currentChainHeight,
 		numBlocksIndexed,
 		lastIndexedBlock = {},
 		chainLength,
 		percentage,
-	} = await getIndexStats();
+	} = indexStats;
+
+	Signals.get('indexStatUpdate').dispatch(indexStats);
 
 	logger.info([
 		`currentChainHeight: ${currentChainHeight}`,
@@ -96,20 +116,12 @@ const reportIndexStatus = async () => {
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
 };
 
-const indexSchemas = {
-	accounts: require('../database/schema/accounts'),
-	blocks: require('../database/schema/blocks'),
-	multisignature: require('../database/schema/multisignature'),
-	transactions: require('../database/schema/transactions'),
-	validators: require('../database/schema/validators'),
-	votes: require('../database/schema/votes'),
-	key_value_store: require('../database/schema/kvStore'),
-};
-
 const initializeSearchIndex = async () => {
+	// Dynamically fetch all available table schemas
+	const tableSchemas = Object.values(Utils.requireAllJs(path.join(__dirname, '../database/schema')));
 	await BluebirdPromise.map(
-		Object.keys(indexSchemas),
-		key => getTableInstance(key, indexSchemas[key]),
+		tableSchemas,
+		schema => getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT),
 		{ concurrency: 1 },
 	);
 	Signals.get('searchIndexInitialized').dispatch();
@@ -118,10 +130,20 @@ const initializeSearchIndex = async () => {
 const init = async () => {
 	await initializeSearchIndex();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+
+	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
+	Signals.get('chainNewBlock').add(updateFinalizedHeight);
+
+	const genesisBlock = await getBlockByHeight(await getGenesisHeight());
+
+	// Index stakers and commission information available in genesis block
+	await indexValidatorCommissionInfo(genesisBlock);
+	await indexStakersInfo(genesisBlock);
 };
 
 module.exports = {
+	getIndexReadyStatus,
 	getIndexStats,
 	init,
 };

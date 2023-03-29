@@ -32,10 +32,9 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestPeers = async params => request(wsRpcUrl, 'get.peers', params);
 
-// TODO: Enable when peers endpoint is available from sdk
-xdescribe('Peers API', () => {
+describe('Peers API', () => {
 	describe('get.peers', () => {
-		xit('without request params -> ok', async () => {
+		it('without request params -> ok', async () => {
 			const response = await requestPeers({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -46,7 +45,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('empty ip -> ok', async () => {
+		it('empty ip -> ok', async () => {
 			const response = await requestPeers({ ip: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -62,7 +61,7 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		xit('valid networkVersion -> ok', async () => {
+		it('valid networkVersion -> ok', async () => {
 			const response = await requestPeers({ networkVersion: '2.0' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -73,7 +72,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('empty networkVersion -> ok', async () => {
+		it('empty networkVersion -> ok', async () => {
 			const response = await requestPeers({ networkVersion: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -90,11 +89,11 @@ xdescribe('Peers API', () => {
 		});
 
 		it('invalid networkVersion -> invalid param', async () => {
-			const error = await requestPeers({ networkVersion: 'v2.0' });
+			const error = await requestPeers({ networkVersion: 'v3.0' });
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		xit('\'connected\' state -> ok', async () => {
+		it('\'connected\' state -> ok', async () => {
 			const response = await requestPeers({ state: 'connected' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -105,7 +104,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('\'disconnected\' state -> ok', async () => {
+		it('\'disconnected\' state -> ok', async () => {
 			const response = await requestPeers({ state: 'disconnected' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -116,7 +115,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('\'any\' state -> ok', async () => {
+		it('\'any\' state -> ok', async () => {
 			const response = await requestPeers({ state: 'any' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -127,7 +126,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('empty state -> ok', async () => {
+		it('empty state -> ok', async () => {
 			const response = await requestPeers({ state: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -148,7 +147,7 @@ xdescribe('Peers API', () => {
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		xit('empty height -> ok', async () => {
+		it('empty height -> ok', async () => {
 			const response = await requestPeers({ height: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -169,7 +168,7 @@ xdescribe('Peers API', () => {
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		xit('limit=100 -> ok', async () => {
+		it('limit=100 -> ok', async () => {
 			const response = await requestPeers({ limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -180,7 +179,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('empty limit -> ok', async () => {
+		it('empty limit -> ok', async () => {
 			const response = await requestPeers({ limit: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -191,7 +190,7 @@ xdescribe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('empty offset -> ok', async () => {
+		it('empty offset -> ok', async () => {
 			const response = await requestPeers({ offset: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -207,7 +206,7 @@ xdescribe('Peers API', () => {
 			expect(response).toMap(emptyResponseSchema);
 		});
 
-		xit('empty sort -> ok', async () => {
+		it('empty sort -> ok', async () => {
 			const response = await requestPeers({ sort: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -234,7 +233,7 @@ xdescribe('Peers API', () => {
 		});
 	});
 
-	xdescribe('Peers sorted by height', () => {
+	describe('Peers sorted by height', () => {
 		it('returns 10 peers sorted by height descending', async () => {
 			const response = await requestPeers({ sort: 'height:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -272,7 +271,7 @@ xdescribe('Peers API', () => {
 		});
 	});
 
-	xdescribe('Peers sorted by networkVersion', () => {
+	describe('Peers sorted by networkVersion', () => {
 		it('returns 10 peers sorted by networkVersion descending', async () => {
 			const response = await requestPeers({ sort: 'networkVersion:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);

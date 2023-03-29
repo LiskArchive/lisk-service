@@ -104,26 +104,24 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('returns block assets by moduleID', async () => {
-			const response = await getBlocksAssets({ moduleID: refAsset.moduleID });
+		it('returns block assets by module', async () => {
+			const response = await getBlocksAssets({ module: refAsset.module });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			result.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
-				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
-				expect(blockAssets.moduleID).toEqual(refBlockAssets.moduleID);
+				blockAssets.assets.forEach(asset => expect(asset.module).toEqual(refAsset.module));
 			});
 		});
 
-		it('returns block assets by multiple moduleIDs', async () => {
-			const arrayOfModuleIDs = refBlockAssets.assets.map(asset => asset.moduleID);
-			const response = await getBlocksAssets({ moduleID: arrayOfModuleIDs.join(',') });
+		it('returns block assets by multiple modules', async () => {
+			const modules = refBlockAssets.assets.map(asset => asset.module);
+			const response = await getBlocksAssets({ module: modules.join(',') });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			result.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
-				blockAssets.assets.forEach(asset => expect(arrayOfModuleIDs).toContain(asset.moduleID));
-				expect(blockAssets.moduleID).toEqual(refBlockAssets.moduleID);
+				blockAssets.assets.forEach(asset => expect(modules).toContain(asset.module));
 			});
 		});
 
@@ -200,8 +198,8 @@ describe('Method get.blocks.assets', () => {
 
 	describe('is able to retireve block assets within height range', () => {
 		it('return blocks assets with min...max height -> ok', async () => {
-			const minHeight = refBlockAssets.block.height - 10;
-			const maxHeight = refBlockAssets.block.height;
+			const minHeight = refBlockAssets.block.height;
+			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await getBlocksAssets({ height: `${minHeight}:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -220,7 +218,7 @@ describe('Method get.blocks.assets', () => {
 		});
 
 		it('returns blocks assets with min... height -> ok', async () => {
-			const minHeight = refBlockAssets.block.height - 10;
+			const minHeight = refBlockAssets.block.height;
 			const response = await getBlocksAssets({ height: `${minHeight}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -238,7 +236,7 @@ describe('Method get.blocks.assets', () => {
 		});
 
 		it('Breturns blocks assets with ...max height -> ok', async () => {
-			const maxHeight = refBlockAssets.block.height;
+			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await getBlocksAssets({ height: `:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

@@ -14,37 +14,55 @@
  *
  */
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const ADDRESS_LISK32_CSV = /^(lsk[a-hjkm-z2-9]{38}){1}(,lsk[a-hjkm-z2-9]{38})*$/;
 const NONCE = /^[0-9]+$/;
-const TIMESTAMP_RANGE = /^\b(?:[0-9]{1,}(?::[0-9]{1,})?)\b$/;
-const HEIGHT_RANGE = /^\b(?:[0-9]{1,}(?::[0-9]{1,})?)\b$/;
-const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
+const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
+const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
+const NAME = /^[\w!@$&.]{3,20}$/;
+const NAME_CSV = /^[\w!@$&.,]{3,}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
-const DPOS_DELEGATE_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
-const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
+const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,)+\b$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
 const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
-const NETWORK = /^\b(?:mainnet|testnet|betanet|,)+\b$/;
-const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
-const MODULE_COMMAND = /[a-zA-Z]{1,32}:[a-zA-Z]{1,32}/;
+const NETWORK_CSV = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
+const APPLICATION_STATUS = /^\b(?:registered|active|terminated|unregistered|,)+\b$/;
+const MODULE_COMMAND = /^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/;
+const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const CHAIN_ID_CSV = /^\b[a-fA-F0-9,]{8,}\b$/;
+const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
+const TOKEN_ID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
+const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
+const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
+const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
+const TOPIC = /^\b(?:(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}),?)+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
-	ADDRESS_BASE32,
+	ADDRESS_LISK32,
+	ADDRESS_LISK32_CSV,
 	NONCE,
 	NAME,
+	NAME_CSV,
 	TRANSACTION_EXECUTION_STATUS,
-	DPOS_DELEGATE_STATUS,
-	NEWSFEED_SOURCE,
+	POS_VALIDATOR_STATUS,
 	HASH_SHA256,
 	TIMESTAMP_RANGE,
 	HEIGHT_RANGE,
 	CCM_STATUS,
 	INTERVAL,
 	CHAINID_RANGE,
-	NETWORK,
-	APPLICATION_STATE,
+	NETWORK_CSV,
+	APPLICATION_STATUS,
 	MODULE_COMMAND,
+	CHAIN_ID,
+	CHAIN_ID_CSV,
+	TOKEN_ID,
+	TOKEN_ID_CSV,
+	BLS_KEY,
+	PROOF_OF_POSSESSION,
+	MODULE,
+	TOPIC,
 };

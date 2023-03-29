@@ -13,9 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 };
 
 /**
@@ -42,6 +47,11 @@ config.feeEstimates = {
 	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE || 0.5),
 	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
 };
+
+config.cacheKeys = Object.freeze({
+	cacheKeyFeeEstFull: 'lastFeeEstimateFull',
+	cacheKeyFeeEstQuick: 'lastFeeEstimateQuick',
+});
 
 /**
  * LOGGING

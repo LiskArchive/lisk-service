@@ -20,45 +20,47 @@ const util = require('util');
 const {
 	CacheRedis,
 	Logger,
-	Exceptions: { NotFoundException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const logger = Logger();
 
-// const { getEventsByHeight } = require('./events');
-const { getFinalizedHeight } = require('../../constants');
+const { getEventsByHeight } = require('./events');
+const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { normalizeTransaction } = require('../../utils/transactionsUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.tableName,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
 
-const normalizeBlock = async (originalblock) => {
+const normalizeBlock = async (originalBlock) => {
 	try {
-		const blocksDB = await getBlocksIndex();
+		const blocksTable = await getBlocksIndex();
 
 		const block = {
-			...originalblock.header,
-			transactions: originalblock.transactions,
-			assets: originalblock.assets,
+			...originalBlock.header,
+			transactions: originalBlock.transactions,
+			assets: originalBlock.assets,
 		};
 
 		if (block.generatorAddress) {
-			block.generatorAddress = await getLisk32AddressFromHex(block.generatorAddress);
-
 			const generatorInfo = await getIndexedAccountInfo(
 				{ address: block.generatorAddress, limit: 1 },
 				['publicKey', 'name'],
@@ -67,18 +69,44 @@ const normalizeBlock = async (originalblock) => {
 			block.generator = {
 				address: block.generatorAddress,
 				publicKey: generatorInfo ? generatorInfo.publicKey : null,
-				name: generatorInfo ? generatorInfo.name : null,
+				name: generatorInfo && generatorInfo.name
+					? generatorInfo.name
+					: await getNameByAddress(block.generatorAddress),
 			};
 		}
 
 		block.isFinal = block.height <= (await getFinalizedHeight());
 		block.numberOfTransactions = block.transactions.length;
 		block.numberOfAssets = block.assets.length;
-		const [{ numberOfEvents, reward } = {}] = await blocksDB.find({ height: block.height }, ['numberOfEvents', 'reward']);
-		block.numberOfEvents = numberOfEvents;
 
+		const { numberOfEvents, reward } = await (async () => {
+			const [dbResponse] = await blocksTable.find(
+				{ height: block.height },
+				['numberOfEvents', 'reward'],
+			);
+
+			if (dbResponse) {
+				return {
+					numberOfEvents: dbResponse.numberOfEvents,
+					reward: dbResponse.reward,
+				};
+			}
+
+			const events = await getEventsByHeight(block.height);
+			const blockRewardEvent = events.find(
+				e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
+					&& e.name === EVENT.REWARD_MINTED,
+			);
+
+			return {
+				numberOfEvents: events.length,
+				reward: blockRewardEvent ? blockRewardEvent.data.amount : null,
+			};
+		})();
+
+		block.numberOfEvents = numberOfEvents;
 		block.size = 0;
-		// TODO: get reward value from block event
+		block.reward = reward;
 		block.totalForged = BigInt(reward || '0');
 		block.totalBurnt = BigInt('0');
 		block.networkFee = BigInt('0');
@@ -99,7 +127,7 @@ const normalizeBlock = async (originalblock) => {
 
 		return parseToJSONCompatObj(block);
 	} catch (error) {
-		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}, id: ${originalblock.header.id}:\n${error.stack}`);
+		logger.error(`Error occurred when normalizing block at height ${originalBlock.header.height}, id: ${originalBlock.header.id}:\n${error.stack}`);
 		throw error;
 	}
 };
@@ -126,11 +154,6 @@ const getBlockByID = async id => {
 
 const getBlocksByIDs = async ids => {
 	const response = await requestConnector('getBlocksByIDs', { ids });
-	return normalizeBlocks(response);
-};
-
-const getBlocksByHeightBetween = async (from, to) => {
-	const response = await requestConnector('getBlocksByHeightBetween', { from, to });
 	return normalizeBlocks(response);
 };
 
@@ -167,7 +190,7 @@ const isQueryFromIndex = params => {
 };
 
 const getBlocks = async params => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const blocks = {
 		data: [],
 		meta: {},
@@ -187,45 +210,27 @@ const getBlocks = async params => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	const total = await blocksDB.count(params);
+	const total = await blocksTable.count(params);
 	if (isQueryFromIndex(params)) {
-		const resultSet = await blocksDB.find(params, ['id']);
+		const resultSet = await blocksTable.find(params, ['id']);
 		params.ids = resultSet.map(row => row.id);
 	}
 
 	try {
 		if (params.ids) {
-			if (Array.isArray(params.ids) && !params.ids.length) throw new NotFoundException(`Block with IDs: ${params.ids.join(', ')} not found.`);
+			if (Array.isArray(params.ids) && !params.ids.length) return blocks;
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
 			blocks.data.push(await getBlockByID(params.id));
-			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Block ID ${params.id} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.height) {
 			blocks.data.push(await getBlockByHeight(Number(params.height)));
-			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Height ${params.height} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.heightBetween) {
-			const { from, to } = params.heightBetween;
-			blocks.data = await getBlocksByHeightBetween(from, to);
-			if (params.sort) {
-				const [sortProp, sortOrder] = params.sort.split(':');
-				blocks.data = blocks.data.sort(
-					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-				);
-			}
 		} else {
 			blocks.data.push(await getLastBlock());
 		}
 	} catch (err) {
-		// Block does not exist
-		if (err.message.includes('does not exist')) {
-			let errMessage;
-			if ('id' in params && err.message.includes(params.id)) errMessage = `Block with ID ${params.id} does not exist`;
-			if ('height' in params) errMessage = `Block at height ${params.height} does not exist (${err.message})`;
-			throw new NotFoundException(errMessage || err.message);
-		}
-		throw err;
+		if (!err.message.includes('does not exist')) throw err;
 	}
 
 	blocks.meta = {
@@ -237,21 +242,21 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const filterBlockAssets = (moduleIDs, block) => {
-	const filteredBlockAssets = moduleIDs.length
-		? block.assets.filter(asset => moduleIDs.includes(String(asset.moduleID)))
+const filterBlockAssets = (modules, block) => {
+	const filteredBlockAssets = modules.length
+		? block.assets.filter(asset => modules.includes(String(asset.module)))
 		: block.assets;
 	return filteredBlockAssets;
 };
 
 const getBlocksAssets = async (params) => {
-	const blocksDB = await getBlocksIndex();
+	const blocksTable = await getBlocksIndex();
 	const blockAssets = {
 		data: [],
 		meta: {},
 	};
 
-	const moduleIDs = [];
+	const modules = [];
 
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
@@ -267,17 +272,17 @@ const getBlocksAssets = async (params) => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	if (params.moduleID) {
-		const { moduleID, ...remParams } = params;
-		const moduleIDArr = String(moduleID).split(',');
-		moduleIDs.push(...moduleIDArr);
+	if (params.module) {
+		const { module, ...remParams } = params;
+		const moduleArr = String(module).split(',');
+		modules.push(...moduleArr);
 		params = remParams;
-		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: moduleIDs };
+		params.whereJsonSupersetOf = { property: 'assetsModules', values: modules };
 	}
 
 	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
-	const total = await blocksDB.count(params);
-	const blocksFromDB = await blocksDB.find(params, ['id']);
+	const total = await blocksTable.count(params);
+	const blocksFromDB = await blocksTable.find(params, ['id']);
 
 	logger.debug(`Requesting blockchain application for blocks with IDs: ${blocksFromDB.map(b => b.id).join(', ')}`);
 	blockAssets.data = await BluebirdPromise.map(
@@ -291,7 +296,7 @@ const getBlocksAssets = async (params) => {
 					height: block.height,
 					timestamp: block.timestamp,
 				},
-				assets: filterBlockAssets(moduleIDs, block),
+				assets: filterBlockAssets(modules, block),
 			};
 		},
 		{ concurrency: blocksFromDB.length },

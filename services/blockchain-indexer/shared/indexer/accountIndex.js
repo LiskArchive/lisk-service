@@ -13,13 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
 const Redis = require('ioredis');
 
 const {
 	Queue,
-	CacheRedis,
-	Logger,
 	MySQL: { getTableInstance },
 	Signals,
 } = require('lisk-service-framework');
@@ -29,10 +26,7 @@ const {
 	getAccountsByPublicKey2,
 } = require('../dataService');
 
-const { requestConnector } = require('../utils/request');
-
 const config = require('../../config');
-const keyValueDB = require('../database/mysqlKVStore');
 
 const redis = new Redis(config.endpoints.cache);
 
@@ -46,20 +40,13 @@ const getAccountIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
-
-// Key constants for the KV-store
-const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
-
-const logger = Logger();
-
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;
 
 	const account = await getAccountsByPublicKey2([publicKey]);
 	if (account.length) {
-		const accountsDB = await getAccountIndex();
-		await accountsDB.upsert(account);
+		const accountsTable = await getAccountIndex();
+		await accountsTable.upsert(account);
 	}
 };
 
@@ -68,16 +55,16 @@ const updateAccountInfoAddr = async (job) => {
 
 	const account = await getAccountsByAddress([address]);
 	if (account.length) {
-		const accountsDB = await getAccountIndex();
-		await accountsDB.upsert(account);
+		const accountsTable = await getAccountIndex();
+		await accountsTable.upsert(account);
 	}
 };
 
 const updateAccountWithData = async (job) => {
 	const accounts = job.data;
 
-	const accountsDB = await getAccountIndex();
-	await accountsDB.upsert(accounts);
+	const accountsTable = await getAccountIndex();
+	await accountsTable.upsert(accounts);
 };
 
 const accountPkUpdateQueue = Queue(config.endpoints.cache, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
@@ -102,78 +89,14 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
-const getNumberOfGenesisAccounts = async () => requestConnector('getNumberOfGenesisAccounts');
-
-const getGenesisAccounts = async () => {
-	let genesisAccounts = [];
-	const PAGE_SIZE = 100;
-	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
-
-	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		const accounts = await requestConnector('getGenesisAccounts', { limit: PAGE_SIZE, offset: i * PAGE_SIZE });
-		genesisAccounts = genesisAccounts.concat(accounts);
-	}
-	return genesisAccounts;
-};
-
-const getGenesisAccountAddresses = async (includeLegacy = false) => {
-	const accounts = await getGenesisAccounts();
-	const filteredAccounts = accounts.filter(a => includeLegacy || a.address.length === 40);
-	const genesisAccountAddresses = filteredAccounts.map(account => account.address);
-	return genesisAccountAddresses;
-};
-
-const buildLegacyAccountCache = async () => {
-	// Cache the legacy account reclaim balance information
-	const genesisAccounts = await getGenesisAccounts();
-	const unregisteredAccounts = genesisAccounts.filter(a => a.address.length !== 40);
-
-	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
-	logger.info('Starting to cache legacy account reclaim balance information');
-	await BluebirdPromise.map(
-		unregisteredAccounts,
-		async account => {
-			const legacyAccountInfo = {
-				address: account.address,
-				balance: account.token.balance,
-			};
-			await legacyAccountCache.set(account.address, JSON.stringify(legacyAccountInfo));
-		},
-		{ concurrency: 1000 },
-	);
-	logger.info('Finished caching legacy account reclaim balance information');
-};
-
-const isGenesisAccountsIndexed = async () => {
-	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
-	if (!isIndexed) {
-		const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
-		const accountsDB = await getAccountIndex();
-		const count = await accountsDB.count();
-		if (count >= numOfGenesisAccounts) {
-			await keyValueDB.set(isGenesisAccountIndexingFinished, true);
-			return true;
-		}
-		return false;
-	}
-	return true;
-};
-
-const getDelegateAccounts = async () => {
-	const allDelegatesInfo = await requestConnector('invokeEndpoint', { endpoint: 'dpos_getAllDelegates' });
-	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
-	return allDelegateAddresses;
-};
-
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
 const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
 const keepAccountsCacheUpdated = async () => {
-	const accountsDB = await getAccountIndex();
+	const accountsTable = await getAccountIndex();
 	const updateAccountsCacheListener = async (address) => {
 		const accounts = await getAccountsByAddress(address);
-		await accountsDB.upsert(accounts);
+		await accountsTable.upsert(accounts);
 	};
 	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
 };
@@ -185,10 +108,6 @@ module.exports = {
 	indexAccountByAddress,
 	indexAccountWithData,
 	triggerAccountUpdates,
-	buildLegacyAccountCache,
-	isGenesisAccountsIndexed,
-	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
-	getGenesisAccountAddresses,
 };

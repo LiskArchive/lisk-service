@@ -16,10 +16,13 @@
 const { requestConnector } = require('../utils/request');
 
 const getRegisteredModules = async () => {
-	const systemMetada = await requestConnector('getSystemMetadata');
-	return systemMetada.modules;
+	const systemMetadata = await requestConnector('getSystemMetadata');
+	return systemMetadata.modules;
 };
+
+const getAllPosValidators = async () => requestConnector('getAllPosValidators');
 
 module.exports = {
 	getRegisteredModules,
+	getAllPosValidators,
 };

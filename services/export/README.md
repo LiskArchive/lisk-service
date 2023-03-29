@@ -45,7 +45,7 @@ https://github.com/LiskHQ/lisk-service/graphs/contributors
 
 ## License
 
-Copyright 2016-2019 Lisk Foundation
+Copyright 2016-2023 Lisk Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

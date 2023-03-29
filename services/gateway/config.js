@@ -13,9 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	api: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 };
 
 /**
@@ -28,8 +33,8 @@ config.host = process.env.HOST || '0.0.0.0';
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
-config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/5';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/5';
 
 /**
  * Compatibility
@@ -69,7 +74,6 @@ config.api.ws = process.env.ENABLE_WS_API || 'blockchain,rpc-v3';
  * API versions
  */
 config.api.versions = {
-	'/api/v2': ['http-version2', 'http-exports'],
 	'/api/v3': ['http-version3', 'http-exports'],
 };
 
@@ -78,9 +82,6 @@ config.api.versions = {
  */
 config.api.httpCacheControlDirectives = String(process.env.HTTP_CACHE_CONTROL_DIRECTIVES || 'public, max-age=10');
 config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE_CONTROL).toLowerCase() === 'true');
-
-// Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
-config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 
 // configuration for websocket rate limit
 config.websocket = {
@@ -96,5 +97,10 @@ config.rpcCache = {
 	ttl: 5, // in seconds
 	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
+
+const DEFAULT_DEPENDENCIES = 'indexer,connector';
+const { GATEWAY_DEPENDENCIES } = process.env;
+
+config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIES || '').split(',');
 
 module.exports = config;

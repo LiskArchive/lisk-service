@@ -19,7 +19,6 @@ const {
 	createIPCClient,
 } = require('@liskhq/lisk-api-client');
 
-const { decodeResponse } = require('./decoder');
 const config = require('../../config');
 const delay = require('../utils/delay');
 const waitForIt = require('../utils/waitForIt');
@@ -29,20 +28,29 @@ const logger = Logger();
 // Constants
 const timeoutMessage = 'Response not received in';
 const liskAddress = config.endpoints.liskWs;
-const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
-const RETRY_INTERVAL = 500; // ms
 const NUM_REQUEST_RETRIES = 5;
+const RETRY_INTERVAL = 500; // ms
+const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
+const LIVELINESS_CHECK_THRESHOLD_IN_MS = 1000; // in ms
 
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let lastApiClientLivelinessCheck = 0;
 let isClientAlive = false;
 let isInstantiating = false;
 
 const checkIsClientAlive = async () => {
-	await clientCache._channel.invoke('app_getNodeInfo')
-		.then(() => { isClientAlive = true; })
-		.catch(() => { isClientAlive = false; });
+	if (config.isUseLiskIPCClient) {
+		if (Date.now() - lastApiClientLivelinessCheck > LIVELINESS_CHECK_THRESHOLD_IN_MS) {
+			await clientCache._channel.invoke('system_getNodeInfo')
+				.then(() => { isClientAlive = true; })
+				.catch(() => { isClientAlive = false; })
+				.finally(() => { if (isClientAlive) lastApiClientLivelinessCheck = Date.now(); });
+		}
+	} else {
+		isClientAlive = clientCache._channel.isAlive;
+	}
 
 	return isClientAlive;
 };
@@ -52,8 +60,7 @@ const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
 			// TODO: Verify and enable the code
-			// if (!clientCache || !(await checkIsClientAlive())) {
-			if (!clientCache) {
+			if (!clientCache || !(await checkIsClientAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				// if (clientCache) await clientCache.disconnect();
@@ -112,16 +119,9 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const invokeEndpointProxy = async (endpoint, params) => {
-	const response = await invokeEndpoint(endpoint, params);
-	const decodedResponse = decodeResponse(endpoint, response);
-	return decodedResponse;
-};
-
 module.exports = {
 	timeoutMessage,
 
 	getApiClient,
 	invokeEndpoint,
-	invokeEndpointProxy,
 };

@@ -20,14 +20,18 @@ const {
 
 const logger = Logger();
 
-const { APP_STATE } = require('./constants');
+const { APP_STATUS } = require('./constants');
 const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
+const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
-const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
+const getBlockchainAppsTable = () => getTableInstance(
+	blockchainAppsTableSchema.tableName,
+	blockchainAppsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 let blockchainAppsStatsCache = {};
 
@@ -44,11 +48,11 @@ const getBlockchainAppsStatistics = async () => {
 const reloadBlockchainAppsStats = async () => {
 	try {
 		// TODO: Update implementation once interoperability_getOwnChainAccount is available
-		const blockchainAppsDB = await getBlockchainAppsIndex();
+		const blockchainAppsTable = await getBlockchainAppsTable();
 
-		const numActiveChains = await blockchainAppsDB.count({ state: APP_STATE.ACTIVE });
-		const numRegisteredChains = await blockchainAppsDB.count({ state: APP_STATE.REGISTERED });
-		const numTerminatedChains = await blockchainAppsDB.count({ state: APP_STATE.TERMINATED });
+		const numActiveChains = await blockchainAppsTable.count({ status: APP_STATUS.ACTIVE });
+		const numRegisteredChains = await blockchainAppsTable.count({ status: APP_STATUS.REGISTERED });
+		const numTerminatedChains = await blockchainAppsTable.count({ status: APP_STATUS.TERMINATED });
 
 		logger.debug('Updating blockchain apps statistics cache');
 
@@ -62,7 +66,7 @@ const reloadBlockchainAppsStats = async () => {
 			inflationRate: '',
 		};
 
-		logger.info('Updated blockchain apps statistics cache');
+		logger.info('Updated blockchain apps statistics cache.');
 	} catch (err) {
 		logger.warn(`Failed to update blockchain apps statistics cache due to: ${err.message}`);
 	}

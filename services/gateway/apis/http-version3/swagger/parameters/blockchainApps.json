@@ -2,45 +2,45 @@
     "name": {
         "name": "name",
         "in": "query",
-        "description": "Blockchain application name",
+        "description": "Blockchain application name.",
         "type": "string",
-        "format": "name",
         "minLength": 1,
         "maxLength": 20
     },
     "chainID": {
         "name": "chainID",
         "in": "query",
-        "description": "Chain ID to query (can be expressed as an interval from:to)",
+        "description": "Chain ID to query.",
         "type": "string",
         "format": "id",
-        "minLength": 1
+        "minLength": 8,
+        "maxLength": 8
     },
-    "state": {
-        "name": "state",
+    "chainIDCSV": {
+        "name": "chainID",
         "in": "query",
-        "description": "State of Blockchain application",
+        "description": "Chain ID to query (can be expressed as CSV).",
         "type": "string",
-        "minLength": 1
+        "format": "id",
+        "minLength": 8
     },
-    "isDefault": {
-        "name": "isDefault",
+    "blockchainAppStatus": {
+        "name": "status",
         "in": "query",
-        "description": "Filter default blockchain application",
-        "type": "string",
-        "minLength": 1
+        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'active', 'terminated'.",
+        "type": "string"
     },
     "network": {
         "name": "network",
         "in": "query",
-        "description": "Network for which the application metadata is to be queried (can be expressed as CSV)",
+        "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAvailable values: mainnet, testnet, betanet, alphanet, devnet.",
         "type": "string",
         "minLength": 1
     },
     "chainName": {
         "name": "chainName",
         "in": "query",
-        "description": "Chain Name to query",
+        "description": "Chain name to query.",
         "type": "string",
         "minLength": 1
     }

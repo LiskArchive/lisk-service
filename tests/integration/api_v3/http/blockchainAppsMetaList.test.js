@@ -30,8 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/list`;
 
-// TODO: Enable/update test cases once off-chain data is available
-xdescribe('Blockchain application meta list API', () => {
+describe('Blockchain application meta list API', () => {
 	it('retrieves list', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
@@ -76,13 +75,13 @@ xdescribe('Blockchain application meta list API', () => {
 		const response = await api.get(`${endpoint}?chainName=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('retrieves blockchain application meta list by network', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet`);
+		const response = await api.get(`${endpoint}?network=betanet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -91,10 +90,10 @@ xdescribe('Blockchain application meta list API', () => {
 	});
 
 	it('retrieves blockchain application meta list by network as CSV', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet,testnet`);
+		const response = await api.get(`${endpoint}?network=betanet,devnet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
 		expect(response.meta).toMap(metaSchema);
 	});

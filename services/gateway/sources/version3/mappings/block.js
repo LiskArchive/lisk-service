@@ -25,7 +25,7 @@ module.exports = {
 		publicKey: '=,string',
 	},
 	transactionRoot: '=,string',
-	assetsRoot: '=,string',
+	assetRoot: '=,string',
 	stateRoot: '=,string',
 	maxHeightPrevoted: '=,number',
 	maxHeightGenerated: '=,number',

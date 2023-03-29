@@ -18,18 +18,16 @@ import regex from './regex';
 
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
-const moduleCommandSchema = {
-	id: Joi.string().required(),
-	name: Joi.string().required(),
+const genesisBlockSchema = {
+	fromFile: Joi.string().required(),
 };
 
 const genesisSchema = {
-	blockTime: Joi.number().integer().min(0).required(),
-	communityIdentifier: Joi.string().required(),
-	maxTransactionsSize: Joi.number().integer().min(0).required(),
-	minFeePerByte: Joi.number().integer().min(0).required(),
-	baseFees: Joi.array().required(),
-	modules: Joi.object().required(),
+	block: Joi.object(genesisBlockSchema).required(),
+	bftBatchSize: Joi.number().integer().positive().required(),
+	blockTime: Joi.number().integer().positive().required(),
+	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
+	maxTransactionsSize: Joi.number().integer().positive().required(),
 };
 
 const seedPeerSchema = {
@@ -38,6 +36,7 @@ const seedPeerSchema = {
 };
 
 const networkSchema = {
+	version: Joi.string().required(),
 	port: Joi.number().port().required(),
 	seedPeers: Joi.array().items(seedPeerSchema).required(),
 };
@@ -45,9 +44,8 @@ const networkSchema = {
 const networkStatusSchema = {
 	version: Joi.string().pattern(regex.SEMVER).required(),
 	networkVersion: Joi.string().required(),
-	networkIdentifier: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
-		.required(),
-	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
+	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
+	lastBlockID: Joi.string().pattern(regex.HASH_SHA256)
 		.required(),
 	height: Joi.number().integer().min(0).required(),
 	finalizedHeight: Joi.number().min(0).integer().required(),
@@ -55,7 +53,7 @@ const networkStatusSchema = {
 	unconfirmedTransactions: Joi.number().integer().min(0).required(),
 	genesis: Joi.object(genesisSchema).required(),
 	registeredModules: Joi.array().items(Joi.string()).required(),
-	moduleCommands: Joi.array().items(moduleCommandSchema).required(),
+	moduleCommands: Joi.array().items(Joi.string().pattern(regex.MODULE_COMMAND)).required(),
 	network: Joi.object(networkSchema).required(),
 };
 

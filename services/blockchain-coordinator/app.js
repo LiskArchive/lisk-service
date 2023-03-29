@@ -22,17 +22,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+
+LoggerConfig(config.log);
+
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/utils/request');
 const { init } = require('./shared/scheduler');
-
-const loggerConf = {
-	...config.log,
-	name: packageJson.name,
-	version: packageJson.version,
-};
-
-LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -40,18 +35,18 @@ const app = Microservice({
 	name: 'coordinator',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
-	logger: loggerConf,
+	logger: config.log,
 	events: {
 		chainNewBlock: async (payload) => {
-			logger.info('Subscribed to the new block event from connecter');
+			logger.debug('Received a \'chainNewBlock\' event from connecter.');
 			Signals.get('newBlock').dispatch(payload);
 		},
 		chainDeleteBlock: async (payload) => {
-			logger.info('Subscribed to the delete block event from connecter');
+			logger.debug('Received a \'chainDeleteBlock\' event from connecter.');
 			Signals.get('deleteBlock').dispatch(payload);
 		},
 		chainValidatorsChange: async (payload) => {
-			logger.info('Subscribed to the validators change event from connecter');
+			logger.debug('Received a \'chainValidatorsChange\' event from connecter.');
 			Signals.get('newRound').dispatch(payload);
 		},
 	},

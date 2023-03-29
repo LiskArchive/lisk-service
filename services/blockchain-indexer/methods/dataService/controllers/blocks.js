@@ -15,10 +15,10 @@
  */
 const {
 	HTTP,
-	Exceptions: { ValidationException, NotFoundException },
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
+const { StatusCodes: { BAD_REQUEST } } = HTTP;
 
 const dataService = require('../../../shared/dataService');
 
@@ -34,7 +34,6 @@ const getBlocks = async params => {
 	} catch (err) {
 		let status;
 		if (err instanceof ValidationException) status = BAD_REQUEST;
-		if (err instanceof NotFoundException) status = NOT_FOUND;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}
@@ -52,7 +51,6 @@ const getBlocksAssets = async params => {
 	} catch (err) {
 		let status;
 		if (err instanceof ValidationException) status = BAD_REQUEST;
-		if (err instanceof NotFoundException) status = NOT_FOUND;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}

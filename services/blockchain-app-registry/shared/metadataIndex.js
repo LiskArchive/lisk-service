@@ -27,23 +27,24 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const applicationsIndexSchema = require('./database/schema/applications');
-const tokensIndexSchema = require('./database/schema/tokens');
+const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
+const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
-const { getDirectories, read, getFiles } = require('./utils/fsUtils');
+const { getDirectories, read, getFiles, exists } = require('./utils/fsUtils');
 
 const config = require('../config');
+const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getApplicationsIndex = () => getTableInstance(
-	applicationsIndexSchema.tableName,
-	applicationsIndexSchema,
+const getApplicationMetadataIndex = () => getTableInstance(
+	applicationMetadataIndexSchema.tableName,
+	applicationMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
-const getTokensIndex = () => getTableInstance(
-	tokensIndexSchema.tableName,
-	tokensIndexSchema,
+const getTokenMetadataIndex = () => getTableInstance(
+	tokenMetadataIndexSchema.tableName,
+	tokenMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -54,73 +55,144 @@ const { FILENAME } = config;
 const KNOWN_CONFIG_FILES = Object.freeze(Object.values(FILENAME));
 
 const indexTokensMeta = async (tokenMeta, dbTrx) => {
-	const tokensDB = await getTokensIndex();
+	const tokenMetadataTable = await getTokenMetadataIndex();
 
 	const tokenMetaToIndex = await BluebirdPromise.map(
 		tokenMeta.tokens,
 		async (token) => {
 			const result = {
-				chainID: tokenMeta.chainID,
+				chainID: tokenMeta.chainID.toLowerCase(),
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				tokenID: token.tokenID,
-				tokenName: token.name,
+				localID: token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
+				tokenName: token.tokenName,
 			};
 			return result;
 		},
 		{ concurrency: tokenMeta.tokens.length },
 	);
 
-	await tokensDB.upsert(tokenMetaToIndex, dbTrx);
+	await tokenMetadataTable.upsert(tokenMetaToIndex, dbTrx);
 };
 
-const indexChainMeta = async (chainMeta, dbTrx) => {
-	const applicationsDB = await getApplicationsIndex();
+const indexAppMeta = async (appMeta, dbTrx) => {
+	const applicationMetadataTable = await getApplicationMetadataIndex();
 
-	const chainMetaToIndex = {
-		chainID: chainMeta.chainID,
-		chainName: chainMeta.chainName,
-		network: chainMeta.networkType,
-		isDefault: config.defaultApps.some(e => e === chainMeta.chainName),
-		appDirName: chainMeta.appDirName,
+	const appMetaToIndex = {
+		chainID: appMeta.chainID,
+		chainName: appMeta.chainName,
+		network: appMeta.networkType,
+		isDefault: config.defaultApps.some(e => e === appMeta.chainName),
+		appDirName: appMeta.appDirName,
 	};
 
-	await applicationsDB.upsert(chainMetaToIndex, dbTrx);
+	await applicationMetadataTable.upsert(appMetaToIndex, dbTrx);
 };
 
-const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
-	logger.debug(`Indexing metadata information for the app: ${app} (${network})`);
+// Given filepath of app.json or nativetokens.json, indexes the information in DB
+const indexMetadataFromFile = async (filePath, dbTrx) => {
+	const [network, app, filename] = filePath.split('/').slice(-3);
+	logger.debug(`Indexing metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
-	const appPathInClonedRepo = `${dataDir}/${repo}/${network}/${app}`;
-	logger.trace('Reading chain information');
-	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
-	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
+	// While processing nativetokens.json in sync job, newly downloaded app.json will be present
+	// in the temp download directory. Read from this file if present to fetch updated information.
+	// Otherwise read the previously downloaded app.json path.
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
+	const oldAppJsonPath = `${dataDir}/${repo}/${network}/${app}/${FILENAME.APP_JSON}`;
+	const downloadedAppJsonPath = `${path.dirname(filePath)}/${FILENAME.APP_JSON}`;
+	const appJsonPath = await exists(downloadedAppJsonPath) ? downloadedAppJsonPath : oldAppJsonPath;
+
+	logger.trace('Reading chain information.');
+	const appMetaString = await read(appJsonPath);
+	const appMeta = { ...JSON.parse(appMetaString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
-		logger.debug(`Indexing chain information for the app: ${app} (${network})`);
-		await indexChainMeta(chainMeta, dbTrx);
-		logger.debug(`Indexed chain information for the app: ${app} (${network})`);
+		logger.debug(`Indexing chain information for the app: ${app} (${network}).`);
+		await indexAppMeta(appMeta, dbTrx);
+		logger.debug(`Indexed chain information for the app: ${app} (${network}).`);
 	}
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
-		logger.trace('Reading tokens information');
-		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
+		logger.trace('Reading tokens information.');
+		const tokenMetaString = await read(filePath);
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
-			chainName: chainMeta.chainName,
-			chainID: chainMeta.chainID,
+			chainName: appMeta.chainName,
+			chainID: appMeta.chainID,
 			network,
 		};
 
-		logger.debug(`Indexing tokens information for the app: ${app} (${network})`);
+		logger.debug(`Indexing tokens information for the app: ${app} (${network}).`);
 		await indexTokensMeta(tokenMeta, dbTrx);
-		logger.debug(`Indexed tokens information for the app: ${app} (${network})`);
+		logger.debug(`Indexed tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished indexing metadata information for the app: ${app} (${network})`);
+	logger.info(`Finished indexing metadata information for the app: ${app} (${network}) file: ${filename}.`);
+};
+
+const deleteAppMeta = async (appMeta, dbTrx) => {
+	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const appMetaParams = {
+		network: appMeta.networkType,
+		chainName: appMeta.chainName,
+	};
+
+	await applicationMetadataTable.delete(appMetaParams, dbTrx);
+};
+
+const deleteTokensMeta = async (tokenMeta, dbTrx) => {
+	const tokenMetadataTable = await getTokenMetadataIndex();
+	await BluebirdPromise.map(
+		tokenMeta.localIDs,
+		async (localID) => {
+			const queryParams = {
+				network: tokenMeta.network,
+				chainName: tokenMeta.chainName,
+				localID,
+			};
+			await tokenMetadataTable.delete(queryParams, dbTrx);
+		},
+		{ concurrency: tokenMeta.localIDs.length },
+	);
+};
+
+const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
+	const [network, app, filename] = filePath.split('/').slice(-3);
+	logger.debug(`Deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
+
+	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
+
+	const appPathInClonedRepo = path.dirname(filePath);
+	logger.trace('Reading chain information.');
+	const appMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
+	const appMeta = { ...JSON.parse(appMetaString) };
+
+	if (filename === FILENAME.APP_JSON || filename === null) {
+		logger.debug(`Deleting chain information for the app: ${app} (${network}).`);
+		await deleteAppMeta(appMeta, dbTrx);
+		logger.debug(`Deleted chain information for the app: ${app} (${network}).`);
+	}
+
+	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
+		logger.trace('Reading tokens information.');
+		const tokenMetaString = await read(filePath);
+		const { tokens } = JSON.parse(tokenMetaString);
+		const localIDs = tokens.map(
+			token => token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
+		);
+		const tokenMeta = {
+			localIDs,
+			chainName: appMeta.chainName,
+			network,
+		};
+
+		logger.debug(`Deleting tokens information for the app: ${app} (${network}).`);
+		await deleteTokensMeta(tokenMeta, dbTrx);
+		logger.debug(`Deleted tokens information for the app: ${app} (${network}).`);
+	}
+	logger.info(`Finished deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 };
 
 const indexAllBlockchainAppsMeta = async () => {
@@ -139,23 +211,24 @@ const indexAllBlockchainAppsMeta = async () => {
 				allAvailableApps,
 				async app => {
 					const allFilesFromApp = await getFiles(`${app}`);
+
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
-							const [appName, filename] = file.split('/').slice(-2);
+							const filename = file.split('/').pop();
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
-								const connection = await getDbConnection();
+								const connection = await getDbConnection(MYSQL_ENDPOINT);
 								const dbTrx = await startDbTransaction(connection);
 
 								try {
-									logger.debug('Created new MySQL transaction to index blockchain metadata information');
-									await indexMetadataFromFile(network, appName, filename, dbTrx);
+									logger.debug('Created new MySQL transaction to index blockchain metadata information.');
+									await indexMetadataFromFile(file, dbTrx);
 									await commitDbTransaction(dbTrx);
-									logger.debug('Committed MySQL transaction to index blockchain metadata information');
+									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
 								} catch (error) {
 									await rollbackDbTransaction(dbTrx);
-									logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
+									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
 								}
 							}
 						},
@@ -172,4 +245,5 @@ const indexAllBlockchainAppsMeta = async () => {
 module.exports = {
 	indexAllBlockchainAppsMeta,
 	indexMetadataFromFile,
+	deleteIndexedMetadataFromFile,
 };

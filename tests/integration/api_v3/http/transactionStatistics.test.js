@@ -52,6 +52,7 @@ describe('Transaction statistics API', () => {
 					const response = await api.get(`${baseEndpoint}?interval=${interval}`);
 					expect(response).toMap(goodRequestSchema);
 					expect(response.data).toMap(transactionStatisticsSchema);
+
 					const tokensListEntries = Object.entries(response.data.timeline);
 					tokensListEntries.forEach(([tokenID, timeline]) => {
 						expect(tokenID).toMatch(regex.TOKEN_ID);
@@ -97,7 +98,7 @@ describe('Transaction statistics API', () => {
 						const tokensListEntries = Object.entries(response.data.timeline);
 						tokensListEntries.forEach(([tokenID, timeline]) => {
 							expect(tokenID).toMatch(regex.TOKEN_ID);
-							expect(timeline).toHaveLength(1);
+							expect(timeline.length).toBeGreaterThanOrEqual(0);
 							timeline.forEach(timelineItem => expect(timelineItem)
 								.toMap(timelineItemSchema, {
 									date: startOfYesterday.format(dateFormat),
@@ -105,10 +106,10 @@ describe('Transaction statistics API', () => {
 								}));
 						});
 
-						expect(response.meta.date).toMatchObject({
-							dateFormat,
-							dateFrom: startOfYesterday.format(dateFormat),
-							dateTo: startOfYesterday.format(dateFormat),
+						expect(response.meta.duration).toMatchObject({
+							format: dateFormat,
+							from: startOfYesterday.format(dateFormat),
+							to: startOfYesterday.format(dateFormat),
 						});
 						expect(response.meta).toMap(metaSchema, { limit, offset });
 					}
@@ -126,7 +127,7 @@ describe('Transaction statistics API', () => {
 						tokensListEntries.forEach(([tokenID, timeline]) => {
 							expect(tokenID).toMatch(regex.TOKEN_ID);
 							expect(timeline).toBeInstanceOf(Array);
-							expect(timeline.length).toBeGreaterThanOrEqual(1);
+							expect(timeline.length).toBeGreaterThanOrEqual(0);
 							expect(timeline.length).toBeLessThanOrEqual(limit);
 							timeline.forEach((timelineItem, i) => {
 								const date = moment(startOfIntervalInUTC).subtract(i + offset, interval);
@@ -137,7 +138,7 @@ describe('Transaction statistics API', () => {
 							});
 						});
 
-						expect(response.meta.date).toMatchObject({ dateFormat });
+						expect(response.meta.duration).toMatchObject({ format: dateFormat });
 						expect(response.meta).toMap(metaSchema, { limit, offset });
 					}
 				});

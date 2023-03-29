@@ -27,6 +27,7 @@ module.exports = {
 		limit: '=,number',
 		offset: '=,number',
 		sort: '=,string',
+		order: '=,string',
 	},
 	definition: {
 		data: ['data', events],

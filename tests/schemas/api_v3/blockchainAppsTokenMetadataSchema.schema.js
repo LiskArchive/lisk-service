@@ -16,14 +16,16 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const EMPTY_STRING = '';
+
 const logo = {
-	png: Joi.string().optional(),
-	svg: Joi.string().optional(),
+	png: Joi.string().required(),
+	svg: Joi.string().allow(EMPTY_STRING).required(),
 };
 
 const denomUnit = {
 	denom: Joi.string().pattern(regex.NAME).required(),
-	decimal: Joi.number().integer().required(),
+	decimals: Joi.number().integer().required(),
 	aliases: Joi.array().items(Joi.string()).optional(),
 };
 

@@ -13,9 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
 };
 
 /**
@@ -61,10 +66,23 @@ config.queue = {
 	},
 };
 
-config.serviceURL = {
-	mainnet: 'https://service.lisk.com',
-	testnet: 'https://testnet-service.lisk.com',
-	betanet: 'https://betanet-service.lisk.com',
-};
+config.networks = [
+	{
+		networkName: 'mainnet',
+		chainID: '00000000',
+		serviceUrl: 'https://service.lisk.com',
+	},
+	{
+		networkName: 'testnet',
+		chainID: '01000000',
+		serviceUrl: 'https://testnet-service.lisk.com',
+
+	},
+	{
+		networkName: 'betanet',
+		chainID: '02000000',
+		serviceUrl: 'https://betanet-service.lisk.com',
+	},
+];
 
 module.exports = config;

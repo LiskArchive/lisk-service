@@ -18,10 +18,10 @@ const moment = require('moment');
 
 const {
 	MySQL: { getTableInstance },
+	Utils: { isEmptyObject },
 } = require('lisk-service-framework');
 
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
-const { getTokensMetaInfo } = require('./utils/metadata');
 const { requestIndexer } = require('./utils/request');
 
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
@@ -38,20 +38,25 @@ const getDBInstance = () => getTableInstance(
 );
 
 const getSelector = async (params) => {
-	const result = { property: 'date' };
-	if (params.dateFrom) result.from = params.dateFrom.unix();
-	if (params.dateTo) result.to = params.dateTo.unix();
-
 	if (!numTrxTypes) {
 		const networkStatus = await requestIndexer('network.status');
 		numTrxTypes = networkStatus.data.moduleCommands.length;
 	}
 
+	// max supported limit of days * #transaction types + 1 (for the default type: 'any')
+	const limit = params.limit || 366 * (numTrxTypes + 1);
+	const sort = 'date:desc';
+
+	if (isEmptyObject(params)) return { sort, limit };
+
+	const result = { property: 'date' };
+	if (params.dateFrom) result.from = params.dateFrom.unix();
+	if (params.dateTo) result.to = params.dateTo.unix();
+
 	return {
 		propBetweens: [result],
-		sort: 'date:desc',
-		// max supported limit of days * #transaction types + 1 (for the default type: 'any')
-		limit: params.limit || 366 * (numTrxTypes + 1),
+		sort,
+		limit,
 	};
 };
 
@@ -182,8 +187,8 @@ const getTransactionsStatistics = async params => {
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
 
-	// TODO: Update code once MySQL supports distinct query
-	const tokens = await db.rawQuery(`SELECT DISTINCT(tokenID) FROM ${txStatisticsIndexSchema.tableName}`);
+	const tokens = await db.find({ distinct: 'tokenID' }, ['tokenID']);
+
 	const tokenIDs = tokens.map(e => e.tokenID);
 
 	const statsParams = {
@@ -199,8 +204,8 @@ const getTransactionsStatistics = async params => {
 
 	transactionsStatistics.data = { timeline, distributionByType, distributionByAmount };
 
-	const [{ date: minDate }] = await db.find({ sort: 'date:asc' }, 'date');
-	const total = moment().diff(moment.unix(minDate), params.interval);
+	const [{ date: minDate } = {}] = await db.find({ sort: 'date:asc' }, 'date');
+	const total = minDate ? moment().diff(moment.unix(minDate), params.interval) : 0;
 
 	transactionsStatistics.meta = {
 		limit: params.limit,
@@ -211,7 +216,6 @@ const getTransactionsStatistics = async params => {
 			from: dateFrom.format(dateFormat),
 			to: dateTo.format(dateFormat),
 		},
-		info: { ...await getTokensMetaInfo(tokenIDs) },
 	};
 
 	return transactionsStatistics;
@@ -222,4 +226,7 @@ module.exports = {
 	getDistributionByType,
 	getDistributionByAmount,
 	getTransactionsStatistics,
+
+	// For functional tests
+	getSelector,
 };

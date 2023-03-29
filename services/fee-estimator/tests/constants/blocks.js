@@ -63,6 +63,7 @@ const nonEmptyBlock = {
 				'99a86e93f6931681ff327f1974c69ba42e0e1f5b68e4e50d764cb0aff8e6895f4bae365ef8fa79dfdb97ce6a12c76f37e8ba10f086ae35ceee92ed321ad996ab',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'a1610f176f02513b66dcdca24248bef4c2224fae3cbdc3b514704323192cf8d5',
@@ -80,6 +81,7 @@ const nonEmptyBlock = {
 				'59227a38b79e34d9109a7f91dd45cad2fce2bac139823ea4fdb971be59d7d0bdfba2fc9bece03b23cb927964b944cc9f8524877e5a28d41c9551e9cac3c5d765',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'c79fa1d4e03de131c21dd0189011e432a4b5a69e91b4cc521b436f4d9e217bd6',
@@ -100,6 +102,7 @@ const nonEmptyBlock = {
 				'1fa1336f27b800458a442cde58ef80afb223897e07dc8ca69584e36082bbf3854ca1cb702f796c0ec7fb43110ad466463885a3b62151d5781933a7a082e646b7',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '9629a02f29647e1f024ad9fe589fa4b403d36be37601d28379c0d50d6aca4eec',
@@ -117,6 +120,7 @@ const nonEmptyBlock = {
 				'192d6b462b9733808f41b2190a0893f6a3544b51c4f030ab48b4f0384a68795a42de7431c6c813ece15710898e2003f8ce133d737f993ff6ae99679f8f05a482',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '4a7097b8ff98bdd71b81043e49fddf13d7c12c756a2f28d4055e94cb3d118851',
@@ -134,6 +138,7 @@ const nonEmptyBlock = {
 				'8e73fb5c684dc4f23174fe56705f132412e39137e1770d886359cd42ad47c87cc63479866961653d9401b2431b42282733596ced3a81d294bb991874e7592858',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'c2341705d701d8ae85e9c8f1a8a88d11432dbea08b6b12174b76a5474f87136c',
@@ -151,6 +156,7 @@ const nonEmptyBlock = {
 				'fdbe063732354c10cc727e4a29ca43c0e1b86c874e075a7316297ba66e071feaf6783a870a1e67c6c3137761a5126950bc7bf8c7833d978a05e32dfa52e1df1f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '120fa570d8a75b4acd8acf22aa6fd0af576433260fa1aa86b4d3d7619523b8fe',
@@ -168,6 +174,7 @@ const nonEmptyBlock = {
 				'1006864cc960ffe4bd760cdaf5ea993777e653dc01751962a299b3644e4b316aceabf6531a97f5098c2dedc61872f2ac9a47ebfa05c2aad4bd4d5d26c63c4230',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'c1793b23bb1848ff35ad29535c03e9be0051cbafc7c5a7523b9a9223550ec4d7',
@@ -185,6 +192,7 @@ const nonEmptyBlock = {
 				'9fb86b6300baecdfac85ac0e5ab94ab96a2d5d1bdb87a3f31abfc23f59850c5c4a375574af6adcb876d875fb46018843aa25c20c4dfff852e30c8b9518f7065c',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '3e31356fc5c49477622ca893652f68cbd34f7925f80b4270e14de6833ba1bc12',
@@ -202,6 +210,7 @@ const nonEmptyBlock = {
 				'8fc9dd254871cd2d33164d7f2f1a9252168aa1e5d4f1c16a71c667f90c8086dc19ace3afbf2a80831843327a8d1ed4fd45d93b3d94c59d5bc7a9c6316a0ec4e8',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'a21acf20715d32be9dac48166848b87500c1d85dc7841f6a62c5eaa6d125e956',
@@ -219,6 +228,7 @@ const nonEmptyBlock = {
 				'5bb3f4c0866a2a5c272bddea7636c9881997441bba41bbe5822e0848c73c1531e7b233e08f9793637458fd7fe4b8965d975ed3b980e0db70e79feda4f98862ee',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '5a910bdaf24fca7a8ba4aecf8cc716993796c3974b6ffcdb55ae46851a5378e8',
@@ -236,6 +246,7 @@ const nonEmptyBlock = {
 				'80bb887bac938287cb6630fe37adbdccab435d3faa75895d7701960334a4997cbdcc7112b8f55c52ac7cb17848c0ff7f9e9fedfa49724b297132f1594c9806e3',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'd7acbb3d3151dcb6a21cc8c1fb48f103f1746224f1d457ed336b0794d200517e',
@@ -253,6 +264,7 @@ const nonEmptyBlock = {
 				'57e1682086b12e06765942293b30315785bee26a57252f923271e37bd89f9a1d248aa01cfa4e588b04077c2b0aafb7bde009e224bccac0d0bcb9594558c369d1',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '240c761f0e7d114e360fa4c80474ca107c1f204a97c812a0fcb1ccb4f29750a8',
@@ -270,6 +282,7 @@ const nonEmptyBlock = {
 				'e36951480928009922e3aa04ecde273418f00a8db65543492ebe3ed950c84c1092523c3ad3ee4068b4292d464801ef1d6521765dbeea772e0b35596e07f93808',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '035c4aa95e4cca5d3fcc6bd345d4d49a0bf645090c6387dadaa9dc3db3128d11',
@@ -287,6 +300,7 @@ const nonEmptyBlock = {
 				'efdc024533245271dd6923e2bfec7494d1e499ebfc46eacb95531ca2a6bd1559ffb720ca9446844f0f784426d412b76f34053cc0315c1c48fc9aed4c5fe9d21b',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'e47ee7753ad72ad63144ea746a8a664ad896a7982a78ffe882bbd9b5a771d9ac',
@@ -304,6 +318,7 @@ const nonEmptyBlock = {
 				'805be839f8b4de5548ed49046898cedb571c310776561edff32f179af6173e840e2a58c60e0ad8392cc823d2e32d0a9a2eb7081d289a235e8cbb8c6231d7f3fe',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'bf81c487f8ca96dc8eb528871a744b6a9b6f862717bc6063a8087fbf65f001c1',
@@ -321,6 +336,7 @@ const nonEmptyBlock = {
 				'4ca8eb4fa50d64b42b19ed3ecb314e890ee90bd2160247d684ddaf844e4682a14ddb5cbcf1cfed7abc01948cdc26b3aa800cdd3f242c8a8514beb2896653910a',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'df99d1ffa3858d62b4b4b30e9f0ad1eebd4ae3310fa69f463e14d3da5aa4abbd',
@@ -338,6 +354,7 @@ const nonEmptyBlock = {
 				'd8b627305aba4d6e48e07f92bca2b8aa07a48996ee38bc526af26a4ae82bfcd20814fc60d0148fa3e996501a9d08fcb0f02a47b883ea1cc34c1a66d93d2a4585',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '7041d3ef5bb7adb97b5cfff38f6f4311473f6d4ffcf488521094b1bbc118759b',
@@ -355,6 +372,7 @@ const nonEmptyBlock = {
 				'6981bb5852a5fc24fed7cad446d58c24da799108cca195c3070cbc1e8c2a958f9ee31583b3455e62fd967813225312cbfa3196679ec62c7a8e35139a1d471e6f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '6e68c3a18b4a1690e68c3ee85799de2dfc1e1c2e29abab4a770cad7b714cb748',
@@ -372,6 +390,7 @@ const nonEmptyBlock = {
 				'e9140f0d7c5197d89675411fccfa036a4b88f318b15c793fe5658165e1e3f7cefd7bc0c4a683854465948fb9d307f2b39fdc89ecb4afd7ab1f70b61cbf2dd19e',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '11f53a90eae4e218b631614187670829e6f1a3db13ae0693af5b8249f5923bf2',
@@ -389,6 +408,7 @@ const nonEmptyBlock = {
 				'f035df2a393ac45a6a779d0b794357857f6d274ea49af052e07e7f49343481551b77be44f54b56f88a06af8deb6eb6805deb5a19dac152828dcfaebe88c0c26b',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '582e9f4764058d2ca7a814f6a82a516a33f4552f85ef132d4cf1fd1dab51629a',
@@ -406,6 +426,7 @@ const nonEmptyBlock = {
 				'787749abec266168952db50decbdac00ab1b76a6eb76a75a2119c5df46d174d7273cc4b80bf8bc04ce02767b74b9dd7ed32b48a14131540ea93cdd2d9078d480',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '055966abf25e3be54ff1a1df8fb21af74e5ce2e80e133e1867cacf745bb00d15',
@@ -423,6 +444,7 @@ const nonEmptyBlock = {
 				'4abf1b5f96ed58b4785d0ea12b717bee2c848096eb01acd10306aca41b79f16a8124757ab227e0b46aa915c106b2d17cff79cc61a02f5162ccb5b7d46ff814cf',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '77d56781efa4a94c4ae3158aa5aaeb25ad9460b11f615e17d2e64db6d9caa841',
@@ -440,6 +462,7 @@ const nonEmptyBlock = {
 				'df22e647550d7b9e684f59c8fd8432e870055be5d3a4a4e640efe85117f9258919ca8642246044d8f36b7b0ade0f25ac9fb35846342a6199413cac33709b3ed4',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'ed84a7e50a21a1f12df7c5646ac1493e5bb990713962585a518a23dbffab6d9f',
@@ -457,6 +480,7 @@ const nonEmptyBlock = {
 				'1de1c90e74321c8a8edd0404bf32cf4da55b39a2872025b4fd639570cf321fec8a63b9b55c5462fa7e290e607766895e34a83caf96d826d4cdf980fdde6de136',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '014e6a97a853984920ca66fcd5b89795b97c7a50bcb66d9a0df66d3feba896af',
@@ -474,6 +498,7 @@ const nonEmptyBlock = {
 				'71e16b2fb6a2d00e530845d2913ff87d6be9e6a5857a2d2f9d330b16e7c72607cb6f1e07f6a1a88d18817aad922d07238668b2b9f96bc3a46eea349687c83cff',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '6d369a5a3493cc00300e95bdbc1cf2fc0c215bdd4707da52efa390b3c6e52677',
@@ -491,6 +516,7 @@ const nonEmptyBlock = {
 				'71f842766c89e4293d2d38dce8febfaae5761aee10b64c38318b075356e05ccaaf5e73ba3a43783f23a87174bbba8c97fc54d7353a041df7f459669dd1f220a4',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '9cfe41a933b14dab8c2ec902b53d1f2f53799a040b1bff4c207be075b4388622',
@@ -508,6 +534,7 @@ const nonEmptyBlock = {
 				'b854f0491011d5e2d8ebf212fa94c0486111f8d735e0d5cfee5b4b1dcbd3b63167fe609f03078197673c2bfbda5b58d5be1d24268fc5775dbb6967e93a94527b',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '6b2b3fabad0795759b77757f0511b590e18c631e942b78dd035f90c2df11df41',
@@ -525,6 +552,7 @@ const nonEmptyBlock = {
 				'c9f94bcf19313f5d16a027e9528f2e0e4c07839141e80db291e4e4be34a60d1150fc9d0147464b834671a853e70bf0914c069964c7e844a441b95676cf6c32b2',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'af50e8989743dcbb68cead67556c2829b686b2cebd7c70233bcfa2a92734cb65',
@@ -542,6 +570,7 @@ const nonEmptyBlock = {
 				'2406853102e9999a77c0bf70455c60997ac27664c1904e7b33031a7c549c4da2fc081533a8808915f679a7bc0d4701d2e6ad69f9ec24e3d5ef3b23a9de5daa3f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'ff25c9d0ead11192eaf93825f6db24f09581615036b8b1e9af4ecfb2c43026e4',
@@ -559,6 +588,7 @@ const nonEmptyBlock = {
 				'ca5fac972cc9ce773b0da4e461ec37129bd6a6b4998899bedb3447529eedc5494d04bddb89ce898fda990e2a8ed4cd65ee668d0f9eca049a03f9733d6c71778c',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '5661b0791d86ed79d54b1297c41f32ba569284bc2ff451a602b739d6e7651ad7',
@@ -576,6 +606,7 @@ const nonEmptyBlock = {
 				'080f0ebc77dd125cd58a6f38b5358b796104cdf2cb43063341709744c08bfa6ab48a9943af7c79134e9fb26ef737d850373217e8d4fbccc1726d4262a3e3286a',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '4716ac232701333d59cb751f1e624d4ee3047589d5e4386224b8b24aae2bcf2f',
@@ -593,6 +624,7 @@ const nonEmptyBlock = {
 				'98a378e31a79325041cbc1e29834d820c89835fce02f5e724b03fdec43b6c7be3b459604ea5a75bbba05e1e8872b372c7a5253bbc54ef0af46c04022ddcb36c5',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '026ac62db7531c1f5cf94f7178d9d73b4be213e0852eb0e90e7677bb6bf62e92',
@@ -610,6 +642,7 @@ const nonEmptyBlock = {
 				'746cf3c0e719f1369abedf920fb69c663e2571fd927640a429c74a490b7d92355efae67e446f5d215dc160b63a7fb2e328e9e15132010c3bb60c2b8ec1e7149b',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '29ffcb1e99044a5b174703d3c8bab00be3f22f923e06f67d75368d672ff4f982',
@@ -627,6 +660,7 @@ const nonEmptyBlock = {
 				'b6274849ecbdd3d92090c69a6a593c88f16765291b7c8c80b6696e2cad20415c28ae6577f488da903e86d51909112ec8183e4232fca60a89ead63b947675514f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '2bc2ee0fcb5e5485e43e68d2bf546370dafcbb058a645c004bd685839e82a2e8',
@@ -644,6 +678,7 @@ const nonEmptyBlock = {
 				'dee299893f033bfc9e0d9cbf829d3a25d4548ecdc3495399b1266a6537300e36cd514443a3943525857bf52ed8529f779ceedab6ac460ab5cb40b45be517bd87',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'd2a14d039fcf4cf8420b1a0317e003b4af3ecf8dc27f892f2ef586a4ceced0e8',
@@ -661,6 +696,7 @@ const nonEmptyBlock = {
 				'233b2cdcc5cd6648f94faba8e14d001f1b844933c0f541a261a3e64abb7ebd0242b3a69b265e96231445cb67a502b02d714d824962ebc99e8de62db86071b31e',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '9300ba949e737a4c3c9f6bf80d0d51050c74dfea5f373377d1ff78426ee6fe8a',
@@ -678,6 +714,7 @@ const nonEmptyBlock = {
 				'cbf53fc6bf35e0967c3eb15c7aa0dd56eb545729dfb782f67b89a232abb6ee3cf60d27f3f1ddcf91a01817a312784a7a560a57a38b4a25d6c2381054e969d969',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'aa177c234cecef3c506541cd35d69904b0bd59acca9bd53500295490892cc7bf',
@@ -695,6 +732,7 @@ const nonEmptyBlock = {
 				'1724f82457cc884993f7f28fe52b86889f5dd14342b1357c03d7e3c61c572b17c5c147f1142a1822bd67076db672ba9d4219997228b994df52aa3e8617bece57',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'cc0277f398cd332c9cc76952c0c5969baeff5eb874b1a50071ee8a311b1dc012',
@@ -712,6 +750,7 @@ const nonEmptyBlock = {
 				'2ca9b5567b3cd2884606464278273896906502ccce6fb1750948e91c064909832d1888b246726560130762fe5f345725587c7945db3e78c801d57af1bde3dd26',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '3fa7c2a5a410541f65460dd74401296b5ad0a0c0f63520cb3c6de43743d98bd1',
@@ -729,6 +768,7 @@ const nonEmptyBlock = {
 				'9626ca271773563604db0da7c416877f4a9dc9efd51c0c11c3989dd41be368eda0e408985f0be55b82af148695bb015c8b09fe7afc1bcaa72f21c51d4bf68ea9',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'dd31a4e6e4831940311dc8e9b5f4e44c0cbdc79440611443bd41a67433809a1a',
@@ -746,6 +786,7 @@ const nonEmptyBlock = {
 				'ee102a5ec574863cf70cfb23656f512dda2c2383662d0718b77ed92d815b4bc05ec82906ba9b6ebe751bb74ac24cc410fabddcafabe2663ab4436ca0e07e7662',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '7f4924c857a72c945795790a90115d5e63e10f86b313c8b79b66d590ba5211d0',
@@ -763,6 +804,7 @@ const nonEmptyBlock = {
 				'3e692943bde988f52a2fd970939986afafd0d9f2a9b48d96b8355e55621157a00e73ea29276d23465f20477e7a921a8a29ef2443ae2efc08616eac955c1cd2e1',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '8bf8f2b9ee2ae043cba60d1cc1a1a5b826da525aac9345de10f6b73b8c49c326',
@@ -780,6 +822,7 @@ const nonEmptyBlock = {
 				'7dc1540a52bf3808312719ea8ac7faf8ade7b31fc93668db3bf230f98e3f57e0a47c0ab8a4a401d399c4389378073488357fc1ad7551abcf1aa76f7fd60e8e16',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '650f59a05ec597ae386c2588ead1b2659ffe3bc3f7e552c645a133efe0f5ae22',
@@ -797,6 +840,7 @@ const nonEmptyBlock = {
 				'c5a2b9f02531f5df87fcec5153a1948e53b51cd0ab2d147b723ca8b402aa57a9a8671f803c61ba6bbf8066732f03cabcadcc3098e46e603a88702f511eca4cf8',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '40acdc262a1fb214ed98c49d44d383f9d9af52669016680234de7e84494eb08e',
@@ -814,6 +858,7 @@ const nonEmptyBlock = {
 				'c3da3db5f3a77b4aea3b0a6f135233f22363a4212499f2c183467494a77bdcb14d64b55f03138dee5e308c1c7607c1e0820c65c13a0517eabe6b46221e0c1f68',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'a140ddefcf3866d1e0d68a72b3577670a3a5450f420d551214c4ed77fa0d2694',
@@ -831,6 +876,7 @@ const nonEmptyBlock = {
 				'd23ec64e155bb16ba97a0ddc5709f0e338de109ba59362e79b33e27bf5c849fb854d9f071366e9c704b8da4ef5d07e871b84a9f99d89dc43c231b30556faf078',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '798abe652775a84524ff9d9c8dc5d6d054854a709794a5d2e5202547de80d8c6',
@@ -848,6 +894,7 @@ const nonEmptyBlock = {
 				'c5d735e7fe94a49cbbfa5913a3345076026d7ba21754ffdf96e49fe96533f66ae1a6d8c331f80df55f54395908b37a95bc51822e3689637f6d3c930a5a8bf2d4',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '280bca49b3fe7884bad1f530857d61251ce4a273052da3257633c1b996cc2b53',
@@ -868,6 +915,7 @@ const nonEmptyBlock = {
 				'53d712206bc55ea8788e8d69c0a83f281c4b4ce470aa18b62923db59553b706ee3731087ac0761f8de7d3fdbaf0044ebb8db2705575a9f880c67ab1f8686fd57',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '60148a990fa0f670b4fc91a4e8c82f0054f36d48fca7ef242344a15f65bb8085',
@@ -885,6 +933,7 @@ const nonEmptyBlock = {
 				'5c38154a1ea788f268294e82de3ed5fbbf9e45527d16fef71813c69d3885330e57c90219df38e16ab0254abbb532475769b80c268d9e1416810529880cc47737',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'a2d1e2e4fc94eb4b9e46f4be36849e1e12e29a445dec164343ef661d296be306',
@@ -902,6 +951,7 @@ const nonEmptyBlock = {
 				'675f971e9d5361cea1129afdd418fab7313b1062cdfb6a713d17b1f168e69ee097b0361cde0319ab159667655ad57e6d2023bb85858cbc3d87780c81cf3d4ec5',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'bb6329ac52d60a3ad44ef10cb093a7458008d0011f2c5b7896f1b437d2b29029',
@@ -919,6 +969,7 @@ const nonEmptyBlock = {
 				'0bdbc263a2ae07c31c3250fcc1b0d13f9eb919a2fe4da1a2c1a683a6228497f0e4c5775730cbb190dc508a5edee04588545aafc845e12522558bd0a610e31e57',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'b19dcd95f5589810a005ecfeed756d317ced9cdb1f534cfd8f76e41d26d2c0b8',
@@ -936,6 +987,7 @@ const nonEmptyBlock = {
 				'9f2c4d9f2de365e56c806c7ca64474c4e12669ca57737ef1aaa86dd81236c38c4893b0787ca832fa72f3df4d0f307ac8a205b855e35c7b88ed1543356bf63b3b',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'c8619998ad0607cc2fb2ebc2bac09e25d836c6c7dad44de7f03f81c52046529a',
@@ -953,6 +1005,7 @@ const nonEmptyBlock = {
 				'c3a46ca0796ce5928541327548ece67badad0ac3a48a0b46a1af14467f6a1c9fe1b21ee719c7d7b0d03a7c56b520aaf2d3008e0d2291f1ff06254ce0ce9aff83',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '39d36445b1d028ce40946929e2e23a51ddd2e00a4af164cce5f94beb33d6599a',
@@ -970,6 +1023,7 @@ const nonEmptyBlock = {
 				'207f833201aa930a12714ad1519321d2452b0c214e3a3c55148388ff9d00a72332994a13cc1a5a18b97ff26ef31427ad378e0f8d023fe8d514bddc654889a450',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'f45b13f3a1294b03f5ae08d85cddae0f6031487ab5ba9087d4d3eb9f27ba3e0b',
@@ -987,6 +1041,7 @@ const nonEmptyBlock = {
 				'488c876600bcc5026ea3d36461ba2f80f8daa82221fb2583609029984a7239d61ff3bd420301237d3742f40b8d8e35cffdd41bc3143573cc4c53009999390540',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '1119c94f736e0dfd732cc4205f23e0cade391a4fe7cb7c219e4161b03bbef0c0',
@@ -1007,6 +1062,7 @@ const nonEmptyBlock = {
 				'c20d60fd0e80ba768b2591527a8cb82304a44aa4912b6b9cd558e14a92a8e153a4536d71d69371b983e12a606df0555023ded5a9f7057f584fb3020d69e254d2',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '08d55f58cecdbf8a99a187e56b047c90bf3f83073e4a519dc8c7629c284b454a',
@@ -1024,6 +1080,7 @@ const nonEmptyBlock = {
 				'787ca065df6382aacc094bb3942fa9835c221fd8aa849db8ffc4ee51afba43885fb45a91b8eab1cd3b37a49449cfa198cd2eb718944d3c1eb2b73ab8e4f0d568',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '07e708fdf756c08651311cadceac20a3f5ac6290dce8bd1f416037f0a5c03b17',
@@ -1041,6 +1098,7 @@ const nonEmptyBlock = {
 				'2ba8f7758a83200ff613b2fa9b8bcab7194294cf5347f7eeadf913cc67431ba9684440fdd5982b1ff33d3a61ab32451c862a958d100490a971c36c5186fcc568',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '39bfc8fd3d55beaeb0561ef7c84c144833707301ef580cf10436c51625087bb8',
@@ -1058,6 +1116,7 @@ const nonEmptyBlock = {
 				'8ce73d33da3cda89d6e0de97777595bf89e2626e03fc58d841e030a08b5a04d7d3f6577a215a6f2fb19852ec7a7496dee80537fbd8be3b20d6e4c72157c4c37a',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'af381ab1dab6f95744801fd480c0def7dbc53daaaf15cebbfcc8610cbe27c24c',
@@ -1075,6 +1134,7 @@ const nonEmptyBlock = {
 				'b400b7cafcc940ec49c09d9fd2e6c2fbf63137afa798d4961152177422bc3ee10e83c84805f231c491afbbacda2caaf5f3b945b28cb13a24a650165c1223932c',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'bc51a1719eda2e1f19b786082bbbd0c744a3f5bfcda986b3e22188f827bea88b',
@@ -1092,6 +1152,7 @@ const nonEmptyBlock = {
 				'c08b39b6475a3b778bf40effd9ccb0722d9ad744658708841db303aab0a7e7dcc50addea59e1c7f875682ce97a432e1605dde22496e1801b77abe6748a8bd676',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '46a883639f9f70d1a86d9c4e48c5ab0a09ef7a776520dd1205ae5840570191e3',
@@ -1109,6 +1170,7 @@ const nonEmptyBlock = {
 				'f6399b01bf6e93cb0573fab9bb95a9cbc43da3a399d798bd65f24559b3c280c68613815b6abd0d723fa445d3955ad44d77b869c386ff4f87c186602bfa033b28',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '1897426e8b999595a15fe9374d6e76ad1dda79824fce3ba618a0f07d0884a161',
@@ -1126,6 +1188,7 @@ const nonEmptyBlock = {
 				'1092693e4ed682fe594148eda16cf06038341e79224a8798df283ce350e4fb0fa897fa9aa1b1c8aabfe958f87906a89d9445ca64c22f7b71a371d4997aa047c7',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '8fbc82b6a621a4b5f457903600d1701efb3f37687b52ef39f4d2c82c7498b342',
@@ -1146,6 +1209,7 @@ const nonEmptyBlock = {
 				'40e6995c2a1e9d199198a3553336f41917b182568ec16b3c0e919229e357c4c7b874b4bf473ac5e4ee519420577fcdfc3d1d165c9323a224f5727a9748dfa30f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '62865e6dd11da36e9928fb9c1520d3225bb91eaa1471d2a2508bf07409b5d11a',
@@ -1163,6 +1227,7 @@ const nonEmptyBlock = {
 				'7362262fef343897e1e4a2ceefaea35b22471419cc9dd781c217036e72230f6ff027f6929de0046175aa127381c53f273af585a0a7d6d81ac662202692eda74f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '789c27a89b0c4faf73fc1ed5cf69a2ce43ce71aace6512a70e742f5910c18cf5',
@@ -1180,6 +1245,7 @@ const nonEmptyBlock = {
 				'627c0da11aae752d2d4c2506bfcf8faf7038a627c1bc6399ade668d495376375902db75553999ce27753f5a79cf676dc5dd8723bbb810736f92895cdf15f4baa',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '8f7fdae1d5433fa5e6e6b8f48ea20d0bcabd963fdde19d600dfc34e7096a9ab9',
@@ -1197,6 +1263,7 @@ const nonEmptyBlock = {
 				'c73141777c981f7d85c07f9fee02e9b12d4b394d661ccc38116b541c5ffdedcdd97ce8c6f3db64d7098af7cee88dad6459e138ba1b129e3c6f3424bf421a79df',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '1ba94e67eeed8386f313091de63efbbf421a0737df6b87ef348d14cbb7e37564',
@@ -1214,6 +1281,7 @@ const nonEmptyBlock = {
 				'c03e4930c0bea6bcf1685d93d0bd3691699009ea93df7510cf341eb76bf8fef5720d00cd638049d6fe2cc35ab94ae45087ed1575181b4174c7ff87ee511a61f6',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '8ed4b089928838b948699b32e37af0c1593de4ff7706b02ab08a1162ba419b36',
@@ -1238,6 +1306,7 @@ const nonEmptyBlock = {
 				'3c9bdecd51b45e3881253436bae19823049530fe850cd3be7da6d188f7ea9ed1cb3d8c03909bb8113b08e3fd9014f53c5060eec556c67e728e7e0fdee61aaf65',
 			],
 			size: 117,
+			minFee: 13000,
 		},
 		{
 			id: '32a22c31c44b960c138dae3c6e5fe28a3d3c3f572912f2bdd60a694c85a70534',
@@ -1255,6 +1324,7 @@ const nonEmptyBlock = {
 				'8cb1c8ae7b336edea90e85349c2787e06ec2f004df7852c06df1b47c27fc7eebd0afbb5ca7173cabbffc35a6af79f076bbceb17e7f856e83da6785a69faf6789',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '5501f9280b244994a20ba75f353fcaf07e71524edd1f576a49f2c0eb906e6103',
@@ -1272,6 +1342,7 @@ const nonEmptyBlock = {
 				'61147b3ac317c25007874926b15ad8e487f4aec9864428b7be3d2f428b20e306a13ef2ee484976a42493e2a3150bc2214339a80e6602ec063582b3aaa33fdb13',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'b8b3312f0e81701f125e0d46011b243ea89164607d95965f691eff76bc9106ef',
@@ -1289,6 +1360,7 @@ const nonEmptyBlock = {
 				'dd842f6061ec792ac6e40a2102aa1318fb1a101d953f512082968f19f028fab9b92c874b3a49e07ddd6fd2fe89bcdfac165ef839e3b0443eceb50a15419bac68',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '024c7058108c52214df59b33714e026fbc4a02db3c8dd1ec5cffafbcd2fd095c',
@@ -1306,6 +1378,7 @@ const nonEmptyBlock = {
 				'2c502d4d01e7cad43fdc7e76e12ddd364762ee296de568d8c5e0534353b864605be575dfb2d8b652cbad3480d36123787e000ffb0ecef84c4147447b0c5339fe',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '4f08211378f82d48a921c6f5b3fddb872c9608b1757a9a8b4e106bd927552d18',
@@ -1329,6 +1402,7 @@ const nonEmptyBlock = {
 				'cc548b268bff5b4b847cb49a93d1070abf269db6efa37e2111e1d0b616c41281f72414a4d588426e06d93b68e39c4858009a52e5a80ccd384edc74d2f08098fa',
 			],
 			size: 117,
+			minFee: 13000,
 		},
 		{
 			id: '8bb1b28474b220eaced92f7c8223051658d2233e88aa7126eda72adff39680c5',
@@ -1346,6 +1420,7 @@ const nonEmptyBlock = {
 				'900852573f3427765c0a392ad61d44d5a17a29169b4ac88304177526e4fc6ac013f81fea573997d44c3ade7242b2ea7730c400791160a5e95daca8cbcdd1a2eb',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '10a7a7e9cd2bd0151e512c4c381bb798bdba8f78b098230df6fe42a7f716acfa',
@@ -1363,6 +1438,7 @@ const nonEmptyBlock = {
 				'4169aa62aa2a1c4d5a90419d570665f542a0c23dac9ba09a88ee70437299ea2f7dfa029448c2b18a0539d0227c005811d6b60610a1c96fceb466f4ba651c71ed',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '74e025187fbaada13f178af1d21c08ec2ca25dd36f3a1f0f5291e058d5de5d0c',
@@ -1380,6 +1456,7 @@ const nonEmptyBlock = {
 				'ea396849bfcfe423a3e3834916dec54c3d82332e6eb997344cff7d7b72e4456eb02dcd8cd14b97481c89b43e0a43fb4d42665744c4be6e1e30946ef473779ea0',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '909001e7426a1c97c05c35b726c410f2c181d0a2f006e169c3a92558f926b584',
@@ -1397,6 +1474,7 @@ const nonEmptyBlock = {
 				'7008883e39e34b7916dd6f0cf356769442bdc13f8200a1d3d6c1b4f12262202398e7c540b797c446220b4dcfee69c4920bb3d61ce85747fa7019ca85e8e53714',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'bd313362b18638ecd4682916b6b96ebbae24145fa32305b9df213904580397f2',
@@ -1414,6 +1492,7 @@ const nonEmptyBlock = {
 				'b0019228dc805e814b639994ce23a466e49354135096e6a662b4267ed479bb774a8106442c065dd768bac30c6d65b2fe48ab98e6a9558ba27d6e8b30db4ee4d0',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'e8011900982bf5cfa99d403b7acdc4d183c7c00baae38d62c3b4499aa7626c62',
@@ -1431,6 +1510,7 @@ const nonEmptyBlock = {
 				'd4531d9f186d7f694ec8135ed0a2e23e81e86ab011b7786d22dedec492f1326cf2bd4325faef53188ba75eb1873cce9299766e3b133a18cf54341ee9c1a7a535',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '9a61b7f8c51fb46add8c1dc2853093d3e2badecfdab4fd34a0d0a2bc82f3dc44',
@@ -1448,6 +1528,7 @@ const nonEmptyBlock = {
 				'5f2d112d67ebc1ced54e82b049a222e2b718f788b3d1a8d8dc54fb4c3f0422d6fa0e0026b7310ac9fd025b46d3e76093abc9bcedbb6850dd6e8b710851338fff',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '54abbafd396a527b9ae04c1ac811b45bef0fd5e9e40c58239f10556196f9d031',
@@ -1465,6 +1546,7 @@ const nonEmptyBlock = {
 				'8f2a3b7266fb2ab57cd740ef9b43fbd96138f879b38a62adf317a78124d0032313c689e6a7fa29edc2490e23a4bfea57045af5dee860f97a7490c4cebb4752df',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '5a87dff0ed76045d7bb2b181b453ba9afb0b87409ea5ae6b3b8d07111616f8b1',
@@ -1482,6 +1564,7 @@ const nonEmptyBlock = {
 				'f3a8821c54db5ae168ed9f90270dd9ba552859bba215b1fa9e4af9aa2e219feb4e0f6698f39e201f1420a0a827621e5ac44274d67186b0b8e291f8b098ce143d',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'e82426af9521dde380beaf920e7a5dab6c79ac1e324d6eadb22bfb88fdd478cf',
@@ -1499,6 +1582,7 @@ const nonEmptyBlock = {
 				'853efcea20896187d624e4ed18c8c4713981657bbafee034e5a388527cf2523346866265366ca02bbc83c5fcaa08c6039ff75ebc4847875b3a7d1fd023f09225',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '3ec725f2757135c9e3ee80b87540ae029fdbf06ba82d7a3f0bdb3da12f213fd5',
@@ -1516,6 +1600,7 @@ const nonEmptyBlock = {
 				'21a8b9a64f733c981d363d979671b5b99eedbbfcfabbbdece1629ecd87e9836043c14af60842652b2f49ded655d2994dba453e64b19bcbb929ee585b836d9d88',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'b71ab0051ec9eed575ff9c18da28a730a5a1141f7130d03e6470512dfe93b6a3',
@@ -1536,6 +1621,7 @@ const nonEmptyBlock = {
 				'91abedc4c7f959ff410230275b03f7ba413f8769ad881761c79bb4ae968e27ab68f86855658e9f0d1f07bfe90261c3499e021e0f81e8acdab343076e372051dd',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'a6fc1edc230b1d76861d799c70ee481244bd0381ab01734122b857b79331a012',
@@ -1553,6 +1639,7 @@ const nonEmptyBlock = {
 				'4b36a3b69b157bca4184885179842c7ecd3d860b44ab5db0427e4aca09bc982e875040eb0ae60b35bc46c4a35bfe0b8a8796a3395a3aa7794f3f0d398b4e64f3',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '49d7dcc7c70515d19fa26c1e8f47ea87049aeb83f874fcf2a29679d53ad8490d',
@@ -1570,6 +1657,7 @@ const nonEmptyBlock = {
 				'19e8a1ee13ac236cb16c6be7b9a9056a11052086a7be75358fea92437353c2aed944151265b85a5432392b70eb55a884229904a7ff56b1a870ce9cdced12253d',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'c35a6855954491e5fbae1046136d1943dc37f7468521fdb27ca1bef78b95bbd4',
@@ -1587,6 +1675,7 @@ const nonEmptyBlock = {
 				'dbfb600134e4ed4bd320a6100cc249f92e5749b6e0cb32d8e6c1debc62d40354af687492dbec5c80f99a97a79fa199484261326ece0c8eaeacc495cae93aea30',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '1f8d20e70f8470913753411820ebf02e3248a1a221d02e48827d22752f6d84e7',
@@ -1604,6 +1693,7 @@ const nonEmptyBlock = {
 				'ed2e0d37c2381db04f08074e5a8713a0e0a4df916babf2a961e7a251d9f7b884c5535f055db8daea0f21c029c4efc015dffdbb19a93d7bd5e527dbc81adfaaff',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '964a03d14165b64077e1dd7ff7473834c577147dbedf8c5ee9d387c2f8a474c2',
@@ -1621,6 +1711,7 @@ const nonEmptyBlock = {
 				'483296fc907a08650b49ca7ba8bf4da4cf4367964574e0c5e8f1c850affe6a262231bc0c66dae03f12fc15b21e0c59aa9b2d684c8dca0b58063ec95f54d175d4',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '1b5596565c3aa88c4997b9a65bc4682d00f093794882ef5a94c981fd42fb99c6',
@@ -1638,6 +1729,7 @@ const nonEmptyBlock = {
 				'447652c483e81e84faadb0b32b19da7bf570bd8b943859038120840f7a82412578ea5af2409b3dc8b15e76a6da02d4ce2607da273fb75acc8fe81d2256b54746',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '33df67eb4fd57d537f16c7044e07fdcebdf5f4ebf8c1dc5e7e9cd173b7ea1086',
@@ -1655,6 +1747,7 @@ const nonEmptyBlock = {
 				'34becb06a0ac538769b2281a6ea3439789620aa67e531faeddf61a267b1d01865aa2452b526515b91f3aa7f3b5ca37481944cdaa9fff29f27e152c53d5ae3dbf',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '6b1d398326c69c35648e493c47bbb3c4d45044a2bf5818da33dc7420990497d0',
@@ -1672,6 +1765,7 @@ const nonEmptyBlock = {
 				'97c0aae3d1e257a531aaf42168cbdfc36e7ad98e591c9b95f31b9fce5c5a0c56e65234fa603c45b2f35fe6d765d3fe84cdc7cc2eaa0409f978ba068bcd5182b1',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'a01177e8b2c404fd219304b3d24177f1618ef962df86e67707ecfeced33cb15d',
@@ -1689,6 +1783,7 @@ const nonEmptyBlock = {
 				'9f41bf4ad8a0d1450313423603fea31a01ce6d0bed68eb0a2660beada6c89ae0204c9045038b18af2eec62057c449ba4ed0cdc88ef85c1e302a2ae105a2553b5',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '7b8ad6e72dbe2ad8d23e73f9c7454396ea3f77e57e485d6731663fe65e10dd56',
@@ -1706,6 +1801,7 @@ const nonEmptyBlock = {
 				'2004822fe7f7c39ee9f8f9c35a1b42fa623527463e022471b43e1c1fc5ca18224e9be6315bee25b7f25f2bdd5add016f96c048220a3289fc946b87ac350f8306',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'e8cb8fbbf0e15e157a8a77f4d6a3677ee3dfa53bbea63fc8f5810a98e38bd5e5',
@@ -1723,6 +1819,7 @@ const nonEmptyBlock = {
 				'8ed3d35f9980c4f77e32f945863acbe9a41dadf5322d522785e41355fde3e60ddafa749330d2586843cf0aa6061ffcf389f8151d6ca50068cc99474d46727c22',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '93f7e63b236470919de2b68e74d6c3979816bfae1a5a55d827fde36ba8b585a8',
@@ -1740,6 +1837,7 @@ const nonEmptyBlock = {
 				'b71f8f8889414e8c3596aee2b7b42886415ffd41cc6b078fb6fd9e84a95c565190c54774de5f16b254b9172be566570724cd50890c17d04d5d5f9bd65cfe528e',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'dd4ae07e65696e912e175e51b711f2fd21a3a3a36f0b780acfbc84cd97ee535b',
@@ -1757,6 +1855,7 @@ const nonEmptyBlock = {
 				'c9798537d3c3388ccdf15f808a247ecfd3049f25a7dc5bbaaa10e41cf8d2fa2e7620ee45b8b30d934f7cfc45c122c1c92f5f762d918bd2df2c2d43a59a874ec3',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '71897bd1abf1cfedc9053f84b2fce0129d0df60df62745c3d4f0ef0dad943f99',
@@ -1774,6 +1873,7 @@ const nonEmptyBlock = {
 				'30e9da9a61ddbf6169355224de2dfe5c3997d36572c1b93d515766f10e6df73dd15ca9af20352c6d3bf67a813bb40c8e58cf2d5e8ecf32ca1211bbf557b01324',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '85af09a732b9b32583042ead55017359d31b8248530db16ed816c7e2e44d94b9',
@@ -1791,6 +1891,7 @@ const nonEmptyBlock = {
 				'a3d5f351df5b28286972ecb93b3a805476d38560c7ea28541e068d8a34f16909cd6cf66bfea13ef38a69e77f6324cccb7e2e3777d935343d0b4c628243b75e39',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'cfdcb2d8e6dd0c1a0688ada1afe32a4d5e8bc18892165c498bd931eaf08ec178',
@@ -1808,6 +1909,7 @@ const nonEmptyBlock = {
 				'bf03838994d3a876d019d349c19bf4d0c2693fa4e6140a63f826d89e6efdd0f263d6d68fc00542b2fe41b1a6ae8167d2f7076cf53aef47ff7f7cc19ad89b6950',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '5678e11e6716fef076778b3a84fe122768e5afeb7570a3bfff815850a8af316c',
@@ -1825,6 +1927,7 @@ const nonEmptyBlock = {
 				'95fc44f87b23686ee8f959e5ed7c115788b96ef51e5f4ecfa2b61d59c260b0b0eb660f96870202ed8a01fd3b23e215bf0ad48862df34ace906e8ca4cdad7d2b4',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '8cc4d2b6f2bd2def0a7a56d2acb843a0952baf98fbd40d99c010136b9be6be81',
@@ -1842,6 +1945,7 @@ const nonEmptyBlock = {
 				'd33886d371e706c853a2e269b2d42dafcf4ad9d8880520e18e8425a5705ca70acd48289a54ad92769b57b0d5b6625af30d4816ce9fa0f1558ad300d9c33e64d4',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'e373758ac84d990ded10402b8592c3834349bca06c2f3edaeb214a8beb88a27b',
@@ -1859,6 +1963,7 @@ const nonEmptyBlock = {
 				'1286840b3628439029a15a2ed53ea049c5678a9a8e51052f40e33bcd6f5599d0ba57b113609ed5e66b8cd6a094fe2247193e5171321f22c5fbfc4603e74fe503',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '4113c9ad66d0485e54c6be5eeea3b46e9987540b5515375def087292b26fdae3',
@@ -1876,6 +1981,7 @@ const nonEmptyBlock = {
 				'f9fb794b1a6576225a6b5e0a07a6b2684344e15b862d8faa278a164f13024a628a97db2f55582e2c636312eb8ad073f0257c1a4827311bc537df9949ad1ca010',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '193e1adcd841dc9f7832818fd96e2c41fe2695aa9b19a4a7e90e49dd947bee21',
@@ -1893,6 +1999,7 @@ const nonEmptyBlock = {
 				'44a788f11fa92a05bd9a545dde5a7d3e612069f2a41fdd5623aa25ebf55795c6589f4f4970fa938531fb3d5d0e34ee0cd89d5bf147233847dbffa098fc227b22',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '04a1db58fba3466af4a872b0c1cd5d8a54313bb2f3b0a6e08aafe2813756f244',
@@ -1910,6 +2017,7 @@ const nonEmptyBlock = {
 				'a67031cf6da278c9843895185a9795cca1839c4a8e24905e34ae20d84ba0f0a60d07958802fc5943ea5afd6615d23acb0c9f1f52af178f123b3f5b0173145de5',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '691fa84edb10a7ec2988914cd9c28774aa97325b1328878fa0c92174f2d94125',
@@ -1927,6 +2035,7 @@ const nonEmptyBlock = {
 				'a88357e1775a3695a08f4a53fbc8d99f324468c9185532cfa895014b8471f4fd14b99d574132643bfb2cefc11435ab5b2f69f2c142547bbc3c406bd5deafdb6f',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '2ebf8b50710f97d16bb57a46bff1f87c5d6e62fadf9e7d58ce45c731b7835cb2',
@@ -1944,6 +2053,7 @@ const nonEmptyBlock = {
 				'e553a809ec79e5046c8e3bb206649f8f71aecb9a6c86a0c2d1af319be162d3ef59609adb23104389918b9c89865c3b73f19f2d9da7d66cac75d977c7ce680125',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '7175ea337120688bb06303f3a606d0fb45421b84dde34c1010e641bc1395e983',
@@ -1961,6 +2071,7 @@ const nonEmptyBlock = {
 				'e567c5781b78e8521a10d309fafb7abcfa2845114d99b327e4a4790ede62a3752c939cace9d3c8cc2e32f17af61d3997cafddc04033c917e71316ef39e1818b0',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '2dc94d6b12f21ee3b965e1d8e823b486f003cf623c49c52ef8b0dc45c341c710',
@@ -1978,6 +2089,7 @@ const nonEmptyBlock = {
 				'774a472d8b32b8466896d857b097d14bb1303f97b1d802abbb248a72e4bbb43b97919e646cb58bf1698a449ee1b13128c5281fefb73e44a4c86ff9476efcf1a7',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '65fe0c0992995299fbdce74cb665e5e330c67d11c4d491d39873a149c5f40db0',
@@ -1998,6 +2110,7 @@ const nonEmptyBlock = {
 				'9519ba18e3ecbb82a61ab5edb6322d507255de16abc78d77ea0491cd5443e16ef0e256328151caa1cd16ec1e5c87ade7359d0feb10654299f93657aa9dad5992',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '6be711353711ec784d4d5d0bd7eedf1ad3b7c41438fb9d8382a838c86945ddc7',
@@ -2015,6 +2128,7 @@ const nonEmptyBlock = {
 				'a85bb516a19239af44fa66952a5112db115ba2b4fb3e3b7f08e20d436aee6216c89b755ab1dca8e44340c115a4807adeb054164bb9069c2b3c4ec657bf424ae5',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'f3c11ff40bb43ba3f72b354edefd14ae8b905557b4843d67685d6e78d2502cc8',
@@ -2032,6 +2146,7 @@ const nonEmptyBlock = {
 				'd10f2135e26aa93fcf82f6ef6ba2e7617b63fd00bdb6e40268492e6e5086118ec1621b0c4e9cd1e369614fd942b74aa7090d694dd6e6048f9a6a7cea8f256b77',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: '108e0f0ab18d83280cf1a54e7c9cfb68984e1219c45dd2fb328855bc8ac63648',
@@ -2049,6 +2164,7 @@ const nonEmptyBlock = {
 				'798c1c8e17cf9421bca834e4ccb7064ae7aa364bc0e36551037862e82f349fb4ec6c05ed8850ddc6ca04f35726eb6118e57d4c41c523f046933c6b4272bab0e9',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'cf7c06f0ddd94661f76ef97d23c9421a63b41c68684e431e01bee7744b3853c6',
@@ -2066,6 +2182,7 @@ const nonEmptyBlock = {
 				'8f4cd4279b38ac35882ca7e75d63570be4aa1223db35ff6f7f627ec6b0365b35e84c2f6a08d35699981a1e92f746a5a953e858a0818b6cfa8fa82d872f458b64',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 		{
 			id: 'fcdb3ed9a1eecf19b2d4bdb35d32bbad480193958cd1d78917d455d4d534f573',
@@ -2083,6 +2200,7 @@ const nonEmptyBlock = {
 				'7f5efb0c3bbb17213a8732dd245ddbef39ee87dc011a5fa53a6d7ba23eba325ef47f8bf736bfb57e6f77ec67570381aa10c2a6390cb909c69a019e2eb0b814bd',
 			],
 			size: 130,
+			minFee: 13000,
 		},
 	],
 };

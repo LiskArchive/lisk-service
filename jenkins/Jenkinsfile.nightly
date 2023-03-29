@@ -35,7 +35,7 @@ def echoBanner(msg) {
 
 properties([
 	parameters([
-		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'development' ),
+		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'release/4.0.0' ),
 	])
 ])
 
@@ -52,7 +52,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -70,7 +70,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -102,7 +102,6 @@ pipeline {
 								dir('./services/blockchain-coordinator') { sh 'npm ci' }
 								dir('./services/fee-estimator') { sh 'npm ci' }
 								dir('./services/market') { sh 'npm ci' }
-								dir('./services/newsfeed') { sh 'npm ci' }
 								dir('./services/export') { sh 'npm ci' }
 								dir('./services/gateway') { sh 'npm ci' }
 								dir('./services/template') { sh 'npm ci' }
@@ -118,7 +117,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -128,6 +127,7 @@ pipeline {
 						dir('lisk-core') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
+									./bin/run blockchain:import --force lisk-core/snapshots/blockchain.tar.gz
 									./bin/run start --network devnet --api-ipc &
 									echo $! > lisk-core.pid
 								'''
@@ -151,7 +151,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -161,7 +161,7 @@ pipeline {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
 					}
 					sleep(90)
-					waitForHttp('http://localhost:9901/api/v3/blocks')
+					waitForHttp('http://localhost:9901/api/ready')
 				}
 			}
 		}
@@ -169,7 +169,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
-					branch 'feature/blockchain-agnostic'
+					branch 'feature/**'
 				}
 			}
 			parallel {
@@ -211,6 +211,26 @@ pipeline {
 	}
 	post {
 		failure {
+			emailext(
+				to: 'service-dev@lisk.com',
+				subject: "[JENKINS] ${currentBuild.fullDisplayName} - ${currentBuild.result}",
+				body: """
+					Hello Team,<br><br>
+					
+					Build <b>${currentBuild.fullDisplayName}</b> for <b>Lisk Service</b> needs your attention. Please find all the necessary details below:
+					
+					<p>
+						<ul>
+							<li>Job <b>${currentBuild.fullDisplayName}</b> finished with result - <b>${currentBuild.result}</b></li>
+							<li>Total time taken: ${currentBuild.durationString}</li>
+							<li>The job logs are available at: <a href='${currentBuild.absoluteUrl}'>${currentBuild.fullDisplayName}</a></li>
+						</ul>
+					</p>
+
+					- Lisk Service Team!
+				""",
+				mimeType: 'text/html'
+			)
 			script { 
 				echoBanner('Failed to run the pipeline') 
 			}

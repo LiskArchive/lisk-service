@@ -30,8 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/validator`;
 
-// TODO: Enable when test blockchain is updated
-xdescribe('Validator API', () => {
+describe('Validator API', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrlV3}/generators?limit=1`);
@@ -39,7 +38,7 @@ xdescribe('Validator API', () => {
 	});
 
 	it('retrieves validator info -> ok', async () => {
-		const response = await api.get(`endpoint?address=${refGenerator.address}`);
+		const response = await api.get(`${endpoint}?address=${refGenerator.address}`);
 		expect(response).toMap(goodRequestSchemaForValidator);
 		expect(response.data).toMap(validatorInfoSchema);
 		expect(response.meta).toMap(validatorMetaSchema);

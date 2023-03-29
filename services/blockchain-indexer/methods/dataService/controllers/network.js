@@ -15,14 +15,42 @@
  */
 const dataService = require('../../../shared/dataService');
 
+const {
+	getTotalStaked,
+	getTotalSelfStaked,
+} = require('../../../shared/utils/pos');
+const { getTotalLocked } = require('../../../shared/utils/token');
+
 const getNetworkStatus = async () => {
-	const result = await dataService.getNetworkStatus();
-	return {
-		data: result.data,
+	const networkStatus = {
+		data: {},
 		meta: {},
 	};
+	const response = await dataService.getNetworkStatus();
+
+	if (response.data) networkStatus.data = response.data;
+	if (response.meta) networkStatus.meta = response.meta;
+
+	return networkStatus;
+};
+
+const getNetworkStatistics = async () => {
+	const networkStats = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.getPeersStatistics();
+	if (response.data) networkStats.data = response.data;
+	if (response.meta) networkStats.meta = response.meta;
+
+	networkStats.data.totalLocked = await getTotalLocked();
+	networkStats.data.totalStaked = await getTotalStaked();
+	networkStats.data.totalSelfStaked = await getTotalSelfStaked();
+
+	return networkStats;
 };
 
 module.exports = {
 	getNetworkStatus,
+	getNetworkStatistics,
 };

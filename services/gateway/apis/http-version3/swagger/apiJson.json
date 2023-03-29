@@ -17,47 +17,67 @@
         "tags": [
             {
                 "name": "Blocks",
-                "description": "API calls for blocks from the Lisk network"
+                "description": "API calls for blocks from the Lisk network."
             },
             {
                 "name": "Transactions",
-                "description": "API calls for the transactions on the Lisk network"
-            },
-            {
-                "name": "Network",
-                "description": "Lisk Network utility API calls"
-            },
-            {
-                "name": "Auth",
-                "description": "Lisk Auth module API calls"
-            },
-            {
-                "name": "Interoperability",
-                "description": "Lisk Blockchain Interoperability related API calls"
-            },
-            {
-                "name": "DPoS",
-                "description": "Lisk DPoS module API calls"
+                "description": "API calls for the transactions on the Lisk network."
             },
             {
                 "name": "Events",
-                "description": "Lisk Events API calls"
+                "description": "Lisk Events API calls."
             },
             {
-                "name": "Fee",
-                "description": "Lisk transaction fee recommendation API calls"
-            },
-            {
-                "name": "Legacy",
-                "description": "Lisk Legacy module API calls"
-            },
-            {
-                "name": "Tokens",
-                "description": "Lisk Token module API calls"
+                "name": "Auth",
+                "description": "Lisk Auth module API calls."
             },
             {
                 "name": "Validator",
-                "description": "Lisk Validators module API calls"
+                "description": "Lisk Validators module API calls."
+            },
+            {
+                "name": "Token",
+                "description": "Lisk Token module API calls."
+            },
+            {
+                "name": "Fee",
+                "description": "Lisk transaction fee recommendation API calls."
+            },
+            {
+                "name": "Interoperability",
+                "description": "Lisk Blockchain Interoperability related API calls."
+            },
+            {
+                "name": "PoS",
+                "description": "Lisk PoS module API calls."
+            },
+            {
+                "name": "Reward",
+                "description": "Lisk Reward module API calls."
+            },
+            {
+                "name": "Legacy",
+                "description": "Lisk Legacy module API calls."
+            },
+            {
+                "name": "Network",
+                "description": "Lisk Network utility API calls."
+            },
+            {
+                "name": "Peers",
+                "description": "Lisk P2P (peer-to-peer) API calls."
+            },
+            {
+                "name": "Generators",
+                "description": "Lisk Generators API calls."
+            },
+            {
+                "name": "Schemas",
+                "description": "Lisk Schema API calls."
+            },
+            {
+                "name": "Proxy",
+                "description": "Proxy API calls via Lisk Service."
             }
         ],
         "schemes": [

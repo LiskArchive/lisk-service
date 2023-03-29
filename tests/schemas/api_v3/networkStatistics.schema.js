@@ -15,11 +15,7 @@
  */
 import Joi from 'joi';
 
-const goodRequestSchema = {
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
-	links: Joi.object().optional(),
-};
+const regex = require('./regex');
 
 const basicStatsSchema = {
 	totalPeers: Joi.number().integer().min(0).required(),
@@ -27,13 +23,20 @@ const basicStatsSchema = {
 	disconnectedPeers: Joi.number().integer().min(0).required(),
 };
 
+const amountEntry = {
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	amount: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
+};
+
 const networkStatisticsSchema = {
 	basic: Joi.object(basicStatsSchema).required(),
 	height: Joi.object().required(),
 	networkVersion: Joi.object().required(),
+	totalLocked: Joi.array().items(Joi.object(amountEntry).required()).required(),
+	totalStaked: Joi.object(amountEntry).required(),
+	totalSelfStaked: Joi.object(amountEntry).required(),
 };
 
 module.exports = {
 	networkStatisticsSchema: Joi.object(networkStatisticsSchema).required(),
-	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 };

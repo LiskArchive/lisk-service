@@ -31,14 +31,42 @@ module.exports = {
 			env: {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_GATEWAY_VOLATILE: 'redis://localhost:6379/3',
-				STRICT_READINESS_CHECK: false,
-				WS_RATE_LIMIT_ENABLE: false,
+				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/3',
+				ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
+				ENABLE_WS_API: 'blockchain,rpc-v3',
+				GATEWAY_DEPENDENCIES: 'indexer,connector',
+				WS_RATE_LIMIT_ENABLE: 'false',
 				WS_RATE_LIMIT_CONNECTIONS: 5,
 				WS_RATE_LIMIT_DURATION: 1, // in seconds
-				HTTP_RATE_LIMIT_ENABLE: true,
+				ENABLE_REQUEST_CACHING: 'true',
+				JSON_RPC_STRICT_MODE: 'false',
+				HTTP_RATE_LIMIT_ENABLE: 'true',
 				HTTP_RATE_LIMIT_CONNECTIONS: 200,
 				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
+				HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
+				ENABLE_HTTP_CACHE_CONTROL: 'true',
+			},
+		},
+		{
+			name: 'lisk-service-blockchain-app-registry',
+			script: 'app.js',
+			cwd: './services/blockchain-app-registry',
+			pid_file: './pids/service_blockchain_app_registry.pid',
+			out_file: './logs/service_blockchain_app_registry.log',
+			error_file: './logs/service_blockchain_app_registry.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '150M',
+			autorestart: true,
+			env: {
+				// --- Remember to set the properties below
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+				ENABLE_REBUILD_INDEX_AT_INIT: 'false',
+				GITHUB_APP_REGISTRY_REPO: 'https://github.com/LiskHQ/app-registry',
+				GITHUB_APP_REGISTRY_REPO_BRANCH: 'main',
+				GITHUB_ACCESS_TOKEN: '',
 			},
 		},
 		{
@@ -57,11 +85,10 @@ module.exports = {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_APP_WS: 'ws://localhost:5001',
-				GEOIP_JSON: '',
-				USE_LISK_IPC_CLIENT: 'true', // TODO: Revert this change once issue https://github.com/LiskHQ/lisk-sdk/issues/7141 is fixed
-				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				GEOIP_JSON: 'https://geoip.lisk.com/json',
+				USE_LISK_IPC_CLIENT: 'true',
+				LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
 				ENABLE_TESTING_MODE: 'true',
-				GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 			},
 		},
 		{
@@ -83,8 +110,9 @@ module.exports = {
 				SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
 				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
 				SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
-				// ENABLE_DATA_RETRIEVAL_MODE: 'true',
-				// ENABLE_INDEXING_MODE: 'true',
+				ENABLE_DATA_RETRIEVAL_MODE: 'true',
+				ENABLE_INDEXING_MODE: 'true',
+				ENABLE_PERSIST_EVENTS: 'false',
 			},
 		},
 		{
@@ -140,9 +168,8 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_STATISTICS_CACHE_REDIS: 'redis://localhost:6379/1',
+				SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
 				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
-				ENABLE_TRANSACTION_STATS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 			},
 		},
@@ -160,23 +187,10 @@ module.exports = {
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-			},
-		},
-		{
-			name: 'lisk-service-newsfeed',
-			script: 'app.js',
-			cwd: './services/newsfeed',
-			pid_file: './pids/service_newsfeed.pid',
-			out_file: './logs/service_newsfeed.log',
-			error_file: './logs/service_newsfeed.err',
-			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
-			watch: false,
-			kill_timeout: 10000,
-			max_memory_restart: '300M',
-			autorestart: true,
-			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
+				SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
+				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
+				SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
+				// EXCHANGERATESAPI_IO_API_KEY: ''
 			},
 		},
 	],

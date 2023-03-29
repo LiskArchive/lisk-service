@@ -14,19 +14,18 @@
                         "type": "string",
                         "format": "App version",
                         "example": "4.0.0",
-                        "description": "Current application version"
+                        "description": "Current application version."
                     },
                     "networkVersion": {
                         "type": "string",
                         "format": "networkVersion",
                         "example": "3.0",
-                        "description": "Current network version"
+                        "description": "Current network version."
                     },
-                    "networkIdentifier": {
+                    "chainID": {
                         "type": "string",
-                        "format": "networkIdentifier",
-                        "example": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
-                        "description": "Network identifier"
+                        "example": "00000000",
+                        "description": "Chain ID of the blockchain application."
                     },
                     "lastBlockID": {
                         "type": "string",
@@ -40,13 +39,13 @@
                         "type": "integer",
                         "example": 16550779,
                         "minimum": 0,
-                        "description": "Current block height"
+                        "description": "Current block height."
                     },
                     "finalizedHeight": {
                         "type": "integer",
                         "example": 16550609,
                         "minimum": 0,
-                        "description": "Last finalized block height"
+                        "description": "Last finalized block height."
                     },
                     "syncing": {
                         "type": "boolean",
@@ -55,18 +54,29 @@
                     "unconfirmedTransactions": {
                         "type": "integer",
                         "example": 0,
-                        "description": "Unconfirmed transactions count"
+                        "description": "Unconfirmed transactions count."
                     },
                     "genesis": {
                         "type": "object",
                         "properties": {
+                            "block": {
+                                "type": "object",
+                                "properties": {
+                                    "fromFile": {
+                                        "type": "string",
+                                        "example": "./config/genesis_block.blob"
+                                    }
+                                }
+                            },
                             "blockTime": {
                                 "type": "integer",
                                 "example": 10
                             },
-                            "communityIdentifier": {
+                            "chainID": {
                                 "type": "string",
-                                "example": "Lisk"
+                                "minLength": 8,
+                                "maxLength": 8,
+                                "example": "00000000"
                             },
                             "minFeePerByte": {
                                 "type": "integer",
@@ -85,49 +95,67 @@
                     "registeredModules": {
                         "type": "array",
                         "items": {
-                            "example": [
-                                "token",
-                                "reward",
-                                "validators",
-                                "auth",
-                                "dpos",
-                                "fee",
-                                "random",
-                                "legacy"
-                            ]
+                            "type": "string",
+                            "description": "List of all the current registered modules."
                         },
-                        "description": "Array of all the current registered modules"
+                        "example": [
+                            "token",
+                            "reward",
+                            "validators",
+                            "auth",
+                            "pos",
+                            "fee",
+                            "random",
+                            "legacy",
+                            "interoperability"
+                        ]
                     },
                     "moduleCommands": {
                         "type": "array",
                         "items": {
-                            "properties": {
-                                "id": {
-                                    "type": "string",
-                                    "example": "2:0"
-                                },
-                                "name": {
-                                    "type": "string",
-                                    "example": "token:transfer"
-                                }
-                            }
+                            "type": "string",
+                            "description": "List of all current supported transaction types."
                         },
-                        "description": "Array of all current supported transaction types"
+                        "example": [
+                            "auth:registerMultisignature",
+                            "interoperability:submitMainchainCrossChainUpdate",
+                            "interoperability:initializeMessageRecovery",
+                            "interoperability:recoverMessage",
+                            "interoperability:registerSidechain",
+                            "interoperability:recoverState",
+                            "interoperability:terminateSidechainForLiveness",
+                            "legacy:reclaimLSK",
+                            "legacy:registerKeys",
+                            "pos:registerValidator",
+                            "pos:reportMisbehavior",
+                            "pos:unlock",
+                            "pos:updateGeneratorKey",
+                            "pos:stake",
+                            "pos:changeCommission",
+                            "pos:claimRewards",
+                            "token:transfer",
+                            "token:transferCrossChain"
+                        ]
                     },
                     "network": {
                         "type": "object",
                         "properties": {
+                            "version": {
+                                "type": "string",
+                                "example": "1.0"
+                            },
                             "port": {
                                 "type": "integer",
                                 "example": 10
                             },
-                            "hostIp": {
-                                "type": "string",
-                                "example": "Lisk"
-                            },
                             "seedPeers": {
-                                "type": "integer",
-                                "example": 1000
+                                "type": "array",
+                                "items": {
+                                    "example": {
+                                        "ip": "127.0.0.1",
+                                        "port": 7667
+                                    }
+                                }
                             },
                             "blacklistedIPs": {
                                 "type": "integer",
@@ -137,9 +165,7 @@
                                 "type": "integer",
                                 "example": 10
                             },
-                            "whitelistedPeers": {
-
-                            }
+                            "whitelistedPeers": {}
                         }
                     }
                 }
@@ -155,17 +181,17 @@
                     "lastUpdate": {
                         "type": "string",
                         "example": "1632471013",
-                        "description": "Current timestamp"
+                        "description": "Current timestamp."
                     },
                     "lastBlockHeight": {
                         "type": "integer",
                         "example": 16550779,
-                        "description": "Height of the current block"
+                        "description": "Height of the current block."
                     },
                     "lastBlockID": {
                         "type": "string",
                         "example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
-                        "description": "ID of the current block"
+                        "description": "ID of the current block."
                     }
                 }
             }

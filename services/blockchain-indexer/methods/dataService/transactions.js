@@ -18,7 +18,8 @@ const {
 	getTransactions,
 	getPendingTransactions,
 	postTransactions,
-	getCommandsParamsSchemas,
+	getSchemas,
+	dryRunTransactions,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -40,6 +41,7 @@ module.exports = [
 			offset: { optional: true, type: 'number' },
 			executionStatus: { optional: true, type: 'string' },
 			sort: { optional: true, type: 'string' },
+			order: { optional: true, type: 'string' },
 		},
 	},
 	{
@@ -51,14 +53,20 @@ module.exports = [
 		name: 'transactions.post',
 		controller: postTransactions,
 		params: {
-			transaction: { optional: true, type: 'any' },
+			transaction: { optional: false, type: 'string' },
 		},
 	},
 	{
-		name: 'commands.parameters.schemas',
-		controller: getCommandsParamsSchemas,
+		name: 'schemas',
+		controller: getSchemas,
+		params: {},
+	},
+	{
+		name: 'transactions.dryrun',
+		controller: dryRunTransactions,
 		params: {
-			moduleCommand: { optional: true, type: 'string' },
+			transaction: { optional: false, type: 'any' },
+			skipVerify: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];

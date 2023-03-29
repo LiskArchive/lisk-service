@@ -31,16 +31,16 @@ const isIncludePendingTransactions = (executionStatus) => {
 };
 
 const getPendingTransactions = async params => {
-	const pendingtransactions = {
+	const pendingTransactions = {
 		data: [],
 		meta: {},
 	};
 
 	const response = await dataService.getPendingTransactions(params);
-	if (response.data) pendingtransactions.data = response.data;
-	if (response.meta) pendingtransactions.meta = response.meta;
+	if (response.data) pendingTransactions.data = response.data;
+	if (response.meta) pendingTransactions.meta = response.meta;
 
-	return pendingtransactions;
+	return pendingTransactions;
 };
 
 const mergeTransactions = async (params) => {
@@ -123,30 +123,14 @@ const postTransactions = async params => {
 	}
 };
 
-const getCommandsParamsSchemas = async params => {
-	const commandsParamsSchemas = {
-		data: [],
-		meta: {},
-	};
-
-	const response = await dataService.getCommandsParamsSchemas(params);
-	if (response.data) commandsParamsSchemas.data = response.data;
-	if (response.meta) commandsParamsSchemas.meta = response.meta;
-
-	if (!commandsParamsSchemas.data.length && params.moduleCommand) {
-		const errorMessage = `Schema corresponding moduleCommand: '${params.moduleCommand}' not found.`;
-		return {
-			data: { error: errorMessage },
-			status: 'NOT_FOUND',
-		};
-	}
-
-	return commandsParamsSchemas;
-};
-
 const initPendingTransactionsList = () => dataService.loadAllPendingTransactions();
 
 const reload = () => dataService.loadAllPendingTransactions();
+
+const dryRunTransactions = async params => {
+	const response = await dataService.dryRunTransactions(params);
+	return response;
+};
 
 module.exports = {
 	getTransactions,
@@ -154,6 +138,6 @@ module.exports = {
 	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
 	postTransactions,
-	getCommandsParamsSchemas,
 	getTransactionsByBlockID: dataService.getTransactionsByBlockID,
+	dryRunTransactions,
 };

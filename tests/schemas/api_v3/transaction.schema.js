@@ -18,9 +18,9 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const sender = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
-	name: Joi.string().pattern(regex.NAME).required(),
+	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
 };
 
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
@@ -30,6 +30,17 @@ const block = {
 	height: Joi.number().integer().min(1).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
 		.required(),
+	isFinal: Joi.boolean().required(),
+};
+
+const transactionMetaRecipientSchema = {
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
+	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
+};
+
+const transactionMetaSchema = {
+	recipient: Joi.object(transactionMetaRecipientSchema).required(),
 };
 
 const TRANSACTION_EXECUTION_STATUSES = [
@@ -43,11 +54,14 @@ const transactionSchema = {
 	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	nonce: Joi.string().required(),
 	fee: Joi.string().required(),
+	size: Joi.number().integer().positive().required(),
 	sender: Joi.object(sender).required(),
 	params: Joi.object().required(),
 	block: Joi.object(block).required(),
-	confirmations: Joi.number().required(),
 	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
+	meta: Joi.object(transactionMetaSchema).optional(),
+	index: Joi.number().integer().min(0).required(),
+	minFee: Joi.string().required(),
 };
 
 const postTransactionSchema = {

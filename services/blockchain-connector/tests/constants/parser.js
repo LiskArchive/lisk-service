@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const liskAccount = {
+const liskAccount = Object.freeze({
 	input: {
 		address: '7a74ddeca43fef9d3fbf405039743dc54f0cdc9b',
 		token: {
@@ -237,9 +237,9 @@ const liskAccount = {
 			'dpos',
 		],
 	},
-};
+});
 
-const liskBlock = {
+const liskBlock = Object.freeze({
 	input: {
 		header: {
 			version: 2,
@@ -299,9 +299,9 @@ const liskBlock = {
 			'payload',
 		],
 	},
-};
+});
 
-const liskBlockHeader = {
+const liskBlockHeader = Object.freeze({
 	input: {
 		version: 2,
 		timestamp: 1649419370,
@@ -386,9 +386,9 @@ const liskBlockHeader = {
 			'asset',
 		],
 	},
-};
+});
 
-const liskBlockHeaderAsset = {
+const liskBlockHeaderAsset = Object.freeze({
 	input: {
 		initRounds: 3,
 		initDelegates: [
@@ -710,9 +710,9 @@ const liskBlockHeaderAsset = {
 			},
 		},
 	},
-};
+});
 
-const liskBlockHeaderAssetV2 = {
+const liskBlockHeaderAssetV3 = Object.freeze({
 	input: {
 		maxHeightPreviouslyForged: 18211671,
 		maxHeightPrevoted: 18211676,
@@ -724,7 +724,7 @@ const liskBlockHeaderAssetV2 = {
 		seedReveal: Buffer.from('bbe7d7e3afb79ff40551b3535c1fbd6b', 'hex'),
 	},
 	schema: {
-		$id: '/blockHeader/asset/v2',
+		$id: '/blockHeader/asset/v3',
 		type: 'object',
 		properties: {
 			maxHeightPreviouslyForged: {
@@ -748,9 +748,9 @@ const liskBlockHeaderAssetV2 = {
 			'seedReveal',
 		],
 	},
-};
+});
 
-const liskTransaction = {
+const liskTransaction = Object.freeze({
 	input: {
 		moduleID: 2,
 		assetID: 0,
@@ -831,9 +831,9 @@ const liskTransaction = {
 			},
 		},
 	},
-};
+});
 
-const liskTransactionAssets = [
+const liskTransactionAssets = Object.freeze([
 	{
 		moduleID: 2,
 		moduleName: 'token',
@@ -1386,14 +1386,14 @@ const liskTransactionAssets = [
 		},
 	},
 
-];
+]);
 
 module.exports = {
 	liskAccount,
 	liskBlock,
 	liskBlockHeader,
 	liskBlockHeaderAsset,
-	liskBlockHeaderAssetV2,
+	liskBlockHeaderAssetV3,
 	liskTransaction,
 	liskTransactionAssets,
 };

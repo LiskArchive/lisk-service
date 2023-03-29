@@ -20,7 +20,7 @@ module.exports = {
 		timestamp: '=,number',
 	},
 	assets: ['assets', {
-		moduleID: '=,string',
-		data: '=', // TODO: Update data schema once confirmed from sdk
+		module: '=,string',
+		data: '=',
 	}],
 };

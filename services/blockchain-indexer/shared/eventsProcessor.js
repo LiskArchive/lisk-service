@@ -20,13 +20,13 @@ const {
 	getBlocks,
 	performLastBlockUpdate,
 	reloadGeneratorsCache,
-	reloadDelegateCache,
+	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
 	normalizeBlocks,
 } = require('./dataService');
 
-const { deleteBlock } = require('./indexer/blockchainIndex');
+const { deleteBlock, indexNewBlock } = require('./indexer/blockchainIndex');
 
 const config = require('../config');
 
@@ -41,11 +41,12 @@ const eventsQueue = new MessageQueue(
 const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
 	const response = await getBlocks({ height: block.height });
-	await performLastBlockUpdate(response.data[0]);
+	const [newBlock] = response.data;
+	await indexNewBlock(newBlock);
+	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 };
 
-// TODO: Test delete block implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1189
 const deleteBlockProcessor = async (block) => {
 	let response;
 	try {
@@ -64,8 +65,8 @@ const deleteBlockProcessor = async (block) => {
 };
 
 const newRoundProcessor = async () => {
-	logger.debug('Performing updates on new round');
-	await reloadDelegateCache();
+	logger.debug('Performing updates on new round.');
+	await reloadValidatorCache();
 	await reloadGeneratorsCache();
 	const limit = await getNumberOfGenerators();
 	const generators = await getGenerators({ limit, offset: 0 });
@@ -75,7 +76,7 @@ const newRoundProcessor = async () => {
 
 const initEventsProcess = async () => {
 	eventsQueue.process(async (job) => {
-		logger.debug('Subscribed to the events from coordinator');
+		logger.debug('Subscribed to the events from coordinator.');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
@@ -84,7 +85,9 @@ const initEventsProcess = async () => {
 		} else if (isDeleteBlock) {
 			const { blockHeader } = job.data;
 			await deleteBlockProcessor(blockHeader);
-		} else if (isNewRound) await newRoundProcessor();
+		} else if (isNewRound) {
+			await newRoundProcessor();
+		}
 	});
 };
 

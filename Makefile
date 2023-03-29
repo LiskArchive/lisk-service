@@ -36,7 +36,7 @@ test-functional:
 	$(compose) exec -T tests npm run test:functional
 
 test-integration:
-	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
+	$(compose) exec -T tests npm run test:integration:APIv3:SDKv6
 
 cli: cli-gateway
 
@@ -64,7 +64,7 @@ logs-live-%:
 print-config:
 	$(compose) config
 
-build: build-app-registry build-connector build-indexer build-coordinator build-statistics build-fees build-market build-newsfeed build-export build-gateway
+build: build-app-registry build-connector build-indexer build-coordinator build-statistics build-fees build-market build-export build-gateway
 
 build-all: build build-template build-tests
 
@@ -88,9 +88,6 @@ build-fees:
 
 build-market:
 	cd ./services/market && docker build --tag=lisk/service_market ./
-	
-build-newsfeed:
-	cd ./services/newsfeed && docker build --tag=lisk/service_newsfeed ./
 
 build-export:
 	cd ./services/export && docker build --tag=lisk/service_export ./
@@ -114,7 +111,6 @@ build-local:
 	cd ./services/transaction-statistics && npm ci
 	cd ./services/fee-estimator && npm ci
 	cd ./services/market && npm ci
-	cd ./services/newsfeed && npm ci
 	cd ./services/gateway && npm ci
 	cd ./services/export && npm ci
 	cd ./services/template && npm ci
@@ -132,7 +128,6 @@ clean-local:
 	cd ./services/transaction-statistics && rm -rf node_modules
 	cd ./services/fee-estimator && rm -rf node_modules
 	cd ./services/market && rm -rf node_modules
-	cd ./services/newsfeed && rm -rf node_modules
 	cd ./services/gateway && rm -rf node_modules
 	cd ./services/export && rm -rf node_modules
 	cd ./services/template && rm -rf node_modules
@@ -147,7 +142,6 @@ clean-images:
 	lisk/service_transaction_statistics \
 	lisk/service_fee_estimator \
 	lisk/service_market \
-	lisk/service_newsfeed \
 	lisk/service_export \
 	lisk/service_template \
 	lisk/service_tests; :
@@ -162,7 +156,6 @@ audit:
 	cd ./services/transaction-statistics && npm audit; :
 	cd ./services/fee-estimator && npm audit; :
 	cd ./services/market && npm audit; :
-	cd ./services/newsfeed && npm audit; :
 	cd ./services/gateway && npm audit; :
 	cd ./services/export && npm audit; :
 
@@ -176,7 +169,6 @@ audit-fix:
 	cd ./services/transaction-statistics && npm audit fix; :
 	cd ./services/fee-estimator && npm audit fix; :
 	cd ./services/market && npm audit fix; :
-	cd ./services/newsfeed && npm audit fix; :
 	cd ./services/gateway && npm audit fix; :
 	cd ./services/export && npm audit fix; :
 
@@ -190,7 +182,6 @@ tag-%:
 	cd services/transaction-statistics && npm version --no-git-tag-version --allow-same-version $*
 	cd services/fee-estimator && npm version --no-git-tag-version --allow-same-version $*
 	cd services/market && npm version --no-git-tag-version --allow-same-version $*
-	cd services/newsfeed && npm version --no-git-tag-version --allow-same-version $*
 	cd services/export && npm version --no-git-tag-version --allow-same-version $*
 	cd services/template && npm version --no-git-tag-version --allow-same-version $*
 	git add ./services/gateway/package*.json
@@ -201,7 +192,6 @@ tag-%:
 	git add ./services/transaction-statistics/package*.json
 	git add ./services/fee-estimator/package*.json
 	git add ./services/market/package*.json
-	git add ./services/newsfeed/package*.json
 	git add ./services/export/package*.json
 	git add ./services/template/package*.json
 	git add ./package*.json

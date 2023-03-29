@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	CacheLRU,
 	Exceptions: { NotFoundException },
 	MySQL: {
 		getTableInstance,
@@ -24,53 +25,69 @@ const {
 
 const config = require('../../../config');
 
-const blocksIndexSchema = require('../../database/schema/blocks');
-const eventsIndexSchema = require('../../database/schema/events');
-const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
+const blocksTableSchema = require('../../database/schema/blocks');
+const eventsTableSchema = require('../../database/schema/events');
+const eventTopicsTableSchema = require('../../database/schema/eventTopics');
 
-const { decodeEvent } = require('../../utils/eventsUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema.tableName,
-	blocksIndexSchema,
+const getBlocksTable = () => getTableInstance(
+	blocksTableSchema.tableName,
+	blocksTableSchema,
 	MYSQL_ENDPOINT,
 );
-const getEventsIndex = () => getTableInstance(
-	eventsIndexSchema.tableName,
-	eventsIndexSchema,
+const getEventsTable = () => getTableInstance(
+	eventsTableSchema.tableName,
+	eventsTableSchema,
 	MYSQL_ENDPOINT,
 );
-const getEventTopicsIndex = () => getTableInstance(
-	eventTopicsIndexSchema.tableName,
-	eventTopicsIndexSchema,
+const getEventTopicsTable = () => getTableInstance(
+	eventTopicsTableSchema.tableName,
+	eventTopicsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
-let registeredModules;
+const eventCache = CacheLRU('events');
 
-const getEventsByHeight = async (height) => {
-	const events = await requestConnector('chain_getEvents', { height });
+const getEventsByHeightFromNode = async (height) => {
+	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
 };
 
-const getModuleNameByID = async (moduleID) => {
-	if (!registeredModules) {
-		const response = await requestConnector('getSystemMetadata');
-		registeredModules = response.modules;
+const getEventsByHeight = async (height) => {
+	// Get from cache
+	const cachedEvents = await eventCache.get(height);
+	if (cachedEvents) return JSON.parse(cachedEvents);
+
+	// Get from DB only when isPersistEvents is enabled
+	if (config.isPersistEvents) {
+		const eventsTable = await getEventsTable();
+		const dbEventStrs = await eventsTable.find({ height }, ['eventStr']);
+
+		if (dbEventStrs.length) {
+			const dbEvents = dbEventStrs
+				.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+			await eventCache.set(height, JSON.stringify(dbEvents));
+			return dbEvents;
+		}
 	}
-	const filteredModule = registeredModules.map(module => module.id === moduleID);
-	return filteredModule.name;
+
+	// Get from node
+	const eventsFromNode = await getEventsByHeightFromNode(height);
+	await eventCache.set(height, JSON.stringify(eventsFromNode));
+	return eventsFromNode;
 };
 
+const deleteEventsFromCache = async (height) => eventCache.delete(height);
+
 const getEvents = async (params) => {
-	const blocksDB = await getBlocksIndex();
-	const eventsDB = await getEventsIndex();
-	const eventTopicsDB = await getEventTopicsIndex();
+	const blocksTable = await getBlocksTable();
+	const eventsTable = await getEventsTable();
+	const eventTopicsTable = await getEventTopicsTable();
 
 	const events = {
 		data: [],
@@ -117,44 +134,51 @@ const getEvents = async (params) => {
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
 		params = remParams;
-		const [block] = await blocksDB.find({ id: blockID }, ['height']);
+		const [block] = await blocksTable.find({ id: blockID }, ['height']);
 		if ('height' in params && params.height !== block.height) {
 			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 		}
 		params.height = block.height;
 	}
 
-	const total = await eventTopicsDB.count(params);
-	const response = await eventTopicsDB.find(params, ['id']);
+	const response = await eventTopicsTable.find(
+		{ ...params, distinct: 'eventID' },
+		['eventID'],
+	);
 
-	const eventIDs = response.map(entry => entry.id);
-	const eventsInfo = await eventsDB.find(
-		{ whereIn: { property: 'id', values: eventIDs } },
-		['event', 'height'],
+	const eventIDs = response.map(entry => entry.eventID);
+	const eventsInfo = await eventsTable.find(
+		{
+			whereIn: { property: 'id', values: eventIDs },
+			order: params.order,
+			sort: params.sort.replace('timestamp', 'height'),
+		},
+		['eventStr', 'height', 'index'],
 	);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
-		async (eventInfo) => {
-			const decodedEvent = await decodeEvent(eventInfo.event);
-			decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
+		async ({ eventStr, height, index }) => {
+			let event;
+			if (config.db.isPersistEvents) {
+				if (eventStr) event = JSON.parse(eventStr);
+			}
+			if (!event) {
+				const eventsFromCache = await getEventsByHeight(height);
+				event = eventsFromCache.find(entry => entry.index === index);
+			}
 
-			const [blockInfo] = await blocksDB.find(
-				{ height: eventInfo.height },
-				['id', 'timestamp'],
-			);
+			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
 
-			return {
-				...decodedEvent,
-				block: {
-					id: blockInfo.id,
-					height: eventInfo.height,
-					timestamp: blockInfo.timestamp,
-				},
-			};
+			return parseToJSONCompatObj({
+				...event,
+				block: { id, height, timestamp },
+			});
 		},
 		{ concurrency: eventsInfo.length },
 	);
+
+	const total = await eventTopicsTable.count({ ...params, distinct: 'eventID' });
 
 	events.meta = {
 		count: events.data.length,
@@ -168,4 +192,5 @@ const getEvents = async (params) => {
 module.exports = {
 	getEvents,
 	getEventsByHeight,
+	deleteEventsFromCache,
 };

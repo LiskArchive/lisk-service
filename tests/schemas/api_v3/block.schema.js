@@ -14,27 +14,45 @@
  *
  */
 import Joi from 'joi';
+import regex from './regex';
+
+const EMPTY_STRING = '';
+
+const generator = {
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
+	name: Joi.string().pattern(regex.NAME).optional(),
+};
+
+const aggregateCommit = {
+	height: Joi.number().integer().min(0).required(),
+	aggregationBits: Joi.string().allow(EMPTY_STRING).required(),
+	certificateSignature: Joi.string().allow(EMPTY_STRING).required(),
+};
 
 const blockSchema = {
-	id: Joi.string().required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	height: Joi.number().integer().min(0).required(),
 	version: Joi.number().required(),
 	timestamp: Joi.number().integer().min(1).required(),
-	generatorAddress: Joi.string().allow('').required(),
-	assetsRoot: Joi.string().required(),
-	stateRoot: Joi.string().required(),
-	transactionRoot: Joi.string().required(),
-	previousBlockID: Joi.string().required(),
-	signature: Joi.string().allow('').required(),
-	aggregateCommit: Joi.object().required(),
+	generator: Joi.object(generator).required(),
+	assetRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
+	signature: Joi.string().allow(EMPTY_STRING).pattern(regex.HASH_SHA512).required(),
+	aggregateCommit: Joi.object(aggregateCommit).required(),
 	isFinal: Joi.boolean().required(),
-	reward: Joi.string().required(),
+	reward: Joi.string().allow(null).required(), // Genesis block does not have reward event
 	networkFee: Joi.string().required(),
 	totalForged: Joi.string().required(),
 	totalBurnt: Joi.string().required(),
 	maxHeightGenerated: Joi.number().required(),
 	maxHeightPrevoted: Joi.number().required(),
-	validatorsHash: Joi.string().required(),
+	validatorsHash: Joi.string().pattern(regex.HASH_SHA256).required(),
+	numberOfTransactions: Joi.number().integer().min(0).required(),
+	numberOfAssets: Joi.number().integer().min(1).required(),
+	numberOfEvents: Joi.number().integer().min(1).required(),
 };
 
 const block = {
@@ -44,8 +62,8 @@ const block = {
 };
 
 const asset = {
-	moduleID: Joi.string().required(),
-	data: Joi.string().required(), // TODO: Update data schema once confirmed from sdk
+	module: Joi.string().required(),
+	data: Joi.object().required(),
 };
 
 const blockAssetSchema = {

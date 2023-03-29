@@ -18,9 +18,8 @@ const util = require('util');
 
 const logger = Logger();
 
-const dataService = require('./business');
+const business = require('./business');
 const { getGenesisHeight } = require('../constants');
-const { getNameByAddress } = require('../utils/delegateUtils');
 
 const config = require('../../config');
 
@@ -49,7 +48,7 @@ const getBlocksFromServer = async params => {
 	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
 
-	const response = await dataService.getBlocks(params);
+	const response = await business.getBlocks(params);
 	if (response.data) blocks.data = response.data;
 	if (response.meta) blocks.meta = response.meta;
 
@@ -61,36 +60,31 @@ const getBlocksFromServer = async params => {
 };
 
 const getBlocks = async (params = {}) => {
-	const blocks = {
+	const blocksResponse = {
 		data: [],
 		meta: {},
 	};
 
 	const response = await getBlocksFromServer(params);
-	if (response.data) blocks.data = response.data;
-	if (response.meta) blocks.meta = response.meta;
-
-	await Promise.all(blocks.data.map(async block => {
-		block.generatorUsername = await getNameByAddress(block.generatorAddress);
-		return block;
-	}));
+	if (response.data) blocksResponse.data = response.data;
+	if (response.meta) blocksResponse.meta = response.meta;
 
 	let total;
 	if (params.generatorAddress) {
-		total = blocks.meta.total || null;
+		total = blocksResponse.meta.total || null;
 	} else if (params.blockID || !Number.isNaN(Number(params.height))) {
-		total = blocks.data.length;
+		total = blocksResponse.data.length;
 	} else if ((params.height && params.height.includes(':'))
 		|| (params.timestamp && params.timestamp.includes(':'))) {
-		total = blocks.meta.total;
+		total = blocksResponse.meta.total;
 	} else {
 		total = await getTotalNumberOfBlocks();
 	}
 
 	return {
-		data: blocks.data,
+		data: blocksResponse.data,
 		meta: {
-			count: blocks.data.length,
+			count: blocksResponse.data.length,
 			offset: parseInt(params.offset, 10) || 0,
 			total,
 		},
@@ -103,7 +97,7 @@ const getBlocksAssets = async params => {
 		meta: {},
 	};
 
-	const response = await dataService.getBlocksAssets(params);
+	const response = await business.getBlocksAssets(params);
 	if (response.data) blocksAssets.data = response.data;
 	if (response.meta) blocksAssets.meta = response.meta;
 
@@ -115,7 +109,7 @@ const performLastBlockUpdate = async (newBlock) => {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
 		await setLastBlock(newBlock);
 	} catch (err) {
-		logger.error(`Error occured when performing last block update:\n${err.stack}`);
+		logger.error(`Error occurred when performing last block update:\n${err.stack}`);
 	}
 };
 

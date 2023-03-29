@@ -16,39 +16,51 @@
 const dataService = require('../../../shared/dataService');
 
 const getPeers = async params => {
-	const response = await dataService.getPeers(params);
-
-	return {
-		data: response.data,
-		meta: response.meta,
+	const peers = {
+		data: [],
+		meta: {},
 	};
+	const response = await dataService.getPeers(params);
+	if (response.data) peers.data = response.data;
+	if (response.meta) peers.meta = response.meta;
+
+	return peers;
 };
 
 const getConnectedPeers = async params => {
-	const response = await dataService.getConnectedPeers(params);
-
-	return {
-		data: response.data,
-		meta: response.meta,
+	const connectedPeers = {
+		data: [],
+		meta: {},
 	};
+	const response = await dataService.getConnectedPeers(params);
+	if (response.data) connectedPeers.data = response.data;
+	if (response.meta) connectedPeers.meta = response.meta;
+
+	return connectedPeers;
 };
 
 const getDisconnectedPeers = async params => {
-	const response = await dataService.getDisconnectedPeers(params);
-
-	return {
-		data: response.data,
-		meta: response.meta,
+	const disconnectedPeers = {
+		data: [],
+		meta: {},
 	};
+	const response = await dataService.getDisconnectedPeers(params);
+	if (response.data) disconnectedPeers.data = response.data;
+	if (response.meta) disconnectedPeers.meta = response.meta;
+
+	return disconnectedPeers;
 };
 
 const getPeersStatistics = async () => {
-	const response = await dataService.getPeersStatistics();
-
-	return {
-		data: response.data,
-		meta: response.meta,
+	const peerStatistics = {
+		data: {},
+		meta: {},
 	};
+	const response = await dataService.getPeersStatistics();
+	if (response.data) peerStatistics.data = response.data;
+	if (response.meta) peerStatistics.meta = response.meta;
+
+	return peerStatistics;
 };
 
 module.exports = {

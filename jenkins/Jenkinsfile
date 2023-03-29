@@ -22,7 +22,6 @@ pipeline {
 					dir('./services/blockchain-coordinator') { sh 'npm ci' }
 					dir('./services/fee-estimator') { sh 'npm ci' }
 					dir('./services/market') { sh 'npm ci' }
-					dir('./services/newsfeed') { sh 'npm ci' }
 					dir('./services/export') { sh 'npm ci' }
 					dir('./services/gateway') { sh 'npm ci' }
 					dir('./services/template') { sh 'npm ci' }
@@ -49,8 +48,8 @@ pipeline {
 					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
 					dir('./services/fee-estimator') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
-					dir('./services/newsfeed') { sh "npm run test:unit" }
 					dir('./services/export') { sh "npm run test:unit" }
+					dir('./services/gateway') { sh "npm run test:unit" }
 				}
 			}
 		}

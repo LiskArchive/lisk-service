@@ -14,13 +14,18 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const { Logger } = require('lisk-service-framework');
 
-const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
-const { getGenesisConfig } = require('../../constants');
+const { getPosConstants } = require('./pos');
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
-const { getNameByAddress } = require('../../utils/delegateUtils');
+const { getNameByAddress } = require('../../utils/validatorUtils');
 
-const getGenerators = async () => {
+const logger = Logger();
+
+let generatorsListCache = [];
+
+const getGeneratorsInfo = async () => {
 	const { list: generatorsList } = await requestConnector('getGenerators');
 	const generators = await BluebirdPromise.map(
 		generatorsList,
@@ -31,10 +36,9 @@ const getGenerators = async () => {
 			);
 
 			return {
-				address: getLisk32AddressFromHex(generator.address),
+				...generator,
 				name: name || await getNameByAddress(generator.address),
 				publicKey,
-				nextAllocatedTime: generator.nextAllocatedTime,
 			};
 		});
 
@@ -42,11 +46,27 @@ const getGenerators = async () => {
 };
 
 const getNumberOfGenerators = async () => {
-	const genesisConfig = await getGenesisConfig();
-	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
+	const constants = await getPosConstants();
+	return constants.numberActiveValidators + constants.numberStandbyValidators;
+};
+
+const reloadGeneratorsCache = async () => {
+	try {
+		generatorsListCache = await getGeneratorsInfo();
+		logger.info(`Updated generators list with ${generatorsListCache.length} validators.`);
+	} catch (err) {
+		logger.warn(`Failed to load all generators due to: ${err.message}`);
+		throw err;
+	}
+};
+
+const getGenerators = async () => {
+	if (generatorsListCache.length === 0) await reloadGeneratorsCache();
+	return generatorsListCache;
 };
 
 module.exports = {
+	reloadGeneratorsCache,
 	getGenerators,
 	getNumberOfGenerators,
 };

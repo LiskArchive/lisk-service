@@ -131,7 +131,7 @@ const transformStatsObjectToList = statsObject => (
 
 const insertToDB = async (statsList, date) => {
 	const db = await getDBInstance();
-	const connection = await getDbConnection();
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const trx = await startDbTransaction(connection);
 	try {
 		try {
@@ -173,7 +173,7 @@ const fetchTransactions = async (date) => {
 const queueJob = async (job) => {
 	const { date } = job.data;
 	if (!date) {
-		return Promise.reject(new Error('Missing date'));
+		return Promise.reject(new Error('Missing date.'));
 	}
 	try {
 		const transactions = await fetchTransactions(date);
@@ -206,13 +206,13 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 
 		if (shouldUpdate || forceReload) {
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
-			logger.debug(`Adding day ${i + 1}, ${formattedDate} to the queue`);
+			logger.debug(`Adding day ${i + 1}, ${formattedDate} to the queue.`);
 			await transactionStatisticsQueue.add({ date });
-			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue`);
+			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 			scheduledDays.push(formattedDate.toString());
 		}
 		if (scheduledDays.length === n) {
-			logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
+			logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]}).`);
 		}
 		/* eslint-enable no-await-in-loop */
 	}

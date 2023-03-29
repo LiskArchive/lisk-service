@@ -21,6 +21,7 @@ const {
 
 const {
 	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -33,8 +34,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getValidator = async (params) => request(wsRpcUrl, 'get.validator', params);
 const getGenerators = async (params) => request(wsRpcUrl, 'get.generators', params);
 
-// TODO: Enable when test blockchain is updated
-xdescribe('get.validator', () => {
+describe('get.validator', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		const response = await getGenerators({ limit: 1 });
@@ -43,9 +43,11 @@ xdescribe('get.validator', () => {
 
 	it('returns validator info', async () => {
 		const response = await getValidator({ address: refGenerator.address });
-		expect(response).toMap(goodRequestSchemaForValidator);
-		expect(response.data).toMap(validatorInfoSchema);
-		expect(response.meta).toMap(validatorMetaSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodRequestSchemaForValidator);
+		expect(result.data).toMap(validatorInfoSchema);
+		expect(result.meta).toMap(validatorMetaSchema);
 	});
 
 	it('invalid address -> invalid params', async () => {

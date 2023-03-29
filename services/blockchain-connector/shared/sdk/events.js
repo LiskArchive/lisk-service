@@ -14,12 +14,15 @@
  *
  */
 const util = require('util');
-const { Signals, Logger } = require('lisk-service-framework');
 
-const { getRegisteredEvents } = require('./endpoints');
+const { Logger, Signals } = require('lisk-service-framework');
+
 const { getApiClient } = require('./client');
+const { formatEvent } = require('./formatter');
+const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
 
 const logger = Logger();
+
 const EVENT_CHAIN_FORK = 'chain_forked';
 const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
 const EVENT_CHAIN_BLOCK_DELETE = 'chain_deleteBlock';
@@ -41,7 +44,10 @@ const subscribeToAllRegisteredEvents = async () => {
 	allEvents.forEach(event => {
 		apiClient.subscribe(
 			event,
-			payload => {
+			async payload => {
+				// Force update nodeInfo cache on new chain events
+				if (event.startsWith('chain_')) await getNodeInfo(true);
+
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);
 			},
@@ -50,4 +56,15 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
-module.exports = { subscribeToAllRegisteredEvents, events };
+const getEventsByHeightFormatted = async (height) => {
+	const chainEvents = await getEventsByHeight(height);
+	const formattedEvents = chainEvents.map((event) => formatEvent(event));
+	return formattedEvents;
+};
+
+module.exports = {
+	events,
+
+	subscribeToAllRegisteredEvents,
+	getEventsByHeight: getEventsByHeightFormatted,
+};

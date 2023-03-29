@@ -13,10 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const packageJson = require('./package.json');
+
 const config = {
 	endpoints: {},
 	jobs: {},
-	log: {},
+	log: {
+		name: packageJson.name,
+		version: packageJson.version,
+	},
+	constants: {},
 };
 
 /**
@@ -28,7 +34,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 /**
  * External endpoints
  */
-config.endpoints.liskHttp = `${(process.env.LISK_APP_HTTP || 'http://127.0.0.1:8080')}/api`;
+config.endpoints.liskHttp = `${(process.env.LISK_APP_HTTP || 'http://127.0.0.1:7887')}/api`;
 config.endpoints.liskWs = process.env.LISK_APP_WS || config.endpoints.liskHttp.replace('http', 'ws').replace('/api', '');
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json';
 config.endpoints.cache = process.env.SERVICE_CONNETOR_CACHE_REDIS || 'redis://localhost:6379/2';
@@ -42,24 +48,29 @@ config.liskAppDataPath = process.env.LISK_APP_DATA_PATH || '~/.lisk/lisk-core';
 /**
   * Network-related settings
   */
-config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL || '';
-config.networks = [
-	{
-		name: 'mainnet',
-		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
-	},
-	{
-		name: 'testnet',
-		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
-	},
-	{
-		name: 'betanet',
-		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisBlockUrl: 'https://downloads.lisk.com/lisk/betanet/genesis_block.json.tar.gz',
-	},
-];
+config.constants.GENESIS_BLOCK_URL_DEFAULT = '';
+config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL
+	|| config.constants.GENESIS_BLOCK_URL_DEFAULT;
+config.genesisHeight = Number(process.env.GENESIS_HEIGHT || 0);
+config.networks = {
+	LISK: [
+		{
+			name: 'mainnet',
+			chainID: '00000000',
+			genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
+		},
+		{
+			name: 'testnet',
+			chainID: '01000000',
+			genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
+		},
+		{
+			name: 'betanet',
+			chainID: '02000000',
+			genesisBlockUrl: 'https://downloads.lisk.com/lisk/betanet/genesis_block.json.tar.gz',
+		},
+	],
+};
 
 /**
  * LOGGING

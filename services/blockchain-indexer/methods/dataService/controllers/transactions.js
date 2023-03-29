@@ -17,10 +17,8 @@ const {
 	Exceptions: {
 		InvalidParamsException,
 		ValidationException,
-		NotFoundException,
 	},
 	HTTP: { StatusCodes: { NOT_FOUND, BAD_REQUEST } },
-	Utils: { isEmptyArray, isEmptyObject },
 } = require('lisk-service-framework');
 
 const { confirmAddress } = require('../../../shared/accountUtils');
@@ -54,10 +52,6 @@ const getTransactions = async (params) => {
 			...params,
 		});
 
-		if (isEmptyObject(result) || isEmptyArray(result.data)) {
-			return NOT_FOUND_RESPONSE;
-		}
-
 		const meta = {
 			count: result.data.length,
 			offset: result.meta.offset || 0,
@@ -73,32 +67,9 @@ const getTransactions = async (params) => {
 		let status;
 		if (err instanceof InvalidParamsException) status = 'INVALID_PARAMS';
 		if (err instanceof ValidationException) status = BAD_REQUEST;
-		if (err instanceof NotFoundException) status = NOT_FOUND;
-		if (err.message.includes('does not exist')) status = NOT_FOUND;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}
-};
-
-const getLastTransactions = async (params) => {
-	const result = await dataService.getTransactions({
-		...params,
-		sort: 'timestamp:desc',
-	});
-
-	const meta = {
-		count: result.data.length,
-		limit: result.meta.limit,
-		offset: result.meta.offset,
-		total: result.meta.count,
-	};
-
-	return {
-		data: {
-			data: result.data,
-			meta,
-		},
-	};
 };
 
 const getPendingTransactions = async (params) => {
@@ -111,12 +82,14 @@ const getPendingTransactions = async (params) => {
 
 const postTransactions = async (params) => dataService.postTransactions(params);
 
-const getCommandsParamsSchemas = async (params) => dataService.getCommandsParamsSchemas(params);
+const getSchemas = async () => dataService.getSchemas();
+
+const dryRunTransactions = async (params) => dataService.dryRunTransactions(params);
 
 module.exports = {
 	getTransactions,
-	getLastTransactions,
 	getPendingTransactions,
 	postTransactions,
-	getCommandsParamsSchemas,
+	getSchemas,
+	dryRunTransactions,
 };

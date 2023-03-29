@@ -18,18 +18,16 @@ module.exports = {
 	primaryKey: 'chainID',
 	schema: {
 		chainID: { type: 'string' },
-		chainName: { type: 'string' },
-		state: { type: 'string' },
+		name: { type: 'string' },
+		status: { type: 'string' },
 		address: { type: 'string' },
-		isDefault: { type: 'boolean', null: false, defaultValue: false },
 		lastUpdated: { type: 'string' },
 		lastCertificateHeight: { type: 'string' },
 	},
 	indexes: {
 		chainID: { type: 'key' },
-		state: { type: 'key' },
-		chainName: { type: 'key' },
-		isDefault: { type: 'key' },
+		status: { type: 'key' },
+		name: { type: 'key' },
 	},
 	purge: {},
 };

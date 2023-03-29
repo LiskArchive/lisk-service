@@ -23,8 +23,7 @@ const logger = Logger();
 
 const { initEventsProcess } = require('./eventsProcessor');
 const {
-	buildLegacyAccountCache,
-	addAccountToAddrUpdateQueue,
+	addAccountToDirectUpdateQueue,
 } = require('./indexer/accountIndex');
 
 const {
@@ -47,8 +46,6 @@ const accountIndexQueue = new MessageQueue(
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
-
-let isLegacyAccountCached = false;
 
 const queueStatus = async (queueInstance) => {
 	setInterval(async () => {
@@ -83,15 +80,9 @@ const initProcess = async () => {
 
 	accountIndexQueue.process(async (job) => {
 		logger.debug('Subscribed to account index message queue');
-		if (!isLegacyAccountCached) {
-			await buildLegacyAccountCache();
-			isLegacyAccountCached = true;
-			logger.info('Finished caching legacy accounts');
-		}
-
-		const { address } = job.data;
-		logger.debug(`Scheduling indexing for account with address: ${address}`);
-		await addAccountToAddrUpdateQueue(address);
+		const { account } = job.data;
+		logger.debug(`Scheduling indexing for account with address: ${account.address}`);
+		await addAccountToDirectUpdateQueue(account);
 	});
 
 	await initQueueStatus();

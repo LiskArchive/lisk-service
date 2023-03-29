@@ -17,11 +17,25 @@ const {
 	Utils,
 } = require('lisk-service-framework');
 const path = require('path');
+const BluebirdPromise = require('bluebird');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
+const { exists } = require('./fsUtils');
 
-const createApiDocs = (apiName, apiJsonPaths) => {
-	const services = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
+const createApiDocs = async (apiName, apiJsonPaths, registeredModuleNames) => {
+	const methodsDir = path.resolve(__dirname, `../apis/${apiName}/methods`);
+	// Load generic method definitions
+	const services = Utils.requireAllJs(methodsDir);
+	// Load module specific method definitions
+	await BluebirdPromise.map(
+		registeredModuleNames,
+		async module => {
+			const dirPath = path.resolve(`${methodsDir}/modules/${module}`);
+			if (await exists(dirPath)) Object.assign(services, Utils.requireAllJs(dirPath));
+		},
+		{ concurrency: registeredModuleNames.length },
+	);
+
 	const methods = Object.keys(services).reduce((acc, key) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
@@ -34,9 +48,9 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 	return apiJsonPaths;
 };
 
-const genDocs = ctx => {
+const genDocs = async (ctx, registeredModuleNames) => {
 	if (!config.api.versions[ctx.endpoint.baseUrl]) return {
-		info: { description: `This route offers no specs for ${ctx.endpoint.baseUrl}` },
+		info: { description: `This route offers no specs for ${ctx.endpoint.baseUrl}.` },
 	};
 
 	const finalDoc = {};
@@ -45,39 +59,47 @@ const genDocs = ctx => {
 		? config.api.versions[ctx.endpoint.baseUrl]
 		: [config.api.versions[ctx.endpoint.baseUrl]];
 
-	apis.forEach((api) => {
-		const { apiJson, parameters, definitions, responses } = requireAllJson(api);
+	await BluebirdPromise.map(
+		apis,
+		async (api) => {
+			const { apiJson, parameters, definitions, responses } = requireAllJson(api);
 
-		const params = finalDoc.parameters || {};
-		Object.assign(params, parameters);
+			const params = finalDoc.parameters || {};
+			Object.assign(params, parameters);
 
-		const defs = finalDoc.definitions || {};
-		Object.assign(defs, definitions);
+			const defs = finalDoc.definitions || {};
+			Object.assign(defs, definitions);
 
-		const allResponses = finalDoc.responses || {};
-		Object.assign(allResponses, responses);
+			const allResponses = finalDoc.responses || {};
+			Object.assign(allResponses, responses);
 
-		const tags = finalDoc.tags || [];
-		apiJson.tags.forEach(tag => tags.push(tag));
+			const tags = finalDoc.tags || [];
+			apiJson.tags.forEach(tag => tags.push(tag));
 
-		const paths = finalDoc.paths || {};
-		Object.assign(paths, createApiDocs(api, apiJson.paths));
+			const paths = finalDoc.paths || {};
+			const apiDocs = await createApiDocs(api, apiJson.paths, registeredModuleNames);
+			Object.assign(paths, apiDocs);
 
-		Object.assign(finalDoc,
-			{
-				...apiJson,
-				parameters: params,
-				definitions: defs,
-				responses: allResponses,
-				tags,
-				paths,
-			},
-		);
-	});
+			Object.assign(finalDoc,
+				{
+					...apiJson,
+					parameters: params,
+					definitions: defs,
+					responses: allResponses,
+					tags,
+					paths,
+				},
+			);
+		},
+		{ concurrency: 1 },
+	);
 
 	return finalDoc;
 };
 
 module.exports = {
 	genDocs,
+
+	// For testing
+	createApiDocs,
 };

@@ -20,22 +20,30 @@ let genesisHeight;
 let moduleCommands;
 let registeredModules;
 let systemMetadata;
+let finalizedHeight;
+
+const updateFinalizedHeight = async () => {
+	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
+	finalizedHeight = latestFinalizedHeight;
+};
 
 const getFinalizedHeight = async () => {
-	const { finalizedHeight } = await requestConnector('getNodeInfo');
+	if (typeof finalizedHeight !== 'number') {
+		await updateFinalizedHeight();
+	}
 	return finalizedHeight;
 };
 
 const getGenesisHeight = async () => {
-	if (!genesisHeight) {
+	if (typeof genesisHeight !== 'number') {
 		genesisHeight = await requestConnector('getGenesisHeight');
 	}
 	return genesisHeight;
 };
 
 const getCurrentHeight = async () => {
-	const currentHeight = (await requestConnector('getNodeInfo')).height;
-	return currentHeight;
+	const { height } = await requestConnector('getNetworkStatus');
+	return height;
 };
 
 const getGenesisConfig = async () => {
@@ -77,15 +85,52 @@ const getSystemMetadata = async () => {
 };
 
 const MODULE = {
-	DPOS: 'dpos',
+	POS: 'pos',
+	AUTH: 'auth',
+	DYNAMIC_REWARD: 'dynamicReward',
+	REWARD: 'reward',
 };
 
 const COMMAND = {
-	REGISTER_DELEGATE: 'registerDelegate',
-	VOTE_DELEGATE: 'voteDelegate',
+	REGISTER_VALIDATOR: 'registerValidator',
+	STAKE: 'stake',
+};
+
+const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const LENGTH_TOKEN_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
+const PATTERN_ANY_TOKEN_ID = '*';
+const PATTERN_ANY_CHAIN_TOKEN_ID = '*'.repeat(LENGTH_TOKEN_LOCAL_ID);
+
+const MAX_COMMISSION = BigInt('10000');
+
+const KV_STORE_KEY = Object.freeze({
+	PREFIX: {
+		TOTAL_LOCKED: 'total_locked_',
+		TOTAL_STAKED: 'total_staked_',
+		TOTAL_SELF_STAKED: 'total_self_staked_',
+	},
+});
+
+const TRANSACTION_STATUS = Object.freeze({
+	SUCCESS: 'success',
+	FAIL: 'fail',
+});
+
+const EVENT = Object.freeze({
+	LOCK: 'lock',
+	UNLOCK: 'unlock',
+	COMMAND_EXECUTION_RESULT: 'commandExecutionResult',
+	REWARD_MINTED: 'rewardMinted',
+});
+
+const TRANSACTION_VERIFY_RESULT = {
+	INVALID: -1,
+	PENDING: 0,
+	OK: 1,
 };
 
 module.exports = {
+	updateFinalizedHeight,
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisConfig,
@@ -95,6 +140,14 @@ module.exports = {
 	getRegisteredModules,
 	getSystemMetadata,
 
+	LENGTH_CHAIN_ID,
+	PATTERN_ANY_TOKEN_ID,
+	PATTERN_ANY_CHAIN_TOKEN_ID,
 	MODULE,
 	COMMAND,
+	EVENT,
+	MAX_COMMISSION,
+	KV_STORE_KEY,
+	TRANSACTION_STATUS,
+	TRANSACTION_VERIFY_RESULT,
 };

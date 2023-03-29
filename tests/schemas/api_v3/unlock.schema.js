@@ -16,17 +16,20 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const unlocking = {
-	delegateAddress: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+const pendingUnlock = {
+	validatorAddress: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	amount: Joi.string().min(10).required(),
-	unvoteHeight: Joi.number().integer().min(1).required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	unstakeHeight: Joi.number().integer().positive().required(),
+	expectedUnlockableHeight: Joi.number().integer().positive().required(),
+	isLocked: Joi.boolean().required(),
 };
 
 const unlockSchema = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
-	unlocking: Joi.array().items(unlocking).max(20).optional(),
+	pendingUnlocks: Joi.array().items(pendingUnlock).max(20).required(),
 };
 
 module.exports = {

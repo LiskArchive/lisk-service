@@ -13,13 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const packageJson = require('../package.json');
 
 const getBuildTimestamp = () => {
 	let timestamp;
 	try {
-		// eslint-disable-next-line import/no-unresolved
-		timestamp = require('../build.json').timestamp;
+		// eslint-disable-next-line import/no-unresolved, import/no-dynamic-require
+		timestamp = require(path.resolve(__dirname, '../build.json')).timestamp;
 	} catch (e) {
 		// build.json is only generated in docker
 	}
@@ -33,8 +34,9 @@ const buildTimestamp = getBuildTimestamp();
 
 const getStatus = async broker => {
 	let version;
-	const networkstatus = await broker.call('core.network.status');
-	const networkStatistics = await broker.call('core.peers.statistics');
+	const networkStatistics = await broker.call('indexer.network.statistics');
+	const { chainID } = await broker.call('connector.getNetworkStatus');
+
 	if (Object.getOwnPropertyNames(networkStatistics.data.coreVer).length) {
 		version = networkStatistics.data.coreVer;
 	} else {
@@ -49,11 +51,14 @@ const getStatus = async broker => {
 		description: 'Lisk Service Gateway',
 		name: packageJson.name,
 		version: packageJson.version,
-		networkID: networkstatus.data.constants.networkIdentifier,
 		networkNodeVersion,
+		chainID,
 	};
 };
 
 module.exports = {
 	getStatus,
+
+	// For testing
+	getBuildTimestamp,
 };

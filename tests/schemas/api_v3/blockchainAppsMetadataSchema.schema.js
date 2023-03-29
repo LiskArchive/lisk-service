@@ -16,9 +16,12 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const EMPTY_STRING = '';
+const validStatuses = ['registered', 'active', 'terminated', 'unregistered'];
+
 const logo = {
-	png: Joi.string().optional(),
-	svg: Joi.string().optional(),
+	png: Joi.string().required(),
+	svg: Joi.string().allow(EMPTY_STRING).required(),
 };
 
 const serviceURL = {
@@ -39,11 +42,12 @@ const appNode = {
 const blockchainAppMetadataSchema = {
 	chainName: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.string().required(),
+	status: Joi.string().valid(...validStatuses).required(),
 	networkType: Joi.string().pattern(regex.NETWORK).required(),
-	isDefault: Joi.boolean().optional(),
+	isDefault: Joi.boolean().required(),
 	title: Joi.string().optional(),
 	description: Joi.string().optional(),
-	genesisURL: Joi.string().required(),
+	genesisURL: Joi.string().allow(EMPTY_STRING).required(),
 	projectPage: Joi.string().required(),
 	appPage: Joi.string().optional(),
 	serviceURLs: Joi.array().items(serviceURL).required(),

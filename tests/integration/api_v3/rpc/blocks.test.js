@@ -376,7 +376,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('returns blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
-			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress, sort: 'height:asc', limit: 5, offset: 0 });
+			const response = await getBlocks({ generatorAddress: refBlock.generator.address, sort: 'height:asc', limit: 5, offset: 0 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);

@@ -25,8 +25,9 @@ module.exports = {
 	tags: ['Interoperability'],
 	params: {
 		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		chainID: { optional: true, type: 'string', min: 1, max: 21 },
-		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV, altSwaggerKey: 'chainIDCSV' },
+		isDefault: { optional: true, type: 'boolean' },
+		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK_CSV },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
@@ -46,7 +47,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns a list of blockchain applications off-chain metadata',
 		});
-		blockchainAppsMetadataSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsMetaList', this.params);
+		blockchainAppsMetadataSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsMeta', this.params);
 		blockchainAppsMetadataSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of blockchain applications off-chain metadata',

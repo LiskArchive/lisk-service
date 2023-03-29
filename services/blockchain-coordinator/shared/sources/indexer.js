@@ -17,12 +17,6 @@ const { requestIndexer } = require('../utils/request');
 
 const isGenesisBlockIndexed = async () => requestIndexer('isGenesisBlockIndexed');
 
-const isGenesisAccountsIndexed = async () => requestIndexer('isGenesisAccountsIndexed');
-
-const getDelegateAccounts = async () => requestIndexer('getDelegateAccounts');
-
-const getGenesisAccountAddresses = async () => requestIndexer('getGenesisAccountAddresses');
-
 const getMissingblocks = async (from, to) => requestIndexer('getMissingBlocks', {
 	from,
 	to,
@@ -38,9 +32,6 @@ const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifie
 
 module.exports = {
 	isGenesisBlockIndexed,
-	isGenesisAccountsIndexed,
-	getDelegateAccounts,
-	getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,

@@ -74,10 +74,12 @@ docker/graylog/data*
 .env
 
 # Database snapshots
-*.gz
 *.gz.*
 *.sql
 *.zst
 
 # Legacy configs
 *.old
+
+# Test coverage files
+.coverage

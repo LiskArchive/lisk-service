@@ -16,6 +16,7 @@
 import Joi from 'joi';
 
 const { jsonRPCSchema } = require('../rpcGenerics.schema');
+const regex = require('./regex');
 
 const allowedPeerStateNames = ['connected', 'disconnected', 'any'];
 
@@ -30,8 +31,8 @@ const peerSchema = {
 	port: Joi.number().port().optional(),
 	networkVersion: Joi.string().required(),
 	state: Joi.string().valid(...allowedPeerStateNames).required(),
-	height: Joi.number().optional(),
-	networkIdentifier: Joi.string().required(),
+	height: Joi.number().positive().optional(),
+	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	location: Joi.object(locationSchema).optional(),
 };
 

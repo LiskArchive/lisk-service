@@ -43,7 +43,7 @@ const request = (method, params) => {
 			console.log(colorize(JSON.stringify(res, null, 2)));
 			process.exit(0);
 		})
-		.catch(err => console.error(`Error occured! ${err.message}`));
+		.catch(err => console.error(`Error occurred! ${err.message}`));
 };
 
 setTimeout(() => {

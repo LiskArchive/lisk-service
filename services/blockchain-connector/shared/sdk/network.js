@@ -30,8 +30,6 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const getNetworkStatus = async () => parseToJSONCompatObj(networkStatus);
-
 const refreshNetworkStatus = async () => {
 	const refreshNetworkStatusListener = async () => {
 		try {
@@ -41,7 +39,19 @@ const refreshNetworkStatus = async () => {
 			logger.warn(`Error occurred while refreshing network status:\n${err.stack}`);
 		}
 	};
+
+	if (!networkStatus) {
+		await refreshNetworkStatusListener();
+	}
+
 	Signals.get('chainNewBlock').add(refreshNetworkStatusListener);
+};
+
+const getNetworkStatus = async () => {
+	if (!networkStatus) {
+		await refreshNetworkStatus();
+	}
+	return parseToJSONCompatObj(networkStatus);
 };
 
 module.exports = {

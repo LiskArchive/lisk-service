@@ -21,7 +21,6 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -33,11 +32,10 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/events`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Events API', () => {
+describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommandID=2:0`);
+		const response = await api.get(`${baseUrl}/transactions?limit=1&moduleCommand=token:transfer`);
 		[refTransaction] = response.data;
 	});
 
@@ -64,7 +62,7 @@ xdescribe('Events API', () => {
 		});
 
 		it('returns events by limit=5', async () => {
-			const response = await api.get(`${endpoint}&limit=5`);
+			const response = await api.get(`${endpoint}?limit=5`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -89,7 +87,9 @@ xdescribe('Events API', () => {
 		it('returns event with known transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(1);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
 			});
@@ -117,13 +117,15 @@ xdescribe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('long invalid transactionID -> 400', async () => {
-			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
-			expect(response).toMap(badRequestSchema);
+		it('short invalid transactionID -> empty data', async () => {
+			const response = await api.get(`${endpoint}?transactionID=41287`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(0);
 		});
 
-		it('short invalid transactionID -> 404', async () => {
-			const response = await api.get(`${endpoint}?transactionID=41287`, 404);
+		it('long invalid transactionID -> 400', async () => {
+			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
@@ -165,9 +167,9 @@ xdescribe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid blockID -> 404', async () => {
-			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid blockID -> 400', async () => {
+			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -208,9 +210,9 @@ xdescribe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> 404', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid height -> 400', async () => {
+			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -569,6 +571,54 @@ xdescribe('Events API', () => {
 						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Events ordered by index', () => {
+		it('returns events ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns events ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
 						}
 					}
 				}

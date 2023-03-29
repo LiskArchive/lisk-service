@@ -14,11 +14,10 @@
  *
  */
 module.exports = {
-	chainName: '=,string',
-	chainID: '=,number',
-	state: '=,string',
+	name: '=,string',
+	chainID: '=,string',
+	status: '=,string',
 	address: '=,string',
-	isDefault: '=,boolean',
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
 };

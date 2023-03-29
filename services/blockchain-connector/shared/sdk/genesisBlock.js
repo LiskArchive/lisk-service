@@ -20,7 +20,9 @@ const {
 
 const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
+
 const { timeoutMessage, invokeEndpoint } = require('./client');
+const config = require('../../config');
 
 const logger = Logger();
 
@@ -29,33 +31,20 @@ let genesisBlockID;
 let genesisConfig;
 
 const getGenesisHeight = async () => {
-	if (!genesisHeight) {
+	if (typeof genesisHeight !== 'number') {
 		const nodeInfo = await getNodeInfo();
-		genesisHeight = 'genesisHeight' in nodeInfo ? nodeInfo.genesisHeight : 0;
+		genesisHeight = 'genesisHeight' in nodeInfo ? nodeInfo.genesisHeight : config.genesisHeight;
 	}
 	return genesisHeight;
 };
 
-const getGenesisBlock = async (includeAccounts = false) => {
+const getGenesisBlock = async (isIncludeAssets = false) => {
 	try {
 		const block = await getGenesisBlockFromFS();
-		const { header: { asset: { accounts, ...remAsset }, ...remHeader }, payload } = block;
-		const finalAccounts = includeAccounts ? accounts : [];
-		const metaMessage = 'Fetch the genesis accounts with \'getNumberOfGenesisAccounts\' and \'getGenesisAccounts\' methods';
-
+		// Filter out assets from genesis block and assign empty array
 		return {
-			header: {
-				asset: {
-					...remAsset,
-					accounts: finalAccounts,
-				},
-				...remHeader,
-			},
-			payload,
-			meta: {
-				isGenesisBlock: true,
-				message: includeAccounts ? '' : metaMessage,
-			},
+			...block,
+			assets: isIncludeAssets ? block.assets : [],
 		};
 	} catch (_) {
 		logger.debug('Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.');
@@ -67,7 +56,7 @@ const getGenesisBlock = async (includeAccounts = false) => {
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'');
+			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'.');
 		}
 		throw err;
 	}
@@ -81,28 +70,15 @@ const getGenesisBlockID = async () => {
 	return genesisBlockID;
 };
 
-const getNumberOfGenesisAccounts = async () => {
-	const block = await getGenesisBlock(true);
-	const { header: { asset: { accounts } } } = block;
-	return accounts.length;
-};
-
-const getGenesisAccounts = async (limit, offset) => {
-	const block = await getGenesisBlock(true);
-	const { header: { asset: { accounts } } } = block;
-	const accountsSlice = accounts.slice(offset, limit);
-	return accountsSlice;
-};
-
 const getGenesisConfig = async () => {
 	try {
 		if (!genesisConfig) {
-			genesisConfig = (await invokeEndpoint('system_getNodeInfo')).genesis;
+			genesisConfig = (await getNodeInfo()).genesis;
 		}
 		return genesisConfig;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'');
+			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'.');
 		}
 		throw err;
 	}
@@ -112,7 +88,5 @@ module.exports = {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
-	getNumberOfGenesisAccounts,
-	getGenesisAccounts,
 	getGenesisConfig,
 };

@@ -14,7 +14,9 @@
  *
  */
 const { getValidator } = require('./validatorInfo');
+const { validateBLSKey } = require('./validateBLSKey');
 
 module.exports = {
 	getValidator,
+	validateBLSKey,
 };

@@ -24,6 +24,7 @@ const {
 	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -35,11 +36,10 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getEvents = async params => request(wsRpcUrl, 'get.events', params);
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Method get.events', () => {
+describe('Method get.events', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '2:0', limit: 1 });
+		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
 		[refTransaction] = response.result.data;
 	});
 
@@ -96,7 +96,9 @@ xdescribe('Method get.events', () => {
 			const response = await getEvents({ transactionID: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
@@ -115,9 +117,7 @@ xdescribe('Method get.events', () => {
 
 		it('empty transactionID -> empty response', async () => {
 			const response = await getEvents({ transactionID: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 	});
 
@@ -135,9 +135,7 @@ xdescribe('Method get.events', () => {
 
 		it('empty blockID ->  empty response', async () => {
 			const response = await getEvents({ blockID: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 	});
 
@@ -503,6 +501,58 @@ xdescribe('Method get.events', () => {
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+	});
+
+	describe('Events ordered by index', () => {
+		it('returns events ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await getEvents({ order });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = result.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
+					}
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns eventss ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await getEvents({ order: 'index:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = result.data[i - 1];
+					if (event.block.height === prevEvent.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevEvent.index).toBe(event.index - 1);
+						} else {
+							expect(prevEvent.index).toBe(event.index + 1);
+						}
+					}
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
 		});
 	});
 });

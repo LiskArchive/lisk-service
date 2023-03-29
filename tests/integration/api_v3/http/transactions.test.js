@@ -21,7 +21,6 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -33,8 +32,7 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/transactions`;
 
-// TODO: Enable once Lisk Core is updated
-xdescribe('Transactions API', () => {
+describe('Transactions API', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
@@ -158,9 +156,9 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid blockID -> 404', async () => {
-			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid blockID -> 400 OK', async () => {
+			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -195,9 +193,9 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> 404', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid height -> 400', async () => {
+			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -536,10 +534,11 @@ xdescribe('Transactions API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with transactionID and non-zero offset', async () => {
-			const expectedStatusCode = 404;
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`, expectedStatusCode);
-			expect(response).toMap(notFoundSchema);
+		it('returns 200 OK when queried with transactionID and non-zero offset', async () => {
+			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(0);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns transaction when queried with transactionID and blockID', async () => {
@@ -585,10 +584,59 @@ xdescribe('Transactions API', () => {
 				});
 				expect(response.meta).toMap(metaSchema);
 			} catch (_) {
-				const expectedStatusCode = 404;
-				const response = await api.get(`${endpoint}?limit=5&offset=1`, expectedStatusCode);
-				expect(response).toMap(notFoundSchema);
+				const response = await api.get(`${endpoint}?limit=5&offset=1`);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
 			}
+		});
+	});
+
+	describe('Transactions ordered by index', () => {
+		it('returns 10 transactions ordered by index descending', async () => {
+			const order = 'index:desc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = response.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions ordered by index ascending', async () => {
+			const order = 'index:asc';
+			const response = await api.get(`${endpoint}?order=${order}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = response.data[i - 1];
+					if (transaction.block.height === prevTx.block.height) {
+						if (order.endsWith('asc')) {
+							expect(prevTx.index).toBe(transaction.index - 1);
+						} else {
+							expect(prevTx.index).toBe(transaction.index + 1);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });

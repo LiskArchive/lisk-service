@@ -32,10 +32,13 @@ const cast = {
 	base64: input => (input ? (Buffer.from(input)).toString('base64') : undefined),
 };
 
+// Retrieves value of a nested key inside an object. Returns undefined when not found.
 const resolvePath = (obj, path) => {
 	try {
-		const test = (subObj, prop) => (subObj && subObj[prop] !== undefined);
-		return path.split('.').reduce((xs, x) => (test(xs, x) ? xs[x] : undefined), obj);
+		return path.split('.').reduce(
+			(subObj, prop) => subObj && subObj[prop] !== undefined ? subObj[prop] : undefined,
+			obj,
+		);
 	} catch (e) {
 		return undefined;
 	}
@@ -56,7 +59,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 					dataSource.forEach(item => {
 						if (validate(mapObject(item, innerDef))) tempArr.push(mapObject(item, innerDef));
 					});
-					if (!isEmptyArr(tempArr)) acc[key] = tempArr;
+					acc[key] = tempArr;
 				}
 			} else if (definition[key].length === 1) {
 				const innerDef = definition[key][0];
@@ -100,4 +103,11 @@ const map = (data, def) => {
 	return {};
 };
 
-module.exports = map;
+module.exports = {
+	mapper: map,
+
+	// For testing
+	resolvePath,
+	mapObject,
+	mapArray,
+};

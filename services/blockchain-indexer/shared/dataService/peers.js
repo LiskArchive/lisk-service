@@ -15,6 +15,8 @@
  */
 const { requestConnector } = require('../utils/request');
 
+const business = require('./business');
+
 const getPeers = async params => {
 	let peers;
 
@@ -88,12 +90,8 @@ const getDisconnectedPeers = async params => {
 };
 
 const getPeersStatistics = async () => {
-	const response = await requestConnector('getPeersStatistics');
-
-	return {
-		data: response,
-		meta: {},
-	};
+	const response = await business.getPeersStatistics();
+	return response;
 };
 
 module.exports = {

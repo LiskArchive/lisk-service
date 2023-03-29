@@ -34,7 +34,6 @@ module.exports = {
 				from: '=,string',
 				to: '=,string',
 			},
-			info: '=',
 		},
 		links: {},
 	},
