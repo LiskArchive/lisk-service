@@ -37,14 +37,14 @@ let clientCache;
 let instantiationBeginTime;
 let isInstantiating = false;
 
-const checkIsClientAlive = async () => clientCache._channel.isAlive;
+const checkIsClientAlive = () => clientCache._channel.isAlive;
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
 			// TODO: Verify and enable the code
-			if (!clientCache || !(await checkIsClientAlive())) {
+			if (!clientCache || !(checkIsClientAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				// if (clientCache) await clientCache.disconnect();
@@ -81,7 +81,7 @@ const instantiateClient = async () => {
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return (apiClient && await checkIsClientAlive())
+	return (apiClient && checkIsClientAlive())
 		? apiClient
 		: getApiClient();
 };
