@@ -41,7 +41,7 @@ const getChainAccount = async (chainID) => {
 const getMainchainID = async () => {
 	try {
 		if (!mainchainID) {
-			// const mainchainID = await invokeEndpoint('interoperability_getMainchainID', { chainID });
+			// const mainchainID = await invokeEndpoint('interoperability_getMainchainID');
 
 			// TODO: Remove this and use SDK endpoint once following issue is closed: https://github.com/LiskHQ/lisk-sdk/issues/8309
 			const { chainID } = await getNodeInfo();
