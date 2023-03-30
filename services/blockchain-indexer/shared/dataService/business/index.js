@@ -50,6 +50,7 @@ const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
+	getMainchainID,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
@@ -125,6 +126,7 @@ module.exports = {
 	// Interoperability
 	getBlockchainApps,
 	getChainAccount,
+	getMainchainID,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 

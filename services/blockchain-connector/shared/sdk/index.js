@@ -98,6 +98,7 @@ const {
 
 const {
 	getChainAccount,
+	getMainchainID,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -198,6 +199,7 @@ module.exports = {
 
 	// Interoperability
 	getChainAccount,
+	getMainchainID,
 
 	// Legacy
 	getLegacyAccount,

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,15 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getBlockchainApps } = require('./blockchainApps');
-const { getChainAccount } = require('./chainAccount');
-const { getMainchainID } = require('./mainchain');
-const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
+
+const { requestConnector } = require('../../../utils/request');
+
+const getMainchainID = async () => {
+	const response = await requestConnector('getMainchainID');
+	return response;
+};
 
 module.exports = {
-	getBlockchainApps,
-	getBlockchainAppsStatistics,
-	getChainAccount,
 	getMainchainID,
-	reloadBlockchainAppsStats,
 };
