@@ -31,29 +31,13 @@ const liskAddress = config.endpoints.liskWs;
 const NUM_REQUEST_RETRIES = 5;
 const RETRY_INTERVAL = 500; // ms
 const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
-const LIVELINESS_CHECK_THRESHOLD_IN_MS = 1000; // in ms
 
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
-let lastApiClientLivelinessCheck = 0;
-let isClientAlive = false;
 let isInstantiating = false;
 
-const checkIsClientAlive = async () => {
-	if (config.isUseLiskIPCClient) {
-		if (Date.now() - lastApiClientLivelinessCheck > LIVELINESS_CHECK_THRESHOLD_IN_MS) {
-			await clientCache._channel.invoke('system_getNodeInfo')
-				.then(() => { isClientAlive = true; })
-				.catch(() => { isClientAlive = false; })
-				.finally(() => { if (isClientAlive) lastApiClientLivelinessCheck = Date.now(); });
-		}
-	} else {
-		isClientAlive = clientCache._channel.isAlive;
-	}
-
-	return isClientAlive;
-};
+const checkIsClientAlive = async () => clientCache._channel.isAlive;
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async () => {
