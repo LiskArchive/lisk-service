@@ -22,7 +22,6 @@ const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
-const config = require('../../config');
 
 const logger = Logger();
 
@@ -31,9 +30,9 @@ let genesisBlockID;
 let genesisConfig;
 
 const getGenesisHeight = async () => {
-	if (typeof genesisHeight !== 'number') {
+	if (!genesisHeight) {
 		const nodeInfo = await getNodeInfo();
-		genesisHeight = 'genesisHeight' in nodeInfo ? nodeInfo.genesisHeight : config.genesisHeight;
+		genesisHeight = nodeInfo.genesisHeight;
 	}
 	return genesisHeight;
 };
