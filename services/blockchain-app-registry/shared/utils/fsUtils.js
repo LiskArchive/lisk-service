@@ -15,6 +15,7 @@
  */
 const path = require('path');
 const fs = require('fs');
+const { NON_META_FILES } = require("../constants");
 
 const { Logger } = require('lisk-service-framework');
 
@@ -179,6 +180,36 @@ const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	});
 });
 
+const deleteNonMetaExtAndEmptyFolders = async (folderPath) => {
+	const files = await fs.promises.readdir(folderPath);
+
+	for (const file of files) {
+		const filePath = path.join(folderPath, file);
+		const isDirectory = (await fs.promises.lstat(filePath)).isDirectory();
+
+		if (isDirectory) {
+			await deleteNonMetaExtAndEmptyFolders(filePath);
+			await deleteFolderIfEmpty(filePath);
+		} else {
+			const fileName = path.basename(filePath);
+			if (NON_META_FILES.some((ending) => fileName.endsWith(ending) || fileName === ending)) {
+				await fs.promises.unlink(filePath);
+				logger.trace(`Deleted file: ${filePath}`);
+			}
+		}
+	}
+};
+
+const deleteFolderIfEmpty = async (folderPath) => {
+	const files = await fs.promises.readdir(folderPath);
+
+	if (files.length === 0) {
+		await fs.promises.rmdir(folderPath);
+		logger.trace(`Deleted folder: ${folderPath}`);
+		return;
+	}
+};
+
 const mv = async (source, target) => rename(source, target);
 
 module.exports = {
@@ -193,4 +224,5 @@ module.exports = {
 	rename,
 	mv,
 	stats,
+	deleteNonMetaExtAndEmptyFolders
 };

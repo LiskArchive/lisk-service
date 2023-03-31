@@ -19,7 +19,10 @@ const KV_STORE_KEY = {
 	COMMIT_HASH_UNTIL_LAST_SYNC: 'commitHashUntilLastSync',
 };
 
+const NON_META_FILES = ['.gitKeep'];
+
 module.exports = {
 	LENGTH_CHAIN_ID,
 	KV_STORE_KEY,
+	NON_META_FILES
 };
