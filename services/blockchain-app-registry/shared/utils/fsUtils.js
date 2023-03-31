@@ -192,7 +192,7 @@ const deleteEmptyFoldersAndNonMetaFiles = (directoryPath) => {
 			if (fs.readdirSync(filePath).length === 0) {
 				fs.rmdirSync(filePath);
 			}
-		} else if (NON_META_FILES.some((ending) => file.endsWith(ending) || file === ending)) {
+		} else if (NON_META_FILES.some((ending) => file.endsWith(ending))) {
 			fs.unlinkSync(filePath);
 		}
 	});
