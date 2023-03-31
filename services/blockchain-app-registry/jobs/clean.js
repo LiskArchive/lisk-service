@@ -23,7 +23,7 @@ module.exports = [
 		name: 'job.clean.data',
 		description: 'Delete any non-metadata files and empty folders inside data directory',
 		schedule: '0 0 * * *', // Every day at midnight
-		controller: async () => {
+		controller: () => {
 			logger.debug('Cleaning data directory...');
 			try {
 				logger.info('Starting to clean data directory.');
