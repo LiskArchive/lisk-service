@@ -24,5 +24,5 @@ const NON_META_FILES = ['.gitKeep'];
 module.exports = {
 	LENGTH_CHAIN_ID,
 	KV_STORE_KEY,
-	NON_META_FILES
+	NON_META_FILES,
 };

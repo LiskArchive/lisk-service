@@ -16,7 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 const path = require('path');
 
-const { deleteNonMetaExtAndEmptyFolders } = require('../shared/utils/fsUtils');
+const { deleteEmptyFoldersAndNonMetaFiles } = require('../shared/utils/fsUtils');
 
 module.exports = [
 	{
@@ -27,7 +27,7 @@ module.exports = [
 			logger.debug('Cleaning data directory...');
 			try {
 				logger.info('Starting to clean data directory.');
-				await deleteNonMetaExtAndEmptyFolders(path.resolve("./data"));
+				deleteEmptyFoldersAndNonMetaFiles(path.resolve('./data'));
 				logger.info('Data directory has been successfully cleaned.');
 			} catch (err) {
 				logger.warn(`Cleaning data directory failed due to: ${err.message}`);
