@@ -16,7 +16,7 @@
 const path = require('path');
 const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
-const { NON_META_FILES } = require('../constants');
+const { META_FILES } = require('../constants');
 
 const logger = Logger();
 
@@ -192,7 +192,7 @@ const deleteEmptyFoldersAndNonMetaFiles = (directoryPath) => {
 			if (fs.readdirSync(filePath).length === 0) {
 				fs.rmdirSync(filePath);
 			}
-		} else if (NON_META_FILES.some((ending) => file.endsWith(ending))) {
+		} else if (!META_FILES.some((ending) => file.endsWith(ending))) {
 			fs.unlinkSync(filePath);
 		}
 	});
