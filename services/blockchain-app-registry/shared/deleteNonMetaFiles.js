@@ -14,17 +14,16 @@
  *
  */
 
-const { ALLOWED_FILES, ALLOWED_FILE_EXTENSIONS } = require('../config');
-const { getFilesAndDirectories, rmdir, rm, stats } = require('./utils/fsUtils');
-const { isMetadataFile } = require('./utils/downloadRepository');
 const { Logger } = require('lisk-service-framework');
-const fs = require('fs');
 const path = require('path');
+const { ALLOWED_FILE_EXTENSIONS } = require('../config');
+const { getFilesAndDirs, rmdir, rm, stats } = require('./utils/fsUtils');
+const { isMetadataFile } = require('./utils/downloadRepository');
 
 const logger = Logger();
 
 const deleteFolderIfEmpty = async (folderPath) => {
-	const files = await getFilesAndDirectories(folderPath);
+	const files = await getFilesAndDirs(folderPath);
 
 	if (files.length === 0) {
 		await rmdir(folderPath);
@@ -33,7 +32,7 @@ const deleteFolderIfEmpty = async (folderPath) => {
 };
 
 const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
-	const files = await getFilesAndDirectories(folderPath, { withFileTypes: false });
+	const files = await getFilesAndDirs(folderPath, { withFileTypes: false });
 
 	for (let i = 0; i < files.length; i++) {
 		/* eslint-disable no-await-in-loop */
@@ -44,13 +43,10 @@ const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
 		if (isDirectory) {
 			await deleteEmptyFoldersAndNonMetaFiles(filePath);
 			await deleteFolderIfEmpty(filePath);
-		} else {
-
-			if (!ALLOWED_FILE_EXTENSIONS.some((ending) => file.endsWith(ending))
+		} else if (!ALLOWED_FILE_EXTENSIONS.some((ending) => file.endsWith(ending))
 					&& !isMetadataFile(filePath)) {
-				await rm(filePath);
-				logger.trace(`Deleted file: ${filePath}.`);
-			}
+			await rm(filePath);
+			logger.trace(`Deleted file: ${filePath}.`);
 		}
 		/* eslint-enable no-await-in-loop */
 	}

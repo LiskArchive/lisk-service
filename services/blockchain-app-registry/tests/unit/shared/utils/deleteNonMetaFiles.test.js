@@ -14,7 +14,6 @@
  *
  */
 const path = require('path');
-const fsPromises = require('node:fs/promises');
 
 const {
 	exists,
@@ -23,7 +22,7 @@ const {
 	write,
 } = require('../../../../shared/utils/fsUtils');
 
-const {deleteEmptyFoldersAndNonMetaFiles} = require('../../../../shared/deleteNonMetaFiles')
+const { deleteEmptyFoldersAndNonMetaFiles } = require('../../../../shared/deleteNonMetaFiles');
 
 const testData = {
 	chain_name: 'testApp',
@@ -33,7 +32,7 @@ const testData = {
 
 describe('Test filesystem util methods', () => {
 	const dirPath = `${path.dirname(__dirname)}/testDir`;
-	const subDirPath = path.join(dirPath, 'emptyDir');;
+	const subDirPath = path.join(dirPath, 'emptyDir');
 	const subFilePath = path.join(subDirPath, '.gitKeep');
 
 	beforeAll(async () => {

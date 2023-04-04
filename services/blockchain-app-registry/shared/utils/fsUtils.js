@@ -165,7 +165,7 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 		});
 	});
 
-const getFilesAndDirectories = async (directoryPath, options = { withFileTypes: true }) => new Promise(
+const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => new Promise(
 	(resolve, reject) => {
 		logger.trace(`Reading files in directory: ${directoryPath}.`);
 		fs.readdir(directoryPath, options, (err, files) => {
@@ -206,5 +206,5 @@ module.exports = {
 	rename,
 	mv,
 	stats,
-	getFilesAndDirectories,
+	getFilesAndDirs,
 };

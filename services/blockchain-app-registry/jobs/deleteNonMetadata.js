@@ -14,7 +14,6 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const path = require('path');
 const { dataDir } = require('../config');
 
 const { deleteEmptyFoldersAndNonMetaFiles } = require('../shared/deleteNonMetaFiles');
