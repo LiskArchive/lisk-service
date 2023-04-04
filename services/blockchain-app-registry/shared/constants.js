@@ -19,12 +19,7 @@ const KV_STORE_KEY = {
 	COMMIT_HASH_UNTIL_LAST_SYNC: 'commitHashUntilLastSync',
 };
 
-const ALLOWED_FILES = ['app.json', 'nativetokens.json'];
-const ALLOWED_FILE_EXTENSIONS = ['.png', '.svg'];
-
 module.exports = {
 	LENGTH_CHAIN_ID,
 	KV_STORE_KEY,
-	ALLOWED_FILES,
-	ALLOWED_FILE_EXTENSIONS,
 };

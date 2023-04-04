@@ -15,22 +15,23 @@
  */
 const logger = require('lisk-service-framework').Logger();
 const path = require('path');
+const { dataDir } = require('../config');
 
-const { deleteEmptyFoldersAndNonMetaFiles } = require('../shared/utils/fsUtils');
+const { deleteEmptyFoldersAndNonMetaFiles } = require('../shared/deleteNonMetaFiles');
 
 module.exports = [
 	{
 		name: 'delete.non.metadata.files',
 		description: 'Delete any non-metadata files and empty folders inside data directory',
-		schedule: '0 0 * * *', // Every day at midnight
+		schedule: '* * * * *', // Every day at midnight
 		controller: async () => {
 			logger.debug('Cleaning data directory...');
 			try {
 				logger.info('Starting to clean data directory.');
-				await deleteEmptyFoldersAndNonMetaFiles(path.resolve('./data'));
+				await deleteEmptyFoldersAndNonMetaFiles(dataDir);
 				logger.info('Data directory has been successfully cleaned.');
 			} catch (err) {
-				logger.warn(`Cleaning data directory failed due to: ${err.message}`);
+				logger.warn(`Cleaning data directory failed due to: ${err.message}.`);
 			}
 		},
 	},

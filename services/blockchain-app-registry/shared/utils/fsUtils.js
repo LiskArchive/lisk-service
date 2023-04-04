@@ -16,7 +16,6 @@
 const path = require('path');
 const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
-const { ALLOWED_FILES, ALLOWED_FILE_EXTENSIONS } = require('../constants');
 
 const logger = Logger();
 
@@ -166,6 +165,20 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 		});
 	});
 
+const getFilesAndDirectories = async (directoryPath, options = { withFileTypes: true }) => new Promise(
+	(resolve, reject) => {
+		logger.trace(`Reading files in directory: ${directoryPath}.`);
+		fs.readdir(directoryPath, options, (err, files) => {
+			if (err) {
+				logger.error(`Error when files in directory: ${directoryPath}.\n`, err);
+				return reject(err);
+			}
+
+			logger.trace(`Successfully read contents of: ${directoryPath}.`);
+			return resolve(files);
+		});
+	});
+
 const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
 	fs.rename(oldName, newName, (err) => {
@@ -178,40 +191,6 @@ const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 		return resolve();
 	});
 });
-
-const deleteFolderIfEmpty = async (folderPath) => {
-	const files = await fs.promises.readdir(folderPath);
-
-	if (files.length === 0) {
-		await fs.promises.rmdir(folderPath);
-		logger.trace(`Deleted folder: ${folderPath}`);
-	}
-};
-
-const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
-	const files = await fs.promises.readdir(folderPath);
-
-	for (let i = 0; i < files.length; i++) {
-		/* eslint-disable no-await-in-loop */
-		const file = files[i];
-		const filePath = path.join(folderPath, file);
-		const isDirectory = (await fs.promises.lstat(filePath)).isDirectory();
-
-		if (isDirectory) {
-			await deleteEmptyFoldersAndNonMetaFiles(filePath);
-			await deleteFolderIfEmpty(filePath);
-		} else {
-			const fileName = path.basename(filePath);
-
-			if (!ALLOWED_FILE_EXTENSIONS.some((ending) => file.endsWith(ending))
-					&& !ALLOWED_FILES.some((name) => fileName === name)) {
-				await fs.promises.unlink(filePath);
-				logger.trace(`Deleted file: ${filePath}`);
-			}
-		}
-		/* eslint-enable no-await-in-loop */
-	}
-};
 
 const mv = async (source, target) => rename(source, target);
 
@@ -227,5 +206,5 @@ module.exports = {
 	rename,
 	mv,
 	stats,
-	deleteEmptyFoldersAndNonMetaFiles,
+	getFilesAndDirectories,
 };

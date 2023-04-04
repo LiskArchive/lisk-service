@@ -27,7 +27,6 @@ const {
 	rename,
 	stats,
 	rm,
-	deleteEmptyFoldersAndNonMetaFiles,
 } = require('../../../../shared/utils/fsUtils');
 
 const testData = {
@@ -94,22 +93,6 @@ describe('Test filesystem util methods', () => {
 		expect(exists(subDirPathNew)).resolves.toBe(false);
 		await rename(subDirPath, subDirPathNew);
 		expect(exists(subDirPathNew)).resolves.toBe(true);
-	});
-
-	it('deleteEmptyFoldersAndNonMetaFiles() method', async () => {
-		const subDirPath = path.join(dirPath, 'emptyDir');
-		expect(exists(subDirPath)).resolves.toBe(false);
-		await mkdir(subDirPath);
-		expect(exists(subDirPath)).resolves.toBe(true);
-
-		const subFilePath = path.join(dirPath, '.gitKeep');
-		expect(exists(subFilePath)).resolves.toBe(false);
-		await write(subFilePath, JSON.stringify(testData));
-		expect(exists(subFilePath)).resolves.toBe(true);
-
-		await deleteEmptyFoldersAndNonMetaFiles(dirPath);
-		expect(exists(subFilePath)).resolves.toBe(false);
-		expect(exists(subDirPath)).resolves.toBe(false);
 	});
 });
 
