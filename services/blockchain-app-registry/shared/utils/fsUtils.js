@@ -165,19 +165,11 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 		});
 	});
 
-const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => new Promise(
-	(resolve, reject) => {
-		logger.trace(`Reading files in directory: ${directoryPath}.`);
-		fs.readdir(directoryPath, options, (err, files) => {
-			if (err) {
-				logger.error(`Error when files in directory: ${directoryPath}.\n`, err);
-				return reject(err);
-			}
-
-			logger.trace(`Successfully read contents of: ${directoryPath}.`);
-			return resolve(files);
-		});
-	});
+const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => {
+	const subDirectories = await getDirectories(directoryPath, options);
+    const filesInDirectory = await getFiles(directoryPath, options);
+    return [...subDirectories, ...filesInDirectory];
+};
 
 const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);

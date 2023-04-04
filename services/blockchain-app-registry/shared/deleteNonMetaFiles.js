@@ -32,18 +32,17 @@ const deleteFolderIfEmpty = async (folderPath) => {
 };
 
 const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
-	const files = await getFilesAndDirs(folderPath, { withFileTypes: false });
+	const filesAndDirPaths = await getFilesAndDirs(folderPath);
 
-	for (let i = 0; i < files.length; i++) {
+	for (let i = 0; i < filesAndDirPaths.length; i++) {
 		/* eslint-disable no-await-in-loop */
-		const file = files[i];
-		const filePath = path.join(folderPath, file);
-		const isDirectory = (await stats(filePath)).isDirectory();
+        const filePath = filesAndDirPaths[i];
+        const isDirectory = (await stats(filePath)).isDirectory();
 
 		if (isDirectory) {
 			await deleteEmptyFoldersAndNonMetaFiles(filePath);
 			await deleteFolderIfEmpty(filePath);
-		} else if (!ALLOWED_FILE_EXTENSIONS.some((ending) => file.endsWith(ending))
+		} else if (!ALLOWED_FILE_EXTENSIONS.some((ending) => filePath.endsWith(ending))
 					&& !isMetadataFile(filePath)) {
 			await rm(filePath);
 			logger.trace(`Deleted file: ${filePath}.`);
