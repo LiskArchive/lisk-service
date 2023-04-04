@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRepoInfoFromURL, getUniqueNetworkAppDirPairs, filterMetaConfigFilesByNetwork } = require('../../../../shared/utils/downloadRepository');
+const { getRepoInfoFromURL, getUniqueNetworkAppDirPairs, filterMetaConfigFilesByNetwork, getModifiedFileNames } = require('../../../../shared/utils/downloadRepository');
 const config = require('../../../../config');
+const { getModifiedFileNamesInput, getModifiedFileNamesExpectedResponse } = require('../../../constants/downloadRepository');
 
 describe('Test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {
@@ -168,5 +169,22 @@ describe('Test filterMetaConfigFilesByNetwork method', () => {
 	it('should return empty array when network and files are null', async () => {
 		const response = await filterMetaConfigFilesByNetwork(null, null);
 		expect(response).toEqual([]);
+	});
+});
+
+describe('Test getModifiedFileNames method', () => {
+	it('should return flatted file names when called with valid groupedFiles', async () => {
+		const response = getModifiedFileNames(getModifiedFileNamesInput);
+		expect(response).toEqual(getModifiedFileNamesExpectedResponse);
+	});
+
+	it('should return empty array when called with empty array or object', async () => {
+		expect(getModifiedFileNames([])).toEqual([]);
+		expect(getModifiedFileNames({})).toEqual([]);
+	});
+
+	it('should throw error when called with null or undefined groupedFiles', async () => {
+		expect(() => getModifiedFileNames(null)).toThrow();
+		expect(() => getModifiedFileNames(undefined)).toThrow();
 	});
 });
