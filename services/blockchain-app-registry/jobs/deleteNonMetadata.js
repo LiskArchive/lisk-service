@@ -27,21 +27,21 @@ const removeDirectoryIfEmpty = async (dirPath) => {
 	}
 };
 
-const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
-	const filesAndDirPaths = await getFilesAndDirs(folderPath);
+const removeEmptyDirectoriesAndNonMetaFiles = async (dirPath) => {
+	const contents = await getFilesAndDirs(dirPath);
 
-	for (let i = 0; i < filesAndDirPaths.length; i++) {
+	for (let i = 0; i < contents.length; i++) {
 		/* eslint-disable no-await-in-loop */
-		const filePath = filesAndDirPaths[i];
+		const filePath = contents[i];
 		const isDirectory = (await stats(filePath)).isDirectory();
 
 		if (isDirectory) {
-			await deleteEmptyFoldersAndNonMetaFiles(filePath);
+			await removeEmptyDirectoriesAndNonMetaFiles(filePath);
 			await removeDirectoryIfEmpty(filePath);
 		} else if (!ALLOWED_FILE_EXTENSIONS.some((ending) => filePath.endsWith(ending))
 					&& !isMetadataFile(filePath)) {
 			await rm(filePath);
-			logger.trace(`Deleted file: ${filePath}.`);
+			logger.trace(`Removed file: ${filePath}.`);
 		}
 		/* eslint-enable no-await-in-loop */
 	}
@@ -56,7 +56,7 @@ module.exports = [
 			logger.debug('Cleaning data directory...');
 			try {
 				logger.info('Starting to clean data directory.');
-				await deleteEmptyFoldersAndNonMetaFiles(dataDir);
+				await removeEmptyDirectoriesAndNonMetaFiles(dataDir);
 				logger.info('Data directory has been successfully cleaned.');
 			} catch (err) {
 				logger.warn(`Cleaning data directory failed due to: ${err.message}.`);
