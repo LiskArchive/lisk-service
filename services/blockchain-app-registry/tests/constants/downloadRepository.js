@@ -19,9 +19,9 @@ const getModifiedFileNamesInput = {
 			{ filename: 'alphanet/Lisk/app.json' },
 			{ filename: 'alphanet/Lisk/nativetokens.json' },
 		],
-		Evevti: [
-			{ filename: 'alphanet/Evevti/app.json' },
-			{ filename: 'alphanet/Evevti/nativetokens.json' },
+		Enevti: [
+			{ filename: 'alphanet/Enevti/app.json' },
+			{ filename: 'alphanet/Enevti/nativetokens.json' },
 		],
 	},
 	betanet: {
@@ -29,9 +29,9 @@ const getModifiedFileNamesInput = {
 			{ filename: 'betanet/Lisk/app.json' },
 			{ filename: 'betanet/Lisk/nativetokens.json' },
 		],
-		Evevti: [
-			{ filename: 'betanet/Evevti/app.json' },
-			{ filename: 'betanet/Evevti/nativetokens.json' },
+		Enevti: [
+			{ filename: 'betanet/Enevti/app.json' },
+			{ filename: 'betanet/Enevti/nativetokens.json' },
 		],
 	},
 };
@@ -39,13 +39,13 @@ const getModifiedFileNamesInput = {
 const getModifiedFileNamesExpectedResponse = [
 	'alphanet/Lisk/app.json',
 	'alphanet/Lisk/nativetokens.json',
-	'alphanet/Evevti/app.json',
-	'alphanet/Evevti/nativetokens.json',
+	'alphanet/Enevti/app.json',
+	'alphanet/Enevti/nativetokens.json',
 
 	'betanet/Lisk/app.json',
 	'betanet/Lisk/nativetokens.json',
-	'betanet/Evevti/app.json',
-	'betanet/Evevti/nativetokens.json',
+	'betanet/Enevti/app.json',
+	'betanet/Enevti/nativetokens.json',
 ];
 
 module.exports = {

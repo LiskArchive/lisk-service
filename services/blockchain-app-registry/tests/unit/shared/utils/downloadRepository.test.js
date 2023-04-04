@@ -176,7 +176,7 @@ describe('Test filterMetaConfigFilesByNetwork method', () => {
 });
 
 describe('Test getModifiedFileNames method', () => {
-	it('should return flatted file names when called with valid groupedFiles', async () => {
+	it('should return flattened list of filenames when called with valid groupedFiles', async () => {
 		const response = getModifiedFileNames(getModifiedFileNamesInput);
 		expect(response).toEqual(getModifiedFileNamesExpectedResponse);
 	});
