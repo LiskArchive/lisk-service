@@ -15,7 +15,10 @@
  */
 const { getRepoInfoFromURL, getUniqueNetworkAppDirPairs, filterMetaConfigFilesByNetwork, getModifiedFileNames } = require('../../../../shared/utils/downloadRepository');
 const config = require('../../../../config');
-const { getModifiedFileNamesInput, getModifiedFileNamesExpectedResponse } = require('../../../constants/downloadRepository');
+const {
+	getModifiedFileNamesInput,
+	getModifiedFileNamesExpectedResponse,
+} = require('../../../constants/downloadRepository');
 
 describe('Test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {

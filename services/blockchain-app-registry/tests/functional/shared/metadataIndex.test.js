@@ -35,14 +35,18 @@ const {
 	deleteIndexedMetadataFromFile,
 	indexAllBlockchainAppsMeta,
 } = require('../../../shared/metadataIndex');
-const { indexAppMetaInput, indexTokenMetaInput } = require('../../constants/metadataIndex');
+const { downloadRepositoryToFS } = require('../../../shared/utils/downloadRepository');
+
+const {
+	appMetaObj,
+	tokenMetaObj,
+} = require('../../constants/metadataIndex');
 
 const { LENGTH_CHAIN_ID } = require('../../../shared/constants');
 const config = require('../../../config');
 
 const applicationMetadataIndexSchema = require('../../../shared/database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('../../../shared/database/schema/token_metadata');
-const { downloadRepositoryToFS } = require('../../../shared/utils/downloadRepository');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -61,23 +65,28 @@ let applicationMetadataTable;
 let tokenMetadataTable;
 let connection;
 
-const tempDir = `${__dirname}/temp/${indexAppMetaInput.networkType}/${indexAppMetaInput.chainName}`;
+const tempDir = `${__dirname}/temp/${appMetaObj.networkType}/${appMetaObj.chainName}`;
 const appMetaPath = `${tempDir}/${config.FILENAME.APP_JSON}`;
 const tokenMetaPath = `${tempDir}/${config.FILENAME.NATIVETOKENS_JSON}`;
 
+const appMetaQueryParams = {
+	network: appMetaObj.networkType,
+	chainName: appMetaObj.chainName,
+};
 const tokenMetaQueryParams = {
-	network: indexAppMetaInput.networkType,
-	chainName: indexAppMetaInput.chainName,
+	network: appMetaObj.networkType,
+	chainName: appMetaObj.chainName,
 	whereIn: {
 		property: 'localID',
-		values: indexTokenMetaInput.tokens.map(token => token.tokenID.substring(LENGTH_CHAIN_ID)),
+		values: tokenMetaObj.tokens.map(token => token.tokenID.substring(LENGTH_CHAIN_ID)),
 	},
 };
 
 beforeAll(async () => {
+	// Create metadata files in a temporary directory
 	await mkdir(tempDir);
-	await write(appMetaPath, JSON.stringify(indexAppMetaInput));
-	await write(tokenMetaPath, JSON.stringify(indexTokenMetaInput));
+	await write(appMetaPath, JSON.stringify(appMetaObj));
+	await write(tokenMetaPath, JSON.stringify(tokenMetaObj));
 
 	applicationMetadataTable = await getApplicationMetadataIndex();
 	tokenMetadataTable = await getTokenMetadataIndex();
@@ -89,29 +98,29 @@ afterAll(async () => rmdir(tempDir));
 describe('Test indexAppMeta method', () => {
 	afterEach(async () => {
 		await applicationMetadataTable.delete({
-			network: indexAppMetaInput.networkType,
-			chainName: indexAppMetaInput.chainName,
+			network: appMetaObj.networkType,
+			chainName: appMetaObj.chainName,
 		});
 	});
 
 	it('should index app meta in db when called with valid metadata object', async () => {
-		await indexAppMeta(indexAppMetaInput);
+		await indexAppMeta(appMetaObj);
 
 		const dbResponse = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 
-		expect(dbResponse[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponse.length).toEqual(1);
 	});
 
 	it('should index app meta in db only after commit when called with dbTrx', async () => {
 		const dbTrx = await startDbTransaction(connection);
-		await indexAppMeta(indexAppMetaInput, dbTrx);
+		await indexAppMeta(appMetaObj, dbTrx);
 
 		const responseBeforeCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(responseBeforeCommit.length).toEqual(0);
@@ -119,7 +128,7 @@ describe('Test indexAppMeta method', () => {
 		await commitDbTransaction(dbTrx);
 
 		const responseAfterCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(responseAfterCommit.length).toEqual(1);
@@ -135,8 +144,8 @@ describe('Test indexMetadataFromFile method', () => {
 	afterEach(async () => {
 		// Delete app meta info
 		await applicationMetadataTable.delete({
-			network: indexAppMetaInput.networkType,
-			chainName: indexAppMetaInput.chainName,
+			network: appMetaObj.networkType,
+			chainName: appMetaObj.chainName,
 		});
 
 		// Delete token meta info
@@ -147,11 +156,11 @@ describe('Test indexMetadataFromFile method', () => {
 		await indexMetadataFromFile(appMetaPath);
 
 		const dbResponse = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 
-		expect(dbResponse[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponse.length).toEqual(1);
 	});
 
@@ -160,7 +169,7 @@ describe('Test indexMetadataFromFile method', () => {
 
 		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 
-		expect(dbResponse[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponse.length).toEqual(1);
 	});
 
@@ -169,7 +178,7 @@ describe('Test indexMetadataFromFile method', () => {
 		await indexMetadataFromFile(appMetaPath, dbTrx);
 
 		const responseBeforeCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(responseBeforeCommit.length).toEqual(0);
@@ -177,7 +186,7 @@ describe('Test indexMetadataFromFile method', () => {
 		await commitDbTransaction(dbTrx);
 
 		const responseAfterCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(responseAfterCommit.length).toEqual(1);
@@ -203,27 +212,27 @@ describe('Test indexMetadataFromFile method', () => {
 });
 
 describe('Test deleteAppMeta method', () => {
-	beforeEach(async () => indexAppMeta(indexAppMetaInput));
+	beforeEach(async () => indexAppMeta(appMetaObj));
 
 	afterEach(async () => {
 		await applicationMetadataTable.delete({
-			network: indexAppMetaInput.networkType,
-			chainName: indexAppMetaInput.chainName,
+			network: appMetaObj.networkType,
+			chainName: appMetaObj.chainName,
 		});
 	});
 
 	it('should delete indexed app meta from db when called with valid metadata object', async () => {
 		const dbResponseBefore = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponseBefore.length).toEqual(1);
 
-		await deleteAppMeta(indexAppMetaInput);
+		await deleteAppMeta(appMetaObj);
 
 		const dbResponse = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(dbResponse.length).toEqual(0);
@@ -231,26 +240,26 @@ describe('Test deleteAppMeta method', () => {
 
 	it('should delete indexed app meta from db only after commit when called with dbTrx', async () => {
 		const dbResponseBefore = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponseBefore.length).toEqual(1);
 
 		const dbTrx = await startDbTransaction(connection);
-		await deleteAppMeta(indexAppMetaInput, dbTrx);
+		await deleteAppMeta(appMetaObj, dbTrx);
 
 		const responseBeforeCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBeforeCommit.length).toEqual(1);
 
 		await commitDbTransaction(dbTrx);
 
 		const responseAfterCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(responseAfterCommit.length).toEqual(0);
@@ -263,15 +272,15 @@ describe('Test deleteAppMeta method', () => {
 });
 
 describe('Test deleteTokenMeta method', () => {
-	const localIDs = indexTokenMetaInput.tokens.map(
+	const localIDs = tokenMetaObj.tokens.map(
 		token => token.tokenID.substring(LENGTH_CHAIN_ID),
 	);
 
 	beforeEach(async () => indexTokensMeta({
-		chainID: indexAppMetaInput.chainID,
-		chainName: indexAppMetaInput.chainName,
-		network: indexAppMetaInput.networkType,
-		...indexTokenMetaInput,
+		chainID: appMetaObj.chainID,
+		chainName: appMetaObj.chainName,
+		network: appMetaObj.networkType,
+		...tokenMetaObj,
 	}));
 
 	afterEach(async () => tokenMetadataTable.delete(tokenMetaQueryParams));
@@ -281,13 +290,13 @@ describe('Test deleteTokenMeta method', () => {
 			tokenMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponseBefore.length).toEqual(1);
 
 		await deleteTokensMeta({
-			...indexTokenMetaInput,
-			network: indexAppMetaInput.networkType,
-			chainName: indexAppMetaInput.chainName,
+			...tokenMetaObj,
+			network: appMetaObj.networkType,
+			chainName: appMetaObj.chainName,
 			localIDs,
 		});
 
@@ -303,15 +312,15 @@ describe('Test deleteTokenMeta method', () => {
 			tokenMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponseBefore.length).toEqual(1);
 
 		const dbTrx = await startDbTransaction(connection);
 		await deleteTokensMeta(
 			{
-				...indexTokenMetaInput,
-				network: indexAppMetaInput.networkType,
-				chainName: indexAppMetaInput.chainName,
+				...tokenMetaObj,
+				network: appMetaObj.networkType,
+				chainName: appMetaObj.chainName,
 				localIDs,
 			},
 			dbTrx,
@@ -321,7 +330,7 @@ describe('Test deleteTokenMeta method', () => {
 			tokenMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBeforeCommit.length).toEqual(1);
 
 		await commitDbTransaction(dbTrx);
@@ -346,28 +355,23 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 	});
 
 	afterEach(async () => {
-		// Delete app meta info
-		await applicationMetadataTable.delete({
-			network: indexAppMetaInput.networkType,
-			chainName: indexAppMetaInput.chainName,
-		});
-
-		// Delete token meta info
+		// Delete app and token meta info
+		await applicationMetadataTable.delete(appMetaQueryParams);
 		await tokenMetadataTable.delete(tokenMetaQueryParams);
 	});
 
 	it('should delete indexed app meta in db when called with valid app meta path', async () => {
 		const dbResponse = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
-		expect(dbResponse[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponse.length).toEqual(1);
 
 		await deleteIndexedMetadataFromFile(appMetaPath);
 
 		const dbResponseAfterDelete = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(dbResponseAfterDelete.length).toEqual(0);
@@ -375,7 +379,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 
 	it('should delete indexed token meta in db when called with valid token meta path', async () => {
 		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(dbResponse[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponse.length).toEqual(1);
 
 		await deleteIndexedMetadataFromFile(tokenMetaPath);
@@ -386,26 +390,26 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 
 	it('should delete indexed app meta in db only after commit when called with valid app meta path and dbTrx', async () => {
 		const responseBefore = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
-		expect(responseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(responseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBefore.length).toEqual(1);
 
 		const dbTrx = await startDbTransaction(connection);
 		await deleteIndexedMetadataFromFile(appMetaPath, dbTrx);
 
 		const responseBeforeCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
-		expect(responseBeforeCommit[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(responseBeforeCommit[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBeforeCommit.length).toEqual(1);
 
 		await commitDbTransaction(dbTrx);
 
 		const responseAfterCommit = await applicationMetadataTable.find(
-			{ network: indexAppMetaInput.networkType, chainName: indexAppMetaInput.chainName },
+			appMetaQueryParams,
 			['chainID'],
 		);
 		expect(responseAfterCommit.length).toEqual(0);
@@ -413,14 +417,14 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 
 	it('should delete indexed token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
 		const responseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(responseBefore[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(responseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBefore.length).toEqual(1);
 
 		const dbTrx = await startDbTransaction(connection);
 		await deleteIndexedMetadataFromFile(tokenMetaPath, dbTrx);
 
 		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(responseBeforeCommit[0].chainID).toEqual(indexAppMetaInput.chainID);
+		expect(responseBeforeCommit[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBeforeCommit.length).toEqual(1);
 
 		await commitDbTransaction(dbTrx);

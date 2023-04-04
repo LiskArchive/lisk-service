@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const indexAppMetaInput = {
+const appMetaObj = {
 	title: 'testChain999 - Betanet',
 	description: 'Metadata configuration for the testChain999 blockchain (mainchain) in betanet',
 	chainName: 'testChain999',
@@ -51,7 +51,7 @@ const indexAppMetaInput = {
 	appDirName: 'testChain999',
 };
 
-const indexTokenMetaInput = {
+const tokenMetaObj = {
 	title: 'Lisk - Betanet - Native tokens',
 	tokens: [
 		{
@@ -86,6 +86,6 @@ const indexTokenMetaInput = {
 };
 
 module.exports = {
-	indexAppMetaInput,
-	indexTokenMetaInput,
+	appMetaObj,
+	tokenMetaObj,
 };
