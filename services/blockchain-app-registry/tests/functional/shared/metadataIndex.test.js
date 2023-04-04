@@ -74,8 +74,7 @@ const appMetaQueryParams = {
 	chainName: appMetaObj.chainName,
 };
 const tokenMetaQueryParams = {
-	network: appMetaObj.networkType,
-	chainName: appMetaObj.chainName,
+	...appMetaQueryParams,
 	whereIn: {
 		property: 'localID',
 		values: tokenMetaObj.tokens.map(token => token.tokenID.substring(LENGTH_CHAIN_ID)),
@@ -96,12 +95,7 @@ beforeAll(async () => {
 afterAll(async () => rmdir(tempDir));
 
 describe('Test indexAppMeta method', () => {
-	afterEach(async () => {
-		await applicationMetadataTable.delete({
-			network: appMetaObj.networkType,
-			chainName: appMetaObj.chainName,
-		});
-	});
+	afterEach(async () => applicationMetadataTable.delete(appMetaQueryParams));
 
 	it('should index app meta in db when called with valid metadata object', async () => {
 		await indexAppMeta(appMetaObj);
@@ -143,10 +137,7 @@ describe('Test indexAppMeta method', () => {
 describe('Test indexMetadataFromFile method', () => {
 	afterEach(async () => {
 		// Delete app meta info
-		await applicationMetadataTable.delete({
-			network: appMetaObj.networkType,
-			chainName: appMetaObj.chainName,
-		});
+		await applicationMetadataTable.delete(appMetaQueryParams);
 
 		// Delete token meta info
 		await tokenMetadataTable.delete(tokenMetaQueryParams);
@@ -214,12 +205,7 @@ describe('Test indexMetadataFromFile method', () => {
 describe('Test deleteAppMeta method', () => {
 	beforeEach(async () => indexAppMeta(appMetaObj));
 
-	afterEach(async () => {
-		await applicationMetadataTable.delete({
-			network: appMetaObj.networkType,
-			chainName: appMetaObj.chainName,
-		});
-	});
+	afterEach(async () => applicationMetadataTable.delete(appMetaQueryParams));
 
 	it('should delete indexed app meta from db when called with valid metadata object', async () => {
 		const dbResponseBefore = await applicationMetadataTable.find(
