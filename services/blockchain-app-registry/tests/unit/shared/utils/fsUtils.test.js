@@ -103,12 +103,11 @@ describe('Test filesystem util methods', () => {
 		expect(exists(subDirPath)).resolves.toBe(true);
 
 		const subFilePath = path.join(dirPath, '.gitKeep');
-
 		expect(exists(subFilePath)).resolves.toBe(false);
 		await write(subFilePath, JSON.stringify(testData));
 		expect(exists(subFilePath)).resolves.toBe(true);
 
-		deleteEmptyFoldersAndNonMetaFiles(dirPath);
+		await deleteEmptyFoldersAndNonMetaFiles(dirPath);
 		expect(exists(subFilePath)).resolves.toBe(false);
 		expect(exists(subDirPath)).resolves.toBe(false);
 	});

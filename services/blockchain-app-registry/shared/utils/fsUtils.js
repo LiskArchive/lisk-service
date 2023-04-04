@@ -16,7 +16,7 @@
 const path = require('path');
 const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
-const { META_FILES } = require('../constants');
+const { ALLOWED_FILES, ALLOWED_FILE_EXTENSIONS } = require('../constants');
 
 const logger = Logger();
 
@@ -179,23 +179,38 @@ const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	});
 });
 
-const deleteEmptyFoldersAndNonMetaFiles = (directoryPath) => {
-	const files = fs.readdirSync(directoryPath);
+const deleteFolderIfEmpty = async (folderPath) => {
+	const files = await fs.promises.readdir(folderPath);
 
-	files.forEach((file) => {
-		const filePath = path.join(directoryPath, file);
-		const fileStat = fs.statSync(filePath);
+	if (files.length === 0) {
+		await fs.promises.rmdir(folderPath);
+		logger.trace(`Deleted folder: ${folderPath}`);
+	}
+};
 
-		if (fileStat.isDirectory()) {
-			deleteEmptyFoldersAndNonMetaFiles(filePath);
+const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
+	const files = await fs.promises.readdir(folderPath);
 
-			if (fs.readdirSync(filePath).length === 0) {
-				fs.rmdirSync(filePath);
+	for (let i = 0; i < files.length; i++) {
+		/* eslint-disable no-await-in-loop */
+		const file = files[i];
+		const filePath = path.join(folderPath, file);
+		const isDirectory = (await fs.promises.lstat(filePath)).isDirectory();
+
+		if (isDirectory) {
+			await deleteEmptyFoldersAndNonMetaFiles(filePath);
+			await deleteFolderIfEmpty(filePath);
+		} else {
+			const fileName = path.basename(filePath);
+
+			if (!ALLOWED_FILE_EXTENSIONS.some((ending) => file.endsWith(ending))
+					&& !ALLOWED_FILES.some((name) => fileName === name)) {
+				await fs.promises.unlink(filePath);
+				logger.trace(`Deleted file: ${filePath}`);
 			}
-		} else if (!META_FILES.some((ending) => file.endsWith(ending))) {
-			fs.unlinkSync(filePath);
 		}
-	});
+		/* eslint-enable no-await-in-loop */
+	}
 };
 
 const mv = async (source, target) => rename(source, target);

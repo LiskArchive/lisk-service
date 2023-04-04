@@ -20,14 +20,14 @@ const { deleteEmptyFoldersAndNonMetaFiles } = require('../shared/utils/fsUtils')
 
 module.exports = [
 	{
-		name: 'job.clean.data',
+		name: 'delete.non.metadata.files',
 		description: 'Delete any non-metadata files and empty folders inside data directory',
 		schedule: '0 0 * * *', // Every day at midnight
-		controller: () => {
+		controller: async () => {
 			logger.debug('Cleaning data directory...');
 			try {
 				logger.info('Starting to clean data directory.');
-				deleteEmptyFoldersAndNonMetaFiles(path.resolve('./data'));
+				await deleteEmptyFoldersAndNonMetaFiles(path.resolve('./data'));
 				logger.info('Data directory has been successfully cleaned.');
 			} catch (err) {
 				logger.warn(`Cleaning data directory failed due to: ${err.message}`);
