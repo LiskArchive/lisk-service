@@ -167,8 +167,8 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 
 const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => {
 	const subDirectories = await getDirectories(directoryPath, options);
-    const filesInDirectory = await getFiles(directoryPath, options);
-    return [...subDirectories, ...filesInDirectory];
+	const filesInDirectory = await getFiles(directoryPath, options);
+	return [...subDirectories, ...filesInDirectory];
 };
 
 const rename = async (oldName, newName) => new Promise((resolve, reject) => {

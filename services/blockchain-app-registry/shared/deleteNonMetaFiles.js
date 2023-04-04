@@ -15,7 +15,6 @@
  */
 
 const { Logger } = require('lisk-service-framework');
-const path = require('path');
 const { ALLOWED_FILE_EXTENSIONS } = require('../config');
 const { getFilesAndDirs, rmdir, rm, stats } = require('./utils/fsUtils');
 const { isMetadataFile } = require('./utils/downloadRepository');
@@ -36,8 +35,8 @@ const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
 
 	for (let i = 0; i < filesAndDirPaths.length; i++) {
 		/* eslint-disable no-await-in-loop */
-        const filePath = filesAndDirPaths[i];
-        const isDirectory = (await stats(filePath)).isDirectory();
+		const filePath = filesAndDirPaths[i];
+		const isDirectory = (await stats(filePath)).isDirectory();
 
 		if (isDirectory) {
 			await deleteEmptyFoldersAndNonMetaFiles(filePath);
