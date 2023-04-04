@@ -18,12 +18,12 @@ const { dataDir, ALLOWED_FILE_EXTENSIONS } = require('../config');
 const { getFilesAndDirs, rmdir, rm, stats } = require('../shared/utils/fsUtils');
 const { isMetadataFile } = require('../shared/utils/downloadRepository');
 
-const deleteFolderIfEmpty = async (folderPath) => {
-	const files = await getFilesAndDirs(folderPath);
+const removeDirectoryIfEmpty = async (dirPath) => {
+	const files = await getFilesAndDirs(dirPath);
 
 	if (files.length === 0) {
-		await rmdir(folderPath);
-		logger.trace(`Deleted folder: ${folderPath}.`);
+		await rmdir(dirPath);
+		logger.trace(`Removed directory: ${dirPath}.`);
 	}
 };
 
@@ -37,7 +37,7 @@ const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
 
 		if (isDirectory) {
 			await deleteEmptyFoldersAndNonMetaFiles(filePath);
-			await deleteFolderIfEmpty(filePath);
+			await removeDirectoryIfEmpty(filePath);
 		} else if (!ALLOWED_FILE_EXTENSIONS.some((ending) => filePath.endsWith(ending))
 					&& !isMetadataFile(filePath)) {
 			await rm(filePath);
@@ -50,7 +50,7 @@ const deleteEmptyFoldersAndNonMetaFiles = async (folderPath) => {
 module.exports = [
 	{
 		name: 'delete.non.metadata.files',
-		description: 'Delete any non-metadata files and empty folders inside data directory',
+		description: 'Delete any non-metadata files and empty folders inside data directory.',
 		schedule: '0 0 * * *', // Every day at midnight
 		controller: async () => {
 			logger.debug('Cleaning data directory...');
