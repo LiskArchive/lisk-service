@@ -412,11 +412,13 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 
 	xit('should index app and token meta in db when data is present', async () => {
 		await downloadRepositoryToFS();
+		expect(await applicationMetadataTable.count()).toEqual(0);
+		expect(await tokenMetadataTable.count()).toEqual(0);
 
 		await indexAllBlockchainAppsMeta();
+
 		const appMetaCount = await applicationMetadataTable.count();
 		const tokenMetaCount = await tokenMetadataTable.count();
-
 		expect(appMetaCount).toBeGreaterThanOrEqual(1);
 		expect(tokenMetaCount).toBeGreaterThanOrEqual(1);
 	});
