@@ -16,7 +16,7 @@
 
 const waitForIt = require('../../../shared/waitForIt');
 
-const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve.bind(null, val), ms));
+const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve, ms, val));
 
 describe('Test waitForIt method', () => {
 	it('should wait for the function to return response', async () => {

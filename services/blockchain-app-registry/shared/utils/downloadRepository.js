@@ -422,4 +422,5 @@ module.exports = {
 	getFileDownloadURL,
 	getDiff,
 	buildEventPayload,
+	getModifiedFileNames,
 };

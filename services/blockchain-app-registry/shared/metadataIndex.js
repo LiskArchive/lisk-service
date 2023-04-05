@@ -246,4 +246,10 @@ module.exports = {
 	indexAllBlockchainAppsMeta,
 	indexMetadataFromFile,
 	deleteIndexedMetadataFromFile,
+
+	// For testing
+	indexAppMeta,
+	indexTokensMeta,
+	deleteAppMeta,
+	deleteTokensMeta,
 };
