@@ -27,6 +27,7 @@ const {
 	rename,
 	stats,
 	rm,
+	getFilesAndDirs,
 } = require('../../../../shared/utils/fsUtils');
 
 const testData = {
@@ -80,6 +81,17 @@ describe('Test filesystem util methods', () => {
 		const availableFiles = await getFiles(dirPath);
 		expect(availableFiles.length).toBeGreaterThanOrEqual(1);
 		expect(availableFiles).toContain(filePath);
+	});
+
+	it('getFilesAndDirs() method', async () => {
+		const subDirPath = path.join(dirPath, 'testDir');
+		const subFilePath = path.join(dirPath, 'testFile');
+		await mkdir(subDirPath);
+		await write(subFilePath, JSON.stringify(testData));
+
+		const availableFilesAndDirs = await getFilesAndDirs(dirPath);
+		expect(availableFilesAndDirs).toContain(subDirPath);
+		expect(availableFilesAndDirs).toContain(subFilePath);
 	});
 
 	it('rename() method', async () => {

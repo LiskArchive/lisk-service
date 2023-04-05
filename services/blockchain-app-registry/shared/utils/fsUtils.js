@@ -15,7 +15,6 @@
  */
 const path = require('path');
 const fs = require('fs');
-
 const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -166,6 +165,12 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 		});
 	});
 
+const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => {
+	const subDirectories = await getDirectories(directoryPath, options);
+	const filesInDirectory = await getFiles(directoryPath, options);
+	return [...subDirectories, ...filesInDirectory];
+};
+
 const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
 	fs.rename(oldName, newName, (err) => {
@@ -193,4 +198,5 @@ module.exports = {
 	rename,
 	mv,
 	stats,
+	getFilesAndDirs,
 };

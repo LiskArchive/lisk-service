@@ -411,6 +411,7 @@ module.exports = {
 	downloadRepositoryToFS,
 	getRepoInfoFromURL,
 	syncWithRemoteRepo,
+	isMetadataFile,
 
 	// For testing
 	getRepoDownloadURL,
