@@ -24,7 +24,6 @@ const logger = Logger();
 
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
-	isGenesisBlockIndexed,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,

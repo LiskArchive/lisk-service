@@ -487,13 +487,6 @@ const getMissingBlocks = async (params) => {
 	return listOfMissingBlocks;
 };
 
-const isGenesisBlockIndexed = async () => {
-	const blocksTable = await getBlocksTable();
-	const genesisHeight = await getGenesisHeight();
-	const [block] = await blocksTable.find({ height: genesisHeight, limit: 1 }, ['height']);
-	return !!block;
-};
-
 const addBlockToQueue = async height => {
 	const block = await getBlockByHeight(height);
 	indexBlocksQueue.add({ block });
@@ -506,7 +499,6 @@ const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 module.exports = {
 	indexNewBlock,
 	updateNonFinalBlocks,
-	isGenesisBlockIndexed,
 	addBlockToQueue,
 	getMissingBlocks,
 	deleteBlock,
