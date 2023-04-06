@@ -54,12 +54,6 @@ const accountIndexQueue = new MessageQueue(
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
-const scheduleGenesisBlockIndexing = async () => {
-	const genesisHeight = await getGenesisHeight();
-	await blockIndexQueue.add({ height: genesisHeight });
-	logger.info('Finished scheduling of genesis block indexing.');
-};
-
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
@@ -98,12 +92,6 @@ const initIndexingScheduler = async () => {
 	const { validators } = await getAllPosValidators();
 	if (Array.isArray(validators) && validators.length) {
 		await scheduleValidatorsIndexing(validators);
-	}
-
-	// Check if genesis block is already indexed and schedule indexing if not indexed
-	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
-	if (!isGenesisBlockAlreadyIndexed) {
-		await scheduleGenesisBlockIndexing();
 	}
 
 	// Check for missing blocks
