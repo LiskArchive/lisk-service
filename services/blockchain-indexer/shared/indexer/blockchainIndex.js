@@ -110,10 +110,6 @@ const indexBlock = async job => {
 	const { block } = job.data;
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
 
-	if (block.height === await getGenesisHeight()) {
-		await indexGenesisBlockAssets();
-	}
-
 	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
@@ -122,6 +118,10 @@ const indexBlock = async job => {
 	let blockReward = BigInt('0');
 
 	try {
+		if (block.height === await getGenesisHeight()) {
+			await indexGenesisBlockAssets(dbTrx);
+		}
+
 		const events = await getEventsByHeight(block.height);
 
 		if (block.transactions.length) {

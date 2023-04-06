@@ -17,11 +17,26 @@ const { MODULE } = require('../constants');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 const { requestConnector } = require('../utils/request');
 
-const USER_SUB_STORE_KEY = 'userSubstore';
+const {
+	updateTotalStake,
+	updateTotalSelfStake,
+} = require('./transactionProcessor/pos/stake');
+
+const MODULE_SUB_STORE = Object.freeze({
+	TOKEN: {
+		USER: 'userSubstore',
+	},
+	POS: {
+		STAKERS: 'stakers',
+	},
+});
 
 const indexTokenModuleAssets = async (dbTrx) => {
-	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.TOKEN, subStore: USER_SUB_STORE_KEY });
-	const totalUserSubStore = genesisBlockAssetsLength[MODULE.TOKEN].userSubstore;
+	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
+		module: MODULE.TOKEN,
+        subStore: MODULE_SUB_STORE.TOKEN.USER,
+    });
+	const totalUserSubStore = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
 	const tokenIDLockedAmountChangeMap = {};
 	let offset = 0;
@@ -29,10 +44,10 @@ const indexTokenModuleAssets = async (dbTrx) => {
 		// eslint-disable-next-line no-await-in-loop
 		const [tokenModule] = await requestConnector('getGenesisAssets', {
 			module: MODULE.TOKEN,
-			subStore: USER_SUB_STORE_KEY,
+			subStore: MODULE_SUB_STORE.TOKEN.USER,
 			offset,
 		});
-		const userSubStoreInfos = tokenModule.data.userSubstore;
+		const userSubStoreInfos = tokenModule.data[MODULE_SUB_STORE.TOKEN.USER];
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const userInfo of userSubStoreInfos) {
@@ -53,8 +68,43 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 };
 
+const indexPosModuleAssets = async (dbTrx) => {
+	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS });
+	const totalStakers = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.STAKERS];
+
+	let offset = 0;
+	let totalStakeChange = BigInt(0);
+	let totalSelfStakeChange = BigInt(0);
+
+	while (offset < totalStakers) {
+		// eslint-disable-next-line no-await-in-loop
+		const [posModule] = await requestConnector('getGenesisAssets', {
+			module: MODULE.POS,
+			subStore: MODULE_SUB_STORE.POS.STAKERS,
+			offset,
+		});
+		const stakersInfo = posModule.data[MODULE_SUB_STORE.POS.STAKERS];
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const stakerInfo of stakersInfo) {
+			// eslint-disable-next-line no-restricted-syntax
+			for (const stake of stakerInfo.stakes) {
+				totalStakeChange += BigInt(stake.amount);
+				if (stakerInfo.address === stake.validatorAddress) {
+					totalSelfStakeChange += BigInt(stake.amount);
+				}
+			}
+		}
+		offset += stakersInfo.length;
+	}
+
+	await updateTotalStake(totalStakeChange, dbTrx);
+	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
+};
+
 const indexGenesisBlockAssets = async (dbTrx) => {
 	await indexTokenModuleAssets(dbTrx);
+	await indexPosModuleAssets(dbTrx);
 };
 
 module.exports = {
