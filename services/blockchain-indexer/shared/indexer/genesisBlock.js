@@ -34,13 +34,13 @@ const MODULE_SUB_STORE = Object.freeze({
 const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
 		module: MODULE.TOKEN,
-        subStore: MODULE_SUB_STORE.TOKEN.USER,
-    });
-	const totalUserSubStore = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
+		subStore: MODULE_SUB_STORE.TOKEN.USER,
+	});
+	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
 	const tokenIDLockedAmountChangeMap = {};
 	let offset = 0;
-	while (offset < totalUserSubStore) {
+	while (offset < totalUsers) {
 		// eslint-disable-next-line no-await-in-loop
 		const [tokenModule] = await requestConnector('getGenesisAssets', {
 			module: MODULE.TOKEN,

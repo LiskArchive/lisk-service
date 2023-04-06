@@ -87,13 +87,12 @@ module.exports = [
 	},
 	{
 		name: 'getGenesisAssets',
-		controller: async ({ module, subStore, limit, offset }) => getGenesisAssets(
-			{
-				module,
-				subStore,
-				limit,
-				offset,
-			},
+		controller: async ({ module, subStore, limit, offset }) => getGenesisAssets({
+			module,
+			subStore,
+			limit,
+			offset,
+		},
 		),
 		params: {
 			module: { type: 'string', optional: false },

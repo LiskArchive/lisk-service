@@ -114,7 +114,7 @@ const getGenesisAssets = async (params = {}) => {
 	return genesisBlock.assets;
 };
 
-/* Returns a nested array of following structure filtered by module and subStore if present
+/* Returns a nested object of following structure filtered by module and subStore if present
 {
 	moduleName1: {
 		module1.data.key1 (subStore): module1.data.key1.length,
@@ -134,7 +134,6 @@ const getGenesisAssetsLength = async (params) => {
 		Object.keys(asset.data).forEach(
 			subStoreKey => {
 				if (!assetLengthMap[asset.module]) assetLengthMap[asset.module] = {};
-
 				assetLengthMap[asset.module][subStoreKey] = asset.data[subStoreKey].length;
 			});
 	}

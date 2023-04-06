@@ -504,7 +504,6 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
 module.exports = {
-	indexBlock,
 	indexNewBlock,
 	updateNonFinalBlocks,
 	isGenesisBlockIndexed,
