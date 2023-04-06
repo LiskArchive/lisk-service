@@ -18,6 +18,8 @@ const {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 } = require('./genesisBlock');
 
 const {
@@ -130,6 +132,8 @@ module.exports = {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 
 	// Endpoints
 	getGenerators,

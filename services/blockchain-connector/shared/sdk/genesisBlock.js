@@ -22,6 +22,7 @@ const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
+const { formatBlock } = require('./formatter');
 
 const logger = Logger();
 
@@ -52,7 +53,8 @@ const getGenesisBlock = async (isIncludeAssets = false) => {
 	const height = await getGenesisHeight();
 	try {
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
-		return block;
+		const formattedGenesisBlock = await formatBlock(block);
+		return formattedGenesisBlock;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'.');
@@ -83,9 +85,69 @@ const getGenesisConfig = async () => {
 	}
 };
 
+const getGenesisAssets = async (params = {}) => {
+	const genesisBlock = await getGenesisBlock(true);
+	let assetModuleSubStore;
+
+	const assetModule = genesisBlock.assets.find(
+		genesisAsset => genesisAsset.module === params.module,
+	);
+
+	if (params.subStore) {
+		assetModuleSubStore = Object.keys(assetModule.data).find(
+			subStoreKey => subStoreKey === params.subStore,
+		);
+
+		return assetModuleSubStore
+			? [{
+				...assetModule,
+				data: {
+					[params.subStore]: assetModuleSubStore,
+				},
+			}]
+			: [];
+	}
+
+	if (params.module) {
+		return assetModule ? [assetModule] : [];
+	}
+
+	return genesisBlock.assets;
+};
+
+/* Returns a nested array of following structure filtered by module and subStore if present
+{
+	moduleName1: {
+		module1.data.key1 (subStore): module1.data.key1.length,
+	}
+	moduleName2: {
+		module2.data.key2 (subStore): module2.data.key2.length,
+	}
+}
+*/
+const getGenesisAssetsLength = async (params) => {
+	const genesisAssets = await getGenesisAssets(params);
+
+	const assetLengthMap = {};
+
+	// eslint-disable-next-line no-restricted-syntax
+	for (const genesisAsset of genesisAssets) {
+		Object.keys(genesisAsset.data).forEach(
+			subStoreKey => {
+				if (!assetLengthMap[genesisAsset.module]) assetLengthMap[genesisAsset.module] = {};
+
+				assetLengthMap[genesisAsset.module][subStoreKey] = genesisAssets.data[subStoreKey].length;
+			});
+	}
+
+	return assetLengthMap;
+};
+
 module.exports = {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 };

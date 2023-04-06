@@ -26,6 +26,8 @@ const {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 } = require('../shared/sdk/genesisBlock');
 
 module.exports = [
@@ -82,5 +84,23 @@ module.exports = [
 		name: 'getGenesisConfig',
 		controller: getGenesisConfig,
 		params: {},
+	},
+	{
+		name: 'getGenesisAssets',
+		controller: getGenesisAssets,
+		params: {
+			module: { type: 'string', required: true },
+			subStore: { type: 'string', required: false },
+			limit: { type: 'number', min: 1, default: 5000 },
+			offset: { type: 'number', min: 0, default: 0 },
+		},
+	},
+	{
+		name: 'getGenesisAssetsLength',
+		controller: getGenesisAssetsLength,
+		params: {
+			module: { type: 'string', required: false },
+			subStore: { type: 'string', required: false },
+		},
 	},
 ];
