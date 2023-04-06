@@ -99,27 +99,20 @@ const getValidatorsTable = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const { KV_STORE_KEY } = require('../constants');
+const { indexGenesisBlockAssets } = require('./genesisBlock');
+const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
-const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
-	Object.entries(tokenIDLockedAmountChangeMap),
-	async ([tokenID, lockedAmountChange]) => {
-		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
-		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
-		const newLockedAmount = curLockedAmount + lockedAmountChange;
-
-		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
-	},
-	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
-);
-
 const indexBlock = async job => {
 	const { block } = job.data;
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
+
+	if (block.height === await getGenesisHeight()) {
+		await indexGenesisBlockAssets();
+	}
 
 	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection(MYSQL_ENDPOINT);

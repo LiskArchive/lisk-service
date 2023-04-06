@@ -53,8 +53,7 @@ const getGenesisBlock = async (isIncludeAssets = false) => {
 	const height = await getGenesisHeight();
 	try {
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
-		const formattedGenesisBlock = await formatBlock(block);
-		return formattedGenesisBlock;
+		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'.');
@@ -86,23 +85,23 @@ const getGenesisConfig = async () => {
 };
 
 const getGenesisAssets = async (params = {}) => {
-	const genesisBlock = await getGenesisBlock(true);
-	let assetModuleSubStore;
+	const rawGenesisBlock = await getGenesisBlock(true);
+	const genesisBlock = await formatBlock(rawGenesisBlock);
 
 	const assetModule = genesisBlock.assets.find(
 		genesisAsset => genesisAsset.module === params.module,
 	);
 
 	if (params.subStore) {
-		assetModuleSubStore = Object.keys(assetModule.data).find(
+		const assetModuleSubStoreKey = Object.keys(assetModule.data).find(
 			subStoreKey => subStoreKey === params.subStore,
 		);
 
-		return assetModuleSubStore
+		return assetModuleSubStoreKey
 			? [{
 				...assetModule,
 				data: {
-					[params.subStore]: assetModuleSubStore,
+					[assetModuleSubStoreKey]: assetModule.data[assetModuleSubStoreKey],
 				},
 			}]
 			: [];
@@ -131,12 +130,12 @@ const getGenesisAssetsLength = async (params) => {
 	const assetLengthMap = {};
 
 	// eslint-disable-next-line no-restricted-syntax
-	for (const genesisAsset of genesisAssets) {
-		Object.keys(genesisAsset.data).forEach(
+	for (const asset of genesisAssets) {
+		Object.keys(asset.data).forEach(
 			subStoreKey => {
-				if (!assetLengthMap[genesisAsset.module]) assetLengthMap[genesisAsset.module] = {};
+				if (!assetLengthMap[asset.module]) assetLengthMap[asset.module] = {};
 
-				assetLengthMap[genesisAsset.module][subStoreKey] = genesisAssets.data[subStoreKey].length;
+				assetLengthMap[asset.module][subStoreKey] = asset.data[subStoreKey].length;
 			});
 	}
 

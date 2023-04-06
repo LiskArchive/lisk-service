@@ -87,20 +87,27 @@ module.exports = [
 	},
 	{
 		name: 'getGenesisAssets',
-		controller: getGenesisAssets,
+		controller: async ({ module, subStore, limit, offset }) => getGenesisAssets(
+			{
+				module,
+				subStore,
+				limit,
+				offset,
+			},
+		),
 		params: {
-			module: { type: 'string', required: true },
-			subStore: { type: 'string', required: false },
+			module: { type: 'string', optional: false },
+			subStore: { type: 'string' },
 			limit: { type: 'number', min: 1, default: 5000 },
 			offset: { type: 'number', min: 0, default: 0 },
 		},
 	},
 	{
 		name: 'getGenesisAssetsLength',
-		controller: getGenesisAssetsLength,
+		controller: async ({ module, subStore }) => getGenesisAssetsLength({ module, subStore }),
 		params: {
-			module: { type: 'string', required: false },
-			subStore: { type: 'string', required: false },
+			module: { type: 'string', optional: true },
+			subStore: { type: 'string', optional: true },
 		},
 	},
 ];
