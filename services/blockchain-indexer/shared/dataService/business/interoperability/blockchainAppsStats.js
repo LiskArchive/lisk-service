@@ -70,7 +70,7 @@ const reloadBlockchainAppsStats = async () => {
 			active: numActiveChains,
 			terminated: numTerminatedChains,
 			totalSupplyLSK: totalSupply,
-			totalStakedLSK: totalStaked || 0,
+			totalStakedLSK: totalStaked,
 			currentAnnualInflationRate: annualInflation,
 		};
 
