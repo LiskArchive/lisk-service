@@ -112,6 +112,21 @@ const getGenesisAssets = async (params = {}) => {
 	return genesisBlock.assets;
 };
 
+const getGenesisAssetByModule = async (params = {}) => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+
+	const genesisAssets = await getGenesisAssets(params);
+
+	if (genesisAssets && genesisAssets.length) {
+		response.data = genesisAssets[0].data;
+	}
+
+	return response;
+};
+
 /* Returns a nested object of following structure filtered by module and subStore if present
 {
 	moduleName1: {
@@ -145,5 +160,6 @@ module.exports = {
 	getGenesisBlock,
 	getGenesisConfig,
 	getGenesisAssets,
+	getGenesisAssetByModule,
 	getGenesisAssetsLength,
 };
