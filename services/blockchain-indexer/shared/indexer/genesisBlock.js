@@ -32,21 +32,20 @@ const MODULE_SUB_STORE = Object.freeze({
 });
 
 const indexTokenModuleAssets = async (dbTrx) => {
-	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
-		module: MODULE.TOKEN,
-		subStore: MODULE_SUB_STORE.TOKEN.USER,
-	});
+	const genesisBlockAssetsLength = await requestConnector(
+		'getGenesisAssetsLength',
+		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+	);
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
 	const tokenIDLockedAmountChangeMap = {};
 	let offset = 0;
 	while (offset < totalUsers) {
 		// eslint-disable-next-line no-await-in-loop
-		const [tokenModule] = await requestConnector('getGenesisAssets', {
-			module: MODULE.TOKEN,
-			subStore: MODULE_SUB_STORE.TOKEN.USER,
-			offset,
-		});
+		const [tokenModule] = await requestConnector(
+			'getGenesisAssets',
+			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, offset },
+		);
 		const userSubStoreInfos = tokenModule.data[MODULE_SUB_STORE.TOKEN.USER];
 
 		// eslint-disable-next-line no-restricted-syntax
@@ -69,7 +68,10 @@ const indexTokenModuleAssets = async (dbTrx) => {
 };
 
 const indexPosModuleAssets = async (dbTrx) => {
-	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS });
+	const genesisBlockAssetsLength = await requestConnector(
+		'getGenesisAssetsLength',
+		{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
+	);
 	const totalStakers = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.STAKERS];
 
 	let offset = 0;
@@ -78,11 +80,10 @@ const indexPosModuleAssets = async (dbTrx) => {
 
 	while (offset < totalStakers) {
 		// eslint-disable-next-line no-await-in-loop
-		const [posModule] = await requestConnector('getGenesisAssets', {
-			module: MODULE.POS,
-			subStore: MODULE_SUB_STORE.POS.STAKERS,
-			offset,
-		});
+		const [posModule] = await requestConnector(
+			'getGenesisAssets',
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS, offset },
+		);
 		const stakersInfo = posModule.data[MODULE_SUB_STORE.POS.STAKERS];
 
 		// eslint-disable-next-line no-restricted-syntax

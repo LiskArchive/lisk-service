@@ -18,7 +18,7 @@ const BluebirdPromise = require('bluebird');
 const { KV_STORE_KEY } = require('../constants');
 const keyValueTable = require('../database/mysqlKVStore');
 
-const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
+const updateTotalLockedAmounts = async (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),
 	async ([tokenID, lockedAmountChange]) => {
 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);

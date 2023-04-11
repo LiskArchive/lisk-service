@@ -88,27 +88,25 @@ const getGenesisAssets = async (params = {}) => {
 	const rawGenesisBlock = await getGenesisBlock(true);
 	const genesisBlock = await formatBlock(rawGenesisBlock);
 
-	const assetModule = genesisBlock.assets.find(
-		genesisAsset => genesisAsset.module === params.module,
-	);
+	const assetByModule = genesisBlock.assets.find(asset => asset.module === params.module);
 
 	if (params.subStore) {
-		const assetModuleSubStoreKey = Object.keys(assetModule.data).find(
+		const assetModuleSubStoreKey = Object.keys(assetByModule.data).find(
 			subStoreKey => subStoreKey === params.subStore,
 		);
 
 		return assetModuleSubStoreKey
 			? [{
-				...assetModule,
+				...assetByModule,
 				data: {
-					[assetModuleSubStoreKey]: assetModule.data[assetModuleSubStoreKey],
+					[assetModuleSubStoreKey]: assetByModule.data[assetModuleSubStoreKey],
 				},
 			}]
 			: [];
 	}
 
 	if (params.module) {
-		return assetModule ? [assetModule] : [];
+		return assetByModule ? [assetByModule] : [];
 	}
 
 	return genesisBlock.assets;
