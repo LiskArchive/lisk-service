@@ -61,7 +61,6 @@ const scheduleGenesisBlockIndexing = async () => {
 };
 
 const scheduleBlocksIndexing = async (heights) => {
-	const genesisHeight = await getGenesisHeight();
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
@@ -69,7 +68,6 @@ const scheduleBlocksIndexing = async (heights) => {
 	await BluebirdPromise.map(
 		blockHeights,
 		async height => {
-			if (height === genesisHeight) console.log(' =============== Scheduling genesis block indexing ===============');
 			await blockIndexQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		},
