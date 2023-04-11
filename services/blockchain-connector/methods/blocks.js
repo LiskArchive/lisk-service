@@ -95,8 +95,8 @@ module.exports = [
 		},
 		),
 		params: {
-			module: { type: 'string', optional: false },
-			subStore: { type: 'string' },
+			module: { type: 'string' },
+			subStore: { type: 'string', optional: true },
 			limit: { type: 'number', min: 1, default: 5000 },
 			offset: { type: 'number', min: 0, default: 0 },
 		},

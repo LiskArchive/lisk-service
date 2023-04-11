@@ -39,16 +39,14 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	);
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
-	const tokenIDLockedAmountChangeMap = {};
-
 	const tokenModuleData = await requestAll(
 		requestConnector,
 		'getGenesisAssetByModule',
 		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
 		totalUsers,
 	);
-
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
+	const tokenIDLockedAmountChangeMap = {};
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const userInfo of userSubStoreInfos) {
@@ -106,4 +104,7 @@ const indexGenesisBlockAssets = async (dbTrx) => {
 
 module.exports = {
 	indexGenesisBlockAssets,
+
+	// For testing
+	MODULE_SUB_STORE,
 };

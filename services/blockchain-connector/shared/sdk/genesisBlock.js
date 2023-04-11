@@ -95,36 +95,42 @@ const getGenesisAssets = async (params = {}) => {
 			subStoreKey => subStoreKey === params.subStore,
 		);
 
-		return assetModuleSubStoreKey
-			? [{
+		if (assetModuleSubStoreKey) {
+			let moduleData = assetByModule.data[assetModuleSubStoreKey];
+
+			// Filter module data based on limit and offset
+			if (typeof params.offset !== 'undefined' && params.limit) {
+				moduleData = moduleData.slice(params.offset, params.offset + params.limit);
+			}
+
+			return [{
 				...assetByModule,
 				data: {
-					[assetModuleSubStoreKey]: assetByModule.data[assetModuleSubStoreKey],
+					[assetModuleSubStoreKey]: moduleData,
 				},
-			}]
-			: [];
+			}];
+		}
+
+		// Return empty array if no data found for the input module and subStore key
+		return [];
 	}
 
 	if (params.module) {
 		return assetByModule ? [assetByModule] : [];
 	}
 
+	// Return all genesis block assets if no module / subStore key present in params.
+	// The code may only reach here for internal calls
 	return genesisBlock.assets;
 };
 
 const getGenesisAssetByModule = async (params = {}) => {
-	const response = {
-		data: {},
-		meta: {},
-	};
-
 	const genesisAssets = await getGenesisAssets(params);
 
 	if (genesisAssets && genesisAssets.length) {
-		response.data = genesisAssets[0].data;
+		return genesisAssets[0].data;
 	}
-
-	return response;
+	return {};
 };
 
 /* Returns a nested object of following structure filtered by module and subStore if present
