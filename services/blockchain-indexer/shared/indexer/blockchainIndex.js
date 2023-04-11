@@ -189,6 +189,7 @@ const indexBlock = async job => {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
 
 				if (blockReward !== BigInt('0')) {
+					// TODO: Verify logic
 					const commission = await calcCommission(block.generatorAddress, blockReward);
 					const selfStakeReward = await calcSelfStakeReward(
 						block.generatorAddress,
@@ -511,7 +512,6 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
 module.exports = {
-	indexBlock,
 	indexNewBlock,
 	updateNonFinalBlocks,
 	isGenesisBlockIndexed,

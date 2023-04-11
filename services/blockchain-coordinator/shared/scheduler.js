@@ -61,6 +61,7 @@ const scheduleGenesisBlockIndexing = async () => {
 };
 
 const scheduleBlocksIndexing = async (heights) => {
+	const genesisHeight = await getGenesisHeight();
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
@@ -68,6 +69,7 @@ const scheduleBlocksIndexing = async (heights) => {
 	await BluebirdPromise.map(
 		blockHeights,
 		async height => {
+			if (height === genesisHeight) console.log(' =============== Scheduling genesis block indexing ===============');
 			await blockIndexQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		},
@@ -121,7 +123,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	// Missing blocks are being checked during regualar interval
+	// Missing blocks are being checked during regular interval
 	// By default they are checked from the blockchain's beginning
 	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
 

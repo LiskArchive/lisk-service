@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	HTTP,
 	Exceptions: { InvalidParamsException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
@@ -108,9 +109,20 @@ const getBlockchainAppsMetaList = async (params) => {
 	return blockchainAppsMetaList;
 };
 
+const readMetadataFromClonedRepo = async (network, appDirName, filename) => {
+	const {
+		dataDir,
+		gitHub: { appRegistryRepoName },
+	} = config;
+
+	const filepath = `${dataDir}/${appRegistryRepoName}/${network}/${appDirName}/${filename}`;
+	const metadataStr = await read(filepath);
+	const parsedMetadata = JSON.parse(metadataStr);
+
+	return parsedMetadata;
+};
+
 const getBlockchainAppsMetadata = async (params) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 
 	const blockchainAppsMetadata = {
@@ -180,9 +192,11 @@ const getBlockchainAppsMetadata = async (params) => {
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
 		blockchainAppsMetadata.data,
 		async (appMetadata) => {
-			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
-			const appMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
-			const appMeta = JSON.parse(appMetaString);
+			const appMeta = await readMetadataFromClonedRepo(
+				appMetadata.network,
+				appMetadata.appDirName,
+				config.FILENAME.APP_JSON,
+			);
 			appMeta.isDefault = appMetadata.isDefault;
 
 			if (await isMainchain()
@@ -210,8 +224,6 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 	const tokenMetadataTable = await getTokenMetadataIndex();
 
@@ -303,10 +315,12 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 				{ network: tokenMeta.network, chainID: tokenMeta.chainID },
 				['appDirName'],
 			);
-			const appPathInClonedRepo = `${dataDir}/${repo}/${tokenMeta.network}/${appDirName}`;
-			const tokenMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.NATIVETOKENS_JSON}`);
-			const parsedTokenMeta = JSON.parse(tokenMetaString);
 
+			const parsedTokenMeta = await readMetadataFromClonedRepo(
+				tokenMeta.network,
+				appDirName,
+				config.FILENAME.NATIVETOKENS_JSON,
+			);
 			parsedTokenMeta.tokens.forEach(token => {
 				blockchainAppsTokenMetadata.data.push({
 					...token,
@@ -330,8 +344,87 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	return blockchainAppsTokenMetadata;
 };
 
+const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
+	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokensResultSet = await tokenMetadataTable.find(
+		{
+			search: {
+				property: 'tokenID',
+				startsWith: chainID.substring(0, 2),
+			},
+			limit,
+			offset,
+			sort,
+		},
+		['network', 'chainID', 'chainName'],
+	);
+
+	const tokensMeta = await BluebirdPromise.map(
+		tokensResultSet,
+		async (entry) => readMetadataFromClonedRepo(
+			entry.network,
+			entry.chainName,
+			config.FILENAME.NATIVETOKENS_JSON,
+		),
+		{ concurrency: tokensResultSet.length },
+	);
+
+	// Fetch the data
+	return tokensMeta;
+};
+
+const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
+	for (const { http: serviceURL } of serviceURLs) {
+		const tokenSummaryEndpoint = `${serviceURL}/api/v3/token/summary`;
+		// eslint-disable-next-line no-await-in-loop
+		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
+
+		if (response.data && response.data.supportedTokens) {
+			return Promise.resolve(response.data.supportedTokens);
+		}
+	}
+	return Promise.resolve({});
+};
+
+const getBlockchainAppsTokensSupportedMetadata = async ({ chainID, limit, offset, sort }) => {
+	const applicationMetadataTable = await getApplicationMetadataIndex();
+
+	const tokenMetadata = {
+		data: [],
+		meta: { limit, offset, total: 0 },
+	};
+
+	// Check if the metadata for the requested chainID exists
+	const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['network', 'chainName']);
+	if (!requestedAppInfo) return tokenMetadata;
+
+	const { serviceURLs } = await readMetadataFromClonedRepo(
+		requestedAppInfo.network,
+		requestedAppInfo.chainName,
+		config.FILENAME.APP_JSON,
+	);
+
+	// Query supported tokens information for the requested chainID
+	const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
+	const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
+
+	if (isSupportAllTokens) {
+		tokenMetadata.data = await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort);
+	} else {
+		const supportedChainIDs = patternTokenIDs.map(e => e.substring(0, LENGTH_CHAIN_ID));
+		const tokenMetadata = await BluebirdPromise.map(
+			supportedChainIDs,
+			chainID => getAllTokensMetaInNetworkByChainID(chainID),
+			{ concurrency: supportedChainIDs.length },
+		);
+	}
+
+	return tokenMetadata;
+};
+
 module.exports = {
 	getBlockchainAppsMetaList,
 	getBlockchainAppsMetadata,
 	getBlockchainAppsTokenMetadata,
+	getBlockchainAppsTokensSupportedMetadata,
 };
