@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const { ServiceBroker } = require('moleculer');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -27,15 +28,15 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
+beforeAll(() => broker.start());
+afterAll(() => broker.stop());
+
 describe('Genesis Block import tests', () => {
 	let genesisBlockFilePath;
 
-	beforeAll(() => broker.start());
-	afterAll(() => broker.stop());
-
 	it('Verify if genesis block is downloaded successfully', async () => {
 		const { chainID } = await broker.call('connector.getNetworkStatus');
-		genesisBlockFilePath = `./data/${chainID}/genesis_block.json.tar.gz`;
+		genesisBlockFilePath = path.resolve(`${__dirname}/../../data/${chainID}/genesis_block.json.tar.gz`);
 
 		const isExists = await exists(genesisBlockFilePath);
 		expect(isExists).toBe(true);
@@ -57,5 +58,57 @@ describe('Genesis Block import tests', () => {
 		});
 
 		expect(expectedHash).toEqual(fileHash);
+	});
+});
+
+describe('Test getGenesisAssets method', () => {
+	it('should return token module data when called with module:token', async () => {
+		const module = 'token';
+		const response = await broker.call('connector.getGenesisAssetByModule', { module });
+		expect(Object.keys(response).length).toBe(4);
+	});
+
+	it('should return token module userSubstore data when called with module:token and subStore:userSubstore', async () => {
+		const module = 'token';
+		const subStore = 'userSubstore';
+		const response = await broker.call('connector.getGenesisAssetByModule', { module, subStore });
+		expect(Object.keys(response).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(subStore);
+		expect(response[subStore].length).toBeGreaterThan(1);
+	});
+
+	it('should return token module userSubstore data when called with module:token, subStore:userSubstore, offset:0, limit: 10', async () => {
+		const module = 'token';
+		const subStore = 'userSubstore';
+		const limit = 10;
+		const response = await broker.call('connector.getGenesisAssetByModule', { module, subStore, offset: 0, limit });
+		expect(Object.keys(response).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(subStore);
+		expect(response[subStore].length).toBeGreaterThanOrEqual(1);
+		expect(response[subStore].length).toBeLessThanOrEqual(limit);
+	});
+});
+
+describe('Test getGenesisAssetsLength method', () => {
+	it('should return all modules when called without any params', async () => {
+		const response = await broker.call('connector.getGenesisAssetsLength');
+		expect(Object.keys(response).length).toBeGreaterThan(1);
+	});
+
+	it('should return token module data length when called with module:token', async () => {
+		const module = 'token';
+		const response = await broker.call('connector.getGenesisAssetsLength', { module });
+		expect(Object.keys(response)[0]).toBe(module);
+		expect(Object.keys(response[module]).length).toBe(4);
+	});
+
+	it('should return token module userSubstore length when called with module:token and subStore:userSubstore', async () => {
+		const module = 'token';
+		const subStore = 'userSubstore';
+		const response = await broker.call('connector.getGenesisAssetsLength', { module, subStore });
+		expect(Object.keys(response).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(module);
+		expect(Object.keys(response[module])[0]).toBe(subStore);
+		expect(Object.keys(response[module]).length).toBe(1);
 	});
 });
