@@ -356,7 +356,7 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 				config.FILENAME.NATIVETOKENS_JSON,
 			);
 
-			parsedTokenMeta.tokens.map(token => {
+			parsedTokenMeta.tokens.map(async token => {
 				tokensMeta.push({
 					...token,
 					chainID: entry.chainID,
@@ -418,8 +418,8 @@ const getSupportedTokenMetaInfo = async (patternTokenIDs, exactTokenIDs, limit, 
 };
 
 const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
-	for (const { http: serviceURL } of serviceURLs) {
-		const tokenSummaryEndpoint = `${serviceURL}/api/v3/token/summary`;
+	for (let i = 0; i < serviceURLs.length; i++) {
+		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
 		// eslint-disable-next-line no-await-in-loop
 		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
 
