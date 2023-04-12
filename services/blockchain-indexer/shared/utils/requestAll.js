@@ -41,6 +41,7 @@ const requestAll = async (fn, method, params, limit) => {
 					},
 				});
 
+				// This check needs to be updated for dynamic exit based on emptiness of object properties
 				if (!result || Utils.isEmptyArray(result) || Utils.isEmptyObject(result)) {
 					break;
 				}

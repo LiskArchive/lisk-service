@@ -62,15 +62,14 @@ describe('Genesis Block import tests', () => {
 });
 
 describe('Test getGenesisAssets method', () => {
+	const module = 'token';
+	const subStore = 'userSubstore';
 	it('should return token module data when called with module:token', async () => {
-		const module = 'token';
 		const response = await broker.call('connector.getGenesisAssetByModule', { module });
 		expect(Object.keys(response).length).toBe(4);
 	});
 
 	it('should return token module userSubstore data when called with module:token and subStore:userSubstore', async () => {
-		const module = 'token';
-		const subStore = 'userSubstore';
 		const response = await broker.call('connector.getGenesisAssetByModule', { module, subStore });
 		expect(Object.keys(response).length).toBe(1);
 		expect(Object.keys(response)[0]).toBe(subStore);
@@ -78,8 +77,6 @@ describe('Test getGenesisAssets method', () => {
 	});
 
 	it('should return token module userSubstore data when called with module:token, subStore:userSubstore, offset:0, limit: 10', async () => {
-		const module = 'token';
-		const subStore = 'userSubstore';
 		const limit = 10;
 		const response = await broker.call('connector.getGenesisAssetByModule', { module, subStore, offset: 0, limit });
 		expect(Object.keys(response).length).toBe(1);
@@ -90,21 +87,20 @@ describe('Test getGenesisAssets method', () => {
 });
 
 describe('Test getGenesisAssetsLength method', () => {
+	const module = 'token';
+	const subStore = 'userSubstore';
 	it('should return all modules when called without any params', async () => {
 		const response = await broker.call('connector.getGenesisAssetsLength');
 		expect(Object.keys(response).length).toBeGreaterThan(1);
 	});
 
 	it('should return token module data length when called with module:token', async () => {
-		const module = 'token';
 		const response = await broker.call('connector.getGenesisAssetsLength', { module });
 		expect(Object.keys(response)[0]).toBe(module);
 		expect(Object.keys(response[module]).length).toBe(4);
 	});
 
 	it('should return token module userSubstore length when called with module:token and subStore:userSubstore', async () => {
-		const module = 'token';
-		const subStore = 'userSubstore';
 		const response = await broker.call('connector.getGenesisAssetsLength', { module, subStore });
 		expect(Object.keys(response).length).toBe(1);
 		expect(Object.keys(response)[0]).toBe(module);

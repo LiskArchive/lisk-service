@@ -94,11 +94,11 @@ const getGenesisAssets = async (params = {}) => {
 	const genesisBlock = await getGenesisBlockFormatted(true);
 
 	// Return all genesis block assets if no module / subStore key present in params
-	if	(!params.module && !params.subStore) return genesisBlock.assets;
+	if (!params.module && !params.subStore) return genesisBlock.assets;
 
 	const assetByModule = genesisBlock.assets.find(asset => asset.module === params.module);
 
-	// Filter data by subStore if passed
+	// Filter data by subStore if passed in input
 	if (params.subStore) {
 		let moduleData = assetByModule.data[params.subStore];
 
