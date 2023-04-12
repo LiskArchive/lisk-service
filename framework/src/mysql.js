@@ -297,6 +297,18 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 				});
 		}
 
+		if (params.orSearch) {
+			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
+
+			params.orSearch.forEach(
+				orSearch => {
+					const { property, pattern, startsWith, endsWith } = orSearch;
+					if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
+					if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
+					if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+				});
+		}
+
 		if (params.aggregate) {
 			query.sum(`${params.aggregate} as total`);
 		}
@@ -481,6 +493,18 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 					if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
 					if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
 					if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+				});
+		}
+
+		if (params.orSearch) {
+			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
+
+			params.orSearch.forEach(
+				orSearch => {
+					const { property, pattern, startsWith, endsWith } = orSearch;
+					if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
+					if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
+					if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
 				});
 		}
 

@@ -344,6 +344,33 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	return blockchainAppsTokenMetadata;
 };
 
+const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
+	const tokensMeta = [];
+
+	await BluebirdPromise.map(
+		tokenInfoFromDB,
+		async (entry) => {
+			const parsedTokenMeta = await readMetadataFromClonedRepo(
+				entry.network,
+				entry.chainName,
+				config.FILENAME.NATIVETOKENS_JSON,
+			);
+
+			parsedTokenMeta.tokens.map(token => {
+				tokensMeta.push({
+					...token,
+					chainID: entry.chainID,
+					chainName: entry.chainName,
+					network: entry.network,
+				});
+			});
+		},
+		{ concurrency: tokenInfoFromDB.length },
+	);
+
+	return tokensMeta;
+};
+
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
 	const tokenMetadataTable = await getTokenMetadataIndex();
 	const tokensResultSet = await tokenMetadataTable.find(
@@ -359,16 +386,33 @@ const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) 
 		['network', 'chainID', 'chainName'],
 	);
 
-	const tokensMeta = await BluebirdPromise.map(
-		tokensResultSet,
-		async (entry) => readMetadataFromClonedRepo(
-			entry.network,
-			entry.chainName,
-			config.FILENAME.NATIVETOKENS_JSON,
-		),
-		{ concurrency: tokensResultSet.length },
-	);
+	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
+	// Fetch the data
+	return tokensMeta;
+};
 
+const getSupportedTokenMetaInfo = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
+	const tokenMetadataTable = await getTokenMetadataIndex();
+	const searchParams = {
+		whereIn: [{
+			property: 'tokenID',
+			values: exactTokenIDs,
+		}],
+		orSearch: patternTokenIDs.map(e => {
+			const chainID = e.substring(0, LENGTH_CHAIN_ID);
+			return {
+				property: 'tokenID',
+				startsWith: chainID,
+			};
+		}),
+		limit,
+		offset,
+		sort,
+	};
+
+	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
+
+	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	// Fetch the data
 	return tokensMeta;
 };
@@ -411,11 +455,12 @@ const getBlockchainAppsTokensSupportedMetadata = async ({ chainID, limit, offset
 	if (isSupportAllTokens) {
 		tokenMetadata.data = await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort);
 	} else {
-		const supportedChainIDs = patternTokenIDs.map(e => e.substring(0, LENGTH_CHAIN_ID));
-		const tokenMetadata = await BluebirdPromise.map(
-			supportedChainIDs,
-			chainID => getAllTokensMetaInNetworkByChainID(chainID),
-			{ concurrency: supportedChainIDs.length },
+		tokenMetadata.data = await getSupportedTokenMetaInfo(
+			patternTokenIDs,
+			exactTokenIDs,
+			limit,
+			offset,
+			sort,
 		);
 	}
 
