@@ -373,22 +373,20 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
 	const tokenMetadataTable = await getTokenMetadataIndex();
-	const tokensResultSet = await tokenMetadataTable.find(
-		{
-			search: {
-				property: 'tokenID',
-				startsWith: chainID.substring(0, 2),
-			},
-			limit,
-			offset,
-			sort,
+	const searchParams = {
+		search: {
+			property: 'tokenID',
+			startsWith: chainID.substring(0, 2),
 		},
-		['network', 'chainID', 'chainName'],
-	);
-
+		limit,
+		offset,
+		sort,
+	};
+	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	// Fetch the data
-	return tokensMeta;
+	return { tokensMeta, total };
 };
 
 const getSupportedTokenMetaInfo = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
@@ -411,10 +409,10 @@ const getSupportedTokenMetaInfo = async (patternTokenIDs, exactTokenIDs, limit, 
 	};
 
 	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
-
+	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	// Fetch the data
-	return tokensMeta;
+	return { tokensMeta, total };
 };
 
 const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
@@ -435,7 +433,7 @@ const getBlockchainAppsTokensSupportedMetadata = async ({ chainID, limit, offset
 
 	const tokenMetadata = {
 		data: [],
-		meta: { limit, offset, total: 0 },
+		meta: {},
 	};
 
 	// Check if the metadata for the requested chainID exists
@@ -452,17 +450,16 @@ const getBlockchainAppsTokensSupportedMetadata = async ({ chainID, limit, offset
 	const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
 	const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
 
-	if (isSupportAllTokens) {
-		tokenMetadata.data = await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort);
-	} else {
-		tokenMetadata.data = await getSupportedTokenMetaInfo(
-			patternTokenIDs,
-			exactTokenIDs,
-			limit,
-			offset,
-			sort,
-		);
-	}
+	const { tokensMeta, total } = isSupportAllTokens
+		? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
+		: await getSupportedTokenMetaInfo(patternTokenIDs, exactTokenIDs, limit, offset, sort);
+
+	tokenMetadata.data = tokensMeta;
+	tokenMetadata.meta = {
+		count: tokensMeta.length,
+		offset,
+		total,
+	};
 
 	return tokenMetadata;
 };
