@@ -129,12 +129,8 @@ const getGenesisAssets = async (params = {}) => {
 }
 */
 const getGenesisAssetByModule = async (params = {}) => {
-	const genesisAssets = await getGenesisAssets(params);
-
-	if (genesisAssets && genesisAssets.length) {
-		return genesisAssets[0].data;
-	}
-	return {};
+	const [genesisAsset = {}] = await getGenesisAssets(params);
+	return genesisAsset.data ? genesisAsset.data : {};
 };
 
 /* Returns a nested object of following structure filtered by module and subStore if present
