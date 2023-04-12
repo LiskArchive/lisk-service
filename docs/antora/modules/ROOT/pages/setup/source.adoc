@@ -236,8 +236,8 @@ Follow the steps described in the xref:{url_setup_docker_docker}[Prerequisites >
 ----
 # Clone the Lisk Service repository
 git clone https://github.com/LiskHQ/lisk-service.git
-cd lisk-service/docker/redis
-git checkout v0.6.4
+cd lisk-service/jenkins/redis
+git checkout v0.7.0
 make up # to start Redis
 ----
 
@@ -312,7 +312,7 @@ git clone https://github.com/LiskHQ/lisk-service.git
 cd lisk-service
 
 # Switch to the recent stable as a base
-git checkout v0.6.4
+git checkout v0.7.0
 
 # ...or use the development branch
 git checkout development
