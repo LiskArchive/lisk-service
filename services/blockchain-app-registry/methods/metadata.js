@@ -67,7 +67,7 @@ module.exports = [
 	{
 		name: 'blockchain.apps.meta.tokens.supported',
 		params: {
-			chainID: { optional: true, type: 'string' },
+			chainID: { optional: false, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 			sort: { optional: true, type: 'string' },

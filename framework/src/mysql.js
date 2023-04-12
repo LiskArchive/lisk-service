@@ -288,25 +288,23 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.search) {
 			params.search = Array.isArray(params.search) ? params.search : [params.search];
 
-			params.search.forEach(
-				search => {
-					const { property, pattern, startsWith, endsWith } = search;
-					if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-					if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-					if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
-				});
+			params.search.forEach(search => {
+				const { property, pattern, startsWith, endsWith } = search;
+				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+			});
 		}
 
 		if (params.orSearch) {
 			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
 
-			params.orSearch.forEach(
-				orSearch => {
-					const { property, pattern, startsWith, endsWith } = orSearch;
-					if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
-					if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
-					if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
-				});
+			params.orSearch.forEach(orSearch => {
+				const { property, pattern, startsWith, endsWith } = orSearch;
+				if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+			});
 		}
 
 		if (params.aggregate) {
@@ -487,25 +485,23 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.search) {
 			params.search = Array.isArray(params.search) ? params.search : [params.search];
 
-			params.search.forEach(
-				search => {
-					const { property, pattern, startsWith, endsWith } = search;
-					if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-					if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-					if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
-				});
+			params.search.forEach(search => {
+				const { property, pattern, startsWith, endsWith } = search;
+				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+			});
 		}
 
 		if (params.orSearch) {
 			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
 
-			params.orSearch.forEach(
-				orSearch => {
-					const { property, pattern, startsWith, endsWith } = orSearch;
-					if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
-					if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
-					if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
-				});
+			params.orSearch.forEach(orSearch => {
+				const { property, pattern, startsWith, endsWith } = orSearch;
+				if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+			});
 		}
 
 		return query
