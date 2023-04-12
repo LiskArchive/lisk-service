@@ -107,4 +107,6 @@ module.exports = {
 
 	// For testing
 	MODULE_SUB_STORE,
+	indexTokenModuleAssets,
+	indexPosModuleAssets,
 };

@@ -62,6 +62,12 @@ const getGenesisBlock = async (isIncludeAssets = false) => {
 	}
 };
 
+const getGenesisBlockFormatted = async (includeAssets = false) => {
+	const rawGenesisBlock = await getGenesisBlock(includeAssets);
+	const genesisBlock = await formatBlock(rawGenesisBlock);
+	return genesisBlock;
+};
+
 const getGenesisBlockID = async () => {
 	if (!genesisBlockID) {
 		const genesisBlock = await getGenesisBlock();
@@ -85,45 +91,43 @@ const getGenesisConfig = async () => {
 };
 
 const getGenesisAssets = async (params = {}) => {
-	const rawGenesisBlock = await getGenesisBlock(true);
-	const genesisBlock = await formatBlock(rawGenesisBlock);
+	const genesisBlock = await getGenesisBlockFormatted(true);
+
+	// Return all genesis block assets if no module / subStore key present in params
+	if	(!params.module && !params.subStore) return genesisBlock.assets;
 
 	const assetByModule = genesisBlock.assets.find(asset => asset.module === params.module);
 
+	// Filter data by subStore if passed
 	if (params.subStore) {
-		const assetModuleSubStoreKey = Object.keys(assetByModule.data).find(
-			subStoreKey => subStoreKey === params.subStore,
-		);
+		let moduleData = assetByModule.data[params.subStore];
 
-		if (assetModuleSubStoreKey) {
-			let moduleData = assetByModule.data[assetModuleSubStoreKey];
+		// Return empty array otherwise if passed subStore is not present
+		if (!moduleData) return [];
 
-			// Filter module data based on limit and offset
-			if (typeof params.offset !== 'undefined' && params.limit) {
-				moduleData = moduleData.slice(params.offset, params.offset + params.limit);
-			}
-
-			return [{
-				...assetByModule,
-				data: {
-					[assetModuleSubStoreKey]: moduleData,
-				},
-			}];
+		// Filter module data based on limit and offset
+		if (typeof params.offset !== 'undefined' && params.limit) {
+			moduleData = moduleData.slice(params.offset, params.offset + params.limit);
 		}
 
-		// Return empty array if no data found for the input module and subStore key
-		return [];
+		return [{
+			...assetByModule,
+			data: {
+				[params.subStore]: moduleData,
+			},
+		}];
 	}
 
-	if (params.module) {
-		return assetByModule ? [assetByModule] : [];
-	}
-
-	// Return all genesis block assets if no module / subStore key present in params.
-	// The code may only reach here for internal calls
-	return genesisBlock.assets;
+	// This will only be executed when params.module is present. Return the module info if found
+	return assetByModule ? [assetByModule] : [];
 };
 
+/* Returns following structure of genesis asset data filtered by module and subStore
+{
+	subStore1: [],
+	subStore2: [],
+}
+*/
 const getGenesisAssetByModule = async (params = {}) => {
 	const genesisAssets = await getGenesisAssets(params);
 
@@ -135,17 +139,13 @@ const getGenesisAssetByModule = async (params = {}) => {
 
 /* Returns a nested object of following structure filtered by module and subStore if present
 {
-	moduleName1: {
-		module1.data.key1 (subStore): module1.data.key1.length,
-	}
-	moduleName2: {
-		module2.data.key2 (subStore): module2.data.key2.length,
+	[moduleName]: {
+		[subStoreName]: subStore.length,
 	}
 }
 */
 const getGenesisAssetsLength = async (params) => {
 	const genesisAssets = await getGenesisAssets(params);
-
 	const assetLengthMap = {};
 
 	// eslint-disable-next-line no-restricted-syntax
@@ -165,7 +165,6 @@ module.exports = {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
-	getGenesisAssets,
 	getGenesisAssetByModule,
 	getGenesisAssetsLength,
 };
