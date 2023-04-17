@@ -236,7 +236,7 @@ Follow the steps described in the xref:{url_setup_docker_docker}[Prerequisites >
 ----
 docker run --name redis_service --port 6379:6379 -d redis:5-alpine
 ----
-.To use the custom redis.conf file
+.How to use the custom redis.conf file
 [source,bash]
 ----
 docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf -d redis:5-alpine
