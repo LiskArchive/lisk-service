@@ -234,14 +234,14 @@ Follow the steps described in the xref:{url_setup_docker_docker}[Prerequisites >
 .How to install and start Redis with Docker
 [source,bash]
 ----
-# Clone the Lisk Service repository
-git clone https://github.com/LiskHQ/lisk-service.git
-cd lisk-service/jenkins/redis
-git checkout v0.7.0
-make up # to start Redis
+docker run --name redis_service --port 6379:6379 -d redis:5-alpine
 ----
-
-The above commands should be enough to install Redis which is ready to use with Lisk Service.
+.To use the custom redis.conf file
+[source,bash]
+----
+docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf -d redis:5-alpine
+----
+The above commands should be enough to start Redis which is ready to use with Lisk Service.
 
 To stop the Docker container again, execute the following commands below:
 
