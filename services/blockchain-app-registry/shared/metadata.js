@@ -356,7 +356,7 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 				config.FILENAME.NATIVETOKENS_JSON,
 			);
 
-			parsedTokenMeta.tokens.map(async token => {
+			parsedTokenMeta.tokens.forEach(async token => {
 				tokensMeta.push({
 					...token,
 					chainID: entry.chainID,
@@ -369,6 +369,19 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 	);
 
 	return tokensMeta;
+};
+
+const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
+	for (let i = 0; i < serviceURLs.length; i++) {
+		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
+		// eslint-disable-next-line no-await-in-loop
+		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
+
+		if (response.data && response.data.supportedTokens) {
+			return Promise.resolve(response.data.supportedTokens);
+		}
+	}
+	return Promise.resolve({});
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
@@ -389,7 +402,7 @@ const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) 
 	return { tokensMeta, total };
 };
 
-const getSupportedTokenMetaInfo = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
+const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
 	const tokenMetadataTable = await getTokenMetadataIndex();
 	const searchParams = {
 		whereIn: [{
@@ -410,25 +423,14 @@ const getSupportedTokenMetaInfo = async (patternTokenIDs, exactTokenIDs, limit, 
 
 	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
 	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
-	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
+
 	// Fetch the data
+	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	return { tokensMeta, total };
 };
 
-const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
-	for (let i = 0; i < serviceURLs.length; i++) {
-		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
-		// eslint-disable-next-line no-await-in-loop
-		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
-
-		if (response.data && response.data.supportedTokens) {
-			return Promise.resolve(response.data.supportedTokens);
-		}
-	}
-	return Promise.resolve({});
-};
-
-const getBlockchainAppsTokensSupportedMetadata = async ({ chainID, limit, offset, sort }) => {
+const getBlockchainAppsTokensSupportedMetadata = async (params) => {
+	const { chainID, limit, offset, sort } = params;
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 
 	const tokenMetadata = {
@@ -452,7 +454,7 @@ const getBlockchainAppsTokensSupportedMetadata = async ({ chainID, limit, offset
 
 	const { tokensMeta, total } = isSupportAllTokens
 		? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
-		: await getSupportedTokenMetaInfo(patternTokenIDs, exactTokenIDs, limit, offset, sort);
+		: await getTokensMetaByTokenIDs(patternTokenIDs, exactTokenIDs, limit, offset, sort);
 
 	tokenMetadata.data = tokensMeta;
 	tokenMetadata.meta = {

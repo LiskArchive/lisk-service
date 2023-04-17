@@ -50,16 +50,16 @@ const getBlockchainAppsMetadata = async (params) => {
 
 const getBlockchainAppsTokenMetadata = async (params) => {
 	try {
-		const blockchainAppsTokenMetaList = {
+		const blockchainAppsTokenMeta = {
 			data: [],
 			meta: {},
 		};
 
 		const response = await appRegistryService.getBlockchainAppsTokenMetadata(params);
-		if (response.data) blockchainAppsTokenMetaList.data = response.data;
-		if (response.meta) blockchainAppsTokenMetaList.meta = response.meta;
+		if (response.data) blockchainAppsTokenMeta.data = response.data;
+		if (response.meta) blockchainAppsTokenMeta.meta = response.meta;
 
-		return blockchainAppsTokenMetaList;
+		return blockchainAppsTokenMeta;
 	} catch (err) {
 		let status;
 		if (err instanceof InvalidParamsException) status = BAD_REQUEST;
@@ -69,23 +69,16 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokensSupportedMetadata = async (params) => {
-	try {
-		const blockchainAppsTokensSupportedMetaList = {
-			data: [],
-			meta: {},
-		};
+	const blockchainAppsTokensSupportedMeta = {
+		data: [],
+		meta: {},
+	};
 
-		const response = await appRegistryService.getBlockchainAppsTokensSupportedMetadata(params);
-		if (response.data) blockchainAppsTokensSupportedMetaList.data = response.data;
-		if (response.meta) blockchainAppsTokensSupportedMetaList.meta = response.meta;
+	const response = await appRegistryService.getBlockchainAppsTokensSupportedMetadata(params);
+	if (response.data) blockchainAppsTokensSupportedMeta.data = response.data;
+	if (response.meta) blockchainAppsTokensSupportedMeta.meta = response.meta;
 
-		return blockchainAppsTokensSupportedMetaList;
-	} catch (err) {
-		let status;
-		if (err instanceof InvalidParamsException) status = BAD_REQUEST;
-		if (status) return { status, data: { error: err.message } };
-		throw err;
-	}
+	return blockchainAppsTokensSupportedMeta;
 };
 
 module.exports = {
