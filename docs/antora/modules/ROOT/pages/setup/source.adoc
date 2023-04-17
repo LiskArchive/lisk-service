@@ -248,7 +248,7 @@ To stop the Docker container again, execute the following commands below:
 .How to stop Redis with Docker
 [source,bash]
 ----
-make down # to stop Redis
+docker stop redis_service
 ----
 --
 Redis system-wide::
