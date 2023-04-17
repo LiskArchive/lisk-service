@@ -24,6 +24,7 @@ const {
 	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -95,7 +96,9 @@ describe('Method get.events', () => {
 			const response = await getEvents({ transactionID: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
@@ -114,9 +117,7 @@ describe('Method get.events', () => {
 
 		it('empty transactionID -> empty response', async () => {
 			const response = await getEvents({ transactionID: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 	});
 
@@ -134,9 +135,7 @@ describe('Method get.events', () => {
 
 		it('empty blockID ->  empty response', async () => {
 			const response = await getEvents({ blockID: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 	});
 

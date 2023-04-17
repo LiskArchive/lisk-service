@@ -22,6 +22,7 @@ module.exports = {
 		network: { type: 'string' },
 		localID: { type: 'string' },
 		tokenName: { type: 'string' },
+		tokenID: { type: 'string' },
 	},
 	indexes: {
 		chainID: { type: 'key' },
@@ -29,6 +30,7 @@ module.exports = {
 		localID: { type: 'key' },
 		tokenName: { type: 'key' },
 		network: { type: 'key' },
+		tokenID: { type: 'key' },
 	},
 	purge: {},
 };

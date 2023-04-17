@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// TODO: Rename all methods to use 'DB' instead of 'Db'
-
 const Logger = require('./logger').get;
 
 const logger = Logger();
@@ -94,7 +92,7 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -288,8 +286,25 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.search) {
-			const { property, pattern } = params.search;
-			query.where(`${property}`, 'like', `%${pattern}%`);
+			params.search = Array.isArray(params.search) ? params.search : [params.search];
+
+			params.search.forEach(search => {
+				const { property, pattern, startsWith, endsWith } = search;
+				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+			});
+		}
+
+		if (params.orSearch) {
+			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
+
+			params.orSearch.forEach(orSearch => {
+				const { property, pattern, startsWith, endsWith } = orSearch;
+				if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+			});
 		}
 
 		if (params.aggregate) {
@@ -308,7 +323,6 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	};
 
 	const find = async (params = {}, columns) => {
-		// TODO: Add support for IS NULL, IS NOT NULL, LIKE
 		const trx = await createDefaultTransaction(knex);
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
@@ -469,8 +483,25 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		if (params.search) {
-			const { property, pattern } = params.search;
-			query.where(`${property}`, 'like', `%${pattern}%`);
+			params.search = Array.isArray(params.search) ? params.search : [params.search];
+
+			params.search.forEach(search => {
+				const { property, pattern, startsWith, endsWith } = search;
+				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+			});
+		}
+
+		if (params.orSearch) {
+			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
+
+			params.orSearch.forEach(orSearch => {
+				const { property, pattern, startsWith, endsWith } = orSearch;
+				if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+			});
 		}
 
 		return query

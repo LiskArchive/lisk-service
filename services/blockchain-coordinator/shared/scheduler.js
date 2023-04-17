@@ -24,7 +24,6 @@ const logger = Logger();
 
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
-	isGenesisBlockIndexed,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
@@ -53,12 +52,6 @@ const accountIndexQueue = new MessageQueue(
 
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
-
-const scheduleGenesisBlockIndexing = async () => {
-	const genesisHeight = await getGenesisHeight();
-	await blockIndexQueue.add({ height: genesisHeight });
-	logger.info('Finished scheduling of genesis block indexing.');
-};
 
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
@@ -100,12 +93,6 @@ const initIndexingScheduler = async () => {
 		await scheduleValidatorsIndexing(validators);
 	}
 
-	// Check if genesis block is already indexed and schedule indexing if not indexed
-	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
-	if (!isGenesisBlockAlreadyIndexed) {
-		await scheduleGenesisBlockIndexing();
-	}
-
 	// Check for missing blocks
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
@@ -121,7 +108,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	// Missing blocks are being checked during regualar interval
+	// Missing blocks are being checked during regular interval
 	// By default they are checked from the blockchain's beginning
 	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
 

@@ -29,6 +29,9 @@ const blockchainAppsStatsSchema = {
 	registered: Joi.number().integer().min(0).required(),
 	active: Joi.number().integer().min(0).required(),
 	terminated: Joi.number().integer().min(0).required(),
+	totalSupplyLSK: Joi.string().required(),
+	totalStakedLSK: Joi.string().required(),
+	currentAnnualInflationRate: Joi.string().required(),
 };
 
 const blockchainAppSchema = {

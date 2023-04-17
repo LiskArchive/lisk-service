@@ -15,7 +15,6 @@
  */
 const {
 	getMissingBlocks,
-	isGenesisBlockIndexed,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
 } = require('../../shared/indexer/blockchainIndex');
@@ -33,11 +32,6 @@ module.exports = [
 			from: { optional: false, type: 'any' },
 			to: { optional: false, type: 'any' },
 		},
-	},
-	{
-		name: 'isGenesisBlockIndexed',
-		controller: isGenesisBlockIndexed,
-		params: {},
 	},
 	{
 		name: 'getCurrentHeight',

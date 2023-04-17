@@ -23,7 +23,6 @@ const NAME = /^[\w!@$&.]{3,20}$/;
 const NAME_CSV = /^[\w!@$&.,]{3,}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
-const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,)+\b$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
@@ -38,7 +37,7 @@ const TOKEN_ID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
-const TOPIC = /^\b(?:[0-9a-fA-F]+|lsk[a-hjkm-z2-9]{38})\b$/;
+const TOPIC = /^\b(?:(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}),?)+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -49,7 +48,6 @@ module.exports = {
 	NAME_CSV,
 	TRANSACTION_EXECUTION_STATUS,
 	POS_VALIDATOR_STATUS,
-	NEWSFEED_SOURCE,
 	HASH_SHA256,
 	TIMESTAMP_RANGE,
 	HEIGHT_RANGE,

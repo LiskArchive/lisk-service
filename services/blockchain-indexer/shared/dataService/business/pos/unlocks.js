@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { getPosTokenID } = require('./constants');
 const {
 	getIndexedAccountInfo,
 	getLisk32AddressFromPublicKey,
@@ -35,16 +36,17 @@ const getPosUnlocks = async params => {
 		{ address: params.address },
 	);
 
+	const tokenID = await getPosTokenID();
 	const filteredPendingUnlocks = pendingUnlocks.reduce(
 		(accumulator, pendingUnlock) => {
 			const { unlockable, ...remPendingUnlock } = pendingUnlock;
 			const isLocked = !pendingUnlock.unlockable;
-
 			// Filter results based on `params.isLocked`
 			if (params.isLocked === undefined || params.isLocked === isLocked) {
 				accumulator.push({
 					...remPendingUnlock,
 					isLocked,
+					tokenID,
 				});
 			}
 			return accumulator;

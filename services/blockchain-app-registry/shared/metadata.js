@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	HTTP,
 	Exceptions: { InvalidParamsException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
@@ -70,6 +71,15 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
+	if (params.network) {
+		const { network, ...remParams } = params;
+		params = remParams;
+		params.whereIn = [{
+			property: 'network',
+			values: network.split(','),
+		}];
+	}
+
 	const limit = params.limit * config.supportedNetworks.length;
 	const defaultApps = await applicationMetadataTable.find(
 		{ ...params, limit, isDefault: true },
@@ -88,7 +98,6 @@ const getBlockchainAppsMetaList = async (params) => {
 	blockchainAppsMetaList.data = blockchainAppsMetaList.data
 		.slice(params.offset, params.offset + params.limit);
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
 
 	blockchainAppsMetaList.meta = {
@@ -100,9 +109,20 @@ const getBlockchainAppsMetaList = async (params) => {
 	return blockchainAppsMetaList;
 };
 
+const readMetadataFromClonedRepo = async (network, appDirName, filename) => {
+	const {
+		dataDir,
+		gitHub: { appRegistryRepoName },
+	} = config;
+
+	const filepath = `${dataDir}/${appRegistryRepoName}/${network}/${appDirName}/${filename}`;
+	const metadataStr = await read(filepath);
+	const parsedMetadata = JSON.parse(metadataStr);
+
+	return parsedMetadata;
+};
+
 const getBlockchainAppsMetadata = async (params) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 
 	const blockchainAppsMetadata = {
@@ -172,25 +192,26 @@ const getBlockchainAppsMetadata = async (params) => {
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
 		blockchainAppsMetadata.data,
 		async (appMetadata) => {
-			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
-			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
-			const chainMeta = JSON.parse(chainMetaString);
-			chainMeta.isDefault = appMetadata.isDefault;
+			const appMeta = await readMetadataFromClonedRepo(
+				appMetadata.network,
+				appMetadata.appDirName,
+				config.FILENAME.APP_JSON,
+			);
+			appMeta.isDefault = appMetadata.isDefault;
 
 			if (await isMainchain()
-				&& knownMainchainIDs.includes(chainMeta.chainID)) {
-				chainMeta.status = APP_STATUS.ACTIVE;
+				&& knownMainchainIDs.includes(appMeta.chainID)) {
+				appMeta.status = APP_STATUS.ACTIVE;
 			} else {
-				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: chainMeta.chainID })).data;
-				chainMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
+				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: appMeta.chainID })).data;
+				appMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
 			}
 
-			return chainMeta;
+			return appMeta;
 		},
 		{ concurrency: blockchainAppsMetadata.data.length },
 	);
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
 
 	blockchainAppsMetadata.meta = {
@@ -203,8 +224,6 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
-	const { dataDir } = config;
-	const repo = config.gitHub.appRegistryRepoName;
 	const applicationMetadataTable = await getApplicationMetadataIndex();
 	const tokenMetadataTable = await getTokenMetadataIndex();
 
@@ -251,7 +270,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 			if (!('network' in params)) {
 				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
-				networkSet.push(network);
+				networkSet.add(network);
 			}
 
 			return [chainID, localID];
@@ -296,10 +315,12 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 				{ network: tokenMeta.network, chainID: tokenMeta.chainID },
 				['appDirName'],
 			);
-			const appPathInClonedRepo = `${dataDir}/${repo}/${tokenMeta.network}/${appDirName}`;
-			const tokenMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.NATIVETOKENS_JSON}`);
-			const parsedTokenMeta = JSON.parse(tokenMetaString);
 
+			const parsedTokenMeta = await readMetadataFromClonedRepo(
+				tokenMeta.network,
+				appDirName,
+				config.FILENAME.NATIVETOKENS_JSON,
+			);
 			parsedTokenMeta.tokens.forEach(token => {
 				blockchainAppsTokenMetadata.data.push({
 					...token,
@@ -312,7 +333,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		{ concurrency: uniqueChainList.length },
 	);
 
-	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
 	const [{ total }] = await tokenMetadataTable.rawQuery(`SELECT COUNT(tokenName) as total from ${tokenMetadataIndexSchema.tableName}`);
 
 	blockchainAppsTokenMetadata.meta = {
@@ -324,8 +344,131 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	return blockchainAppsTokenMetadata;
 };
 
+const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
+	const tokensMeta = [];
+
+	await BluebirdPromise.map(
+		tokenInfoFromDB,
+		async (entry) => {
+			const parsedTokenMeta = await readMetadataFromClonedRepo(
+				entry.network,
+				entry.chainName,
+				config.FILENAME.NATIVETOKENS_JSON,
+			);
+
+			parsedTokenMeta.tokens.forEach(async token => {
+				tokensMeta.push({
+					...token,
+					chainID: entry.chainID,
+					chainName: entry.chainName,
+					network: entry.network,
+				});
+			});
+		},
+		{ concurrency: tokenInfoFromDB.length },
+	);
+
+	return tokensMeta;
+};
+
+const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
+	for (let i = 0; i < serviceURLs.length; i++) {
+		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
+		// eslint-disable-next-line no-await-in-loop
+		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
+
+		if (response.data && response.data.supportedTokens) {
+			return Promise.resolve(response.data.supportedTokens);
+		}
+	}
+	return Promise.resolve({});
+};
+
+const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
+	const tokenMetadataTable = await getTokenMetadataIndex();
+	const searchParams = {
+		search: {
+			property: 'tokenID',
+			startsWith: chainID.substring(0, 2),
+		},
+		limit,
+		offset,
+		sort,
+	};
+	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
+	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
+	// Fetch the data
+	return { tokensMeta, total };
+};
+
+const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
+	const tokenMetadataTable = await getTokenMetadataIndex();
+	const searchParams = {
+		whereIn: [{
+			property: 'tokenID',
+			values: exactTokenIDs,
+		}],
+		orSearch: patternTokenIDs.map(e => {
+			const chainID = e.substring(0, LENGTH_CHAIN_ID);
+			return {
+				property: 'tokenID',
+				startsWith: chainID,
+			};
+		}),
+		limit,
+		offset,
+		sort,
+	};
+
+	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
+
+	// Fetch the data
+	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
+	return { tokensMeta, total };
+};
+
+const getBlockchainAppsTokensSupportedMetadata = async (params) => {
+	const { chainID, limit, offset, sort } = params;
+	const applicationMetadataTable = await getApplicationMetadataIndex();
+
+	const tokenMetadata = {
+		data: [],
+		meta: {},
+	};
+
+	// Check if the metadata for the requested chainID exists
+	const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['network', 'chainName']);
+	if (!requestedAppInfo) return tokenMetadata;
+
+	const { serviceURLs } = await readMetadataFromClonedRepo(
+		requestedAppInfo.network,
+		requestedAppInfo.chainName,
+		config.FILENAME.APP_JSON,
+	);
+
+	// Query supported tokens information for the requested chainID
+	const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
+	const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
+
+	const { tokensMeta, total } = isSupportAllTokens
+		? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
+		: await getTokensMetaByTokenIDs(patternTokenIDs, exactTokenIDs, limit, offset, sort);
+
+	tokenMetadata.data = tokensMeta;
+	tokenMetadata.meta = {
+		count: tokensMeta.length,
+		offset,
+		total,
+	};
+
+	return tokenMetadata;
+};
+
 module.exports = {
 	getBlockchainAppsMetaList,
 	getBlockchainAppsMetadata,
 	getBlockchainAppsTokenMetadata,
+	getBlockchainAppsTokensSupportedMetadata,
 };

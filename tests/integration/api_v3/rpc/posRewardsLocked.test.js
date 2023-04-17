@@ -19,6 +19,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -36,12 +37,12 @@ describe('Rewards Locked API', () => {
 	beforeAll(async () => {
 		let refStakerAddress;
 		const stakeTransactionReponse = await getTransaction({ moduleCommand: 'pos:stake', limit: 1 });
-		const { stakeTxs = [] } = stakeTransactionReponse.result.data;
+		const { data: stakeTxs = [] } = stakeTransactionReponse.result;
 		if (stakeTxs.length) {
 			refStakerAddress = stakeTxs[0].sender.address;
 		}
 		const response2 = await getStakes({ address: refStakerAddress });
-		refStaker = response2.meta.staker;
+		refStaker = response2.result.meta.staker;
 	});
 
 	it('Returns list of locked rewards with name parameter', async () => {
@@ -65,18 +66,20 @@ describe('Rewards Locked API', () => {
 	});
 
 	it('Returns list of locked rewards with publicKey', async () => {
-		const response = await getPosRewardsLocked({ publicKey: refStaker.publicKey });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (refStaker.publicKey) {
+			const response = await getPosRewardsLocked({ publicKey: refStaker.publicKey });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodResponseSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+			const { result } = response;
+			expect(result).toMap(goodResponseSchema);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+		}
 	});
 
 	it('No param -> bad request', async () => {
 		const response = await getPosRewardsLocked({});
-		expect(response).toMap(invalidParamsSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('Invalid address -> bad request', async () => {

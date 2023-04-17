@@ -33,7 +33,6 @@ const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
 let curChainID;
 
-// TODO: Update test when data is available in blockchain_apps table
 describe('Blockchain apps API', () => {
 	beforeAll(async () => {
 		const response = await api.get(networkStatusEndpoint);
@@ -88,8 +87,8 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications by state', async () => {
-		const response = await api.get(`${endpoint}?state=active`);
+	it('retrieves blockchain applications by status', async () => {
+		const response = await api.get(`${endpoint}?status=active`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

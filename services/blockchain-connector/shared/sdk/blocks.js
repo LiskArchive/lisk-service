@@ -28,8 +28,8 @@ const getLastBlockFormatted = async () => {
 	return formattedBlock;
 };
 
-const getBlockByHeightFormatted = async (height) => {
-	const block = await getBlockByHeight(height);
+const getBlockByHeightFormatted = async (height, includeGenesisAssets = false) => {
+	const block = await getBlockByHeight(height, includeGenesisAssets);
 	const formattedBlock = formatBlock(block);
 	return formattedBlock;
 };

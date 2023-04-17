@@ -87,6 +87,9 @@ const getSystemMetadata = async () => {
 const MODULE = {
 	POS: 'pos',
 	AUTH: 'auth',
+	DYNAMIC_REWARD: 'dynamicReward',
+	REWARD: 'reward',
+	TOKEN: 'token',
 };
 
 const COMMAND = {
@@ -114,6 +117,19 @@ const TRANSACTION_STATUS = Object.freeze({
 	FAIL: 'fail',
 });
 
+const EVENT = Object.freeze({
+	LOCK: 'lock',
+	UNLOCK: 'unlock',
+	COMMAND_EXECUTION_RESULT: 'commandExecutionResult',
+	REWARD_MINTED: 'rewardMinted',
+});
+
+const TRANSACTION_VERIFY_RESULT = {
+	INVALID: -1,
+	PENDING: 0,
+	OK: 1,
+};
+
 module.exports = {
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -130,7 +146,9 @@ module.exports = {
 	PATTERN_ANY_CHAIN_TOKEN_ID,
 	MODULE,
 	COMMAND,
+	EVENT,
 	MAX_COMMISSION,
 	KV_STORE_KEY,
 	TRANSACTION_STATUS,
+	TRANSACTION_VERIFY_RESULT,
 };

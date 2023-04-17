@@ -54,7 +54,7 @@ module.exports = {
 		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/dryrunTransaction' }];
 		dryRunTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
-				description: 'Dry run transactions',
+				description: 'Dry run transactions. \'errorMessage\' is available only when \'result: -1\'.',
 				schema: {
 					$ref: '#/definitions/dryTransactionWithEnvelope',
 				},

@@ -88,7 +88,7 @@ describe('Blocks Assets API', () => {
 		});
 
 		it('returns block assets by multiple modules -> ok', async () => {
-			const modules = refBlockAssets.assets.map(asset => asset.moduleID);
+			const modules = refBlockAssets.assets.map(asset => asset.module);
 			const response = await api.get(`${endpoint}?module=${modules.join(',')}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -220,8 +220,8 @@ describe('Blocks Assets API', () => {
 
 	describe('Retrieve blocks assets within height range', () => {
 		it('returns blocks assets within set height are returned', async () => {
-			const minHeight = refBlockAssets.block.height - 10;
-			const maxHeight = refBlockAssets.block.height;
+			const minHeight = refBlockAssets.block.height;
+			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -240,7 +240,7 @@ describe('Blocks Assets API', () => {
 		});
 
 		it('return blocks assets with half bounded range: minHeight', async () => {
-			const minHeight = refBlockAssets.block.height - 10;
+			const minHeight = refBlockAssets.block.height;
 			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -258,7 +258,7 @@ describe('Blocks Assets API', () => {
 		});
 
 		it('return blocks assets with half bounded range: maxHeight', async () => {
-			const maxHeight = refBlockAssets.block.height;
+			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await api.get(`${endpoint}?height=:${maxHeight}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

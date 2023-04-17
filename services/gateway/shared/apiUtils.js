@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const mapper = require('./customMapper');
+const { mapper } = require('./customMapper');
 
 const dropOneSlashAtBeginning = str => str.replace(/^\//, '');
 const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');

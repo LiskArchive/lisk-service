@@ -13,13 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const packageJson = require('../package.json');
 
 const getBuildTimestamp = () => {
 	let timestamp;
 	try {
-		// eslint-disable-next-line import/no-unresolved
-		timestamp = require('../build.json').timestamp;
+		// eslint-disable-next-line import/no-unresolved, import/no-dynamic-require
+		timestamp = require(path.resolve(__dirname, '../build.json')).timestamp;
 	} catch (e) {
 		// build.json is only generated in docker
 	}
@@ -57,4 +58,7 @@ const getStatus = async broker => {
 
 module.exports = {
 	getStatus,
+
+	// For testing
+	getBuildTimestamp,
 };

@@ -16,16 +16,18 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const EMPTY_STRING = '';
+
 const generator = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 };
 
 const aggregateCommit = {
 	height: Joi.number().integer().min(0).required(),
-	aggregationBits: Joi.string().allow(regex.EMPTY_STRING).required(),
-	certificateSignature: Joi.string().allow(regex.EMPTY_STRING).required(),
+	aggregationBits: Joi.string().allow(EMPTY_STRING).required(),
+	certificateSignature: Joi.string().allow(EMPTY_STRING).required(),
 };
 
 const blockSchema = {
@@ -38,10 +40,10 @@ const blockSchema = {
 	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
-	signature: Joi.string().allow(regex.EMPTY_STRING).pattern(regex.HASH_SHA512).required(),
+	signature: Joi.string().allow(EMPTY_STRING).pattern(regex.HASH_SHA512).required(),
 	aggregateCommit: Joi.object(aggregateCommit).required(),
 	isFinal: Joi.boolean().required(),
-	reward: Joi.string().required(),
+	reward: Joi.string().allow(null).required(), // Genesis block does not have reward event
 	networkFee: Joi.string().required(),
 	totalForged: Joi.string().required(),
 	totalBurnt: Joi.string().required(),
@@ -50,7 +52,7 @@ const blockSchema = {
 	validatorsHash: Joi.string().pattern(regex.HASH_SHA256).required(),
 	numberOfTransactions: Joi.number().integer().min(0).required(),
 	numberOfAssets: Joi.number().integer().min(1).required(),
-	numberOfEvents: Joi.number().integer().min(0).required(),
+	numberOfEvents: Joi.number().integer().min(1).required(),
 };
 
 const block = {

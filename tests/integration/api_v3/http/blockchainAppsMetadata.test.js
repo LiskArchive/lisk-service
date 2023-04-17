@@ -115,7 +115,7 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?network=${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});

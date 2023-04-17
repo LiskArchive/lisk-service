@@ -23,14 +23,13 @@ const goodRequestSchemaForValidator = {
 
 const validatorMetaSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).required(),
 	name: Joi.string().pattern(regex.NAME).required(),
 };
 
 const validatorInfoSchema = {
 	generatorKey: Joi.string().required(),
 	blsKey: Joi.string().required(),
-	proofOfPosession: Joi.string().required(),
 };
 
 const validateBLSKeySchema = {

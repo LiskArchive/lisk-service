@@ -50,13 +50,14 @@ const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
+	getMainchainID,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
 const {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 } = require('./token');
 
@@ -125,13 +126,14 @@ module.exports = {
 	// Interoperability
 	getBlockchainApps,
 	getChainAccount,
+	getMainchainID,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 
 	// Token
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 
 	// PoS

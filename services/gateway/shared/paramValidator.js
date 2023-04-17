@@ -24,7 +24,10 @@ const mapObjectWithProperty = (obj, propName) => Object.keys(obj).reduce((acc, c
 	return acc;
 }, {});
 
+// Returns testedObject keys which are not present in reference
 const objDiff = (reference, testedObject) => Object.keys(testedObject).filter(o => typeof reference[o] === 'undefined');
+
+// Returns arr2 items which are not present in arr1
 const arrDiff = (arr1, arr2) => arr2.filter(x => !arr1.includes(x));
 
 const dropEmptyProps = p => Object.keys(p)
@@ -58,50 +61,55 @@ const parseParams = (p) => {
 	};
 };
 
+// Returns empty array if inputParamKeys matches with one of the schema paramPairings.
+// Otherwise, returns the schema paramPairings
+const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
+	if (!paramsRequired) return [];
+
+	const relevantPairings = paramPairings
+		.filter(pairing => inputParamKeys.some(key => pairing.includes(key)));
+	if (relevantPairings.length === 0) return paramPairings;
+
+	const result = relevantPairings
+		.some(pairing => pairing.every(param => inputParamKeys.includes(param)));
+	return result ? [] : paramPairings;
+};
+
+// Returns a list of required routeParams which are not present in requestParams
+const checkMissingParams = (routeParams, requestParams) => {
+	const requiredParamList = Object.keys(routeParams)
+		.filter(o => routeParams[o].required === true);
+	const requestParamList = Object.keys(requestParams);
+	return arrDiff(requestParamList, requiredParamList);
+};
+
+const parseDefaultParams = p => mapObjectWithProperty(p, 'default');
+
+// Returns the parsed requestParams which are present in routeParams schema
+const parseAllParams = (routeParams, requestParams) => Object.keys(routeParams)
+	.reduce((acc, cur) => {
+		const paramDatatype = routeParams[cur].type;
+		if (routeParams[cur].default !== undefined) acc[cur] = routeParams[cur].default;
+		if (requestParams[cur] !== undefined) {
+			if (paramDatatype === 'number') {
+				acc[cur] = requestParams[cur] === '' ? acc[cur] : Number(requestParams[cur]);
+			} else {
+				acc[cur] = requestParams[cur];
+			}
+		}
+		return acc;
+	}, {});
+
+// Adds convert:true property to number and boolean type specPar elements
+const looseSpecParams = (specPar) => Object.keys(specPar).reduce((acc, cur) => {
+	if (specPar[cur].type === 'number' || specPar[cur].type === 'boolean') {
+		acc[cur] = { convert: true, ...specPar[cur] };
+	} else acc[cur] = specPar[cur];
+	return acc;
+}, {});
+
 // TODO: Add check so that only one pair is accepted among the validParamPairings
 const validateInputParams = (rawInputParams = {}, specs) => {
-	const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
-		if (!paramsRequired) return [];
-
-		const relevantPairings = paramPairings
-			.filter(pairing => inputParamKeys.some(key => pairing.includes(key)));
-		if (relevantPairings.length === 0) return paramPairings;
-
-		const result = relevantPairings
-			.some(pairing => pairing.every(param => inputParamKeys.includes(param)));
-		return result ? [] : paramPairings;
-	};
-
-	const checkMissingParams = (routeParams, requestParams) => {
-		const requiredParamList = Object.keys(routeParams)
-			.filter(o => routeParams[o].required === true);
-		const requestParamList = Object.keys(requestParams);
-		return arrDiff(requestParamList, requiredParamList);
-	};
-
-	const parseDefaultParams = p => mapObjectWithProperty(p, 'default');
-
-	const parseAllParams = (routeParams, requestParams) => Object.keys(routeParams)
-		.reduce((acc, cur) => {
-			const paramDatatype = routeParams[cur].type;
-			if (routeParams[cur].default !== undefined) acc[cur] = routeParams[cur].default;
-			if (requestParams[cur] !== undefined) {
-				if (paramDatatype === 'number') {
-					acc[cur] = requestParams[cur] === '' ? acc[cur] : Number(requestParams[cur]);
-				} else {
-					acc[cur] = requestParams[cur];
-				}
-			}
-			return acc;
-		}, {});
-
-	const looseSpecParams = (specPar) => Object.keys(specPar).reduce((acc, cur) => {
-		if (specPar[cur].type === 'number' || specPar[cur].type === 'boolean') {
-			acc[cur] = { convert: true, ...specPar[cur] };
-		} else acc[cur] = specPar[cur];
-		return acc;
-	}, {}); // adds convert: true
-
 	const specParams = specs.params || {};
 	const inputParams = rawInputParams;
 
@@ -137,4 +145,13 @@ module.exports = {
 	arrDiff,
 	getTimestamp,
 	dropEmptyProps,
+
+	// For testing
+	mapObjectWithProperty,
+	parseParams,
+	validateFromParamPairings,
+	checkMissingParams,
+	parseDefaultParams,
+	parseAllParams,
+	looseSpecParams,
 };

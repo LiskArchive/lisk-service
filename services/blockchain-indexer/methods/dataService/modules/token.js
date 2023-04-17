@@ -14,8 +14,8 @@
  *
  */
 const {
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	tokenHasUserAccount,
 	getTokenConstants,
 } = require('../controllers/token');
@@ -24,8 +24,8 @@ const regex = require('../../../shared/regex');
 
 module.exports = [
 	{
-		name: 'tokens',
-		controller: getTokens,
+		name: 'token.balances',
+		controller: getTokenBalances,
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: true, type: 'string' },
@@ -34,8 +34,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'tokens.summary',
-		controller: getTokensSummary,
+		name: 'token.summary',
+		controller: getTokenSummary,
 		params: {
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
