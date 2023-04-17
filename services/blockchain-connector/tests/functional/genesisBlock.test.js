@@ -28,6 +28,9 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
+const moduleName = 'token';
+const subStoreName = 'userSubstore';
+
 beforeAll(() => broker.start());
 afterAll(() => broker.stop());
 
@@ -62,49 +65,45 @@ describe('Genesis Block import tests', () => {
 });
 
 describe('Test getGenesisAssets method', () => {
-	const module = 'token';
-	const subStore = 'userSubstore';
 	it('should return token module data when called with module:token', async () => {
-		const response = await broker.call('connector.getGenesisAssetByModule', { module });
+		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName });
 		expect(Object.keys(response).length).toBe(4);
 	});
 
 	it('should return token module userSubstore data when called with module:token and subStore:userSubstore', async () => {
-		const response = await broker.call('connector.getGenesisAssetByModule', { module, subStore });
+		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName, subStore: subStoreName });
 		expect(Object.keys(response).length).toBe(1);
-		expect(Object.keys(response)[0]).toBe(subStore);
-		expect(response[subStore].length).toBeGreaterThan(1);
+		expect(Object.keys(response)[0]).toBe(subStoreName);
+		expect(response[subStoreName].length).toBeGreaterThan(1);
 	});
 
 	it('should return token module userSubstore data when called with module:token, subStore:userSubstore, offset:0, limit: 10', async () => {
 		const limit = 10;
-		const response = await broker.call('connector.getGenesisAssetByModule', { module, subStore, offset: 0, limit });
+		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName, subStore: subStoreName, offset: 0, limit });
 		expect(Object.keys(response).length).toBe(1);
-		expect(Object.keys(response)[0]).toBe(subStore);
-		expect(response[subStore].length).toBeGreaterThanOrEqual(1);
-		expect(response[subStore].length).toBeLessThanOrEqual(limit);
+		expect(Object.keys(response)[0]).toBe(subStoreName);
+		expect(response[subStoreName].length).toBeGreaterThanOrEqual(1);
+		expect(response[subStoreName].length).toBeLessThanOrEqual(limit);
 	});
 });
 
 describe('Test getGenesisAssetsLength method', () => {
-	const module = 'token';
-	const subStore = 'userSubstore';
 	it('should return all modules when called without any params', async () => {
 		const response = await broker.call('connector.getGenesisAssetsLength');
 		expect(Object.keys(response).length).toBeGreaterThan(1);
 	});
 
 	it('should return token module data length when called with module:token', async () => {
-		const response = await broker.call('connector.getGenesisAssetsLength', { module });
-		expect(Object.keys(response)[0]).toBe(module);
-		expect(Object.keys(response[module]).length).toBe(4);
+		const response = await broker.call('connector.getGenesisAssetsLength', { module: moduleName });
+		expect(Object.keys(response)[0]).toBe(moduleName);
+		expect(Object.keys(response[moduleName]).length).toBe(4);
 	});
 
 	it('should return token module userSubstore length when called with module:token and subStore:userSubstore', async () => {
-		const response = await broker.call('connector.getGenesisAssetsLength', { module, subStore });
+		const response = await broker.call('connector.getGenesisAssetsLength', { module: moduleName, subStore: subStoreName });
 		expect(Object.keys(response).length).toBe(1);
-		expect(Object.keys(response)[0]).toBe(module);
-		expect(Object.keys(response[module])[0]).toBe(subStore);
-		expect(Object.keys(response[module]).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(moduleName);
+		expect(Object.keys(response[moduleName])[0]).toBe(subStoreName);
+		expect(Object.keys(response[moduleName]).length).toBe(1);
 	});
 });
