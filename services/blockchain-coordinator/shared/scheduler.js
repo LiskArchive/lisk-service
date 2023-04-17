@@ -108,7 +108,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	// Missing blocks are being checked during regualar interval
+	// Missing blocks are being checked during regular interval
 	// By default they are checked from the blockchain's beginning
 	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
 
