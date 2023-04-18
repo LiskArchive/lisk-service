@@ -1071,13 +1071,13 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/validator/validateBLSKey': {
+	'/validator/validate-bls-key': {
 		post: {
 			tags: [
 				'Validator',
 			],
 			summary: 'Validates a BLS key against its corresponding Proof of Possession.',
-			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validateBLSKey',
+			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validate-bls-key',
 			parameters: [
 				{
 					$ref: '#/parameters/validateBLSKeyParams',
