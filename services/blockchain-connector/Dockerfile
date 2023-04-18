@@ -2,7 +2,7 @@
 
 FROM node:16-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk=~1.0-r1 python3=~3.10.10-r0 cmake=~3.24.4-r0 && \
+RUN apk add --no-cache alpine-sdk=~1.0 python3=~3.10 cmake=~3.24 && \
     adduser -D builder && \
     mkdir /home/builder/build && \
     chown -R builder:builder /home/builder/
