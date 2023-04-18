@@ -20,9 +20,9 @@ const { response, getSwaggerDescription } = require('../../../../../shared/utils
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/validator/validateBLSKey',
+	swaggerApiPath: '/validator/validate-bls-key',
 	httpMethod: 'POST',
-	rpcMethod: 'post.validator.validateBLSKey',
+	rpcMethod: 'post.validator.validate-bls-key',
 	tags: ['Validator'],
 	params: {
 		blsKey: { optional: false, type: 'string', pattern: regex.BLS_KEY },
