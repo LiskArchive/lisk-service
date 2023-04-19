@@ -167,7 +167,7 @@ Ubuntu::
 [source,bash]
 ----
 sudo apt update
-sudo apt install mysql-server
+sudo apt install mysql-server=8.0*
 sudo mysql_secure_installation
 ----
 
