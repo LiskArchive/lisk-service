@@ -26,7 +26,7 @@ const { validateBLSKeySchema, validateBLSKeyGoodRequestSchema } = require('../..
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const validateBLSKey = async params => request(wsRpcUrl, 'post.validator.validate-bls-key', params);
 
-describe('Method post.validator.validateBLSKey', () => {
+describe('Method post.validator.validate-bls-key', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
 		const response = await validateBLSKey({
 			blsKey: BLS_KEY.VALID,
