@@ -142,7 +142,7 @@ For macOS, please execute the following command below:
 
 [source,bash]
 ----
-brew install node@12
+brew install node@16
 ----
 --
 ====
