@@ -239,7 +239,7 @@ docker run --name redis_service --port 6379:6379 -d redis:5-alpine
 .How to use the custom redis.conf file
 [source,bash]
 ----
-docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf -d redis:5-alpine
+docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf --port 6379:6379 -d redis:5-alpine
 ----
 The above commands should be enough to start Redis which is ready to use with Lisk Service.
 
