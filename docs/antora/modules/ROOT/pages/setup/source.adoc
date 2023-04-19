@@ -120,7 +120,7 @@ nvm ls-remote
 .Install the latest LTS version
 [source,bash]
 ----
-nvm install 16.15.0
+nvm install 16
 ----
 --
 Option B - Node.js package::
