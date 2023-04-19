@@ -188,7 +188,7 @@ If you encounter issues to authenticate, and received the following error:
 
  caching_sha2_password' cannot be loaded: dlopen(/usr/local/lib/plugin/caching_sha2_password.so, 2): image not found
 
-Try the following: Change the `default_authentication_plugin` using `mysql_native_password`.
+Try the following: Change the `default_authentication_plugin` using the `mysql_native_password`.
 
 Open up `my.cnf` .
 
