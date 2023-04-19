@@ -27,10 +27,23 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Transaction statistics](#transaction-statistics)
     - [Transaction schema](#transaction-schema)
     - [Dynamic fees](#dynamic-fees)
+  - [Events](#events)
+  - [Auth](#auth)
+  - [Validator](#validator)
+  - [Token](#token)
+  - [Dynamic Fees](#dynamic-fees)
+  - [Interoperability](#interoperability)
+  - [PoS](#proof-of-stake)
+  - [Reward](#reward)
+  - [Legacy](#legacy)
   - [Network](#network)
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
+  - [Generators](#generators)
+  - [Schemas](#schemas)
+  - [Index Status](#index-status)
+  - [Proxy](#proxy)
 - [Off-chain Features](#off-chain-features)
   - [Market Prices](#market-prices)
   - [Account History Export](#account-history-export)
@@ -95,8 +108,8 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval ie. `100000:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` |
 | generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
@@ -186,8 +199,8 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval ie. `100000:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` |
 | module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
@@ -267,7 +280,7 @@ _Supports pagination._
 | recipientAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
 | executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
 | nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -606,8 +619,8 @@ _Supports pagination._
 | senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | topic | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Can be expressed as a CSV |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval ie. `1:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval ie. `100000:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
@@ -787,8 +800,8 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP POST `/api/v3/validator/validateBLSKey`
-- RPC `get.validator.validateBLSKey`
+- HTTP POST `/api/v3/validator/validate-bls-key`
+- RPC `post.validator.validate-bls-key`
 
 #### Request parameters
 
@@ -1041,7 +1054,7 @@ https://service.lisk.com/api/v3/token/summary
 ```
 
 
-## Dynamic fees
+## Dynamic Fees
 
 Requests transaction fee estimates per byte.
 
@@ -1356,7 +1369,7 @@ https://service.lisk.com/api/v3/blockchain/apps/meta
 
 ### Interoperable application token (off-chain) metadata details
 
-Retrieves the metadata for the tokens supported by the specified blockchain application. The information is used by the wallets.
+Retrieves the metadata for the tokens. The information is used by the wallets.
 
 _Supports pagination._
 
@@ -1430,6 +1443,87 @@ _Supports pagination._
 
 ```
 https://service.lisk.com/api/v3/blockchain/apps/meta/tokens
+```
+
+### Interoperable application token (off-chain) metadata details for all tokens supported by a specific chain
+
+Retrieves the metadata for the tokens supported by the specified blockchain application. The information is used by the wallets.
+This endpoint internally queries the `/token/summary` for the specified chainID and considers the `supportedTokens` information to collate the relevant metadata.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta/tokens/supported`
+- RPC `get.blockchain.apps.meta.tokens.supported`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[tokenID:asc, tokenID:desc]` | tokenID:asc |  |
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainID": "00000000",
+      "chainName": "Lisk",
+      "tokenID": "0000000000000000",
+      "tokenName": "Lisk",
+      "networkType": "mainnet",
+      "description": "Default token for the entire Lisk ecosystem",
+      "logo": {
+        "png": "https://downloads.lisk.com/lisk/images/logo.png",
+        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
+      },
+      "symbol": "LSK",
+      "displayDenom": "lsk",
+      "baseDenom": "beddows",
+      "denomUnits": [
+        {
+          "denom": "beddows",
+          "decimals": 0,
+          "aliases": [
+            "Beddows"
+          ]
+        },
+        {
+          "denom": "lsk",
+          "decimals": 8,
+          "aliases": [
+            "Lisk"
+          ]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "offset": 0,
+    "total": 1
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta/tokens/supported?chainID=00000000
 ```
 
 
