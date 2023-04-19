@@ -152,7 +152,7 @@ MySQL is used for storing persistent data.
 
 [NOTE]
 ====
-Lisk Service expects a MySQL user `lisk` with password `password` and a database `lisk`.
+Lisk Service, by default, expects a MySQL user `lisk` with password `password` and a database `lisk`.
 
 **The MySQL user `lisk` needs to be manually created** after installing MySQL.
 
