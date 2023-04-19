@@ -21,7 +21,7 @@ const schema = {
 	$id: Joi.string().required(),
 	title: Joi.string().optional(),
 	type: Joi.string().required(),
-	required: Joi.array().items(Joi.string().pattern(regex.MODULE).required()).required(),
+	required: Joi.array().items(Joi.string().pattern(regex.MODULE).required()).optional(),
 	properties: Joi.object().optional(),
 	items: Joi.array().items(Joi.object().required()).optional(),
 };
@@ -56,6 +56,8 @@ const genericSchema = {
 	schema: Joi.object(schema).required(),
 };
 
+const ccmSchema = {};
+
 const allSchemasSchema = {
 	block: Joi.object(genericSchema).required(),
 	header: Joi.object(genericSchema).required(),
@@ -63,6 +65,7 @@ const allSchemasSchema = {
 	transaction: Joi.object(genericSchema).required(),
 	event: Joi.object(genericSchema).required(),
 	standardEvent: Joi.object(genericSchema).required(),
+	ccm: Joi.object(ccmSchema).required(),
 	events: Joi.array().items(eventsSchema).required(),
 	assets: Joi.array().items(assetsSchema).required(),
 	commands: Joi.array().items(commandsParamsSchemasSchema).required(),

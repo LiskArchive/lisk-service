@@ -278,6 +278,8 @@ const standardEventSchema = {
 	},
 };
 
+const ccmSchema = undefined;
+
 const messageSchema = {
 	$id: '/auth/command/regMultisigMsg',
 	type: 'object',
@@ -331,5 +333,6 @@ module.exports = {
 	transactionSchema,
 	eventSchema,
 	standardEventSchema,
+	ccmSchema,
 	messageSchema,
 };

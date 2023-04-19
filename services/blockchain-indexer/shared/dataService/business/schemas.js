@@ -69,6 +69,8 @@ const getAllSchemas = async () => {
 			assets: assetsSchemas,
 			commands: commandsParamsSchemas,
 			events: eventsSchemas,
+			// TODO: Fetch schema from node once this issue is closed https://github.com/LiskHQ/lisk-sdk/issues/8375
+			ccm: {},
 		});
 
 		// Assign generic schemas
