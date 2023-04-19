@@ -147,7 +147,7 @@ brew install node@16
 --
 ====
 
-=== MYSQL
+=== MySQL
 MySQL is used for storing persistent data.
 
 [NOTE]
