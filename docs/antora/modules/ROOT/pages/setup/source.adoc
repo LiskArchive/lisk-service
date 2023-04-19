@@ -108,8 +108,8 @@ Option A - Node version manager::
 It is recommended to use a Node version manager such as {url_nvm}[NVM^].
 NVM is a bash script that enables the management of multiple active Node.js versions.
 
-. Install nvm following the {url_nvm_instructions}[official instructions^].
-. Install v16 of Node.js using NVM:
+. Install NVM by following the {url_nvm_instructions}[official instructions^].
+. Install v16 of Node.js using NVM.
 
 .Check for the latest LTS version
 [source,bash]
@@ -152,7 +152,7 @@ MySQL is used for storing persistent data.
 
 [NOTE]
 ====
-Lisk Service, by default, expects a MySQL user `lisk` with password `password` and a database `lisk`.
+Lisk Service, by default, expects a MySQL user `lisk` with the password `password` and a database `lisk`.
 
 **The MySQL user `lisk` needs to be manually created** after installing MySQL.
 
