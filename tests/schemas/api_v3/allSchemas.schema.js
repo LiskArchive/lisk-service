@@ -56,7 +56,9 @@ const genericSchema = {
 	schema: Joi.object(schema).required(),
 };
 
-const ccmSchema = {};
+const ccmSchema = {
+	schema: Joi.object(schema).required(),
+};
 
 const allSchemasSchema = {
 	block: Joi.object(genericSchema).required(),
