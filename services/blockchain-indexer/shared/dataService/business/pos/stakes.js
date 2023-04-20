@@ -49,11 +49,19 @@ const getStakes = async params => {
 	// Filter stakes by user specified search param (validator name) and add to response
 	const accountInfoQueryFilter = {};
 	if (params.search) {
-		accountInfoQueryFilter.search = {
+		accountInfoQueryFilter.search = [{
 			property: 'name',
 			pattern: params.search,
-		};
+		},{
+			property: 'address',
+			pattern: params.search,
+		},{
+			property: 'publicKey',
+			pattern: params.search,
+		}];
 	}
+
+	console.log("params.search: " + accountInfoQueryFilter.orSearch)
 
 	await BluebirdPromise.map(
 		stakerInfo.stakes,
@@ -68,6 +76,8 @@ const getStakes = async params => {
 				},
 				['name'],
 			);
+
+				console.log("validatorName: " + validatorName)
 
 			// Add validator to response
 			if (validatorName) {
