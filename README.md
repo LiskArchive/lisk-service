@@ -42,6 +42,11 @@ Every microservice is independently managed and placed in a separate directory u
 - The default installation method is based on Docker.
 - Some token conversion rates in the Market service require their API keys.
 
+## Architecture Diagram
+
+Inter-microservice communications are enabled with a message broker, typically an instance of Redis or NATS.
+
+![Lisk Service Architecture](./docs/assets/architecture.png)
 ## API documentation
 
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
