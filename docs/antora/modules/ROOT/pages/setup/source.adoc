@@ -333,7 +333,7 @@ Now it is possible to start Lisk Service.
 npm run start
 ----
 
-This will use the default configuration and connect Lisk Service to the Lisk Mainnet.
+The default configuration in `ecosystem.config.js` should suffice in most of the cases. If necessary, please modify the file to configure the necessary environment variables for each microservice as per your requirements.
 
 To change the default configuration, check out the page xref:{url_config}[Configuration with PM2].
 
