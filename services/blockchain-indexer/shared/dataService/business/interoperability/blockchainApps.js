@@ -13,7 +13,9 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const BluebirdPromise = require('bluebird');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const { requestConnector } = require('../../../utils/request');
 
 const config = require('../../../../config');
 
@@ -71,9 +73,22 @@ const getBlockchainApps = async (params) => {
 
 	const total = await blockchainAppsTable.count(params);
 
-	blockchainAppsInfo.data = await blockchainAppsTable.find(
+	const resultSet = await blockchainAppsTable.find(
 		{ ...params, limit: params.limit || total },
 		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
+	);
+
+	blockchainAppsInfo.data = await BluebirdPromise.map(
+		resultSet,
+		async blockchainAppInfo => {
+			const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
+
+			return {
+				...blockchainAppInfo,
+				escrow: escrowedAmounts,
+			};
+		},
+		{ concurrency: resultSet.length },
 	);
 
 	blockchainAppsInfo.meta = {

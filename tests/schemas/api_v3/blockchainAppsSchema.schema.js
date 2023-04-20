@@ -34,6 +34,11 @@ const blockchainAppsStatsSchema = {
 	currentAnnualInflationRate: Joi.string().required(),
 };
 
+const escrow = {
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	amount: Joi.string().pattern(regex.DIGITS).required(),
+};
+
 const blockchainAppSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.number().integer().min(1).required(),
@@ -45,6 +50,7 @@ const blockchainAppSchema = {
 		.positive()
 		.max(getCurrentTimestamp())
 		.required(),
+	escrow: Joi.array().items(escrow).required(),
 };
 
 module.exports = {
