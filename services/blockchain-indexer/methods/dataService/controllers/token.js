@@ -19,17 +19,17 @@ const {
 
 const dataService = require('../../../shared/dataService');
 
-const getTokens = async params => {
+const getTokenBalances = async params => {
 	try {
-		const tokensInfo = {
+		const tokenBalances = {
 			data: [],
 			meta: {},
 		};
-		const response = await dataService.getTokens(params);
-		if (response.data) tokensInfo.data = response.data;
-		if (response.meta) tokensInfo.meta = response.meta;
+		const response = await dataService.getTokenBalances(params);
+		if (response.data) tokenBalances.data = response.data;
+		if (response.meta) tokenBalances.meta = response.meta;
 
-		return tokensInfo;
+		return tokenBalances;
 	} catch (error) {
 		let status;
 		if (error instanceof InvalidParamsException) status = 'INVALID_PARAMS';
@@ -38,16 +38,16 @@ const getTokens = async params => {
 	}
 };
 
-const getTokensSummary = async params => {
-	const tokensSummary = {
+const getTokenSummary = async params => {
+	const tokenSummary = {
 		data: {},
 		meta: {},
 	};
-	const response = await dataService.getTokensSummary(params);
-	if (response.data) tokensSummary.data = response.data;
-	if (response.meta) tokensSummary.meta = response.meta;
+	const response = await dataService.getTokenSummary(params);
+	if (response.data) tokenSummary.data = response.data;
+	if (response.meta) tokenSummary.meta = response.meta;
 
-	return tokensSummary;
+	return tokenSummary;
 };
 
 const tokenHasUserAccount = async params => {
@@ -77,7 +77,7 @@ const getTokenConstants = async () => {
 
 module.exports = {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 };

@@ -111,7 +111,7 @@ scenarios:
   - name: "Tokens information"
     flow:
       - get:
-          url: "/tokens"
+          url: "/token/balances"
           qs:
             address: "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"
           expect:
@@ -137,7 +137,7 @@ scenarios:
   - name: "Tokens summary"
     flow:
       - get:
-          url: "/tokens/summary"
+          url: "/token/summary"
           expect:
             - statusCode: 200
 

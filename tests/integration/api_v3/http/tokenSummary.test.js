@@ -19,22 +19,22 @@ const { api } = require('../../../helpers/api');
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	tokensSummaryResponseSchema,
+	tokenSummaryResponseSchema,
 	goodResponseSchema,
-	tokensSummaryMetaResponseSchema,
-} = require('../../../schemas/api_v3/tokensSummary.schema');
+	tokenSummaryMetaResponseSchema,
+} = require('../../../schemas/api_v3/tokenSummary.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/tokens/summary`;
+const endpoint = `${baseUrlV3}/token/summary`;
 
 describe('Tokens API', () => {
 	it('Retrieves tokens summary -> ok', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodResponseSchema);
 		expect(response.data).toBeInstanceOf(Object);
-		expect(response.data).toMap(tokensSummaryResponseSchema);
-		expect(response.meta).toMap(tokensSummaryMetaResponseSchema);
+		expect(response.data).toMap(tokenSummaryResponseSchema);
+		expect(response.meta).toMap(tokenSummaryMetaResponseSchema);
 	});
 
 	it('Invalid request param -> bad request', async () => {

@@ -304,6 +304,58 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
+	'/blockchain/apps/meta/tokens/supported': {
+		get: {
+			tags: [
+				'Interoperability',
+			],
+			summary: 'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+			description: 'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.\n RPC => get.blockchain.apps.meta.tokens.supported',
+			parameters: [
+				{
+					$ref: '#/parameters/chainID',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+				{
+					name: 'sort',
+					in: 'query',
+					description: 'Fields to sort results by.',
+					required: false,
+					type: 'string',
+					enum: [
+						'tokenID:asc',
+						'tokenID:desc',
+					],
+					default: 'tokenID:asc',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a list of blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+					schema: {
+						$ref: '#/definitions/BlockchainAppsTokenMetadataWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+				404: {
+					description: 'Not found',
+					schema: {
+						$ref: '#/definitions/notFound',
+					},
+				},
+			},
+		},
+	},
 	'/blocks': {
 		get: {
 			tags: [
@@ -926,13 +978,13 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/validator/validateBLSKey': {
+	'/validator/validate-bls-key': {
 		post: {
 			tags: [
 				'Validator',
 			],
 			summary: 'Validates a BLS key against its corresponding Proof of Possession.',
-			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validateBLSKey',
+			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validate-bls-key',
 			parameters: [
 				{
 					$ref: '#/parameters/validateBLSKeyParams',

@@ -19,23 +19,15 @@ const {
 } = require('lisk-service-framework');
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
-const regex = require('../utils/regex');
+const { getNodeInfo } = require('./endpoints_1');
 
 const logger = Logger();
+
+let mainchainID;
 
 const getChainAccount = async (chainID) => {
 	try {
 		const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID });
-
-		if (chainAccount.error
-			&& regex.KEY_NOT_EXIST.test(chainAccount.error.message)) {
-			return {
-				lastCertificate: {},
-				name: null,
-				status: null,
-			};
-		}
-
 		return chainAccount;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -46,6 +38,28 @@ const getChainAccount = async (chainID) => {
 	}
 };
 
+const getMainchainID = async () => {
+	try {
+		if (!mainchainID) {
+			// const mainchainID = await invokeEndpoint('interoperability_getMainchainID');
+
+			// TODO: Remove this and use SDK endpoint once following issue is closed: https://github.com/LiskHQ/lisk-sdk/issues/8309
+			const { chainID } = await getNodeInfo();
+			const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
+			mainchainID = chainID.substring(0, 2).padEnd(LENGTH_CHAIN_ID, '0');
+		}
+
+		return mainchainID;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getMainchainID\'.');
+		}
+		logger.warn(`Error returned when invoking 'interoperability_getMainchainID'.\n${err.stack}`);
+		throw err;
+	}
+};
+
 module.exports = {
 	getChainAccount,
+	getMainchainID,
 };

@@ -99,23 +99,12 @@ const getValidatorsTable = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const { KV_STORE_KEY } = require('../constants');
+const { indexGenesisBlockAssets } = require('./genesisBlock');
+const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
-
-const updateTotalLockedAmounts = (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
-	Object.entries(tokenIDLockedAmountChangeMap),
-	async ([tokenID, lockedAmountChange]) => {
-		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
-		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
-		const newLockedAmount = curLockedAmount + lockedAmountChange;
-
-		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
-	},
-	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
-);
 
 const indexBlock = async job => {
 	const { block } = job.data;
@@ -129,6 +118,10 @@ const indexBlock = async job => {
 	let blockReward = BigInt('0');
 
 	try {
+		if (block.height === await getGenesisHeight()) {
+			await indexGenesisBlockAssets(dbTrx);
+		}
+
 		const events = await getEventsByHeight(block.height);
 
 		if (block.transactions.length) {
@@ -189,6 +182,7 @@ const indexBlock = async job => {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
 
 				if (blockReward !== BigInt('0')) {
+					// TODO: Verify logic
 					const commission = await calcCommission(block.generatorAddress, blockReward);
 					const selfStakeReward = await calcSelfStakeReward(
 						block.generatorAddress,
@@ -494,13 +488,6 @@ const getMissingBlocks = async (params) => {
 	return listOfMissingBlocks;
 };
 
-const isGenesisBlockIndexed = async () => {
-	const blocksTable = await getBlocksTable();
-	const genesisHeight = await getGenesisHeight();
-	const [block] = await blocksTable.find({ height: genesisHeight, limit: 1 }, ['height']);
-	return !!block;
-};
-
 const addBlockToQueue = async height => {
 	const block = await getBlockByHeight(height);
 	indexBlocksQueue.add({ block });
@@ -511,10 +498,8 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
 module.exports = {
-	indexBlock,
 	indexNewBlock,
 	updateNonFinalBlocks,
-	isGenesisBlockIndexed,
 	addBlockToQueue,
 	getMissingBlocks,
 	deleteBlock,

@@ -13,15 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokensSource = require('../../../../../sources/version3/tokens');
+const tokenBalancesSource = require('../../../../../sources/version3/tokenBalances');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/tokens',
-	rpcMethod: 'get.tokens',
+	swaggerApiPath: '/token/balances',
+	rpcMethod: 'get.token.balances',
 	tags: ['Token'],
 	params: {
 		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
@@ -50,6 +50,6 @@ module.exports = {
 		Object.assign(tokenSchema[this.swaggerApiPath].get.responses, response);
 		return tokenSchema;
 	},
-	source: tokensSource,
+	source: tokenBalancesSource,
 	envelope,
 };

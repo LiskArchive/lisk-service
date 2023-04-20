@@ -64,8 +64,8 @@ const {
 
 const {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 } = require('./token');
 
@@ -82,6 +82,7 @@ const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
+	getMainchainID,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
@@ -120,8 +121,8 @@ module.exports = {
 
 	// Token
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 
 	// Transactions
@@ -136,6 +137,7 @@ module.exports = {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
+	getMainchainID,
 	reloadBlockchainAppsStats,
 
 	// Events
