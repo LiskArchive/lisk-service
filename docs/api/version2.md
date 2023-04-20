@@ -1,19 +1,19 @@
 # Lisk Service API Documentation
 
-Lisk Service is a middleware web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing the market data, and interacting with social media.
+Lisk Service is a middleware web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data (both on-chain and off-chain information), retrieving and storing market data, and exporting account history.
 
-The main focus of this project is to provide data to Lisk blockchain users by serving them in a standardized JSON format and exposing a public RESTful API. The project is split into several smaller components each focused on serving a single specific purpose.
+The main focus of this project is to provide data to Lisk blockchain users by serving them in a standardized JSON format and exposing a public RESTful API. The project is split into several smaller components (microservices) each focused on serving a single specific purpose.
 
-As a pure backend project, it is designed to meet the requirements of the frontend developers, especially Lisk Desktop and Lisk Mobile.
+As a pure backend project, it is designed to meet the requirements of front-end developers, especially Lisk Desktop and Lisk Mobile.
 
-The API can be accessed at `https://service.lisk.com`.
+The API is accessible at `https://service.lisk.com`.
 It is also possible to access the Testnet network at `https://testnet-service.lisk.com`.
 
 The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.
 
 ## Table of Contents
 
-- [Lisk Service HTTP API Documentation](#lisk-service-http-api-documentation)
+- [Lisk Service API Documentation](#lisk-service-api-documentation)
   - [API Status and Readiness](#api-status-and-readiness)
   - [Base URL](#base-url)
   - [Endpoint logic](#endpoint-logic)
@@ -21,36 +21,65 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 - [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
   - [Blocks](#blocks)
     - [Block search](#block-search)
+    - [Block assets search](#block-assets-search)
   - [Transactions](#transactions)
     - [Transaction search](#transaction-search)
+    - [Transaction dryrun](#transaction-dryrun)
     - [Transaction broadcast](#transaction-broadcast)
     - [Transaction statistics](#transaction-statistics)
-    - [Transaction schema](#transaction-schema)
-    - [Dynamic fees](#dynamic-fees)
   - [Events](#events)
+    - [Event search](#event-search)
   - [Auth](#auth)
+    - [Auth details](#auth-details)
   - [Validator](#validator)
+    - [Validator details](#validator-details)
+    - [Validate BLS Key](#validate-bls-key)
   - [Token](#token)
+    - [Token Account Exists](#token-account-exists)
+    - [Token Balances](#token-balances)
+    - [Token Constants](#token-constants)
+    - [Token Summary](#token-summary)
   - [Dynamic Fees](#dynamic-fees)
   - [Interoperability](#interoperability)
-  - [PoS](#proof-of-stake)
-  - [Reward](#reward)
+    - [Interoperable applications](#interoperable-applications)
+    - [Interoperable network statistics](#interoperable-network-statistics)
+  - [PoS](#proof-of-stake-pos)
+    - [Claimable rewards](#claimable-rewards)
+    - [Locked rewards](#locked-rewards)
+    - [Module constants](#module-constants)
+    - [Stakers (Received stakes)](#stakers-received-stakes)
+    - [Stakes (Sent stakes)](#stakes-send-stakes)
+    - [Available unlocks](#available-unlocks)
+  - [(Dynamic) Reward](#dynamic-reward)
+    - [Module Constants](#module-constants-2)
+    - [Default Reward](#default-reward)
+    - [Annual Inflation](#annual-inflation)
   - [Legacy](#legacy)
+    - [Legacy Account Details](#legacy-account-details)
   - [Network](#network)
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
   - [Generators](#generators)
+    - [Generator List](#generator-list)
   - [Schemas](#schemas)
+    - [Schema](#schema)
   - [Index Status](#index-status)
+    - [Current indexing status](#current-indexing-status)
   - [Proxy](#proxy)
+    - [Invoke Application Endpoints](#invoke-application-endpoints)
 - [Off-chain Features](#off-chain-features)
+  - [Application Metadata](#market-prices)
+    - [Application metadata overview](#application-metadata-overview)
+    - [Application metadata details](#application-metadata-details)
+    - [Application native token metadata details](#application-native-token-metadata-details)
+    - [Application supported token metadata details](#application-supported-token-metadata-details)
   - [Market Prices](#market-prices)
   - [Account History Export](#account-history-export)
 
 ## API Status and Readiness
 
-Lisk Service offers `/status` and `/ready` endpoints to check the current deployment and a high-level service readiness statuses respectively. These endpoints must be queried without the [base URL](#base-url).
+Lisk Service offers `/status` and `/ready` endpoints to check the current deployment and high-level service readiness statuses respectively. These endpoints must be queried without the [base URL](#base-url).
 <br/>*Example*: https://service.lisk.com/api/status, https://service.lisk.com/api/ready
 
 ## Base URL
@@ -63,12 +92,12 @@ The WS-RPC endpoints however are available to query under the `/rpc-v3` namespac
 
 ## Endpoint Logic
 
-The logic of the endpoints are as follows:
+The logic of the endpoints is as follows:
 The structure is always based on `/<root_entity or module>/<object>/<properties>`.
 
 ## Response format
 
-All responses are returned in the JSON format - `application/json`.
+All responses are in the JSON format - `application/json`.
 
 Each API request has the following structure:
 
@@ -79,7 +108,7 @@ Each API request has the following structure:
 }
 ```
 
-And, the error responses adhere to the following structure:
+The error responses adhere to the following structure:
 
 ```jsonc
 {
@@ -108,12 +137,12 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
 | generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
 
 #### Response example
 
@@ -199,12 +228,12 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
 | module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
 
 #### Response example
 
@@ -261,7 +290,7 @@ https://service.lisk.com/api/v3/block/assets?height=9
 
 ### Transaction search
 
-Retrieves network transactions by criteria defined by params.
+Retrieves network transactions by criteria defined by parameters.
 
 _Supports pagination._
 
@@ -280,13 +309,13 @@ _Supports pagination._
 | recipientAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
 | executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
 | nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
-| order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision. |
+| sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in a collision. |
 
 #### Response example
 
@@ -355,7 +384,7 @@ Get transaction by transactionID
 https://service.lisk.com/api/v3/transactions?transactionID=65c28137c130c6609a67fccfcd9d0f7c3df3577324f8d33134326d653ded613f
 ```
 
-Get last 25 transactions for account `lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu`
+Get the last 25 transactions for account `lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu`
 
 ```
 https://service.lisk.com/api/v3/transactions?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
@@ -363,7 +392,7 @@ https://service.lisk.com/api/v3/transactions?address=lsk24cd35u4jdq8szo3pnsqe5ds
 
 ### Transaction broadcast
 
-Sends encoded transaction to the network node.
+Sends encoded transactions to the network node.
 
 #### Endpoints
 
@@ -373,7 +402,7 @@ Sends encoded transaction to the network node.
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 Request payload:
 
@@ -422,7 +451,7 @@ Sends decoded/encoded transactions to the network node.
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 Request payload:
 
@@ -509,7 +538,7 @@ or
 
 ### Transaction statistics
 
-Retrieves daily network transactions statistics for time spans defined by params.
+Retrieves daily network transaction statistics for periods defined by params.
 
 _Supports pagination._
 
@@ -619,12 +648,12 @@ _Supports pagination._
 | senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | topic | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Can be expressed as a CSV |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |  |
-| order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision. |
+| sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in a collision. |
 
 #### Response example
 
@@ -681,11 +710,561 @@ Get events by topic
 https://service.lisk.com/api/v3/events?topic=lsksod8bj35gmndy94yehxm25nybg5os6ycysejsm
 ```
 
+
+## Generators
+
+### Generator List
+
+Retrieves list of block generators.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/generators`
+- RPC `get.generators`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| limit | Number | `[1,103]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "name": "genesis_84",
+      "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+      "nextForgingTime": 1616058987,
+      "status": "active"
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 103
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get generators
+```
+https://service.lisk.com/api/v3/generators
+```
+
+
+
+## Schemas
+
+### Schema
+
+Retrieves all available schemas.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/schemas`
+- RPC `get.schemas`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "block": {
+      "schema": {
+        "$id": "/block",
+        "type": "object",
+        "required": [
+          "header",
+          "transactions",
+          "assets"
+        ],
+        "properties": {
+          "header": {
+            "dataType": "uint64",
+            "fieldNumber": 1
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "dataType": "bytes"
+            },
+            "fieldNumber": 2
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "dataType": "bytes"
+            },
+            "fieldNumber": 2
+          }
+        }
+      }
+    },
+    "header": {
+      "schema": {
+        "$id": "/block/header/3",
+        "type": "object",
+        "properties": {
+          "version": {
+            "dataType": "uint32",
+            "fieldNumber": 1
+          },
+          "timestamp": {
+            "dataType": "uint32",
+            "fieldNumber": 2
+          },
+          "height": {
+            "dataType": "uint32",
+            "fieldNumber": 3
+          },
+          "previousBlockID": {
+            "dataType": "bytes",
+            "fieldNumber": 4
+          },
+          "generatorAddress": {
+            "dataType": "bytes",
+            "fieldNumber": 5,
+            "format": "lisk32"
+          },
+          "transactionRoot": {
+            "dataType": "bytes",
+            "fieldNumber": 6
+          },
+          "assetRoot": {
+            "dataType": "bytes",
+            "fieldNumber": 7
+          },
+          "eventRoot": {
+            "dataType": "bytes",
+            "fieldNumber": 8
+          },
+          "stateRoot": {
+            "dataType": "bytes",
+            "fieldNumber": 9
+          },
+          "maxHeightPrevoted": {
+            "dataType": "uint32",
+            "fieldNumber": 10
+          },
+          "maxHeightGenerated": {
+            "dataType": "uint32",
+            "fieldNumber": 11
+          },
+          "impliesMaxPrevotes": {
+            "dataType": "boolean",
+            "fieldNumber": 12
+          },
+          "validatorsHash": {
+            "dataType": "bytes",
+            "fieldNumber": 13
+          },
+          "aggregateCommit": {
+            "type": "object",
+            "fieldNumber": 14,
+            "properties": {
+              "height": {
+                "dataType": "uint32",
+                "fieldNumber": 1
+              },
+              "aggregationBits": {
+                "dataType": "bytes",
+                "fieldNumber": 2
+              },
+              "certificateSignature": {
+                "dataType": "bytes",
+                "fieldNumber": 3
+              }
+            }
+          },
+          "signature": {
+            "dataType": "bytes",
+            "fieldNumber": 15
+          }
+        }
+      }
+    },
+    "asset": {
+      "schema": {
+        "$id": "/block/asset/3",
+        "type": "object",
+        "required": [
+          "module",
+          "data"
+        ],
+        "properties": {
+          "module": {
+            "dataType": "uint64",
+            "fieldNumber": 1
+          },
+          "data": {
+            "dataType": "string",
+            "fieldNumber": 2
+          }
+        }
+      }
+    },
+    "transaction": {
+      "schema": {
+        "$id": "/token/events/transfer",
+        "type": "object",
+        "required": [
+          "module",
+          "command",
+          "nonce",
+          "fee",
+          "senderPublicKey",
+          "params"
+        ],
+        "properties": {
+          "module": {
+            "dataType": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "fieldNumber": 1
+          },
+          "command": {
+            "dataType": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "fieldNumber": 2
+          },
+          "nonce": {
+            "dataType": "uint64",
+            "fieldNumber": 3
+          },
+          "fee": {
+            "dataType": "uint64",
+            "fieldNumber": 4
+          },
+          "senderPublicKey": {
+            "dataType": "bytes",
+            "minLength": 32,
+            "maxLength": 32,
+            "fieldNumber": 5
+          },
+          "params": {
+            "dataType": "bytes",
+            "fieldNumber": 6
+          },
+          "signatures": {
+            "type": "array",
+            "items": {
+              "dataType": "bytes"
+            },
+            "fieldNumber": 7
+          }
+        }
+      }
+    },
+    "standardEvent": {
+      "schema": {
+        "$id": "/block/event/standard",
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "dataType": "boolean",
+            "fieldNumber": 1
+          }
+        }
+      }
+    },
+    "event": {
+      "schema": {
+        "$id": "/block/asset/3",
+        "type": "object",
+        "required": [
+          "module",
+          "name",
+          "data",
+          "topics",
+          "height",
+          "index"
+        ],
+        "properties": {
+          "module": {
+            "dataType": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "fieldNumber": 1
+          },
+          "name": {
+            "dataType": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "fieldNumber": 2
+          },
+          "data": {
+            "dataType": "bytes",
+            "fieldNumber": 3
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "dataType": "bytes"
+            },
+            "fieldNumber": 4
+          },
+          "height": {
+            "dataType": "bytes",
+            "fieldNumber": 5
+          },
+          "index": {
+            "dataType": "integer",
+            "fieldNumber": 5
+          }
+        }
+      }
+    },
+    "events": [
+      {
+        "module": "token",
+        "name": "transferEvent",
+        "schema": {
+          "$id": "/token/events/transfer",
+          "type": "object",
+          "required": [
+            "senderAddress",
+            "recipientAddress",
+            "tokenID",
+            "amount",
+            "result"
+          ],
+          "properties": {
+            "senderAddress": {
+              "dataType": "bytes",
+              "fieldNumber": 1
+            },
+            "recipientAddress": {
+              "dataType": "bytes",
+              "fieldNumber": 2
+            },
+            "tokenID": {
+              "dataType": "bytes",
+              "fieldNumber": 3
+            },
+            "amount": {
+              "dataType": "uint64",
+              "fieldNumber": 4
+            },
+            "result": {
+              "dataType": "uint32",
+              "fieldNumber": 5
+            }
+          }
+        }
+      }
+    ],
+    "assets": [
+      {
+        "module": "random",
+        "version": "2",
+        "schema": {
+          "$id": "/modules/random/block/header/asset",
+          "type": "object",
+          "required": [
+            "seedReveal"
+          ],
+          "properties": {
+            "seedReveal": {
+              "dataType": "bytes",
+              "minLength": 16,
+              "maxLength": 16,
+              "fieldNumber": 1
+            }
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "moduleCommand": "token:transfer",
+        "schema": {
+          "$id": "lisk/transfer-asset",
+          "title": "Transfer transaction asset",
+          "type": "object",
+          "required": [
+            "amount",
+            "recipientAddress",
+            "data"
+          ],
+          "properties": {
+            "amount": {
+              "dataType": "uint64",
+              "fieldNumber": 1
+            },
+            "recipientAddress": {
+              "dataType": "bytes",
+              "fieldNumber": 2,
+              "minLength": 20,
+              "maxLength": 20
+            },
+            "data": {
+              "dataType": "bytes",
+              "fieldNumber": 3,
+              "minLength": 0,
+              "maxLength": 64
+            }
+          }
+        }
+      }
+    ],
+    "messages": [
+      {
+        "moduleCommand": "auth:registerMultisignature",
+        "param": "signatures",
+        "schema": {
+          "$id": "/auth/command/regMultisigMsg",
+          "type": "object",
+          "required": [
+            "address",
+            "nonce",
+            "numberOfSignatures",
+            "mandatoryKeys",
+            "optionalKeys"
+          ],
+          "properties": {
+            "address": {
+              "dataType": "bytes",
+              "fieldNumber": 1,
+              "minLength": 20,
+              "maxLength": 20
+            },
+            "nonce": {
+              "dataType": "uint64",
+              "fieldNumber": 2
+            },
+            "numberOfSignatures": {
+              "dataType": "uint32",
+              "fieldNumber": 3
+            },
+            "mandatoryKeys": {
+              "type": "array",
+              "items": {
+                "dataType": "bytes",
+                "minLength": 32,
+                "maxLength": 32
+              },
+              "fieldNumber": 4
+            },
+            "optionalKeys": {
+              "type": "array",
+              "items": {
+                "dataType": "bytes",
+                "minLength": 32,
+                "maxLength": 32
+              },
+              "fieldNumber": 5
+            }
+          }
+        }
+      }
+    ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get schemas
+```
+https://service.lisk.com/api/v3/schemas
+```
+
+
+
+## Index Status
+
+### Current indexing status
+
+Retrieves the current indexing status.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/index/status`
+- RPC `get.index.status`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "genesisHeight": 0,
+    "lastBlockHeight": 2330,
+    "lastIndexedBlockHeight": 2330,
+    "chainLength": 2331,
+    "numBlocksIndexed": 2330,
+    "percentageIndexed": 99.96,
+    "isIndexingInProgress": true
+  },
+  "meta": {
+    "lastUpdate": 1632471013
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get current index status
+```
+https://service.lisk.com/api/v3/index/status
+```
+
+
 ## Auth
 
 ### Auth Details
 
-Retrieves user-specific details form the Auth module.
+Retrieves user-specific details from the Auth module.
 
 #### Endpoints
 
@@ -743,7 +1322,7 @@ https://service.lisk.com/api/v3/auth?address=lskdwsyfmcko6mcd357446yatromr9vzgu7
 
 ### Validator Details
 
-Retrieves user-specific details form the Validator module.
+Retrieves user-specific details from the Validator module.
 
 #### Endpoints
 
@@ -805,7 +1384,7 @@ _Supports pagination._
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 Request payload:
 
@@ -887,7 +1466,7 @@ https://service.lisk.com/api/v3/token/account/exists?tokenID=0400000000000000&ad
 
 ### Token Balances
 
-Retrieves balances from the Token sub-store for the specified address.
+Retrieves the balances from the Token sub-store for the specified address.
 
 #### Endpoints
 
@@ -956,7 +1535,7 @@ Retrieves module constants from the Token module.
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 #### Response example
 
@@ -1000,7 +1579,7 @@ Retrieves the summary of the Token sub-store state from the Token module.
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 #### Response example
 
@@ -1065,7 +1644,7 @@ Requests transaction fee estimates per byte.
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 #### Response example
 
@@ -1115,7 +1694,7 @@ https://service.lisk.com/api/v3/fees
 
 ## Interoperability
 
-### Interoperable applications (on-chain)
+### Interoperable applications
 
 Retrieves blockchain applications in the current network.
 
@@ -1175,7 +1754,7 @@ _Supports pagination._
 https://service.lisk.com/api/v3/blockchain/apps
 ```
 
-### Interoperable applications (on-chain) - network statistics
+### Interoperable network statistics
 
 Retrieves statistics for the current network blockchain applications.
 
@@ -1188,7 +1767,7 @@ _Supports pagination._
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 #### Response example
 
@@ -1222,27 +1801,28 @@ No params required.
 https://service.lisk.com/api/v3/blockchain/apps/statistics
 ```
 
-### Interoperable applications (off-chain) metadata list
+## Proof of Stake (PoS)
 
-Retrieves a list of blockchain applications for which the metadata exist.
+### Claimable rewards
+
+Retrieves currently claimable rewards information from the PoS module for the specified address, publicKey or validator name.
 
 _Supports pagination._
 
 #### Endpoints
 
-- HTTP GET `/api/v3/blockchain/apps/meta/list`
-- RPC `get.blockchain.apps.meta.list`
+- HTTP GET `/api/v3/pos/rewards/claimable`
+- RPC `get.pos.rewards.claimable`
 
 #### Request parameters
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
 
 #### Response example
 
@@ -1252,262 +1832,14 @@ _Supports pagination._
 {
   "data": [
     {
-      "chainName": "Lisk",
-      "chainID": "00000000",
-      "networkType": "mainnet"
-    }
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 10,
-    "total": 400
-  }
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v3/blockchain/apps/meta/list
-```
-
-### Interoperable applications (off-chain) metadata details
-
-Retrieves metadata for a list of blockchain applications. The information is used by the wallets.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP GET `/api/v3/blockchain/apps/meta`
-- RPC `get.blockchain.apps.meta`
-
-#### Request parameters
-
-| Parameter | Type | Validation | Default | Comment |
-| --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
-| isDefault | Boolean | `[true, false]` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": [
-    {
-      "chainName": "Lisk",
-      "chainID": "00000000",
-      "title": "Lisk blockchain application",
-      "status": "active",
-      "description": "Lisk is a blockchain application platform",
-      "networkType": "mainnet",
-      "isDefault": true,
-      "genesisURL": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
-      "projectPage": "https://lisk.com",
-      "serviceURLs": [
-        {
-          "http": "https://service.lisk.com",
-          "ws": "wss://service.lisk.com"
-        }
-      ],
-      "logo": {
-        "png": "https://downloads.lisk.com/lisk/images/logo.png",
-        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
-      },
-      "appPage": "https://lisk.com",
-      "backgroundColor": "#0981D1",
-      "explorers": [
-        {
-          "url": "https://lisk.observer",
-          "txnPage": "https://lisk.observer/transactions"
-        }
-      ],
-      "appNodes": [
-        {
-          "url": "https://mainnet.lisk.com",
-          "maintainer": "Lightcurve GmbH"
-        }
-      ]
-    }
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 10,
-    "total": 400
-  }
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v3/blockchain/apps/meta
-```
-
-### Interoperable application token (off-chain) metadata details
-
-Retrieves the metadata for the tokens. The information is used by the wallets.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP GET `/api/v3/blockchain/apps/meta/tokens`
-- RPC `get.blockchain.apps.meta.tokens`
-
-#### Request parameters
-
-| Parameter | Type | Validation | Default | Comment |
-| --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
-| tokenName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Can be expressed as CSV. |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc]` | chainName:asc |  |
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": [
-    {
-      "chainID": "00000000",
-      "chainName": "Lisk",
-      "tokenID": "Lisk",
-      "tokenName": "00000000",
-      "networkType": "mainnet",
-      "description": "LSK is the utility token of Lisk",
-      "denomUnits": [
-        {
-          "denom": "lsk",
-          "decimals": 8,
-          "aliases": [
-            "LISK"
-          ]
-        }
-      ],
-      "symbol": "LSK",
-      "displayDenom": "LSK",
-      "baseDenom": "beddows",
-      "logo": {
-        "png": "https://downloads.lisk.com/lisk/images/logo.png",
-        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
-      }
-    }
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 10,
-    "total": 400
-  }
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v3/blockchain/apps/meta/tokens
-```
-
-### Interoperable application token (off-chain) metadata details for all tokens supported by a specific chain
-
-Retrieves the metadata for the tokens supported by the specified blockchain application. The information is used by the wallets.
-This endpoint internally queries the `/token/summary` for the specified chainID and considers the `supportedTokens` information to collate the relevant metadata.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP GET `/api/v3/blockchain/apps/meta/tokens/supported`
-- RPC `get.blockchain.apps.meta.tokens.supported`
-
-#### Request parameters
-
-| Parameter | Type | Validation | Default | Comment |
-| --------- | ---- | ---------- | ------- | ------- |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
-| limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `[tokenID:asc, tokenID:desc]` | tokenID:asc |  |
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": [
-    {
-      "chainID": "00000000",
-      "chainName": "Lisk",
       "tokenID": "0000000000000000",
-      "tokenName": "Lisk",
-      "networkType": "mainnet",
-      "description": "Default token for the entire Lisk ecosystem",
-      "logo": {
-        "png": "https://downloads.lisk.com/lisk/images/logo.png",
-        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
-      },
-      "symbol": "LSK",
-      "displayDenom": "lsk",
-      "baseDenom": "beddows",
-      "denomUnits": [
-        {
-          "denom": "beddows",
-          "decimals": 0,
-          "aliases": [
-            "Beddows"
-          ]
-        },
-        {
-          "denom": "lsk",
-          "decimals": 8,
-          "aliases": [
-            "Lisk"
-          ]
-        }
-      ]
+      "reward": "109000000000"
     }
   ],
   "meta": {
-    "count": 1,
-    "offset": 0,
-    "total": 1
+    "count": 10,
+    "offset": 10,
+    "total": 400
   }
 }
 ```
@@ -1523,9 +1855,669 @@ _Supports pagination._
 #### Examples
 
 ```
-https://service.lisk.com/api/v3/blockchain/apps/meta/tokens/supported?chainID=00000000
+https://service.lisk.com/api/v3/pos/rewards/claimable?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
 ```
 
+### Locked rewards
+
+Retrieves currently locked rewards information from the PoS module for the specified address, publicKey or validator name.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/pos/rewards/locked`
+- RPC `get.pos.rewards.locked`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "tokenID": "0000000000000000",
+      "reward": "109000000000"
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/pos/rewards/locked?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+### Module constants
+
+Retrieves configurable constants information from the PoS module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/pos/rewards/claimable`
+- RPC `get.pos.rewards.claimable`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "factorSelfStakes": 10,
+    "maxLengthName": 20,
+    "maxNumberSentStakes": 10,
+    "maxNumberPendingUnlocks": 20,
+    "failSafeMissedBlocks": 50,
+    "failSafeInactiveWindow": 260000,
+    "punishmentWindow": 780000,
+    "roundLength": 10,
+    "minWeightStandby": "100000000000",
+    "numberActiveValidators": 101,
+    "numberStandbyDelegates": 2,
+    "posTokenID": "0000000000000000",
+    "maxBFTWeightCap": 500,
+    "commissionIncreasePeriod": 260000,
+    "maxCommissionIncreaseRate": 500,
+    "extraCommandFees": {
+      "validatorRegistrationFee": "1000000000"
+    }
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/pos/stakers
+```
+
+### Stakers (Received stakes)
+
+Retrieves the list of stakers (received stakes) for the specified validator address, publicKey or name.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/pos/stakers`
+- RPC `get.pos.stakers`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "stakers": [
+      {
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "amount": "10815000000000",
+        "name": "liskhq"
+      }
+    ]
+  },
+  "meta": {
+    "validator": {
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+      "name": "genesis_84"
+    },
+    "count": 100,
+    "offset": 25,
+    "total": 43749
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/pos/stakers?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+### Stakes (Sent stakes)
+
+Retrieves the list of stakes sent by the specified user by their address, publicKey or validator name.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/pos/stakes`
+- RPC `get.pos.stakes`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "stakes": [
+      {
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "amount": "10815000000000",
+        "name": "liskhq"
+      }
+    ]
+  },
+  "meta": {
+    "staker": {
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+      "name": "genesis_84"
+    },
+    "count": 10
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/pos/stakes?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+### Available unlocks
+
+Retrieves the list of available unlocks as a result of un-stakes for the specified user address, publicKey or validator name.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/pos/unlocks`
+- RPC `get.pos.unlocks`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| isLocked | Boolean | `[true, false]` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+      "name": "genesis_84",
+      "pendingUnlocks": [
+        {
+          "validatorAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+          "amount": "1000000000",
+          "tokenID": "0000000000000000",
+          "unstakeHeight": "10000",
+          "expectedUnlockableHeight": "270000",
+          "isLocked": true
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 0,
+    "total": 15
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/pos/unlocks?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+### Validators
+
+Retrieves the list of validators.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/pos/validators`
+- RPC `get.pos.validators`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,)+\b$/` | *(empty)* | Can be expressed as CSV |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `["commission:asc", "commission:desc", "validatorWeight:desc", "validatorWeight:asc", "rank:asc", "rank:desc", "name:asc", "name:desc"]` | commission:asc |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "name": "genesis_84",
+      "totalStake": "109000000000",
+      "selfStake": "109000000000",
+      "validatorWeight": "109000000000",
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+      "lastGeneratedHeight": 0,
+      "status": "active",
+      "isBanned": false,
+      "reportMisbehaviorHeights": [
+        123
+      ],
+      "punishmentPeriods": [
+        {
+          "start": 123,
+          "end": 260123
+        }
+      ],
+      "consecutiveMissedBlocks": 0,
+      "commission": 100000,
+      "lastCommissionIncreaseHeight": 0,
+      "sharingCoefficients": [
+        {
+          "tokenID": "0000000000000000",
+          "coefficient": "0"
+        }
+      ],
+      "rank": 93,
+      "generatedBlocks": 1000,
+      "totalCommission": "100000000000",
+      "totalSelfStakeRewards": "0",
+      "earnedRewards": "100000000000"
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/pos/validators?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
+```
+
+## (Dynamic) Reward
+
+### Module Constants
+
+Retrieves configurable constants information from the (Dynamic) Reward module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/reward/constants`
+- RPC `get.reward.constants`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "rewardTokenID": "0000000000000000"
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/reward/constants
+```
+
+### Default Reward
+
+Retrieves expected block reward at a specified height, as per the network configuration. The actual reward can vary and can be determined from the `rewardMinted` block event for the said height.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/reward/default`
+- RPC `get.reward.default`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| height | Number | `[0,Inf)` | *(empty)* |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "tokenID": "0000000000000000",
+    "defaultReward": "109000000000"
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/reward/default?height=55000
+```
+
+### Annual Inflation
+
+Retrieves the annual inflation at a specified height for the Reward token.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/reward/annual-inflation`
+- RPC `get.reward.annual-inflation`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| height | Number | `[0,Inf)` | *(empty)* |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "tokenID": "0000000000000000",
+    "rate": "10.32"
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/reward/annual-inflation?height=500
+```
+
+## Legacy
+
+### Legacy Account Details
+
+Retrieves legacy account details for the specified user publicKey.
+
+#### Endpoints
+
+- HTTP `/api/v3/legacy`
+- RPC `get.legacy`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  |
+
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": {
+    "legacyAddress": "3057001998458191401L",
+    "balance": "10000000"
+  },
+  "meta": {
+    "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+    "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd"
+  }
+}
+```
+
+400 Bad Request
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get legacy account details by publicKey
+
+```
+https://service.lisk.com/api/v3/legacy?publicKey=b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd
+```
+
+## Proxy
+
+### Invoke Application Endpoints
+
+Proxy request to directly invoke application endpoint. Returns endpoint response from the blockchain application in its original form.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/invoke`
+- RPC `post.invoke`
+
+#### Request body parameters
+
+```jsonc
+{
+  "endpoint": "chain_getBlockByHeight", // Required: Blockchain application endpoint to invoke
+  "params": { // Optional: Parameters to be passed corresponding to the invoked application endpoint
+    "height": 10
+  }
+}
+```
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": {
+    "header": {
+      "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+      "version": 0,
+      "height": 8344448,
+      "timestamp": 85944650,
+      "previousBlockId": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
+      "generatorAddress": "cd56330913e4517f35cf689e849f5c208ed48b8e",
+      "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assetsRoot": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+      "stateRoot": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
+      "maxHeightGenerated": 559421,
+      "maxHeightPrevoted": 559434,
+      "validatorsHash": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
+      "aggregateCommit": {
+        "height": "166",
+        "aggregationBits": "ffffffffffffffffffffffff1f",
+        "certificateSignature": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
+      },
+      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07"
+    },
+    "assets": [
+      {
+        "module": "token",
+        "data": "0a14e135813f51103e7645ed87a0562a823d2fd48bc612207eef331c6d58f3962f5fb35b13f780f0ee7d93fbc37a3e9f4ccbdc6d1551db801a303629827aaa0836111137215708fd2007e9221ca1d56b29b98d8e9747ec3243c0549dc2091515d2bdd72fb28acef50160"
+      }
+    ],
+    "transactions": [
+      {
+        "module": "token",
+        "command": "transfer",
+        "nonce": "0",
+        "fee": "1000000",
+        "senderPublicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+        "params": {
+          "amount": "100003490",
+          "recipientAddress": "0f16f2cd587679d5fd686584b5018d4f844348ac",
+          "data": "test"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "endpoint": "chain_getBlockByHeight",
+    "params": {
+      "height": 10
+    }
+  }
+}
+```
+
+400 Bad Request
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get legacy account details by publicKey
+
+```
+https://service.lisk.com/api/v3/legacy?publicKey=b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd
+```
 
 ## Network
 
@@ -1625,7 +2617,7 @@ Retrieves network details and constants such as network height, fees, reward amo
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 #### Response example
 
@@ -1647,7 +2639,7 @@ No params required.
       "offset": 1451520,
       "distance": 3000000
     },
-    "registeredModules": [ "token", "sequence", "keys", "dpos", "legacyAccount" ],
+    "registeredModules": [ "token", "sequence", "keys", "pos", "legacy" ],
     "moduleAssets": [
       {
         "id": "2:0",
@@ -1685,7 +2677,7 @@ https://service.lisk.com/api/v3/network/status`
 
 ### Network statistics
 
-Retrieves network statistics such as number of peers, node versions, heights etc.
+Retrieves network statistics such as the number of peers, node versions, heights etc.
 
 #### Endpoints
 
@@ -1694,7 +2686,7 @@ Retrieves network statistics such as number of peers, node versions, heights etc
 
 #### Request parameters
 
-No params required.
+No parameters are required.
 
 #### Response example
 
@@ -1736,6 +2728,312 @@ https://service.lisk.com/api/v3/network/statistics`
 ```
 
 # Off-chain Features
+
+## Application Metadata
+
+### Application metadata overview
+
+Retrieves a list of blockchain applications for which the metadata exists.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta/list`
+- RPC `get.blockchain.apps.meta.list`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainName": "Lisk",
+      "chainID": "00000000",
+      "networkType": "mainnet"
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta/list
+```
+
+### Application metadata details
+
+Retrieves metadata for a list of blockchain applications. The information is used by the wallets.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta`
+- RPC `get.blockchain.apps.meta`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| isDefault | Boolean | `[true, false]` | *(empty)* |  |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainName": "Lisk",
+      "chainID": "00000000",
+      "title": "Lisk blockchain application",
+      "status": "active",
+      "description": "Lisk is a blockchain application platform",
+      "networkType": "mainnet",
+      "isDefault": true,
+      "genesisURL": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
+      "projectPage": "https://lisk.com",
+      "serviceURLs": [
+        {
+          "http": "https://service.lisk.com",
+          "ws": "wss://service.lisk.com"
+        }
+      ],
+      "logo": {
+        "png": "https://downloads.lisk.com/lisk/images/logo.png",
+        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
+      },
+      "appPage": "https://lisk.com",
+      "backgroundColor": "#0981D1",
+      "explorers": [
+        {
+          "url": "https://lisk.observer",
+          "txnPage": "https://lisk.observer/transactions"
+        }
+      ],
+      "appNodes": [
+        {
+          "url": "https://mainnet.lisk.com",
+          "maintainer": "Lightcurve GmbH"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta
+```
+
+### Application native token metadata details
+
+Retrieves the metadata for the tokens. The information is used by the wallets.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta/tokens`
+- RPC `get.blockchain.apps.meta.tokens`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| tokenName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Can be expressed as CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[chainName:asc, chainName:desc]` | chainName:asc |  |
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainID": "00000000",
+      "chainName": "Lisk",
+      "tokenID": "Lisk",
+      "tokenName": "00000000",
+      "networkType": "mainnet",
+      "description": "LSK is the utility token of Lisk",
+      "denomUnits": [
+        {
+          "denom": "lsk",
+          "decimals": 8,
+          "aliases": [
+            "LISK"
+          ]
+        }
+      ],
+      "symbol": "LSK",
+      "displayDenom": "LSK",
+      "baseDenom": "beddows",
+      "logo": {
+        "png": "https://downloads.lisk.com/lisk/images/logo.png",
+        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
+      }
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta/tokens
+```
+
+### Application-supported token metadata details
+
+Retrieves the metadata for the tokens supported by the specified blockchain application. The information is used by the wallets.
+This endpoint internally queries the `/token/summary` for the specified chainID and considers the `supportedTokens` information to collate the relevant metadata.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/meta/tokens/supported`
+- RPC `get.blockchain.apps.meta.tokens.supported`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | Enum | `[tokenID:asc, tokenID:desc]` | tokenID:asc |  |
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "chainID": "00000000",
+      "chainName": "Lisk",
+      "tokenID": "0000000000000000",
+      "tokenName": "Lisk",
+      "networkType": "mainnet",
+      "description": "Default token for the entire Lisk ecosystem",
+      "logo": {
+        "png": "https://downloads.lisk.com/lisk/images/logo.png",
+        "svg": "https://downloads.lisk.com/lisk/images/logo.svg"
+      },
+      "symbol": "LSK",
+      "displayDenom": "lsk",
+      "baseDenom": "beddows",
+      "denomUnits": [
+        {
+          "denom": "beddows",
+          "decimals": 0,
+          "aliases": [
+            "Beddows"
+          ]
+        },
+        {
+          "denom": "lsk",
+          "decimals": 8,
+          "aliases": [
+            "Lisk"
+          ]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "offset": 0,
+    "total": 1
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/meta/tokens/supported?chainID=00000000
+```
 
 ## Market Prices
 
@@ -1814,7 +3112,7 @@ Schedule transaction export
 }
 ```
 
-File is ready to export
+The file is ready to export
 
 200 OK
 ```jsonc
@@ -1841,20 +3139,11 @@ _Invalid parameter_
 }
 ```
 
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "Account <account_id> not found."
-}
-
-```
-
 File retrieval
 
 #### Endpoints
 
-- HTTP `/api/v3/exports/{filename}`
+- HTTP GET `/api/v3/exports/{filename}`
 - RPC `Not Applicable`
 
 #### Request parameters
@@ -1869,13 +3158,4 @@ Schedule transaction export
 200 OK
 ```
 [CSV file]
-```
-
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "File <filename.csv> not found."
-}
-
 ```

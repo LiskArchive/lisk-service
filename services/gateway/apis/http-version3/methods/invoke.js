@@ -33,12 +33,12 @@ module.exports = {
 		invokeEndpointSchema[this.swaggerApiPath].post.summary = 'Proxy request to directly invoke application endpoint';
 		invokeEndpointSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns endpoint response from the blockchain application in its original form',
+			description: 'Returns endpoint response from the blockchain application in its original form.',
 		});
 		invokeEndpointSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/invokeParams' }];
 		invokeEndpointSchema[this.swaggerApiPath].post.responses = {
 			200: {
-				description: 'Returns endpoint response from the blockchain application in its original form',
+				description: 'Returns endpoint response from the blockchain application in its original form.',
 				schema: {
 					$ref: '#/definitions/invokeWithEnvelope',
 				},
