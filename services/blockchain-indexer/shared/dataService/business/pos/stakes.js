@@ -52,10 +52,12 @@ const getStakes = async params => {
 		accountInfoQueryFilter.search = [{
 			property: 'name',
 			pattern: params.search,
-		},{
+		}];
+	
+		accountInfoQueryFilter.orSearch = [{
 			property: 'address',
 			pattern: params.search,
-		},{
+		}, {
 			property: 'publicKey',
 			pattern: params.search,
 		}];
