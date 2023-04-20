@@ -53,10 +53,12 @@ module.exports = [
 		controller: async ({
 			transaction,
 			skipVerify,
-		}) => dryRunTransaction({ transaction, skipVerify }),
+			skipDecode,
+		}) => dryRunTransaction({ transaction, skipVerify, skipDecode }),
 		params: {
 			transaction: { optional: false, type: 'any' },
 			skipVerify: { optional: true, type: 'boolean', default: false },
+			skipDecode: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];
