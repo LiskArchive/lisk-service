@@ -22,7 +22,7 @@ const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/validator/validateBLSKey`;
+const endpoint = `${baseUrlV3}/validator/validate-bls-key`;
 
 describe('validate BLS Key API', () => {
 	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
