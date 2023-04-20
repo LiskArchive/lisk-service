@@ -357,6 +357,12 @@
 	"dryrunTransactionParamEnvelope": {
 		"type": "object",
 		"properties": {
+			"skipDecode": {
+				"type": "boolean",
+				"description": "A boolean indicator to skip decoding event data.",
+				"example": "false",
+				"default": false
+			},
 			"skipVerify": {
 				"type": "boolean",
 				"description": "A boolean indicator to skip transaction verification.",
