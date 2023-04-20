@@ -158,8 +158,9 @@ socket.emit('request', {
     process.exit(0);
 });
 ----
+git
 
-////
+ ////
 === Via CLI
 
 [source,bash]
