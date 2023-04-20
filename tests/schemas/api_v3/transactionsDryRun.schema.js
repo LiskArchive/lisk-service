@@ -45,11 +45,13 @@ const dryrunTransactionSuccessResponseSchema = {
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
+
 const dryrunTxSuccessSchemaWithSkipDecode = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(eventSchemaWithSkipDecode).required()).min(1).required(),
 };
+
 const dryrunTransactionPendingResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.PENDING).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
