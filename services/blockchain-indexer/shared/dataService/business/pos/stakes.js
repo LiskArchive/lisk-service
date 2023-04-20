@@ -53,7 +53,7 @@ const getStakes = async params => {
 			property: 'name',
 			pattern: params.search,
 		}];
-	
+
 		accountInfoQueryFilter.orSearch = [{
 			property: 'address',
 			pattern: params.search,
@@ -62,8 +62,6 @@ const getStakes = async params => {
 			pattern: params.search,
 		}];
 	}
-
-	console.log("params.search: " + accountInfoQueryFilter.orSearch)
 
 	await BluebirdPromise.map(
 		stakerInfo.stakes,
@@ -78,8 +76,6 @@ const getStakes = async params => {
 				},
 				['name'],
 			);
-
-				console.log("validatorName: " + validatorName)
 
 			// Add validator to response
 			if (validatorName) {

@@ -177,8 +177,8 @@ const getAllValidators = async () => {
 };
 
 const isQueryInCollection = (collection, query) => {
-	for (const item of collection) {
-		if (item && item.toLowerCase().includes(query.toLowerCase())) return true;
+	for (let i = 0; i < collection.length; i++) {
+		if (collection[i] && collection[i].toLowerCase().includes(query.toLowerCase())) return true;
 	}
 
 	return false;
@@ -219,9 +219,11 @@ const getPosValidators = async params => {
 		if (addressSet.size && !addressSet.has(validator.address)) return false;
 		if (nameSet.size && !nameSet.has(validator.name)) return false;
 		if (statusSet.size && !statusSet.has(validator.status)) return false;
-		if (params.search && !isQueryInCollection([validator.name, validator.address, validator.publicKey], params.search)) {
+		if (params.search && !isQueryInCollection(
+			[validator.name, validator.address, validator.publicKey], params.search)) {
 			return false;
 		}
+
 		return true;
 	});
 

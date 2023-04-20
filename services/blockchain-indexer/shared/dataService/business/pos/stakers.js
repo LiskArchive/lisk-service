@@ -100,13 +100,13 @@ const getStakers = async params => {
 					property: 'name',
 					pattern: params.search,
 				}],
-				onSearch:[{
+				onSearch: [{
 					property: 'address',
 					pattern: params.search,
-				},{
+				}, {
 					property: 'publicKey',
 					pattern: params.search,
-				}]
+				}],
 			},
 			['name', 'address'],
 		);
