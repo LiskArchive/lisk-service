@@ -194,12 +194,6 @@ const validateSpecs = {
 							$ref: '#/definitions/badRequest',
 						},
 					},
-					404: {
-						description: 'Not found',
-						schema: {
-							$ref: '#/definitions/notFound',
-						},
-					},
 				},
 			},
 		},
