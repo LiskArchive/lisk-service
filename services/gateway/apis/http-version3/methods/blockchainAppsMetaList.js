@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps/meta/list',
 	rpcMethod: 'get.blockchain.apps.meta.list',
-	tags: ['Application Metadata'],
+	tags: ['Application Off-Chain Metadata'],
 	params: {
 		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK_CSV },

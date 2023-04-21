@@ -245,7 +245,7 @@ const requireAllJsonExpectedResponse = {
 		basePath: '/api/v3',
 		tags: [
 			{
-				name: 'Transaction Export',
+				name: 'Account History Export',
 				description: 'Lisk Network transaction history export API.',
 			},
 		],

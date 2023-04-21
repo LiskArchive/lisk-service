@@ -21,35 +21,35 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 - [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
   - [Blocks](#blocks)
     - [Block search](#block-search)
-    - [Block assets search](#block-assets-search)
+    - [Block Assets search](#block-assets-search)
   - [Transactions](#transactions)
     - [Transaction search](#transaction-search)
-    - [Transaction dryrun](#transaction-dryrun)
-    - [Transaction broadcast](#transaction-broadcast)
-    - [Transaction statistics](#transaction-statistics)
+    - [Transaction Dryrun](#transaction-dryrun)
+    - [Transaction Broadcast](#transaction-broadcast)
+    - [Transaction Statistics](#transaction-statistics)
   - [Events](#events)
     - [Event search](#event-search)
+  - [Generators](#generators)
+    - [Generator list](#generator-list)
   - [Auth](#auth)
-    - [Auth details](#auth-details)
+    - [Auth Account details](#auth-account-details)
   - [Validator](#validator)
     - [Validator details](#validator-details)
     - [Validate BLS Key](#validate-bls-key)
   - [Token](#token)
     - [Token Account Exists](#token-account-exists)
     - [Token Balances](#token-balances)
-    - [Token Constants](#token-constants)
+    - [Module Constants](#module-constants)
     - [Token Summary](#token-summary)
   - [Dynamic Fees](#dynamic-fees)
-  - [Interoperability](#interoperability)
-    - [Interoperable applications](#interoperable-applications)
-    - [Interoperable network statistics](#interoperable-network-statistics)
   - [PoS](#proof-of-stake-pos)
     - [Claimable rewards](#claimable-rewards)
     - [Locked rewards](#locked-rewards)
-    - [Module constants](#module-constants)
+    - [Module constants](#module-constants-1)
     - [Stakers (Received stakes)](#stakers-received-stakes)
-    - [Stakes (Sent stakes)](#stakes-send-stakes)
+    - [Stakes (Sent stakes)](#stakes-sent-stakes)
     - [Available unlocks](#available-unlocks)
+    - [Validators](#validators)
   - [(Dynamic) Reward](#dynamic-reward)
     - [Module Constants](#module-constants-2)
     - [Default Reward](#default-reward)
@@ -60,16 +60,17 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
-  - [Generators](#generators)
-    - [Generator List](#generator-list)
   - [Schemas](#schemas)
-    - [Schema](#schema)
+    - [List Known Schemas](#list-known-schemas)
+  - [Interoperability](#interoperability)
+    - [Interoperable applications](#interoperable-applications)
+    - [Interoperable network statistics](#interoperable-network-statistics)
   - [Index Status](#index-status)
     - [Current indexing status](#current-indexing-status)
   - [Proxy](#proxy)
     - [Invoke Application Endpoints](#invoke-application-endpoints)
 - [Off-chain Features](#off-chain-features)
-  - [Application Metadata](#market-prices)
+  - [Application Metadata](#application-metadata)
     - [Application metadata overview](#application-metadata-overview)
     - [Application metadata details](#application-metadata-details)
     - [Application native token metadata details](#application-native-token-metadata-details)
@@ -390,56 +391,7 @@ Get the last 25 transactions for account `lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg
 https://service.lisk.com/api/v3/transactions?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
-### Transaction broadcast
-
-Sends encoded transactions to the network node.
-
-#### Endpoints
-
-- HTTP POST `/api/v3/transactions​`
-- RPC `post.transactions`
-
-
-#### Request parameters
-
-No parameters are required.
-
-Request payload:
-
-```jsonc
-{
-  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
-}
-```
-
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "message": "Transaction payload was successfully passed to the network node.",
-  "transactionID": "bfd3521aeddd586f43931b6972b5771e9919e18f2cc91e940a15eacb588ecc6c"
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Transaction payload was rejected by the network node."
-}
-```
-
-500 Internal Server Error
-```jsonc
-{
-  "error": true,
-  "message": "Unable to reach the network node."
-}
-```
-
-### Transaction dryrun
+### Transaction Dryrun
 
 Sends decoded/encoded transactions to the network node.
 
@@ -536,7 +488,56 @@ or
 }
 ```
 
-### Transaction statistics
+### Transaction Broadcast
+
+Sends encoded transactions to the network node.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/transactions​`
+- RPC `post.transactions`
+
+
+#### Request parameters
+
+No parameters are required.
+
+Request payload:
+
+```jsonc
+{
+  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
+}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "message": "Transaction payload was successfully passed to the network node.",
+  "transactionID": "bfd3521aeddd586f43931b6972b5771e9919e18f2cc91e940a15eacb588ecc6c"
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Transaction payload was rejected by the network node."
+}
+```
+
+500 Internal Server Error
+```jsonc
+{
+  "error": true,
+  "message": "Unable to reach the network node."
+}
+```
+
+### Transaction Statistics
 
 Retrieves daily network transaction statistics for periods defined by params.
 
@@ -713,7 +714,7 @@ https://service.lisk.com/api/v3/events?topic=lsksod8bj35gmndy94yehxm25nybg5os6yc
 
 ## Generators
 
-### Generator List
+### Generator list
 
 Retrieves list of block generators.
 
@@ -769,500 +770,9 @@ Get generators
 https://service.lisk.com/api/v3/generators
 ```
 
-
-
-## Schemas
-
-### Schema
-
-Retrieves all available schemas.
-
-#### Endpoints
-
-- HTTP GET `/api/v3/schemas`
-- RPC `get.schemas`
-
-#### Request parameters
-
-No parameters are required.
-
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": {
-    "block": {
-      "schema": {
-        "$id": "/block",
-        "type": "object",
-        "required": [
-          "header",
-          "transactions",
-          "assets"
-        ],
-        "properties": {
-          "header": {
-            "dataType": "uint64",
-            "fieldNumber": 1
-          },
-          "transactions": {
-            "type": "array",
-            "items": {
-              "dataType": "bytes"
-            },
-            "fieldNumber": 2
-          },
-          "assets": {
-            "type": "array",
-            "items": {
-              "dataType": "bytes"
-            },
-            "fieldNumber": 2
-          }
-        }
-      }
-    },
-    "header": {
-      "schema": {
-        "$id": "/block/header/3",
-        "type": "object",
-        "properties": {
-          "version": {
-            "dataType": "uint32",
-            "fieldNumber": 1
-          },
-          "timestamp": {
-            "dataType": "uint32",
-            "fieldNumber": 2
-          },
-          "height": {
-            "dataType": "uint32",
-            "fieldNumber": 3
-          },
-          "previousBlockID": {
-            "dataType": "bytes",
-            "fieldNumber": 4
-          },
-          "generatorAddress": {
-            "dataType": "bytes",
-            "fieldNumber": 5,
-            "format": "lisk32"
-          },
-          "transactionRoot": {
-            "dataType": "bytes",
-            "fieldNumber": 6
-          },
-          "assetRoot": {
-            "dataType": "bytes",
-            "fieldNumber": 7
-          },
-          "eventRoot": {
-            "dataType": "bytes",
-            "fieldNumber": 8
-          },
-          "stateRoot": {
-            "dataType": "bytes",
-            "fieldNumber": 9
-          },
-          "maxHeightPrevoted": {
-            "dataType": "uint32",
-            "fieldNumber": 10
-          },
-          "maxHeightGenerated": {
-            "dataType": "uint32",
-            "fieldNumber": 11
-          },
-          "impliesMaxPrevotes": {
-            "dataType": "boolean",
-            "fieldNumber": 12
-          },
-          "validatorsHash": {
-            "dataType": "bytes",
-            "fieldNumber": 13
-          },
-          "aggregateCommit": {
-            "type": "object",
-            "fieldNumber": 14,
-            "properties": {
-              "height": {
-                "dataType": "uint32",
-                "fieldNumber": 1
-              },
-              "aggregationBits": {
-                "dataType": "bytes",
-                "fieldNumber": 2
-              },
-              "certificateSignature": {
-                "dataType": "bytes",
-                "fieldNumber": 3
-              }
-            }
-          },
-          "signature": {
-            "dataType": "bytes",
-            "fieldNumber": 15
-          }
-        }
-      }
-    },
-    "asset": {
-      "schema": {
-        "$id": "/block/asset/3",
-        "type": "object",
-        "required": [
-          "module",
-          "data"
-        ],
-        "properties": {
-          "module": {
-            "dataType": "uint64",
-            "fieldNumber": 1
-          },
-          "data": {
-            "dataType": "string",
-            "fieldNumber": 2
-          }
-        }
-      }
-    },
-    "transaction": {
-      "schema": {
-        "$id": "/token/events/transfer",
-        "type": "object",
-        "required": [
-          "module",
-          "command",
-          "nonce",
-          "fee",
-          "senderPublicKey",
-          "params"
-        ],
-        "properties": {
-          "module": {
-            "dataType": "string",
-            "minLength": 1,
-            "maxLength": 32,
-            "fieldNumber": 1
-          },
-          "command": {
-            "dataType": "string",
-            "minLength": 1,
-            "maxLength": 32,
-            "fieldNumber": 2
-          },
-          "nonce": {
-            "dataType": "uint64",
-            "fieldNumber": 3
-          },
-          "fee": {
-            "dataType": "uint64",
-            "fieldNumber": 4
-          },
-          "senderPublicKey": {
-            "dataType": "bytes",
-            "minLength": 32,
-            "maxLength": 32,
-            "fieldNumber": 5
-          },
-          "params": {
-            "dataType": "bytes",
-            "fieldNumber": 6
-          },
-          "signatures": {
-            "type": "array",
-            "items": {
-              "dataType": "bytes"
-            },
-            "fieldNumber": 7
-          }
-        }
-      }
-    },
-    "standardEvent": {
-      "schema": {
-        "$id": "/block/event/standard",
-        "type": "object",
-        "required": [
-          "success"
-        ],
-        "properties": {
-          "success": {
-            "dataType": "boolean",
-            "fieldNumber": 1
-          }
-        }
-      }
-    },
-    "event": {
-      "schema": {
-        "$id": "/block/asset/3",
-        "type": "object",
-        "required": [
-          "module",
-          "name",
-          "data",
-          "topics",
-          "height",
-          "index"
-        ],
-        "properties": {
-          "module": {
-            "dataType": "string",
-            "minLength": 1,
-            "maxLength": 32,
-            "fieldNumber": 1
-          },
-          "name": {
-            "dataType": "string",
-            "minLength": 1,
-            "maxLength": 32,
-            "fieldNumber": 2
-          },
-          "data": {
-            "dataType": "bytes",
-            "fieldNumber": 3
-          },
-          "topics": {
-            "type": "array",
-            "items": {
-              "dataType": "bytes"
-            },
-            "fieldNumber": 4
-          },
-          "height": {
-            "dataType": "bytes",
-            "fieldNumber": 5
-          },
-          "index": {
-            "dataType": "integer",
-            "fieldNumber": 5
-          }
-        }
-      }
-    },
-    "events": [
-      {
-        "module": "token",
-        "name": "transferEvent",
-        "schema": {
-          "$id": "/token/events/transfer",
-          "type": "object",
-          "required": [
-            "senderAddress",
-            "recipientAddress",
-            "tokenID",
-            "amount",
-            "result"
-          ],
-          "properties": {
-            "senderAddress": {
-              "dataType": "bytes",
-              "fieldNumber": 1
-            },
-            "recipientAddress": {
-              "dataType": "bytes",
-              "fieldNumber": 2
-            },
-            "tokenID": {
-              "dataType": "bytes",
-              "fieldNumber": 3
-            },
-            "amount": {
-              "dataType": "uint64",
-              "fieldNumber": 4
-            },
-            "result": {
-              "dataType": "uint32",
-              "fieldNumber": 5
-            }
-          }
-        }
-      }
-    ],
-    "assets": [
-      {
-        "module": "random",
-        "version": "2",
-        "schema": {
-          "$id": "/modules/random/block/header/asset",
-          "type": "object",
-          "required": [
-            "seedReveal"
-          ],
-          "properties": {
-            "seedReveal": {
-              "dataType": "bytes",
-              "minLength": 16,
-              "maxLength": 16,
-              "fieldNumber": 1
-            }
-          }
-        }
-      }
-    ],
-    "commands": [
-      {
-        "moduleCommand": "token:transfer",
-        "schema": {
-          "$id": "lisk/transfer-asset",
-          "title": "Transfer transaction asset",
-          "type": "object",
-          "required": [
-            "amount",
-            "recipientAddress",
-            "data"
-          ],
-          "properties": {
-            "amount": {
-              "dataType": "uint64",
-              "fieldNumber": 1
-            },
-            "recipientAddress": {
-              "dataType": "bytes",
-              "fieldNumber": 2,
-              "minLength": 20,
-              "maxLength": 20
-            },
-            "data": {
-              "dataType": "bytes",
-              "fieldNumber": 3,
-              "minLength": 0,
-              "maxLength": 64
-            }
-          }
-        }
-      }
-    ],
-    "messages": [
-      {
-        "moduleCommand": "auth:registerMultisignature",
-        "param": "signatures",
-        "schema": {
-          "$id": "/auth/command/regMultisigMsg",
-          "type": "object",
-          "required": [
-            "address",
-            "nonce",
-            "numberOfSignatures",
-            "mandatoryKeys",
-            "optionalKeys"
-          ],
-          "properties": {
-            "address": {
-              "dataType": "bytes",
-              "fieldNumber": 1,
-              "minLength": 20,
-              "maxLength": 20
-            },
-            "nonce": {
-              "dataType": "uint64",
-              "fieldNumber": 2
-            },
-            "numberOfSignatures": {
-              "dataType": "uint32",
-              "fieldNumber": 3
-            },
-            "mandatoryKeys": {
-              "type": "array",
-              "items": {
-                "dataType": "bytes",
-                "minLength": 32,
-                "maxLength": 32
-              },
-              "fieldNumber": 4
-            },
-            "optionalKeys": {
-              "type": "array",
-              "items": {
-                "dataType": "bytes",
-                "minLength": 32,
-                "maxLength": 32
-              },
-              "fieldNumber": 5
-            }
-          }
-        }
-      }
-    ]
-  },
-  "meta": {}
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-Get schemas
-```
-https://service.lisk.com/api/v3/schemas
-```
-
-
-
-## Index Status
-
-### Current indexing status
-
-Retrieves the current indexing status.
-
-#### Endpoints
-
-- HTTP GET `/api/v3/index/status`
-- RPC `get.index.status`
-
-#### Request parameters
-
-No parameters are required.
-
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": {
-    "genesisHeight": 0,
-    "lastBlockHeight": 2330,
-    "lastIndexedBlockHeight": 2330,
-    "chainLength": 2331,
-    "numBlocksIndexed": 2330,
-    "percentageIndexed": 99.96,
-    "isIndexingInProgress": true
-  },
-  "meta": {
-    "lastUpdate": 1632471013
-  }
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-Get current index status
-```
-https://service.lisk.com/api/v3/index/status
-```
-
-
 ## Auth
 
-### Auth Details
+### Auth Account Details
 
 Retrieves user-specific details from the Auth module.
 
@@ -1524,7 +1034,7 @@ Get token balances by address
 https://service.lisk.com/api/v3/token/balances?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99
 ```
 
-### Token Constants
+### Module Constants
 
 Retrieves module constants from the Token module.
 
@@ -1691,115 +1201,6 @@ No parameters are required.
 https://service.lisk.com/api/v3/fees
 ```
 
-
-## Interoperability
-
-### Interoperable applications
-
-Retrieves blockchain applications in the current network.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP GET `/api/v3/blockchain/apps`
-- RPC `get.blockchain.apps`
-
-#### Request parameters
-
-| Parameter | Type | Validation | Default | Comment |
-| --------- | ---- | ---------- | ------- | ------- |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
-
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": [
-    {
-      "name": "Lisk",
-      "chainID": "00000000",
-      "status": "active",
-      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-      "lastCertificateHeight": 160,
-      "lastUpdated": 1616008148
-    }
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 10,
-    "total": 400
-  }
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v3/blockchain/apps
-```
-
-### Interoperable network statistics
-
-Retrieves statistics for the current network blockchain applications.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP GET `/api/v3/blockchain/apps/statistics`
-- RPC `get.blockchain.apps.statistics`
-
-#### Request parameters
-
-No parameters are required.
-
-#### Response example
-
-200 OK
-
-```jsonc
-{
-  "data": {
-    "registered": 2503,
-    "active": 2328,
-    "terminated": 35,
-    "totalSupplyLSK": "5000000",
-    "stakedLSK": "3000000",
-    "inflationRate": "4.50"
-  },
-  "meta": {}
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-```
-https://service.lisk.com/api/v3/blockchain/apps/statistics
-```
 
 ## Proof of Stake (PoS)
 
@@ -2425,100 +1826,6 @@ Get legacy account details by publicKey
 https://service.lisk.com/api/v3/legacy?publicKey=b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd
 ```
 
-## Proxy
-
-### Invoke Application Endpoints
-
-Proxy request to directly invoke application endpoint. Returns endpoint response from the blockchain application in its original form.
-
-#### Endpoints
-
-- HTTP POST `/api/v3/invoke`
-- RPC `post.invoke`
-
-#### Request body parameters
-
-```jsonc
-{
-  "endpoint": "chain_getBlockByHeight", // Required: Blockchain application endpoint to invoke
-  "params": { // Optional: Parameters to be passed corresponding to the invoked application endpoint
-    "height": 10
-  }
-}
-```
-
-#### Response example
-
-200 OK
-```jsonc
-{
-  "data": {
-    "header": {
-      "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-      "version": 0,
-      "height": 8344448,
-      "timestamp": 85944650,
-      "previousBlockId": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
-      "generatorAddress": "cd56330913e4517f35cf689e849f5c208ed48b8e",
-      "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "assetsRoot": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
-      "stateRoot": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
-      "maxHeightGenerated": 559421,
-      "maxHeightPrevoted": 559434,
-      "validatorsHash": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
-      "aggregateCommit": {
-        "height": "166",
-        "aggregationBits": "ffffffffffffffffffffffff1f",
-        "certificateSignature": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
-      },
-      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07"
-    },
-    "assets": [
-      {
-        "module": "token",
-        "data": "0a14e135813f51103e7645ed87a0562a823d2fd48bc612207eef331c6d58f3962f5fb35b13f780f0ee7d93fbc37a3e9f4ccbdc6d1551db801a303629827aaa0836111137215708fd2007e9221ca1d56b29b98d8e9747ec3243c0549dc2091515d2bdd72fb28acef50160"
-      }
-    ],
-    "transactions": [
-      {
-        "module": "token",
-        "command": "transfer",
-        "nonce": "0",
-        "fee": "1000000",
-        "senderPublicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-        "params": {
-          "amount": "100003490",
-          "recipientAddress": "0f16f2cd587679d5fd686584b5018d4f844348ac",
-          "data": "test"
-        }
-      }
-    ]
-  },
-  "meta": {
-    "endpoint": "chain_getBlockByHeight",
-    "params": {
-      "height": 10
-    }
-  }
-}
-```
-
-400 Bad Request
-```
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-#### Examples
-
-Get legacy account details by publicKey
-
-```
-https://service.lisk.com/api/v3/legacy?publicKey=b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd
-```
-
 ## Network
 
 ### Network peers
@@ -2725,6 +2032,3594 @@ No parameters are required.
 
 ```
 https://service.lisk.com/api/v3/network/statistics`
+```
+
+## Schemas
+
+### List Known Schemas
+
+Retrieves all available schemas.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/schemas`
+- RPC `get.schemas`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+    "data": {
+        "block": {
+            "schema": {
+                "$id": "/block",
+                "type": "object",
+                "properties": {
+                    "header": {
+                        "dataType": "bytes",
+                        "fieldNumber": 1
+                    },
+                    "transactions": {
+                        "type": "array",
+                        "items": {
+                            "dataType": "bytes"
+                        },
+                        "fieldNumber": 2
+                    },
+                    "assets": {
+                        "type": "array",
+                        "items": {
+                            "dataType": "bytes"
+                        },
+                        "fieldNumber": 3
+                    }
+                },
+                "required": [
+                    "header",
+                    "transactions",
+                    "assets"
+                ]
+            }
+        },
+        "header": {
+            "schema": {
+                "$id": "/block/header/3",
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "dataType": "uint32",
+                        "fieldNumber": 1
+                    },
+                    "timestamp": {
+                        "dataType": "uint32",
+                        "fieldNumber": 2
+                    },
+                    "height": {
+                        "dataType": "uint32",
+                        "fieldNumber": 3
+                    },
+                    "previousBlockID": {
+                        "dataType": "bytes",
+                        "fieldNumber": 4
+                    },
+                    "generatorAddress": {
+                        "dataType": "bytes",
+                        "fieldNumber": 5,
+                        "format": "lisk32"
+                    },
+                    "transactionRoot": {
+                        "dataType": "bytes",
+                        "fieldNumber": 6
+                    },
+                    "assetRoot": {
+                        "dataType": "bytes",
+                        "fieldNumber": 7
+                    },
+                    "eventRoot": {
+                        "dataType": "bytes",
+                        "fieldNumber": 8
+                    },
+                    "stateRoot": {
+                        "dataType": "bytes",
+                        "fieldNumber": 9
+                    },
+                    "maxHeightPrevoted": {
+                        "dataType": "uint32",
+                        "fieldNumber": 10
+                    },
+                    "maxHeightGenerated": {
+                        "dataType": "uint32",
+                        "fieldNumber": 11
+                    },
+                    "impliesMaxPrevotes": {
+                        "dataType": "boolean",
+                        "fieldNumber": 12
+                    },
+                    "validatorsHash": {
+                        "dataType": "bytes",
+                        "fieldNumber": 13
+                    },
+                    "aggregateCommit": {
+                        "type": "object",
+                        "fieldNumber": 14,
+                        "required": [
+                            "height",
+                            "aggregationBits",
+                            "certificateSignature"
+                        ],
+                        "properties": {
+                            "height": {
+                                "dataType": "uint32",
+                                "fieldNumber": 1
+                            },
+                            "aggregationBits": {
+                                "dataType": "bytes",
+                                "fieldNumber": 2
+                            },
+                            "certificateSignature": {
+                                "dataType": "bytes",
+                                "fieldNumber": 3
+                            }
+                        }
+                    },
+                    "signature": {
+                        "dataType": "bytes",
+                        "fieldNumber": 15
+                    }
+                },
+                "required": [
+                    "version",
+                    "timestamp",
+                    "height",
+                    "previousBlockID",
+                    "generatorAddress",
+                    "transactionRoot",
+                    "assetRoot",
+                    "eventRoot",
+                    "stateRoot",
+                    "maxHeightPrevoted",
+                    "maxHeightGenerated",
+                    "impliesMaxPrevotes",
+                    "validatorsHash",
+                    "aggregateCommit",
+                    "signature"
+                ]
+            }
+        },
+        "asset": {
+            "schema": {
+                "$id": "/block/asset/3",
+                "type": "object",
+                "required": [
+                    "module",
+                    "data"
+                ],
+                "properties": {
+                    "module": {
+                        "dataType": "string",
+                        "fieldNumber": 1
+                    },
+                    "data": {
+                        "dataType": "bytes",
+                        "fieldNumber": 2
+                    }
+                }
+            }
+        },
+        "transaction": {
+            "schema": {
+                "$id": "/lisk/transaction",
+                "type": "object",
+                "required": [
+                    "module",
+                    "command",
+                    "nonce",
+                    "fee",
+                    "senderPublicKey",
+                    "params"
+                ],
+                "properties": {
+                    "module": {
+                        "dataType": "string",
+                        "fieldNumber": 1,
+                        "minLength": 1,
+                        "maxLength": 32
+                    },
+                    "command": {
+                        "dataType": "string",
+                        "fieldNumber": 2,
+                        "minLength": 1,
+                        "maxLength": 32
+                    },
+                    "nonce": {
+                        "dataType": "uint64",
+                        "fieldNumber": 3
+                    },
+                    "fee": {
+                        "dataType": "uint64",
+                        "fieldNumber": 4
+                    },
+                    "senderPublicKey": {
+                        "dataType": "bytes",
+                        "fieldNumber": 5,
+                        "minLength": 32,
+                        "maxLength": 32
+                    },
+                    "params": {
+                        "dataType": "bytes",
+                        "fieldNumber": 6
+                    },
+                    "signatures": {
+                        "type": "array",
+                        "items": {
+                            "dataType": "bytes"
+                        },
+                        "fieldNumber": 7
+                    }
+                }
+            }
+        },
+        "event": {
+            "schema": {
+                "$id": "/block/event",
+                "type": "object",
+                "required": [
+                    "module",
+                    "name",
+                    "data",
+                    "topics",
+                    "height",
+                    "index"
+                ],
+                "properties": {
+                    "module": {
+                        "dataType": "string",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "fieldNumber": 1
+                    },
+                    "name": {
+                        "dataType": "string",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "fieldNumber": 2
+                    },
+                    "data": {
+                        "dataType": "bytes",
+                        "fieldNumber": 3
+                    },
+                    "topics": {
+                        "type": "array",
+                        "fieldNumber": 4,
+                        "items": {
+                            "dataType": "bytes"
+                        }
+                    },
+                    "height": {
+                        "dataType": "uint32",
+                        "fieldNumber": 5
+                    },
+                    "index": {
+                        "dataType": "uint32",
+                        "fieldNumber": 6
+                    }
+                }
+            }
+        },
+        "standardEvent": {
+            "schema": {
+                "$id": "/block/event/standard",
+                "type": "object",
+                "required": [
+                    "success"
+                ],
+                "properties": {
+                    "success": {
+                        "dataType": "boolean",
+                        "fieldNumber": 1
+                    }
+                }
+            }
+        },
+        "ccm": {
+            "schema": {
+                "$id": "/modules/interoperability/ccm",
+                "type": "object",
+                "required": [
+                    "module",
+                    "crossChainCommand",
+                    "nonce",
+                    "fee",
+                    "sendingChainID",
+                    "receivingChainID",
+                    "params",
+                    "status"
+                ],
+                "properties": {
+                    "module": {
+                        "dataType": "string",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "fieldNumber": 1
+                    },
+                    "crossChainCommand": {
+                        "dataType": "string",
+                        "minLength": 1,
+                        "maxLength": 32,
+                        "fieldNumber": 2
+                    },
+                    "nonce": {
+                        "dataType": "uint64",
+                        "fieldNumber": 3
+                    },
+                    "fee": {
+                        "dataType": "uint64",
+                        "fieldNumber": 4
+                    },
+                    "sendingChainID": {
+                        "dataType": "bytes",
+                        "minLength": 4,
+                        "maxLength": 4,
+                        "fieldNumber": 5
+                    },
+                    "receivingChainID": {
+                        "dataType": "bytes",
+                        "minLength": 4,
+                        "maxLength": 4,
+                        "fieldNumber": 6
+                    },
+                    "params": {
+                        "dataType": "bytes",
+                        "fieldNumber": 7
+                    },
+                    "status": {
+                        "dataType": "uint32",
+                        "fieldNumber": 8
+                    }
+                }
+            }
+        },
+        "events": [
+            {
+                "module": "auth",
+                "name": "multisignatureRegistration",
+                "schema": {
+                    "$id": "/auth/events/multisigRegData",
+                    "type": "object",
+                    "required": [
+                        "numberOfSignatures",
+                        "mandatoryKeys",
+                        "optionalKeys"
+                    ],
+                    "properties": {
+                        "numberOfSignatures": {
+                            "dataType": "uint32",
+                            "fieldNumber": 1
+                        },
+                        "mandatoryKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 2
+                        },
+                        "optionalKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "auth",
+                "name": "invalidSignature",
+                "schema": {
+                    "$id": "/auth/events/invalidSigData",
+                    "type": "object",
+                    "required": [
+                        "numberOfSignatures",
+                        "mandatoryKeys",
+                        "optionalKeys",
+                        "failingPublicKey",
+                        "failingSignature"
+                    ],
+                    "properties": {
+                        "numberOfSignatures": {
+                            "dataType": "uint32",
+                            "fieldNumber": 1
+                        },
+                        "mandatoryKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 2
+                        },
+                        "optionalKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 3
+                        },
+                        "failingPublicKey": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 4
+                        },
+                        "failingSignature": {
+                            "dataType": "bytes",
+                            "minLength": 64,
+                            "maxLength": 64,
+                            "fieldNumber": 5
+                        }
+                    }
+                }
+            },
+            {
+                "module": "dynamicReward",
+                "name": "rewardMinted",
+                "schema": {
+                    "$id": "/reward/events/rewardMintedData",
+                    "type": "object",
+                    "required": [
+                        "amount",
+                        "reduction"
+                    ],
+                    "properties": {
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 1
+                        },
+                        "reduction": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "fee",
+                "name": "generatorFeeProcessed",
+                "schema": {
+                    "$id": "/fee/events/generatorFeeProcessed",
+                    "type": "object",
+                    "required": [
+                        "senderAddress",
+                        "generatorAddress",
+                        "burntAmount",
+                        "generatorAmount"
+                    ],
+                    "properties": {
+                        "senderAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "generatorAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 2
+                        },
+                        "burntAmount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "generatorAmount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "fee",
+                "name": "relayerFeeProcessed",
+                "schema": {
+                    "$id": "/fee/events/relayerFeeProcessed",
+                    "type": "object",
+                    "required": [
+                        "ccmID",
+                        "relayerAddress",
+                        "burntAmount",
+                        "relayerAmount"
+                    ],
+                    "properties": {
+                        "ccmID": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "relayerAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 2
+                        },
+                        "burntAmount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "relayerAmount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "fee",
+                "name": "insufficientFee",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "chainAccountUpdated",
+                "schema": {
+                    "$id": "/modules/interoperability/chainData",
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "lastCertificate",
+                        "status"
+                    ],
+                    "properties": {
+                        "name": {
+                            "dataType": "string",
+                            "fieldNumber": 1
+                        },
+                        "lastCertificate": {
+                            "type": "object",
+                            "fieldNumber": 2,
+                            "required": [
+                                "height",
+                                "timestamp",
+                                "stateRoot",
+                                "validatorsHash"
+                            ],
+                            "properties": {
+                                "height": {
+                                    "dataType": "uint32",
+                                    "fieldNumber": 1
+                                },
+                                "timestamp": {
+                                    "dataType": "uint32",
+                                    "fieldNumber": 2
+                                },
+                                "stateRoot": {
+                                    "dataType": "bytes",
+                                    "minLength": 32,
+                                    "maxLength": 32,
+                                    "fieldNumber": 3
+                                },
+                                "validatorsHash": {
+                                    "dataType": "bytes",
+                                    "minLength": 32,
+                                    "maxLength": 32,
+                                    "fieldNumber": 4
+                                }
+                            }
+                        },
+                        "status": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "ccmProcessed",
+                "schema": {
+                    "$id": "/interoperability/events/ccmProcessed",
+                    "type": "object",
+                    "required": [
+                        "ccm",
+                        "result",
+                        "code"
+                    ],
+                    "properties": {
+                        "ccm": {
+                            "fieldNumber": 1,
+                            "type": "object",
+                            "required": [
+                                "module",
+                                "crossChainCommand",
+                                "nonce",
+                                "fee",
+                                "sendingChainID",
+                                "receivingChainID",
+                                "params",
+                                "status"
+                            ],
+                            "properties": {
+                                "module": {
+                                    "dataType": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "fieldNumber": 1
+                                },
+                                "crossChainCommand": {
+                                    "dataType": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "fieldNumber": 2
+                                },
+                                "nonce": {
+                                    "dataType": "uint64",
+                                    "fieldNumber": 3
+                                },
+                                "fee": {
+                                    "dataType": "uint64",
+                                    "fieldNumber": 4
+                                },
+                                "sendingChainID": {
+                                    "dataType": "bytes",
+                                    "minLength": 4,
+                                    "maxLength": 4,
+                                    "fieldNumber": 5
+                                },
+                                "receivingChainID": {
+                                    "dataType": "bytes",
+                                    "minLength": 4,
+                                    "maxLength": 4,
+                                    "fieldNumber": 6
+                                },
+                                "params": {
+                                    "dataType": "bytes",
+                                    "fieldNumber": 7
+                                },
+                                "status": {
+                                    "dataType": "uint32",
+                                    "fieldNumber": 8
+                                }
+                            }
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        },
+                        "code": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "ccmSendSuccess",
+                "schema": {
+                    "$id": "/interoperability/events/ccmSendSuccess",
+                    "type": "object",
+                    "required": [
+                        "ccm"
+                    ],
+                    "properties": {
+                        "ccm": {
+                            "fieldNumber": 1,
+                            "type": "object",
+                            "required": [
+                                "module",
+                                "crossChainCommand",
+                                "nonce",
+                                "fee",
+                                "sendingChainID",
+                                "receivingChainID",
+                                "params",
+                                "status"
+                            ],
+                            "properties": {
+                                "module": {
+                                    "dataType": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "fieldNumber": 1
+                                },
+                                "crossChainCommand": {
+                                    "dataType": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "fieldNumber": 2
+                                },
+                                "nonce": {
+                                    "dataType": "uint64",
+                                    "fieldNumber": 3
+                                },
+                                "fee": {
+                                    "dataType": "uint64",
+                                    "fieldNumber": 4
+                                },
+                                "sendingChainID": {
+                                    "dataType": "bytes",
+                                    "minLength": 4,
+                                    "maxLength": 4,
+                                    "fieldNumber": 5
+                                },
+                                "receivingChainID": {
+                                    "dataType": "bytes",
+                                    "minLength": 4,
+                                    "maxLength": 4,
+                                    "fieldNumber": 6
+                                },
+                                "params": {
+                                    "dataType": "bytes",
+                                    "fieldNumber": 7
+                                },
+                                "status": {
+                                    "dataType": "uint32",
+                                    "fieldNumber": 8
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "ccmSentFailed",
+                "schema": {
+                    "$id": "/interoperability/events/ccmSendFail",
+                    "type": "object",
+                    "required": [
+                        "ccm",
+                        "code"
+                    ],
+                    "properties": {
+                        "ccm": {
+                            "$id": "/modules/interoperability/ccm",
+                            "type": "object",
+                            "required": [
+                                "module",
+                                "crossChainCommand",
+                                "nonce",
+                                "fee",
+                                "sendingChainID",
+                                "receivingChainID",
+                                "params",
+                                "status"
+                            ],
+                            "properties": {
+                                "module": {
+                                    "dataType": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "fieldNumber": 1
+                                },
+                                "crossChainCommand": {
+                                    "dataType": "string",
+                                    "minLength": 1,
+                                    "maxLength": 32,
+                                    "fieldNumber": 2
+                                },
+                                "nonce": {
+                                    "dataType": "uint64",
+                                    "fieldNumber": 3
+                                },
+                                "fee": {
+                                    "dataType": "uint64",
+                                    "fieldNumber": 4
+                                },
+                                "sendingChainID": {
+                                    "dataType": "bytes",
+                                    "minLength": 4,
+                                    "maxLength": 4,
+                                    "fieldNumber": 5
+                                },
+                                "receivingChainID": {
+                                    "dataType": "bytes",
+                                    "minLength": 4,
+                                    "maxLength": 4,
+                                    "fieldNumber": 6
+                                },
+                                "params": {
+                                    "dataType": "bytes",
+                                    "fieldNumber": 7
+                                },
+                                "status": {
+                                    "dataType": "uint32",
+                                    "fieldNumber": 8
+                                }
+                            },
+                            "fieldNumber": 1
+                        },
+                        "code": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "invalidRegistrationSignature",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "terminatedStateCreated",
+                "schema": {
+                    "$id": "/modules/interoperability/terminatedState",
+                    "type": "object",
+                    "required": [
+                        "stateRoot",
+                        "mainchainStateRoot",
+                        "initialized"
+                    ],
+                    "properties": {
+                        "stateRoot": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "mainchainStateRoot": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 2
+                        },
+                        "initialized": {
+                            "dataType": "boolean",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "terminatedOutboxCreated",
+                "schema": {
+                    "$id": "/modules/interoperability/terminatedOutbox",
+                    "type": "object",
+                    "required": [
+                        "outboxRoot",
+                        "outboxSize",
+                        "partnerChainInboxSize"
+                    ],
+                    "properties": {
+                        "outboxRoot": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "outboxSize": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        },
+                        "partnerChainInboxSize": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "name": "invalidCertificateSignature",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "module": "legacy",
+                "name": "accountReclaimed",
+                "schema": {
+                    "$id": "lisk/legacy/accountReclaimedEventData",
+                    "type": "object",
+                    "required": [
+                        "legacyAddress",
+                        "address",
+                        "amount"
+                    ],
+                    "properties": {
+                        "legacyAddress": {
+                            "dataType": "bytes",
+                            "maxLength": 8,
+                            "fieldNumber": 1
+                        },
+                        "address": {
+                            "dataType": "bytes",
+                            "maxLength": 20,
+                            "fieldNumber": 2
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "legacy",
+                "name": "keysRegistered",
+                "schema": {
+                    "$id": "lisk/legacy/keysRegisteredEventData",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "generatorKey",
+                        "blsKey"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "maxLength": 20,
+                            "fieldNumber": 1
+                        },
+                        "generatorKey": {
+                            "dataType": "bytes",
+                            "maxLength": 32,
+                            "fieldNumber": 2
+                        },
+                        "blsKey": {
+                            "dataType": "bytes",
+                            "maxLength": 48,
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "name": "validatorBanned",
+                "schema": {
+                    "$id": "/pos/events/validatorBannedData",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "height"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "format": "lisk32"
+                        },
+                        "height": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "name": "validatorPunished",
+                "schema": {
+                    "$id": "/pos/events/punishValidatorData",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "height"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "format": "lisk32"
+                        },
+                        "height": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "name": "validatorRegistered",
+                "schema": {
+                    "$id": "/pos/events/registerValidatorData",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "name"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "format": "lisk32"
+                        },
+                        "name": {
+                            "dataType": "string",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "name": "validatorStaked",
+                "schema": {
+                    "$id": "/pos/events/validatorStakedData",
+                    "type": "object",
+                    "required": [
+                        "senderAddress",
+                        "validatorAddress",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "senderAddress": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "format": "lisk32"
+                        },
+                        "validatorAddress": {
+                            "dataType": "bytes",
+                            "fieldNumber": 2,
+                            "format": "lisk32"
+                        },
+                        "amount": {
+                            "dataType": "sint64",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "name": "commissionChange",
+                "schema": {
+                    "$id": "/pos/events/commissionChangeData",
+                    "type": "object",
+                    "required": [
+                        "validatorAddress",
+                        "oldCommission",
+                        "newCommission"
+                    ],
+                    "properties": {
+                        "validatorAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "oldCommission": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        },
+                        "newCommission": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "name": "rewardsAssigned",
+                "schema": {
+                    "$id": "/pos/events/rewardsAssignedData",
+                    "type": "object",
+                    "required": [
+                        "stakerAddress",
+                        "validatorAddress",
+                        "tokenID",
+                        "amount"
+                    ],
+                    "properties": {
+                        "stakerAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "validatorAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 2
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 3
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "transfer",
+                "schema": {
+                    "$id": "/token/events/transfer",
+                    "type": "object",
+                    "required": [
+                        "senderAddress",
+                        "recipientAddress",
+                        "tokenID",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "senderAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "recipientAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 2
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 3
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 5
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "transferCrossChain",
+                "schema": {
+                    "$id": "/token/events/transferCrossChain",
+                    "type": "object",
+                    "required": [
+                        "senderAddress",
+                        "recipientAddress",
+                        "tokenID",
+                        "amount",
+                        "receivingChainID",
+                        "result"
+                    ],
+                    "properties": {
+                        "senderAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "recipientAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 2
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 3
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        },
+                        "receivingChainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 5
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 6
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "ccmTransfer",
+                "schema": {
+                    "$id": "/token/events/ccmTransfer",
+                    "type": "object",
+                    "required": [
+                        "senderAddress",
+                        "recipientAddress",
+                        "tokenID",
+                        "amount",
+                        "receivingChainID",
+                        "result"
+                    ],
+                    "properties": {
+                        "senderAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "recipientAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 2
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 3
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        },
+                        "receivingChainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 5
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 6
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "mint",
+                "schema": {
+                    "$id": "/token/events/mint",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "tokenID",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "burn",
+                "schema": {
+                    "$id": "/token/events/burn",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "tokenID",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "lock",
+                "schema": {
+                    "$id": "/token/events/lock",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "module",
+                        "tokenID",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "module": {
+                            "dataType": "string",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "fieldNumber": 2
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 3
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 5
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "unlock",
+                "schema": {
+                    "$id": "/token/events/unlock",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "module",
+                        "tokenID",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "module": {
+                            "dataType": "string",
+                            "minLength": 1,
+                            "maxLength": 32,
+                            "fieldNumber": 2
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 3
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 5
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "initializeToken",
+                "schema": {
+                    "$id": "/token/events/initializeTokenEvent",
+                    "type": "object",
+                    "required": [
+                        "tokenID",
+                        "result"
+                    ],
+                    "properties": {
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 1
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "initializeUserAccount",
+                "schema": {
+                    "$id": "/token/events/initializeUserAccount",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "tokenID",
+                        "initializationFee",
+                        "result"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 1
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "initializationFee": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "initializeEscrowAccount",
+                "schema": {
+                    "$id": "/token/events/initializeEscrowAccount",
+                    "type": "object",
+                    "required": [
+                        "chainID",
+                        "tokenID",
+                        "initializationFee",
+                        "result"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 1
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "initializationFee": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "recover",
+                "schema": {
+                    "$id": "/token/events/recover",
+                    "type": "object",
+                    "required": [
+                        "terminatedChainID",
+                        "tokenID",
+                        "amount",
+                        "result"
+                    ],
+                    "properties": {
+                        "terminatedChainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 1
+                        },
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "beforeCCCExecution",
+                "schema": {
+                    "$id": "/token/events/beforeCCCExecution",
+                    "type": "object",
+                    "required": [
+                        "ccmID",
+                        "messageFeeTokenID",
+                        "relayerAddress",
+                        "result"
+                    ],
+                    "properties": {
+                        "ccmID": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "messageFeeTokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "relayerAddress": {
+                            "dataType": "bytes",
+                            "format": "lisk32",
+                            "fieldNumber": 3
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "beforeCCMForwarding",
+                "schema": {
+                    "$id": "/token/events/beforeCCMForwarding",
+                    "type": "object",
+                    "required": [
+                        "ccmID",
+                        "messageFeeTokenID",
+                        "result"
+                    ],
+                    "properties": {
+                        "ccmID": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "messageFeeTokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 2
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "allTokensSupported",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "module": "token",
+                "name": "allTokensSupportRemoved",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "module": "token",
+                "name": "allTokensFromChainSupported",
+                "schema": {
+                    "$id": "/token/events/allTokensFromChainSupported",
+                    "type": "object",
+                    "required": [
+                        "chainID"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 1
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "allTokensFromChainSupportRemoved",
+                "schema": {
+                    "$id": "/token/events/allTokensFromChainSupportRemoved",
+                    "type": "object",
+                    "required": [
+                        "chainID"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 1
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "tokenIDSupported",
+                "schema": {
+                    "$id": "/token/events/tokenIDSupported",
+                    "type": "object",
+                    "required": [
+                        "tokenID"
+                    ],
+                    "properties": {
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 1
+                        }
+                    }
+                }
+            },
+            {
+                "module": "token",
+                "name": "tokenIDSupportRemoved",
+                "schema": {
+                    "$id": "/token/events/tokenIDSupportRemoved",
+                    "type": "object",
+                    "required": [
+                        "tokenID"
+                    ],
+                    "properties": {
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "minLength": 8,
+                            "maxLength": 8,
+                            "fieldNumber": 1
+                        }
+                    }
+                }
+            },
+            {
+                "module": "validators",
+                "name": "generatorKeyRegistration",
+                "schema": {
+                    "$id": "/validators/event/generatorKeyRegData",
+                    "type": "object",
+                    "required": [
+                        "generatorKey",
+                        "result"
+                    ],
+                    "properties": {
+                        "generatorKey": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "module": "validators",
+                "name": "blsKeyRegistration",
+                "schema": {
+                    "$id": "/validators/event/blsKeyRegData",
+                    "type": "object",
+                    "required": [
+                        "blsKey",
+                        "result"
+                    ],
+                    "properties": {
+                        "blsKey": {
+                            "dataType": "bytes",
+                            "minLength": 48,
+                            "maxLength": 48,
+                            "fieldNumber": 1
+                        },
+                        "proofOfPossession": {
+                            "dataType": "bytes",
+                            "minLength": 96,
+                            "maxLength": 96,
+                            "fieldNumber": 2
+                        },
+                        "result": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            }
+        ],
+        "assets": [
+            {
+                "module": "auth",
+                "version": "0",
+                "schema": {
+                    "$id": "/auth/module/genesis",
+                    "type": "object",
+                    "required": [
+                        "authDataSubstore"
+                    ],
+                    "properties": {
+                        "authDataSubstore": {
+                            "type": "array",
+                            "fieldNumber": 1,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "storeKey",
+                                    "storeValue"
+                                ],
+                                "properties": {
+                                    "storeKey": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 1
+                                    },
+                                    "storeValue": {
+                                        "type": "object",
+                                        "fieldNumber": 2,
+                                        "required": [
+                                            "nonce",
+                                            "numberOfSignatures",
+                                            "mandatoryKeys",
+                                            "optionalKeys"
+                                        ],
+                                        "properties": {
+                                            "nonce": {
+                                                "dataType": "uint64",
+                                                "fieldNumber": 1
+                                            },
+                                            "numberOfSignatures": {
+                                                "dataType": "uint32",
+                                                "fieldNumber": 2
+                                            },
+                                            "mandatoryKeys": {
+                                                "type": "array",
+                                                "fieldNumber": 3,
+                                                "items": {
+                                                    "dataType": "bytes"
+                                                }
+                                            },
+                                            "optionalKeys": {
+                                                "type": "array",
+                                                "fieldNumber": 4,
+                                                "items": {
+                                                    "dataType": "bytes"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "module": "interoperability",
+                "version": "0",
+                "schema": {
+                    "$id": "/interoperability/module/genesis",
+                    "type": "object",
+                    "required": [
+                        "ownChainName",
+                        "ownChainNonce",
+                        "chainInfos",
+                        "terminatedStateAccounts",
+                        "terminatedOutboxAccounts"
+                    ],
+                    "properties": {
+                        "ownChainName": {
+                            "dataType": "string",
+                            "maxLength": 32,
+                            "fieldNumber": 1
+                        },
+                        "ownChainNonce": {
+                            "dataType": "uint64",
+                            "fieldNumber": 2
+                        },
+                        "chainInfos": {
+                            "type": "array",
+                            "fieldNumber": 3,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "chainID",
+                                    "chainData",
+                                    "channelData",
+                                    "chainValidators"
+                                ],
+                                "properties": {
+                                    "chainID": {
+                                        "dataType": "bytes",
+                                        "minLength": 4,
+                                        "maxLength": 4,
+                                        "fieldNumber": 1
+                                    },
+                                    "chainData": {
+                                        "$id": "/modules/interoperability/chainData",
+                                        "type": "object",
+                                        "required": [
+                                            "name",
+                                            "lastCertificate",
+                                            "status"
+                                        ],
+                                        "properties": {
+                                            "name": {
+                                                "dataType": "string",
+                                                "fieldNumber": 1
+                                            },
+                                            "lastCertificate": {
+                                                "type": "object",
+                                                "fieldNumber": 2,
+                                                "required": [
+                                                    "height",
+                                                    "timestamp",
+                                                    "stateRoot",
+                                                    "validatorsHash"
+                                                ],
+                                                "properties": {
+                                                    "height": {
+                                                        "dataType": "uint32",
+                                                        "fieldNumber": 1
+                                                    },
+                                                    "timestamp": {
+                                                        "dataType": "uint32",
+                                                        "fieldNumber": 2
+                                                    },
+                                                    "stateRoot": {
+                                                        "dataType": "bytes",
+                                                        "minLength": 32,
+                                                        "maxLength": 32,
+                                                        "fieldNumber": 3
+                                                    },
+                                                    "validatorsHash": {
+                                                        "dataType": "bytes",
+                                                        "minLength": 32,
+                                                        "maxLength": 32,
+                                                        "fieldNumber": 4
+                                                    }
+                                                }
+                                            },
+                                            "status": {
+                                                "dataType": "uint32",
+                                                "fieldNumber": 3
+                                            }
+                                        },
+                                        "fieldNumber": 2
+                                    },
+                                    "channelData": {
+                                        "$id": "/modules/interoperability/channel",
+                                        "type": "object",
+                                        "required": [
+                                            "inbox",
+                                            "outbox",
+                                            "partnerChainOutboxRoot",
+                                            "messageFeeTokenID",
+                                            "minReturnFeePerByte"
+                                        ],
+                                        "properties": {
+                                            "inbox": {
+                                                "type": "object",
+                                                "fieldNumber": 1,
+                                                "required": [
+                                                    "appendPath",
+                                                    "size",
+                                                    "root"
+                                                ],
+                                                "properties": {
+                                                    "appendPath": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "dataType": "bytes",
+                                                            "minLength": 32,
+                                                            "maxLength": 32
+                                                        },
+                                                        "fieldNumber": 1
+                                                    },
+                                                    "size": {
+                                                        "dataType": "uint32",
+                                                        "fieldNumber": 2
+                                                    },
+                                                    "root": {
+                                                        "dataType": "bytes",
+                                                        "minLength": 32,
+                                                        "maxLength": 32,
+                                                        "fieldNumber": 3
+                                                    }
+                                                }
+                                            },
+                                            "outbox": {
+                                                "type": "object",
+                                                "fieldNumber": 2,
+                                                "required": [
+                                                    "appendPath",
+                                                    "size",
+                                                    "root"
+                                                ],
+                                                "properties": {
+                                                    "appendPath": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "dataType": "bytes",
+                                                            "minLength": 32,
+                                                            "maxLength": 32
+                                                        },
+                                                        "fieldNumber": 1
+                                                    },
+                                                    "size": {
+                                                        "dataType": "uint32",
+                                                        "fieldNumber": 2
+                                                    },
+                                                    "root": {
+                                                        "dataType": "bytes",
+                                                        "minLength": 32,
+                                                        "maxLength": 32,
+                                                        "fieldNumber": 3
+                                                    }
+                                                }
+                                            },
+                                            "partnerChainOutboxRoot": {
+                                                "dataType": "bytes",
+                                                "minLength": 32,
+                                                "maxLength": 32,
+                                                "fieldNumber": 3
+                                            },
+                                            "messageFeeTokenID": {
+                                                "dataType": "bytes",
+                                                "minLength": 8,
+                                                "maxLength": 8,
+                                                "fieldNumber": 4
+                                            },
+                                            "minReturnFeePerByte": {
+                                                "dataType": "uint64",
+                                                "fieldNumber": 5
+                                            }
+                                        },
+                                        "fieldNumber": 3
+                                    },
+                                    "chainValidators": {
+                                        "$id": "/modules/interoperability/chainValidators",
+                                        "type": "object",
+                                        "required": [
+                                            "activeValidators",
+                                            "certificateThreshold"
+                                        ],
+                                        "properties": {
+                                            "activeValidators": {
+                                                "type": "array",
+                                                "fieldNumber": 1,
+                                                "minItems": 1,
+                                                "maxItems": 199,
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "blsKey",
+                                                        "bftWeight"
+                                                    ],
+                                                    "properties": {
+                                                        "blsKey": {
+                                                            "dataType": "bytes",
+                                                            "minLength": 48,
+                                                            "maxLength": 48,
+                                                            "fieldNumber": 1
+                                                        },
+                                                        "bftWeight": {
+                                                            "dataType": "uint64",
+                                                            "fieldNumber": 2
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "certificateThreshold": {
+                                                "dataType": "uint64",
+                                                "fieldNumber": 2
+                                            }
+                                        },
+                                        "fieldNumber": 4
+                                    }
+                                }
+                            }
+                        },
+                        "terminatedStateAccounts": {
+                            "type": "array",
+                            "fieldNumber": 4,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "chainID",
+                                    "terminatedStateAccount"
+                                ],
+                                "properties": {
+                                    "chainID": {
+                                        "dataType": "bytes",
+                                        "minLength": 4,
+                                        "maxLength": 4,
+                                        "fieldNumber": 1
+                                    },
+                                    "terminatedStateAccount": {
+                                        "$id": "/modules/interoperability/terminatedState",
+                                        "type": "object",
+                                        "required": [
+                                            "stateRoot",
+                                            "mainchainStateRoot",
+                                            "initialized"
+                                        ],
+                                        "properties": {
+                                            "stateRoot": {
+                                                "dataType": "bytes",
+                                                "minLength": 32,
+                                                "maxLength": 32,
+                                                "fieldNumber": 1
+                                            },
+                                            "mainchainStateRoot": {
+                                                "dataType": "bytes",
+                                                "minLength": 32,
+                                                "maxLength": 32,
+                                                "fieldNumber": 2
+                                            },
+                                            "initialized": {
+                                                "dataType": "boolean",
+                                                "fieldNumber": 3
+                                            }
+                                        },
+                                        "fieldNumber": 2
+                                    }
+                                }
+                            }
+                        },
+                        "terminatedOutboxAccounts": {
+                            "type": "array",
+                            "fieldNumber": 5,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "chainID",
+                                    "terminatedOutboxAccount"
+                                ],
+                                "properties": {
+                                    "chainID": {
+                                        "dataType": "bytes",
+                                        "minLength": 4,
+                                        "maxLength": 4,
+                                        "fieldNumber": 1
+                                    },
+                                    "terminatedOutboxAccount": {
+                                        "$id": "/modules/interoperability/terminatedOutbox",
+                                        "type": "object",
+                                        "required": [
+                                            "outboxRoot",
+                                            "outboxSize",
+                                            "partnerChainInboxSize"
+                                        ],
+                                        "properties": {
+                                            "outboxRoot": {
+                                                "dataType": "bytes",
+                                                "minLength": 32,
+                                                "maxLength": 32,
+                                                "fieldNumber": 1
+                                            },
+                                            "outboxSize": {
+                                                "dataType": "uint32",
+                                                "fieldNumber": 2
+                                            },
+                                            "partnerChainInboxSize": {
+                                                "dataType": "uint32",
+                                                "fieldNumber": 3
+                                            }
+                                        },
+                                        "fieldNumber": 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "module": "legacy",
+                "version": "0",
+                "schema": {
+                    "$id": "/legacy/module/genesis",
+                    "type": "object",
+                    "required": [
+                        "accounts"
+                    ],
+                    "properties": {
+                        "accounts": {
+                            "type": "array",
+                            "fieldNumber": 1,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "address",
+                                    "balance"
+                                ],
+                                "properties": {
+                                    "address": {
+                                        "dataType": "bytes",
+                                        "minLength": 8,
+                                        "maxLength": 8,
+                                        "fieldNumber": 1
+                                    },
+                                    "balance": {
+                                        "dataType": "uint64",
+                                        "fieldNumber": 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "module": "pos",
+                "version": "0",
+                "schema": {
+                    "$id": "/pos/module/genesis",
+                    "type": "object",
+                    "required": [
+                        "validators",
+                        "stakers",
+                        "genesisData"
+                    ],
+                    "properties": {
+                        "validators": {
+                            "type": "array",
+                            "fieldNumber": 1,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "address",
+                                    "name",
+                                    "blsKey",
+                                    "proofOfPossession",
+                                    "generatorKey",
+                                    "lastGeneratedHeight",
+                                    "isBanned",
+                                    "reportMisbehaviorHeights",
+                                    "consecutiveMissedBlocks",
+                                    "commission",
+                                    "lastCommissionIncreaseHeight",
+                                    "sharingCoefficients"
+                                ],
+                                "properties": {
+                                    "address": {
+                                        "dataType": "bytes",
+                                        "format": "lisk32",
+                                        "fieldNumber": 1
+                                    },
+                                    "name": {
+                                        "dataType": "string",
+                                        "fieldNumber": 2,
+                                        "minLength": 1,
+                                        "maxLength": 20
+                                    },
+                                    "blsKey": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 3,
+                                        "minLength": 48,
+                                        "maxLength": 48
+                                    },
+                                    "proofOfPossession": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 4,
+                                        "minLength": 96,
+                                        "maxLength": 96
+                                    },
+                                    "generatorKey": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 5,
+                                        "minLength": 32,
+                                        "maxLength": 32
+                                    },
+                                    "lastGeneratedHeight": {
+                                        "dataType": "uint32",
+                                        "fieldNumber": 6
+                                    },
+                                    "isBanned": {
+                                        "dataType": "boolean",
+                                        "fieldNumber": 7
+                                    },
+                                    "reportMisbehaviorHeights": {
+                                        "type": "array",
+                                        "fieldNumber": 8,
+                                        "items": {
+                                            "dataType": "uint32"
+                                        }
+                                    },
+                                    "consecutiveMissedBlocks": {
+                                        "dataType": "uint32",
+                                        "fieldNumber": 9
+                                    },
+                                    "commission": {
+                                        "dataType": "uint32",
+                                        "fieldNumber": 10,
+                                        "maximum": 10000
+                                    },
+                                    "lastCommissionIncreaseHeight": {
+                                        "dataType": "uint32",
+                                        "fieldNumber": 11
+                                    },
+                                    "sharingCoefficients": {
+                                        "type": "array",
+                                        "fieldNumber": 12,
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "tokenID",
+                                                "coefficient"
+                                            ],
+                                            "properties": {
+                                                "tokenID": {
+                                                    "dataType": "bytes",
+                                                    "minLength": 8,
+                                                    "maxLength": 8,
+                                                    "fieldNumber": 1
+                                                },
+                                                "coefficient": {
+                                                    "dataType": "bytes",
+                                                    "maxLength": 24,
+                                                    "fieldNumber": 2
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stakers": {
+                            "type": "array",
+                            "fieldNumber": 2,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "address",
+                                    "stakes",
+                                    "pendingUnlocks"
+                                ],
+                                "properties": {
+                                    "address": {
+                                        "dataType": "bytes",
+                                        "format": "lisk32",
+                                        "fieldNumber": 1
+                                    },
+                                    "stakes": {
+                                        "type": "array",
+                                        "fieldNumber": 2,
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "validatorAddress",
+                                                "amount",
+                                                "sharingCoefficients"
+                                            ],
+                                            "properties": {
+                                                "validatorAddress": {
+                                                    "dataType": "bytes",
+                                                    "format": "lisk32",
+                                                    "fieldNumber": 1
+                                                },
+                                                "amount": {
+                                                    "dataType": "uint64",
+                                                    "fieldNumber": 2
+                                                },
+                                                "sharingCoefficients": {
+                                                    "type": "array",
+                                                    "fieldNumber": 3,
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "tokenID",
+                                                            "coefficient"
+                                                        ],
+                                                        "properties": {
+                                                            "tokenID": {
+                                                                "dataType": "bytes",
+                                                                "minLength": 8,
+                                                                "maxLength": 8,
+                                                                "fieldNumber": 1
+                                                            },
+                                                            "coefficient": {
+                                                                "dataType": "bytes",
+                                                                "maxLength": 24,
+                                                                "fieldNumber": 2
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "pendingUnlocks": {
+                                        "type": "array",
+                                        "fieldNumber": 3,
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "validatorAddress",
+                                                "amount",
+                                                "unstakeHeight"
+                                            ],
+                                            "properties": {
+                                                "validatorAddress": {
+                                                    "dataType": "bytes",
+                                                    "fieldNumber": 1,
+                                                    "format": "lisk32"
+                                                },
+                                                "amount": {
+                                                    "dataType": "uint64",
+                                                    "fieldNumber": 2
+                                                },
+                                                "unstakeHeight": {
+                                                    "dataType": "uint32",
+                                                    "fieldNumber": 3
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "genesisData": {
+                            "type": "object",
+                            "fieldNumber": 3,
+                            "required": [
+                                "initRounds",
+                                "initValidators"
+                            ],
+                            "properties": {
+                                "initRounds": {
+                                    "dataType": "uint32",
+                                    "fieldNumber": 1
+                                },
+                                "initValidators": {
+                                    "type": "array",
+                                    "fieldNumber": 2,
+                                    "items": {
+                                        "dataType": "bytes",
+                                        "format": "lisk32"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "module": "random",
+                "version": "2",
+                "schema": {
+                    "$id": "/modules/random/block/header/asset",
+                    "type": "object",
+                    "properties": {
+                        "seedReveal": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 16,
+                            "maxLength": 16
+                        }
+                    },
+                    "required": [
+                        "seedReveal"
+                    ]
+                }
+            },
+            {
+                "module": "token",
+                "version": "0",
+                "schema": {
+                    "$id": "/token/module/genesis",
+                    "type": "object",
+                    "required": [
+                        "userSubstore",
+                        "supplySubstore",
+                        "escrowSubstore",
+                        "supportedTokensSubstore"
+                    ],
+                    "properties": {
+                        "userSubstore": {
+                            "type": "array",
+                            "fieldNumber": 1,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "address",
+                                    "tokenID",
+                                    "availableBalance",
+                                    "lockedBalances"
+                                ],
+                                "properties": {
+                                    "address": {
+                                        "dataType": "bytes",
+                                        "format": "lisk32",
+                                        "fieldNumber": 1
+                                    },
+                                    "tokenID": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 2,
+                                        "minLength": 8,
+                                        "maxLength": 8
+                                    },
+                                    "availableBalance": {
+                                        "dataType": "uint64",
+                                        "fieldNumber": 3
+                                    },
+                                    "lockedBalances": {
+                                        "type": "array",
+                                        "fieldNumber": 4,
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "module",
+                                                "amount"
+                                            ],
+                                            "properties": {
+                                                "module": {
+                                                    "dataType": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 32,
+                                                    "fieldNumber": 1
+                                                },
+                                                "amount": {
+                                                    "dataType": "uint64",
+                                                    "fieldNumber": 2
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "supplySubstore": {
+                            "type": "array",
+                            "fieldNumber": 2,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "tokenID",
+                                    "totalSupply"
+                                ],
+                                "properties": {
+                                    "tokenID": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 1,
+                                        "minLength": 8,
+                                        "maxLength": 8
+                                    },
+                                    "totalSupply": {
+                                        "dataType": "uint64",
+                                        "fieldNumber": 2
+                                    }
+                                }
+                            }
+                        },
+                        "escrowSubstore": {
+                            "type": "array",
+                            "fieldNumber": 3,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "escrowChainID",
+                                    "tokenID",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "escrowChainID": {
+                                        "dataType": "bytes",
+                                        "minLength": 4,
+                                        "maxLength": 4,
+                                        "fieldNumber": 1
+                                    },
+                                    "tokenID": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 2,
+                                        "minLength": 8,
+                                        "maxLength": 8
+                                    },
+                                    "amount": {
+                                        "dataType": "uint64",
+                                        "fieldNumber": 3
+                                    }
+                                }
+                            }
+                        },
+                        "supportedTokensSubstore": {
+                            "type": "array",
+                            "fieldNumber": 4,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "chainID",
+                                    "supportedTokenIDs"
+                                ],
+                                "properties": {
+                                    "chainID": {
+                                        "dataType": "bytes",
+                                        "minLength": 4,
+                                        "maxLength": 4,
+                                        "fieldNumber": 1
+                                    },
+                                    "supportedTokenIDs": {
+                                        "type": "array",
+                                        "fieldNumber": 2,
+                                        "items": {
+                                            "dataType": "bytes",
+                                            "minLength": 8,
+                                            "maxLength": 8
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "commands": [
+            {
+                "moduleCommand": "auth:registerMultisignature",
+                "schema": {
+                    "$id": "/auth/command/regMultisig",
+                    "type": "object",
+                    "properties": {
+                        "numberOfSignatures": {
+                            "dataType": "uint32",
+                            "fieldNumber": 1,
+                            "minimum": 1,
+                            "maximum": 64
+                        },
+                        "mandatoryKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 2,
+                            "minItems": 0,
+                            "maxItems": 64
+                        },
+                        "optionalKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 3,
+                            "minItems": 0,
+                            "maxItems": 64
+                        },
+                        "signatures": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 64,
+                                "maxLength": 64
+                            },
+                            "fieldNumber": 4
+                        }
+                    },
+                    "required": [
+                        "numberOfSignatures",
+                        "mandatoryKeys",
+                        "optionalKeys",
+                        "signatures"
+                    ]
+                }
+            },
+            {
+                "moduleCommand": "interoperability:submitMainchainCrossChainUpdate",
+                "schema": {
+                    "$id": "/modules/interoperability/ccu",
+                    "type": "object",
+                    "required": [
+                        "sendingChainID",
+                        "certificate",
+                        "activeValidatorsUpdate",
+                        "certificateThreshold",
+                        "inboxUpdate"
+                    ],
+                    "properties": {
+                        "sendingChainID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 4,
+                            "maxLength": 4
+                        },
+                        "certificate": {
+                            "dataType": "bytes",
+                            "fieldNumber": 2
+                        },
+                        "activeValidatorsUpdate": {
+                            "type": "object",
+                            "fieldNumber": 3,
+                            "required": [
+                                "blsKeysUpdate",
+                                "bftWeightsUpdate",
+                                "bftWeightsUpdateBitmap"
+                            ],
+                            "properties": {
+                                "blsKeysUpdate": {
+                                    "type": "array",
+                                    "fieldNumber": 1,
+                                    "items": {
+                                        "dataType": "bytes",
+                                        "minLength": 48,
+                                        "maxLength": 48
+                                    }
+                                },
+                                "bftWeightsUpdate": {
+                                    "type": "array",
+                                    "fieldNumber": 2,
+                                    "items": {
+                                        "dataType": "uint64"
+                                    }
+                                },
+                                "bftWeightsUpdateBitmap": {
+                                    "dataType": "bytes",
+                                    "fieldNumber": 3
+                                }
+                            }
+                        },
+                        "certificateThreshold": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        },
+                        "inboxUpdate": {
+                            "type": "object",
+                            "fieldNumber": 5,
+                            "required": [
+                                "crossChainMessages",
+                                "messageWitnessHashes",
+                                "outboxRootWitness"
+                            ],
+                            "properties": {
+                                "crossChainMessages": {
+                                    "type": "array",
+                                    "fieldNumber": 1,
+                                    "items": {
+                                        "dataType": "bytes"
+                                    }
+                                },
+                                "messageWitnessHashes": {
+                                    "type": "array",
+                                    "fieldNumber": 2,
+                                    "items": {
+                                        "dataType": "bytes",
+                                        "minLength": 32,
+                                        "maxLength": 32
+                                    }
+                                },
+                                "outboxRootWitness": {
+                                    "type": "object",
+                                    "fieldNumber": 3,
+                                    "required": [
+                                        "bitmap",
+                                        "siblingHashes"
+                                    ],
+                                    "properties": {
+                                        "bitmap": {
+                                            "dataType": "bytes",
+                                            "fieldNumber": 1
+                                        },
+                                        "siblingHashes": {
+                                            "type": "array",
+                                            "fieldNumber": 2,
+                                            "items": {
+                                                "dataType": "bytes",
+                                                "minLength": 32,
+                                                "maxLength": 32
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "interoperability:initializeMessageRecovery",
+                "schema": {
+                    "$id": "/modules/interoperability/mainchain/messageRecoveryInitialization",
+                    "type": "object",
+                    "required": [
+                        "chainID",
+                        "channel",
+                        "bitmap",
+                        "siblingHashes"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 4,
+                            "maxLength": 4
+                        },
+                        "channel": {
+                            "dataType": "bytes",
+                            "fieldNumber": 2
+                        },
+                        "bitmap": {
+                            "dataType": "bytes",
+                            "fieldNumber": 3
+                        },
+                        "siblingHashes": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "interoperability:recoverMessage",
+                "schema": {
+                    "$id": "/modules/interoperability/mainchain/messageRecovery",
+                    "type": "object",
+                    "required": [
+                        "chainID",
+                        "crossChainMessages",
+                        "idxs",
+                        "siblingHashes"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "minLength": 4,
+                            "maxLength": 4,
+                            "fieldNumber": 1
+                        },
+                        "crossChainMessages": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes"
+                            },
+                            "fieldNumber": 2
+                        },
+                        "idxs": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "uint32"
+                            },
+                            "fieldNumber": 3
+                        },
+                        "siblingHashes": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "interoperability:registerSidechain",
+                "schema": {
+                    "$id": "/modules/interoperability/mainchain/sidechainRegistration",
+                    "type": "object",
+                    "required": [
+                        "chainID",
+                        "name",
+                        "sidechainValidators",
+                        "sidechainCertificateThreshold"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 4,
+                            "maxLength": 4
+                        },
+                        "name": {
+                            "dataType": "string",
+                            "fieldNumber": 2,
+                            "minLength": 1,
+                            "maxLength": 32
+                        },
+                        "sidechainValidators": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "blsKey",
+                                    "bftWeight"
+                                ],
+                                "properties": {
+                                    "blsKey": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 1,
+                                        "minLength": 48,
+                                        "maxLength": 48
+                                    },
+                                    "bftWeight": {
+                                        "dataType": "uint64",
+                                        "fieldNumber": 2
+                                    }
+                                }
+                            },
+                            "minItems": 1,
+                            "fieldNumber": 3,
+                            "maxItems": 199
+                        },
+                        "sidechainCertificateThreshold": {
+                            "dataType": "uint64",
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "interoperability:recoverState",
+                "schema": {
+                    "$id": "/modules/interoperability/mainchain/commands/stateRecovery",
+                    "type": "object",
+                    "required": [
+                        "chainID",
+                        "module",
+                        "storeEntries",
+                        "siblingHashes"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 4,
+                            "maxLength": 4
+                        },
+                        "module": {
+                            "dataType": "string",
+                            "fieldNumber": 2,
+                            "minLength": 1,
+                            "maxLength": 32
+                        },
+                        "storeEntries": {
+                            "type": "array",
+                            "fieldNumber": 3,
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "substorePrefix": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 1,
+                                        "minLength": 2,
+                                        "maxLength": 2
+                                    },
+                                    "storeKey": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 2
+                                    },
+                                    "storeValue": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 3
+                                    },
+                                    "bitmap": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 4
+                                    }
+                                },
+                                "required": [
+                                    "substorePrefix",
+                                    "storeKey",
+                                    "storeValue",
+                                    "bitmap"
+                                ]
+                            }
+                        },
+                        "siblingHashes": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "interoperability:terminateSidechainForLiveness",
+                "schema": {
+                    "$id": "/modules/interoperability/mainchain/terminateSidechainForLiveness",
+                    "type": "object",
+                    "required": [
+                        "chainID"
+                    ],
+                    "properties": {
+                        "chainID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 4,
+                            "maxLength": 4
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "legacy:reclaimLSK",
+                "schema": {
+                    "$id": "/legacy/command/reclaimLSKParams",
+                    "type": "object",
+                    "required": [
+                        "amount"
+                    ],
+                    "properties": {
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 1
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "legacy:registerKeys",
+                "schema": {
+                    "$id": "/legacy/command/registerKeysParams",
+                    "type": "object",
+                    "required": [
+                        "blsKey",
+                        "proofOfPossession",
+                        "generatorKey"
+                    ],
+                    "properties": {
+                        "blsKey": {
+                            "dataType": "bytes",
+                            "minLength": 48,
+                            "maxLength": 48,
+                            "fieldNumber": 1
+                        },
+                        "proofOfPossession": {
+                            "dataType": "bytes",
+                            "minLength": 96,
+                            "maxLength": 96,
+                            "fieldNumber": 2
+                        },
+                        "generatorKey": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 3
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "pos:registerValidator",
+                "schema": {
+                    "$id": "/pos/command/registerValidatorParams",
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "blsKey",
+                        "proofOfPossession",
+                        "generatorKey"
+                    ],
+                    "properties": {
+                        "name": {
+                            "dataType": "string",
+                            "fieldNumber": 1
+                        },
+                        "blsKey": {
+                            "dataType": "bytes",
+                            "minLength": 48,
+                            "maxLength": 48,
+                            "fieldNumber": 2
+                        },
+                        "proofOfPossession": {
+                            "dataType": "bytes",
+                            "minLength": 96,
+                            "maxLength": 96,
+                            "fieldNumber": 3
+                        },
+                        "generatorKey": {
+                            "dataType": "bytes",
+                            "minLength": 32,
+                            "maxLength": 32,
+                            "fieldNumber": 4
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "pos:reportMisbehavior",
+                "schema": {
+                    "$id": "/pos/command/reportMisbehaviorParams",
+                    "type": "object",
+                    "required": [
+                        "header1",
+                        "header2"
+                    ],
+                    "properties": {
+                        "header1": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1
+                        },
+                        "header2": {
+                            "dataType": "bytes",
+                            "fieldNumber": 2
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "pos:unlock",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "moduleCommand": "pos:updateGeneratorKey",
+                "schema": {
+                    "$id": "/pos/command/updateGeneratorKeyParams",
+                    "type": "object",
+                    "required": [
+                        "generatorKey"
+                    ],
+                    "properties": {
+                        "generatorKey": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 32,
+                            "maxLength": 32
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "pos:stake",
+                "schema": {
+                    "$id": "/pos/command/stakeValidatorParams",
+                    "type": "object",
+                    "required": [
+                        "stakes"
+                    ],
+                    "properties": {
+                        "stakes": {
+                            "type": "array",
+                            "fieldNumber": 1,
+                            "minItems": 1,
+                            "maxItems": 20,
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "validatorAddress",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "validatorAddress": {
+                                        "dataType": "bytes",
+                                        "fieldNumber": 1,
+                                        "format": "lisk32"
+                                    },
+                                    "amount": {
+                                        "dataType": "sint64",
+                                        "fieldNumber": 2
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "pos:changeCommission",
+                "schema": {
+                    "$id": "/pos/command/changeCommissionCommandParams",
+                    "type": "object",
+                    "required": [
+                        "newCommission"
+                    ],
+                    "properties": {
+                        "newCommission": {
+                            "dataType": "uint32",
+                            "fieldNumber": 1,
+                            "maximum": 10000
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "pos:claimRewards",
+                "schema": {
+                    "$id": "/lisk/empty",
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            {
+                "moduleCommand": "token:transfer",
+                "schema": {
+                    "$id": "/lisk/transferParams",
+                    "title": "Transfer transaction params",
+                    "type": "object",
+                    "required": [
+                        "tokenID",
+                        "amount",
+                        "recipientAddress",
+                        "data"
+                    ],
+                    "properties": {
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 8,
+                            "maxLength": 8
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 2
+                        },
+                        "recipientAddress": {
+                            "dataType": "bytes",
+                            "fieldNumber": 3,
+                            "format": "lisk32"
+                        },
+                        "data": {
+                            "dataType": "string",
+                            "fieldNumber": 4,
+                            "minLength": 0,
+                            "maxLength": 64
+                        }
+                    }
+                }
+            },
+            {
+                "moduleCommand": "token:transferCrossChain",
+                "schema": {
+                    "$id": "/lisk/ccTransferParams",
+                    "type": "object",
+                    "required": [
+                        "tokenID",
+                        "amount",
+                        "receivingChainID",
+                        "recipientAddress",
+                        "data",
+                        "messageFee",
+                        "messageFeeTokenID"
+                    ],
+                    "properties": {
+                        "tokenID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 8,
+                            "maxLength": 8
+                        },
+                        "amount": {
+                            "dataType": "uint64",
+                            "fieldNumber": 2
+                        },
+                        "receivingChainID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 3,
+                            "minLength": 4,
+                            "maxLength": 4
+                        },
+                        "recipientAddress": {
+                            "dataType": "bytes",
+                            "fieldNumber": 4,
+                            "format": "lisk32"
+                        },
+                        "data": {
+                            "dataType": "string",
+                            "fieldNumber": 5,
+                            "minLength": 0,
+                            "maxLength": 64
+                        },
+                        "messageFee": {
+                            "dataType": "uint64",
+                            "fieldNumber": 6
+                        },
+                        "messageFeeTokenID": {
+                            "dataType": "bytes",
+                            "fieldNumber": 7,
+                            "minLength": 8,
+                            "maxLength": 8
+                        }
+                    }
+                }
+            }
+        ],
+        "messages": [
+            {
+                "moduleCommand": "auth:registerMultisignature",
+                "param": "signatures",
+                "schema": {
+                    "$id": "/auth/command/regMultisigMsg",
+                    "type": "object",
+                    "required": [
+                        "address",
+                        "nonce",
+                        "numberOfSignatures",
+                        "mandatoryKeys",
+                        "optionalKeys"
+                    ],
+                    "properties": {
+                        "address": {
+                            "dataType": "bytes",
+                            "fieldNumber": 1,
+                            "minLength": 20,
+                            "maxLength": 20
+                        },
+                        "nonce": {
+                            "dataType": "uint64",
+                            "fieldNumber": 2
+                        },
+                        "numberOfSignatures": {
+                            "dataType": "uint32",
+                            "fieldNumber": 3
+                        },
+                        "mandatoryKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 4
+                        },
+                        "optionalKeys": {
+                            "type": "array",
+                            "items": {
+                                "dataType": "bytes",
+                                "minLength": 32,
+                                "maxLength": 32
+                            },
+                            "fieldNumber": 5
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get schemas
+```
+https://service.lisk.com/api/v3/schemas
+```
+
+## Interoperability
+
+### Interoperable applications
+
+Retrieves blockchain applications in the current network.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps`
+- RPC `get.blockchain.apps`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "name": "Lisk",
+      "chainID": "00000000",
+      "status": "active",
+      "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+      "lastCertificateHeight": 160,
+      "lastUpdated": 1616008148
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 400
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps
+```
+
+### Interoperable network statistics
+
+Retrieves statistics for the current network blockchain applications.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP GET `/api/v3/blockchain/apps/statistics`
+- RPC `get.blockchain.apps.statistics`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "registered": 2503,
+    "active": 2328,
+    "terminated": 35,
+    "totalSupplyLSK": "5000000",
+    "stakedLSK": "3000000",
+    "inflationRate": "4.50"
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/blockchain/apps/statistics
+```
+
+## Index Status
+
+### Current indexing status
+
+Retrieves the current indexing status.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/index/status`
+- RPC `get.index.status`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "genesisHeight": 0,
+    "lastBlockHeight": 2330,
+    "lastIndexedBlockHeight": 2330,
+    "chainLength": 2331,
+    "numBlocksIndexed": 2330,
+    "percentageIndexed": 99.96,
+    "isIndexingInProgress": true
+  },
+  "meta": {
+    "lastUpdate": 1632471013
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get current index status
+```
+https://service.lisk.com/api/v3/index/status
+```
+
+
+## Proxy
+
+### Invoke Application Endpoints
+
+Proxy request to directly invoke application endpoint. Returns endpoint response from the blockchain application in its original form.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/invoke`
+- RPC `post.invoke`
+
+#### Request body parameters
+
+```jsonc
+{
+  "endpoint": "chain_getBlockByHeight", // Required: Blockchain application endpoint to invoke
+  "params": { // Optional: Parameters to be passed corresponding to the invoked application endpoint
+    "height": 10
+  }
+}
+```
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": {
+    "header": {
+      "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+      "version": 0,
+      "height": 8344448,
+      "timestamp": 85944650,
+      "previousBlockId": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
+      "generatorAddress": "cd56330913e4517f35cf689e849f5c208ed48b8e",
+      "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assetsRoot": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+      "stateRoot": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
+      "maxHeightGenerated": 559421,
+      "maxHeightPrevoted": 559434,
+      "validatorsHash": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
+      "aggregateCommit": {
+        "height": "166",
+        "aggregationBits": "ffffffffffffffffffffffff1f",
+        "certificateSignature": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
+      },
+      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07"
+    },
+    "assets": [
+      {
+        "module": "token",
+        "data": "0a14e135813f51103e7645ed87a0562a823d2fd48bc612207eef331c6d58f3962f5fb35b13f780f0ee7d93fbc37a3e9f4ccbdc6d1551db801a303629827aaa0836111137215708fd2007e9221ca1d56b29b98d8e9747ec3243c0549dc2091515d2bdd72fb28acef50160"
+      }
+    ],
+    "transactions": [
+      {
+        "module": "token",
+        "command": "transfer",
+        "nonce": "0",
+        "fee": "1000000",
+        "senderPublicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+        "params": {
+          "amount": "100003490",
+          "recipientAddress": "0f16f2cd587679d5fd686584b5018d4f844348ac",
+          "data": "test"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "endpoint": "chain_getBlockByHeight",
+    "params": {
+      "height": 10
+    }
+  }
+}
+```
+
+400 Bad Request
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get legacy account details by publicKey
+
+```
+https://service.lisk.com/api/v3/legacy?publicKey=b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd
 ```
 
 # Off-chain Features
