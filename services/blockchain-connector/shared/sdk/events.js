@@ -46,7 +46,7 @@ const subscribeToAllRegisteredEvents = async () => {
 		apiClient.subscribe(
 			event,
 			async payload => {
-				// Force update nodeInfo cache on new chain events
+				// Force update necessary caches on new chain events
 				if (event.startsWith('chain_')) {
 					await getNodeInfo(true);
 					await getEscrowedAmounts(true);

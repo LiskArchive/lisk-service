@@ -50,7 +50,7 @@ const blockchainAppSchema = {
 		.positive()
 		.max(getCurrentTimestamp())
 		.required(),
-	escrow: Joi.array().items(escrow).required(),
+	escrow: Joi.array().items(escrow).min(0).required(),
 };
 
 module.exports = {

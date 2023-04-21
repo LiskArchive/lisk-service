@@ -53,7 +53,7 @@
 					"properties": {
 						"tokenID": {
 							"type": "string",
-							"example": "0000000010000000",
+							"example": "0000000000000000",
 							"description": "The universal token identifier for the escrowed tokens within the Lisk ecosystem."
 						},
 						"amount": {
