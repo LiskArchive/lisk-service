@@ -311,6 +311,7 @@ _Supports pagination._
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
 | height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
 | executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
 | nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -409,6 +410,7 @@ Request payload:
 
 ```jsonc
 {
+  "skipDecode": false,
   "skipVerify": false,
   "transaction": {
     "module": "token",
@@ -433,6 +435,7 @@ or
 
 ```jsonc
 {
+  "skipDecode": false,
   "skipVerify": false,
   "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
 }
@@ -554,7 +557,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| interval | Enum | `["day", "month"]` | *(empty)* | Required field |
+| interval | String | `["day", "month"]` | *(empty)* | Required |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
 
@@ -653,7 +656,7 @@ _Supports pagination._
 | timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
-| sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
+| sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |  |
 | order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in a collision. |
 
 #### Response example
@@ -896,7 +899,7 @@ _Supports pagination._
 
 No parameters are required.
 
-Request payload:
+#### Request payload:
 
 ```jsonc
 {
@@ -942,9 +945,9 @@ Validates if an entry exists in the Token sub-store for the specified address.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
-<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  |
+| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 
 #### Response example
 
@@ -988,11 +991,11 @@ Retrieves the balances from the Token sub-store for the specified address.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
-<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
+<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
 
@@ -1219,8 +1222,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
@@ -1274,8 +1277,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
@@ -1320,8 +1323,8 @@ Retrieves configurable constants information from the PoS module.
 
 #### Endpoints
 
-- HTTP GET `/api/v3/pos/rewards/claimable`
-- RPC `get.pos.rewards.claimable`
+- HTTP GET `/api/v3/pos/constants`
+- RPC `get.pos.constants`
 
 #### Request parameters
 
@@ -1386,8 +1389,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -1448,8 +1451,8 @@ Retrieves the list of stakes sent by the specified user by their address, public
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 
@@ -1508,8 +1511,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | isLocked | Boolean | `[true, false]` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -1575,8 +1578,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,)+\b$/` | *(empty)* | Can be expressed as CSV |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
@@ -1836,20 +1839,20 @@ _Supports pagination._
 
 #### Endpoints
 
-- HTTP `/api/v3/peers`
-- RPC `get.peers`
+- HTTP `/api/v3/network/peers`
+- RPC `get.network.peers`
 
 #### Request parameters
 
-| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
-| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
-| ip             | String           | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/`                                                                             | *(empty)*     |
-| networkVersion | String           | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ ` | *(empty)*     |
-| state          | Array of Strings | `["connected", "disconnected", "any"]`                                                                                                                                          | connected     |
-| height         | Number           | ` <1;+Inf>`                                                                                                                                                                     | *(empty)*     |
-| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
-| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
-| sort           | String           | `["height:asc", "height:desc", "networkVersion:asc", "networkVersion:desc"]`                                                                                                    | "height:desc" |
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| ip   | String | `/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/` | *(empty)* |  |
+| networkVersion | String | `/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/` | *(empty)* |  |
+| state | String | `["connected", "disconnected", "any"]` | any |  |
+| height | Number | `[1,Inf)` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+| sort | String | `["height:asc", "height:desc", "networkVersion:asc", "networkVersion:desc"]` | height:desc |  |
 
 #### Response example
 
@@ -1889,27 +1892,12 @@ _Supports pagination._
 }
 ```
 
-404 Not Found
-```
-{
-  "error": true,
-  "message": "There are no peers reported."
-}
-```
-
-```
-{
-  "error": true,
-  "message": "Peer with ip <ip> was not found."
-}
-```
-
 #### Examples
 
-Get hosts with certain IP
+Get peer with IP
 
 ```
-https://service.lisk.com/api/v3/peers?ip=210.239.23.62
+https://service.lisk.com/api/v3/network/peers?ip=210.239.23.62
 ```
 
 ### Network status
@@ -1930,39 +1918,76 @@ No parameters are required.
 
 200 OK
 
-
 ```jsonc
 {
   "data": {
-    "genesisHeight": 16270293,
+    "version": "4.0.0",
+    "networkVersion": "3.0",
+    "chainID": "00000000",
+    "lastBlockID": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
     "height": 16550779,
     "finalizedHeight": 16550609,
-    "networkVersion": "3.0",
-    "networkIdentifier": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
-    "milestone": "4",
-    "currentReward": "100000000",
-    "rewards": {
-      "milestones": [ "500000000", "400000000", "300000000", "200000000", "100000000" ],
-      "offset": 1451520,
-      "distance": 3000000
-    },
-    "registeredModules": [ "token", "sequence", "keys", "pos", "legacy" ],
-    "moduleAssets": [
-      {
-        "id": "2:0",
-        "name": "token:transfer"
+    "syncing": true,
+    "unconfirmedTransactions": 0,
+    "genesis": {
+      "block": {
+        "fromFile": "./config/genesis_block.blob"
       },
-      ...
+      "blockTime": 10,
+      "chainID": "00000000",
+      "minFeePerByte": 1000,
+      "maxTransactionsSize": 15360,
+      "bftBatchSize": 10
+    },
+    "registeredModules": [
+      "token",
+      "reward",
+      "validators",
+      "auth",
+      "pos",
+      "fee",
+      "random",
+      "legacy",
+      "interoperability"
     ],
-    "blockTime": 10,
-    "communityIdentifier": "Lisk",
-    "minRemainingBalance": "5000000",
-    "maxPayloadLength": 15360
+    "moduleCommands": [
+      "auth:registerMultisignature",
+      "interoperability:submitMainchainCrossChainUpdate",
+      "interoperability:initializeMessageRecovery",
+      "interoperability:recoverMessage",
+      "interoperability:registerSidechain",
+      "interoperability:recoverState",
+      "interoperability:terminateSidechainForLiveness",
+      "legacy:reclaimLSK",
+      "legacy:registerKeys",
+      "pos:registerValidator",
+      "pos:reportMisbehavior",
+      "pos:unlock",
+      "pos:updateGeneratorKey",
+      "pos:stake",
+      "pos:changeCommission",
+      "pos:claimRewards",
+      "token:transfer",
+      "token:transferCrossChain"
+    ],
+    "network": {
+      "version": "1.0",
+      "port": 10,
+      "seedPeers": [
+        {
+          "ip": "127.0.0.1",
+          "port": 7667
+        }
+      ],
+      "blacklistedIPs": 15360,
+      "fixedPeers": 10,
+      "whitelistedPeers": "string"
+    }
   },
   "meta": {
-    "lastUpdate": 1632471013,
+    "lastUpdate": "1632471013",
     "lastBlockHeight": 16550779,
-    "lastBlockId": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f"
+    "lastBlockID": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f"
   }
 }
 ```
@@ -5455,8 +5480,8 @@ No parameters are required.
     "active": 2328,
     "terminated": 35,
     "totalSupplyLSK": "5000000",
-    "stakedLSK": "3000000",
-    "inflationRate": "4.50"
+    "totalStakedLSK": "3000000",
+    "currentAnnualInflationRate": "4.50"
   },
   "meta": {}
 }
@@ -5936,12 +5961,12 @@ Retrieves current market prices.
 
 #### Endpoints
 
-- HTTP `/api/v3/market/prices`
+- HTTP GET `/api/v3/market/prices`
 - RPC `get.market.prices`
 
 #### Request parameters
 
-*(no params)*
+No parameters are required.
 
 #### Response example
 
@@ -5980,14 +6005,14 @@ Returns transaction history export scheduling information
 
 #### Endpoints
 
-- HTTP `/api/v3/transactions/export`
+- HTTP GET `/api/v3/transactions/export`
 - RPC `get.transactions.export`
 
 #### Request parameters
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |  One of address or publicKey required  |
 | publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
 | interval  | String           |                                                            | *(empty)*      |
 

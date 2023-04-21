@@ -52,8 +52,8 @@
                 "description": "Lisk PoS module API calls."
             },
             {
-                "name": "Reward",
-                "description": "Lisk Reward module API calls."
+                "name": "(Dynamic) Reward",
+                "description": "Lisk (Dynamic) Reward module API calls."
             },
             {
                 "name": "Legacy",

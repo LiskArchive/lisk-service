@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/reward/inflation',
 	rpcMethod: 'get.reward.inflation',
-	tags: ['Reward'],
+	tags: ['(Dynamic) Reward'],
 	params: {
 		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
 	},

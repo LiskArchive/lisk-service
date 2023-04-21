@@ -32,7 +32,7 @@ Every microservice is independently managed and placed in a separate directory u
 | [App Registry](services/blockchain-app-registry)          | The Blockchain Application Registry service is primarily responsible for regularly synchronize and providing off-chain metadata information for known blockchain applications in the Lisk ecosystem. The metadata is maintained in Lisk's [Application Registry](https://github.com/LiskHQ/app-registry) repository. |
 | [Fee Estimator](services/fee-estimator)                   | The Fee Estimator service implements the [dynamic fee system](https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md) algorithm to offer users transaction fee recommendations based on the network traffic. |
 | [Transaction Statistics](services/transaction-statistics) | The Transaction Statistics service, as the name suggests, is primarily responsible to compute various transaction statistics to offer users various real-time network insights. |
-| [Market](services/market)                                 | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real-time. |
+| [Market](services/market)                                 | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real time. |
 | [Export](services/export)                                 | The Export service enables users to download the transaction history as a CSV file for any given account on the blockchain. |
 | [Template](services/template)                             | The Template service is an abstract microservice from which all Lisk Service services inherit. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, thus, simplifying code maintenance and testing. |
 
@@ -54,7 +54,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 | API                                                  | Description |
 | ---------------------------------------------------- | ----------- |
 | [HTTP API](docs/api/version3.md)                     | HTTP API is the public RESTful API that provides blockchain data in standardized JSON format. |
-| [WebSocket JSON-RPC API](docs/api/version2.md)       | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards. |
+| [WebSocket JSON-RPC API](docs/api/version3.md)       | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards. |
 | [Subscribe API](docs/api/websocket_subscribe_api.md) | The Subscribe API is an event-driven API. It uses a two-way streaming connection, which can notify the client about new data instantly as it arrives. It is responsible for updating users regarding changes in the blockchain network and markets. |
 
 ## Installation
