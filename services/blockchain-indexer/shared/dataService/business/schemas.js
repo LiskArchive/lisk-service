@@ -70,7 +70,6 @@ const getAllSchemas = async () => {
 			assets: assetsSchemas,
 			commands: commandsParamsSchemas,
 			events: eventsSchemas,
-			ccm: {},
 		});
 
 		// Assign generic schemas
