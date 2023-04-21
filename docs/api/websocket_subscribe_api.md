@@ -11,21 +11,26 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 - [Lisk Service Subscribe API Documentation](#lisk-service-subscribe-api-documentation)
   - [Access paths and compatibility](#access-paths-and-compatibility)
   - [Endpoint Logic](#endpoint-logic)
-  - [Responses](#responses)
-  - [Date Format](#date-format)
+  - [Payloads](#payloads)
   - [Example of a client implementation](#example-of-a-client-implementation)
     - [Node.js](#nodejs)
 - [Blockchain updates (`/blockchain`)](#blockchain-updates-blockchain)
-  - [`update.block`](#updateblock)
-    - [Response](#response)
+  - [`new.block`](#newblock)
+    - [Payload](#payload)
+  - [`delete.block`](#deleteblock)
+    - [Payload](#payload-1)
+  - [`new.transactions`](#newtransactions)
+    - [Payload](#payload-2)
+  - [`delete.transactions`](#deletetransactions)
+    - [Payload](#payload-3)
   - [`update.round`](#updateround)
-    - [Response](#response-1)
-  - [`update.forgers`](#updateforgers)
-    - [Response](#response-2)
-  - [`update.transactions`](#updatetransactions)
-    - [Response](#response-3)
+    - [Payload](#payload-4)
+  - [`update.generators`](#updategenerators)
+    - [Payload](#payload-5)
   - [`update.fee_estimates`](#updatefee_estimates)
-    - [Response](#response-4)
+    - [Payload](#payload-6)
+  - [`update.metadata`](#updatemetadata)
+    - [Payload](#payload-7)
 
 ## Access paths and compatibility
 
@@ -33,23 +38,21 @@ The blockchain update API can be accessed by the following path `https://service
 
 You might also be interested in accessing the `testnet` network by using the `https://testnet-service.lisk.com/blockchain` endpoint.
 
-**Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with the version 2.0 of `socket.io` library. Using the wrong major version might result in a broken connection and messages not being passed.
+**Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with version 2.0 of the `socket.io` library. Using the wrong major version might result in a broken connection and events not being passed.
 
-The specification below contains numerous examples how to use the API in practice.
+The specification below contains numerous examples of how to use the API in practice.
 
 ## Endpoint Logic
 
-The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the `action` is equivalent to method type performed on server (ie. update) and `entity` is a part of the application logic, ex. `accounts`, `transactions`.
+The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the `action` is equivalent to the method type performed on the server (ie. update) and `entity` is a part of the application logic, eg. `blocks`, `transactions`.
 
-## Responses
+## Payloads
 
-All responses are returned in the JSON format - application/json.
-
-Each API request has the following structure:
+All the event payloads are returned in the JSON format - application/json and adhere to the following structure:
 
 ```jsonc
 {
-    "data": {}, // Contains the requested data
+    "data": {}, // Contains the update information
     "meta": {
         "count": <integer>, // number of items
         "timestamp": <timestamp>, // timestamp in seconds
@@ -57,10 +60,6 @@ Each API request has the following structure:
     },
 }
 ```
-
-## Date Format
-
-On the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
 ## Example of a client implementation
 
@@ -74,142 +73,256 @@ connection.on('update.block', (block) => { (...) });
 
 # Blockchain updates (`/blockchain`)
 
-## `update.block`
+## `new.block`
 
-Updates about a newly forged block with its all data.
+Updates about a newly generated block.
 
-### Response
+### Payload
 
 ```jsonc
 {
   "data": [
     {
-      "id": "64829af74cdeaa696e4fdef3d7a498b816c8c2e088ecd6a4b59df1df8370c650",
-      "height": 12464,
-      "version": 2,
-      "timestamp": 1622816707,
-      "generatorAddress": "lskq847deet5ohzujm6s5t9adeotvmdo7pq4y36nz",
-      "generatorPublicKey": "09bafa700435af1b77ad1743e1e9df4157019dccca2fae0986e8e9431ed3e074",
-      "generatorUsername": "genesis_45",
+      "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+      "version": 0,
+      "height": 8344448,
+      "timestamp": 85944650,
+      "previousBlockId": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
+      "generator": {
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "name": "genesis_3",
+        "publicKey": "32ddb97e8d7e607a14fef8449c2a2180cd74a51f67b04a50a4b1917d3ca8a52e"
+      },
       "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "signature": "db2331a34dc93ca87762732108c67d8fe3bf725cf6f5c73290495d5f3a73a80227df36f291e259b7ae720fc0c7d27a213c5faa7cb5524e2c77ee8881ffdb1309",
-      "previousBlockId": "940c71fed31d45e5087ad63d494224d3417e32f44ddef6c182dfd0258994e3ea",
-      "numberOfTransactions": 0,
-      "totalForged": "500000000",
+      "assetsRoot": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+      "stateRoot": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
+      "maxHeightGenerated": 559421,
+      "maxHeightPrevoted": 559434,
+      "validatorsHash": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
+      "aggregateCommit": {
+        "height": 166,
+        "aggregationBits": "ffffffffffffffffffffffff1f",
+        "certificateSignature": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
+      },
+      "numberOfTransactions": 10,
+      "numberOfAssets": 10,
+      "numberOfEvents": 10,
       "totalBurnt": "0",
-      "totalFee": "0",
-      "reward": "500000000",
-      "isFinal": false,
-      "maxHeightPreviouslyForged": 12458,
-      "maxHeightPrevoted": 12395,
-      "seedReveal": "de2646e55ae279b17980823c8917078d"
+      "networkFee": "15000000",
+      "totalForged": "65000000",
+      "reward": "50000000",
+      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
+      "isFinal": true
     }
   ],
   "meta": {
     "count": 1,
     "offset": 0,
-    "total": 12464
+    "total": 1
+  }
+}
+```
+
+## `delete.block`
+
+Updates about a deleted block. This usually happens when the chain switches forks.
+
+### Payload
+
+```jsonc
+{
+  "data": [
+    {
+      "id": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+      "version": 0,
+      "height": 8344448,
+      "timestamp": 85944650,
+      "previousBlockId": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
+      "generator": {
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "name": "genesis_3",
+        "publicKey": "32ddb97e8d7e607a14fef8449c2a2180cd74a51f67b04a50a4b1917d3ca8a52e"
+      },
+      "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assetsRoot": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+      "stateRoot": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
+      "maxHeightGenerated": 559421,
+      "maxHeightPrevoted": 559434,
+      "validatorsHash": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
+      "aggregateCommit": {
+        "height": 166,
+        "aggregationBits": "ffffffffffffffffffffffff1f",
+        "certificateSignature": "a7db952f87db29718c40afca9a9fb2f6b605f8588c1c99e41e92f26ec005e6d14327c33051fa383fe903b7040d16c7441570167a73d9468aa16a6720c765b3f22aeca42102c45b4616fd7543d7a0649e0fa934e0de1973486eede9d56f014f9f"
+      },
+      "numberOfTransactions": 10,
+      "numberOfAssets": 10,
+      "numberOfEvents": 10,
+      "totalBurnt": "0",
+      "networkFee": "15000000",
+      "totalForged": "65000000",
+      "reward": "50000000",
+      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
+      "isFinal": true
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "offset": 0,
+    "total": 1
+  }
+}
+```
+
+## `new.transactions`
+
+Updates about included transactions within a newly generated block.
+
+### Payload
+
+```jsonc
+{
+  "data": [
+    {
+      "id": "65c28137c130c6609a67fccfcd9d0f7c3df3577324f8d33134326d653ded613f",
+      "moduleCommand": "token:transfer",
+      "nonce": "1",
+      "fee": "5166000",
+      "minFee": "165000",
+      "size": 166,
+      "sender": {
+        "address": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+        "publicKey": "475697e34ae02b394721020d38677a072dbd5c03d61c1c8fdd6563eb66160fa3",
+        "name": "genesis_0"
+      },
+      "params": {
+        "tokenID": "0400000100000000",
+        "amount": "10000000000",
+        "recipientAddress": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
+        "data": ""
+      },
+      "block": {
+        "id": "ebb1ba587a1e8385a2aac1317edcb872c05b2b07df6560fabd0f0d23d7d6a0df",
+        "height": 122721,
+        "timestamp": 1678989430,
+        "isFinal": true
+      },
+      "meta": {
+        "recipient": {
+          "address": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
+          "publicKey": null,
+          "name": null
+        }
+      },
+      "executionStatus": "success",
+      "index": 0
+    },
+  ],
+  "meta": {
+    "count": 1,
+    "offset": 0,
+    "total": 1
+  }
+}
+```
+
+## `delete.transactions`
+
+Updates about deleted transactions within a deleted block. This usually happens when the chain switches forks.
+
+### Payload
+
+```jsonc
+{
+  "data": [
+    {
+      "id": "65c28137c130c6609a67fccfcd9d0f7c3df3577324f8d33134326d653ded613f",
+      "moduleCommand": "token:transfer",
+      "nonce": "1",
+      "fee": "5166000",
+      "minFee": "165000",
+      "size": 166,
+      "sender": {
+        "address": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+        "publicKey": "475697e34ae02b394721020d38677a072dbd5c03d61c1c8fdd6563eb66160fa3",
+        "name": "genesis_0"
+      },
+      "params": {
+        "tokenID": "0400000100000000",
+        "amount": "10000000000",
+        "recipientAddress": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
+        "data": ""
+      },
+      "block": {
+        "id": "ebb1ba587a1e8385a2aac1317edcb872c05b2b07df6560fabd0f0d23d7d6a0df",
+        "height": 122721,
+        "timestamp": 1678989430,
+        "isFinal": true
+      },
+      "meta": {
+        "recipient": {
+          "address": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
+          "publicKey": null,
+          "name": null
+        }
+      },
+      "executionStatus": "success",
+      "index": 0
+    },
+  ],
+  "meta": {
+    "count": 1,
+    "offset": 0,
+    "total": 1
   }
 }
 ```
 
 ## `update.round`
 
-Updates about the forging delegates for the next round.
+Updates about the generators for the next round.
 
-### Response
+### Payload
 
 ```jsonc
 {
   "data": [
     {
-      "username": "genesis_51",
-      "totalVotesReceived": "1006000000000",
-      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
-      "minActiveHeight": 27605,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1607521557
+      "address": "lskjta9erat6qqpa32hqbssttc6p5da3k7tydvhmv",
+      "name": "panzer",
+      "publicKey": "2ca9a7...c23079",
+      "nextAllocatedTime": 1659863166
     },
+    ...
   ],
   "meta": {
     "count": 10,
-    "offset": 20,
-    "total": 103
+    "offset": 0,
+    "total": 103,
   },
 }
 ```
 
-## `update.forgers`
+## `update.generators`
 
-Updates the current forgers' list, so the current forger is on the first position.
+Updates the current generators list, so the current generator is in the first position.
 
-### Response
+### Payload
 
 ```jsonc
 {
   "data": [
     {
-      "username": "genesis_45",
-      "totalVotesReceived": "1000000000000",
-      "address": "lskq847deet5ohzujm6s5t9adeotvmdo7pq4y36nz",
-      "minActiveHeight": 1,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1622816707
+      "address": "lskjta9erat6qqpa32hqbssttc6p5da3k7tydvhmv",
+      "name": "panzer",
+      "publicKey": "2ca9a7...c23079",
+      "nextAllocatedTime": 1659863166
     },
-    // ...
+    ...
   ],
   "meta": {
-    "count": 25,
+    "count": 10,
     "offset": 0,
-    "total": 103
-  }
-}
-```
-
-## `update.transactions`
-
-Updates about transactions from the last block.
-
-### Response
-
-```jsonc
-{
-  "data": [
-    {
-      "id": "222675625422353767",
-      "moduleAssetId": "2:0",
-      "moduleAssetName": "token:transfer",
-      "fee": "1000000",
-      "nonce": "0",
-      "block": {  // optional
-        "id": "6258354802676165798",
-        "height": 8350681,
-        "timestamp": 28227090,
-      },
-      "sender": {
-        "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-        "publicKey": "2ca9a7...c23079",
-        "username": "genesis_51",
-      },
-      "signatures": [ "72c9b2...36c60a" ],
-      "confirmations": 0,
-      "asset": {  // Depends on operation
-        "amount": "150000000",
-        "recipient": {
-          "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "publicKey": "2ca9a7...c23079",
-          "username": "genesis_49",
-        },
-        "data": "message"
-      },
-      "relays": 0,
-      "isPending": false
-    }
-  ],
-  "meta": {
-    "count": 100,
-    "offset": 25,
-    "total": 43749
+    "total": 103,
   },
 }
 ```
@@ -218,7 +331,7 @@ Updates about transactions from the last block.
 
 Updates about recent fee estimates.
 
-### Response
+### Payload
 
 ```jsonc
 {
@@ -228,15 +341,27 @@ Updates about recent fee estimates.
       "medium": 0,
       "high": 0
     },
-    "baseFeeByName": {
-      "dpos:registerDelegate": "1000000000"
-    },
-    "minFeePerByte": 1000
+    "minFeePerByte": 1000,
+    "feeTokenID": "0000000000000000",
   },
   "meta": {
-    "lastUpdate": 1623755357,
-    "lastBlockHeight": 4996,
-    "lastBlockId": "03237f191c8acd0077fc897213973c25ed086c1b5e78dccb4cc1c4dd83a00e21"
+    "lastUpdate": 1659974881,
+    "lastBlockHeight": 19264798,
+    "lastBlockID": "fbcb48456086d11dc797321a672cd964cebee85296ec8c7bd6ed036f88f27fb1"
   }
+}
+```
+
+## `update.metadata`
+
+Updates about recent metadata changes.
+
+### Payload
+
+```jsonc
+{
+  "mainnet": ["Lisk", "Colecti"],
+  "testnet": ["Lisk", "Enevti"],
+  "betanet": ["Lisk"],
 }
 ```
