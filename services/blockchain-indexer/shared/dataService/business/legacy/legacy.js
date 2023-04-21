@@ -16,7 +16,7 @@
 const {
 	getLegacyAddressFromPublicKey,
 	getLisk32AddressFromPublicKey,
-} = require('../../../utils/accountUtils');
+} = require('../../../utils/account');
 
 const { requestConnector } = require('../../../utils/request');
 

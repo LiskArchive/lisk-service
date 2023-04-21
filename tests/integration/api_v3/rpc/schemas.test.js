@@ -44,6 +44,7 @@ describe('Method get.schemas', () => {
 		expect(result.data.transaction.schema).toStrictEqual(schemas.transactionSchema);
 		expect(result.data.event.schema).toStrictEqual(schemas.eventSchema);
 		expect(result.data.standardEvent.schema).toStrictEqual(schemas.standardEventSchema);
+		expect(result.data.ccm.schema).toStrictEqual(schemas.ccmSchema);
 
 		result.data.messages
 			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));

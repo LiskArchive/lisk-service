@@ -32,7 +32,7 @@ const {
 const keyValueTable = require('../../../../shared/database/mysqlKVStore');
 const { KV_STORE_KEY } = require('../../../../shared/constants');
 const config = require('../../../../config');
-const { exists, rmdir } = require('../../../../shared/utils/fsUtils');
+const { exists, rmdir } = require('../../../../shared/utils/fs');
 
 const commitHashRegex = /^[a-f0-9]{40}$/;
 const enevtiAppFilePath = path.resolve(`${config.dataDir}/app-registry/devnet/Enevti/app.json`);
