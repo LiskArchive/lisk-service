@@ -337,6 +337,6 @@ The default configuration in `ecosystem.config.js` should suffice in most of the
 
 To change the default configuration, check out the page xref:{url_config}[Configuration with PM2].
 
-More commands about how to manage Lisk Service are described on the xref:{url_management_pm2}[PM2 commands] page.
+// TODO: More commands about how to manage Lisk Service are described on the xref:{url_management_pm2}[PM2 commands] page.
 
-TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
+// TODO: TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
