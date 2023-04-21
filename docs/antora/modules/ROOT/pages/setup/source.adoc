@@ -184,15 +184,15 @@ brew services start mysql@8.0
 
 .Authentication
 
-If you encounter issues to authenticate, and received the following error:
+If you encounter issues to authenticate, regardless of which platform you are using, and you received the following error:
 
  caching_sha2_password' cannot be loaded: dlopen(/usr/local/lib/plugin/caching_sha2_password.so, 2): image not found
 
-Try the following: Change the `default_authentication_plugin` using the `mysql_native_password`.
+Try to perform the following: Change the `default_authentication_plugin` using the `mysql_native_password`.
 
 Open up `my.cnf` .
 
-If you are unsure where to find your `my.cnf`, use the following command:
+If you are unsure where to find your `my.cnf`, run the following command:
 
  $ mysql --verbose --help | grep my.cnf
 
