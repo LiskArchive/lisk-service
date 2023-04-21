@@ -32,7 +32,9 @@ module.exports = {
 	standardEvent: {
 		schema: '=',
 	},
-	ccm: '=',
+	ccm: {
+		schema: '=',
+	},
 	events: ['data.events', {
 		module: '=,string',
 		name: '=,string',
