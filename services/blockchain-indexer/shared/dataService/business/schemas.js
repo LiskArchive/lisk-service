@@ -79,11 +79,7 @@ const getAllSchemas = async () => {
 		Object.assign(allSchemas, { messages: schemas.messageSchemas });
 
 		// Assign ccm schema
-		Object.assign(allSchemas, {
-			ccm: {
-				schema: ccmSchema,
-			},
-		});
+		Object.assign(allSchemas, { ccm: { schema: ccmSchema } });
 	}
 
 	return allSchemas;
