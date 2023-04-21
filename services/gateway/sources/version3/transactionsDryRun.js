@@ -19,6 +19,7 @@ module.exports = {
 	params: {
 		transaction: '=',
 		skipVerify: '=,boolean',
+		skipDecode: '=,boolean',
 	},
 	definition: {
 		data: {

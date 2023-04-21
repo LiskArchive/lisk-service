@@ -16,7 +16,7 @@
 const {
 	parseToJSONCompatObj,
 	parseInputBySchema,
-} = require('../../shared/utils/parser');
+} = require('../../../../shared/utils/parser');
 
 const {
 	liskAccount,
@@ -26,7 +26,7 @@ const {
 	liskBlockHeaderAssetV3,
 	liskTransaction,
 	liskTransactionAssets,
-} = require('../constants/parser');
+} = require('../../../constants/parser');
 
 describe('Test parse utilities', () => {
 	describe('parseToJSONCompatObj', () => {

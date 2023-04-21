@@ -15,7 +15,7 @@
  */
 const {
 	getIndexedAccountInfo,
-} = require('../../../utils/accountUtils');
+} = require('../../../utils/account');
 const { requestConnector } = require('../../../utils/request');
 
 const getValidator = async params => {

@@ -23,7 +23,7 @@ const {
 
 const { LENGTH_CHAIN_ID } = require('./constants');
 const { isMainchain } = require('./chain');
-const { read } = require('./utils/fsUtils');
+const { read } = require('./utils/fs');
 const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');

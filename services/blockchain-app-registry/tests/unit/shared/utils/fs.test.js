@@ -28,7 +28,7 @@ const {
 	stats,
 	rm,
 	getFilesAndDirs,
-} = require('../../../../shared/utils/fsUtils');
+} = require('../../../../shared/utils/fs');
 
 const testData = {
 	chain_name: 'testApp',
