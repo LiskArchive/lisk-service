@@ -18,6 +18,8 @@ const {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 } = require('./genesisBlock');
 
 const {
@@ -98,6 +100,7 @@ const {
 
 const {
 	getChainAccount,
+	getMainchainID,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -129,6 +132,8 @@ module.exports = {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 
 	// Endpoints
 	getGenerators,
@@ -198,6 +203,7 @@ module.exports = {
 
 	// Interoperability
 	getChainAccount,
+	getMainchainID,
 
 	// Legacy
 	getLegacyAccount,

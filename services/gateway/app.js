@@ -39,7 +39,7 @@ const { getReady, getIndexStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 const { setAppContext } = require('./shared/appContext');
 
-const mapper = require('./shared/customMapper');
+const { mapper } = require('./shared/customMapper');
 const { definition: blocksDefinition } = require('./sources/version3/blocks');
 const { definition: feesDefinition } = require('./sources/version3/fees');
 const { definition: generatorsDefinition } = require('./sources/version3/generators');

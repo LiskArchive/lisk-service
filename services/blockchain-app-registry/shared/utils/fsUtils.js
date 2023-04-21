@@ -15,7 +15,6 @@
  */
 const path = require('path');
 const fs = require('fs');
-
 const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -69,22 +68,27 @@ const mkdir = async (directoryPath, options = { recursive: true }) => new Promis
 	},
 );
 
-const rmdir = async (directoryPath, options = { recursive: true }) => new Promise((resolve) => {
-	logger.trace(`Removing directory: ${directoryPath}.`);
+const rm = async (deletePath, options) => new Promise((resolve) => {
+	logger.trace(`Removing directory: ${deletePath}.`);
 	fs.rm(
-		directoryPath,
-		{ ...options, recursive: true },
+		deletePath,
+		options,
 		(err) => {
 			if (err) {
-				logger.error(`Error when removing directory: ${directoryPath}.\n`, err);
+				logger.error(`Error when removing file/directory: ${deletePath}.\n`, err);
 				return resolve(false);
 			}
 
-			logger.debug(`Successfully removed directory: ${directoryPath}`);
+			logger.debug(`Successfully removed file/directory: ${deletePath}`);
 			return resolve(true);
 		},
 	);
 });
+
+const rmdir = async (directoryPath, options) => rm(
+	directoryPath,
+	{ ...options, recursive: true },
+);
 
 const read = async (filePath) => new Promise((resolve, reject) => {
 	logger.trace(`Reading file: ${filePath}.`);
@@ -161,6 +165,12 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 		});
 	});
 
+const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => {
+	const subDirectories = await getDirectories(directoryPath, options);
+	const filesInDirectory = await getFiles(directoryPath, options);
+	return [...subDirectories, ...filesInDirectory];
+};
+
 const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
 	fs.rename(oldName, newName, (err) => {
@@ -174,14 +184,19 @@ const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	});
 });
 
+const mv = async (source, target) => rename(source, target);
+
 module.exports = {
 	exists,
 	mkdir,
+	rm,
 	rmdir,
 	getDirectories,
 	read,
 	write,
 	getFiles,
 	rename,
+	mv,
 	stats,
+	getFilesAndDirs,
 };

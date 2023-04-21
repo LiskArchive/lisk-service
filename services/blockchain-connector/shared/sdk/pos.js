@@ -21,6 +21,7 @@ const {
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const { MODULE_NAME_POS } = require('./constants/names');
 const { getBlockByHeight } = require('./endpoints');
+const regex = require('../utils/regex');
 
 const logger = Logger();
 
@@ -93,6 +94,14 @@ const getPosPendingUnlocks = async (address) => {
 const getStaker = async (address) => {
 	try {
 		const staker = await invokeEndpoint('pos_getStaker', { address });
+
+		if (staker.error && regex.KEY_NOT_EXIST.test(staker.error.message)) {
+			return {
+				stakes: [],
+				pendingUnlocks: [],
+			};
+		}
+
 		return staker;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

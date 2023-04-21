@@ -31,7 +31,7 @@ const {
 
 let moduleConstants = {};
 
-const getTokens = async (params) => {
+const getTokenBalances = async (params) => {
 	const tokensInfo = [];
 	const tokens = {
 		data: [],
@@ -68,7 +68,7 @@ const getTokens = async (params) => {
 	return tokens;
 };
 
-const getTokensSummary = async () => {
+const getTokenSummary = async () => {
 	const summary = {
 		data: {},
 		meta: {},
@@ -154,7 +154,7 @@ const getTokenConstants = async () => {
 
 module.exports = {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 };

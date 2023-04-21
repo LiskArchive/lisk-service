@@ -165,4 +165,8 @@ module.exports = {
 	COMMAND_NAME,
 	applyTransaction,
 	revertTransaction,
+
+	// For genesis block processing
+	updateTotalStake,
+	updateTotalSelfStake,
 };

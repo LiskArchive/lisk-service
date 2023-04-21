@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,25 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const token = require('./mappings/token');
+
+const { requestConnector } = require('../../../utils/request');
+
+const getMainchainID = async () => {
+	const response = await requestConnector('getMainchainID');
+	return response;
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.tokens',
-	params: {
-		address: '=,string',
-		tokenID: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-	},
-	definition: {
-		data: ['data', token],
-		meta: {
-			address: '=,string',
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	getMainchainID,
 };

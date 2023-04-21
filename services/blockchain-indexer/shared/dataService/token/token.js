@@ -17,15 +17,15 @@ const business = require('../business');
 
 const tokenHasUserAccount = async (params) => business.tokenHasUserAccount(params);
 
-const getTokens = async (params) => business.getTokens(params);
+const getTokenBalances = async (params) => business.getTokenBalances(params);
 
-const getTokensSummary = async (params) => business.getTokensSummary(params);
+const getTokenSummary = async (params) => business.getTokenSummary(params);
 
 const getTokenConstants = async () => business.getTokenConstants();
 
 module.exports = {
 	tokenHasUserAccount,
-	getTokens,
-	getTokensSummary,
+	getTokenBalances,
+	getTokenSummary,
 	getTokenConstants,
 };

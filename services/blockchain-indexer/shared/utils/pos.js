@@ -21,7 +21,7 @@ const { KV_STORE_KEY } = require('../constants');
 
 const getStakeInfo = async (keyPrefix) => {
 	const [row] = await keyValueTable.getByPattern(keyPrefix);
-	const stakeAmount = row && row.value ? row.value.toString() : null;
+	const stakeAmount = row && row.value ? row.value.toString() : '0';
 
 	return {
 		tokenID: await getPosTokenID(),

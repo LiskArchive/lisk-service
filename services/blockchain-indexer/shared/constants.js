@@ -89,6 +89,7 @@ const MODULE = {
 	AUTH: 'auth',
 	DYNAMIC_REWARD: 'dynamicReward',
 	REWARD: 'reward',
+	TOKEN: 'token',
 };
 
 const COMMAND = {

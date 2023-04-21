@@ -93,11 +93,11 @@
 						"type": "string",
 						"example": "5000000"
 					},
-					"stakedLSK": {
+					"totalStakedLSK": {
 						"type": "string",
 						"example": "3000000"
 					},
-					"inflationRate": {
+					"currentAnnualInflationRate": {
 						"type": "string",
 						"example": "4.50"
 					}

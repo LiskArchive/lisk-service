@@ -83,6 +83,9 @@ config.FILENAME = Object.freeze({
 	NATIVETOKENS_JSON: 'nativetokens.json',
 });
 
+config.ALLOWED_FILES = Object.values(config.FILENAME);
+config.ALLOWED_FILE_EXTENSIONS = ['.png', '.svg'];
+
 config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'00': 'mainnet',
 	'01': 'testnet',

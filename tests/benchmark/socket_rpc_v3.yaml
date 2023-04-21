@@ -102,7 +102,7 @@ scenarios:
     flow:
       - emit:
           channel: "request"
-          data: {"method": "get.tokens", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+          data: {"method": "get.token.balances", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
 
   - name: "Check existence of an account for the specified token"
     engine: "socketio"
@@ -123,7 +123,7 @@ scenarios:
     flow:
       - emit:
           channel: "request"
-          data: {"method": "get.tokens.summary"}
+          data: {"method": "get.token.summary"}
 
   # Fees
   - name: "Fee estimates"
