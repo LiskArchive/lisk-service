@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { rmdir } = require('../../../../blockchain-app-registry/shared/utils/fsUtils');
+const { rmdir } = require('../../../../blockchain-app-registry/shared/utils/fs');
 const { exists } = require('../../../shared/fsUtils');
 const { getBuildTimestamp } = require('../../../shared/status');
 

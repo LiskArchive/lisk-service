@@ -15,7 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 const { dataDir, ALLOWED_FILE_EXTENSIONS } = require('../config');
-const { getFilesAndDirs, rmdir, rm, stats } = require('../shared/utils/fsUtils');
+const { getFilesAndDirs, rmdir, rm, stats } = require('../shared/utils/fs');
 const { isMetadataFile } = require('../shared/utils/downloadRepository');
 
 const removeDirectoryIfEmpty = async (dirPath) => {
