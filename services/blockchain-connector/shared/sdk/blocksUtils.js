@@ -108,6 +108,7 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 		} catch (err) {
 			logger.error('Error while downloading and validating genesis block');
 			logger.error(err.message);
+			throw err;
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);

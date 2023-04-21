@@ -39,29 +39,31 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	);
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
-	const tokenModuleData = await requestAll(
-		requestConnector,
-		'getGenesisAssetByModule',
-		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-		totalUsers,
-	);
-	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
-	const tokenIDLockedAmountChangeMap = {};
-
-	// eslint-disable-next-line no-restricted-syntax
-	for (const userInfo of userSubStoreInfos) {
-		const { tokenID } = userInfo;
+	if (totalUsers !== 0) {
+		const tokenModuleData = await requestAll(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+			totalUsers,
+		);
+		const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
+		const tokenIDLockedAmountChangeMap = {};
 
 		// eslint-disable-next-line no-restricted-syntax
-		for (const lockedBalance of userInfo.lockedBalances) {
-			if (!tokenIDLockedAmountChangeMap[tokenID]) {
-				tokenIDLockedAmountChangeMap[tokenID] = BigInt(0);
-			}
-			tokenIDLockedAmountChangeMap[tokenID] += BigInt(lockedBalance.amount);
-		}
-	}
+		for (const userInfo of userSubStoreInfos) {
+			const { tokenID } = userInfo;
 
-	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+			// eslint-disable-next-line no-restricted-syntax
+			for (const lockedBalance of userInfo.lockedBalances) {
+				if (!tokenIDLockedAmountChangeMap[tokenID]) {
+					tokenIDLockedAmountChangeMap[tokenID] = BigInt(0);
+				}
+				tokenIDLockedAmountChangeMap[tokenID] += BigInt(lockedBalance.amount);
+			}
+		}
+
+		await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+	}
 };
 
 const indexPosModuleAssets = async (dbTrx) => {
@@ -74,27 +76,29 @@ const indexPosModuleAssets = async (dbTrx) => {
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);
 
-	const posModuleData = await requestAll(
-		requestConnector,
-		'getGenesisAssetByModule',
-		{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
-		totalStakers,
-	);
-	const stakersInfo = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
+	if (totalStakers !== 0) {
+		const posModuleData = await requestAll(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
+			totalStakers,
+		);
+		const stakersInfo = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const stakerInfo of stakersInfo) {
 		// eslint-disable-next-line no-restricted-syntax
-		for (const stake of stakerInfo.stakes) {
-			totalStakeChange += BigInt(stake.amount);
-			if (stakerInfo.address === stake.validatorAddress) {
-				totalSelfStakeChange += BigInt(stake.amount);
+		for (const stakerInfo of stakersInfo) {
+			// eslint-disable-next-line no-restricted-syntax
+			for (const stake of stakerInfo.stakes) {
+				totalStakeChange += BigInt(stake.amount);
+				if (stakerInfo.address === stake.validatorAddress) {
+					totalSelfStakeChange += BigInt(stake.amount);
+				}
 			}
 		}
-	}
 
-	await updateTotalStake(totalStakeChange, dbTrx);
-	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
+		await updateTotalStake(totalStakeChange, dbTrx);
+		await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
+	}
 };
 
 const indexGenesisBlockAssets = async (dbTrx) => {
