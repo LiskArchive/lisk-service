@@ -108,11 +108,11 @@ const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
 const { getValidator, validateBLSKey } = require('./validators');
-const { refreshNetworkStatus, getNetworkStatus } = require('./network');
+const { getNetworkStatus } = require('./network');
 
 const init = async () => {
 	// Initialize the local cache
-	await refreshNetworkStatus();
+	await getNodeInfo(true);
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 
@@ -223,6 +223,5 @@ module.exports = {
 	validateBLSKey,
 
 	// Network
-	refreshNetworkStatus,
 	getNetworkStatus,
 };

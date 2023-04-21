@@ -15,6 +15,7 @@
 */
 const BluebirdPromise = require('bluebird');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const { getNetworkStatus } = require('../../network');
 const { requestConnector } = require('../../../utils/request');
 
 const config = require('../../../../config');
@@ -78,14 +79,20 @@ const getBlockchainApps = async (params) => {
 		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
 	);
 
+	const { chainID } = (await getNetworkStatus()).data;
+
 	blockchainAppsInfo.data = await BluebirdPromise.map(
 		resultSet,
 		async blockchainAppInfo => {
 			const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
+			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
 
 			return {
 				...blockchainAppInfo,
-				escrow: escrowedAmounts,
+				escrow: escrow.length ? escrow : [{
+					tokenID: chainID.substring(0, 2).padEnd(16, '0'),
+					amount: '0',
+				}],
 			};
 		},
 		{ concurrency: resultSet.length },

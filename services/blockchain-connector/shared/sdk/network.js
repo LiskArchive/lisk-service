@@ -13,49 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
 const { getNodeInfo } = require('./endpoints');
 const { parseToJSONCompatObj } = require('../utils/parser');
 
-const logger = Logger();
-
 let genesisConfig;
-let networkStatus;
 
 const getGenesisConfig = async () => {
 	if (!genesisConfig) {
-		networkStatus = await getNodeInfo();
+		const networkStatus = await getNodeInfo();
 		genesisConfig = networkStatus.genesis;
 	}
 	return genesisConfig;
 };
 
-const refreshNetworkStatus = async () => {
-	const refreshNetworkStatusListener = async () => {
-		try {
-			logger.debug('Refreshing network status');
-			networkStatus = await getNodeInfo();
-		} catch (err) {
-			logger.warn(`Error occurred while refreshing network status:\n${err.stack}`);
-		}
-	};
-
-	if (!networkStatus) {
-		await refreshNetworkStatusListener();
-	}
-
-	Signals.get('chainNewBlock').add(refreshNetworkStatusListener);
-};
-
 const getNetworkStatus = async () => {
-	if (!networkStatus) {
-		await refreshNetworkStatus();
-	}
+	const networkStatus = await getNodeInfo();
 	return parseToJSONCompatObj(networkStatus);
 };
 
 module.exports = {
 	getNetworkStatus,
 	getGenesisConfig,
-	refreshNetworkStatus,
 };
