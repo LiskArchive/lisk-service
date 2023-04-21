@@ -212,7 +212,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		{ concurrency: blockchainAppsMetadata.data.length },
 	);
 
-	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
+	const total = await applicationMetadataTable.count(params, ['chainName']);
 
 	blockchainAppsMetadata.meta = {
 		count: blockchainAppsMetadata.data.length,
