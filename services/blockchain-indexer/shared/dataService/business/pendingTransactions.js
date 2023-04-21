@@ -26,7 +26,7 @@ const {
 	getIndexedAccountInfo,
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
-} = require('../../utils/accountUtils');
+} = require('../../utils/account');
 const { requestConnector } = require('../../utils/request');
 
 let pendingTransactionsList = [];

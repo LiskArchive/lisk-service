@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { normalizeTransaction, getTransactionExecutionStatus } = require('../../shared/utils/transactionsUtils');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../../shared/utils/transactions');
 
 const {
 	inputTransaction,

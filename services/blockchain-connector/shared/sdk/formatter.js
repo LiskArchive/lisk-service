@@ -34,7 +34,7 @@ const {
 
 const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
-const { getLisk32Address } = require('../utils/accountUtils');
+const { getLisk32Address } = require('../utils/account');
 const { getMinFeePerByte } = require('./fee');
 
 const logger = Logger();
