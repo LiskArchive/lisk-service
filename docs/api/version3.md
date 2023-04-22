@@ -14,10 +14,10 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 ## Table of Contents
 
 - [Lisk Service API Documentation](#lisk-service-api-documentation)
-  - [API Status and Readiness](#api-status-and-readiness)
-  - [Base URL](#base-url)
   - [Endpoint logic](#endpoint-logic)
   - [Response format](#response-format)
+  - [API Base URL](#api-base-url)
+  - [API Status and Readiness](#api-status-and-readiness)
 - [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
   - [Blocks](#blocks)
     - [Block search](#block-search)
@@ -42,7 +42,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Module Constants](#module-constants)
     - [Token Summary](#token-summary)
   - [Dynamic Fees](#dynamic-fees)
-  - [PoS](#proof-of-stake-pos)
+  - [Proof of Stake (PoS)](#proof-of-stake-pos)
     - [Claimable rewards](#claimable-rewards)
     - [Locked rewards](#locked-rewards)
     - [Module constants](#module-constants-1)
@@ -78,19 +78,6 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [Market Prices](#market-prices)
   - [Account History Export](#account-history-export)
 
-## API Status and Readiness
-
-Lisk Service offers `/status` and `/ready` endpoints to check the current deployment and high-level service readiness statuses respectively. These endpoints must be queried without the [base URL](#base-url).
-<br/>*Example*: https://service.lisk.com/api/status, https://service.lisk.com/api/ready
-
-## Base URL
-
-The base URL for the Lisk Service v3 API is `/api/v3`. All the RESTful endpoints specified below follow the base URL.
-<br/>*Example*: https://service.lisk.com/api/v3/spec
-
-The WS-RPC endpoints however are available to query under the `/rpc-v3` namespace.
-<br/>*Example*: https://service.lisk.com/api/rpc-v3
-
 ## Endpoint Logic
 
 The logic of the endpoints is as follows:
@@ -118,6 +105,19 @@ The error responses adhere to the following structure:
 }
 ```
 
+## API Base URL
+
+The base URL for the Lisk Service v3 API is `/api/v3`. All the RESTful endpoints specified below follow the base URL.
+<br/>*Example*: https://service.lisk.com/api/v3/spec
+
+The WS-RPC endpoints however are available to query under the `/rpc-v3` namespace.
+<br/>*Example*: https://service.lisk.com/api/rpc-v3
+
+## API Status and Readiness
+
+Lisk Service offers `/status` and `/ready` endpoints to check the current deployment and high-level service readiness statuses respectively. These endpoints must be queried without the API versioning.
+<br/>*Example*: https://service.lisk.com/api/status, https://service.lisk.com/api/ready
+
 # Lisk Blockchain-related Endpoints
 
 ## Blocks
@@ -139,7 +139,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
 | height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
@@ -230,7 +230,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
 | height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
@@ -311,7 +311,7 @@ _Supports pagination._
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
 | height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
 | nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -653,7 +653,7 @@ _Supports pagination._
 | topic | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Can be expressed as a CSV |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
 | height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as interval i.e. `100000:200000` or `100000:` or `:200000` |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[1,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |  |
@@ -1333,7 +1333,6 @@ No parameters are required.
 #### Response example
 
 200 OK
-
 ```jsonc
 {
   "data": {
