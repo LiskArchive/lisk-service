@@ -45,7 +45,6 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(tokenIDsSchema[this.swaggerApiPath].get.responses, response);
 		return tokenIDsSchema;
 	},
 	source: tokenIDsSource,
