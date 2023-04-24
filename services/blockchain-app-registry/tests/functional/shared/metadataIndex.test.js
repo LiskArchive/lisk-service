@@ -24,7 +24,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { mkdir, rmdir, write } = require('../../../shared/utils/fsUtils');
+const { mkdir, rmdir, write } = require('../../../shared/utils/fs');
 const {
 	indexAppMeta,
 	indexMetadataFromFile,

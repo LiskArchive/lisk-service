@@ -26,10 +26,10 @@ const { getEventsByHeight } = require('./events');
 const {
 	getLisk32AddressFromPublicKey,
 	getIndexedAccountInfo,
-} = require('../../utils/accountUtils');
+} = require('../../utils/account');
 const { requestConnector } = require('../../utils/request');
-const { normalizeRangeParam } = require('../../utils/paramUtils');
-const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactionsUtils');
+const { normalizeRangeParam } = require('../../utils/param');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactions');
 const { getFinalizedHeight } = require('../../constants');
 
 const transactionsIndexSchema = require('../../database/schema/transactions');

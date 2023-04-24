@@ -35,11 +35,23 @@ const event = {
 	id: Joi.string().pattern(regex.HEX).required(),
 };
 
+const eventSchemaWithSkipDecode = {
+	...event,
+	data: Joi.string().required(),
+};
+
 const dryrunTransactionSuccessResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
+
+const dryrunTxSuccessSchemaWithSkipDecode = {
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
+	events: Joi.array().items(Joi.object(eventSchemaWithSkipDecode).required()).min(1).required(),
+};
+
 const dryrunTransactionPendingResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.PENDING).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
@@ -55,6 +67,9 @@ const dryrunTransactionInvalidResponseSchema = {
 module.exports = {
 	dryrunTransactionSuccessResponseSchema: Joi.object(
 		dryrunTransactionSuccessResponseSchema,
+	).required(),
+	dryrunTxSuccessSchemaWithSkipDecode: Joi.object(
+		dryrunTxSuccessSchemaWithSkipDecode,
 	).required(),
 	dryrunTransactionPendingResponseSchema: Joi.object(
 		dryrunTransactionPendingResponseSchema,

@@ -40,12 +40,12 @@ const {
 
 const {
 	range,
-} = require('../utils/arrayUtils');
+} = require('../utils/array');
 
-const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/accountUtils');
-const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactionsUtils');
-const { getEventsInfoToIndex } = require('../utils/eventsUtils');
-const { calcCommission, calcSelfStakeReward } = require('../utils/validatorUtils');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
+const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
+const { getEventsInfoToIndex } = require('../utils/events');
+const { calcCommission, calcSelfStakeReward } = require('../utils/validator');
 
 const {
 	getFinalizedHeight,

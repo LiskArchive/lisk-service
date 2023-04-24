@@ -761,6 +761,192 @@
             }
         }
     },
+    "CcmSchema": {
+        "type": "object",
+        "required": [
+            "schema"
+        ],
+        "properties": {
+            "schema": {
+                "type": "object",
+                "required": [
+                    "$id",
+                    "type",
+                    "required",
+                    "properties"
+                ],
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "example": "/modules/interoperability/ccm",
+                        "description": "Unique identifier of the event schema."
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "module",
+                            "crossChainCommand",
+                            "nonce",
+                            "fee",
+                            "sendingChainID",
+                            "receivingChainID",
+                            "params",
+                            "status"
+                        ]
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "module": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "crossChainCommand": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 32
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                }
+                            },
+                            "nonce": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                }
+                            },
+                            "fee": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                }
+                            },
+                            "sendingChainID": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                }
+                            },
+                            "receivingChainID": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 6
+                                    }
+                                }
+                            },
+                            "params": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 7
+                                    }
+                                }
+                            },
+                            "status": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint32"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 8
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "AssetsSchema": {
         "type": "object",
         "required": [
@@ -1311,6 +1497,9 @@
                     },
                     "standardEvent": {
                         "$ref": "#/definitions/StandardEventSchema"
+                    },
+                    "ccm": {
+                        "$ref": "#/definitions/CcmSchema"
                     },
                     "event": {
                         "$ref": "#/definitions/EventSchema"
