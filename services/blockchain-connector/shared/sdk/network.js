@@ -14,7 +14,6 @@
  *
  */
 const { getNodeInfo } = require('./endpoints');
-const { parseToJSONCompatObj } = require('../utils/parser');
 
 let genesisConfig;
 
@@ -28,7 +27,7 @@ const getGenesisConfig = async () => {
 
 const getNetworkStatus = async () => {
 	const networkStatus = await getNodeInfo();
-	return parseToJSONCompatObj(networkStatus);
+	return networkStatus;
 };
 
 module.exports = {
