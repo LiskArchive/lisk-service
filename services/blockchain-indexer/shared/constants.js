@@ -102,7 +102,7 @@ const LENGTH_TOKEN_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const PATTERN_ANY_TOKEN_ID = '*';
 const PATTERN_ANY_CHAIN_TOKEN_ID = '*'.repeat(LENGTH_TOKEN_LOCAL_ID);
 const LENGTH_TOKEN_ID = LENGTH_CHAIN_ID + LENGTH_TOKEN_LOCAL_ID;
-const LENGTH_NETWORK_ID = 2;
+const LENGTH_NETWORK_ID = 1 * 2; // Each byte is represented with 2 nibbles
 
 const MAX_COMMISSION = BigInt('10000');
 
