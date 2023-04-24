@@ -14,6 +14,8 @@
  *
  */
 const requestAll = async (fn, method, params, limit) => {
+	if (!limit) return [];
+
 	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn(method,

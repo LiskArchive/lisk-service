@@ -17,7 +17,10 @@ const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
 
-const { Logger } = require('lisk-service-framework');
+const {
+	Logger,
+	Exceptions: { NotFoundException },
+} = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
 const { formatBlock } = require('./formatter');
@@ -108,7 +111,7 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 		} catch (err) {
 			logger.error('Error while downloading and validating genesis block');
 			logger.error(err.message);
-			throw err;
+			if (err instanceof NotFoundException) throw err;
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
