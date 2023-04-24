@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenConstants = require('./mappings/IDs');
 
 module.exports = {
 	type: 'moleculer',
@@ -21,8 +20,8 @@ module.exports = {
 	params: {},
 	definition: {
 		data: {
-            tokenIDs: ['=,string']
-        },
+			tokenIDs: ['=,string'],
+		},
 		meta: {},
 		links: {},
 	},
