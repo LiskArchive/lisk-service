@@ -1,14 +1,14 @@
 # Lisk Service Gateway
 
-The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never disrupts or breaks the existing application compatibility.
+The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy the API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never disrupts or breaks the existing application compatibility.
 
-> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
 ## Installation
 
 ### Prerequisites
 
-Please refer to the readme file (`README.md`) in the project root directory.
+Please refer to the [README](../../README.md) in the project root directory.
 
 ## Installation
 
@@ -24,9 +24,9 @@ npm install # install required Node.js dependencies
 
 To configure the different microservices, there are a number of environment variables the user can define in order to customize the configurations.
 
-A list of the most commonly used environment variables can be seen below:
+A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (Redis)
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
 - `JSON_RPC_STRICT_MODE`: Makes JSON-RPC require a valid JSON-RPC 2.0 envelope
 - `ENABLE_HTTP_API`: Enables particular HTTP APIs listed by a comma
 - `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma
@@ -67,7 +67,7 @@ Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscri
 
 If you want to run a production variant of the service use `Docker` or `PM2`. In the event whereby the process fails, it will be automatically recovered.
 
-#### Stop
+### Stop
 
 Press `Ctrl+C` in the terminal to stop the process.
 
