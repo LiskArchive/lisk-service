@@ -39,6 +39,8 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	);
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
+	if (!totalUsers) return;
+
 	const tokenModuleData = await requestAll(
 		requestConnector,
 		'getGenesisAssetByModule',
@@ -70,6 +72,8 @@ const indexPosModuleAssets = async (dbTrx) => {
 		{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
 	);
 	const totalStakers = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.STAKERS];
+
+	if (!totalStakers) return;
 
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);
