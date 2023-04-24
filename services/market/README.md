@@ -1,8 +1,8 @@
 # Lisk Service Market
 
-The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real time.
+The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real-time.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all the microservices simultaneously.
 
 ## Installation
 
@@ -22,13 +22,13 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
-- `SERVICE_MARKET_REDIS`: URL of the cache storage (Redis)
-- `EXCHANGERATESAPI_IO_API_KEY`: Access key to fetch data from the exchangeratesapi.io API
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `SERVICE_MARKET_REDIS`: URL of the cache storage (Redis).
+- `EXCHANGERATESAPI_IO_API_KEY`: Access key to fetch data from the exchangeratesapi.io API.
 
 ## Management
 

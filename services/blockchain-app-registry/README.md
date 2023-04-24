@@ -22,13 +22,13 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations. 
+To configure the different microservices, there are several environment variables the user can define to customize the configurations. 
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
-- `SERVICE_APP_REGISTRY_MYSQL`: Connection string of the MySQL instance that the microservice connects to
-- `ENABLE_REBUILD_INDEX_AT_INIT`: Boolean flag to truncate the index and rebuild at application init
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `SERVICE_APP_REGISTRY_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
+- `ENABLE_REBUILD_INDEX_AT_INIT`: Boolean flag to truncate the index and rebuild at application init.
 
 ## Management
 
@@ -41,7 +41,7 @@ npm start # start the microservice
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
 
-Once the process is verified as running correctly, `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
+Once the process is verified as running correctly, press `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
 
 ### Stop
 

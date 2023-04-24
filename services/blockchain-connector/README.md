@@ -1,8 +1,8 @@
 # Lisk Service Blockchain Connector
 
-The Blockchain Connector service is the only microservice that connects directly with the Lisk SDK-based application node. It is responsible to reduce the number of calls to the node ensuring high availability and offering both efficient and reliable access to the application node's API. It also automatically decodes all the necessary information (e.g: event data) for a better user experience.
+The Blockchain Connector service is the only microservice that connects directly with the Lisk SDK-based application node. It is responsible to reduce the number of calls to the node ensuring high availability and offering both efficient and reliable access to the application node's API. It also automatically decodes all the necessary information (e.g. event data), for a more enhanced user experience.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
 ## Installation
 
@@ -22,16 +22,16 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
-- `LISK_APP_HTTP`: URL to connect with the Lisk SDK-based application node over HTTP
-- `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WS
-- `USE_LISK_IPC_CLIENT`: Boolean flag to enable IPC-based connection to the Lisk SDK-based application node
-- `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC
-- `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is huge enough to be transmitted over API calls within the timeout
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `LISK_APP_HTTP`: URL to connect with the Lisk SDK-based application node over HTTP.
+- `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WS.
+- `USE_LISK_IPC_CLIENT`: Boolean flag to enable IPC-based connection to the Lisk SDK-based application node.
+- `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC.
+- `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 - `GEOIP_JSON`: URL of GeoIP server
 
 The variables listed above can be overridden globally by using global variables.

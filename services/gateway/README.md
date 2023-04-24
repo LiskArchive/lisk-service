@@ -2,7 +2,7 @@
 
 The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy the API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never disrupts or breaks the existing application compatibility.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes how to run all the microservices simultaneously.
 
 ## Installation
 
@@ -26,10 +26,10 @@ To configure the different microservices, there are a number of environment vari
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
-- `JSON_RPC_STRICT_MODE`: Makes JSON-RPC require a valid JSON-RPC 2.0 envelope
-- `ENABLE_HTTP_API`: Enables particular HTTP APIs listed by a comma
-- `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `JSON_RPC_STRICT_MODE`: Makes JSON-RPC require a valid JSON-RPC 2.0 envelope.
+- `ENABLE_HTTP_API`: Enables particular HTTP APIs listed by a comma.
+- `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma.
 
 The variables listed above can be overridden globally by using global variables.
 

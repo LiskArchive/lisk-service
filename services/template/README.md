@@ -2,7 +2,7 @@
 
 The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes how to run all the microservices simultaneously.
 
 ## Installation
 
@@ -22,7 +22,7 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 The template service does not use any of them by default.
 
 ## Management
@@ -36,7 +36,7 @@ npm start # start the microservice
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
 
-Once the process is verified as running correctly, `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
+Once the process is verified as running correctly, press `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
 
 ### Stop
 

@@ -12,29 +12,29 @@
 
 Lisk Service is a web application middleware that allows interaction with various blockchain networks based on the Lisk protocol.
 
-The main focus of Lisk Service is to provide data to the UI clients such as Lisk Desktop and Lisk Mobile. It allows accessing the live blockchain data similarly to the regular Lisk SDK API, albeit more exhaustively. In addition, Lisk Service also provides users with much more detailed information and endpoints, such as geolocation, network usage statistics and more.
+The main focus of Lisk Service is to provide data to the UI clients such as Lisk Desktop and Lisk Mobile. It allows accessing the live blockchain data similarly to the regular Lisk SDK API, albeit with more comprehensive features. Furthermore, Lisk Service also provides users with much more detailed information and endpoints, such as geolocation, network usage statistics, and more.
 
-The project is a Microservices-based implementation. The technical stack design helps deliver several micro-services, where each one is responsible for a particular functionality. The data is served in JSON format and exposed by a public RESTful or a WebSocket-based RPC API.
+The project is a Microservices-based implementation. The technical stack design helps deliver several micro-services, whereby each one is responsible for a particular functionality. The data is served in JSON format and exposed by a public RESTful or a WebSocket-based RPC API.
 
 ## Available Services
 
-Lisk Service consists of various microservices that can run independently from the others. The Gateway is required to expose the APIs provided by the specific services.
+Lisk Service comprises of multiple microservices that can operate independently of each other. The Gateway is required to expose the APIs provided by the specific services.
 
-Every microservice is independently managed and placed in a separate directory under the [`services`](services) directory. They contain their own `package.json` and `Dockerfile` that are helpful when running the applications.
+Every microservice is independently managed and placed in a separate directory under the [`services`](services) directory. They contain their own `package.json` and `Dockerfile` that are beneficial when running the applications.
 
 
 | Service                                                   | Description |
 | --------------------------------------------------------- | ----------- |
 | [Gateway](services/gateway)                               | The Gateway exposes the API for Lisk Service users to access and use over HTTP and WS protocols. Its main purpose is to proxy API requests from users to the concerned Lisk Service microservices. It provides the users with a central point of data access that ensures existing application compatibility. |
 | [Connector](services/blockchain-connector)                | The Blockchain Connector connects with the node running a Lisk protocol-compliant blockchain application. It is primarily responsible for data transformation and caching, thus reducing the number of calls made to the node. |
-| [Coordinator](services/blockchain-coordinator)            | The Blockchain Coordinator service is primarily responsible for ensuring the completeness of the index. It regularly checks for gaps in the index and schedules jobs to update it along with the new block updates. |
-| [Indexer](services/blockchain-indexer)                    | The Blockchain Indexer service, in the indexing mode, is primarily responsible to update the index, based on the scheduled jobs by the Blockchain Coordinator. In the data service mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls. It can run both the indexer and data service modes simultaneously, enabled by default. |
-| [App Registry](services/blockchain-app-registry)          | The Blockchain Application Registry service is primarily responsible for regularly synchronize and providing off-chain metadata information for known blockchain applications in the Lisk ecosystem. The metadata is maintained in Lisk's [Application Registry](https://github.com/LiskHQ/app-registry) repository. |
+| [Coordinator](services/blockchain-coordinator)            | The Blockchain Coordinator service is primarily responsible for ensuring the completeness of the index. It performs periodic checks for any gaps in the index and schedules tasks to update it, along with the latest block updates. |
+| [Indexer](services/blockchain-indexer)                    | The Blockchain Indexer service, in the indexing mode, is primarily responsible to update the index, based on the scheduled jobs by the Blockchain Coordinator. In the data service mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls. It can run both the indexer and data service modes simultaneously, which is enabled by default. |
+| [App Registry](services/blockchain-app-registry)          | The Blockchain Application Registry service is primarily responsible for regularly synchronizing and providing off-chain metadata information for known blockchain applications in the Lisk ecosystem. The metadata is maintained in the Lisk [Application Registry](https://github.com/LiskHQ/app-registry) repository. |
 | [Fee Estimator](services/fee-estimator)                   | The Fee Estimator service implements the [dynamic fee system](https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md) algorithm to offer users transaction fee recommendations based on the network traffic. |
 | [Transaction Statistics](services/transaction-statistics) | The Transaction Statistics service, as the name suggests, is primarily responsible to compute various transaction statistics to offer users various real-time network insights. |
 | [Market](services/market)                                 | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real time. |
 | [Export](services/export)                                 | The Export service enables users to download the transaction history as a CSV file for any given account on the blockchain. |
-| [Template](services/template)                             | The Template service is an abstract microservice from which all Lisk Service services inherit. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, thus, simplifying code maintenance and testing. |
+| [Template](services/template)                             | The Template service is an abstract microservice from which all Lisk Service services are inherited. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence, simplifying code maintenance and testing. |
 
 **Remarks**
 

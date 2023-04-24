@@ -2,12 +2,12 @@
 
 The Blockchain Indexer service, in the *indexing* mode, is primarily responsible to index all the blockchain information, based on the scheduled jobs by the Blockchain Coordinator.
 In the *data service* mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls.
-It can run both the indexer and data service modes simultaneously, enabled by default.
+It can run both the indexer and data service modes simultaneously, and is enabled by default.
 
 This microservice encapsulates most of the business logic for the Lisk Service API. By default, it only implements the business logic for all the available commands from the Lisk SDK.
-The *applyTransaction* and *revertTransaction* hooks implement the indexing logic and are specific to each available command. The *applyTransaction* is triggered when processing an included transaction within a new block while (usually) indexing the `chain_newBlock` event. The *revertTransaction* hook is triggered when processing an included transaction within a deleted block while processing the `chain_deleteBlock` event. All the implemented hooks are grouped [here](./shared/indexer/transactionProcessor). A command specific hooks are always implemented within a single file and are grouped by the module. When interested in extending Lisk Service and implementing hooks for your custom modules, please check the [Extending Indexer](#extending-indexer) section below.
+The *applyTransaction* and *revertTransaction* hooks implement the indexing logic and are specific to each available command. The *applyTransaction* is triggered when processing an included transaction within a new block while (usually) indexing the `chain_newBlock` event. The *revertTransaction* hook is triggered when processing an included transaction within a deleted block while processing the `chain_deleteBlock` event. All the implemented hooks are grouped [here](./shared/indexer/transactionProcessor). Command specific hooks are always implemented within a single file and are grouped by the module. When interested in extending Lisk Service and implementing hooks for your custom modules, please check the [Extending Indexer](#extending-indexer) section below.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all microservices at once.
 
 ## Installation
 
@@ -27,17 +27,17 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (Redis)
-- `SERVICE_INDEXER_MYSQL`: Connection string of the MySQL instance that the microservice connects to
-- `SERVICE_MESSAGE_QUEUE_REDIS`: URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis)
-- `SERVICE_INDEXER_REDIS_VOLATILE`: URL of the volatile cache storage (Redis)
-- `ENABLE_DATA_RETRIEVAL_MODE`: Boolean flag to enable the Data Service mode
-- `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode
-- `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently persist the events in the MySQL database
+- `SERVICE_BROKER`: URL of the microservice message broker (Redis).
+- `SERVICE_INDEXER_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
+- `SERVICE_MESSAGE_QUEUE_REDIS`: URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis).
+- `SERVICE_INDEXER_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
+- `ENABLE_DATA_RETRIEVAL_MODE`: Boolean flag to enable the Data Service mode.
+- `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode.
+- `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently maintain the events in the MySQL database.
 
 ## Management
 
@@ -63,10 +63,10 @@ Existing hooks are located in the [shared/indexer/transactionProcessor](./shared
 
 When implementing the custom hooks please adhere to the following:
 
-- Create a sub-directory with the module name. Eg: [token](./shared/indexer/transactionProcessor/token)
+- Create a sub-directory with the module name. For example: [token](./shared/indexer/transactionProcessor/token).
 - Add `index.js` under the above directory.
   - Export a `MODULE_NAME` variable. The value must match the *module* name as registered within the application.
-- Create a file specific to the command for which you need to implement the custom hooks. Eg: [transfer](./shared/indexer/transactionProcessor/token/transfer.js)
+- Create a file specific to the command for which you need to implement the custom hooks. For example: [transfer](./shared/indexer/transactionProcessor/token/transfer.js).
   - Export a `COMMAND_NAME` variable. The value must match the *command* name as registered within the application.
   - Implement the custom logic for the `applyTransaction` and `revertTransaction` hooks.
   - Export the hooks.

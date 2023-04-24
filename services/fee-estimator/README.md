@@ -2,7 +2,7 @@
 
 The Fee Estimator service is primarily responsible to implement the [Dynamic Fee](https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md) proposal. It implements the algorithm specified in [LIP-0016](https://github.com/LiskHQ/lips/blob/main/proposals/lip-0016.md) and provides estimates based on the network activity.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory covers running all the microservices simultaneously.
 
 ## Installation
 
@@ -22,12 +22,12 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
-- `SERVICE_FEE_ESTIMATOR_CACHE`: URL of the cache storage (Redis)
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `SERVICE_FEE_ESTIMATOR_CACHE`: URL of the cache storage (Redis).
 
 ## Management
 

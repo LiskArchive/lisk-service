@@ -2,7 +2,7 @@
 
 The Transaction Statistics service, as the name suggests, is primarily responsible to compute various transaction statistics to offer users various near real-time network activity insights.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all the microservices simultaneously.
 
 ## Installation
 
@@ -16,20 +16,20 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/services/transaction-statistics # move into transaction-statistics microservice directory
+cd lisk-service/services/transaction-statistics # move into the transaction-statistics microservice directory
 npm install # install required Node.js dependencies
 ```
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
 A list of the most commonly used environment variables is presented below:
 
-- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
-- `SERVICE_STATISTICS_MYSQL`: Connection string of the MySQL instance that the microservice connects to
-- `SERVICE_STATISTICS_REDIS`: URL of the cache storage (Redis)
-- `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`: Number of days for which the transaction statistics needs to be build in retrospect to the application init
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `SERVICE_STATISTICS_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
+- `SERVICE_STATISTICS_REDIS`: URL of the cache storage (Redis).
+- `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`: The number of days for which the transaction statistics need to be built in retrospect to the application init.
 
 ## Management
 
