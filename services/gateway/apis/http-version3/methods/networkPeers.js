@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peersSource = require('../../../sources/version3/peers');
+const networkPeersSource = require('../../../sources/version3/networkPeers');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
@@ -32,16 +32,16 @@ module.exports = {
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'networkVersion:asc', 'networkVersion:desc'], default: 'height:desc' },
 	},
 	get schema() {
-		const peerSchema = {};
-		peerSchema[this.swaggerApiPath] = { get: {} };
-		peerSchema[this.swaggerApiPath].get.tags = this.tags;
-		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
-		peerSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const networkPeerSchema = {};
+		networkPeerSchema[this.swaggerApiPath] = { get: {} };
+		networkPeerSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkPeerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
+		networkPeerSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns peers data',
 		});
-		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
-		peerSchema[this.swaggerApiPath].get.responses = {
+		networkPeerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
+		networkPeerSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of peer nodes in the network',
 				schema: {
@@ -49,9 +49,9 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(peerSchema[this.swaggerApiPath].get.responses, response);
-		return peerSchema;
+		Object.assign(networkPeerSchema[this.swaggerApiPath].get.responses, response);
+		return networkPeerSchema;
 	},
-	source: peersSource,
+	source: networkPeersSource,
 	envelope,
 };

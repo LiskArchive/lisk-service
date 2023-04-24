@@ -15,6 +15,7 @@
  */
 const { Logger, Signals } = require('lisk-service-framework');
 const { getNodeInfo } = require('./endpoints');
+const peerCache = require('./peerCache');
 const { parseToJSONCompatObj } = require('../utils/parser');
 
 const logger = Logger();
@@ -54,8 +55,21 @@ const getNetworkStatus = async () => {
 	return parseToJSONCompatObj(networkStatus);
 };
 
+const getNetworkConnectedPeers = async () => peerCache.get('connected');
+
+const getNetworkDisconnectedPeers = async () => peerCache.get('disconnected');
+
+const getNetworkPeers = async () => peerCache.get();
+
+const getNetworkPeersStatistics = async () => peerCache.getStatistics();
+
 module.exports = {
 	getNetworkStatus,
 	getGenesisConfig,
 	refreshNetworkStatus,
+
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };

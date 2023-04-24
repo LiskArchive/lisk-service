@@ -43,10 +43,6 @@ const {
 } = require('./pendingTransactions');
 
 const {
-	getPeersStatistics,
-} = require('./peers');
-
-const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
@@ -160,9 +156,6 @@ module.exports = {
 	// Validator
 	getValidator,
 	validateBLSKey,
-
-	// Peers
-	getPeersStatistics,
 
 	getAnnualInflation,
 	getDefaultRewardAtHeight,

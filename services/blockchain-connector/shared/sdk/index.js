@@ -51,13 +51,6 @@ const {
 } = require('./transactions');
 
 const {
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
-} = require('./peers');
-
-const {
 	tokenHasUserAccount,
 	getTokenBalance,
 	getTokenBalances,
@@ -108,7 +101,14 @@ const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
 const { getValidator, validateBLSKey } = require('./validators');
-const { refreshNetworkStatus, getNetworkStatus } = require('./network');
+const {
+	refreshNetworkStatus,
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
+} = require('./network');
 
 const init = async () => {
 	// Initialize the local cache
@@ -159,12 +159,6 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-
-	// Peers
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
 
 	// Tokens
 	tokenHasUserAccount,
@@ -225,4 +219,8 @@ module.exports = {
 	// Network
 	refreshNetworkStatus,
 	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };
