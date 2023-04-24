@@ -1,8 +1,11 @@
 # Lisk Service Blockchain Indexer
 
-The Blockchain Indexer service, in the *indexing* mode, is primarily responsible to update the index, based on the scheduled jobs by the Blockchain Coordinator. In the *data service* mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls. It can run both the indexer and data service modes simultaneously, enabled by default.
+The Blockchain Indexer service, in the *indexing* mode, is primarily responsible to index all the blockchain information, based on the scheduled jobs by the Blockchain Coordinator.
+In the *data service* mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls.
+It can run both the indexer and data service modes simultaneously, enabled by default.
 
-<!-- It is primarily responsible to index all the blockchain information and encapsulate majority of the business logic for the Lisk Service API. -->
+This microservice encapsulates most of the business logic for the Lisk Service API. By default, it only implements the business logic for all the available commands from the Lisk SDK.
+The *applyTransaction* and *revertTransaction* hooks implement the indexing logic and are specific to each available command. The *applyTransaction* is triggered when processing an included transaction within a new block while (usually) indexing the `chain_newBlock` event. The *revertTransaction* hook is triggered when processing an included transaction within a deleted block while processing the `chain_deleteBlock` event. All the implemented hooks are grouped [here](./shared/indexer/transactionProcessor). A command specific hooks are always implemented within a single file and are grouped by the module. When interested in extending Lisk Service and implementing hooks for your custom modules, please check the [Extending Indexer](#extending-indexer) section below.
 
 > Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes running all microservices at once.
 
@@ -52,6 +55,22 @@ If you want to run a production variant of the service, use `Docker` or `PM2`. T
 ### Stop
 
 Press `Ctrl+C` in the terminal to stop the process.
+
+## Extending Indexer
+
+The *applyTransaction* and *revertTransaction* hooks are arranged per command in a file and are grouped by the module that they belong to.<br />
+Existing hooks are located in the [shared/indexer/transactionProcessor](./shared/indexer/transactionProcessor) directory.
+
+When implementing the custom hooks please adhere to the following:
+
+- Create a sub-directory with the module name. Eg: [token](./shared/indexer/transactionProcessor/token)
+- Add `index.js` under the above directory.
+  - Export a `MODULE_NAME` variable. The value must match the *module* name as registered within the application.
+- Create a file specific to the command for which you need to implement the custom hooks. Eg: [transfer](./shared/indexer/transactionProcessor/token/transfer.js)
+  - Export a `COMMAND_NAME` variable. The value must match the *command* name as registered within the application.
+  - Implement the custom logic for the `applyTransaction` and `revertTransaction` hooks.
+  - Export the hooks.
+- To aid your development, please use the sample templates [here](./shared/indexer/transactionProcessor/0_moduleName).
 
 ## Contributors
 
