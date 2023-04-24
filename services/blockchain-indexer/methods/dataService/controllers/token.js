@@ -83,7 +83,7 @@ const getTokenIDs = async () => ({
 		],
 	},
 	meta: {
-		limit: 10,
+		count: 1,
 		offset: 0,
 		total: 1,
 	},

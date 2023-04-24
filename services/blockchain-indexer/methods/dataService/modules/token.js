@@ -60,6 +60,9 @@ module.exports = [
 	{
 		name: 'token.ids',
 		controller: getTokenIDs,
-		params: {},
+		params: {
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
 	},
 ];

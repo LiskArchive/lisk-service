@@ -16,7 +16,7 @@
 const tokenIDsSource = require('../../../../../sources/version3/tokenIDs');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../../../shared/regex');
-const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
+const { transformParams, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',

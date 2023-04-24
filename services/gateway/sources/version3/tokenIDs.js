@@ -17,12 +17,19 @@
 module.exports = {
 	type: 'moleculer',
 	method: 'indexer.token.ids',
-	params: {},
+	params: {
+		offset: '=,number',
+		limit: '=,number',
+	},
 	definition: {
 		data: {
-			tokenIDs: ['=,string'],
+			tokenIDs: '=',
 		},
-		meta: {},
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
 		links: {},
 	},
 };
