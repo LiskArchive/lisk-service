@@ -19,8 +19,8 @@ const { response, getSwaggerDescription, transformParams } = require('../../../.
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/reward/inflation',
-	rpcMethod: 'get.reward.inflation',
+	swaggerApiPath: '/reward/annual-inflation',
+	rpcMethod: 'get.reward.annual-inflation',
 	tags: ['(Dynamic) Reward'],
 	params: {
 		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },

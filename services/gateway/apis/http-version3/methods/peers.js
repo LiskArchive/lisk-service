@@ -19,8 +19,8 @@ const { transformParams, response, getSwaggerDescription } = require('../../../s
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/peers',
-	rpcMethod: 'get.peers',
+	swaggerApiPath: '/network/peers',
+	rpcMethod: 'get.network.peers',
 	tags: ['Network'],
 	params: {
 		ip: { optional: true, type: 'string', pattern: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/ },

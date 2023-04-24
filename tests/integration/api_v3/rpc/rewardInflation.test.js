@@ -27,11 +27,11 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getRewardInflation = async (params) => request(wsRpcUrl, 'get.reward.inflation', params);
+const getRewardInflation = async (params) => request(wsRpcUrl, 'get.reward.annual-inflation', params);
 
 let latestBlockHeight;
 
-describe('Test get.reward.inflation', () => {
+describe('Test get.reward.annual-inflation', () => {
 	beforeAll(async () => {
 		const response = await request(wsRpcUrl, 'get.network.status');
 		latestBlockHeight = response.result.data.height;

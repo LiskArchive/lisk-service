@@ -29,7 +29,7 @@ const {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/peers`;
+const endpoint = `${baseUrlV3}/network/peers`;
 
 describe('Peers API', () => {
 	describe('GET /peers', () => {

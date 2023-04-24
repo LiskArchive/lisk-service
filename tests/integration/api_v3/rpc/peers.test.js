@@ -30,7 +30,7 @@ const {
 } = require('../../../schemas/api_v3/peer.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const requestPeers = async params => request(wsRpcUrl, 'get.peers', params);
+const requestPeers = async params => request(wsRpcUrl, 'get.network.peers', params);
 
 describe('Peers API', () => {
 	describe('get.peers', () => {
