@@ -87,6 +87,13 @@ const {
 } = require('./events');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { getValidator, validateBLSKey } = require('./validator');
+const {
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
+} = require('./network');
 
 module.exports = {
 	// Generators
@@ -157,7 +164,15 @@ module.exports = {
 	getValidator,
 	validateBLSKey,
 
+	// Dynamic Reward
 	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
+
+	// Network
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };
