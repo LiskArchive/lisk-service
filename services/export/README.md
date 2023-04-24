@@ -1,12 +1,12 @@
 # Lisk Service Export
 
-TBD
+The Export service allows users to download the transaction history for a specified user address or publicKey, in a CSV format to aid the auditors.
 
 ## Installation
 
 ### Prerequisites
 
-Please refer to the readme file (`README.md`) in the project root directory.
+Please refer to the [README](../../README.md) in the project root directory.
 
 ## Installation
 
@@ -20,14 +20,20 @@ npm install # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations.
+To configure the different microservices, there are several environment variables, the user can define to customize the configurations.
+
+A list of the most commonly used environment variables is presented below:
+
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis)
+- `SERVICE_EXPORT_REDIS`: URL of the permanent cache storage (Redis)
+- `SERVICE_EXPORT_REDIS_VOLATILE`: URL of the volatile cache storage (Redis)
 
 ## Management
 
 ### Start
 
 ```bash
-cd lisk-service/services/export # move into root directory of the export microservice
+cd lisk-service/services/export # move into the root directory of the export microservice
 npm start # start the microservice
 ```
 
@@ -35,7 +41,7 @@ Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscri
 
 Once the process is verified as running correctly, `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
 
-#### Stop Lisk Service
+### Stop
 
 Press `Ctrl+C` in the terminal to stop the process.
 
