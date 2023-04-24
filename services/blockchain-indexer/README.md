@@ -30,7 +30,7 @@ A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis)
 - `SERVICE_INDEXER_MYSQL`: Connection string of the MySQL instance that the microservice connects to
-- `SERVICE_MESSAGE_QUEUE_REDIS`: URL of the permanent cache storage (Redis)
+- `SERVICE_MESSAGE_QUEUE_REDIS`: URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis)
 - `SERVICE_INDEXER_REDIS_VOLATILE`: URL of the volatile cache storage (Redis)
 - `ENABLE_DATA_RETRIEVAL_MODE`: Boolean flag to enable the Data Service mode
 - `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode
