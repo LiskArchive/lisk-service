@@ -75,9 +75,26 @@ const getTokenConstants = async () => {
 	return constants;
 };
 
+const getTokenIDs = async () => {
+	// TODO: fetch available tokens after indexing
+	return {
+		"data": {
+		  "tokenIDs": [
+			"04000000000000000000",
+		  ],
+		},
+		"meta": {
+		  "limit": 10,
+		  "offset": 0,
+		  "total": 1
+		}
+	  };
+};
+
 module.exports = {
 	tokenHasUserAccount,
 	getTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getTokenIDs,
 };

@@ -17,7 +17,7 @@ const tokenConstants = require('./mappings/IDs');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.token.constants',
+	method: 'indexer.token.ids',
 	params: {},
 	definition: {
 		data: {
