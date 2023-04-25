@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/export/transactions',
 	rpcMethod: 'get.export.transactions',
-	tags: ['Transaction Export'],
+	tags: ['Account History Export'],
 	params: {
 		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
 		publicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY },

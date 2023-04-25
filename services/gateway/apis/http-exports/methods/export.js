@@ -23,7 +23,7 @@ module.exports = {
 	params: {
 		filename: { optional: false, type: 'string' },
 	},
-	tags: ['Transaction Export'],
+	tags: ['Account History Export'],
 	get schema() {
 		const exportSchema = {};
 		exportSchema[this.swaggerApiPath] = { get: {} };

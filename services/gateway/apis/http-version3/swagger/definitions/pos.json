@@ -336,10 +336,7 @@
 		"properties": {
 			"data": {
 				"description": "Array of PoS unlocks data.",
-				"type": "array",
-				"items": {
-					"$ref": "#/definitions/posUnlock"
-				}
+				"$ref": "#/definitions/posUnlock"
 			},
 			"meta": {
 				"$ref": "#/definitions/pagination"

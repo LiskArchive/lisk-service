@@ -20,11 +20,10 @@ describe('Signals tests', () => {
 		const signal = signals.get('dispatchEvent');
 		it('Dispatch and add signal data', async () => {
 			signal.dispatch('Event is dispatched');
-			signal.add((data) => {
+			signal.add(data => {
 				expect(data.toEqual('Event is dispatched'));
 			});
 		});
-
 	});
 
 	describe('signal.add()', () => {
@@ -48,7 +47,7 @@ describe('Signals tests', () => {
 		const signal = signals.get('disposeEvent');
 		it('Dispose signal', async () => {
 			signal.dispatch('Event is dispatched');
-			signal.add((data) => {
+			signal.add(data => {
 				expect(data.toEqual('Event is dispatched'));
 			});
 

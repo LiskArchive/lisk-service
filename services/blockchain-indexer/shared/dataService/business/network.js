@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,21 +13,42 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../utils/request');
+const { requestConnector } = require('../../utils/request');
+const { getAvailableModuleCommands, getRegisteredModules } = require('../../constants');
 
-const business = require('./business');
+const PEER_STATE = {
+	CONNECTED: 'connected',
+	DISCONNECTED: 'disconnected',
+};
 
-const getPeers = async params => {
+const getNetworkStatus = async () => {
+	const status = await requestConnector('getNetworkStatus');
+
+	status.moduleCommands = await getAvailableModuleCommands();
+	status.registeredModules = await getRegisteredModules();
+	status.constants = { chainID: status.chainID };
+
+	return {
+		data: status,
+		meta: {
+			lastUpdate: Math.floor(Date.now() / 1000),
+			lastBlockHeight: status.height,
+			lastBlockID: status.lastBlockID,
+		},
+	};
+};
+
+const getNetworkPeers = async params => {
 	let peers;
 
 	const state = params.state ? params.state.toString().toLowerCase() : undefined;
 
 	if (state === 'connected') {
-		peers = await requestConnector('getConnectedPeers');
+		peers = await requestConnector('getNetworkConnectedPeers');
 	} else if (state === 'disconnected') {
-		peers = await requestConnector('getDisconnectedPeers');
+		peers = await requestConnector('getNetworkDisconnectedPeers');
 	} else {
-		peers = await requestConnector('getPeers');
+		peers = await requestConnector('getNetworkPeers');
 	}
 
 	const intersect = (a, b) => {
@@ -79,24 +100,28 @@ const getPeers = async params => {
 	};
 };
 
-const getConnectedPeers = async params => {
-	const response = await getPeers(Object.assign(params, { state: 'connected' }));
+const getNetworkConnectedPeers = async params => {
+	const response = await getNetworkPeers(Object.assign(params, { state: PEER_STATE.CONNECTED }));
 	return response;
 };
 
-const getDisconnectedPeers = async params => {
-	const response = await getPeers(Object.assign(params, { state: 'disconnected' }));
+const getNetworkDisconnectedPeers = async params => {
+	const response = await getNetworkPeers(Object.assign(params, { state: PEER_STATE.DISCONNECTED }));
 	return response;
 };
 
-const getPeersStatistics = async () => {
-	const response = await business.getPeersStatistics();
-	return response;
+const getNetworkPeersStatistics = async () => {
+	const response = await requestConnector('getNetworkPeersStatistics');
+	return {
+		data: response,
+		meta: {},
+	};
 };
 
 module.exports = {
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };

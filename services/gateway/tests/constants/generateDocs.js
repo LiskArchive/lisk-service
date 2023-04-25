@@ -117,7 +117,7 @@ const createApiDocsExpectedResponse = {
 	'/blockchain/apps/meta/list': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests list of blockchain applications for which the off-chain metadata is available',
 			description: 'Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list',
@@ -169,7 +169,7 @@ const createApiDocsExpectedResponse = {
 	'/blockchain/apps/meta': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata',
 			description: 'Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta',
@@ -246,7 +246,7 @@ const createApiDocsExpectedResponse = {
 	'/blockchain/apps/meta/tokens': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata for tokens',
 			description: 'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
@@ -307,7 +307,7 @@ const createApiDocsExpectedResponse = {
 	'/blockchain/apps/meta/tokens/supported': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.',
 			description: 'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.\n RPC => get.blockchain.apps.meta.tokens.supported',
@@ -553,7 +553,7 @@ const createApiDocsExpectedResponse = {
 				'Proxy',
 			],
 			summary: 'Proxy request to directly invoke application endpoint',
-			description: 'Returns endpoint response from the blockchain application in its original form\n RPC => post.invoke',
+			description: 'Returns endpoint response from the blockchain application in its original form.\n RPC => post.invoke',
 			parameters: [
 				{
 					$ref: '#/parameters/invokeParams',
@@ -561,7 +561,7 @@ const createApiDocsExpectedResponse = {
 			],
 			responses: {
 				200: {
-					description: 'Returns endpoint response from the blockchain application in its original form',
+					description: 'Returns endpoint response from the blockchain application in its original form.',
 					schema: {
 						$ref: '#/definitions/invokeWithEnvelope',
 					},
@@ -635,13 +635,13 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/peers': {
+	'/network/peers': {
 		get: {
 			tags: [
-				'Peers',
+				'Network',
 			],
 			summary: 'Requests peers data',
-			description: 'Returns peers data\n RPC => get.peers',
+			description: 'Returns peers data\n RPC => get.network.peers',
 			parameters: [
 				{
 					$ref: '#/parameters/ip',
