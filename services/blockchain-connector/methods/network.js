@@ -13,12 +13,38 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNetworkStatus } = require('../shared/sdk');
+const {
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
+} = require('../shared/sdk');
 
 module.exports = [
 	{
 		name: 'getNetworkStatus',
 		controller: getNetworkStatus,
+		params: {},
+	},
+	{
+		name: 'getNetworkPeers',
+		controller: getNetworkPeers,
+		params: {},
+	},
+	{
+		name: 'getNetworkConnectedPeers',
+		controller: getNetworkConnectedPeers,
+		params: {},
+	},
+	{
+		name: 'getNetworkDisconnectedPeers',
+		controller: getNetworkDisconnectedPeers,
+		params: {},
+	},
+	{
+		name: 'getNetworkPeersStatistics',
+		controller: getNetworkPeersStatistics,
 		params: {},
 	},
 ];

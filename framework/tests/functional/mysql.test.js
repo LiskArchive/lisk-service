@@ -48,16 +48,17 @@ describe('Test MySQL', () => {
 	});
 
 	describe('Generic MySQL validation', () => {
-		it(`validate if primary key is set`, async () => {
+		it('validate if primary key is set', async () => {
 			const result = await testTable.rawQuery(`SHOW KEYS FROM ${tableName} WHERE Key_name = 'PRIMARY'`);
 			expect(result.length).toBe(1);
 			expect(result[0].Column_name).toBe(schema.primaryKey);
 		});
 
-		it(`validate if composite primary key is set`, async () => {
+		it('validate if composite primary key is set', async () => {
 			const result = await compositeKeyTable.rawQuery(`SHOW KEYS FROM ${compositeKeyTableName} WHERE Key_name = 'PRIMARY'`);
 			expect(result.length).toBe(compositeKeySchema.primaryKey.length);
-			result.forEach(res => expect(compositeKeySchema.primaryKey.includes(res.Column_name)).toBe(true));
+			result
+				.forEach(res => expect(compositeKeySchema.primaryKey.includes(res.Column_name)).toBe(true));
 		});
 
 		it(`${tableName} exists`, async () => {
@@ -96,7 +97,7 @@ describe('Test MySQL', () => {
 				{
 					property: 'id',
 					values: [emptyBlock.id],
-				}]
+				}],
 			};
 			const result = await testTable.find(params, ['id']);
 			expect(result).toBeInstanceOf(Array);
@@ -129,7 +130,7 @@ describe('Test MySQL', () => {
 				{
 					property: 'id',
 					values: [emptyBlock.id],
-				}]
+				}],
 			};
 			const result = await testTable.count(params);
 			expect(result).toBe(1);
@@ -208,8 +209,8 @@ describe('Test MySQL', () => {
 
 			const params = {
 				where: { height: emptyBlock.height },
-				updates: { timestamp: emptyBlock.timestamp + 1000 }
-			}
+				updates: { timestamp: emptyBlock.timestamp + 1000 },
+			};
 
 			await testTable.update(params);
 
@@ -254,7 +255,7 @@ describe('Test MySQL', () => {
 				{
 					property: 'id',
 					values: [emptyBlock.id],
-				}]
+				}],
 			};
 			const result = await testTable.find(params, ['id']);
 			expect(result).toBeInstanceOf(Array);
@@ -293,7 +294,7 @@ describe('Test MySQL', () => {
 				{
 					property: 'id',
 					values: [emptyBlock.id],
-				}]
+				}],
 			};
 			const result = await testTable.count(params);
 			expect(result).toBe(1);
@@ -326,10 +327,10 @@ describe('Test MySQL', () => {
 			await commitDbTransaction(trx);
 			expect(numAffectedRows).toEqual(1);
 
-			const count = await testTable.count({ [schema.primaryKey]: existingBlock[schema.primaryKey] });
+			const count = await testTable
+				.count({ [schema.primaryKey]: existingBlock[schema.primaryKey] });
 			expect(count).toBe(0);
 		});
-
 
 		it('Delete rows', async () => {
 			const connection = await getDbConnection();
@@ -348,7 +349,6 @@ describe('Test MySQL', () => {
 			const count = await testTable.count({});
 			expect(count).toBe(0);
 		});
-
 
 		it('Delete row', async () => {
 			const connection = await getDbConnection();
@@ -397,8 +397,8 @@ describe('Test MySQL', () => {
 
 			const params = {
 				where: { height: emptyBlock.height },
-				updates: { timestamp: emptyBlock.timestamp + 1000 }
-			}
+				updates: { timestamp: emptyBlock.timestamp + 1000 },
+			};
 
 			await testTable.update(params, trx);
 			await commitDbTransaction(trx);

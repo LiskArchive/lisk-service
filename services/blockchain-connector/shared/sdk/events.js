@@ -20,6 +20,7 @@ const { Logger, Signals } = require('lisk-service-framework');
 const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
+const { getEscrowedAmounts } = require('./tokens');
 
 const logger = Logger();
 
@@ -45,8 +46,11 @@ const subscribeToAllRegisteredEvents = async () => {
 		apiClient.subscribe(
 			event,
 			async payload => {
-				// Force update nodeInfo cache on new chain events
-				if (event.startsWith('chain_')) await getNodeInfo(true);
+				// Force update necessary caches on new chain events
+				if (event.startsWith('chain_')) {
+					await getNodeInfo(true);
+					await getEscrowedAmounts(true);
+				}
 
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);

@@ -39,7 +39,7 @@ const getNetworkStatistics = async () => {
 		data: {},
 		meta: {},
 	};
-	const response = await dataService.getPeersStatistics();
+	const response = await dataService.getNetworkPeersStatistics();
 	if (response.data) networkStats.data = response.data;
 	if (response.meta) networkStats.meta = response.meta;
 
@@ -50,7 +50,60 @@ const getNetworkStatistics = async () => {
 	return networkStats;
 };
 
+const getNetworkPeers = async params => {
+	const peers = {
+		data: [],
+		meta: {},
+	};
+	const response = await dataService.getNetworkPeers(params);
+	if (response.data) peers.data = response.data;
+	if (response.meta) peers.meta = response.meta;
+
+	return peers;
+};
+
+const getNetworkConnectedPeers = async params => {
+	const connectedPeers = {
+		data: [],
+		meta: {},
+	};
+	const response = await dataService.getNetworkConnectedPeers(params);
+	if (response.data) connectedPeers.data = response.data;
+	if (response.meta) connectedPeers.meta = response.meta;
+
+	return connectedPeers;
+};
+
+const getNetworkDisconnectedPeers = async params => {
+	const disconnectedPeers = {
+		data: [],
+		meta: {},
+	};
+	const response = await dataService.getNetworkDisconnectedPeers(params);
+	if (response.data) disconnectedPeers.data = response.data;
+	if (response.meta) disconnectedPeers.meta = response.meta;
+
+	return disconnectedPeers;
+};
+
+const getNetworkPeersStatistics = async () => {
+	const peerStatistics = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.getNetworkPeersStatistics();
+	if (response.data) peerStatistics.data = response.data;
+	if (response.meta) peerStatistics.meta = response.meta;
+
+	return peerStatistics;
+};
+
 module.exports = {
 	getNetworkStatus,
 	getNetworkStatistics,
+
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };

@@ -147,7 +147,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		stakes,
 		async (stake) => {
 			await decrementStakeTrx(stake, dbTrx);
-			// Substract to reverse the impact
+			// Subtract to reverse the impact
 			if (stake.stakerAddress === stake.validatorAddress) {
 				totalSelfStakeChange -= BigInt(stake.amount);
 			}

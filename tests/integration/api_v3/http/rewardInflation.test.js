@@ -27,7 +27,7 @@ const {
 	rewardInflationResponseSchema,
 } = require('../../../schemas/api_v3/rewardInflation.schema');
 
-const endpoint = `${baseUrlV3}/reward/inflation`;
+const endpoint = `${baseUrlV3}/reward/annual-inflation`;
 
 let latestBlockHeight;
 

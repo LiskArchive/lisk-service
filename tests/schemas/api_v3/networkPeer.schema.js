@@ -26,7 +26,7 @@ const locationSchema = {
 	longitude: Joi.string().pattern(/^[0-9.-]+$/).optional(),
 };
 
-const peerSchema = {
+const networkPeerSchema = {
 	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).required(),
 	port: Joi.number().port().optional(),
 	networkVersion: Joi.string().required(),
@@ -49,7 +49,7 @@ const emptyResponseSchema = {
 };
 
 module.exports = {
-	peerSchema: Joi.object(peerSchema),
+	networkPeerSchema: Joi.object(networkPeerSchema),
 	emptyResultEnvelopeSchema: Joi.object(emptyResultEnvelopeSchema).required(),
 	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
 };

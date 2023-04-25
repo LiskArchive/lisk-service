@@ -58,12 +58,12 @@ const addLocation = async (ipAddress) => {
 	}
 };
 
-const getPeers = async () => {
-	const connectedPeers = await endpoints.getConnectedPeers();
+const getNetworkPeers = async () => {
+	const connectedPeers = await endpoints.getNetworkConnectedPeers();
 	connectedPeers.data = connectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
 
-	const disconnectedPeers = await endpoints.getDisconnectedPeers();
+	const disconnectedPeers = await endpoints.getNetworkDisconnectedPeers();
 	disconnectedPeers.data = disconnectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
 
@@ -129,7 +129,7 @@ const getStatistics = () => peerStore.statistics;
 const reload = async () => {
 	logger.debug('Refreshing peer cache...');
 	try {
-		peerStore.peers = await getPeers();
+		peerStore.peers = await getNetworkPeers();
 		peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
 		peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
 		peerStore.statistics = await refreshStatistics();

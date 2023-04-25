@@ -78,7 +78,7 @@ describe('isString()', () => {
 		expect(isString('')).toBe(true);
 		expect(isString('sample_string')).toBe(true);
 	});
-	
+
 	test('returns false on non-strings', async () => {
 		expect(isString({ data: 'sample_data' })).toBe(false);
 		expect(isString(null)).toBe(false);
