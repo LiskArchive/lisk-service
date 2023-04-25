@@ -7,7 +7,7 @@ It can run both the indexer and data service modes simultaneously, and is enable
 This microservice encapsulates most of the business logic for the Lisk Service API. By default, it only implements the business logic for all the available commands from the Lisk SDK.
 The *applyTransaction* and *revertTransaction* hooks implement the indexing logic and are specific to each available command. The *applyTransaction* is triggered when processing an included transaction within a new block while (usually) indexing the `chain_newBlock` event. The *revertTransaction* hook is triggered when processing an included transaction within a deleted block while processing the `chain_deleteBlock` event. All the implemented hooks are grouped [here](./shared/indexer/transactionProcessor). Command specific hooks are always implemented within a single file and are grouped by the module. When interested in extending Lisk Service and implementing hooks for your custom modules, please check the [Extending Indexer](#extending-indexer) section below.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all the microservices at once.
 
 ## Installation
 

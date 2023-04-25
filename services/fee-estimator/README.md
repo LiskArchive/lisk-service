@@ -2,7 +2,7 @@
 
 The Fee Estimator service is primarily responsible to implement the [Dynamic Fee](https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md) proposal. It implements the algorithm specified in [LIP-0016](https://github.com/LiskHQ/lips/blob/main/proposals/lip-0016.md) and provides estimates based on the network activity.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory covers running all the microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory covers running all the microservices simultaneously.
 
 ## Installation
 

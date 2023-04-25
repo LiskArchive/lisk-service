@@ -2,7 +2,7 @@
 
 The Blockchain Connector service is the only microservice that connects directly with the Lisk SDK-based application node. It is responsible to reduce the number of calls to the node ensuring high availability and offering both efficient and reliable access to the application node's API. It also automatically decodes all the necessary information (e.g. event data), for a more enhanced user experience.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes how to run all the microservices simultaneously.
 
 ## Installation
 

@@ -2,7 +2,7 @@
 
 The Blockchain Application Registry service is responsible to serve the off-chain application metadata from the [Lisk Application Registry](https://github.com/LiskHQ/app-registry) via an API.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes how to run all the microservices simultaneously.
 
 ## Installation
 

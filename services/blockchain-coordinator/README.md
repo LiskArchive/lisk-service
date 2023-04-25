@@ -2,7 +2,7 @@
 
 The Blockchain Coordinator service is primarily responsible to verify the index readiness. It regularly monitors the index completion status and schedules jobs to index the missing or newly generated blocks as soon as they're available.
 
-> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their instance. The global readme file present in the root directory covers running all the microservices simultaneously.
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory covers running all the microservices simultaneously.
 
 ## Installation
 
