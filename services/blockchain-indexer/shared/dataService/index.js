@@ -56,13 +56,6 @@ const {
 } = require('./dynamicReward');
 
 const {
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
-} = require('./peers');
-
-const {
 	tokenHasUserAccount,
 	getTokenBalances,
 	getTokenSummary,
@@ -89,7 +82,13 @@ const {
 const { getEvents } = require('./events');
 const { getSchemas } = require('./schemas');
 const { getAuthAccountInfo } = require('./auth');
-const { getNetworkStatus } = require('./network');
+const {
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
+} = require('./network');
 const { getIndexStatus } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
@@ -112,12 +111,6 @@ module.exports = {
 	getStakes,
 	getStakers,
 	getPosClaimableRewards,
-
-	// Peers
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
 
 	// Token
 	tokenHasUserAccount,
@@ -151,6 +144,10 @@ module.exports = {
 
 	// Network
 	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 
 	// Index Status
 	getIndexStatus,

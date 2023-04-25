@@ -710,13 +710,13 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/peers': {
+	'/network/peers': {
 		get: {
 			tags: [
 				'Network',
 			],
 			summary: 'Requests peers data',
-			description: 'Returns peers data\n RPC => get.peers',
+			description: 'Returns peers data\n RPC => get.network.peers',
 			parameters: [
 				{
 					$ref: '#/parameters/ip',
