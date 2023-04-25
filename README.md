@@ -38,9 +38,10 @@ Every microservice is independently managed and placed in a separate directory u
 
 **Remarks**
 
-- Lisk Service can be configured to connect a local node via WebSocket on port `7887` or IPC on `~/.lisk/lisk-core` by default.
+- Lisk Service by default attempts to connect to a local node via WebSocket on port `7887` or IPC on `~/.lisk/lisk-core` by default.
 - The default installation method is based on Docker.
 - Some token conversion rates in the Market service require their API keys.
+- For the events information to be always available in the API, please set `system.keepEventsForHeights: -1` in the Lisk application node config.
 
 ## Architecture Diagram
 
