@@ -66,8 +66,7 @@
 	"blockchainAppsStatsEnvelope": {
 		"type": "object",
 		"required": [
-			"data",
-			"meta"
+			"data"
 		],
 		"properties": {
 			"data": {
@@ -102,9 +101,6 @@
 						"example": "4.50"
 					}
 				}
-			},
-			"meta": {
-				"type": "object"
 			}
 		}
 	},
@@ -242,11 +238,6 @@
 					}
 				}
 			},
-			"appPage": {
-				"type": "string",
-				"example": "https://lisk.com",
-				"description": "URL to the blockchain application's frontend, if exists"
-			},
 			"backgroundColor": {
 				"type": "string",
 				"example": "#0981D1",
@@ -334,12 +325,12 @@
 			},
 			"tokenID": {
 				"type": "string",
-				"example": "Lisk",
+				"example": "0400000200000000",
 				"description": "The universal identifier for the token within the Lisk ecosystem."
 			},
 			"tokenName": {
 				"type": "string",
-				"example": "00000000",
+				"example": "Lisk",
 				"description": "The name of the token. For example Lisk"
 			},
 			"networkType": {
@@ -383,7 +374,7 @@
 			},
 			"displayDenom": {
 				"type": "string",
-				"example": "LSK",
+				"example": "lsk",
 				"description": "The human friendly denomination unit of the token. Must be a 'denom' in denomUnits. Example: LSK"
 			},
 			"baseDenom": {

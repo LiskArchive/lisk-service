@@ -128,9 +128,9 @@
 									"example": "14447177193385"
 								},
 								"volume": {
-									"type": "string",
+									"type": "integer",
 									"description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows).",
-									"example": "14447177193385"
+									"example": 14447177193385
 								}
 							}
 						}
@@ -245,27 +245,15 @@
 						"example": "100003490",
 						"description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
 					},
-					"recipient": {
-						"type": "object",
-						"properties": {
-							"address": {
-								"type": "string",
-								"format": "address",
-								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-								"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-							},
-							"name": {
-								"type": "string",
-								"example": "genesis_84",
-								"description": "Delegate name"
-							},
-							"publicKey": {
-								"type": "string",
-								"format": "publicKey",
-								"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-							}
-						}
+					"recipientAddress": {
+						"type": "string",
+						"example": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
+						"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
+					},
+					"tokenID": {
+						"type": "string",
+						"example": "0000000000000000",
+						"description": "Unique token identifier."
 					},
 					"data": {
 						"type": "string",
@@ -282,6 +270,42 @@
 				"type": "integer",
 				"example": 0,
 				"description": "Transaction index (zero-based) within the block payload."
+			},
+			"meta": {
+				"type": "object",
+				"properties": {
+					"recipient": {
+						"properties": {
+							"address": {
+								"type": "string",
+								"format": "address",
+								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+								"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+							},
+							"publicKey": {
+								"type": "string",
+								"format": "publicKey",
+								"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
+							},
+							"name": {
+								"type": "string",
+								"example": "genesis_84",
+								"description": "Delegate name"
+							}
+						}
+					},
+					"executionStatus": {
+						"type": "string",
+						"example": "success",
+						"description": "Execution status of the transaction."
+					},
+					"index": {
+						"type": "integer",
+						"example": 0,
+						"description": "Transaction index (zero-based) within the block payload."
+					}
+				}
 			}
 		}
 	},

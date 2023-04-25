@@ -89,7 +89,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/blockchainAppStatus',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/blockchainAppSearch',
 				},
 				{
 					$ref: '#/parameters/limit',
