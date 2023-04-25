@@ -15,7 +15,7 @@
  */
 const mapRequiredSchema = (response, schema) => {
 	let errors = '';
-	Object.keys(schema).forEach((key) => {
+	Object.keys(schema).forEach(key => {
 		if (!Object.prototype.hasOwnProperty.call(response, key)) {
 			errors += `${key} is not present in response \n`;
 		} else if (!['array', 'number', 'boolean', 'object', 'string', 'null'].some(type => type === schema[key])) {

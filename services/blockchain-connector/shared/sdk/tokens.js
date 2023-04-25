@@ -18,6 +18,8 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
+let escrowedAmounts;
+
 const getTokenBalances = async (address) => {
 	try {
 		const balances = await invokeEndpoint('token_getBalances', { address });
@@ -44,9 +46,12 @@ const getTokenBalance = async ({ address, tokenID }) => {
 	}
 };
 
-const getEscrowedAmounts = async () => {
+const getEscrowedAmounts = async (isForceUpdate = false) => {
 	try {
-		return invokeEndpoint('token_getEscrowedAmounts');
+		if (isForceUpdate || !escrowedAmounts) {
+			escrowedAmounts = await invokeEndpoint('token_getEscrowedAmounts');
+		}
+		return escrowedAmounts;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getEscrowedAmounts\'.');

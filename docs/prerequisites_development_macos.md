@@ -6,6 +6,8 @@ Note that those requirements are needed only if you want to build the project fr
 
 These programs and resources are required to install and run Lisk Service.
 
+### Only on M1 Mac
+
 ### Brew
 
 Install [Brew](https://brew.sh/) by following [the most recent instruction](https://brew.sh/).
@@ -46,8 +48,8 @@ brew install redis
 
 ```bash
 brew tap homebrew/services
-brew install mysql@5.7
-brew services start mysql@5.7
+brew install mysql@8
+brew services start mysql@8
 ```
 
 ### Node.js

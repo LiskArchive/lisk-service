@@ -25,7 +25,7 @@ const testData = [
 	{ test: 'another_test_value' },
 ];
 
-const waitMs = (n) => new Promise((resolve) => {
+const waitMs = n => new Promise(resolve => {
 	setTimeout(() => {
 		resolve();
 	}, n);
@@ -68,7 +68,7 @@ test('store value in a custom memory bank', async () => {
 	const cacheCustomMemBank = Cache(customMemoryBank);
 	const defaultData = testData[0];
 	const customData = testData[1];
-	
+
 	await cacheCustomMemBank.set('key', customData);
 	await cacheDefaultMemBank.set('key', defaultData);
 

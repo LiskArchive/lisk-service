@@ -28,17 +28,17 @@ describe('Test queue', () => {
 			pause: expect.any(Function),
 			add: expect.any(Function),
 			queue: expect.any(Object),
-		})
+		});
 
 		const host = redisEndpoint.split(':')[1].split('//')[1];
 		const port = Number(redisEndpoint.split(':')[2].split('/')[0]);
-		
+
 		expect(queue.queue.client.options.host).toEqual(host);
 		expect(queue.queue.client.options.port).toEqual(port);
 	});
 
 	it('Add job to the queue', async () => {
-		const data = { a: 1, b: 2 }
+		const data = { a: 1, b: 2 };
 		await queue.add(data).then(job => {
 			expect(job.id).not.toBe(undefined);
 			expect(job.data).toEqual(data);

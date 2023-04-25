@@ -73,7 +73,7 @@ config.dataDir = `${__dirname}/data`;
 
 config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 
-const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
+const DEFAULT_LISK_APPS = ['Lisk'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
