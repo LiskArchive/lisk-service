@@ -478,7 +478,7 @@
 					},
 					"status": {
 						"type": "string",
-						"example": "OK",
+						"example": "ok",
 						"description": "Transaction verification status."
 					},
 					"events": {
@@ -508,6 +508,10 @@
 											"type": "string",
 											"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
 											"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is a 41 characters long identifier that begins with `lsk`."
+										},
+										"result": {
+											"type": "integer",
+											"example": 1
 										}
 									}
 								},
@@ -521,7 +525,7 @@
 								},
 								"name": {
 									"type": "string",
-									"example": "transferEvent"
+									"example": "transfer"
 								},
 								"topics": {
 									"type": "array",
@@ -538,20 +542,19 @@
 								"height": {
 									"type": "number",
 									"example": 10
+								},
+								"id": {
+									"type": "string",
+									"format": "id",
+									"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
+									"minLength": 1,
+									"maxLength": 64,
+									"description": "Unique identifier of the transaction.\nDerived from the transaction signature."
 								}
 							}
 						}
-					},
-					"errorMessage": {
-						"type": "string",
-						"example": "Failed to validate signature '6de57983d8b61a9f7a303f70541fe6f7f1f2d8a12390cefb522ec53c698ed5888432b0179ed12e6624a89b68b0f1c600c2aa568d18885b13ec8dd189a7d2c208' for transaction with id '3f8e0c25154a18d1abf114e2f63a0bd0e56f8a0114b6207381cd32c061452cd1'",
-						"description": "Available only when result is -1."
 					}
 				}
-			},
-			"meta": {
-				"type": "object",
-				"properties": {}
 			}
 		}
 	}
