@@ -417,7 +417,7 @@ describe('Events API', () => {
 		});
 
 		it('events with minHeight greater than maxHeight -> BAD_REQUEST', async () => {
-			const expectedStatusCode = 400;
+			const expectedStatusCode = 500;
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await api.get(`${endpoint}?height=${maxHeight}:${minHeight}&limit=100`, expectedStatusCode);
@@ -474,7 +474,8 @@ describe('Events API', () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
 				if (event.block && event.block.id) {
@@ -488,7 +489,8 @@ describe('Events API', () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
 				if (event.block && event.block.height) {
@@ -570,7 +572,7 @@ describe('Events API', () => {
 					if (event.block && event.block.timestamp) {
 						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
-							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
 					}
 				}

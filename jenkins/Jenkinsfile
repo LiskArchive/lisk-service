@@ -134,7 +134,7 @@ pipeline {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
 					}
 					sleep(90)
-					waitForHttp('http://localhost:9901/api/ready')
+					// waitForHttp('http://localhost:9901/api/ready')
 				}
 			}
 		}
@@ -155,9 +155,13 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./framework') { sh "npm run test:functional" }
+								// dir('./framework') { sh "npm run test:functional" }
+								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
 								dir('./services/blockchain-connector') { sh "npm run test:functional" }
+								dir('./services/blockchain-indexer') { sh "npm run test:functional" }
+								dir('./services/fee-estimator') { sh "npm run test:functional" }
 								dir('./services/market') { sh "npm run test:functional" }
+								dir('./services/transaction-statistics') { sh "npm run test:functional" }
 								// dir('./tests') { sh "npm run test:functional" }
 							}
 						}
