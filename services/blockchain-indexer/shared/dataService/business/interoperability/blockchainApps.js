@@ -75,17 +75,17 @@ const getBlockchainApps = async (params) => {
 
 	const total = await blockchainAppsTable.count(params);
 
-	const resultSet = await blockchainAppsTable.find(
+	const dbBlockchainApps = await blockchainAppsTable.find(
 		{ ...params, limit: params.limit || total },
 		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
 	);
 
-	const { chainID } = (await getNetworkStatus()).data;
+	const { data: { chainID } } = await getNetworkStatus();
+	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 
 	blockchainAppsInfo.data = await BluebirdPromise.map(
-		resultSet,
+		dbBlockchainApps,
 		async blockchainAppInfo => {
-			const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
 
 			return {
@@ -96,7 +96,7 @@ const getBlockchainApps = async (params) => {
 				}],
 			};
 		},
-		{ concurrency: resultSet.length },
+		{ concurrency: dbBlockchainApps.length },
 	);
 
 	blockchainAppsInfo.meta = {
