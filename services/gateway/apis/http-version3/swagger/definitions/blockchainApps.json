@@ -41,6 +41,28 @@
 				"type": "integer",
 				"example": 1616008148,
 				"description": "timestamp"
+			},
+			"escrow": {
+				"type": "array",
+				"required": [
+					"tokenID",
+					"amount"
+				],
+				"items": {
+					"type": "object",
+					"properties": {
+						"tokenID": {
+							"type": "string",
+							"example": "0000000000000000",
+							"description": "The universal token identifier for the escrowed tokens within the Lisk ecosystem."
+						},
+						"amount": {
+							"type": "string",
+							"example": "50000000000",
+							"description": "The escrowed amount."
+						}
+					}
+				}
 			}
 		}
 	},
