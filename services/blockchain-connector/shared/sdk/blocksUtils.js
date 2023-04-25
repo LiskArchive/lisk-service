@@ -109,15 +109,15 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 			// Delete all previous files including the containing directory if genesis block is not valid
 			await rm(directoryPath, { recursive: true, force: true });
 		} catch (err) {
-			logger.error('Error while downloading and validating genesis block');
+			logger.error('Error while downloading and validating genesis block.');
 			logger.error(err.message);
 			if (err instanceof NotFoundException) throw err;
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
-	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}`);
-	logger.fatal('Exiting the application');
+	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}.`);
+	logger.fatal('Exiting the application.');
 	process.exit(1);
 };
 
