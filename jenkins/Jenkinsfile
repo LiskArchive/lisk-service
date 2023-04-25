@@ -121,6 +121,7 @@ pipeline {
 								runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
 								runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 							}
+							dir('./jenkins/mysql') { sh 'make restore' }
 						}
 					}	
 				}
@@ -133,7 +134,7 @@ pipeline {
 					nvm(readFile('.nvmrc').trim()) {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
 					}
-					sleep(90)
+					sleep(100)
 					// waitForHttp('http://localhost:9901/api/ready')
 				}
 			}
