@@ -290,7 +290,8 @@ Updates about the generators for the next round.
       "address": "lskjta9erat6qqpa32hqbssttc6p5da3k7tydvhmv",
       "name": "panzer",
       "publicKey": "2ca9a7...c23079",
-      "nextAllocatedTime": 1659863166
+      "nextAllocatedTime": 1659863166,
+      "status": "active"
     },
     ...
   ],
