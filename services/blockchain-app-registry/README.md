@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/blockchain-app-registry # move into blockchain-app-registry microservice directory
-npm install # install required Node.js dependencies
+npm ci # install required Node.js dependencies
 ```
 
 ## Configuration

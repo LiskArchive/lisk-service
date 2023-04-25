@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/blockchain-connector # move into blockchain-connector microservice directory
-npm install # install required Node.js dependencies
+npm ci # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -28,7 +28,7 @@ A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `LISK_APP_HTTP`: URL to connect with the Lisk SDK-based application node over HTTP.
-- `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WS.
+- `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WebSocket.
 - `USE_LISK_IPC_CLIENT`: Boolean flag to enable IPC-based connection to the Lisk SDK-based application node.
 - `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC.
 - `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.

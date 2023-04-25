@@ -15,7 +15,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/export # move into export microservice directory
-npm install # install required Node.js dependencies
+npm ci # install required Node.js dependencies
 ```
 
 ## Configuration
