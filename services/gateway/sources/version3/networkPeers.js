@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peer = require('./mappings/peer');
+const networkPeer = require('./mappings/networkPeer');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.peers',
+	method: 'indexer.network.peers',
 	params: {
 		ip: '=,string',
 		networkVersion: '=,string',
@@ -28,7 +28,7 @@ module.exports = {
 		sort: '=,string',
 	},
 	definition: {
-		data: ['data', peer],
+		data: ['data', networkPeer],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

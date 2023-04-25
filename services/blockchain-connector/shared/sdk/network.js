@@ -14,6 +14,7 @@
  *
  */
 const { getNodeInfo } = require('./endpoints');
+const peerCache = require('./peerCache');
 
 let genesisConfig;
 
@@ -30,7 +31,20 @@ const getNetworkStatus = async () => {
 	return networkStatus;
 };
 
+const getNetworkConnectedPeers = async () => peerCache.get('connected');
+
+const getNetworkDisconnectedPeers = async () => peerCache.get('disconnected');
+
+const getNetworkPeers = async () => peerCache.get();
+
+const getNetworkPeersStatistics = async () => peerCache.getStatistics();
+
 module.exports = {
 	getNetworkStatus,
 	getGenesisConfig,
+
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };

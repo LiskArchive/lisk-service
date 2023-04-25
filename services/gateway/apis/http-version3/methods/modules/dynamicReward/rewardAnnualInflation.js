@@ -13,29 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const rewardInflationSource = require('../../../../../sources/version3/rewardInflation');
+const rewardAnnualInflationSource = require('../../../../../sources/version3/rewardAnnualInflation');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { response, getSwaggerDescription, transformParams } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/reward/inflation',
-	rpcMethod: 'get.reward.inflation',
-	tags: ['Reward'],
+	swaggerApiPath: '/reward/annual-inflation',
+	rpcMethod: 'get.reward.annual-inflation',
+	tags: ['(Dynamic) Reward'],
 	params: {
 		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
 	},
 	get schema() {
-		const rewardInflationSchema = {};
-		rewardInflationSchema[this.swaggerApiPath] = { get: {} };
-		rewardInflationSchema[this.swaggerApiPath].get.tags = this.tags;
-		rewardInflationSchema[this.swaggerApiPath].get.summary = 'Requests inflation rate.';
-		rewardInflationSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const rewardAnnualInflationSchema = {};
+		rewardAnnualInflationSchema[this.swaggerApiPath] = { get: {} };
+		rewardAnnualInflationSchema[this.swaggerApiPath].get.tags = this.tags;
+		rewardAnnualInflationSchema[this.swaggerApiPath].get.summary = 'Requests inflation rate.';
+		rewardAnnualInflationSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns inflation rate.',
 		});
-		rewardInflationSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
-		rewardInflationSchema[this.swaggerApiPath].get.responses = {
+		rewardAnnualInflationSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
+		rewardAnnualInflationSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns current inflation rate.',
 				schema: {
@@ -43,9 +43,9 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(rewardInflationSchema[this.swaggerApiPath].get.responses, response);
-		return rewardInflationSchema;
+		Object.assign(rewardAnnualInflationSchema[this.swaggerApiPath].get.responses, response);
+		return rewardAnnualInflationSchema;
 	},
-	source: rewardInflationSource,
+	source: rewardAnnualInflationSource,
 	envelope,
 };

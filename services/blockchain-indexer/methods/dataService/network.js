@@ -16,6 +16,9 @@
 const {
 	getNetworkStatus,
 	getNetworkStatistics,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
 } = require('./controllers/network');
 
 module.exports = [
@@ -27,6 +30,29 @@ module.exports = [
 	{
 		name: 'network.statistics',
 		controller: getNetworkStatistics,
+		params: {},
+	},
+	{
+		name: 'network.peers',
+		controller: getNetworkPeers,
+		params: {
+			ip: { optional: true, type: 'string' },
+			networkVersion: { optional: true, type: 'string' },
+			state: { optional: true, type: 'string' },
+			height: { optional: true, type: 'number' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+			sort: { optional: true, type: 'string' },
+		},
+	},
+	{
+		name: 'network.peers.connected',
+		controller: getNetworkConnectedPeers,
+		params: {},
+	},
+	{
+		name: 'network.peers.disconnected',
+		controller: getNetworkDisconnectedPeers,
 		params: {},
 	},
 ];
