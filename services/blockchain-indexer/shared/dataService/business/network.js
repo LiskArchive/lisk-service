@@ -16,6 +16,11 @@
 const { requestConnector } = require('../../utils/request');
 const { getAvailableModuleCommands, getRegisteredModules } = require('../../constants');
 
+const PEER_STATE = {
+	CONNECTED: 'connected',
+	DISCONNECTED: 'disconnected',
+};
+
 const getNetworkStatus = async () => {
 	const status = await requestConnector('getNetworkStatus');
 
@@ -96,12 +101,12 @@ const getNetworkPeers = async params => {
 };
 
 const getNetworkConnectedPeers = async params => {
-	const response = await getNetworkPeers(Object.assign(params, { state: 'connected' }));
+	const response = await getNetworkPeers(Object.assign(params, { state: PEER_STATE.CONNECTED }));
 	return response;
 };
 
 const getNetworkDisconnectedPeers = async params => {
-	const response = await getNetworkPeers(Object.assign(params, { state: 'disconnected' }));
+	const response = await getNetworkPeers(Object.assign(params, { state: PEER_STATE.DISCONNECTED }));
 	return response;
 };
 
