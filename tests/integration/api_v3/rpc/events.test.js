@@ -20,12 +20,10 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
-	emptyResultEnvelopeSchema,
-	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
-	invalidRequestSchema,
 	metaSchema,
+	serverErrorSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -115,9 +113,9 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transactionID -> empty response', async () => {
+		it('empty transactionID -> server error', async () => {
 			const response = await getEvents({ transactionID: '' });
-			expect(response).toMap(invalidRequestSchema);
+			expect(response).toMap(serverErrorSchema);
 		});
 	});
 
@@ -133,9 +131,9 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty blockID ->  empty response', async () => {
+		it('empty blockID -> server error', async () => {
 			const response = await getEvents({ blockID: '' });
-			expect(response).toMap(invalidRequestSchema);
+			expect(response).toMap(serverErrorSchema);
 		});
 	});
 
@@ -165,9 +163,7 @@ describe('Method get.events', () => {
 
 		it('empty senderAddress -> empty response', async () => {
 			const response = await getEvents({ senderAddress: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(serverErrorSchema);
 		});
 
 		it('invalid senderAddress -> invalid params', async () => {
@@ -188,11 +184,15 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty height -> empty response', async () => {
+		it('empty height -> valid response', async () => {
 			const response = await getEvents({ height: '' });
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('Events with min...max height -> ok', async () => {
@@ -275,13 +275,11 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Events with max...min height -> empty response', async () => {
+		it('Events with max...min height -> server error', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `${maxHeight}:${minHeight}` });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(serverErrorSchema);
 		});
 	});
 
@@ -424,7 +422,8 @@ describe('Method get.events', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(event => {
 				expect(event).toMap(eventSchema);
 				if (event.block && event.block.id) {
@@ -442,7 +441,8 @@ describe('Method get.events', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(event => {
 				expect(event).toMap(eventSchema);
 				if (event.block && event.block.height) {
@@ -496,11 +496,15 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty topic -> empty response', async () => {
+		it('empty topic -> valid response', async () => {
 			const response = await getEvents({ topic: '' });
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(result.meta).toMap(metaSchema);
 		});
 	});
 

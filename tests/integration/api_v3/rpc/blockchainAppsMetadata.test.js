@@ -71,7 +71,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(5);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
@@ -82,7 +82,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(5);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);

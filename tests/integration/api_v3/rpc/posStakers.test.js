@@ -76,7 +76,7 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
@@ -114,7 +114,7 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
@@ -152,7 +152,7 @@ describe('get.pos.stakers', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
-		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakers.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 

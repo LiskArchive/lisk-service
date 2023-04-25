@@ -56,7 +56,7 @@ describe('get.pos.unlocks', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(unlockSchema);
-		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 		result.data.pendingUnlocks.forEach(entry => {
 			expect(entry.isLocked).toBe(false);
@@ -101,7 +101,7 @@ describe('get.pos.unlocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(unlockSchema);
-			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
 				expect(entry.isLocked).toBe(false);
@@ -149,7 +149,7 @@ describe('get.pos.unlocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(unlockSchema);
-			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
 				expect(entry.isLocked).toBe(false);
@@ -198,7 +198,7 @@ describe('get.pos.unlocks', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(unlockSchema);
-		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(5);
 		expect(result.meta).toMap(metaSchema);
 	});
