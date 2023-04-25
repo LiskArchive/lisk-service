@@ -15,7 +15,7 @@
 */
 const BluebirdPromise = require('bluebird');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
-const { getNetworkStatus } = require('../../network');
+const { getNetworkStatus } = require('../network');
 const { requestConnector } = require('../../../utils/request');
 const { LENGTH_NETWORK_ID, LENGTH_TOKEN_ID } = require('../../../constants');
 
