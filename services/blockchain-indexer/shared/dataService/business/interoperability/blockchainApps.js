@@ -13,7 +13,11 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const BluebirdPromise = require('bluebird');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const { getNetworkStatus } = require('../../network');
+const { requestConnector } = require('../../../utils/request');
+const { LENGTH_NETWORK_ID, LENGTH_TOKEN_ID } = require('../../../constants');
 
 const config = require('../../../../config');
 
@@ -71,9 +75,28 @@ const getBlockchainApps = async (params) => {
 
 	const total = await blockchainAppsTable.count(params);
 
-	blockchainAppsInfo.data = await blockchainAppsTable.find(
+	const dbBlockchainApps = await blockchainAppsTable.find(
 		{ ...params, limit: params.limit || total },
 		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
+	);
+
+	const { data: { chainID } } = await getNetworkStatus();
+	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
+
+	blockchainAppsInfo.data = await BluebirdPromise.map(
+		dbBlockchainApps,
+		async blockchainAppInfo => {
+			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
+
+			return {
+				...blockchainAppInfo,
+				escrow: escrow.length ? escrow : [{
+					tokenID: chainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0'),
+					amount: '0',
+				}],
+			};
+		},
+		{ concurrency: dbBlockchainApps.length },
 	);
 
 	blockchainAppsInfo.meta = {
