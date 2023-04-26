@@ -68,12 +68,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -95,7 +89,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/blockchainAppStatus',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/blockchainAppSearch',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -115,12 +109,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -173,12 +161,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -241,12 +223,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -263,9 +239,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/blockchainAppsStatsEnvelope',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -328,12 +301,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -378,12 +345,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -441,12 +402,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -524,12 +479,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -546,9 +495,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/FeeEstimateEnvelope',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -581,12 +527,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -603,9 +543,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/IndexStatus',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -661,12 +598,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -684,9 +615,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/NetworkStatistics',
 					},
 				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		},
 	},
@@ -703,9 +631,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/NetworkStatus',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -762,12 +687,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -857,12 +776,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 		post: {
@@ -916,12 +829,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -980,6 +887,12 @@ const createApiDocsExpectedResponse = {
 						'month',
 					],
 				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
 			],
 			responses: {
 				200: {
@@ -994,10 +907,10 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
+				503: {
+					description: 'Service Unavailable',
 					schema: {
-						$ref: '#/definitions/notFound',
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},
@@ -1028,12 +941,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -1062,12 +969,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -1094,12 +995,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},

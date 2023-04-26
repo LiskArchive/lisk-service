@@ -78,10 +78,6 @@
                                 "maxLength": 8,
                                 "example": "00000000"
                             },
-                            "minFeePerByte": {
-                                "type": "integer",
-                                "example": 1000
-                            },
                             "maxTransactionsSize": {
                                 "type": "integer",
                                 "example": 15360
@@ -156,16 +152,7 @@
                                         "port": 7667
                                     }
                                 }
-                            },
-                            "blacklistedIPs": {
-                                "type": "integer",
-                                "example": 15360
-                            },
-                            "fixedPeers": {
-                                "type": "integer",
-                                "example": 10
-                            },
-                            "whitelistedPeers": {}
+                            }
                         }
                     }
                 }
