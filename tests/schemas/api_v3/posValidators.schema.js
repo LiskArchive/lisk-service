@@ -23,7 +23,7 @@ const punishmentPeriod = {
 
 const sharingCoefficient = {
 	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
-	coefficient: Joi.string().allow(""),
+	coefficient: Joi.string().allow(''),
 };
 
 const validatorSchema = {

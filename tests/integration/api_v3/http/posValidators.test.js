@@ -135,103 +135,103 @@ describe('pos/validators API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(5);
 		});
 
-		// it('Returns list of validators when requested with known validator address', async () => {
-		// 	const response = await api.get(`${endpoint}?address=${refGenerators[0].address}`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBe(1);
-		// });
+		it('Returns list of validators when requested with known validator address', async () => {
+			const response = await api.get(`${endpoint}?address=${refGenerators[0].address}`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBe(1);
+		});
 
-		// it('Returns list of validators when requested with known csv validator address', async () => {
-		// 	const addresses = refGenerators.map(generator => generator.address);
-		// 	const response = await api.get(`${endpoint}?address=${addresses}`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(10);
-		// });
+		it('Returns list of validators when requested with known csv validator address', async () => {
+			const addresses = refGenerators.map(generator => generator.address);
+			const response = await api.get(`${endpoint}?address=${addresses}`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+		});
 
-		// it('Returns list of validators when requested with csv validator address and offset=1', async () => {
-		// 	const addresses = refGenerators.map(generator => generator.address);
-		// 	const response = await api.get(`${endpoint}?address=${addresses}&offset=1`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(10);
-		// });
+		it('Returns list of validators when requested with csv validator address and offset=1', async () => {
+			const addresses = refGenerators.map(generator => generator.address);
+			const response = await api.get(`${endpoint}?address=${addresses}&offset=1`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+		});
 
-		// it('Returns list of validators when requested with csv validator address and limit=5', async () => {
-		// 	const addresses = refGenerators.map(generator => generator.address);
-		// 	const response = await api.get(`${endpoint}?address=${addresses}&limit=5`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(5);
-		// });
+		it('Returns list of validators when requested with csv validator address and limit=5', async () => {
+			const addresses = refGenerators.map(generator => generator.address);
+			const response = await api.get(`${endpoint}?address=${addresses}&limit=5`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+		});
 
-		// it('Returns list of validators when requested with csv validator address, offset=1 and limit=5', async () => {
-		// 	const addresses = refGenerators.map(generator => generator.address);
-		// 	const response = await api.get(`${endpoint}?address=${addresses}&offset=1&limit=5`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(5);
-		// });
+		it('Returns list of validators when requested with csv validator address, offset=1 and limit=5', async () => {
+			const addresses = refGenerators.map(generator => generator.address);
+			const response = await api.get(`${endpoint}?address=${addresses}&offset=1&limit=5`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+		});
 
-		// it('Returns list of validators when requested for known validator publicKey', async () => {
-		// 	const { publicKey = null } = refGenerators.find(generator => generator.publicKey);
-		// 	const response = await api.get(`${endpoint}?publicKey=${publicKey}`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBe(1);
-		// });
+		it('Returns list of validators when requested for known validator publicKey', async () => {
+			const { publicKey = null } = refGenerators.find(generator => generator.publicKey);
+			const response = await api.get(`${endpoint}?publicKey=${publicKey}`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBe(1);
+		});
 
-		// it('Returns list of validators when requested for known validator name', async () => {
-		// 	const response = await api.get(`${endpoint}?name=${refGenerators[0].name}`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBe(1);
-		// });
+		it('Returns list of validators when requested for known validator name', async () => {
+			const response = await api.get(`${endpoint}?name=${refGenerators[0].name}`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBe(1);
+		});
 
-		// it('Returns list of validators when requested with known csv validator name', async () => {
-		// 	const names = refGenerators.map(generator => generator.name);
-		// 	const response = await api.get(`${endpoint}?name=${names}`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(10);
-		// });
+		it('Returns list of validators when requested with known csv validator name', async () => {
+			const names = refGenerators.map(generator => generator.name);
+			const response = await api.get(`${endpoint}?name=${names}`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+		});
 
-		// it('Returns list of validators when requested with csv validator name and offset=1', async () => {
-		// 	const names = refGenerators.map(generator => generator.name);
-		// 	const response = await api.get(`${endpoint}?name=${names}&offset=1`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(10);
-		// });
+		it('Returns list of validators when requested with csv validator name and offset=1', async () => {
+			const names = refGenerators.map(generator => generator.name);
+			const response = await api.get(`${endpoint}?name=${names}&offset=1`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+		});
 
-		// it('Returns list of validators when requested with csv validator name and limit=5', async () => {
-		// 	const names = refGenerators.map(generator => generator.name);
-		// 	const response = await api.get(`${endpoint}?name=${names}&limit=5`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(5);
-		// });
+		it('Returns list of validators when requested with csv validator name and limit=5', async () => {
+			const names = refGenerators.map(generator => generator.name);
+			const response = await api.get(`${endpoint}?name=${names}&limit=5`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+		});
 
-		// it('Returns list of validators when requested with csv validator name, offset=1 and limit=5', async () => {
-		// 	const names = refGenerators.map(generator => generator.name);
-		// 	const response = await api.get(`${endpoint}?name=${names}&offset=1&limit=5`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBeGreaterThanOrEqual(1);
-		// 	expect(response.data.length).toBeLessThanOrEqual(5);
-		// });
+		it('Returns list of validators when requested with csv validator name, offset=1 and limit=5', async () => {
+			const names = refGenerators.map(generator => generator.name);
+			const response = await api.get(`${endpoint}?name=${names}&offset=1&limit=5`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+		});
 
-		// it('Returns empty when requested for known non-validator address', async () => {
-		// 	const response = await api.get(`${endpoint}?address=lsk99999999999999999999999999999999999999`);
-		// 	expect(response).toMap(validatorsResponseSchema);
-		// 	expect(response.data.length).toBe(0);
-		// });
+		it('Returns empty when requested for known non-validator address', async () => {
+			const response = await api.get(`${endpoint}?address=lsk99999999999999999999999999999999999999`);
+			expect(response).toMap(validatorsResponseSchema);
+			expect(response.data.length).toBe(0);
+		});
 
-		// it('Invalid address -> bad request', async () => {
-		// 	const response = await api.get(`${endpoint}?address=address=L`, 400);
-		// 	expect(response).toMap(badRequestSchema);
-		// });
+		it('Invalid address -> bad request', async () => {
+			const response = await api.get(`${endpoint}?address=address=L`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
 
-		// it('Invalid request param -> bad request', async () => {
-		// 	const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
-		// 	expect(response).toMap(badRequestSchema);
-		// });
+		it('Invalid request param -> bad request', async () => {
+			const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
 	});
 });
