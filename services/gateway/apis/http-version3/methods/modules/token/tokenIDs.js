@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -15,7 +15,6 @@
  */
 const tokenIDsSource = require('../../../../../sources/version3/tokenIDs');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
-const regex = require('../../../../../shared/regex');
 const { transformParams, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
@@ -24,8 +23,8 @@ module.exports = {
 	rpcMethod: 'get.token.ids',
 	tags: ['Token'],
 	params: {
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
 		const tokenIDsSchema = {};

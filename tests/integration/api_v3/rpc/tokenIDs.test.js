@@ -24,8 +24,7 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	tokenIDsSchema,
-	tokenIDsMetaSchema,
+	goodResponseSchemaFortokenIDs,
 } = require('../../../schemas/api_v3/tokenIDs.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -39,7 +38,6 @@ describe('get.token.ids', () => {
 		const response = await getTokensIds({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result.data).toMap(tokenIDsSchema);
-		expect(result.meta).toMap(tokenIDsMetaSchema);
+		expect(result).toMap(goodResponseSchemaFortokenIDs);
 	});
 });

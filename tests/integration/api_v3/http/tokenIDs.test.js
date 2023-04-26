@@ -30,7 +30,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/ids`;
 
 describe('Token IDs API', () => {
-	it('retrieves token info when call with address and tokenID-> ok', async () => {
+	it('Should retrieves token info when called without any params', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(tokenIDsSchema);
