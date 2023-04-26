@@ -36,6 +36,8 @@ let genesisBlockUrl;
 let genesisBlockFilePath;
 let genesisBlock = { header: {} };
 
+let isGenesisBlockURLNotFound = false;
+
 const parseStream = json.createParseStream();
 
 const setGenesisBlock = (block) => genesisBlock = block;
@@ -111,7 +113,10 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 		} catch (err) {
 			logger.error('Error while downloading and validating genesis block.');
 			logger.error(err.message);
-			if (err instanceof NotFoundException) throw err;
+			if (err instanceof NotFoundException) {
+				isGenesisBlockURLNotFound = true;
+				throw err;
+			}
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
@@ -122,6 +127,8 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 };
 
 const getGenesisBlockFromFS = async () => {
+	if (isGenesisBlockURLNotFound) throw new NotFoundException();
+
 	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
 		if (!(await exists(genesisBlockFilePath))) {
