@@ -264,7 +264,7 @@
 			"executionStatus": {
 				"type": "string",
 				"example": "success",
-				"description": "Execution status of the transaction."
+				"description": "Execution status of the transaction.\nAccepted values: pending, success, fail."
 			},
 			"index": {
 				"type": "integer",
@@ -298,7 +298,7 @@
 					"executionStatus": {
 						"type": "string",
 						"example": "success",
-						"description": "Execution status of the transaction."
+						"description": "Execution status of the transaction. "
 					},
 					"index": {
 						"type": "integer",
@@ -553,8 +553,17 @@
 								}
 							}
 						}
+					},
+					"errorMessage": {
+						"type": "string",
+						"example": "Failed to validate signature '6de57983d8b61a9f7a303f70541fe6f7f1f2d8a12390cefb522ec53c698ed5888432b0179ed12e6624a89b68b0f1c600c2aa568d18885b13ec8dd189a7d2c208' for transaction with id '3f8e0c25154a18d1abf114e2f63a0bd0e56f8a0114b6207381cd32c061452cd1'",
+						"description": "Available only when result is -1."
 					}
 				}
+			},
+			"meta": {
+				"type": "object",
+				"properties": {}
 			}
 		}
 	}

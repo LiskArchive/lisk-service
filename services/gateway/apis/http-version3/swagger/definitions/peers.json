@@ -75,6 +75,19 @@
 				"example": "DE",
 				"description": "ISO 3166-1 country code."
 			},
+			"countryName": {
+				"example": "Germany",
+				"description": "Name of the country."
+			},
+			"hostname": {
+				"type": "string",
+				"example": "host.210.239.23.62.rev.coltfrance.com",
+				"description": "Hostname associated with the node's IP."
+			},
+			"ip": {
+				"example": "210.239.23.62",
+				"description": "Node's IP address."
+			},
 			"latitude": {
 				"type": "string",
 				"example": "48.8323",

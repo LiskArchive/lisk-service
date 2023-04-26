@@ -88,7 +88,8 @@
 	"blockchainAppsStatsEnvelope": {
 		"type": "object",
 		"required": [
-			"data"
+			"data",
+			"meta"
 		],
 		"properties": {
 			"data": {
@@ -123,6 +124,9 @@
 						"example": "4.50"
 					}
 				}
+			},
+			"meta": {
+				"type": "object"
 			}
 		}
 	},
@@ -259,6 +263,11 @@
 						"description": "URI to the SVG format of the application logo"
 					}
 				}
+			},
+			"appPage": {
+				"type": "string",
+				"example": "https://lisk.com",
+				"description": "URL to the blockchain application's frontend, if exists"
 			},
 			"backgroundColor": {
 				"type": "string",

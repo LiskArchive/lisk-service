@@ -15,6 +15,7 @@
  */
 const blockchainAppsStatsSchemaSource = require('../../../sources/version3/blockchainAppsStatsSchema');
 const { getSwaggerDescription } = require('../../../shared/utils');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
@@ -42,4 +43,5 @@ module.exports = {
 		return blockchainAppsStatsSchema;
 	},
 	source: blockchainAppsStatsSchemaSource,
+	envelope,
 };
