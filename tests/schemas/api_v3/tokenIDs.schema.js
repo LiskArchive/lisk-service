@@ -16,6 +16,8 @@
 
 import Joi from 'joi';
 
+const regex = require('./regex');
+
 const tokenIDsMetaSchema = {
 	count: Joi.number().integer().min(0).required(),
 	offset: Joi.number().integer().min(0).required(),
@@ -23,7 +25,7 @@ const tokenIDsMetaSchema = {
 };
 
 const tokenIDsSchema = {
-	tokenIDs: Joi.array().required(),
+	tokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).required(),
 };
 
 const goodResponseSchemaFortokenIDs = {

@@ -79,7 +79,7 @@ const getTokenConstants = async () => {
 const getTokenIDs = async () => ({
 	data: {
 		tokenIDs: [
-			'04000000000000000000',
+			'0400000000000000',
 		],
 	},
 	meta: {

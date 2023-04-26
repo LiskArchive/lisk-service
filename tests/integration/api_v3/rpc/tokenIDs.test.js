@@ -32,8 +32,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensIds = async (params) => request(wsRpcUrl, 'get.token.ids', params);
 
 describe('get.token.ids', () => {
-	beforeAll(async () => {
-	});
 
 	it('returns tokens info when call with address', async () => {
 		const response = await getTokensIds({});
