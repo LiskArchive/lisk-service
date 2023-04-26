@@ -291,7 +291,7 @@
 							"name": {
 								"type": "string",
 								"example": "genesis_84",
-								"description": "Delegate name"
+								"description": "Validator name."
 							}
 						}
 					}
