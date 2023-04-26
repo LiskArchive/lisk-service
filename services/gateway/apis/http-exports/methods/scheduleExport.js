@@ -61,11 +61,6 @@ module.exports = {
 					$ref: '#/definitions/ExportScheduledWithEnvelope',
 				},
 			},
-			404: {
-				schema: {
-					$ref: '#/responses/notFound',
-				},
-			},
 		};
 		Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);
 		return exportSchema;

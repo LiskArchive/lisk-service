@@ -38,9 +38,6 @@ module.exports = {
 					$ref: '#/definitions/IndexStatus',
 				},
 			},
-			404: {
-				$ref: '#/responses/notFound',
-			},
 		};
 		return indexStatusSchema;
 	},
