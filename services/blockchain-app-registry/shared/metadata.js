@@ -251,7 +251,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		// chainID or chainName must be specified with the network
 		// Skip when tokenID is specified, network can be resolved automatically
 		if (!('tokenID' in params) && !('chainID' in params) && ((!('chainName' in params)) || (!('network' in params)))) {
-			throw new InvalidParamsException('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
+			throw new InvalidParamsException('\'tokenName\' must be specified with either \'chainID\', or \'tokenID\', or (\'chainName\' and \'network\').');
 		}
 		params.whereIn.push({
 			property: 'tokenName',

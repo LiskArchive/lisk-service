@@ -86,7 +86,7 @@ const getStakes = async params => {
 	stakesResponse.meta.staker = {
 		address: params.address,
 		name: accountInfo.name || null,
-		publicKey: accountInfo.publicKey || null,
+		publicKey: accountInfo.publicKey || params.publicKey || null,
 	};
 
 	stakesResponse.meta.count = stakesResponse.data.stakes.length;
