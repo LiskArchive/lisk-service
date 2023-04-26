@@ -74,21 +74,23 @@ const indexPosModuleAssets = async (dbTrx) => {
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);
 
-	const posModuleData = await requestAll(
-		requestConnector,
-		'getGenesisAssetByModule',
-		{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
-		totalStakers,
-	);
-	const stakersInfo = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
+	if (totalStakers > 0) {
+		const posModuleData = await requestAll(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
+			totalStakers,
+		);
+		const stakersInfo = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const stakerInfo of stakersInfo) {
 		// eslint-disable-next-line no-restricted-syntax
-		for (const stake of stakerInfo.stakes) {
-			totalStakeChange += BigInt(stake.amount);
-			if (stakerInfo.address === stake.validatorAddress) {
-				totalSelfStakeChange += BigInt(stake.amount);
+		for (const stakerInfo of stakersInfo) {
+			// eslint-disable-next-line no-restricted-syntax
+			for (const stake of stakerInfo.stakes) {
+				totalStakeChange += BigInt(stake.amount);
+				if (stakerInfo.address === stake.validatorAddress) {
+					totalSelfStakeChange += BigInt(stake.amount);
+				}
 			}
 		}
 	}

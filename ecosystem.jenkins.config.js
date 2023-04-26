@@ -64,9 +64,6 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				ENABLE_REBUILD_INDEX_AT_INIT: 'false',
-				GITHUB_APP_REGISTRY_REPO: 'https://github.com/LiskHQ/app-registry',
-				GITHUB_APP_REGISTRY_REPO_BRANCH: 'main',
-				GITHUB_ACCESS_TOKEN: '',
 			},
 		},
 		{
