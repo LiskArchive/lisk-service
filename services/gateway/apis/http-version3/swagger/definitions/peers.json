@@ -78,12 +78,12 @@
 			"latitude": {
 				"type": "string",
 				"example": "48.8323",
-				"description": "Latitude location of Node."
+				"description": "Latitude coordinate of the peer node."
 			},
 			"longitude": {
 				"type": "string",
 				"example": "2.4075",
-				"description": "Longitude location of Node."
+				"description": "Longitude coordinate of the peer node."
 			}
 		}
 	}

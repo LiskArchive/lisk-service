@@ -347,7 +347,7 @@
 			},
 			"tokenID": {
 				"type": "string",
-				"example": "0400000200000000",
+				"example": "0000000000000000",
 				"description": "The universal identifier for the token within the Lisk ecosystem."
 			},
 			"tokenName": {
@@ -397,7 +397,7 @@
 			"displayDenom": {
 				"type": "string",
 				"example": "lsk",
-				"description": "The human friendly denomination unit of the token. Must be a 'denom' in denomUnits. Example: LSK"
+				"description": "The human friendly denomination unit of the token. Must be a 'denom' in denomUnits. Example: lsk"
 			},
 			"baseDenom": {
 				"type": "string",
