@@ -1,5 +1,5 @@
 MYSQL_PORT = 3306
-REDIS_PORT = 6381
+REDIS_PORT = 6379
 
 def checkOpenPort(nPort) {
 	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
@@ -127,7 +127,7 @@ pipeline {
 						dir('lisk-core') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
-									./bin/run blockchain:import --force lisk-core/snapshots/blockchain.tar.gz
+									./bin/run blockchain:import --force ~/lisk-service/jenkins/lisk-core/snapshots/blockchain.tar.gz
 									./bin/run start --network devnet --api-ipc &
 									echo $! > lisk-core.pid
 								'''
@@ -188,9 +188,13 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./framework') { sh "npm run test:functional" }
+								// dir('./framework') { sh "npm run test:functional" }
+								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
 								dir('./services/blockchain-connector') { sh "npm run test:functional" }
+								dir('./services/blockchain-indexer') { sh "npm run test:functional" }
+								dir('./services/fee-estimator') { sh "npm run test:functional" }
 								dir('./services/market') { sh "npm run test:functional" }
+								dir('./services/transaction-statistics') { sh "npm run test:functional" }
 								// dir('./tests') { sh "npm run test:functional" }
 							}
 						}
