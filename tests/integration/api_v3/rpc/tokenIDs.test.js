@@ -20,6 +20,7 @@ const {
 } = require('../../../helpers/socketIoRpcRequest');
 
 const {
+	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -39,5 +40,45 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('Returns list of stakers when requested with known validator name and offset=1', async () => {
+		const response = await getTokensIds({ offset: 1 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('Returns list of stakers when requested with known validator name and limit=5', async () => {
+		const response = await getTokensIds({ limit: 5 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
+	});
+
+	it('Returns list of stakers when requested with known validator name, offset=1 and limit=5', async () => {
+		const response = await getTokensIds({ offset: 1, limit: 5 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
+	});
+
+	it('Invalid request param -> invalid param', async () => {
+		const response = await getTokensIds({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('Invalid limit -> invalid param', async () => {
+		const response = await getTokensIds({ limit: 'L' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('Invalid offset -> invalid param', async () => {
+		const response = await getTokensIds({ offset: 'L' });
+		expect(response).toMap(invalidParamsSchema);
 	});
 });

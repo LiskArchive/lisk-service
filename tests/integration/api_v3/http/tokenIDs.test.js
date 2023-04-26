@@ -18,11 +18,11 @@ const { api } = require('../../../helpers/api');
 
 const {
 	goodRequestSchema,
+	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	tokenIDsSchema,
-	tokenIDsMetaSchema,
+	goodResponseSchemaFortokenIDs,
 } = require('../../../schemas/api_v3/tokenIDs.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -33,7 +33,43 @@ describe('Token IDs API', () => {
 	it('Should retrieves token info when called without any params', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(tokenIDsSchema);
-		expect(response.meta).toMap(tokenIDsMetaSchema);
+		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('Should retrieves token info when called with offset=1', async () => {
+		const response = await api.get(`${endpoint}?offset=1`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('Should retrieves token info when called with limit=5', async () => {
+		const response = await api.get(`${endpoint}?limit=5`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
+	});
+
+	it('Should retrieves token info when called with offset=1 and limit=5', async () => {
+		const response = await api.get(`${endpoint}?offset=1&limit=5`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
+	});
+
+	it('Invalid limit -> bad request', async () => {
+		const response = await api.get(`${endpoint}?limit=one`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('Invalid offset -> bad request', async () => {
+		const response = await api.get(`${endpoint}?offset=one`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('Invalid request param -> bad request', async () => {
+		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
 	});
 });
