@@ -23,7 +23,7 @@ const {
 
 const { LENGTH_CHAIN_ID } = require('./constants');
 const { isMainchain } = require('./chain');
-const { read } = require('./utils/fsUtils');
+const { read } = require('./utils/fs');
 const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
@@ -98,7 +98,7 @@ const getBlockchainAppsMetaList = async (params) => {
 	blockchainAppsMetaList.data = blockchainAppsMetaList.data
 		.slice(params.offset, params.offset + params.limit);
 
-	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
+	const total = await applicationMetadataTable.count(params);
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,
@@ -212,7 +212,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		{ concurrency: blockchainAppsMetadata.data.length },
 	);
 
-	const [{ total }] = await applicationMetadataTable.rawQuery(`SELECT COUNT(chainName) as total from ${applicationMetadataIndexSchema.tableName}`);
+	const total = await applicationMetadataTable.count(params);
 
 	blockchainAppsMetadata.meta = {
 		count: blockchainAppsMetadata.data.length,
@@ -333,7 +333,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		{ concurrency: uniqueChainList.length },
 	);
 
-	const [{ total }] = await tokenMetadataTable.rawQuery(`SELECT COUNT(tokenName) as total from ${tokenMetadataIndexSchema.tableName}`);
+	const total = await tokenMetadataTable.count(params);
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,

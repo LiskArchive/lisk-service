@@ -20,7 +20,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 const { KV_STORE_KEY } = require('../../../constants');
 const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
@@ -147,7 +147,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		stakes,
 		async (stake) => {
 			await decrementStakeTrx(stake, dbTrx);
-			// Substract to reverse the impact
+			// Subtract to reverse the impact
 			if (stake.stakerAddress === stake.validatorAddress) {
 				totalSelfStakeChange -= BigInt(stake.amount);
 			}

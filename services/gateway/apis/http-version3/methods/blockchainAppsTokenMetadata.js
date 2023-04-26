@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps/meta/tokens',
 	rpcMethod: 'get.blockchain.apps.meta.tokens',
-	tags: ['Interoperability'],
+	tags: ['Application Off-Chain Metadata'],
 	params: {
 		chainName: { optional: true, type: 'string', pattern: regex.NAME },
 		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID },

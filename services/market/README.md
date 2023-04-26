@@ -1,12 +1,14 @@
 # Lisk Service Market
 
-> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes running all microservices at once.
+The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real-time.
+
+> Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all the microservices simultaneously.
 
 ## Installation
 
 ### Prerequisites
 
-Please refer to the readme file (`README.md`) in the project root directory.
+Please refer to the [README](../../README.md) in the project root directory.
 
 ## Installation
 
@@ -15,27 +17,33 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/market # move into market microservice directory
-npm install # install required Node.js dependencies
+npm ci # install required Node.js dependencies
 ```
 
 ## Configuration
 
-To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations.
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
+
+A list of the most commonly used environment variables is presented below:
+
+- `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `SERVICE_MARKET_REDIS`: URL of the cache storage (Redis).
+- `EXCHANGERATESAPI_IO_API_KEY`: Access key to fetch data from the exchangeratesapi.io API.
 
 ## Management
 
 ### Start
 
 ```bash
-cd lisk-service/services/market # move into root directory of the market microservice
+cd lisk-service/services/market # move into the root directory of the market microservice
 npm start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
 
-If you want to run a production variant of the service use `Docker` or `PM2`. This will automatically recover the process when it fails.
+If you want to run a production variant of the service, use `Docker` or `PM2`. This will automatically recover the process when it fails.
 
-#### Stop
+### Stop
 
 Press `Ctrl+C` in the terminal to stop the process.
 

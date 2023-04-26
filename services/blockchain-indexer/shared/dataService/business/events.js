@@ -30,7 +30,7 @@ const eventsTableSchema = require('../../database/schema/events');
 const eventTopicsTableSchema = require('../../database/schema/eventTopics');
 
 const { requestConnector } = require('../../utils/request');
-const { normalizeRangeParam } = require('../../utils/paramUtils');
+const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;

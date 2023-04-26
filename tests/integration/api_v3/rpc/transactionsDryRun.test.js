@@ -38,6 +38,7 @@ const {
 
 const {
 	dryrunTransactionSuccessResponseSchema,
+	dryrunTxSuccessSchemaWithSkipDecode,
 	dryrunTransactionInvalidResponseSchema,
 	dryrunTransactionPendingResponseSchema,
 	metaSchema,
@@ -107,6 +108,21 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('Post dryrun transaction succesfully with skipDecode: true', async () => {
+		const response = await postDryrunTransaction(
+			{
+				transaction: TRANSACTION_ENCODED_VALID, skipDecode: true,
+			},
+		);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(goodRequestSchema);
+		expect(result.data).toBeInstanceOf(Object);
+		expect(result.data).toMap(dryrunTxSuccessSchemaWithSkipDecode);
 		expect(result.meta).toMap(metaSchema);
 	});
 

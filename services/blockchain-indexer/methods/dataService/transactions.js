@@ -67,6 +67,7 @@ module.exports = [
 		params: {
 			transaction: { optional: false, type: 'any' },
 			skipVerify: { optional: true, type: 'boolean', default: false },
+			skipDecode: { optional: true, type: 'boolean', default: false },
 		},
 	},
 ];

@@ -22,7 +22,7 @@ const config = require('../../../../config');
 const {
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
-} = require('../../../utils/accountUtils');
+} = require('../../../utils/account');
 
 const logger = Logger();
 

@@ -20,8 +20,8 @@ const {
 } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
-const { getLisk32AddressFromPublicKey } = require('../../utils/accountUtils');
-const { getAddressByName } = require('../../utils/validatorUtils');
+const { getLisk32AddressFromPublicKey } = require('../../utils/account');
+const { getAddressByName } = require('../../utils/validator');
 
 const {
 	LENGTH_CHAIN_ID,

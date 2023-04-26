@@ -68,12 +68,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -95,7 +89,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/blockchainAppStatus',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/blockchainAppSearch',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -117,19 +111,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta/list': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests list of blockchain applications for which the off-chain metadata is available',
 			description: 'Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list',
@@ -175,19 +163,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata',
 			description: 'Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta',
@@ -241,12 +223,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -264,16 +240,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/blockchainAppsStatsEnvelope',
 					},
 				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta/tokens': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata for tokens',
 			description: 'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
@@ -328,19 +301,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta/tokens/supported': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.',
 			description: 'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.\n RPC => get.blockchain.apps.meta.tokens.supported',
@@ -378,12 +345,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -441,12 +402,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -524,12 +479,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -546,9 +495,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/FeeEstimateEnvelope',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -581,12 +527,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -604,9 +544,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/IndexStatus',
 					},
 				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		},
 	},
@@ -616,7 +553,7 @@ const createApiDocsExpectedResponse = {
 				'Proxy',
 			],
 			summary: 'Proxy request to directly invoke application endpoint',
-			description: 'Returns endpoint response from the blockchain application in its original form\n RPC => post.invoke',
+			description: 'Returns endpoint response from the blockchain application in its original form.\n RPC => post.invoke',
 			parameters: [
 				{
 					$ref: '#/parameters/invokeParams',
@@ -624,7 +561,7 @@ const createApiDocsExpectedResponse = {
 			],
 			responses: {
 				200: {
-					description: 'Returns endpoint response from the blockchain application in its original form',
+					description: 'Returns endpoint response from the blockchain application in its original form.',
 					schema: {
 						$ref: '#/definitions/invokeWithEnvelope',
 					},
@@ -661,12 +598,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -683,9 +614,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/NetworkStatistics',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -704,19 +632,16 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/NetworkStatus',
 					},
 				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		},
 	},
-	'/peers': {
+	'/network/peers': {
 		get: {
 			tags: [
-				'Peers',
+				'Network',
 			],
 			summary: 'Requests peers data',
-			description: 'Returns peers data\n RPC => get.peers',
+			description: 'Returns peers data\n RPC => get.network.peers',
 			parameters: [
 				{
 					$ref: '#/parameters/ip',
@@ -762,12 +687,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -857,12 +776,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 		post: {
@@ -916,12 +829,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -980,6 +887,12 @@ const createApiDocsExpectedResponse = {
 						'month',
 					],
 				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
 			],
 			responses: {
 				200: {
@@ -994,10 +907,10 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
+				503: {
+					description: 'Service Unavailable',
 					schema: {
-						$ref: '#/definitions/notFound',
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},
@@ -1028,12 +941,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -1062,22 +969,16 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
-	'/validator/validateBLSKey': {
+	'/validator/validate-bls-key': {
 		post: {
 			tags: [
 				'Validator',
 			],
 			summary: 'Validates a BLS key against its corresponding Proof of Possession.',
-			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validateBLSKey',
+			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validate-bls-key',
 			parameters: [
 				{
 					$ref: '#/parameters/validateBLSKeyParams',
@@ -1094,12 +995,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},

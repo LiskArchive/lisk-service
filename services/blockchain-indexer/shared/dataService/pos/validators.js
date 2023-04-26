@@ -34,10 +34,10 @@ const {
 	getHexAddress,
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
-} = require('../../utils/accountUtils');
+} = require('../../utils/account');
 const { getLastBlock } = require('../blocks');
 const { MODULE, COMMAND } = require('../../constants');
-const { sortComparator } = require('../../utils/arrayUtils');
+const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;

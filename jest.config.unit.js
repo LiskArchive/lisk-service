@@ -3,6 +3,7 @@
 
 module.exports = {
 	testMatch: [
+		'<rootDir>/framework/tests/unit/**/*.test.js',
 		'<rootDir>/services/*/tests/unit/**/*.test.js',
 	],
 	verbose: false,
