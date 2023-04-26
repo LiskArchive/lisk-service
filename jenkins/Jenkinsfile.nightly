@@ -1,5 +1,6 @@
 MYSQL_PORT = 3306
 REDIS_PORT = 6379
+LISK_CORE_WS_PORT = 7887;
 
 def checkOpenPort(nPort) {
 	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
@@ -47,6 +48,11 @@ pipeline {
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
+	environment {
+		ENABLE_HTTP_API='http-version3,http-status'
+		ENABLE_WS_API='rpc-v3,blockchain'
+		LISK_APP_WS='ws://localhost:7887'
+    }
 	stages {
 		stage('Checkout SCM') {
 			when {
@@ -121,26 +127,13 @@ pipeline {
 				}
 			}
 			parallel {
-				stage('Lisk Core') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-core') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh '''
-									./bin/run blockchain:import --force ~/lisk-service/jenkins/lisk-core/snapshots/blockchain.tar.gz
-									./bin/run start --network devnet --api-ipc &
-									echo $! > lisk-core.pid
-								'''
-							}
-						}
-					}
-				}
 				stage('Lisk Service') {
 					steps {
 						dir('lisk-service') {
 							script {
-								runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+								runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
 								runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+								runServiceIfMissing('lisk', './jenkins/redis', REDIS_PORT)
 							}
 						}
 					}	
@@ -157,8 +150,8 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
+					ansiColor('xterm') {
+						dir('./') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} LISK_APP_WS=${LISK_APP_WS} make up" }
 					}
 					sleep(90)
 					waitForHttp('http://localhost:9901/api/ready')
