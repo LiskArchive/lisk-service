@@ -144,7 +144,7 @@ describe('Claimable rewards API', () => {
 	});
 
 	it('Invalid name -> bad request', async () => {
-		const response = await api.get(`${endpoint}?name=#`, 400);
+		const response = await api.get(`${endpoint}?name=412875216073141752800000`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
