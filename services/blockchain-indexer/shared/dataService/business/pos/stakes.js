@@ -18,6 +18,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	getIndexedAccountInfo,
 	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
 } = require('../../../utils/account');
 const { getAddressByName } = require('../../../utils/validator');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
@@ -42,6 +43,9 @@ const getStakes = async params => {
 
 	if (!params.address && params.publicKey) {
 		params.address = getLisk32AddressFromPublicKey(params.publicKey);
+
+		// Index publicKey asynchronously
+		updateAccountPublicKey(params.publicKey);
 	}
 
 	const stakerInfo = await requestConnector('getStaker', { address: params.address });
