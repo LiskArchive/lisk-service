@@ -32,7 +32,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
 
 describe('get.token.available-ids', () => {
-	it('returns token ids when call without any parameters', async () => {
+	it('should retrieve available token ids when called without any parameters', async () => {
 		const response = await getTokensIDs({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -41,7 +41,7 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Should retrieves token ids when called with offset=1', async () => {
+	it('should retrieve available token ids when called with offset=1', async () => {
 		const response = await getTokensIDs({ offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -50,7 +50,7 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Should retrieves token ids when called with limit=5', async () => {
+	it('should retrieve available token ids when called with limit=5', async () => {
 		const response = await getTokensIDs({ limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -59,7 +59,7 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('should retrieves token ids when called with offset=1 and limit=5', async () => {
+	it('should retrieve available token ids when called with offset=1 and limit=5', async () => {
 		const response = await getTokensIDs({ offset: 1, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

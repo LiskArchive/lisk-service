@@ -29,28 +29,28 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/available-ids`;
 
 describe('Token IDs API', () => {
-	it('should retrieves token ids when called without any params', async () => {
+	it('should retrieves available token ids when called without any params', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
-	it('should retrieves token ids when called with offset=1', async () => {
+	it('should retrieves available token ids when called with offset=1', async () => {
 		const response = await api.get(`${endpoint}?offset=1`);
 		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
-	it('should retrieves token ids when called with limit=5', async () => {
+	it('should retrieves available token ids when called with limit=5', async () => {
 		const response = await api.get(`${endpoint}?limit=5`);
 		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('should retrieves token ids when called with offset=1 and limit=5', async () => {
+	it('should retrieves available token ids when called with offset=1 and limit=5', async () => {
 		const response = await api.get(`${endpoint}?offset=1&limit=5`);
 		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
