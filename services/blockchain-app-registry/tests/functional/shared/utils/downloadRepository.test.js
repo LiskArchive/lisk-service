@@ -63,7 +63,7 @@ describe('Test getCommitInfo method', () => {
 
 describe('Test getRepoDownloadURL method', () => {
 	it('should return correct repository download url info', async () => {
-		const repoUrlRegex = /^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main\?token=\w*$/;
+		const repoUrlRegex = /^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main$/;
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(repoUrlRegex);
 	});
@@ -73,7 +73,7 @@ describe('Test getFileDownloadURL method', () => {
 	it('should return correct file download info when file is valid', async () => {
 		const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 		const fileName = 'devnet/Enevti/app.json';
-		const fileUrlRegexStr = `^https://raw.githubusercontent.com/${owner}/${repo}/${config.gitHub.branch}/${fileName}?token=[A-Z0-9]+$`;
+		const fileUrlRegexStr = `^https://raw.githubusercontent.com/${owner}/${repo}/${config.gitHub.branch}/${fileName}$`;
 		const fileUrlRegex = new RegExp(fileUrlRegexStr);
 		/* eslint-disable-next-line no-useless-escape */
 		const response = await getFileDownloadURL(fileName);
