@@ -30,11 +30,9 @@ const tokenIDsSchema = {
 
 const goodResponseSchemaFortokenIDs = {
 	data: Joi.object(tokenIDsSchema).required(),
-	meta: Joi.object().required(),
+	meta: Joi.object(tokenIDsMetaSchema).required(),
 };
 
 module.exports = {
-	tokenIDsSchema: Joi.object(tokenIDsSchema).required(),
-	tokenIDsMetaSchema: Joi.object(tokenIDsMetaSchema).required(),
 	goodResponseSchemaFortokenIDs: Joi.object(goodResponseSchemaFortokenIDs).required(),
 };

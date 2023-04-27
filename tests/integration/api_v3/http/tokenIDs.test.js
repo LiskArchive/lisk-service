@@ -30,28 +30,28 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/ids`;
 
 describe('Token IDs API', () => {
-	it('Should retrieves token info when called without any params', async () => {
-		const response = await api.get(`${endpoint}`);
+	it('Should retrieves token ids when called without any params', async () => {
+		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Should retrieves token info when called with offset=1', async () => {
+	it('Should retrieves token ids when called with offset=1', async () => {
 		const response = await api.get(`${endpoint}?offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Should retrieves token info when called with limit=5', async () => {
+	it('Should retrieves token ids when called with limit=5', async () => {
 		const response = await api.get(`${endpoint}?limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Should retrieves token info when called with offset=1 and limit=5', async () => {
+	it('Should retrieves token ids when called with offset=1 and limit=5', async () => {
 		const response = await api.get(`${endpoint}?offset=1&limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
