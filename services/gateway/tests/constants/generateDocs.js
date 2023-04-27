@@ -722,12 +722,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 			summary: 'Requests to check existence of an account for the specified token.',
 			tags: [
@@ -765,12 +759,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 			summary: 'Requests tokens information',
 			tags: [
@@ -792,12 +780,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -847,12 +829,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
