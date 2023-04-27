@@ -29,14 +29,15 @@ const {
 } = require('../../../schemas/api_v3/tokenIDs.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.ids', params);
+const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
 
-describe('get.token.ids', () => {
+describe('get.token.available-ids', () => {
 	it('returns token ids when call without any parameters', async () => {
 		const response = await getTokensIDs({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
@@ -45,6 +46,7 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
@@ -53,6 +55,7 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
@@ -61,6 +64,7 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 

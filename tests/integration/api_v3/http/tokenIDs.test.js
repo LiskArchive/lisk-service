@@ -27,13 +27,14 @@ const {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/token/ids`;
+const endpoint = `${baseUrlV3}/token/available-ids`;
 
 describe('Token IDs API', () => {
 	it('Should retrieves token ids when called without any params', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
@@ -41,6 +42,7 @@ describe('Token IDs API', () => {
 		const response = await api.get(`${endpoint}?offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
@@ -48,6 +50,7 @@ describe('Token IDs API', () => {
 		const response = await api.get(`${endpoint}?limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
@@ -55,6 +58,7 @@ describe('Token IDs API', () => {
 		const response = await api.get(`${endpoint}?offset=1&limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 

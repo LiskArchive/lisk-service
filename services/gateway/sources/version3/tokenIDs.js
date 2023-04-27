@@ -16,7 +16,7 @@
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.token.ids',
+	method: 'indexer.token.available-ids',
 	params: {
 		offset: '=,number',
 		limit: '=,number',

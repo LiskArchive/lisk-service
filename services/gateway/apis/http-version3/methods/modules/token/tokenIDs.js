@@ -19,8 +19,8 @@ const { transformParams, getSwaggerDescription } = require('../../../../../share
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/token/ids',
-	rpcMethod: 'get.token.ids',
+	swaggerApiPath: '/token/available-ids',
+	rpcMethod: 'get.token.available-ids',
 	tags: ['Token'],
 	params: {
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },

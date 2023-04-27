@@ -58,7 +58,7 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'token.ids',
+		name: 'token.available-ids',
 		controller: getTokenIDs,
 		params: {
 			limit: { optional: true, type: 'number' },

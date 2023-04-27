@@ -25,7 +25,7 @@ const tokenIDsMetaSchema = {
 };
 
 const tokenIDsSchema = {
-	tokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).required(),
+	tokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).min(1).required(),
 };
 
 const goodResponseSchemaFortokenIDs = {

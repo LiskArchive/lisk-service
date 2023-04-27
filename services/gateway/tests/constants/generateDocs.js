@@ -789,9 +789,9 @@ const createApiDocsExpectedResponse = {
 			],
 		},
 	},
-	'/token/ids': {
+	'/token/available-ids': {
 		get: {
-			description: 'Returns all the available token identifiers.\n RPC => get.token.ids',
+			description: 'Returns all the available token identifiers.\n RPC => get.token.available-ids',
 			parameters: [
 				{
 					$ref: '#/parameters/limit',
