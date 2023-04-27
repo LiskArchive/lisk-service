@@ -38,6 +38,29 @@ const getTokenBalances = async params => {
 	}
 };
 
+// TODO: fetch available tokens after indexing
+const getTopTokenBalances = () => ({
+	data: {
+		'0400000000000000': [
+			{
+				address: '',
+				publicKey: '',
+				name: '',
+				balance: '',
+				knowledge: {
+					owner: '',
+					description: '',
+				},
+			},
+		],
+	},
+	meta: {
+		count: 10,
+		offset: 0,
+		total: 110,
+	},
+});
+
 const getTokenSummary = async params => {
 	const tokenSummary = {
 		data: {},
@@ -78,6 +101,7 @@ const getTokenConstants = async () => {
 module.exports = {
 	tokenHasUserAccount,
 	getTokenBalances,
+	getTopTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
 };
