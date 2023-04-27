@@ -88,6 +88,12 @@
                             }
                         }
                     },
+                    "genesisHeight": {
+                        "type": "integer",
+                        "example": 0,
+                        "minimum": 0,
+                        "description": "Genesis block height."
+                    },
                     "registeredModules": {
                         "type": "array",
                         "items": {
