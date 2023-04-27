@@ -59,7 +59,7 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Should retrieves token ids when called with offset=1 and limit=5', async () => {
+	it('should retrieves token ids when called with offset=1 and limit=5', async () => {
 		const response = await getTokensIDs({ offset: 1, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -68,17 +68,17 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Invalid request param -> invalid param', async () => {
+	it('should return Invalid request param when called with invalid param', async () => {
 		const response = await getTokensIDs({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid limit -> invalid param', async () => {
+	it('should return bad request when called with Invalid limit', async () => {
 		const response = await getTokensIDs({ limit: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid offset -> invalid param', async () => {
+	it('should return bad request when called with Invalid offset', async () => {
 		const response = await getTokensIDs({ offset: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});
