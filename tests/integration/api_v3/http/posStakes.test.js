@@ -90,7 +90,8 @@ describe('Stakes API', () => {
 		});
 
 		it('Returns list of stakes when requested with search param (partial staker public key)', async () => {
-			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.publicKey[0]}`);
+			const searchParam = refValidator.publicKey ? refValidator.publicKey[0] : '';
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${searchParam}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
@@ -99,7 +100,8 @@ describe('Stakes API', () => {
 		});
 
 		it('Returns list of stakes when requested with search param (partial staker address)', async () => {
-			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.address[0]}`);
+			const searchParam = refValidator.address ? refValidator.address[0] : '';
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${searchParam}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
