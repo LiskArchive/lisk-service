@@ -18,6 +18,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
+	invalidRequestSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
@@ -235,9 +236,9 @@ describe('get.pos.unlocks', () => {
 		}
 	});
 
-	it('No Params -> invalid param', async () => {
+	it('No Params -> invalid request', async () => {
 		const response = await getUnlocks({});
-		expect(response).toMap(invalidParamsSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('invalid request param -> invalid param', async () => {

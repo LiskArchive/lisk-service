@@ -68,20 +68,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
-						sh 'npm i -g pm2'
-						dir('./') { sh 'npm ci' }
-						dir('./framework') { sh 'npm ci' }
-						dir('./services/blockchain-app-registry') { sh 'npm ci' }
-						dir('./services/blockchain-connector') { sh 'npm ci' }
-						dir('./services/blockchain-indexer') { sh 'npm ci' }
-						dir('./services/blockchain-coordinator') { sh 'npm ci' }
-						dir('./services/fee-estimator') { sh 'npm ci' }
-						dir('./services/market') { sh 'npm ci' }
-						dir('./services/export') { sh 'npm ci' }
-						dir('./services/gateway') { sh 'npm ci' }
-						dir('./services/template') { sh 'npm ci' }
-						dir('./services/transaction-statistics') { sh 'npm ci' }
-						dir('./tests') { sh 'npm ci' }
+						dir('./') { sh 'make build-local' }
 					}
 				}
 			}
@@ -96,6 +83,7 @@ pipeline {
 			steps {
 				dir('lisk-service') {
 					script {
+						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
 						runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
 					}
 				}
@@ -203,6 +191,8 @@ pipeline {
 				echoBanner('Cleaning up...')
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
+						echoBanner('Stopping MySQL')
+						dir('./jenkins/mysql') { sh "make down" }
 						echoBanner('Stopping all microservices and removing dependencies')
 						sh '''
 							make down

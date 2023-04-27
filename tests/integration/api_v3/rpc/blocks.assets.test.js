@@ -23,8 +23,6 @@ const {
 
 const {
 	invalidParamsSchema,
-	emptyResultEnvelopeSchema,
-	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
@@ -125,11 +123,9 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('invalid blockID -> empty response', async () => {
+		it('invalid blockID -> bad request response', async () => {
 			const response = await getBlocksAssets({ blockID: '12602944501676077162' }).catch(e => e);
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('invalid query parameter -> -32602', async () => {

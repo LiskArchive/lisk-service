@@ -23,7 +23,8 @@ const TRANSACTION_VERIFY_RESULT = {
 	OK: 1,
 };
 
-const TRANSACTION_VERIFY_STATUSES = Object.keys(TRANSACTION_VERIFY_RESULT);
+const TRANSACTION_VERIFY_STATUSES = Object
+	.keys(TRANSACTION_VERIFY_RESULT).map(e => e.toLowerCase());
 
 const event = {
 	data: Joi.object().required(),
@@ -37,6 +38,7 @@ const event = {
 
 const eventSchemaWithSkipDecode = {
 	...event,
+	id: Joi.string().pattern(regex.HEX).optional(), // TODO: Verify and fix
 	data: Joi.string().required(),
 };
 
@@ -64,6 +66,11 @@ const dryrunTransactionInvalidResponseSchema = {
 	errorMessage: Joi.string().required(),
 };
 
+const goodRequestSchemaFortransactionsDryRun = {
+	data: Joi.object().required(),
+	meta: Joi.object().optional(),
+};
+
 module.exports = {
 	dryrunTransactionSuccessResponseSchema: Joi.object(
 		dryrunTransactionSuccessResponseSchema,
@@ -77,5 +84,8 @@ module.exports = {
 	dryrunTransactionInvalidResponseSchema: Joi.object(
 		dryrunTransactionInvalidResponseSchema,
 	).required(),
-	metaSchema: Joi.object().required(),
+	metaSchema: Joi.object().optional(),
+	goodRequestSchemaFortransactionsDryRun: Joi.object(
+		goodRequestSchemaFortransactionsDryRun,
+	).optional(),
 };

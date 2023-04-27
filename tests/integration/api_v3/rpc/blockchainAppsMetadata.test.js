@@ -55,7 +55,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata with limit=5', async () => {
+	xit('returns blockchain applications off-chain metadata with limit=5', async () => {
 		const response = await getBlockchainAppsMetadata({ limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

@@ -19,12 +19,12 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	metaSchema,
 	serviceUnavailableSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
 	marketPriceSchema,
+	marketPriceMetaSchema,
 } = require('../../../schemas/api_v3/marketPrice.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -41,7 +41,7 @@ describe('Method get.market.prices', () => {
 				expect(result.data.length).toBeGreaterThanOrEqual(1);
 				expect(result.data.length).toBeLessThanOrEqual(10);
 				result.data.forEach(account => expect(account).toMap(marketPriceSchema));
-				expect(result.meta).toMap(metaSchema);
+				expect(result.meta).toMap(marketPriceMetaSchema);
 			} catch (_) {
 				const response = await getMarketPrices({}).catch(e => e);
 				expect(response).toMap(serviceUnavailableSchema);

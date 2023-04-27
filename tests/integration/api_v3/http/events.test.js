@@ -118,10 +118,8 @@ describe('Events API', () => {
 		});
 
 		it('short invalid transactionID -> empty data', async () => {
-			const response = await api.get(`${endpoint}?transactionID=41287`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toEqual(0);
+			const response = await api.get(`${endpoint}?transactionID=41287`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('long invalid transactionID -> 400', async () => {
