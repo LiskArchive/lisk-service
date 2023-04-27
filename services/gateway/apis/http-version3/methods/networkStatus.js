@@ -37,9 +37,6 @@ module.exports = {
 					$ref: '#/definitions/NetworkStatus',
 				},
 			},
-			404: {
-				$ref: '#/responses/notFound',
-			},
 		};
 		return networkSchema;
 	},

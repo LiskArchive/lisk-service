@@ -28,7 +28,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { requestConnector } = require('../../../utils/request');
 const { getAnnualInflation } = require('../dynamicReward');
-const { getNetworkStatus } = require('../../network');
+const { getNetworkStatus } = require('../network');
 const { getTotalStaked } = require('../../../utils/pos');
 
 const getBlockchainAppsTable = () => getTableInstance(

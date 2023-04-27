@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-let http = require('../../src/http');
+const http = require('../../src/http');
 
 const getTimestamp = () => (new Date().getTime());
 
-const waitMs = (n) => new Promise((resolve) => {
+const waitMs = n => new Promise(resolve => {
 	setTimeout(() => {
 		resolve();
 	}, n);

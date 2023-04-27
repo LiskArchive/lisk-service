@@ -24,12 +24,12 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	peerSchema,
-} = require('../../../schemas/api_v3/peer.schema');
+	networkPeerSchema,
+} = require('../../../schemas/api_v3/networkPeer.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/peers`;
+const endpoint = `${baseUrlV3}/network/peers`;
 
 describe('Peers API', () => {
 	describe('GET /peers', () => {
@@ -39,7 +39,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -49,7 +49,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -64,7 +64,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -74,7 +74,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -96,7 +96,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -106,7 +106,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -116,7 +116,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -126,7 +126,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -146,7 +146,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -168,7 +168,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -178,7 +178,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -188,7 +188,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -205,7 +205,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -234,7 +234,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevPeer = response.data[i - 1];
@@ -251,7 +251,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevPeer = response.data[i - 1];
@@ -270,7 +270,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevPeer = response.data[i - 1];
@@ -290,7 +290,7 @@ describe('Peers API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevPeer = response.data[i - 1];

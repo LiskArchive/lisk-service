@@ -37,6 +37,14 @@
         "type": "string",
         "minLength": 1
     },
+    "blockchainAppSearch": {
+		"name": "search",
+		"in": "query",
+		"description": "Search by name. Supports both partial and full text search.",
+		"type": "string",
+		"minLength": 1,
+		"maxLength": 20
+    },
     "chainName": {
         "name": "chainName",
         "in": "query",

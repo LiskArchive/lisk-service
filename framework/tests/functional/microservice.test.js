@@ -28,7 +28,7 @@ const app = Microservice({
 	name: 'test-service',
 	transporter: 'redis://localhost:6379/0',
 	logger: loggerConf,
-})
+});
 
 const testJob = () => true;
 
@@ -39,7 +39,7 @@ describe('Test microservice', () => {
 				name: 'test.job.start',
 				description: 'Return true',
 				init: () => testJob(),
-			}
+			};
 			expect(app.addJob(job)).toBe(true);
 		});
 
@@ -47,10 +47,10 @@ describe('Test microservice', () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
-				interval: 5, //seconds
+				interval: 5, // seconds
 				init: () => testJob(),
 				controller: () => testJob(),
-			}
+			};
 			expect(app.addJob(job)).toBe(true);
 		});
 
@@ -61,7 +61,7 @@ describe('Test microservice', () => {
 				schedule: '* * * * *',
 				init: () => testJob(),
 				controller: () => testJob(),
-			}
+			};
 			expect(app.addJob(job)).toBe(true);
 		});
 
@@ -70,7 +70,7 @@ describe('Test microservice', () => {
 				name: 'test.job.start',
 				description: 'Return true',
 				schedule: '* * * * *',
-			}
+			};
 			expect(app.addJob(job)).toBe(false);
 		});
 
@@ -80,7 +80,7 @@ describe('Test microservice', () => {
 				description: 'Return true',
 				init: () => testJob(),
 				controller: () => testJob(),
-			}
+			};
 			expect(app.addJob(job)).toBe(false);
 		});
 
@@ -88,9 +88,9 @@ describe('Test microservice', () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
-				interval: 5, //seconds
+				interval: 5, // seconds
 				init: () => testJob(),
-			}
+			};
 			expect(app.addJob(job)).toBe(false);
 		});
 	});
@@ -112,7 +112,7 @@ describe('Test microservice', () => {
 			};
 			expect(app.addMethod(testMethod)).toBe(false);
 		});
-	})
+	});
 
 	describe('addEvents()', () => {
 		it('Return true when event is registered', async () => {
@@ -131,13 +131,13 @@ describe('Test microservice', () => {
 			};
 			expect(app.addEvent(testEvent)).toBe(false);
 		});
-	})
+	});
 
 	describe('requestRpc()', () => {
 		it('Return result when call with registered method name', async () => {
 			const testData = {
-				address: "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-				balance: "95589969000000",
+				address: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
+				balance: '95589969000000',
 			};
 
 			const testFunc = async () => testData;
@@ -158,5 +158,5 @@ describe('Test microservice', () => {
 		it('Throw error when method is not registered', async () => {
 			expect(app.requestRpc('test-service.unregistered.method', {})).rejects.toThrow();
 		});
-	})
+	});
 });

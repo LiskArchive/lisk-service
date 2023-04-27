@@ -39,9 +39,6 @@ module.exports = {
 					$ref: '#/definitions/FeeEstimateEnvelope',
 				},
 			},
-			404: {
-				$ref: '#/responses/notFound',
-			},
 		};
 		return feeEstimatePerByteSchema;
 	},

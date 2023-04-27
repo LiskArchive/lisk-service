@@ -16,19 +16,18 @@
 const delay = require('../../src/delay');
 
 describe('isProperObject()', () => {
-	const delay_time = 20;
+	const delayTime = 20;
 	const justLikeEnum = { original: 'original', updated: 'original' };
-
 
 	test('return unchanged ', async () => {
 		let data = justLikeEnum.original;
 
 		setTimeout(() => {
 			expect(data).toBe(justLikeEnum.original);
-		 }, delay_time - 1);
+		}, delayTime - 1);
 
-		 await delay(delay_time);
-		 data = justLikeEnum.updated;
+		await delay(delayTime);
+		data = justLikeEnum.updated;
 	});
 
 	test('returns true on empty objects', async () => {
@@ -36,9 +35,9 @@ describe('isProperObject()', () => {
 
 		setTimeout(() => {
 			expect(data).toBe(justLikeEnum.updated);
-		 }, delay_time + 1);
+		}, delayTime + 1);
 
-		 await delay(delay_time);
-		 data = justLikeEnum.updated;
+		await delay(delayTime);
+		data = justLikeEnum.updated;
 	});
 });

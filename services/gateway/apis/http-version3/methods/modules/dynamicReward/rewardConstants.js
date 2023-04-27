@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/reward/constants',
 	rpcMethod: 'get.reward.constants',
-	tags: ['Reward'],
+	tags: ['(Dynamic) Reward'],
 	params: {},
 	get schema() {
 		const rewardConstantsSchema = {};
