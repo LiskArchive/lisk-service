@@ -1173,9 +1173,9 @@ Retrieves all the available token identifiers.
     ]
   },
   "meta": {
-    "count": 10,
-    "offset": 10,
-    "total": 100
+    "count": 1,
+    "offset": 0,
+    "total": 1
   }
 }
 ```
