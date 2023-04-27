@@ -68,7 +68,7 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('should return Invalid request param when called with invalid param', async () => {
+	it('should return bad request when called with invalid param', async () => {
 		const response = await getTokensIDs({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
