@@ -83,7 +83,10 @@ describe('get.pos.stakes', () => {
 	});
 
 	it('Returns list of stakes when requested for known staker address and search (exact validator public key) param', async () => {
-		const response = await getStakes({ address: refStaker.address, search: refValidator.publicKey });
+		const response = await getStakes({
+			address: refStaker.address,
+			search: refValidator.publicKey,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(stakesResponseSchema);

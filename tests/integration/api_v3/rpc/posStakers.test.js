@@ -60,7 +60,10 @@ describe('get.pos.stakers', () => {
 	});
 
 	it('Returns list of stakers when requested for known validator address and search address (exact staker address)', async () => {
-		const response = await getStakers({ address: refValidator.address, search: refValidator.address });
+		const response = await getStakers({
+			address: refValidator.address,
+			search: refValidator.address,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
@@ -69,7 +72,10 @@ describe('get.pos.stakers', () => {
 	});
 
 	it('Returns list of stakers when requested for known validator address and search public key (exact staker public key)', async () => {
-		const response = await getStakers({ address: refValidator.address, search: refValidator.publicKey });
+		const response = await getStakers({
+			address: refValidator.address,
+			search: refValidator.publicKey,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
