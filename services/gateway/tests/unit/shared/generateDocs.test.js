@@ -17,7 +17,7 @@ const { createApiDocs } = require('../../../shared/generateDocs');
 const { createApiDocsExpectedResponse } = require('../../constants/generateDocs');
 
 describe('Test createApiDocs method', () => {
-	const registeredModuleNames = ['auth', 'validators'];
+	const registeredModuleNames = ['auth', 'validators','token'];
 	const apiName = 'http-version3';
 
 	it('should return correctly mapped object when called with valid params', async () => {
