@@ -100,7 +100,7 @@ const getStakers = async params => {
 					property: 'name',
 					pattern: params.search,
 				}],
-				onSearch: [{
+				orSearch: [{
 					property: 'address',
 					pattern: params.search,
 				}, {
