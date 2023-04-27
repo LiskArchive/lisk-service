@@ -52,6 +52,7 @@ const networkStatusSchema = {
 	syncing: Joi.boolean().required(),
 	unconfirmedTransactions: Joi.number().integer().min(0).required(),
 	genesis: Joi.object(genesisSchema).required(),
+	genesisHeight: Joi.number().integer().min(0).required(),
 	registeredModules: Joi.array().items(Joi.string()).required(),
 	moduleCommands: Joi.array().items(Joi.string().pattern(regex.MODULE_COMMAND)).required(),
 	network: Joi.object(networkSchema).required(),

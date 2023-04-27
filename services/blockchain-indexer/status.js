@@ -38,7 +38,7 @@ const getStatus = async () => {
 	if (!status.isReady) {
 		serviceTasks.isBlockchainIndexReady = getIndexReadyStatus();
 
-		const events = await dataService.getEvents({ limit: 1 });
+		const events = await dataService.getEvents({ limit: 1, sort: 'timestamp:desc' });
 		if (events.data.length) serviceTasks.isEventsEndpointReady = true;
 
 		const generators = await dataService.getGenerators({ limit: 1, offset: 0 });
