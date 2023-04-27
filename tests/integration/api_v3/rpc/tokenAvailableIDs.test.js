@@ -25,8 +25,8 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	goodResponseSchemaFortokenIDs,
-} = require('../../../schemas/api_v3/tokenIDs.schema');
+	goodResponseSchemaFortokenAvailableIDs,
+} = require('../../../schemas/api_v3/tokenAvailableIDs.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
@@ -36,7 +36,7 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
@@ -45,7 +45,7 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({ offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
@@ -54,7 +54,7 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({ limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
@@ -63,7 +63,7 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({ offset: 1, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenIDs);
+		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});

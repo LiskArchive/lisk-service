@@ -22,8 +22,8 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	goodResponseSchemaFortokenIDs,
-} = require('../../../schemas/api_v3/tokenIDs.schema');
+	goodResponseSchemaFortokenAvailableIDs,
+} = require('../../../schemas/api_v3/tokenAvailableIDs.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -33,7 +33,7 @@ describe('Token IDs API', () => {
 	it('Should retrieves token ids when called without any params', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
-		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
@@ -41,7 +41,7 @@ describe('Token IDs API', () => {
 	it('Should retrieves token ids when called with offset=1', async () => {
 		const response = await api.get(`${endpoint}?offset=1`);
 		expect(response).toMap(goodRequestSchema);
-		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
@@ -49,7 +49,7 @@ describe('Token IDs API', () => {
 	it('Should retrieves token ids when called with limit=5', async () => {
 		const response = await api.get(`${endpoint}?limit=5`);
 		expect(response).toMap(goodRequestSchema);
-		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
@@ -57,7 +57,7 @@ describe('Token IDs API', () => {
 	it('Should retrieves token ids when called with offset=1 and limit=5', async () => {
 		const response = await api.get(`${endpoint}?offset=1&limit=5`);
 		expect(response).toMap(goodRequestSchema);
-		expect(response).toMap(goodResponseSchemaFortokenIDs);
+		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});

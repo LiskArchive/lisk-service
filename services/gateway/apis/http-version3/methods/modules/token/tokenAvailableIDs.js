@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenIDsSource = require('../../../../../sources/version3/tokenIDs');
+const tokenAvailableIDsSource = require('../../../../../sources/version3/tokenAvailableIDs');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, getSwaggerDescription } = require('../../../../../shared/utils');
 
@@ -27,25 +27,25 @@ module.exports = {
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
-		const tokenIDsSchema = {};
-		tokenIDsSchema[this.swaggerApiPath] = { get: {} };
-		tokenIDsSchema[this.swaggerApiPath].get.tags = this.tags;
-		tokenIDsSchema[this.swaggerApiPath].get.summary = 'Requests the list of available tokens identifiers.';
-		tokenIDsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const tokenAvailableIDsSchema = {};
+		tokenAvailableIDsSchema[this.swaggerApiPath] = { get: {} };
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.tags = this.tags;
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.summary = 'Requests the list of available tokens identifiers.';
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns all the available token identifiers.',
 		});
-		tokenIDsSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
-		tokenIDsSchema[this.swaggerApiPath].get.responses = {
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns all the available token identifiers.',
 				schema: {
-					$ref: '#/definitions/tokenIDsWithEnvelope',
+					$ref: '#/definitions/tokenAvailableIDsWithEnvelope',
 				},
 			},
 		};
-		return tokenIDsSchema;
+		return tokenAvailableIDsSchema;
 	},
-	source: tokenIDsSource,
+	source: tokenAvailableIDsSource,
 	envelope,
 };

@@ -18,21 +18,21 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
-const tokenIDsMetaSchema = {
+const tokenAvailableIDsMetaSchema = {
 	count: Joi.number().integer().min(0).required(),
 	offset: Joi.number().integer().min(0).required(),
 	total: Joi.number().integer().min(0).required(),
 };
 
-const tokenIDsSchema = {
+const tokenAvailableIDsSchema = {
 	tokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).min(1).required(),
 };
 
-const goodResponseSchemaFortokenIDs = {
-	data: Joi.object(tokenIDsSchema).required(),
-	meta: Joi.object(tokenIDsMetaSchema).required(),
-};
+const goodResponseSchemaFortokenAvailableIDs = Joi.object({
+	data: Joi.object(tokenAvailableIDsSchema).required(),
+	meta: Joi.object(tokenAvailableIDsMetaSchema).required(),
+}).required();
 
 module.exports = {
-	goodResponseSchemaFortokenIDs: Joi.object(goodResponseSchemaFortokenIDs).required(),
+	goodResponseSchemaFortokenAvailableIDs,
 };

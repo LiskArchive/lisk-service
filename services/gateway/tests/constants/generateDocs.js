@@ -804,7 +804,7 @@ const createApiDocsExpectedResponse = {
 				200: {
 					description: 'Returns all the available token identifiers.',
 					schema: {
-						$ref: '#/definitions/tokenIDsWithEnvelope',
+						$ref: '#/definitions/tokenAvailableIDsWithEnvelope',
 					},
 				},
 			},
