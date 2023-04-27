@@ -143,7 +143,7 @@ _Supports pagination._
 | timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
 
 #### Response example
@@ -234,7 +234,7 @@ _Supports pagination._
 | timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
 
 #### Response example
@@ -316,7 +316,7 @@ _Supports pagination._
 | executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
 | nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
 | order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in a collision. |
 
@@ -560,7 +560,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | interval | String | `["day", "month"]` | *(empty)* | Required |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -656,7 +656,7 @@ _Supports pagination._
 | height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
 | timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |  |
 | order | Enum | `['index:asc', 'index:desc']` | index:asc | The order condition is applied after the sort condition, usually to break ties when the sort condition results in a collision. |
 
@@ -734,7 +734,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | limit | Number | `[1,103]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -994,7 +994,7 @@ Retrieves the balances from the Token sub-store for the specified address.
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 <!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
@@ -1276,7 +1276,7 @@ _Supports pagination._
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -1331,7 +1331,7 @@ _Supports pagination._
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -1443,7 +1443,7 @@ _Supports pagination._
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -1565,7 +1565,7 @@ _Supports pagination._
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | isLocked | Boolean | `[true, false]` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -1633,7 +1633,7 @@ _Supports pagination._
 | status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,)+\b$/` | *(empty)* | Can be expressed as CSV |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["commission:asc", "commission:desc", "validatorWeight:desc", "validatorWeight:asc", "rank:asc", "rank:desc", "name:asc", "name:desc"]` | commission:asc |  |
 
 #### Response example
@@ -1900,7 +1900,7 @@ _Supports pagination._
 | state | String | `["connected", "disconnected", "any"]` | any |  |
 | height | Number | `[1,Inf)` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | String | `["height:asc", "height:desc", "networkVersion:asc", "networkVersion:desc"]` | height:desc |  |
 
 #### Response example
@@ -5463,7 +5463,7 @@ _Supports pagination._
 | status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
@@ -5719,7 +5719,7 @@ _Supports pagination._
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
 
 #### Response example
@@ -5778,7 +5778,7 @@ _Supports pagination._
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
 #### Response example
 
@@ -5867,7 +5867,7 @@ _Supports pagination._
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc]` | chainName:asc |  |
 #### Response example
 
@@ -5941,7 +5941,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[tokenID:asc, tokenID:desc]` | tokenID:asc |  |
 #### Response example
 
