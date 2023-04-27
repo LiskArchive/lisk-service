@@ -41,6 +41,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Token Balances](#token-balances)
     - [Module Constants](#module-constants)
     - [Token Summary](#token-summary)
+    - [Token Available IDs](#token-available-ids)
   - [Dynamic Fees](#dynamic-fees)
   - [Proof of Stake (PoS)](#proof-of-stake-pos)
     - [Claimable rewards](#claimable-rewards)
@@ -1159,7 +1160,7 @@ Retrieves all the available token identifiers.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | limit | Number | `[1,100]` | 10 |  |
-| offset | Number | `[1,Inf)` | 0 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example
 
