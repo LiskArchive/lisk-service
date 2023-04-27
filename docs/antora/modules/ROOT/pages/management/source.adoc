@@ -1,0 +1,120 @@
+= PM2 commands
+Mona Bärenfänger <mona@lightcurve.io>
+:description: Describes how to manage Lisk Service with PM2.
+:toc:
+:idseparator: -
+:idprefix:
+:imagesdir: ../assets/images
+
+== Start
+
+[source,bash]
+----
+pm2 start ecosystem.core3.config.js
+
+# or
+
+npm start
+----
+
+== Status
+
+[source,bash]
+----
+pm2 list
+----
+
+== Stop
+
+[source,bash]
+----
+pm2 stop ecosystem.core3.config.js
+----
+
+== Restart
+
+[source,bash]
+----
+pm2 restart ecosystem.core3.config.js
+----
+
+== Remove all processes from pm2 list
+
+[source,bash]
+----
+pm2 delete ecosystem.core3.config.js
+
+# or
+
+npm stop
+----
+
+== Clean all run-time files with dependencies
+
+[source,bash]
+----
+make clean
+----
+
+== Reset the Lisk Service database
+
+To reset the database of Lisk Service, drop the respective MYSQL and Redis databases.
+
+=== Drop the MYSQL database
+
+[source,bash]
+----
+# Stop Lisk Service
+$ npm stop
+# Login to MYSQL with the lisk user
+$ mysql -u lisk -ppassword
+# Drop the database
+mysql> drop database lisk;
+# Create fresh database
+mysql> create database lisk;
+mysql> quit; # Quit MYSQL
+----
+
+NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated. This can be quite time-consuming and may take up to 2 hours.
+
+=== Flush Redis DB
+
+Reset the databases for Redis after dropping the MYSQL database:
+
+[source,bash]
+----
+redis-cli flushall
+----
+
+[NOTE]
+====
+The `flushall` command removes all existing Redis databases:
+
+> Deletes all the keys of all the existing databases, not just the current selected one. This command never fails.
+
+For more information check the Redis documentation: https://redis.io/commands/FLUSHALL[FLUSHALL]
+
+To flush only a particular DB in Redis, execute the following command instead:
+----
+ redis-cli -n <db_number> flushdb
+----
+====
+
+=== Start Lisk Service
+
+[source,bash]
+----
+# Start Lisk Service
+$ npm start
+----
+
+== Logging
+
+To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2 managed process that contains the logs you wish to view.
+
+For example, to see the logs for the Gateway microservice, execute:
+
+[source,bash]
+----
+pm2 logs lisk-service-gateway
+----

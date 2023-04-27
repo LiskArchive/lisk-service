@@ -28,6 +28,7 @@ module.exports = {
 			syncing: '=,boolean',
 			unconfirmedTransactions: '=,number',
 			genesis: '=',
+			genesisHeight: '=',
 			registeredModules: '=',
 			moduleCommands: '=',
 			network: '=',

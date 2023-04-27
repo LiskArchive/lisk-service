@@ -5,7 +5,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/liskHQ/lisk-service)
 ![GitHub repo size](https://img.shields.io/github/repo-size/liskhq/lisk-service)
-[![DeepScan grade](https://deepscan.io/api/teams/6759/projects/8870/branches/113510/badge/grade.svg)](https://deepscan.io/dashboard/#view=project&tid=6759&pid=8870&bid=113510)
+[![DeepScan grade](https://deepscan.io/api/teams/6759/projects/8870/branches/113510/badge/grade.svg)](https://deepscan.io/dashboard/#view=project&tid=6759&pid=14719&bid=279961)
 ![GitHub issues](https://img.shields.io/github/issues-raw/liskhq/lisk-service)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/liskhq/lisk-service)
 [![Code coverage](https://codecov.io/gh/LiskHQ/lisk-service/branch/development/graph/badge.svg?token=987H7T2C3K)](https://codecov.io/gh/LiskHQ/lisk-service)
@@ -119,10 +119,10 @@ The example below assumes that the Lisk Core (or any Lisk protocol-compliant blo
 ```bash
 ## Required
 # The local Lisk Core node WebSocket API port
-export LISK_APP_WS="ws://host.docker.internal:7667"
+export LISK_APP_WS="ws://host.docker.internal:7887"
 ```
 
-When running a node inside of a Docker container, the variable needs to refer to the container: `LISK_APP_WS="ws://<your_docker_container>:7667"`.
+When running a node inside of a Docker container, the variable needs to refer to the container: `LISK_APP_WS="ws://<your_docker_container>:7887"`.
 
 Configuration options are described [in this document](./docs/config_options.md).
 
