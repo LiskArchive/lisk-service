@@ -1145,6 +1145,55 @@ Get module summary from the Token module
 https://service.lisk.com/api/v3/token/summary
 ```
 
+### Token Available IDs
+
+Retrieves all the available token identifiers.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/token/available-ids`
+- RPC `get.token.available-ids`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[1,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "tokenIDs": [
+      "0000000000000000"
+    ]
+  },
+  "meta": {
+    "count": 10,
+    "offset": 10,
+    "total": 100
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get available token identifiers from the Token module
+```
+https://service.lisk.com/api/v3/token/available-ids
+```
 
 ## Dynamic Fees
 
