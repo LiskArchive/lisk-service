@@ -807,6 +807,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/tokenAvailableIDsWithEnvelope',
 					},
 				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
 			},
 			summary: 'Requests the list of available tokens identifiers.',
 			tags: [
