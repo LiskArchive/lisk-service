@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,30 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
 module.exports = {
 	type: 'moleculer',
-	params: {},
-	method: 'indexer.network.status',
+	method: 'indexer.token.available-ids',
+	params: {
+		offset: '=,number',
+		limit: '=,number',
+	},
 	definition: {
 		data: {
-			version: '=,string',
-			networkVersion: '=,string',
-			chainID: '=,string',
-			lastBlockID: '=,string',
-			height: '=,number',
-			finalizedHeight: '=,number',
-			syncing: '=,boolean',
-			unconfirmedTransactions: '=,number',
-			genesis: '=',
-			genesisHeight: '=',
-			registeredModules: '=',
-			moduleCommands: '=',
-			network: '=',
+			tokenIDs: '=',
 		},
 		meta: {
-			lastUpdate: '=,number',
-			lastBlockHeight: '=,number',
-			lastBlockID: '=,string',
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
 		},
 		links: {},
 	},

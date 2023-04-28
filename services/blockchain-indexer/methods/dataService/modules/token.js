@@ -19,6 +19,7 @@ const {
 	getTokenSummary,
 	tokenHasUserAccount,
 	getTokenConstants,
+	getAvailableTokenIDs,
 } = require('../controllers/token');
 
 const regex = require('../../../shared/regex');
@@ -66,5 +67,13 @@ module.exports = [
 		name: 'token.constants',
 		controller: getTokenConstants,
 		params: {},
+	},
+	{
+		name: 'token.available-ids',
+		controller: getAvailableTokenIDs,
+		params: {
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
 	},
 ];

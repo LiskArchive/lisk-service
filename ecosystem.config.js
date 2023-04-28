@@ -84,7 +84,7 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_APP_WS: 'ws://localhost:7887',
 				GEOIP_JSON: 'https://geoip.lisk.com/json',
-				USE_LISK_IPC_CLIENT: 'true',
+				// USE_LISK_IPC_CLIENT: 'true',
 				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
 				// ENABLE_TESTING_MODE: 'false',
 			},
