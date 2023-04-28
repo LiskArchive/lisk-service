@@ -92,17 +92,23 @@ const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
 
 	if (stakerInfo.length) {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
-		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount), BigInt('0'));
-		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount), BigInt('0'));
+		const { amount: selfStake } = selfStakesInfo.reduce(
+			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
+			{ amount: BigInt('0') },
+		);
+		const { amount: totalStake } = stakerInfo.reduce(
+			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
+			{ amount: BigInt('0') },
+		);
 
 		const rewardQ = q96(reward);
 		const commissionQ = q96(commission);
-		const selfStakesQ = q96(selfStakes);
-		const totalStakesQ = q96(totalStakes);
+		const selfStakeQ = q96(selfStake);
+		const totalStakeQ = q96(totalStake);
 		const remCommissionQ = q96(maxCommissionQ.sub(commissionQ));
 
 		const rewardFractionQ = rewardQ.mul(remCommissionQ);
-		selfStakeReward = (rewardFractionQ.mul(selfStakesQ)).div(totalStakesQ.mul(maxCommissionQ));
+		selfStakeReward = (rewardFractionQ.mul(selfStakeQ)).div(totalStakeQ.mul(maxCommissionQ));
 	}
 
 	return selfStakeReward.floor();
