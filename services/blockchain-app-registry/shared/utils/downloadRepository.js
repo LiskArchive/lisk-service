@@ -220,10 +220,10 @@ const groupFilesByNetworkAndApp = (fileInfos) => {
 	fileInfos.sort((first, second) => first.filename.localeCompare(second.filename));
 
 	fileInfos.forEach(fileInfo => {
-		const [network, appName, fileName] = fileInfo.filename.split('/').slice(-3);
+		const [network, appName] = fileInfo.filename.split('/').slice(-3);
 
 		// Only process metadata files
-		if (!isMetadataFile(fileName)) return;
+		if (!isMetadataFile(fileInfo.filename)) return;
 
 		if (!(network in groupedFiles)) groupedFiles[network] = {};
 		if (!(appName in groupedFiles[network])) groupedFiles[network][appName] = [];

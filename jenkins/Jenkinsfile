@@ -86,7 +86,7 @@ pipeline {
 							'''
 						}
 					}
-					sleep(90)
+					sleep(120)
 					waitForHttp('http://localhost:9901/api/ready')
 				}
 			}

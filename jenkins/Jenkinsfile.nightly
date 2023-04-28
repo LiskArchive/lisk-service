@@ -193,13 +193,14 @@ pipeline {
 					nvm(readFile('.nvmrc').trim()) {
 						echoBanner('Stopping MySQL')
 						dir('./jenkins/mysql') { sh "make down" }
+						echoBanner('Stopping Lisk Core')
+						dir('./jenkins/lisk-core') { sh "make down" }
 						echoBanner('Stopping all microservices and removing dependencies')
 						sh '''
 							make down
-							make clean-local
+							make clean
 						'''
 					}
-					dir('./jenkins/lisk-core') { sh "make down" }
 				}
 			}
 		}
