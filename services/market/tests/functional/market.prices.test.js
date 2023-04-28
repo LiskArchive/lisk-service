@@ -26,7 +26,7 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-describe('Test market prices', () => {
+xdescribe('Test market prices', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 

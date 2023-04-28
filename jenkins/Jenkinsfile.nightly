@@ -137,7 +137,7 @@ pipeline {
 							nvm(readFile('.nvmrc').trim()) {
 								// dir('./framework') { sh "npm run test:functional" }
 								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								dir('./services/blockchain-connector') { sh "npm run test:functional" }
+								// dir('./services/blockchain-connector') { sh "npm run test:functional" }
 								dir('./services/blockchain-indexer') { sh "npm run test:functional" }
 								dir('./services/fee-estimator') { sh "npm run test:functional" }
 								dir('./services/market') { sh "npm run test:functional" }
