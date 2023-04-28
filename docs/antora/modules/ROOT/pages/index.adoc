@@ -1,5 +1,5 @@
 = Lisk Service
-Mona Bärenfänger <mona@lightcurve.io>
+Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.braithwaite@lightcure.io>
 :description: Describes the general purpose, architecture and usage of Lisk Service.
 :toc:
 :idseparator: -
@@ -35,7 +35,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 
 
 The main focus of Lisk Service is to provide data to the UI clients such as {url_lisk_wallet}[Lisk Desktop] and {url_lisk_wallet}[Lisk Mobile].
-Lisk Service makes it possible to access all blockchain live data in a similar way to the regular Lisk SDK API, and in addition provides users with much more details and endpoints, such as geolocation and various statistics about network usage.
+Lisk Service makes it possible to access all blockchain live data in a similar way to the regular Lisk SDK API, and in addition provides users with much more detailed in-depth information and endpoints, such as geolocation and various statistics regarding network usage.
 
 The project implementation is based on <<microservices>>.
 The technical stack is designed to deliver several microservices, and each of them provides one particular functionality.
