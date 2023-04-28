@@ -43,6 +43,7 @@ pipeline {
 		ENABLE_HTTP_API='http-version3,http-status'
 		ENABLE_WS_API='rpc-v3,blockchain'
 		LISK_APP_WS='ws://host.docker.internal:7887'
+		ENABLE_TESTING_MODE='true'
     }
 	stages {
 		stage('Checkout SCM') {
@@ -82,11 +83,12 @@ pipeline {
 						dir('./') { 
 							sh '''
 							make build
-							ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} LISK_APP_WS=${LISK_APP_WS} make up
+							ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} LISK_APP_WS=${LISK_APP_WS} ENABLE_TESTING_MODE=${ENABLE_TESTING_MODE} make up
 							'''
 						}
 					}
 					sleep(120)
+				
 					waitForHttp('http://localhost:9901/api/ready')
 				}
 			}

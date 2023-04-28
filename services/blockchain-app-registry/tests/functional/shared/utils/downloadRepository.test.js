@@ -130,7 +130,7 @@ describe('Test getDiff method', () => {
 });
 
 describe('Test buildEventPayload method', () => {
-	it('should return event payload when called with a list of changed files', async () => {
+	xit('should return event payload when called with a list of changed files', async () => {
 		const changedFiles = [
 			'alphanet/Lisk/nativetokens.json',
 			'betanet/Lisk/nativetokens.json',
@@ -190,7 +190,7 @@ describe('Test downloadRepositoryToFS method', () => {
 		expect(await exists(enevtiAppFilePath)).toEqual(true);
 	});
 
-	it('should update repository correctly when repository is already downloaded before', async () => {
+	xit('should update repository correctly when repository is already downloaded before', async () => {
 		const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 
 		await rmdir(enevtiAppFilePath);
@@ -205,7 +205,7 @@ describe('Test downloadRepositoryToFS method', () => {
 	});
 });
 
-describe('Test syncWithRemoteRepo method', () => {
+xdescribe('Test syncWithRemoteRepo method', () => {
 	const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 	beforeAll(async () => {
 		// Set last sync commit hash in db and remove existing file

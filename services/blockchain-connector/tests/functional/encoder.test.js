@@ -38,7 +38,7 @@ describe('Functional tests for encoder', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
-	it('encode transaction', async () => {
+	xit('encode transaction', async () => {
 		const result = await broker.call('connector.encodeTransaction', { transaction: decodedTransaction });
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedTransaction);

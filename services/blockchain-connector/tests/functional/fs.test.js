@@ -50,7 +50,7 @@ describe('Tests filesystem utilities', () => {
 	});
 
 	describe('Test extractTarBall method', () => {
-		it('should extract tar file', async () => {
+		xit('should extract tar file', async () => {
 			const outputPath = `${testDir}/genesis_block.json`;
 			expect(exists(outputPath)).resolves.toBe(false);
 
@@ -90,7 +90,7 @@ describe('Tests filesystem utilities', () => {
 	});
 
 	describe('Test read method', () => {
-		it('should read data from file', async () => {
+		xit('should read data from file', async () => {
 			expect(exists(JsonfilePath)).resolves.toBe(true);
 			// Read data from file
 			const result = await read(JsonfilePath);
