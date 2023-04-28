@@ -844,43 +844,43 @@ const createApiDocsExpectedResponse = {
 			],
 		},
 	},
-	"/token/balances/top": {
+	'/token/balances/top': {
 		get: {
-			description: "Returns the list of top owners for a token ID.\n RPC => get.token.balances.top",
+			description: 'Returns the list of top owners for a token ID.\n RPC => get.token.balances.top',
 			parameters: [
 				{
-					$ref: "#/parameters/tokenID",
+					$ref: '#/parameters/tokenID',
 				},
 				{
-					$ref: "#/parameters/limit",
+					$ref: '#/parameters/limit',
 				},
 				{
-					$ref: "#/parameters/offset",
+					$ref: '#/parameters/offset',
 				},
 				{
-					default: "balance:desc",
-					description: "Fields to sort results by.",
+					default: 'balance:desc',
+					description: 'Fields to sort results by.',
 					enum: [
-						"balance:desc",
-						"balance:asc",
+						'balance:desc',
+						'balance:asc',
 					],
-					in: "query",
-					name: "sort",
+					in: 'query',
+					name: 'sort',
 					required: false,
-					type: "string",
+					type: 'string',
 				},
 			],
 			responses: {
 				200: {
-					description: "Returns the list of top owners for a token ID.",
+					description: 'Returns the list of top owners for a token ID.',
 					schema: {
-						$ref: "#/definitions/tokenTopBalancesWithEnvelope",
+						$ref: '#/definitions/tokenTopBalancesWithEnvelope',
 					},
 				},
 			},
-			summary: "Requests the list of top owners for a token ID.",
+			summary: 'Requests the list of top owners for a token ID.',
 			tags: [
-				"Token",
+				'Token',
 			],
 		},
 	},
