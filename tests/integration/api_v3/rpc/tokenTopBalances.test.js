@@ -32,7 +32,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
 const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
 
-describe('get.token.ids', () => {
+describe('get.token.balances.top', () => {
 	let tokenID;
 
 	beforeAll(async () => {
@@ -86,12 +86,12 @@ describe('get.token.ids', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return bad request when called with Invalid limit', async () => {
+	it('should return Invalid request param when called with Invalid limit', async () => {
 		const response = await getTokensTopBalances({ tokenID, limit: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return bad request when called with Invalid offset', async () => {
+	it('should return Invalid request param when called with Invalid offset', async () => {
 		const response = await getTokensTopBalances({ tokenID, offset: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});

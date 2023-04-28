@@ -1222,7 +1222,7 @@ Retrieves top token balances for a token ID.
 ```jsonc
 {
   "data": {
-    "0400000000000000": [
+    "0000000000000000": [
       {
         "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
         "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
@@ -1255,7 +1255,7 @@ Retrieves top token balances for a token ID.
 
 Get top token balances from the Token module
 ```
-https://service.lisk.com/api/v3/token/balances/top
+https://service.lisk.com/api/v3/token/balances/top?tokenID=0000000000000000
 ```
 
 ## Dynamic Fees

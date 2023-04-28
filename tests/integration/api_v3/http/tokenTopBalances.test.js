@@ -66,7 +66,7 @@ describe('Tokens top balances API', () => {
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-	it('should return Invalid request param when called without token ID', async () => {
+	it('should return bad request when called without token ID', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
@@ -81,7 +81,7 @@ describe('Tokens top balances API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('should return Invalid request param when called with invalid param', async () => {
+	it('should return bad request when called with invalid param', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&invalidParam=invalid`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
