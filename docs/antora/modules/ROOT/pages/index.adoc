@@ -31,7 +31,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
 :url_setup:  setup/docker.adoc
 
-{url_github_lisk_service}[Lisk Service^] is a web application that allows interaction with various blockchain networks based on xref:{url_protocol}[Lisk] and {url_bitcoin}[Bitcoin] protocols.
+{url_github_lisk_service}[Lisk Service^] is a web application middleware that allows interaction with various blockchain networks based on the xref:{url_protocol}[Lisk] and {url_bitcoin}[Bitcoin] protocols.
 
 
 The main focus of Lisk Service is to provide data to the UI clients such as {url_lisk_wallet}[Lisk Desktop] and {url_lisk_wallet}[Lisk Mobile].
