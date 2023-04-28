@@ -38,15 +38,15 @@ module.exports = {
 		const tokenTopBalancesSchema = {};
 		tokenTopBalancesSchema[this.swaggerApiPath] = { get: {} };
 		tokenTopBalancesSchema[this.swaggerApiPath].get.tags = this.tags;
-		tokenTopBalancesSchema[this.swaggerApiPath].get.summary = 'Requests the list of top owners for a token ID.';
+		tokenTopBalancesSchema[this.swaggerApiPath].get.summary = 'Requests the list of top accounts for the specified tokenID.';
 		tokenTopBalancesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns the list of top owners for a token ID.',
+			description: 'Returns the list of top accounts for the specified tokenID.',
 		});
 		tokenTopBalancesSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
 		tokenTopBalancesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns the list of top owners for a token ID.',
+				description: 'Returns the list of top accounts for the specified tokenID.',
 				schema: {
 					$ref: '#/definitions/tokenTopBalancesWithEnvelope',
 				},

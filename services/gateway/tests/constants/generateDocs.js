@@ -846,7 +846,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/balances/top': {
 		get: {
-			description: 'Returns the list of top owners for a token ID.\n RPC => get.token.balances.top',
+			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
 			parameters: [
 				{
 					$ref: '#/parameters/tokenID',
@@ -872,13 +872,13 @@ const createApiDocsExpectedResponse = {
 			],
 			responses: {
 				200: {
-					description: 'Returns the list of top owners for a token ID.',
+					description: 'Returns the list of top accounts for the specified tokenID.',
 					schema: {
 						$ref: '#/definitions/tokenTopBalancesWithEnvelope',
 					},
 				},
 			},
-			summary: 'Requests the list of top owners for a token ID.',
+			summary: 'Requests the list of top accounts for the specified tokenID.',
 			tags: [
 				'Token',
 			],

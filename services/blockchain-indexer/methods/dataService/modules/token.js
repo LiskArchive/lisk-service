@@ -15,7 +15,7 @@
  */
 const {
 	getTokenBalances,
-	getTopTokenBalances,
+	getTokenTopBalances,
 	getTokenSummary,
 	tokenHasUserAccount,
 	getTokenConstants,
@@ -37,7 +37,7 @@ module.exports = [
 	},
 	{
 		name: 'token.balances.top',
-		controller: getTopTokenBalances,
+		controller: getTokenTopBalances,
 		params: {
 			tokenID: { optional: false, type: 'string' },
 			sort: { optional: true, type: 'string' },
