@@ -25,7 +25,7 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/balances/top`;
-const tokenID = "0400000000000000";
+const tokenID = '0400000000000000';
 
 describe('Tokens top balances API', () => {
 	it('Should retrieves token top balances when queried with token ID', async () => {
@@ -56,10 +56,10 @@ describe('Tokens top balances API', () => {
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-    it('No tokenID -> bad request', async () => {
-        const response = await api.get(endpoint, 400);
-        expect(response).toMap(badRequestSchema);
-    });
+	it('No tokenID -> bad request', async () => {
+		const response = await api.get(endpoint, 400);
+		expect(response).toMap(badRequestSchema);
+	});
 
 	it('Invalid limit -> bad request', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=one`, 400);
