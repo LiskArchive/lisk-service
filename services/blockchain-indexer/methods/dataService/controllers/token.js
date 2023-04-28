@@ -43,21 +43,21 @@ const getTopTokenBalances = () => ({
 	data: {
 		'0400000000000000': [
 			{
-				address: '',
-				publicKey: '',
-				name: '',
-				balance: '',
+				address: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
+				publicKey: 'b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd',
+				name: 'genesis_84',
+				balance: '10000000',
 				knowledge: {
-					owner: '',
-					description: '',
+					owner: 'Genesis Account',
+					description: 'Initial supply',
 				},
 			},
 		],
 	},
 	meta: {
-		count: 10,
+		count: 1,
 		offset: 0,
-		total: 110,
+		total: 1,
 	},
 });
 

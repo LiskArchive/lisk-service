@@ -25,13 +25,20 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/balances/top`;
-const tokenID = '0400000000000000';
 
 describe('Tokens top balances API', () => {
+	let tokenID;
+
+	beforeAll(async () => {
+		const res = await api.get(`${baseUrlV3}/token/available-ids`);
+		tokenID = res.data.tokenIDs[0];
+	});
+
 	it('should retrieve top token balances when called with token ID', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);	
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
@@ -39,6 +46,7 @@ describe('Tokens top balances API', () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(0);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
@@ -46,6 +54,7 @@ describe('Tokens top balances API', () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
@@ -53,6 +62,7 @@ describe('Tokens top balances API', () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=1&limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(0);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
@@ -76,4 +86,3 @@ describe('Tokens top balances API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 });
-

@@ -1224,13 +1224,13 @@ Retrieves top token balances for a token ID.
   "data": {
     "0400000000000000": [
       {
-        "address": "",
-        "publicKey": "",
-        "name": "",
-        "balance": "",
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+        "name": "genesis_84",
+        "balance": "10000000",
         "knowledge": {
-          "owner": "",
-          "description": "",
+          "owner": "Genesis Account",
+          "description": "Initial supply",
         },
       },
     ],
@@ -1253,7 +1253,7 @@ Retrieves top token balances for a token ID.
 
 #### Examples
 
-Get available token identifiers from the Token module
+Get top token balances from the Token module
 ```
 https://service.lisk.com/api/v3/token/balances/top
 ```

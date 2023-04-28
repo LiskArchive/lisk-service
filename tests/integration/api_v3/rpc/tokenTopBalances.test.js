@@ -30,14 +30,22 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
-const tokenID = '0400000000000000';
+const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
 
 describe('get.token.ids', () => {
+	let tokenID;
+
+	beforeAll(async () => {
+		const { result } = await getTokensIDs({});
+		tokenID = result.data.tokenIDs[0];
+	});
+
 	it('should retrieve top token balances when called with token ID', async () => {
 		const response = await getTokensTopBalances({ tokenID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
@@ -46,6 +54,7 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(0);
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
@@ -54,6 +63,7 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
@@ -62,6 +72,7 @@ describe('get.token.ids', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(0);
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
