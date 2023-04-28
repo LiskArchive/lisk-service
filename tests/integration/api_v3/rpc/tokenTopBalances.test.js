@@ -33,7 +33,7 @@ const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.bala
 const tokenID = '0400000000000000';
 
 describe('get.token.ids', () => {
-	it('returns token top balances when requested with token ID', async () => {
+	it('should retrieve top token balances when called with token ID', async () => {
 		const response = await getTokensTopBalances({ tokenID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -41,7 +41,7 @@ describe('get.token.ids', () => {
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns token top balances when requested with token ID and offset=1', async () => {
+	it('should retrieve top token balances when called with token ID and offset=1', async () => {
 		const response = await getTokensTopBalances({ tokenID, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -49,7 +49,7 @@ describe('get.token.ids', () => {
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
-	it('returns token top balances when requested with token ID and limit=5', async () => {
+	it('returns top token balances when requested with token ID and limit=5', async () => {
 		const response = await getTokensTopBalances({ tokenID, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -57,7 +57,7 @@ describe('get.token.ids', () => {
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-	it('returns token top balances when requested with token ID, offset=1 and limit=5', async () => {
+	it('should retrieve top token balances when called with token ID, offset=1 and limit=5', async () => {
 		const response = await getTokensTopBalances({ tokenID, offset: 1, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -65,22 +65,22 @@ describe('get.token.ids', () => {
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-	it('No tokenID -> bad request', async () => {
+	it('should return Invalid request param when called without token ID', async () => {
 		const response = await getTokensTopBalances({});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid request param -> invalid param', async () => {
+	it('should return Invalid request param when called with invalid param', async () => {
 		const response = await getTokensTopBalances({ tokenID, invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid limit -> invalid param', async () => {
+	it('should return bad request when called with Invalid limit', async () => {
 		const response = await getTokensTopBalances({ tokenID, limit: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid offset -> invalid param', async () => {
+	it('should return bad request when called with Invalid offset', async () => {
 		const response = await getTokensTopBalances({ tokenID, offset: 'L' });
 		expect(response).toMap(invalidParamsSchema);
 	});

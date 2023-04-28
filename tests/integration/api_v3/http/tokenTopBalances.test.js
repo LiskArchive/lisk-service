@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -28,50 +28,50 @@ const endpoint = `${baseUrlV3}/token/balances/top`;
 const tokenID = '0400000000000000';
 
 describe('Tokens top balances API', () => {
-	it('Should retrieves token top balances when queried with token ID', async () => {
+	it('should retrieve top token balances when called with token ID', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
-	it('Should retrieves token info when called with offset=1', async () => {
+	it('should retrieve top token balances when called with token ID and offset=1', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
-	it('Should retrieves token info when called with limit=5', async () => {
+	it('should retrieve top token balances when called with token ID and limit=5', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-	it('Should retrieves token info when called with offset=1 and limit=5', async () => {
+	it('should retrieve top token balances when called with token ID, offset=1 and limit=5', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=1&limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-	it('No tokenID -> bad request', async () => {
+	it('should return Invalid request param when called without token ID', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('Invalid limit -> bad request', async () => {
+	it('should return bad request when called with Invalid limit', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=one`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('Invalid offset -> bad request', async () => {
+	it('should return bad request when called with Invalid offset', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=one`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('Invalid request param -> bad request', async () => {
+	it('should return Invalid request param when called with invalid param', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&invalidParam=invalid`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
