@@ -37,7 +37,7 @@ describe('get.token.ids', () => {
 
 	beforeAll(async () => {
 		const { result } = await getTokensIDs({});
-		tokenID = result.data.tokenIDs[0];
+		[tokenID] = result.data.tokenIDs;
 	});
 
 	it('should retrieve top token balances when called with token ID', async () => {

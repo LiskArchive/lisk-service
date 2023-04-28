@@ -31,14 +31,14 @@ describe('Tokens top balances API', () => {
 
 	beforeAll(async () => {
 		const res = await api.get(`${baseUrlV3}/token/available-ids`);
-		tokenID = res.data.tokenIDs[0];
+		[tokenID] = res.data.tokenIDs;
 	});
 
 	it('should retrieve top token balances when called with token ID', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
-		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);	
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
