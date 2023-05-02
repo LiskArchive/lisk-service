@@ -15,6 +15,7 @@
  */
 
 import Joi from 'joi';
+import regex from './regex';
 
 const tokenTopBalancesMetaSchema = {
 	count: Joi.number().integer().min(0).required(),
@@ -22,8 +23,24 @@ const tokenTopBalancesMetaSchema = {
 	total: Joi.number().integer().min(0).required(),
 };
 
+const knowledgeSchema = {
+	owner: Joi.string().optional(),
+	description: Joi.string().optional(),
+}
+
+const tokenTopBalancesSchema = {
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY),
+	name: Joi.string().pattern(regex.NAME),
+	balance: Joi.string().required(),
+	knowledge: Joi.object(knowledgeSchema).required(),
+};
+
+const tokensKey = Joi.string().pattern(regex.TOKEN_ID).required();
+const tokenTopBalancesEntry = Joi.array().items(tokenTopBalancesSchema).required();
+
 const goodResponseSchemaForTokenTopBalances = Joi.object({
-	data: Joi.object().required(),
+	data: Joi.object().pattern(tokensKey, tokenTopBalancesEntry).required(),
 	meta: Joi.object(tokenTopBalancesMetaSchema).required(),
 }).required();
 
