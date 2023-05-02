@@ -1,33 +1,3 @@
-MYSQL_PORT = 3306
-REDIS_PORT = 6379
-LISK_CORE_WS_PORT = 7887;
-
-def checkOpenPort(nPort) {
-	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
-	return (result == 0)
-}
-
-def runServiceIfMissing(svcName, path, nPort) {
-	if (checkOpenPort(nPort) == false) {
-		echo "${svcName} is not running, starting a new instance on port ${nPort}"
-		dir(path) { sh 'make up' }
-		if (checkOpenPort(nPort) == false) {
-			dir(path) { sh 'make logs' }
-			currentBuild.result = 'FAILURE'
-			throw new Exception("Failed to run ${svcName} instance")
-		}
-	}
-}
-
-def checkHttp(url) {
-	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
-	return (result == 0)
-}
-
-def waitForHttp(url) {
-	waitUntil { script { return (checkHttp(url) == true) } }
-}
-
 def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 	echo msg
@@ -39,141 +9,61 @@ pipeline {
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
-	environment {
-		ENABLE_HTTP_API='http-version3,http-status'
-		ENABLE_WS_API='rpc-v3,blockchain'
-		LISK_APP_WS='ws://host.docker.internal:7887'
-		ENABLE_TESTING_MODE='true'
-    }
 	stages {
-		stage('Checkout SCM') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				cleanWs()
-				dir('lisk-service') {
-					checkout scm
-				}
-			}
-		}
 		stage ('Build dependencies') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						dir('./') { sh 'make build-local' }
-					}
+				nvm(readFile('.nvmrc').trim()) {
+					dir('./') { sh 'npm ci' }
+					dir('./framework') { sh 'npm ci' }
+					dir('./services/blockchain-app-registry') { sh 'npm ci' }
+					dir('./services/blockchain-connector') { sh 'npm ci' }
+					dir('./services/blockchain-indexer') { sh 'npm ci' }
+					dir('./services/blockchain-coordinator') { sh 'npm ci' }
+					dir('./services/fee-estimator') { sh 'npm ci' }
+					dir('./services/market') { sh 'npm ci' }
+					dir('./services/export') { sh 'npm ci' }
+					dir('./services/gateway') { sh 'npm ci' }
+					dir('./services/template') { sh 'npm ci' }
+					dir('./services/transaction-statistics') { sh 'npm ci' }
+					dir('./tests') { sh 'npm ci' }
 				}
 			}
 		}
-		stage('Run required services') {
-			steps {
-				dir('lisk-service') {
-					script {
-						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-						runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
-					}
-				}
-			}	
-		}
-		stage('Run microservices') {
+		stage ('Check linting') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					ansiColor('xterm') {
-						dir('./') { 
-							sh '''
-							make build
-							ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} LISK_APP_WS=${LISK_APP_WS} ENABLE_TESTING_MODE=${ENABLE_TESTING_MODE} make up
-							'''
-						}
-					}
-					sleep(120)
-					waitForHttp('http://localhost:9901/api/ready')
+				nvm(readFile('.nvmrc').trim()) {
+					sh 'npm run eslint'
 				}
 			}
 		}
-		stage('Run Tests') {
-			parallel {
-				stage ('Check linting') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh 'npm run eslint'
-							}
-						}
-					}
-				}
-				stage('Run functional tests') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								// dir('./framework') { sh "npm run test:functional" }
-								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								// dir('./services/blockchain-connector') { sh "npm run test:functional" }
-								dir('./services/blockchain-indexer') { sh "npm run test:functional" }
-								dir('./services/fee-estimator') { sh "npm run test:functional" }
-								dir('./services/market') { sh "npm run test:functional" }
-								dir('./services/transaction-statistics') { sh "npm run test:functional" }
-								// dir('./tests') { sh "npm run test:functional" }
-							}
-						}
-					}
-				}
-				stage('Run integration tests') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								dir('./tests') { sh 'npm run test:integration:APIv3:SDKv6' }
-							}
-						}
-					}
+		stage('Perform unit tests') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				nvm(readFile('.nvmrc').trim()) {
+					dir('./framework') { sh "npm run test:unit" }
+					dir('./services/blockchain-app-registry') { sh "npm run test:unit" }
+					dir('./services/blockchain-connector') { sh "npm run test:unit" }
+					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
+					dir('./services/fee-estimator') { sh "npm run test:unit" }
+					dir('./services/market') { sh "npm run test:unit" }
+					dir('./services/export') { sh "npm run test:unit" }
+					dir('./services/gateway') { sh "npm run test:unit" }
 				}
 			}
 		}
 	}
 	post {
 		failure {
-			emailext(
-				to: 'service-dev@lisk.com',
-				subject: "[JENKINS] ${currentBuild.fullDisplayName} - ${currentBuild.result}",
-				body: """
-					Hello Team,<br><br>
-					
-					Build <b>${currentBuild.fullDisplayName}</b> for <b>Lisk Service</b> needs your attention. Please find all the necessary details below:
-					
-					<p>
-						<ul>
-							<li>Job <b>${currentBuild.fullDisplayName}</b> finished with result - <b>${currentBuild.result}</b></li>
-							<li>Total time taken: ${currentBuild.durationString}</li>
-							<li>The job logs are available at: <a href='${currentBuild.absoluteUrl}'>${currentBuild.fullDisplayName}</a></li>
-						</ul>
-					</p>
-
-					- Lisk Service Team!
-				""",
-				mimeType: 'text/html'
-			)
-			script { 
-				echoBanner('Failed to run the pipeline') 
-			}
+			script { echoBanner('Failed to run the pipeline') }
 		}
 		cleanup {
 			script { 
-				echoBanner('Cleaning up...')
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						echoBanner('Stopping MySQL')
-						dir('./jenkins/mysql') { sh "make down" }
-						echoBanner('Stopping all microservices and removing dependencies')
-						sh '''
-							make down
-							make clean-local
-						'''
-					}
-					dir('./jenkins/lisk-core') { sh "make down" }
+				echoBanner('Cleaning up...') 
+				nvm(readFile('.nvmrc').trim()) {
+					echoBanner('Removing dependencies') 
+					sh 'make clean-local'
 				}
 			}
 		}

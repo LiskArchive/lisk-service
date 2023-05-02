@@ -16,6 +16,3 @@ clean: down
 
 cli:
 	$(compose) exec mysql mysql -u root -ppassword lisk
-
-restore:
-	$(compose) exec -T mysql mysql -u root -ppassword lisk < ./snapshot.sql
