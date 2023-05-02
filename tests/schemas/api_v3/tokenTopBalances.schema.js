@@ -26,7 +26,7 @@ const tokenTopBalancesMetaSchema = {
 const knowledgeSchema = {
 	owner: Joi.string().optional(),
 	description: Joi.string().optional(),
-}
+};
 
 const tokenTopBalancesSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
