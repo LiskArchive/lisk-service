@@ -161,7 +161,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty senderAddress -> empty response', async () => {
+		it('empty senderAddress -> server error', async () => {
 			const response = await getEvents({ senderAddress: '' });
 			expect(response).toMap(serverErrorSchema);
 		});

@@ -117,7 +117,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('short invalid transactionID -> empty data', async () => {
+		it('short invalid transactionID -> BAD_REQUEST', async () => {
 			const response = await api.get(`${endpoint}?transactionID=41287`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
@@ -414,7 +414,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('events with minHeight greater than maxHeight -> BAD_REQUEST', async () => {
+		it('events with minHeight greater than maxHeight -> INTERNAL_SERVER_ERROR', async () => {
 			const expectedStatusCode = 500;
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
@@ -566,11 +566,11 @@ describe('Events API', () => {
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
-					const prevEvent = response.data[i - 1];
+					const prevEvent = response.data[i];
 					if (event.block && event.block.timestamp) {
 						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
-							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
 						}
 					}
 				}

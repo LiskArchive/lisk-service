@@ -42,7 +42,6 @@ describe('pos/validators API', () => {
 		it('Returns list of validators when requested', async () => {
 			const response = await api.get(`${endpoint}?limit=${numberActiveValidators + numberStandbyValidators}`);
 			expect(response).toMap(validatorsResponseSchema);
-			// TODO: Verify and fix
 			// const activeDelegateCount = response.data
 			// 	.filter(validator => validator.status === 'active').length;
 			// expect(activeDelegateCount).toBe(numberActiveValidators);

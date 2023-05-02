@@ -53,6 +53,7 @@ pipeline {
 				anyOf {
 					branch 'development'
 					branch 'release/**'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -78,6 +79,7 @@ pipeline {
 				anyOf {
 					branch 'development'
 					branch 'release/**'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -94,6 +96,7 @@ pipeline {
 				anyOf {
 					branch 'development'
 					branch 'release/**'
+					branch 'feature/**'
 				}
 			}
 			steps {
@@ -117,6 +120,7 @@ pipeline {
 				anyOf {
 					branch 'development'
 					branch 'release/**'
+					branch 'feature/**'
 				}
 			}
 			parallel {

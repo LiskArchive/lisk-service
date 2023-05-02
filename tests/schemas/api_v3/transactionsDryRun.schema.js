@@ -38,7 +38,7 @@ const event = {
 
 const eventSchemaWithSkipDecode = {
 	...event,
-	id: Joi.string().pattern(regex.HEX).optional(), // TODO: Verify and fix
+	id: Joi.string().pattern(regex.HASH_SHA256).optional(),
 	data: Joi.string().required(),
 };
 
@@ -87,5 +87,5 @@ module.exports = {
 	metaSchema: Joi.object().optional(),
 	goodRequestSchemaFortransactionsDryRun: Joi.object(
 		goodRequestSchemaFortransactionsDryRun,
-	).optional(),
+	).required(),
 };

@@ -47,7 +47,6 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			// TODO: Verify and fix
 			// const activeDelegateCount = result.data.
 			// 	filter(validator => validator.status === 'active').length;
 			// expect(activeDelegateCount).toBe(numberActiveValidators);

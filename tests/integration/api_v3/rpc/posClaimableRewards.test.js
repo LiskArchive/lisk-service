@@ -167,7 +167,7 @@ describe('Claimable rewards API', () => {
 		}
 	});
 
-	it('No param -> bad request', async () => {
+	it('No param -> invalid request', async () => {
 		const response = await getPosClaimableRewards();
 		expect(response).toMap(invalidRequestSchema);
 	});
