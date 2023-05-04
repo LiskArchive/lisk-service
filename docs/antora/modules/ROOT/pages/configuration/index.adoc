@@ -251,12 +251,12 @@ Properties::
 | false
  
 | `ENABLE_HTTP_API`
-| number
+| string
 | Enables particular HTTP APIs listed by a comma.
 | http-status,http-version3,http-exports
 
 | `ENABLE_WS_API`
-| number
+| string
 | Enables particular JSON-RPC APIs listed by a comma.
 | blockchain,rpc-v3
 |===
@@ -317,27 +317,27 @@ Properties::
 | http://127.0.0.1:7887
  
 | `LISK_APP_WS`
-| number
+| string
 | URL to connect with the Lisk SDK-based application node over WebSocket.
 | ws://localhost:7887
 
 | `GEOIP_JSON`
-| number
+| string
 | URL of GeoIP server
 | https://geoip.lisk.com/json
 
 | `USE_LISK_IPC_CLIENT`
-| number
+| string
 | Boolean flag to enable IPC-based connection to the Lisk SDK-based application node.
 | true 
 
 | `GENESIS_BLOCK_URL`
-| number
+| string
 | URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 | 
 
 | `LISK_APP_DATA_PATH`
-| number
+| string
 | Data path to connect with the Lisk SDK-based application node over IPC.
 | ~/.lisk/lisk-core
 |===
