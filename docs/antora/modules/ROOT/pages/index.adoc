@@ -46,6 +46,11 @@ The data is served in JSON format and exposed by a xref:{url_api_http}[public RE
 
 image::architecture.png[Architecture]
 
+=== Available Services
+
+Lisk Service consists of various microservices which have been further expanded, and possess the ability to run independently of each other.
+The Gateway is required in order to expose the APIs provided by the specific services.
+
 [[microservices]]
 === Microservices
 
