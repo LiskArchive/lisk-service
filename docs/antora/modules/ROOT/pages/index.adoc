@@ -76,10 +76,9 @@ It provides the users with a **central point of data access** that ensures exist
 // It also maintains backwards compatibility when its public API is changed or replaced by a new version.
 // This provides users with a **central point of data access** that never breaks existing application compatibility.
 
-|*Lisk*
-|The REST client component acts as a bridge between the Lisk SDK and the <<gateway,Lisk Service Gateway>>.
-Its main purpose is to provide enriched data from the Lisk SDK API.
-This component is designed to provide high availability, together with efficient and reliable access to the Lisk SDK API.
+|*Connector*
+|The blockchain Connector connects with the node running a Lisk protocol-compliant blockchain application.
+It is primarily responsible for data transformation and caching, hence reducing the number of calls made to the node.
 
 |*Market*
 |The Market service allows price data retrieval.
