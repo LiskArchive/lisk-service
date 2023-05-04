@@ -181,17 +181,32 @@ const getBlockchainAppsMetadata = async (params) => {
 	}
 
 	if (params.isDefault !== true && blockchainAppsMetadata.data.length < params.limit) {
+		const originalOffset = params.offset;
+
+		// If params.isDefault is not passed as a parameter then adjust the offset
+		if(params.isDefault !== false) {
+			const totalDefaultApps = await applicationMetadataTable.count(
+				{ ...params, limit, isDefault: true }
+			);
+
+			params.offset = params.offset - totalDefaultApps > 0 ? params.offset - totalDefaultApps : 0;
+		}
+
 		const nonDefaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, isDefault: false },
 			['network', 'appDirName', 'isDefault'],
 		);
 
+		// Reset the offset to the original value
+		params.offset = originalOffset;
+		
+
 		blockchainAppsMetadata.data.push(...nonDefaultApps);
 	}
 
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
-		// Slice nessasary to adhere to limit passed
-		blockchainAppsMetadata.data.slice(params.offset, params.offset + params.limit),
+		// Slice necessary to adhere to limit passed
+		blockchainAppsMetadata.data.slice(0, params.limit),
 		async (appMetadata) => {
 			const appMeta = await readMetadataFromClonedRepo(
 				appMetadata.network,
