@@ -94,17 +94,20 @@ The metadata is maintained in the Lisk {url_app_registry}[Application Registry^]
 |*Fee Estimator*
 |The Fee Estimator service implements the {url_dynamic_fee}[dynamic fee system^] algorithm to offer users transaction fee recommendations based on the network traffic.
 
+|*Transaction Statistics*
+|The Transaction Statistics service computes various transaction statistics to offer users various real-time network insights.
+
 |*Market*
 |The Market service allows price data retrieval.
 It supports multiple sources to maintain the current up-to-date Lisk token price, and ensures this is available to the clients in real time.
 
-|*Newsfeed*
-|The Newsfeed service is a single-purpose microservice that aggregates content sharing platforms and shares collected data with UI clients such as Lisk Desktop.
+|*Export*
+|The Export service enables users to download the transaction history as a CSV file for any given account on the blockchain.
 
 |*Template*
-|The Template service is an abstract service whereby all of the services from Lisk Service are inherited from.
+All Lisk Service services are derived from the Template service, which is an abstract microservice.
 It allows all services to share a similar interface and design pattern.
-The purpose here is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
+The objective of the Template service is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 |===
 
 [[usage]]
