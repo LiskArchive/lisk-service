@@ -105,7 +105,7 @@ It supports multiple sources to maintain the current up-to-date Lisk token price
 |The Export service enables users to download the transaction history as a CSV file for any given account on the blockchain.
 
 |*Template*
-All Lisk Service services are derived from the Template service, which is an abstract microservice.
+|All Lisk Service services are derived from the Template service, which is an abstract microservice.
 It allows all services to share a similar interface and design pattern.
 The objective of the Template service is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 |===
