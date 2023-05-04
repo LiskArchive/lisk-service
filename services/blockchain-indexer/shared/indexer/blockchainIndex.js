@@ -101,6 +101,7 @@ const getValidatorsTable = () => getTableInstance(
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
+const { scheduleAccountBalanceUpdateFromEvents, scheduleGenesisBlockAccountsBalanceUpdate } = require('./accountBalanceIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -120,6 +121,7 @@ const indexBlock = async job => {
 	try {
 		if (block.height === await getGenesisHeight()) {
 			await indexGenesisBlockAssets(dbTrx);
+			await scheduleGenesisBlockAccountsBalanceUpdate();
 		}
 
 		const events = await getEventsByHeight(block.height);
@@ -218,6 +220,9 @@ const indexBlock = async job => {
 				}
 			});
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+
+			// Schedule address balance updates from token module events
+			await scheduleAccountBalanceUpdateFromEvents(events);
 		}
 
 		const blockToIndex = {
@@ -317,6 +322,9 @@ const deleteIndexedBlocks = async job => {
 						}
 					});
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+
+					// Schedule address balance updates from token module events
+					await scheduleAccountBalanceUpdateFromEvents(events);
 				}
 
 				// Invalidate cached events of this block
