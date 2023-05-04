@@ -33,12 +33,11 @@ const event = {
 	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
 	height: Joi.number().integer().min(0).required(),
-	id: Joi.string().pattern(regex.HEX).required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 };
 
 const eventSchemaWithSkipDecode = {
 	...event,
-	id: Joi.string().pattern(regex.HASH_SHA256).optional(),
 	data: Joi.string().required(),
 };
 

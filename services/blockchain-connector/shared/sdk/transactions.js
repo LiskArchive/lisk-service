@@ -48,10 +48,7 @@ const dryRunTransactionWrapper = async (params) => {
 		: transaction;
 
 	const response = await dryRunTransaction({ transaction: encodedTransaction, skipVerify });
-
-	if (skipDecode) return response;
-
-	response.events = response.events.map(event => formatEvent(event));
+	response.events = response.events.map(event => formatEvent(event, skipDecode));
 	return response;
 };
 
