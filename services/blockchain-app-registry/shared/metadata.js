@@ -190,7 +190,8 @@ const getBlockchainAppsMetadata = async (params) => {
 	}
 
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
-		blockchainAppsMetadata.data,
+		// Slice nessasary to adhere to limit passed
+		blockchainAppsMetadata.data.slice(params.offset, params.offset + params.limit),
 		async (appMetadata) => {
 			const appMeta = await readMetadataFromClonedRepo(
 				appMetadata.network,
