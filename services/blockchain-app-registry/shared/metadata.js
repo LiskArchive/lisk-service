@@ -184,9 +184,9 @@ const getBlockchainAppsMetadata = async (params) => {
 		const originalOffset = params.offset;
 
 		// If params.isDefault is not passed as a parameter then adjust the offset
-		if(params.isDefault !== false) {
+		if (params.isDefault !== false) {
 			const totalDefaultApps = await applicationMetadataTable.count(
-				{ ...params, limit, isDefault: true }
+				{ ...params, limit, isDefault: true },
 			);
 
 			params.offset = params.offset - totalDefaultApps > 0 ? params.offset - totalDefaultApps : 0;
@@ -199,7 +199,6 @@ const getBlockchainAppsMetadata = async (params) => {
 
 		// Reset the offset to the original value
 		params.offset = originalOffset;
-		
 
 		blockchainAppsMetadata.data.push(...nonDefaultApps);
 	}
