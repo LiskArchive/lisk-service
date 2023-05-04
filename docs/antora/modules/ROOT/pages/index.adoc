@@ -54,7 +54,8 @@ Lisk Service consists of various microservices which have been further expanded,
 The Gateway is required in order to expose the APIs provided by the specific services.
 
 Each microservice is independently managed and is stored separately under the {url_services_directory}[services^] directory.
-
+They contain their own `package.json` and `Dockerfile` that are beneficial when running the applications.
+An overview of each microservice is given in the following table listed below.
 
 [[microservices]]
 === Microservices
@@ -67,10 +68,12 @@ Each microservice is independently managed and is stored separately under the {u
 |Microservice |Description
 
 |*Gateway*
-|The Gateway component provides a RESTful xref:{url_api_http}[HTTP API], which all users of Lisk Service can access and use.
-Its main purpose is to proxy API requests from users to other components provided by Lisk Service.
-It also maintains backwards compatibility when its public API is changed or replaced by a new version.
-This provides users with a **central point of data access** that never breaks existing application compatibility.
+|The Gateway component exposes the API for Lisk Service users to access and use over HTTP and WS protocols.
+Its main purpose is to proxy API requests from users to other microservice components provided by Lisk Service.
+// provides a RESTful xref:{url_api_http}[HTTP API], which all users of Lisk Service can access and use.
+// Its main purpose is to proxy API requests from users to other components provided by Lisk Service.
+// It also maintains backwards compatibility when its public API is changed or replaced by a new version.
+// This provides users with a **central point of data access** that never breaks existing application compatibility.
 
 |*Lisk*
 |The REST client component acts as a bridge between the Lisk SDK and the <<gateway,Lisk Service Gateway>>.
