@@ -94,6 +94,7 @@ const defaultBrokerConfig = {
 	if (config.operations.isIndexingModeEnabled) {
 		app.addMethods(path.join(__dirname, 'methods', 'indexer'));
 		app.addEvents(path.join(__dirname, 'events'));
+		app.addJobs(path.join(__dirname, 'jobs', 'indexer'));
 	}
 
 	// Set the app context and start the application
