@@ -70,6 +70,7 @@ An overview of each microservice is given in the following table listed below.
 |*Gateway*
 |The Gateway component exposes the API for Lisk Service users to access and use over HTTP and WS protocols.
 Its main purpose is to proxy API requests from users to other microservice components provided by Lisk Service.
+It provides the users with a **central point of data access** that ensures existing application compatibility is maintained.
 // provides a RESTful xref:{url_api_http}[HTTP API], which all users of Lisk Service can access and use.
 // Its main purpose is to proxy API requests from users to other components provided by Lisk Service.
 // It also maintains backwards compatibility when its public API is changed or replaced by a new version.
