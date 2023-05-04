@@ -23,7 +23,8 @@ Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.bra
 :url_nats: http://nats.io/
 :url_npm_socketio_client: https://www.npmjs.com/package/socket.io-client
 :url_services_directory: https://github.com/LiskHQ/lisk-service/tree/development/services
-
+:url_app_registry: https://github.com/LiskHQ/app-registry
+:url_dynamic_fee: https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md
 
 :url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
 :url_api_http:  ROOT::api/lisk-service-http.adoc
@@ -77,8 +78,21 @@ It provides the users with a **central point of data access** that ensures exist
 // This provides users with a **central point of data access** that never breaks existing application compatibility.
 
 |*Connector*
-|The blockchain Connector connects with the node running a Lisk protocol-compliant blockchain application.
+|The Blockchain Connector connects with the node running a Lisk protocol-compliant blockchain application.
 It is primarily responsible for data transformation and caching, hence reducing the number of calls made to the node.
+
+|*Indexer*
+|The Blockchain Indexer contains both an indexer and data service mode.
+The indexer mode is mainly responsible for updating the index, based on the scheduled jobs by the Blockchain Coordinator.
+In the data service mode it serves user request queries initiated via the RESTful API or WebSocket-based RPC calls.
+It has the ability to run both the indexer and data service modes simultaneously, which is enabled by default.
+
+|*App Registry*
+|The Blockchain Application Registry service is responsible for regularly synchronizing and providing off-chain metadata information for known blockchain applications within the Lisk ecosystem.
+The metadata is maintained in the Lisk {url_app_registry}[Application Registry^] repository.
+
+|*Fee Estimator*
+|The Fee Estimator service implements the {url_dynamic_fee}[dynamic fee system^] algorithm to offer users transaction fee recommendations based on the network traffic.
 
 |*Market*
 |The Market service allows price data retrieval.
