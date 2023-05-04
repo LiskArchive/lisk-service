@@ -24,6 +24,11 @@ const marketPriceSchema = {
 	sources: Joi.array().items(Joi.string().required()).required(),
 };
 
+const marketPriceMetaSchema = {
+	count: Joi.number().integer().min(0).required(),
+};
+
 module.exports = {
 	marketPriceSchema: Joi.object(marketPriceSchema).required(),
+	marketPriceMetaSchema: Joi.object(marketPriceMetaSchema).required(),
 };

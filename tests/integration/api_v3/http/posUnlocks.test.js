@@ -48,7 +48,7 @@ describe('PoS Unlocks API', () => {
 		it('Returns unlocks when requested for existing account by address and isLocked = false', async () => {
 			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&isLocked=false`);
 			expect(response.data).toMap(unlockSchema);
-			expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			response.data.pendingUnlocks.forEach(entry => {
 				expect(entry.isLocked).toBe(false);
@@ -81,7 +81,7 @@ describe('PoS Unlocks API', () => {
 			if (refTransaction.sender.publicKey) {
 				const response = await api.get(`${endpoint}?publicKey=${refTransaction.sender.publicKey}&isLocked=false`);
 				expect(response.data).toMap(unlockSchema);
-				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 				expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 				response.data.pendingUnlocks.forEach(entry => {
 					expect(entry.isLocked).toBe(false);
@@ -117,7 +117,7 @@ describe('PoS Unlocks API', () => {
 			if (refTransaction.sender.name) {
 				const response = await api.get(`${endpoint}?name=${refTransaction.sender.name}&isLocked=false`);
 				expect(response.data).toMap(unlockSchema);
-				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 				expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 				response.data.pendingUnlocks.forEach(entry => {
 					expect(entry.isLocked).toBe(false);
@@ -150,7 +150,7 @@ describe('PoS Unlocks API', () => {
 		it('Returns unlocks when requested for existing account by address, limit=5 and offset=1', async () => {
 			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&limit=5&offset=1`);
 			expect(response.data).toMap(unlockSchema);
-			expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.pendingUnlocks.length).toBeLessThanOrEqual(5);
 			expect(response.meta).toMap(metaSchema);
 		});

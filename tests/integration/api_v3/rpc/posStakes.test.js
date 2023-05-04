@@ -69,7 +69,7 @@ describe('get.pos.stakes', () => {
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
-		expect(response.data.stakes[0].address).toBe(refValidator.address);
+		expect(result.data.stakes[0].address).toBe(refValidator.address);
 	});
 
 	it('Returns list of stakes when requested for known staker address and search (partial validator name) param', async () => {

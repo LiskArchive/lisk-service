@@ -42,6 +42,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Module Constants](#module-constants)
     - [Token Summary](#token-summary)
     - [Token Available IDs](#token-available-ids)
+    - [Top Token Balances](#top-token-balances)
   - [Dynamic Fees](#dynamic-fees)
   - [Proof of Stake (PoS)](#proof-of-stake-pos)
     - [Claimable rewards](#claimable-rewards)
@@ -1194,6 +1195,67 @@ Retrieves all the available token identifiers.
 Get available token identifiers from the Token module
 ```
 https://service.lisk.com/api/v3/token/available-ids
+```
+
+### Top Token Balances
+
+Retrieves top token balances for a token ID.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/token/balances/top`
+- RPC `get.token.balances.top`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
+| sort | Enum | `["balance:desc", "balance:asc"]` | balance:desc |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "0000000000000000": [
+      {
+        "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+        "publicKey": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+        "name": "genesis_84",
+        "balance": "10000000",
+        "knowledge": {
+          "owner": "Genesis Account",
+          "description": "Initial supply",
+        },
+      },
+    ],
+  },
+  "meta": {
+    "count": 1,
+    "offset": 0,
+    "total": 1
+  }
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get top token balances from the Token module
+```
+https://service.lisk.com/api/v3/token/balances/top?tokenID=0000000000000000
 ```
 
 ## Dynamic Fees

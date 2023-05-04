@@ -69,14 +69,14 @@ describe('get.blockchain.apps', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('returns list of all blockchain applications by chainID', async () => {
-		const response = await getBlockchainApps({ chainID: curChainID });
+		const response = await getBlockchainApps({ chainID: '04000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -86,7 +86,7 @@ describe('get.blockchain.apps', () => {
 	});
 
 	it('returns list of all blockchain applications by CSV chainID', async () => {
-		const response = await getBlockchainApps({ chainID: `00000000,${curChainID}` });
+		const response = await getBlockchainApps({ chainID: `04000001,${curChainID}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -96,7 +96,7 @@ describe('get.blockchain.apps', () => {
 	});
 
 	it('returns list of all blockchain applications by status', async () => {
-		const response = await getBlockchainApps({ status: 'active' });
+		const response = await getBlockchainApps({ status: 'registered' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

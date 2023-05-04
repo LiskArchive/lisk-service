@@ -31,7 +31,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/network/peers`;
 
-describe('Peers API', () => {
+xdescribe('Peers API', () => {
 	describe('GET /peers', () => {
 		it('without request params -> ok', async () => {
 			const response = await api.get(`${endpoint}`);

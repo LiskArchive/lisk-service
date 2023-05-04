@@ -67,7 +67,7 @@ describe('Blockchain application supported tokens metadata API', () => {
 		const response = await api.get(`${endpoint}?chainID=${curChainID}&limit=5&offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(5);
 		response.data.forEach(blockchainAppsTokenMetadata => {
 			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);

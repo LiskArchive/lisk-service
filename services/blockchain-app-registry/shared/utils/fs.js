@@ -87,7 +87,13 @@ const rm = async (deletePath, options) => new Promise((resolve) => {
 
 const rmdir = async (directoryPath, options) => rm(
 	directoryPath,
-	{ ...options, recursive: true },
+	{
+		...options,
+		force: true,
+		maxRetries: 3,
+		recursive: true,
+		retryDelay: 50,
+	},
 );
 
 const read = async (filePath) => new Promise((resolve, reject) => {

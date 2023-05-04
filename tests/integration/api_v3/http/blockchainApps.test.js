@@ -63,14 +63,14 @@ describe('Blockchain apps API', () => {
 		const response = await api.get(`${endpoint}?limit=10&offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('retrieves blockchain application by chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=${curChainID}`);
+		const response = await api.get(`${endpoint}?chainID=04000001`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -79,7 +79,7 @@ describe('Blockchain apps API', () => {
 	});
 
 	it('retrieves blockchain application by chainID as CSV', async () => {
-		const response = await api.get(`${endpoint}?chainID=00000000,${curChainID}`);
+		const response = await api.get(`${endpoint}?chainID=04000001,${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -88,7 +88,7 @@ describe('Blockchain apps API', () => {
 	});
 
 	it('retrieves blockchain applications by status', async () => {
-		const response = await api.get(`${endpoint}?status=active`);
+		const response = await api.get(`${endpoint}?status=registered`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

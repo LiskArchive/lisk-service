@@ -1,5 +1,5 @@
 MYSQL_PORT = 3306
-REDIS_PORT = 6381
+LISK_CORE_WS_PORT = 7887;
 
 def checkOpenPort(nPort) {
 	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
@@ -33,12 +33,6 @@ def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 }
 
-properties([
-	parameters([
-		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'release/4.0.0' ),
-	])
-])
-
 pipeline {
 	agent { node { label 'lisk-service' } }
 	triggers {
@@ -47,68 +41,35 @@ pipeline {
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
+	environment {
+		ENABLE_HTTP_API='http-version3,http-status'
+		ENABLE_WS_API='rpc-v3,blockchain'
+		LISK_APP_WS='ws://host.docker.internal:7887'
+		ENABLE_TESTING_MODE='true'
+    }
 	stages {
 		stage('Checkout SCM') {
 			when {
 				anyOf {
 					branch 'development'
+					branch 'release/**'
 					branch 'feature/**'
 				}
 			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				cleanWs()
-				dir('lisk-core') {
-					checkout([$class: 'GitSCM', branches: [[name: "${params.COMMITISH_CORE}" ]], userRemoteConfigs: [[url: 'https://github.com/LiskHQ/lisk-core']]])
-				}
 				dir('lisk-service') {
 					checkout scm
 				}
 			}
 		}
 		stage ('Build dependencies') {
-			when {
-				anyOf {
-					branch 'development'
-					branch 'feature/**'
-				}
-			}
-			parallel {
-				stage('Lisk Core') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-core') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh '''
-									rm -rf ~/.lisk
-									npm ci
-									npm run build
-								'''
-							}
-						}
-					}
-				}
-				stage('Lisk Service') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh 'npm i -g pm2'
-								dir('./') { sh 'npm ci' }
-								dir('./framework') { sh 'npm ci' }
-								dir('./services/blockchain-app-registry') { sh 'npm ci' }
-								dir('./services/blockchain-connector') { sh 'npm ci' }
-								dir('./services/blockchain-indexer') { sh 'npm ci' }
-								dir('./services/blockchain-coordinator') { sh 'npm ci' }
-								dir('./services/fee-estimator') { sh 'npm ci' }
-								dir('./services/market') { sh 'npm ci' }
-								dir('./services/export') { sh 'npm ci' }
-								dir('./services/gateway') { sh 'npm ci' }
-								dir('./services/template') { sh 'npm ci' }
-								dir('./services/transaction-statistics') { sh 'npm ci' }
-								dir('./tests') { sh 'npm ci' }
-							}
-						}
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						dir('./') { sh 'make build-local' }
 					}
 				}
 			}
@@ -117,50 +78,39 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
+					branch 'release/**'
 					branch 'feature/**'
 				}
 			}
-			parallel {
-				stage('Lisk Core') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-core') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh '''
-									./bin/run blockchain:import --force lisk-core/snapshots/blockchain.tar.gz
-									./bin/run start --network devnet --api-ipc &
-									echo $! > lisk-core.pid
-								'''
-							}
-						}
+			steps {
+				dir('lisk-service') {
+					script {
+						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+						runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
 					}
 				}
-				stage('Lisk Service') {
-					steps {
-						dir('lisk-service') {
-							script {
-								runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-								runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
-							}
-						}
-					}	
-				}
-			}
+			}	
 		}
 		stage('Run microservices') {
 			when {
 				anyOf {
 					branch 'development'
+					branch 'release/**'
 					branch 'feature/**'
 				}
 			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
+					ansiColor('xterm') {
+						dir('./') { 
+							sh '''
+							make build
+							ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} LISK_APP_WS=${LISK_APP_WS} ENABLE_TESTING_MODE=${ENABLE_TESTING_MODE} make up
+							'''
+						}
 					}
-					sleep(90)
+					sleep(120)
 					waitForHttp('http://localhost:9901/api/ready')
 				}
 			}
@@ -169,6 +119,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'development'
+					branch 'release/**'
 					branch 'feature/**'
 				}
 			}
@@ -188,9 +139,13 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./framework') { sh "npm run test:functional" }
-								dir('./services/blockchain-connector') { sh "npm run test:functional" }
+								// dir('./framework') { sh "npm run test:functional" }
+								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
+								// dir('./services/blockchain-connector') { sh "npm run test:functional" }
+								dir('./services/blockchain-indexer') { sh "npm run test:functional" }
+								dir('./services/fee-estimator') { sh "npm run test:functional" }
 								dir('./services/market') { sh "npm run test:functional" }
+								dir('./services/transaction-statistics') { sh "npm run test:functional" }
 								// dir('./tests') { sh "npm run test:functional" }
 							}
 						}
@@ -234,34 +189,22 @@ pipeline {
 			script { 
 				echoBanner('Failed to run the pipeline') 
 			}
-			dir('lisk-service') {
-				nvm(readFile('.nvmrc').trim()) {
-					sh 'pm2 logs'	
-				}
-			}
 		}
 		cleanup {
 			script { 
 				echoBanner('Cleaning up...')
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
-						echoBanner('Stopping all microservices and removing dependencies')
-						sh '''
-							pm2 stop --silent ecosystem.jenkins.config.js
-							make clean-local
-						'''
 						echoBanner('Stopping MySQL')
 						dir('./jenkins/mysql') { sh "make down" }
-						echoBanner('Stopping Redis')
-						dir('./jenkins/redis') { sh "make down" }
+						echoBanner('Stopping Lisk Core')
+						dir('./jenkins/lisk-core') { sh "make down" }
+						echoBanner('Stopping all microservices and removing dependencies')
+						sh '''
+							make down
+							make clean
+						'''
 					}
-				}
-				dir('lisk-core') {
-					echoBanner('Stopping Lisk Core')
-					sh '''
-						kill $( cat lisk-core.pid ) || true
-						rm -rf ~/.lisk node_modules
-					'''
 				}
 			}
 		}

@@ -21,10 +21,10 @@ const {
 
 const {
 	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	goodRequestSchema,
 	legacyAccountsSchema,
 	legacyAccountsMetaSchema,
 } = require('../../../schemas/api_v3/legacyAccountsSchema.schema');
@@ -35,9 +35,10 @@ const getLegacyAccountInfo = async (params) => request(wsRpcUrl, 'get.legacy', p
 describe('get.legacy', () => {
 	it('returns legacy account info', async () => {
 		const response = await getLegacyAccountInfo({ publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc' });
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(legacyAccountsSchema);
-		expect(response.meta).toMap(legacyAccountsMetaSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toMap(legacyAccountsSchema);
+		expect(result.meta).toMap(legacyAccountsMetaSchema);
 	});
 
 	it('invalid request param -> invalid param', async () => {
