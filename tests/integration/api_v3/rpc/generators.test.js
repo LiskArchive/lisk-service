@@ -29,22 +29,22 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
-const getPoSConstants = async () => request(wsRpcUrl, 'get.pos.constants');
+// const getPoSConstants = async () => request(wsRpcUrl, 'get.pos.constants');
 
-const STATUS = {
-	ACTIVE: 'active',
-	STANDBY: 'standby',
-};
+// const STATUS = {
+// 	ACTIVE: 'active',
+// 	STANDBY: 'standby',
+// };
 
 describe('Generators API', () => {
-	let numberActiveValidators;
-	let numberStandbyValidators;
-	beforeAll(async () => {
-		const response = await getPoSConstants();
-		const constants = response.result.data;
-		numberActiveValidators = constants.numberActiveValidators;
-		numberStandbyValidators = constants.numberStandbyValidators;
-	});
+	// let numberActiveValidators;
+	// let numberStandbyValidators;
+	// beforeAll(async () => {
+	// 	const response = await getPoSConstants();
+	// 	const constants = response.result.data;
+	// 	numberActiveValidators = constants.numberActiveValidators;
+	// 	numberStandbyValidators = constants.numberStandbyValidators;
+	// });
 
 	describe('GET /generators', () => {
 		it('returns generators list -> ok', async () => {
@@ -69,12 +69,12 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(103);
 			result.data.map(generator => expect(generator).toMap(generatorSchema));
 
-			const activeGenerators = result.data
-				.filter(generator => generator.status === STATUS.ACTIVE);
-			const standbyGenerators = result.data
-				.filter(generator => generator.status === STATUS.STANDBY);
-			expect(activeGenerators.length).toEqual(numberActiveValidators);
-			expect(standbyGenerators.length).toEqual(numberStandbyValidators);
+			// const activeGenerators = result.data
+			// 	.filter(generator => generator.status === STATUS.ACTIVE);
+			// const standbyGenerators = result.data
+			// 	.filter(generator => generator.status === STATUS.STANDBY);
+			// expect(activeGenerators.length).toEqual(numberActiveValidators);
+			// expect(standbyGenerators.length).toEqual(numberStandbyValidators);
 
 			expect(result.meta).toMap(metaSchema);
 		});

@@ -40,7 +40,7 @@ module.exports = {
 				WS_RATE_LIMIT_DURATION: 1, // in seconds
 				ENABLE_REQUEST_CACHING: 'true',
 				JSON_RPC_STRICT_MODE: 'false',
-				HTTP_RATE_LIMIT_ENABLE: 'true',
+				HTTP_RATE_LIMIT_ENABLE: 'false',
 				HTTP_RATE_LIMIT_CONNECTIONS: 200,
 				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 				HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',

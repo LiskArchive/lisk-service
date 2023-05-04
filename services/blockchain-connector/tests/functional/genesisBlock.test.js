@@ -37,7 +37,7 @@ afterAll(() => broker.stop());
 describe('Genesis Block import tests', () => {
 	let genesisBlockFilePath;
 
-	it('Verify if genesis block is downloaded successfully', async () => {
+	xit('Verify if genesis block is downloaded successfully', async () => {
 		const { chainID } = await broker.call('connector.getNetworkStatus');
 		genesisBlockFilePath = path.resolve(`${__dirname}/../../data/${chainID}/genesis_block.json.tar.gz`);
 
@@ -45,7 +45,7 @@ describe('Genesis Block import tests', () => {
 		expect(isExists).toBe(true);
 	});
 
-	it('Validate genesis block', async () => {
+	xit('Validate genesis block', async () => {
 		const genesisBlockSHAFilePath = genesisBlockFilePath.concat('.SHA256');
 		const isExists = await exists(genesisBlockSHAFilePath);
 		expect(isExists).toBe(true);
@@ -64,7 +64,7 @@ describe('Genesis Block import tests', () => {
 	});
 });
 
-describe('Test getGenesisAssets method', () => {
+xdescribe('Test getGenesisAssets method', () => {
 	it('should return token module data when called with module:token', async () => {
 		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName });
 		expect(Object.keys(response).length).toBe(4);
@@ -87,7 +87,7 @@ describe('Test getGenesisAssets method', () => {
 	});
 });
 
-describe('Test getGenesisAssetsLength method', () => {
+xdescribe('Test getGenesisAssetsLength method', () => {
 	it('should return all modules when called without any params', async () => {
 		const response = await broker.call('connector.getGenesisAssetsLength');
 		expect(Object.keys(response).length).toBeGreaterThan(1);

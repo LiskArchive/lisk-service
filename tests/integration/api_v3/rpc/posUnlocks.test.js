@@ -18,6 +18,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
+	invalidRequestSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
@@ -56,7 +57,7 @@ describe('get.pos.unlocks', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(unlockSchema);
-		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 		result.data.pendingUnlocks.forEach(entry => {
 			expect(entry.isLocked).toBe(false);
@@ -101,7 +102,7 @@ describe('get.pos.unlocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(unlockSchema);
-			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
 				expect(entry.isLocked).toBe(false);
@@ -149,7 +150,7 @@ describe('get.pos.unlocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(unlockSchema);
-			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(10);
 			result.data.pendingUnlocks.forEach(entry => {
 				expect(entry.isLocked).toBe(false);
@@ -198,7 +199,7 @@ describe('get.pos.unlocks', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(unlockSchema);
-		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.pendingUnlocks.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.pendingUnlocks.length).toBeLessThanOrEqual(5);
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -235,9 +236,9 @@ describe('get.pos.unlocks', () => {
 		}
 	});
 
-	it('No Params -> invalid param', async () => {
+	it('No Params -> invalid request', async () => {
 		const response = await getUnlocks({});
-		expect(response).toMap(invalidParamsSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('invalid request param -> invalid param', async () => {

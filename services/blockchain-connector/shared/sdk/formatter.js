@@ -106,29 +106,34 @@ const formatBlock = (block) => {
 	return parseToJSONCompatObj(formattedBlock);
 };
 
-const formatEvent = (event) => {
+const formatEvent = (event, skipDecode) => {
 	// Calculate event ID
 	const eventSchema = getEventSchema();
 	const schemaCompliantEvent = parseInputBySchema(event, eventSchema);
 	const eventBuffer = codec.encode(eventSchema, schemaCompliantEvent);
 	const eventID = hash(eventBuffer);
 
-	const eventDataSchema = getDataSchemaByEventName(event.name);
-	const eventData = eventDataSchema
-		? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
-		: { data: event.data };
-
-	if (!eventDataSchema) {
-		// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)
-		console.error(`Event data schema missing for ${event.module}:${event.name}.`);
-		logger.error(`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`);
+	let eventData;
+	if (skipDecode) {
+		eventData = event.data;
 	} else {
-		// TODO: Remove after SDK fixes the address format (before tagging rc.0)
-		Object.keys(eventDataSchema.properties).forEach((prop) => {
-			if (prop.endsWith('Address')) {
-				eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
-			}
-		});
+		const eventDataSchema = getDataSchemaByEventName(event.name);
+		eventData = eventDataSchema
+			? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
+			: { data: event.data };
+
+		if (!eventDataSchema) {
+			// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)
+			console.error(`Event data schema missing for ${event.module}:${event.name}.`);
+			logger.error(`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`);
+		} else {
+			// TODO: Remove after SDK fixes the address format (before tagging rc.0)
+			Object.keys(eventDataSchema.properties).forEach((prop) => {
+				if (prop.endsWith('Address')) {
+					eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
+				}
+			});
+		}
 	}
 
 	const eventTopicMappings = EVENT_TOPIC_MAPPINGS_BY_MODULE[event.module] || {};
