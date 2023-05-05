@@ -64,11 +64,47 @@ config.queue = {
 	accounts: {
 		name: 'Accounts',
 	},
+	accountBalanceIndex: {
+		name: 'AccountBalanceIndex',
+		concurrency: 1,
+	},
+	indexBlocksQueue: {
+		name: 'IndexBlocksQueue',
+		concurrency: 1,
+	},
+	updateBlockIndexQueue: {
+		name: 'UpdateBlockIndexQueue',
+		concurrency: 1,
+	},
+	deleteIndexedBlocksQueue: {
+		name: 'DeleteIndexedBlocksQueue',
+		concurrency: 1,
+	},
 	blocks: {
 		name: 'Blocks',
 	},
 	events: {
 		name: 'Events',
+	},
+	accountQueueByPublicKey: {
+		name: 'AccountQueueByPublicKey',
+		concurrency: 1,
+	},
+	accountQueueByAddress: {
+		name: 'AccountQueueByAddress',
+		concurrency: 1,
+	},
+	accountQueueDirect: {
+		name: 'AccountQueueDirect',
+		concurrency: 1,
+	},
+	scheduleTransactionExportQueue: {
+		name: 'ScheduleTransactionExportQueue',
+		concurrency: 50,
+	},
+	transactionStats: {
+		name: 'TransactionStats',
+		concurrency: 1,
 	},
 	defaultJobOptions: {
 		attempts: 5,

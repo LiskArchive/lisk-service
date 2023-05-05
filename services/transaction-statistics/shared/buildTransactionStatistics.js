@@ -185,12 +185,11 @@ const queueJob = async (job) => {
 	}
 };
 
-const queueName = 'transactionStats';
 const transactionStatisticsQueue = Queue(
 	config.endpoints.redis,
-	queueName,
+	config.queue.transactionStats.name,
 	queueJob,
-	1,
+	config.queue.transactionStats.concurrency,
 	config.queue.default,
 );
 

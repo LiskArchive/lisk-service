@@ -350,9 +350,24 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 1);
-const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const indexBlocksQueue = Queue(
+	config.endpoints.cache,
+	config.queue.indexBlocksQueue.name,
+	indexBlock,
+	config.queue.indexBlocksQueue.concurrency,
+);
+const updateBlockIndexQueue = Queue(
+	config.endpoints.cache,
+	config.queue.updateBlockIndexQueue.name,
+	updateBlockIndex,
+	config.queue.updateBlockIndexQueue.concurrency,
+);
+const deleteIndexedBlocksQueue = Queue(
+	config.endpoints.cache,
+	config.queue.deleteIndexedBlocksQueue.name,
+	deleteIndexedBlocks,
+	config.queue.deleteIndexedBlocksQueue.concurrency,
+);
 
 const getLiveIndexingJobCount = async () => {
 	const { queue: bullQueue } = indexBlocksQueue;

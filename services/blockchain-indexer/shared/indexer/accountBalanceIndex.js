@@ -47,7 +47,12 @@ const updateAccountBalances = async (address) => {
 };
 
 const accountBalanceIndexProcessor = async job => updateAccountBalances(job.data.address);
-const accountBalanceIndexQueue = Queue(config.endpoints.cache, 'accountBalanceIndexQueue', accountBalanceIndexProcessor, 1);
+const accountBalanceIndexQueue = Queue(
+	config.endpoints.cache,
+	config.queue.accountBalanceIndex.name,
+	accountBalanceIndexProcessor,
+	config.queue.accountBalanceIndex.concurrency,
+);
 
 const scheduleAccountBalanceUpdateFromEvents = async (events) => {
 	await BluebirdPromise.map(
