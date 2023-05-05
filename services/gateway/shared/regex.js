@@ -16,7 +16,7 @@
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const ADDRESS_LISK32_CSV = /^(lsk[a-hjkm-z2-9]{38}){1}(,lsk[a-hjkm-z2-9]{38})*$/;
-const PARTIAL_NAME_OR_ADDRESS_OR_PUBLIC_KEY = /^(?:([A-Fa-f0-9]{2}){0,32}|lsk[a-hjkm-z2-9]{0,38}|[\w!@$&.]{3,20})$/;
+const PARTIAL_SEARCH = /^[\w!@$&.]{1,64}$/; // Supports address, publicKey & name
 const NONCE = /^[0-9]+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
@@ -44,7 +44,7 @@ module.exports = {
 	PUBLIC_KEY,
 	ADDRESS_LISK32,
 	ADDRESS_LISK32_CSV,
-	PARTIAL_NAME_OR_ADDRESS_OR_PUBLIC_KEY,
+	PARTIAL_SEARCH,
 	NONCE,
 	NAME,
 	NAME_CSV,
