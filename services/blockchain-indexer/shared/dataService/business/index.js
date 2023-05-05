@@ -94,6 +94,7 @@ const {
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
 } = require('./network');
+const { calculateTransactionFees } = require('./transactionsCalculateFees');
 
 module.exports = {
 	// Generators
@@ -120,6 +121,7 @@ module.exports = {
 	loadAllPendingTransactions,
 	postTransactions,
 	dryRunTransactions,
+	calculateTransactionFees,
 
 	// Events
 	getEvents,

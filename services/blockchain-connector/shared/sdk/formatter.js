@@ -42,12 +42,25 @@ const logger = Logger();
 const formatTransaction = (transaction) => {
 	// Calculate transaction size
 	const txSchema = getTransactionSchema();
+
+	// Decode transaction in case of binary payload
+	if (typeof transaction === 'string') {
+		transaction = codec.decode(txSchema, Buffer.from(transaction, 'hex'));
+	}
+	const txParamsSchema = getTransactionParamsSchema(transaction);
+
+	// Encode transaction params to get params buffer
+	if (typeof transaction.params === 'object' && !Buffer.isBuffer(transaction.params)) {
+		transaction.params = codec.encode(
+			txParamsSchema,
+			parseInputBySchema(transaction.params, txParamsSchema),
+		);
+	}
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
 	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
 	const transactionSize = transactionBuffer.length;
 
 	// Calculate transaction min fee
-	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
 
 	// TODO: Verify transaction minFee

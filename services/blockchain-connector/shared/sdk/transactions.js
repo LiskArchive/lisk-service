@@ -52,10 +52,19 @@ const dryRunTransactionWrapper = async (params) => {
 	return response;
 };
 
+const getTransactionMinFeeAndSize = async (transaction) => {
+	const formattedTransaction = await formatTransaction(transaction);
+	return {
+		minFee: formattedTransaction.minFee,
+		size: formattedTransaction.size,
+	};
+};
+
 module.exports = {
 	getTransactionByID: getTransactionByIDFormatted,
 	getTransactionsByIDs: getTransactionsByIDsFormatted,
 	getTransactionsFromPool: getTransactionsFromPoolFormatted,
 	postTransaction,
 	dryRunTransaction: dryRunTransactionWrapper,
+	getTransactionMinFeeAndSize,
 };

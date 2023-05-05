@@ -90,11 +90,14 @@ const MODULE = {
 	DYNAMIC_REWARD: 'dynamicReward',
 	REWARD: 'reward',
 	TOKEN: 'token',
+	INTEROPERABILITY: 'interoperability',
 };
 
 const COMMAND = {
 	REGISTER_VALIDATOR: 'registerValidator',
 	STAKE: 'stake',
+	TRANSFER: 'transfer',
+	CROSS_CHAIN_TRANSFER: 'transferCrossChain',
 };
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
@@ -124,6 +127,7 @@ const EVENT = Object.freeze({
 	UNLOCK: 'unlock',
 	COMMAND_EXECUTION_RESULT: 'commandExecutionResult',
 	REWARD_MINTED: 'rewardMinted',
+	CCM_SEND_SUCCESS: 'ccmSendSuccess',
 });
 
 const TRANSACTION_VERIFY_RESULT = {

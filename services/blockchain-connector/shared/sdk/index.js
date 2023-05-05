@@ -48,6 +48,7 @@ const {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
+	getTransactionMinFeeAndSize,
 } = require('./transactions');
 
 const {
@@ -94,6 +95,7 @@ const {
 const {
 	getChainAccount,
 	getMainchainID,
+	getChannel,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -158,6 +160,7 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
+	getTransactionMinFeeAndSize,
 
 	// Tokens
 	tokenHasUserAccount,
@@ -197,6 +200,7 @@ module.exports = {
 	// Interoperability
 	getChainAccount,
 	getMainchainID,
+	getChannel,
 
 	// Legacy
 	getLegacyAccount,
