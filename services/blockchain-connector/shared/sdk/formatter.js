@@ -49,7 +49,7 @@ const formatTransaction = (transaction) => {
 	}
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 
-	// Encode transaction params to get params buffer
+	// Encode transaction params to calculate transaction size
 	if (typeof transaction.params === 'object' && !Buffer.isBuffer(transaction.params)) {
 		transaction.params = codec.encode(
 			txParamsSchema,

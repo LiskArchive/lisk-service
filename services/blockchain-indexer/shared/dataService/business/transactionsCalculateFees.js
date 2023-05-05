@@ -25,25 +25,25 @@ const { requestConnector, requestFeesEstimator } = require('../../utils/request'
 const calcMessageFee = async (transaction, schemas) => {
 	const { data: { events } } = (await dryRunTransactions({ transaction }));
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
-	const { ccm } = ccmSendSuccess.data;
 
-	// Get ccm params buffer
-	const ccmParamsSchema = schemas.commands
-		.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`);
+	// In case of decoded ccmParams, encode params (required to calculate ccm length)
+	const ccmParamsSchema = (schemas.commands
+		.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`)).schema;
+	const { ccm } = ccmSendSuccess.data;
 	if (typeof ccm.params === 'object' && !Buffer.isBuffer(ccm.params)) {
 		ccm.params = codec.encode(ccmParamsSchema, parseInputBySchema(ccm.params, ccmParamsSchema));
 	}
 
-	// Get ccm Buffer
-	const ccmSchema = schemas.ccm;
-	const schemaCompliantCCM = parseInputBySchema(ccm, schemas);
+	// Encode ccm Buffer to calculate ccm length
+	const { schema: ccmSchema } = schemas.ccm;
+	const schemaCompliantCCM = parseInputBySchema(ccm, ccmSchema);
 	const ccmBuffer = codec.encode(ccmSchema, schemaCompliantCCM);
 	const ccmLength = ccmBuffer.length;
 
 	const channelInfo = await requestConnector('getChannel', { chainID: transaction.params.receivingChainID });
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
-		amount: ccmLength * Number(channelInfo.messageFeeTokenID),
+		amount: ccmLength * Number(channelInfo.minReturnFeePerByte),
 	};
 };
 
@@ -81,24 +81,35 @@ const calculateTransactionFees = async params => {
 	const transactionFeeEstimates = {};
 
 	const { data: schemas } = (await getSchemas());
-	const transactionSchema = schemas.transaction.schema;
-	const decodedTransaction = typeof params.transaction === 'string'
-		? parseToJSONCompatObj(codec.decode(transactionSchema, Buffer.from(params.transaction, 'hex')))
-		: params.transaction;
 
-	const { minFee, size } = await requestConnector('getTransactionMinFeeAndSize', { transaction: decodedTransaction });
+	// Decode binary payload
+	if (typeof params.transaction === 'string') {
+		const transactionSchema = schemas.transaction.schema;
+		const decodedTransaction = parseToJSONCompatObj(codec.decode(transactionSchema, Buffer.from(params.transaction, 'hex')));
+
+		const transactionParamsSchema = (schemas.commands
+			.find(e => e.moduleCommand === `${decodedTransaction.module}:${decodedTransaction.command}`)).schema;
+		const decodedTransactionParams = codec.decode(transactionParamsSchema, Buffer.from(decodedTransaction.params, 'hex'));
+
+		params.transaction = {
+			...decodedTransaction,
+			params: parseToJSONCompatObj(decodedTransactionParams),
+		};
+	}
+
+	const { minFee, size } = await requestConnector('getTransactionMinFeeAndSize', { transaction: params.transaction });
 	transactionFeeEstimates.minFee = minFee;
 
 	const feeEstimatePerByte = await requestFeesEstimator('estimates');
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
 
-	if (decodedTransaction.module === MODULE.TOKEN) {
-		if (decodedTransaction.command === COMMAND.CROSS_CHAIN_TRANSFER) {
-			transactionFeeEstimates.messageFee = await calcMessageFee(decodedTransaction, schemas);
-		} else if (decodedTransaction.command === COMMAND.TRANSFER) {
+	if (params.transaction.module === MODULE.TOKEN) {
+		if (params.transaction.command === COMMAND.CROSS_CHAIN_TRANSFER) {
+			transactionFeeEstimates.messageFee = await calcMessageFee(params.transaction, schemas);
+		} else if (params.transaction.command === COMMAND.TRANSFER) {
 			const { feeTokenID } = feeEstimatePerByte;
 			transactionFeeEstimates.accountInitializationFee = await calcAccountInitializationFees(
-				decodedTransaction,
+				params.transaction,
 				feeTokenID,
 			);
 		}
