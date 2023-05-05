@@ -72,8 +72,56 @@ describe('get.pos.stakes', () => {
 		expect(result.data.stakes[0].address).toBe(refValidator.address);
 	});
 
+	it('Returns list of stakes when requested for known staker address and search (exact validator address) param', async () => {
+		const response = await getStakes({ address: refStaker.address, search: refValidator.address });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(stakesResponseSchema);
+		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		expect(response.data.stakes[0].address).toBe(refValidator.address);
+	});
+
+	it('Returns list of stakes when requested for known staker address and search (exact validator public key) param', async () => {
+		const response = await getStakes({
+			address: refStaker.address,
+			search: refValidator.publicKey,
+		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(stakesResponseSchema);
+		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		expect(response.data.stakes[0].address).toBe(refValidator.address);
+	});
+
 	it('Returns list of stakes when requested for known staker address and search (partial validator name) param', async () => {
-		const response = await getStakes({ address: refStaker.address, search: refValidator.name[0] });
+		const searchParam = refValidator.name ? refValidator.name.substring(0, 3) : '';
+		const response = await getStakes({ address: refStaker.address, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(stakesResponseSchema);
+		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		expect(result.data.stakes.some(staker => staker.address === refValidator.address))
+			.toBe(true);
+	});
+
+	it('Returns list of stakes when requested for known staker address and search (partial validator address) param', async () => {
+		const searchParam = refValidator.address ? refValidator.address.substring(0, 3) : '';
+		const response = await getStakes({ address: refStaker.address, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(stakesResponseSchema);
+		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		expect(result.data.stakes.some(staker => staker.address === refValidator.address))
+			.toBe(true);
+	});
+
+	it('Returns list of stakes when requested for known staker address and search (partial validator public key) param', async () => {
+		const searchParam = refValidator.publicKey ? refValidator.publicKey.substring(0, 3) : '';
+		const response = await getStakes({ address: refStaker.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(stakesResponseSchema);

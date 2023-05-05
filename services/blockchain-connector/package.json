@@ -37,7 +37,7 @@
     "@liskhq/lisk-validator": "0.7.0-beta.0",
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/30e8e8df1948ccb049e2dd54f779187445aeb7ad/framework/dist/lisk-service-framework-1.4.13.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03a155c9e0c71fab62645ab0c35a2af0d0d2d8ce/framework/dist/lisk-service-framework-1.4.14.tgz",
     "signals": "^1.0.0",
     "tar": "^6.1.11"
   },
