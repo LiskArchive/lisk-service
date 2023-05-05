@@ -18,8 +18,8 @@ const {
 	getIndexedAccountInfo,
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
-} = require('../../../utils/accountUtils');
-const { getAddressByName } = require('../../../utils/validatorUtils');
+} = require('../../../utils/account');
+const { getAddressByName } = require('../../../utils/validator');
 const { requestConnector } = require('../../../utils/request');
 
 const getPosUnlocks = async params => {

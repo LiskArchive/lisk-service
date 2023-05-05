@@ -33,11 +33,8 @@
 				"description": "Chain ID of the blockchain application."
 			},
 			"state": {
-				"type": "integer",
-				"example": 2,
-				"format": "int32",
-				"minimum": 0,
-				"maximum": 2,
+				"type": "string",
+				"example": "connected",
 				"description": "The state of the Peer.\nAvailable values: Connected, Disconnected."
 			},
 			"height": {
@@ -79,7 +76,6 @@
 				"description": "ISO 3166-1 country code."
 			},
 			"countryName": {
-				"type": "string",
 				"example": "Germany",
 				"description": "Name of the country."
 			},
@@ -89,9 +85,18 @@
 				"description": "Hostname associated with the node's IP."
 			},
 			"ip": {
-				"type": "string",
 				"example": "210.239.23.62",
 				"description": "Node's IP address."
+			},
+			"latitude": {
+				"type": "string",
+				"example": "48.8323",
+				"description": "Latitude coordinate of the peer node."
+			},
+			"longitude": {
+				"type": "string",
+				"example": "2.4075",
+				"description": "Longitude coordinate of the peer node."
 			}
 		}
 	}

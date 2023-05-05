@@ -1,0 +1,6 @@
+= HTTP API (Mainnet)
+Mona Bärenfänger <mona@lightcurve.io>
+:description: Interactive HTTP API reference of Lisk Service (Mainnet).
+:page-no-next: true
+:page-layout: swagger
+:page-swagger-url: https://service.lisk.com/api/v2/spec

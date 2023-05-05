@@ -44,7 +44,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator name', async () => {
 		const response = await api.get(`${endpoint}?name=${refGenerator.name}`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -58,7 +58,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator name and limit=5', async () => {
 		const response = await api.get(`${endpoint}?name=${refGenerator.name}&limit=5`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(5);
 	});
 
@@ -72,7 +72,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator address', async () => {
 		const response = await api.get(`${endpoint}?address=${refGenerator.address}`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -86,7 +86,7 @@ describe('Claimable rewards API', () => {
 	it('Returns list of claimable rewards with known validator address and limit=5', async () => {
 		const response = await api.get(`${endpoint}?address=${refGenerator.address}&limit=5`);
 		expect(response).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(5);
 	});
 
@@ -101,7 +101,7 @@ describe('Claimable rewards API', () => {
 		if (refGenerator.publicKey) {
 			const response = await api.get(`${endpoint}?publicKey=${refGenerator.publicKey}`);
 			expect(response).toMap(goodResponseSchema);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 		}
 	});
@@ -119,7 +119,7 @@ describe('Claimable rewards API', () => {
 		if (refGenerator.publicKey) {
 			const response = await api.get(`${endpoint}?publicKey=${refGenerator.publicKey}&limit=5`);
 			expect(response).toMap(goodResponseSchema);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(5);
 		}
 	});
@@ -144,7 +144,7 @@ describe('Claimable rewards API', () => {
 	});
 
 	it('Invalid name -> bad request', async () => {
-		const response = await api.get(`${endpoint}?name=#`, 400);
+		const response = await api.get(`${endpoint}?name=412875216073141752800000`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 

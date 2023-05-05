@@ -47,7 +47,6 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
 		status: chainInfo.status,
-		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
 	};
@@ -67,7 +66,6 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
 		status: chainInfo.status,
-		address: '',
 		lastUpdated: blockHeader.timestamp,
 		lastCertificateHeight: blockHeader.height,
 	};

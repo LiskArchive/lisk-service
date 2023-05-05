@@ -15,9 +15,11 @@
  */
 const {
 	getTokenBalances,
+	getTokenTopBalances,
 	getTokenSummary,
 	tokenHasUserAccount,
 	getTokenConstants,
+	getAvailableTokenIDs,
 } = require('../controllers/token');
 
 const regex = require('../../../shared/regex');
@@ -29,6 +31,16 @@ module.exports = [
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'token.balances.top',
+		controller: getTokenTopBalances,
+		params: {
+			tokenID: { optional: false, type: 'string' },
+			sort: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
@@ -55,5 +67,13 @@ module.exports = [
 		name: 'token.constants',
 		controller: getTokenConstants,
 		params: {},
+	},
+	{
+		name: 'token.available-ids',
+		controller: getAvailableTokenIDs,
+		params: {
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
 	},
 ];

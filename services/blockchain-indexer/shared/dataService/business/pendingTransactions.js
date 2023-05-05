@@ -26,7 +26,7 @@ const {
 	getIndexedAccountInfo,
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
-} = require('../../utils/accountUtils');
+} = require('../../utils/account');
 const { requestConnector } = require('../../utils/request');
 
 let pendingTransactionsList = [];
@@ -114,8 +114,8 @@ const getPendingTransactions = async params => {
 		const sortOrder = sortParam.split(':')[1];
 
 		const comparator = (a, b) => (sortOrder === 'asc')
-			? Number(a[sortProp]) - Number(b[sortProp])
-			: Number(b[sortProp]) - Number(a[sortProp]);
+			? Number(a[sortProp] || 0) - Number(b[sortProp] || 0)
+			: Number(b[sortProp] || 0) - Number(a[sortProp] || 0);
 		return comparator;
 	};
 
@@ -135,7 +135,7 @@ const getPendingTransactions = async params => {
 		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(params.sort))
 			.slice(offset, offset + limit)
-			.forEach(transaction => {
+			.map(transaction => {
 				// Set the 'executionStatus'
 				transaction.executionStatus = 'pending';
 				return transaction;

@@ -23,7 +23,7 @@ module.exports = {
 	params: {
 		filename: { optional: false, type: 'string' },
 	},
-	tags: ['Transaction Export'],
+	tags: ['Account History Export'],
 	get schema() {
 		const exportSchema = {};
 		exportSchema[this.swaggerApiPath] = { get: {} };
@@ -40,11 +40,6 @@ module.exports = {
 		exportSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'CSV file',
-			},
-			404: {
-				schema: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		};
 		Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);

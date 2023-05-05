@@ -1,0 +1,8 @@
+name: lisk-service
+title: Lisk Service
+version: '0.7'
+display_version: '0.7 (beta)'
+start_page: ROOT:index.adoc
+nav:
+- modules/ROOT/nav.adoc
+

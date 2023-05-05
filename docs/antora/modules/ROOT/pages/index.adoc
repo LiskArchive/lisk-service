@@ -1,0 +1,308 @@
+= Lisk Service
+Mona Bärenfänger <mona@lightcurve.io>
+:description: Describes the general purpose, architecture and usage of Lisk Service.
+:toc:
+:idseparator: -
+:idprefix:
+:imagesdir: ../assets/images
+:page-no-previous: true
+
+:url_api_mainnet: https://service.lisk.com/api/v2
+:url_api_testnet: https://testnet-service.lisk.com/api/v2
+:url_rpc_api_mainnet: wss://service.lisk.com/rpc-v2
+:url_rpc_api_testnet: wss://testnet-service.lisk.com/rpc-v2
+:url_subscribe_api_mainnet: wss://testnet-service.lisk.com/blockchain
+:url_subscribe_api_testnet: wss://testnet-service.lisk.com/blockchain
+:url_bitcoin: https://en.bitcoin.it/wiki/Protocol_documentation
+:url_electrumx_docs: https://electrumx.readthedocs.io/en/latest/
+:url_github_lisk_explorer: https://github.com/LiskHQ/lisk-explorer
+:url_github_lisk_service: https://github.com/LiskHQ/lisk-service
+:url_github_leveldb: https://github.com/google/leveldb
+:url_lisk_wallet: https://lisk.com/wallet
+:url_moleculer: https://moleculer.services/
+:url_nats: http://nats.io/
+:url_npm_socketio_client: https://www.npmjs.com/package/socket.io-client
+
+:url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
+:url_api_http:  ROOT::api/lisk-service-http.adoc
+:url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
+:url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
+:url_config:  configuration/docker.adoc
+:url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
+:url_setup:  setup/docker.adoc
+
+{url_github_lisk_service}[Lisk Service^] is a web application that allows interaction with various blockchain networks based on xref:{url_protocol}[Lisk] and {url_bitcoin}[Bitcoin] protocols.
+
+The main focus of Lisk Service is to provide data to the UI clients such as {url_lisk_wallet}[Lisk Desktop] and {url_lisk_wallet}[Lisk Mobile].
+Lisk Service makes it possible to access all blockchain live data in a similar way to the regular Lisk SDK API, and in addition provides users with much more details and endpoints, such as geolocation and various statistics about network usage.
+
+The project implementation is based on <<microservices>>.
+The technical stack is designed to deliver several microservices, and each of them provides one particular functionality.
+The data is served in JSON format and exposed by a xref:{url_api_http}[public RESTful API].
+
+== Architecture
+
+image::architecture.png[Architecture]
+
+[[microservices]]
+=== Microservices
+
+//TODO:Update components list
+
+[cols="1,3", options="header"]
+.The Lisk Service microservices
+|===
+|Microservice |Description
+
+|*Gateway*
+|The Gateway component provides a RESTful xref:{url_api_http}[HTTP API], which all users of Lisk Service can access and use.
+Its main purpose is to proxy API requests from users to other components provided by Lisk Service.
+It also maintains backwards compatibility when its public API is changed or replaced by a new version.
+This provides users with a **central point of data access** that never breaks existing application compatibility.
+
+|*Lisk*
+|The REST client component acts as a bridge between the Lisk SDK and the <<gateway,Lisk Service Gateway>>.
+Its main purpose is to provide enriched data from the Lisk SDK API.
+This component is designed to provide high availability, together with efficient and reliable access to the Lisk SDK API.
+
+|*Market*
+|The Market service allows price data retrieval.
+It supports multiple sources to maintain the current up-to-date Lisk token price, and ensures this is available to the clients in real time.
+
+|*Newsfeed*
+|The Newsfeed service is a single-purpose microservice that aggregates content sharing platforms and shares collected data with UI clients such as Lisk Desktop.
+
+|*Template*
+|The Template service is an abstract service whereby all of the services from Lisk Service are inherited from.
+It allows all services to share a similar interface and design pattern.
+The purpose here is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
+|===
+
+[[usage]]
+== APIs & Usage
+
+Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured] and started, it is possible to retrieve data from the blockchain network.
+
+Lisk Service provides the data through several alternative APIs:
+
+=== The HTTP API
+
+The xref:{url_api_http}[HTTP API] offers a RESTful API with various additional endpoints as compared to the HTTP API of a normal Lisk node.
+
+This API can be utilized to build powerful wallets and user interfaces for blockchain applications which are built with the Lisk SDK.
+
+==== Public Lisk Service APIs
+
+There is a public HTTP API for every public Lisk blockchain network, which can be used to query the desired information from the network.
+
+Lisk Mainnet::
+* Public API base URL: `{url_api_mainnet}`
+* API specification: xref:{url_api_http}[Lisk Service HTTP API reference (Mainnet)]
+
+Lisk Testnet::
+* Public API base URL: `{url_api_testnet}`
+* API specification: xref:{url_api_http_testnet}[Lisk Service HTTP API reference (Testnet)]
+
+[NOTE]
+====
+In the Public API base URLs listed above, in order to fetch the required entities it is necessary to add them at the end of the respective URL. e.g. `/blocks`, and `/transactions`, etc.
+
+For example:
+
+* https://service.lisk.com/api/v2/transactions
+* https://testnet-service.lisk.com/api/v2/transactions
+====
+
+==== Example: Request data with curl
+
+.Example request: Obtain a list of all 101 currently forging delegates
+[source,bash]
+----
+curl -X GET "http://localhost:9901/api/v2/forgers" -H  "accept: application/json"
+----
+
+.Example response
+[source,json]
+----
+{
+  "data": [
+    {
+      "username": "spaceone_pool",
+      "totalVotesReceived": "24200000000000",
+      "address": "lsk52ox9f8t7oghqtbtytvpkqzv4wf2srjsvoaff7",
+      "minActiveHeight": 16357328,
+      "isConsensusParticipant": true,
+      "nextForgingTime": 1635159800
+    },
+    {
+      "username": "btf",
+      "totalVotesReceived": "17250000000000",
+      "address": "lsk49cfgah7bz84ncoqkhsvg5o2bsmj23x3vqo9y5",
+      "minActiveHeight": 16486490,
+      "isConsensusParticipant": true,
+      "nextForgingTime": 1635159810
+    },
+    // ...
+    {
+      "username": "gregoryh",
+      "totalVotesReceived": "21998000000000",
+      "address": "lskfkvo54opxs7cn6aefjhuupbr6zv7yegyow9sb4",
+      "minActiveHeight": 16467538,
+      "isConsensusParticipant": true,
+      "nextForgingTime": 1635160820
+    }
+  ],
+  "meta": {
+    "count": 103,
+    "offset": 0,
+    "total": 103
+  }
+}
+----
+
+=== The JSON-RPC API
+
+The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
+The API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard.
+
+Check out the xref:{url_api_rpc}[] reference for an overview of all available RPC requests.
+
+Lisk Mainnet::
+* Public API: `{url_rpc_api_mainnet}`
+
+Lisk Testnet::
+* Public API: `{url_rpc_api_testnet}`
+
+==== Example: Emit to remote-procedure calls with socket.io
+
+[source,bash]
+----
+node --version
+# v16.15.0
+npm i socket.io-client #<1>
+npm i jsome #<2>
+----
+
+<1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
+<2> Optionally install `jsome` to prettify the API response.
+
+.rpc.js
+[source,js]
+----
+// 1. Require the dependencies
+const io = require('socket.io-client'); // The socket.io client
+const jsome = require('jsome'); // Prettifies the JSON output
+
+jsome.params.colored = true;
+
+// Use local Service node
+const WS_RPC_ENDPOINT = 'ws://localhost:9901/rpc-v2';
+//Use public Service node
+//const WS_RPC_ENDPOINT = "wss://service.lisk.com/rpc-v2";
+
+// 2. Connect to Lisk Service via WebSockets
+const socket = io(WS_RPC_ENDPOINT, {
+  forceNew: true,
+  transports: ['websocket']
+});
+
+// 3. Emit the remote procedure call
+socket.emit('request', {
+  jsonrpc: '2.0',
+  method: 'get.forgers',
+  params: {limit: "5", offset: "0"} },
+  answer => {
+    // console.log(answer);
+    jsome(answer);
+    process.exit(0);
+});
+----
+
+Run the above script with Node.js to receive the API response in the terminal:
+
+[source,bash]
+----
+node rpc.js
+----
+
+=== The Subscribe API
+
+The Subscribe API, or sometimes called the Publish/Subscribe or Event-Driven API uses a two-way streaming connection, which means that not only the client can request the server for a data update, but also the server can notify the client about new data instantly as it arrives.
+
+NOTE: Check out the xref:{url_api_subscribe}[] reference for an overview of all available RPC requests.
+
+Lisk Mainnet::
+* Public API: `{url_subscribe_api_mainnet}`
+
+Lisk Testnet::
+* Public API: `{url_subscribe_api_testnet}`
+
+==== Example: Subscribe to events with socket.io
+
+Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
+
+[source,bash]
+----
+npm i socket.io-client
+----
+
+.subscribe.js
+[source,js]
+----
+const io = require('socket.io-client');
+const jsome = require('jsome');
+
+jsome.params.colored = true;
+
+// Uses local Service node
+const WS_SUBSCRIBE_ENDPOINT = 'ws://localhost:9901/blockchain';
+// Uses public Service node
+//const WS_SUBSCRIBE_ENDPOINT = "wss://service.lisk.com/blockchain";
+
+const socket = io(WS_SUBSCRIBE_ENDPOINT, {
+	forceNew: true,
+	transports: ['websocket'],
+});
+
+const subscribe = event => {
+	socket.on(event, answer => {
+		console.log(`====== ${event} ======`);
+		// console.log(answer);
+		jsome(answer);
+	});
+};
+
+subscribe('update.block');
+subscribe('update.round');
+subscribe('update.forgers');
+subscribe('update.transactions.confirmed');
+subscribe('update.fee_estimates');
+
+// To log all events
+[
+	'connect', 'reconnect',
+	'connect_error', 'connect_timeout', 'error', 'disconnect',
+	'reconnect', 'reconnect_attempt',
+	'reconnecting', 'reconnect_error', 'reconnect_failed',
+].forEach(item => {
+	socket.on(item, res => {
+		console.log(`Event: ${item}, res: ${res || '-'}`);
+	});
+});
+
+// To log incoming data
+['status'].forEach(eventName => {
+	socket.on(eventName, newData => {
+		console.log(
+			`Received data from ${WS_SUBSCRIBE_ENDPOINT}/${eventName}: ${newData}`,
+		);
+	});
+});
+----
+
+Run the above script with Node.js to receive all published events from the Subscribe API:
+
+[source,bash]
+----
+node subscribe.js
+----

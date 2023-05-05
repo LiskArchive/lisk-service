@@ -80,10 +80,7 @@ services:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
       - LISK_APP_WS=${LISK_APP_WS}
-      # - USE_LISK_IPC_CLIENT=${USE_LISK_IPC_CLIENT}
-      # - LISK_APP_DATA_PATH=${LISK_APP_DATA_PATH}
       # - GENESIS_BLOCK_URL=
-      # - GENESIS_BLOCK_URL_DEFAULT=
       # - ENABLE_TESTING_MODE=
     restart: always
     extra_hosts:

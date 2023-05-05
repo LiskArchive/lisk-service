@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/reward/default',
 	rpcMethod: 'get.reward.default',
-	tags: ['Reward'],
+	tags: ['(Dynamic) Reward'],
 	params: {
 		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
 	},

@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-fee-estimator",
-  "version": "0.7.0-alpha.13",
+  "version": "0.7.0-beta.0",
   "description": "Lisk Service Fee Estimator",
   "keywords": [
     "lisk",
@@ -26,12 +26,13 @@
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-codec": "0.3.0-alpha.14",
-    "@liskhq/lisk-cryptography": "4.0.0-alpha.12",
-    "@liskhq/lisk-transactions": "6.0.0-alpha.17",
+    "@liskhq/lisk-codec": "0.3.0-beta.0",
+    "@liskhq/lisk-cryptography": "4.0.0-beta.0",
+    "@liskhq/lisk-transactions": "6.0.0-beta.0",
     "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/30e8e8df1948ccb049e2dd54f779187445aeb7ad/framework/dist/lisk-service-framework-1.4.13.tgz"
   },

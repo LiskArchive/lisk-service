@@ -308,13 +308,13 @@
 							"description": "The universal identifier for the token within the Lisk ecosystem for PoS module."
 						},
 						"unstakeHeight": {
-							"type": "string",
-							"example": "10000",
+							"type": "integer",
+							"example": 10000,
 							"description": "The block height at which the corresponding amount was unstaked."
 						},
 						"expectedUnlockableHeight": {
-							"type": "string",
-							"example": "270000",
+							"type": "integer",
+							"example": 270000,
 							"description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
 						},
 						"isLocked": {
@@ -336,10 +336,7 @@
 		"properties": {
 			"data": {
 				"description": "Array of PoS unlocks data.",
-				"type": "array",
-				"items": {
-					"$ref": "#/definitions/posUnlock"
-				}
+				"$ref": "#/definitions/posUnlock"
 			},
 			"meta": {
 				"$ref": "#/definitions/pagination"

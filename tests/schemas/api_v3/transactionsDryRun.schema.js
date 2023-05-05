@@ -23,7 +23,8 @@ const TRANSACTION_VERIFY_RESULT = {
 	OK: 1,
 };
 
-const TRANSACTION_VERIFY_STATUSES = Object.keys(TRANSACTION_VERIFY_RESULT);
+const TRANSACTION_VERIFY_STATUSES = Object
+	.keys(TRANSACTION_VERIFY_RESULT).map(e => e.toLowerCase());
 
 const event = {
 	data: Joi.object().required(),
@@ -32,7 +33,12 @@ const event = {
 	name: Joi.string().pattern(regex.EVENT_NAME).required(),
 	topics: Joi.array().items(Joi.string().pattern(regex.TOPIC)).required(),
 	height: Joi.number().integer().min(0).required(),
-	id: Joi.string().pattern(regex.HEX).required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
+};
+
+const eventSchemaWithSkipDecode = {
+	...event,
+	data: Joi.string().required(),
 };
 
 const dryrunTransactionSuccessResponseSchema = {
@@ -40,6 +46,13 @@ const dryrunTransactionSuccessResponseSchema = {
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
+
+const dryrunTxSuccessSchemaWithSkipDecode = {
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
+	events: Joi.array().items(Joi.object(eventSchemaWithSkipDecode).required()).min(1).required(),
+};
+
 const dryrunTransactionPendingResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.PENDING).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
@@ -52,9 +65,17 @@ const dryrunTransactionInvalidResponseSchema = {
 	errorMessage: Joi.string().required(),
 };
 
+const goodRequestSchemaFortransactionsDryRun = {
+	data: Joi.object().required(),
+	meta: Joi.object().optional(),
+};
+
 module.exports = {
 	dryrunTransactionSuccessResponseSchema: Joi.object(
 		dryrunTransactionSuccessResponseSchema,
+	).required(),
+	dryrunTxSuccessSchemaWithSkipDecode: Joi.object(
+		dryrunTxSuccessSchemaWithSkipDecode,
 	).required(),
 	dryrunTransactionPendingResponseSchema: Joi.object(
 		dryrunTransactionPendingResponseSchema,
@@ -62,5 +83,8 @@ module.exports = {
 	dryrunTransactionInvalidResponseSchema: Joi.object(
 		dryrunTransactionInvalidResponseSchema,
 	).required(),
-	metaSchema: Joi.object().required(),
+	metaSchema: Joi.object().optional(),
+	goodRequestSchemaFortransactionsDryRun: Joi.object(
+		goodRequestSchemaFortransactionsDryRun,
+	).required(),
 };

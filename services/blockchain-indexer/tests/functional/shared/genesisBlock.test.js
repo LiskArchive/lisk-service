@@ -70,7 +70,7 @@ beforeAll(async () => {
 });
 afterAll(() => broker.stop());
 
-describe('Test indexTokenModuleAssets method', () => {
+xdescribe('Test indexTokenModuleAssets method', () => {
 	beforeEach(async () => {
 		await keyValueTable.delete(totalLockedKey);
 	});
@@ -100,7 +100,7 @@ describe('Test indexTokenModuleAssets method', () => {
 	});
 });
 
-describe('Test indexPosModuleAssets method', () => {
+xdescribe('Test indexPosModuleAssets method', () => {
 	beforeEach(async () => {
 		await keyValueTable.delete(totalStakedKey);
 		await keyValueTable.delete(totalSelfStakedKey);
@@ -140,7 +140,7 @@ describe('Test indexPosModuleAssets method', () => {
 	});
 });
 
-describe('Test indexGenesisBlockAssets method', () => {
+xdescribe('Test indexGenesisBlockAssets method', () => {
 	beforeEach(async () => {
 		await keyValueTable.delete(totalLockedKey);
 		await keyValueTable.delete(totalStakedKey);

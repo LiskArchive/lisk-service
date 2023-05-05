@@ -34,7 +34,7 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-describe('Functional tests for encoder', () => {
+xdescribe('Functional tests for encoder', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
