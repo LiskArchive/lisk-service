@@ -61,34 +61,12 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
  * Message queue options
  */
 config.queue = {
-	accounts: {
-		name: 'Accounts',
-	},
 	accountBalanceIndex: {
 		name: 'AccountBalanceIndex',
 		concurrency: 1,
 	},
-	indexBlocksQueue: {
-		name: 'IndexBlocksQueue',
-		concurrency: 1,
-	},
-	updateBlockIndexQueue: {
-		name: 'UpdateBlockIndexQueue',
-		concurrency: 1,
-	},
-	deleteIndexedBlocksQueue: {
-		name: 'DeleteIndexedBlocksQueue',
-		concurrency: 1,
-	},
-	blocks: {
-		name: 'Blocks',
-	},
-	events: {
-		name: 'Events',
-	},
-	accountQueueByPublicKey: {
-		name: 'AccountQueueByPublicKey',
-		concurrency: 1,
+	accounts: {
+		name: 'Accounts',
 	},
 	accountQueueByAddress: {
 		name: 'AccountQueueByAddress',
@@ -96,6 +74,28 @@ config.queue = {
 	},
 	accountQueueDirect: {
 		name: 'AccountQueueDirect',
+		concurrency: 1,
+	},
+	accountQueueByPublicKey: {
+		name: 'AccountQueueByPublicKey',
+		concurrency: 1,
+	},
+	blocks: {
+		name: 'Blocks',
+	},
+	deleteIndexedBlocksQueue: {
+		name: 'DeleteIndexedBlocksQueue',
+		concurrency: 1,
+	},
+	events: {
+		name: 'Events',
+	},
+	indexBlocksQueue: {
+		name: 'IndexBlocksQueue',
+		concurrency: 1,
+	},
+	updateBlockIndexQueue: {
+		name: 'UpdateBlockIndexQueue',
 		concurrency: 1,
 	},
 	defaultJobOptions: {
