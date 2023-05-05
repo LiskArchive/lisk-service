@@ -85,4 +85,7 @@ const scheduleGenesisBlockAccountsBalanceUpdate = async () => {
 module.exports = {
 	scheduleAccountBalanceUpdateFromEvents,
 	scheduleGenesisBlockAccountsBalanceUpdate,
+
+	// For testing
+	updateAccountBalances,
 };
