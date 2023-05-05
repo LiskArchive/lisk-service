@@ -49,12 +49,10 @@ const getStakes = async params => {
 	// Filter stakes by user specified search param (validator name) and add to response
 	const accountInfoQueryFilter = {};
 	if (params.search) {
-		accountInfoQueryFilter.search = [{
+		accountInfoQueryFilter.orSearch = [{
 			property: 'name',
 			pattern: params.search,
-		}];
-
-		accountInfoQueryFilter.orSearch = [{
+		}, {
 			property: 'address',
 			pattern: params.search,
 		}, {

@@ -96,7 +96,7 @@ describe('get.pos.stakes', () => {
 	});
 
 	it('Returns list of stakes when requested for known staker address and search (partial validator name) param', async () => {
-		const searchParam = refValidator.name ? refValidator.name[0] : '';
+		const searchParam = refValidator.name ? refValidator.name.substring(0, 3) : '';
 		const response = await getStakes({ address: refStaker.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -108,7 +108,7 @@ describe('get.pos.stakes', () => {
 	});
 
 	it('Returns list of stakes when requested for known staker address and search (partial validator address) param', async () => {
-		const searchParam = refValidator.address ? refValidator.address[0] : '';
+		const searchParam = refValidator.address ? refValidator.address.substring(0, 3) : '';
 		const response = await getStakes({ address: refStaker.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -120,7 +120,7 @@ describe('get.pos.stakes', () => {
 	});
 
 	it('Returns list of stakes when requested for known staker address and search (partial validator public key) param', async () => {
-		const searchParam = refValidator.publicKey ? refValidator.publicKey[0] : '';
+		const searchParam = refValidator.publicKey ? refValidator.publicKey.substring(0, 3) : '';
 		const response = await getStakes({ address: refStaker.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

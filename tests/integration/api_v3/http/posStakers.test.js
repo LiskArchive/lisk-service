@@ -71,7 +71,7 @@ describe('Stakers API', () => {
 		});
 
 		it('Returns list of stakers when requested for known validator address and search param (partial staker name)', async () => {
-			const searchParam = refValidator.name ? refValidator.name[0] : '';
+			const searchParam = refValidator.name ? refValidator.name.substring(0, 3) : '';
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&search=${searchParam}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
@@ -81,7 +81,7 @@ describe('Stakers API', () => {
 		});
 
 		it('Returns list of stakers when requested for known validator address and search param (partial staker address)', async () => {
-			const searchParam = refValidator.address ? refValidator.address[0] : '';
+			const searchParam = refValidator.address ? refValidator.address.substring(0, 3) : '';
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&search=${searchParam}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
@@ -91,7 +91,7 @@ describe('Stakers API', () => {
 		});
 
 		it('Returns list of stakers when requested for known validator address and search param (partial staker public key)', async () => {
-			const searchParam = refValidator.publicKey ? refValidator.publicKey[0] : '';
+			const searchParam = refValidator.publicKey ? refValidator.publicKey.substring(0, 3) : '';
 			const response = await api.get(`${endpoint}?address=${refValidator.address}&search=${searchParam}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
