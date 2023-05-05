@@ -20,9 +20,10 @@ const {
 
 const config = require('../../../../config');
 const accountBalancesTableSchema = require('../../../../shared/database/schema/accountBalances');
-const { updateAccountBalances } = require('../../../../shared/indexer/accountBalanceIndex');
-const { getTokenModuleUserSubStoreInfo } = require('../../../../shared/indexer/genesisBlock');
+const { updateAccountBalances, accountBalanceIndexQueue } = require('../../../../shared/indexer/accountBalanceIndex');
+const { getTokenModuleUserSubStoreInfo, MODULE_SUB_STORE } = require('../../../../shared/indexer/genesisBlock');
 const request = require('../../../../shared/utils/request');
+const { MODULE } = require('../../../../shared/constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -40,37 +41,41 @@ const broker = new ServiceBroker({
 });
 
 let accountBalancesTable;
-let usersSubStoreInfo;
+let usersSubStoreInfos;
 
-describe('Test updateAccountBalances method', () => {
-	beforeAll(async () => {
-		await broker.start();
-		await request.setAppContext({
-			requestRpc: (method, params) => new Promise((resolve, reject) => {
-				broker
-					.call(method, params)
-					.then(res => resolve(res))
-					.catch(err => {
-						console.error(`Error occurred! ${err.message}`);
-						reject(err);
-					});
-			}),
-		});
-
-		accountBalancesTable = await getAccountBalancesTable();
-
-		usersSubStoreInfo = await getTokenModuleUserSubStoreInfo();
+beforeAll(async () => {
+	await broker.start();
+	await request.setAppContext({
+		requestRpc: (method, params) => new Promise((resolve, reject) => {
+			broker
+				.call(method, params)
+				.then(res => resolve(res))
+				.catch(err => {
+					console.error(`Error occurred! ${err.message}`);
+					reject(err);
+				});
+		}),
 	});
 
+	accountBalancesTable = await getAccountBalancesTable();
+
+	const tokenModuleData = await request.requestConnector(
+		'getGenesisAssetByModule',
+		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+	);
+	usersSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
+});
+
+describe('Test updateAccountBalances method', () => {
 	it('should update account balances correctly for address having balances', async () => {
-		const accountInfo = usersSubStoreInfo[0];
+		const accountInfo = usersSubStoreInfos[0];
 
 		// Delete all balances and check balance before update
 		await accountBalancesTable.delete({});
 		const balanceBeforeUpdate = await accountBalancesTable.find({ address: accountInfo.address, tokenID: accountInfo.tokenID }, ['balance']);
 		expect(balanceBeforeUpdate.length).toBe(0);
 
-		await updateAccountBalances({ data: { address: accountInfo.address } });
+		await updateAccountBalances(accountInfo.address);
 
 		// Check balance after update
 		const balanceAfterUpdate = await accountBalancesTable.find({ address: accountInfo.address, tokenID: accountInfo.tokenID }, ['balance']);
