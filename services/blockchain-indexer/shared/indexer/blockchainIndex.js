@@ -101,7 +101,7 @@ const getValidatorsTable = () => getTableInstance(
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
-const { scheduleAccountBalanceUpdateFromEvents, scheduleGenesisBlockAccountsBalanceUpdate } = require('./accountBalanceIndex');
+const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -121,7 +121,6 @@ const indexBlock = async job => {
 	try {
 		if (block.height === await getGenesisHeight()) {
 			await indexGenesisBlockAssets(dbTrx);
-			await scheduleGenesisBlockAccountsBalanceUpdate();
 		}
 
 		const events = await getEventsByHeight(block.height);

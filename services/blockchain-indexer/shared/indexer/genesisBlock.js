@@ -17,6 +17,7 @@ const { MODULE } = require('../constants');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 const { requestConnector } = require('../utils/request');
 const requestAll = require('../utils/requestAll');
+const { updateAccountBalances } = require('./accountBalanceIndex');
 
 const {
 	updateTotalStake,
@@ -32,7 +33,7 @@ const MODULE_SUB_STORE = Object.freeze({
 	},
 });
 
-const getTokenModuleUserSubStoreInfo = async () => {
+const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector(
 		'getGenesisAssetsLength',
 		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
@@ -46,11 +47,6 @@ const getTokenModuleUserSubStoreInfo = async () => {
 		totalUsers,
 	);
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
-	return userSubStoreInfos;
-};
-
-const indexTokenModuleAssets = async (dbTrx) => {
-	const userSubStoreInfos = await getTokenModuleUserSubStoreInfo();
 	const tokenIDLockedAmountChangeMap = {};
 
 	// eslint-disable-next-line no-restricted-syntax
@@ -64,6 +60,10 @@ const indexTokenModuleAssets = async (dbTrx) => {
 			}
 			tokenIDLockedAmountChangeMap[tokenID] += BigInt(lockedBalance.amount);
 		}
+
+		// Index account balance
+		// eslint-disable-next-line no-await-in-loop
+		await updateAccountBalances(userInfo.address);
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
@@ -116,5 +116,4 @@ module.exports = {
 	MODULE_SUB_STORE,
 	indexTokenModuleAssets,
 	indexPosModuleAssets,
-	getTokenModuleUserSubStoreInfo,
 };

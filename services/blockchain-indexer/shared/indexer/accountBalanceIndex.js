@@ -23,7 +23,6 @@ const {
 const config = require('../../config');
 const { MODULE } = require('../constants');
 const { getTokenBalances } = require('../dataService');
-const { getTokenModuleUserSubStoreInfo } = require('./genesisBlock');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -34,8 +33,7 @@ const getAccountBalancesTable = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const updateAccountBalances = async (job) => {
-	const { address } = job.data;
+const updateAccountBalances = async (address) => {
 	const accountBalancesTable = await getAccountBalancesTable();
 	const { data: balanceInfos } = await getTokenBalances({ address });
 
@@ -49,7 +47,8 @@ const updateAccountBalances = async (job) => {
 	await accountBalancesTable.upsert(updatedTokenBalances);
 };
 
-const accountBalanceIndexQueue = Queue(config.endpoints.cache, 'accountBalanceIndexQueue', updateAccountBalances, 1);
+const accountBalanceIndexProcessor = async job => updateAccountBalances(job.data.address);
+const accountBalanceIndexQueue = Queue(config.endpoints.cache, 'accountBalanceIndexQueue', accountBalanceIndexProcessor, 1);
 
 const scheduleAccountBalanceUpdateFromEvents = async (events) => {
 	const tokenModuleEvents = events.filter(event => event.module === MODULE.TOKEN);
@@ -72,20 +71,10 @@ const scheduleAccountBalanceUpdateFromEvents = async (events) => {
 	);
 };
 
-const scheduleGenesisBlockAccountsBalanceUpdate = async () => {
-	const usersSubStoreInfo = await getTokenModuleUserSubStoreInfo();
-
-	await BluebirdPromise.map(
-		usersSubStoreInfo,
-		async userInfo => accountBalanceIndexQueue.add({ address: userInfo.address }),
-		{ concurrency: usersSubStoreInfo.length },
-	);
-};
-
 module.exports = {
 	scheduleAccountBalanceUpdateFromEvents,
-	scheduleGenesisBlockAccountsBalanceUpdate,
+	updateAccountBalances,
 
 	// For testing
-	updateAccountBalances,
+	accountBalanceIndexQueue,
 };
