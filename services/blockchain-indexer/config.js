@@ -64,9 +64,6 @@ config.queue = {
 	accounts: {
 		name: 'Accounts',
 	},
-	accountBalances: {
-		name: 'AccountBalances',
-	},
 	blocks: {
 		name: 'Blocks',
 	},

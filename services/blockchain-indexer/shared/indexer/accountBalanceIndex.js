@@ -36,7 +36,6 @@ const getAccountBalancesTable = () => getTableInstance(
 
 const updateAccountBalances = async (job) => {
 	const { address } = job.data;
-
 	const accountBalancesTable = await getAccountBalancesTable();
 	const { data: balanceInfos } = await getTokenBalances({ address });
 
@@ -58,7 +57,7 @@ const scheduleAccountBalanceUpdateFromEvents = async (events) => {
 	await BluebirdPromise.map(
 		tokenModuleEvents,
 		async event => {
-			const { data: eventData = [] } = event;
+			const { data: eventData = {} } = event;
 			const addressKeys = Object.keys(eventData).filter(eventDataKey => eventDataKey.toLowerCase().includes('address'));
 
 			await BluebirdPromise.map(
