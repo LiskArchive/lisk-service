@@ -20,6 +20,7 @@ const {
 	postTransactions,
 	getSchemas,
 	dryRunTransactions,
+	calculateTransactionFees,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -68,6 +69,13 @@ module.exports = [
 			transaction: { optional: false, type: 'any' },
 			skipVerify: { optional: true, type: 'boolean', default: false },
 			skipDecode: { optional: true, type: 'boolean', default: false },
+		},
+	},
+	{
+		name: 'transactions.calculate-fees',
+		controller: calculateTransactionFees,
+		params: {
+			transaction: { optional: false, type: 'any' },
 		},
 	},
 ];

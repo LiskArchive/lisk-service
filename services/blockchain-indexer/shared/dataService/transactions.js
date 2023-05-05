@@ -132,6 +132,11 @@ const dryRunTransactions = async params => {
 	return response;
 };
 
+const calculateTransactionFees = async params => {
+	const response = await dataService.calculateTransactionFees(params);
+	return response;
+};
+
 module.exports = {
 	getTransactions,
 	getPendingTransactions,
@@ -140,4 +145,5 @@ module.exports = {
 	postTransactions,
 	getTransactionsByBlockID: dataService.getTransactionsByBlockID,
 	dryRunTransactions,
+	calculateTransactionFees,
 };
