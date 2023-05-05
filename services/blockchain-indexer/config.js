@@ -98,14 +98,6 @@ config.queue = {
 		name: 'AccountQueueDirect',
 		concurrency: 1,
 	},
-	scheduleTransactionExportQueue: {
-		name: 'ScheduleTransactionExportQueue',
-		concurrency: 50,
-	},
-	transactionStats: {
-		name: 'TransactionStats',
-		concurrency: 1,
-	},
 	defaultJobOptions: {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // millisecs
