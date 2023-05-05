@@ -303,7 +303,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 				params.orSearch.forEach((orSearch, index) => {
 					const { property, pattern, startsWith, endsWith } = orSearch;
 
-					if (index == 0) {
+					if (index === 0) {
 						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
 						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
 						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
@@ -509,7 +509,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 				params.orSearch.forEach((orSearch, index) => {
 					const { property, pattern, startsWith, endsWith } = orSearch;
 
-					if (index == 0) {
+					if (index === 0) {
 						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
 						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
 						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
