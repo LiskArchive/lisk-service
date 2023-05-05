@@ -51,23 +51,25 @@ const accountBalanceIndexProcessor = async job => updateAccountBalances(job.data
 const accountBalanceIndexQueue = Queue(config.endpoints.cache, 'accountBalanceIndexQueue', accountBalanceIndexProcessor, 1);
 
 const scheduleAccountBalanceUpdateFromEvents = async (events) => {
-	const tokenModuleEvents = events.filter(event => event.module === MODULE.TOKEN);
-
 	await BluebirdPromise.map(
-		tokenModuleEvents,
+		events,
 		async event => {
-			const { data: eventData = {} } = event;
-			const addressKeys = Object.keys(eventData).filter(eventDataKey => eventDataKey.toLowerCase().includes('address'));
+			// Skip non token module events
+			if (event.module !== MODULE.TOKEN) return;
 
+			const { data: eventData = {} } = event;
 			await BluebirdPromise.map(
-				addressKeys,
-				async addressKey => {
-					await accountBalanceIndexQueue.add({ address: eventData[addressKey] });
+				Object.keys(eventData),
+				async eventDataKey => {
+					// Schedule account balance update for address related properties
+					if (eventDataKey.toLowerCase().includes('address')) {
+						await accountBalanceIndexQueue.add({ address: eventData[eventDataKey] });
+					}
 				},
-				{ concurrency: addressKeys.length },
+				{ concurrency: Object.keys(eventData).length },
 			);
 		},
-		{ concurrency: tokenModuleEvents.length },
+		{ concurrency: events.length },
 	);
 };
 
