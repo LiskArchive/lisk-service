@@ -181,24 +181,20 @@ const getBlockchainAppsMetadata = async (params) => {
 	}
 
 	if (params.isDefault !== true && blockchainAppsMetadata.data.length < params.limit) {
-		const originalOffset = params.offset;
+		let offset = { params };
 
-		// If params.isDefault is not passed as a parameter then adjust the offset
-		if (params.isDefault !== false) {
+		// If params.isDefault is not passed in the request then adjust the offset
+		if (!('isDefault' in params)) {
 			const totalDefaultApps = await applicationMetadataTable.count(
 				{ ...params, limit, isDefault: true },
 			);
-
-			params.offset = params.offset - totalDefaultApps > 0 ? params.offset - totalDefaultApps : 0;
+			offset = (params.offset - totalDefaultApps) > 0 ? params.offset - totalDefaultApps : 0;
 		}
 
 		const nonDefaultApps = await applicationMetadataTable.find(
-			{ ...params, limit, isDefault: false },
+			{ ...params, offset, limit, isDefault: false },
 			['network', 'appDirName', 'isDefault'],
 		);
-
-		// Reset the offset to the original value
-		params.offset = originalOffset;
 
 		blockchainAppsMetadata.data.push(...nonDefaultApps);
 	}
