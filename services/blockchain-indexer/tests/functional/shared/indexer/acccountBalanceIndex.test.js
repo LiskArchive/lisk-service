@@ -104,7 +104,7 @@ describe('Test scheduleAccountBalanceUpdateFromEvents method', () => {
 
 		await scheduleAccountBalanceUpdateFromEvents(eventsIncludingTokenModule);
 
-		// Check balance after update
+		// Check queue job count after update
 		const queueCountAfterScheduling = await accountBalanceIndexQueue.queue.count();
 		expect(queueCountAfterScheduling).toBeGreaterThanOrEqual(1);
 	});

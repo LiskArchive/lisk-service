@@ -14,7 +14,6 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-
 const {
 	MySQL: { getTableInstance },
 	Queue,
