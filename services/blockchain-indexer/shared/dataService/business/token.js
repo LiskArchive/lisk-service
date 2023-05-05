@@ -56,7 +56,7 @@ const getTokenBalances = async (params) => {
 		if (response.balances) tokensInfo.push(...response.balances);
 	}
 
-	tokens.data = params.offset && params.limit
+	tokens.data = 'offset' in params && 'limit' in params
 		? tokensInfo.slice(params.offset, params.offset + params.limit)
 		: tokensInfo;
 

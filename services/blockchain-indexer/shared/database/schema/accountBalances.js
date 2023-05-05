@@ -19,10 +19,11 @@ module.exports = {
 	schema: {
 		address: { type: 'string', null: false },
 		tokenID: { type: 'string', null: false },
-		balance: { type: 'bigInteger', null: false },
+		balance: { type: 'bigInteger', null: false, default: BigInt('0') },
 	},
 	indexes: {
 		address: { type: 'key' },
+		tokenID: { type: 'key' },
 	},
 	purge: {},
 };
