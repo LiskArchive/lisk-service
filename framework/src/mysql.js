@@ -299,11 +299,20 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.orSearch) {
 			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
 
-			params.orSearch.forEach(orSearch => {
-				const { property, pattern, startsWith, endsWith } = orSearch;
-				if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
-				if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
-				if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+			query.andWhere(function () {
+				params.orSearch.forEach((orSearch, index) => {
+					const { property, pattern, startsWith, endsWith } = orSearch;
+
+					if (index == 0) {
+						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
+					} else {
+						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
+					}
+				});
 			});
 		}
 
@@ -496,11 +505,20 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.orSearch) {
 			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
 
-			params.orSearch.forEach(orSearch => {
-				const { property, pattern, startsWith, endsWith } = orSearch;
-				if (pattern) query.orWhere(`${property}`, 'like', `%${pattern}%`);
-				if (startsWith) query.orWhere(`${property}`, 'like', `${startsWith}%`);
-				if (endsWith) query.orWhere(`${property}`, 'like', `%${endsWith}`);
+			query.andWhere(function () {
+				params.orSearch.forEach((orSearch, index) => {
+					const { property, pattern, startsWith, endsWith } = orSearch;
+
+					if (index == 0) {
+						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
+					} else {
+						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
+					}
+				});
 			});
 		}
 
