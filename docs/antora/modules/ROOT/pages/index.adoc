@@ -110,6 +110,14 @@ It allows all services to share a similar interface and design pattern.
 The objective of the Template service is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 |===
 
+==== Remarks
+
+* Lisk Service by default attempts to connect to a local node via WebSocket on port `7887` or IPC on `~/.lisk/lisk-core` by default.
+* The default installation method is based on Docker.
+* Please note that certain token conversion rates in the Market service require their API keys.
+* For the events information to be always available in the API, please set the `system.keepEventsForHeights: -1` in the Lisk application node config.
+
+
 [[usage]]
 == APIs & Usage
 
