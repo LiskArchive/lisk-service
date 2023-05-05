@@ -61,15 +61,16 @@ const scheduleAccountBalanceUpdateFromEvents = async (events) => {
 			if (event.module !== MODULE.TOKEN) return;
 
 			const { data: eventData = {} } = event;
+			const eventDataKeys = Object.keys(eventData);
 			await BluebirdPromise.map(
-				Object.keys(eventData),
-				async eventDataKey => {
+				eventDataKeys,
+				async key => {
 					// Schedule account balance update for address related properties
-					if (eventDataKey.toLowerCase().includes('address')) {
-						await accountBalanceIndexQueue.add({ address: eventData[eventDataKey] });
+					if (key.toLowerCase().includes('address')) {
+						await accountBalanceIndexQueue.add({ address: eventData[key] });
 					}
 				},
-				{ concurrency: Object.keys(eventData).length },
+				{ concurrency: eventDataKeys.length },
 			);
 		},
 		{ concurrency: events.length },
