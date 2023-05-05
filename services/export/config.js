@@ -70,7 +70,7 @@ config.csv.baseUrl = '/api/v3/exports';
  * Message queue options
  */
 config.queue = {
-	scheduleTransactionExportQueue: {
+	scheduleTransactionExport: {
 		name: 'ScheduleTransactionExportQueue',
 		concurrency: 50,
 	},

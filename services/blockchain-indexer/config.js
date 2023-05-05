@@ -83,18 +83,18 @@ config.queue = {
 	blocks: {
 		name: 'Blocks',
 	},
-	deleteIndexedBlocksQueue: {
+	deleteIndexedBlocks: {
 		name: 'DeleteIndexedBlocksQueue',
 		concurrency: 1,
 	},
 	events: {
 		name: 'Events',
 	},
-	indexBlocksQueue: {
+	indexBlocks: {
 		name: 'IndexBlocksQueue',
 		concurrency: 1,
 	},
-	updateBlockIndexQueue: {
+	updateBlockIndex: {
 		name: 'UpdateBlockIndexQueue',
 		concurrency: 1,
 	},

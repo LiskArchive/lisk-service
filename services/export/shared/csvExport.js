@@ -250,9 +250,9 @@ const exportTransactionsCSV = async (job) => {
 
 const scheduleTransactionExportQueue = Queue(
 	config.endpoints.redis,
-	config.queue.scheduleTransactionExportQueue.name,
+	config.queue.scheduleTransactionExport.name,
 	exportTransactionsCSV,
-	config.queue.scheduleTransactionExportQueue.concurrency,
+	config.queue.scheduleTransactionExport.concurrency,
 );
 
 const scheduleTransactionHistoryExport = async (params) => {

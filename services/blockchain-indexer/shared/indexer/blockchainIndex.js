@@ -352,21 +352,21 @@ const deleteIndexedBlocks = async job => {
 // Initialize queues
 const indexBlocksQueue = Queue(
 	config.endpoints.cache,
-	config.queue.indexBlocksQueue.name,
+	config.queue.indexBlocks.name,
 	indexBlock,
-	config.queue.indexBlocksQueue.concurrency,
+	config.queue.indexBlocks.concurrency,
 );
 const updateBlockIndexQueue = Queue(
 	config.endpoints.cache,
-	config.queue.updateBlockIndexQueue.name,
+	config.queue.updateBlockIndex.name,
 	updateBlockIndex,
-	config.queue.updateBlockIndexQueue.concurrency,
+	config.queue.updateBlockIndex.concurrency,
 );
 const deleteIndexedBlocksQueue = Queue(
 	config.endpoints.cache,
-	config.queue.deleteIndexedBlocksQueue.name,
+	config.queue.deleteIndexedBlocks.name,
 	deleteIndexedBlocks,
-	config.queue.deleteIndexedBlocksQueue.concurrency,
+	config.queue.deleteIndexedBlocks.concurrency,
 );
 
 const getLiveIndexingJobCount = async () => {
