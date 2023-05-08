@@ -13,6 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+/* eslint-disable no-unused-vars */
+
 const { math: { q96 } } = require('@liskhq/lisk-utils');
 const {
 	CacheRedis,
@@ -71,48 +74,53 @@ const getAddressByName = async (name) => {
 	return null;
 };
 
-const calcCommission = async (generatorAddress, reward) => {
-	const commissionsTable = await getCommissionsTable();
-	const [{ commission: currentCommission } = {}] = await commissionsTable
-		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
+// TODO: Remove hardcode response
+const calcCommission = async (generatorAddress, reward) => q96(reward).floor();
+const calcSelfStakeReward = async (generatorAddress, reward, commission) => q96(reward)
+	.sub(q96(commission)).floor();
 
-	const rewardQ = q96(reward);
-	const currentCommissionQ = q96(BigInt(currentCommission || 0));
-	const commission = (rewardQ.mul(currentCommissionQ)).div(maxCommissionQ);
-	return commission.floor();
-};
+// const calcCommission = async (generatorAddress, reward) => {
+// 	const commissionsTable = await getCommissionsTable();
+// 	const [{ commission: currentCommission } = {}] = await commissionsTable
+// 		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
 
-const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
-	let selfStakeReward = q96(BigInt('0'));
+// 	const rewardQ = q96(reward);
+// 	const currentCommissionQ = q96(BigInt(currentCommission || 0));
+// 	const commission = (rewardQ.mul(currentCommissionQ)).div(maxCommissionQ);
+// 	return commission.floor();
+// };
 
-	const stakesTable = await getStakesTable();
-	const stakerInfo = await stakesTable.find(
-		{ validatorAddress: generatorAddress }, ['stakerAddress', 'amount'],
-	);
+// const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
+// 	let selfStakeReward = q96(BigInt('0'));
 
-	if (stakerInfo.length) {
-		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
-		const { amount: selfStake } = selfStakesInfo.reduce(
-			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
-			{ amount: BigInt('0') },
-		);
-		const { amount: totalStake } = stakerInfo.reduce(
-			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
-			{ amount: BigInt('0') },
-		);
+// 	const stakesTable = await getStakesTable();
+// 	const stakerInfo = await stakesTable.find(
+// 		{ validatorAddress: generatorAddress }, ['stakerAddress', 'amount'],
+// 	);
 
-		const rewardQ = q96(reward);
-		const commissionQ = q96(commission);
-		const selfStakeQ = q96(selfStake);
-		const totalStakeQ = q96(totalStake);
-		const remCommissionQ = q96(maxCommissionQ.sub(commissionQ));
+// 	if (stakerInfo.length) {
+// 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
+// 		const { amount: selfStake } = selfStakesInfo.reduce(
+// 			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
+// 			{ amount: BigInt('0') },
+// 		);
+// 		const { amount: totalStake } = stakerInfo.reduce(
+// 			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
+// 			{ amount: BigInt('0') },
+// 		);
 
-		const rewardFractionQ = rewardQ.mul(remCommissionQ);
-		selfStakeReward = (rewardFractionQ.mul(selfStakeQ)).div(totalStakeQ.mul(maxCommissionQ));
-	}
+// 		const rewardQ = q96(reward);
+// 		const commissionQ = q96(commission);
+// 		const selfStakeQ = q96(selfStake);
+// 		const totalStakeQ = q96(totalStake);
+// 		const remCommissionQ = maxCommissionQ.sub(commissionQ);
 
-	return selfStakeReward.floor();
-};
+// 		const rewardFractionQ = rewardQ.mul(remCommissionQ);
+// 		selfStakeReward = (rewardFractionQ.mul(selfStakeQ)).div(totalStakeQ.mul(maxCommissionQ));
+// 	}
+
+// 	return selfStakeReward.floor();
+// };
 
 module.exports = {
 	getNameByAddress,
