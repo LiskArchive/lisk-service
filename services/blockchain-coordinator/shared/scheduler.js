@@ -80,7 +80,12 @@ const scheduleValidatorsIndexing = async (validators) => {
 		{ concurrency: validators.length },
 	);
 
-	logger.info('Finished scheduling of validators indexing');
+	logger.info('Finished scheduling of validators indexing.');
+};
+
+const indexGenesisBlock = async () => {
+	const genesisHeight = await getGenesisHeight();
+	await scheduleBlocksIndexing(genesisHeight);
 };
 
 const initIndexingScheduler = async () => {
@@ -96,7 +101,7 @@ const initIndexingScheduler = async () => {
 	// Check for missing blocks
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
-	const missingBlocksByHeight = await getMissingBlocks(genesisHeight, currentHeight);
+	const missingBlocksByHeight = await getMissingBlocks(genesisHeight + 1, currentHeight);
 
 	// Schedule indexing for the missing blocks
 	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
@@ -140,6 +145,7 @@ const scheduleMissingBlocksIndexing = async () => {
 };
 
 const init = async () => {
+	await indexGenesisBlock();
 	await initIndexingScheduler();
 	await initEventsScheduler();
 };

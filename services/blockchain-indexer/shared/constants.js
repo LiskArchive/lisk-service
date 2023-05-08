@@ -98,6 +98,7 @@ const MODULE_SUB_STORE = Object.freeze({
 	},
 	POS: {
 		STAKERS: 'stakers',
+		VALIDATORS: 'validators',
 	},
 });
 

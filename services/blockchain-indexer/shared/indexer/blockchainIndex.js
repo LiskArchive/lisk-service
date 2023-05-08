@@ -45,7 +45,7 @@ const {
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('../utils/events');
-const { calcCommission, calcSelfStakeReward } = require('../utils/validator');
+const { calcCommissionAmount, calcSelfStakeReward } = require('../utils/validator');
 
 const {
 	getFinalizedHeight,
@@ -182,16 +182,15 @@ const indexBlock = async job => {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
 
 				if (blockReward !== BigInt('0')) {
-					// TODO: Verify logic
-					const commission = await calcCommission(block.generatorAddress, blockReward);
+					const commissionAmount = await calcCommissionAmount(
+						block.generatorAddress, block.height, blockReward,
+					);
 					const selfStakeReward = await calcSelfStakeReward(
-						block.generatorAddress,
-						blockReward,
-						commission,
+						block.generatorAddress, blockReward, commissionAmount,
 					);
 
 					await validatorsTable.increment({
-						increment: { totalCommission: BigInt(commission) },
+						increment: { totalCommission: BigInt(commissionAmount) },
 						where: { address: block.generatorAddress },
 					}, dbTrx);
 					await validatorsTable.increment({
@@ -229,10 +228,10 @@ const indexBlock = async job => {
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
 		await commitDbTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}`);
+		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
 	} catch (error) {
 		await rollbackDbTransaction(dbTrx);
-		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}`);
+		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
 		if (['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e))) {
 			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later.`;
@@ -259,7 +258,7 @@ const deleteIndexedBlocks = async job => {
 	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
-	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
+	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	try {
 		await BluebirdPromise.map(
 			blocks,
@@ -326,9 +325,9 @@ const deleteIndexedBlocks = async job => {
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
 		await commitDbTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
+		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	} catch (error) {
-		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
+		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 		await rollbackDbTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
