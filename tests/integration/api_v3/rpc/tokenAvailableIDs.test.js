@@ -51,7 +51,7 @@ describe('get.token.available-ids', () => {
 
 		const isSortedAscending = result.data.tokenIDs.every((tokenID, index) => {
 			if (index === 0) return true;
-			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') >= 0;
+			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') > 0;
 		});
 		expect(isSortedAscending).toBe(true);
 	});
@@ -66,7 +66,7 @@ describe('get.token.available-ids', () => {
 
 		const isSortedDescending = result.data.tokenIDs.every((tokenID, index) => {
 			if (index === 0) return true;
-			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') <= 0;
+			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') < 0;
 		});
 		expect(isSortedDescending).toBe(true);
 	});
