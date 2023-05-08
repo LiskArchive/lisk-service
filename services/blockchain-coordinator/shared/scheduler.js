@@ -24,7 +24,7 @@ const logger = Logger();
 
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
-	getMissingblocks,
+	getMissingBlocks,
 	getCurrentHeight,
 	getGenesisHeight,
 	getIndexVerifiedHeight,
@@ -96,7 +96,7 @@ const initIndexingScheduler = async () => {
 	// Check for missing blocks
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
-	const missingBlocksByHeight = await getMissingblocks(genesisHeight, currentHeight);
+	const missingBlocksByHeight = await getMissingBlocks(genesisHeight, currentHeight);
 
 	// Schedule indexing for the missing blocks
 	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
@@ -116,7 +116,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const blockIndexHigherRange = currentHeight;
 	const blockIndexLowerRange = lastVerifiedHeight;
 
-	const missingBlocksByHeight = await getMissingblocks(
+	const missingBlocksByHeight = await getMissingBlocks(
 		blockIndexLowerRange,
 		blockIndexHigherRange,
 	);

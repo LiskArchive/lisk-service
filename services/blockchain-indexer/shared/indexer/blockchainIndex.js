@@ -108,7 +108,7 @@ const validateBlock = (block) => !!block && block.height >= 0;
 
 const indexBlock = async job => {
 	const { block } = job.data;
-	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height} }.`);
+	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const blocksTable = await getBlocksTable();
 	const connection = await getDbConnection(MYSQL_ENDPOINT);
@@ -357,7 +357,7 @@ const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [blo
 
 const indexNewBlock = async block => {
 	const blocksTable = await getBlocksTable();
-	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
+	logger.info(`Indexing new block: ${block.id} at height ${block.height}.`);
 
 	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 	// Schedule indexing of incoming block if it is not indexed before
@@ -394,7 +394,7 @@ const indexNewBlock = async block => {
 
 const buildIndex = async (from, to) => {
 	if (from > to) {
-		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}.`);
 		return;
 	}
 
@@ -409,21 +409,21 @@ const buildIndex = async (from, to) => {
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
 		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
-		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
+		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%).`);
 
 		for (let height = batchFromHeight; height <= batchToHeight; height++) {
 			await indexBlocksQueue.add({ height });
 		}
 		/* eslint-enable no-await-in-loop */
 	}
-	logger.info(`Finished scheduling the block index build (${from}-${to})`);
+	logger.info(`Finished scheduling the block index build (${from}-${to}).`);
 };
 
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
 
 	const totalNumOfBlocks = toHeight - fromHeight + 1;
-	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks)`);
+	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks).`);
 
 	const blocksTable = await getBlocksTable();
 	const propBetweens = [{
@@ -453,7 +453,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	}
 
 	const logContent = result.map(o => `${o.from}-${o.to} (${o.to - o.from + 1} blocks)`);
-	logContent.forEach(o => logger.info(`Missing blocks in range: ${o}`));
+	logContent.forEach(o => logger.info(`Missing blocks in range: ${o}.`));
 
 	return result;
 };
@@ -475,7 +475,7 @@ const updateNonFinalBlocks = async () => {
 	const minNFHeight = await getMinNonFinalHeight();
 
 	if (typeof minNFHeight === 'number') {
-		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
+		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks.`);
 		await buildIndex(minNFHeight, cHeight);
 	}
 };
