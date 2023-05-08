@@ -13,15 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { MODULE, MODULE_SUB_STORE } = require('../constants');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
+const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 const { requestConnector } = require('../utils/request');
-const requestAll = require('../utils/requestAll');
-
 const {
 	updateTotalStake,
 	updateTotalSelfStake,
 } = require('./transactionProcessor/pos/stake');
+
+const requestAll = require('../utils/requestAll');
+const config = require('../../config');
+const commissionsTableSchema = require('../database/schema/commissions');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getCommissionsTable = () => getTableInstance(
+	commissionsTableSchema.tableName,
+	commissionsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector(
@@ -55,39 +67,65 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 };
 
-const indexPosModuleAssets = async (dbTrx) => {
-	const genesisBlockAssetsLength = await requestConnector(
-		'getGenesisAssetsLength',
-		{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
-	);
-	const totalStakers = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.STAKERS];
+const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
+	if (numValidators > 0) {
+		const commissionsTable = await getCommissionsTable();
 
+		const posModuleData = await requestAll(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS },
+			numValidators,
+		);
+
+		const validators = posModuleData[MODULE_SUB_STORE.POS.VALIDATORS];
+		const genesisHeight = await getGenesisHeight();
+
+		const commissionEntries = validators.map(validator => ({
+			address: validator.address,
+			commission: validator.commission,
+			height: genesisHeight,
+		}));
+
+		await commissionsTable.upsert(commissionEntries, dbTrx);
+	}
+};
+
+const indexPosStakesInfo = async (numStakers, dbTrx) => {
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);
 
-	if (totalStakers > 0) {
+	if (numStakers > 0) {
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
 			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
-			totalStakers,
+			numStakers,
 		);
-		const stakersInfo = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
+		const stakers = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
 
-		// eslint-disable-next-line no-restricted-syntax
-		for (const stakerInfo of stakersInfo) {
-			// eslint-disable-next-line no-restricted-syntax
-			for (const stake of stakerInfo.stakes) {
-				totalStakeChange += BigInt(stake.amount);
-				if (stakerInfo.address === stake.validatorAddress) {
-					totalSelfStakeChange += BigInt(stake.amount);
-				}
-			}
-		}
+		stakers.forEach(staker => {
+			const { address: stakerAddress, stakes } = staker;
+
+			stakes.forEach(stake => {
+				const { validatorAddress, amount } = stake;
+				totalStakeChange += BigInt(amount);
+				if (stakerAddress === validatorAddress) { totalSelfStakeChange += BigInt(amount); }
+			});
+		});
 	}
 
 	await updateTotalStake(totalStakeChange, dbTrx);
 	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
+};
+
+const indexPosModuleAssets = async (dbTrx) => {
+	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.POS });
+	const numValidators = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.VALIDATORS];
+	const numStakers = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.STAKERS];
+
+	await indexPosValidatorsInfo(numValidators, dbTrx);
+	await indexPosStakesInfo(numStakers, dbTrx);
 };
 
 const indexGenesisBlockAssets = async (dbTrx) => {
