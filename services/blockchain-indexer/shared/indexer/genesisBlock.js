@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { MODULE } = require('../constants');
+const { MODULE, MODULE_SUB_STORE } = require('../constants');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 const { requestConnector } = require('../utils/request');
 const requestAll = require('../utils/requestAll');
@@ -22,15 +22,6 @@ const {
 	updateTotalStake,
 	updateTotalSelfStake,
 } = require('./transactionProcessor/pos/stake');
-
-const MODULE_SUB_STORE = Object.freeze({
-	TOKEN: {
-		USER: 'userSubstore',
-	},
-	POS: {
-		STAKERS: 'stakers',
-	},
-});
 
 const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector(
@@ -108,7 +99,6 @@ module.exports = {
 	indexGenesisBlockAssets,
 
 	// For testing
-	MODULE_SUB_STORE,
 	indexTokenModuleAssets,
 	indexPosModuleAssets,
 };
