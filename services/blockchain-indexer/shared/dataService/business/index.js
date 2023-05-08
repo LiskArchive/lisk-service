@@ -52,9 +52,11 @@ const {
 
 const {
 	tokenHasUserAccount,
+	getAvailableTokenIDs,
 	getTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getTokenTopBalances,
 } = require('./token');
 
 const {
@@ -135,9 +137,11 @@ module.exports = {
 
 	// Token
 	tokenHasUserAccount,
+	getAvailableTokenIDs,
 	getTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getTokenTopBalances,
 
 	// PoS
 	getPosValidators,
