@@ -90,7 +90,7 @@ const checkIndexReadiness = async () => {
 	if (!getIndexReadyStatus() // status is set only once
 		&& await validateIndexReadiness()) { // last block is being indexed atm
 		setIndexReadyStatus(true);
-		logger.info('The blockchain index is complete');
+		logger.info('The blockchain index is complete.');
 		logger.debug(`'blockIndexReady' signal: ${Signals.get('blockIndexReady')}`);
 		Signals.get('blockIndexReady').dispatch(true);
 	}

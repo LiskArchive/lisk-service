@@ -15,7 +15,8 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { deleteEventStrTillFinalizedHeight } = require('../../shared/utils/events');
+const { getFinalizedHeight } = require('../../shared/constants');
+const { deleteEventStrTillHeight } = require('../../shared/utils/events');
 const config = require('../../config');
 
 module.exports = [
@@ -26,9 +27,10 @@ module.exports = [
 		controller: async () => {
 			try {
 				if (!config.db.isPersistEvents) {
-					logger.debug('Deleting the serialized events until finalized height...');
-					await deleteEventStrTillFinalizedHeight();
-					logger.info('Deleted the serialized events until finalized height...');
+					const finalizedHeight = await getFinalizedHeight();
+					logger.debug(`Deleting the serialized events until the finalized height: ${finalizedHeight}.`);
+					await deleteEventStrTillHeight(finalizedHeight);
+					logger.info(`Deleted the serialized events until the finalized height: ${finalizedHeight}.`);
 				}
 			} catch (err) {
 				logger.warn(`Deleting serialized events failed due to: ${err.message}`);

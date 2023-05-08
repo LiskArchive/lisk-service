@@ -84,18 +84,28 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
-const MODULE = {
+const MODULE = Object.freeze({
 	POS: 'pos',
 	AUTH: 'auth',
 	DYNAMIC_REWARD: 'dynamicReward',
 	REWARD: 'reward',
 	TOKEN: 'token',
-};
+});
 
-const COMMAND = {
+const MODULE_SUB_STORE = Object.freeze({
+	TOKEN: {
+		USER: 'userSubstore',
+	},
+	POS: {
+		STAKERS: 'stakers',
+		VALIDATORS: 'validators',
+	},
+});
+
+const COMMAND = Object.freeze({
 	REGISTER_VALIDATOR: 'registerValidator',
 	STAKE: 'stake',
-};
+});
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const LENGTH_TOKEN_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
@@ -149,6 +159,7 @@ module.exports = {
 	LENGTH_TOKEN_ID,
 	LENGTH_NETWORK_ID,
 	MODULE,
+	MODULE_SUB_STORE,
 	COMMAND,
 	EVENT,
 	MAX_COMMISSION,

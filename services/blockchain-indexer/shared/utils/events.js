@@ -25,7 +25,7 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../config');
 
-const { getFinalizedHeight, getGenesisHeight } = require('../constants');
+const { getGenesisHeight } = require('../constants');
 
 const keyValueTable = require('../database/mysqlKVStore');
 const eventsTableSchema = require('../database/schema/events');
@@ -80,10 +80,9 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
-const deleteEventStrTillFinalizedHeight = async () => {
+const deleteEventStrTillHeight = async (toHeight) => {
 	const eventsTable = await getEventsTable();
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
-	const toHeight = await getFinalizedHeight();
 
 	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
@@ -111,10 +110,5 @@ const deleteEventStrTillFinalizedHeight = async () => {
 
 module.exports = {
 	getEventsInfoToIndex,
-	deleteEventStrTillFinalizedHeight,
-};
-
-module.exports = {
-	getEventsInfoToIndex,
-	deleteEventStrTillFinalizedHeight,
+	deleteEventStrTillHeight,
 };

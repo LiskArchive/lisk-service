@@ -15,8 +15,12 @@
  */
 const requireAll = require('require-all');
 
+const { Logger } = require('lisk-service-framework');
+
 const { requestConnector } = require('../../utils/request');
 const { getAllDirectories } = require('../../utils/file');
+
+const logger = Logger();
 
 // Is a map of maps, where the first level keys are moduleIDs, value are maps
 // The keys for the second-level map are commandIDs, values are custom 'applyTransaction' methods
@@ -62,10 +66,16 @@ const buildModuleCommandProcessorMap = async () => {
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
-	if (!moduleProcessorMap.has(tx.module)) throw Error(`No processors implemented for transactions related to module: ${tx.module}`);
+	if (!moduleProcessorMap.has(tx.module)) {
+		logger.warn(`No processors implemented for transactions from module: ${tx.module}. Continuing with generic transaction indexing.`);
+		return Promise.resolve();
+	}
 	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.module);
 
-	if (!moduleCommandProcessorMap.has(`apply_${tx.command}`)) throw Error(`No applyTransaction hook implemented for transactions with module: ${tx.module} and command: ${tx.command}`);
+	if (!moduleCommandProcessorMap.has(`apply_${tx.command}`)) {
+		logger.warn(`No applyTransaction hook implemented for transaction with moduleCommand: ${tx.module}:${tx.command}. Continuing with generic transaction indexing.`);
+		return Promise.resolve();
+	}
 	const transactionProcessor = moduleCommandProcessorMap.get(`apply_${tx.command}`);
 
 	return transactionProcessor(blockHeader, tx, events, dbTrx);
@@ -74,10 +84,16 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
-	if (!moduleProcessorMap.has(tx.module)) throw Error(`No processors implemented for transactions related to module: ${tx.module}`);
+	if (!moduleProcessorMap.has(tx.module)) {
+		logger.warn(`No processors implemented for transactions from module: ${tx.module}. Continuing with removal of the transaction from the index.`);
+		return Promise.resolve();
+	}
 	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.module);
 
-	if (!moduleCommandProcessorMap.has(`revert_${tx.command}`)) throw Error(`No revertTransaction hook implemented for transactions with module: ${tx.module} and command: ${tx.command}`);
+	if (!moduleCommandProcessorMap.has(`revert_${tx.command}`)) {
+		logger.warn(`No revertTransaction hook implemented for transactions with moduleCommand: ${tx.module}:${tx.command}. Continuing with removal of the transaction from the index.`);
+		return Promise.resolve();
+	}
 	const transactionProcessor = moduleCommandProcessorMap.get(`revert_${tx.command}`);
 
 	return transactionProcessor(blockHeader, tx, events, dbTrx);

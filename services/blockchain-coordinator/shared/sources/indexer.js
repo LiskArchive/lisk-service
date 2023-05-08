@@ -15,7 +15,7 @@
  */
 const { requestIndexer } = require('../utils/request');
 
-const getMissingblocks = async (from, to) => requestIndexer('getMissingBlocks', {
+const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', {
 	from,
 	to,
 });
@@ -29,7 +29,7 @@ const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeigh
 const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
 
 module.exports = {
-	getMissingblocks,
+	getMissingBlocks,
 	getCurrentHeight,
 	getGenesisHeight,
 	getIndexVerifiedHeight,

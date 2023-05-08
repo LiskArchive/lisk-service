@@ -94,6 +94,7 @@ const defaultBrokerConfig = {
 	if (config.operations.isIndexingModeEnabled) {
 		app.addMethods(path.join(__dirname, 'methods', 'indexer'));
 		app.addEvents(path.join(__dirname, 'events'));
+		app.addJobs(path.join(__dirname, 'jobs', 'indexer'));
 	}
 
 	// Set the app context and start the application
@@ -110,7 +111,7 @@ const defaultBrokerConfig = {
 			await processor.init();
 		}
 	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 		logger.fatal(err.stack);
 		process.exit(1);
 	});
