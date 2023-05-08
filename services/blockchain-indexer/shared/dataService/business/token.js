@@ -90,14 +90,10 @@ const getTokenTopBalances = async (params) => {
 	const accountBalancesTable = await getAccountBalancesTable();
 	const queryParams = {
 		tokenID: params.tokenID,
+		sort: params.sort,
+		offset: params.offset,
+		limit: params.limit,
 	};
-
-	// Count total number of response before adding limit/offset
-	const totalAddressCount = await accountBalancesTable.count(queryParams);
-
-	if (params.limit) queryParams.limit = params.limit;
-	if (params.offset) queryParams.offset = params.offset;
-	queryParams.sort = params.sort ? params.sort : 'balance:desc';
 
 	const tokenInfos = await accountBalancesTable.find(queryParams, ['address', 'balance']);
 
@@ -110,7 +106,9 @@ const getTokenTopBalances = async (params) => {
 				publicKey: accountInfo.publicKey,
 				name: accountInfo.name,
 				balance: tokenInfo.balance,
-				knowledge: null,
+				knowledge: {
+					// TODO: Integrate knowledge information
+				},
 			};
 		},
 		{ concurrency: tokenInfos.length },
@@ -119,7 +117,7 @@ const getTokenTopBalances = async (params) => {
 	response.meta = {
 		count: Object.keys(response.data[params.tokenID]).length,
 		offset: params.offset,
-		total: totalAddressCount,
+		total: await accountBalancesTable.count(queryParams),
 	};
 
 	return response;
