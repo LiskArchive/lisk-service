@@ -121,6 +121,11 @@ The objective of the Template service is to reduce code duplication and increase
 * Please note that certain token conversion rates in the Market service require their API keys.
 * For the events information to be always available in the API, please set the `system.keepEventsForHeights: -1` in the Lisk application node config.
 
+The following diagram below depicts the microservice architecture.
+The inter-microservice communications are enabled with a message broker.
+This is generally an instance of Redis or NATS.
+
+
 
 == API documentation
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
