@@ -18,6 +18,7 @@ module.exports = {
 	type: 'moleculer',
 	method: 'indexer.token.available-ids',
 	params: {
+		sort: '=,string',
 		offset: '=,number',
 		limit: '=,number',
 	},

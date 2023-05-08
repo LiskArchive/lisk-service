@@ -1161,6 +1161,7 @@ Retrieves all the available token identifiers.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | limit | Number | `[1,100]` | 10 |  |
+| sort | Enum | `["tokenID:desc", "tokenID:asc"]` | tokenID:asc |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
 #### Response example

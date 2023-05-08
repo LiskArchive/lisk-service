@@ -115,7 +115,7 @@ const getTokenTopBalances = async (params) => {
 	);
 
 	response.meta = {
-		count: Object.keys(response.data[params.tokenID]).length,
+		count: response.data[params.tokenID].length,
 		offset: params.offset,
 		total: await accountBalancesTable.count(queryParams),
 	};
@@ -214,13 +214,14 @@ const getAvailableTokenIDs = async (params) => {
 	};
 	const accountBalancesTable = await getAccountBalancesTable();
 
-	const tokenInfos = await accountBalancesTable.find({
-		distinct: 'tokenID',
-		sort: 'tokenID:asc',
-		offset: params.offset,
-		limit: params.limit,
-	},
-	['tokenID'],
+	const tokenInfos = await accountBalancesTable.find(
+		{
+			distinct: 'tokenID',
+			sort: params.sort,
+			offset: params.offset,
+			limit: params.limit,
+		},
+		['tokenID'],
 	);
 
 	response.data.tokenIDs = tokenInfos.map(tokenInfo => tokenInfo.tokenID);

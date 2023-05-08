@@ -20,6 +20,7 @@ module.exports = {
 	params: {
 		address: '=,string',
 		tokenID: '=,string',
+		sort: '=,string',
 		offset: '=,number',
 		limit: '=,number',
 	},

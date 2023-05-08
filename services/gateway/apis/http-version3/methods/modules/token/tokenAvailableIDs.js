@@ -23,6 +23,12 @@ module.exports = {
 	rpcMethod: 'get.token.available-ids',
 	tags: ['Token'],
 	params: {
+		sort: {
+			optional: true,
+			type: 'string',
+			enum: ['tokenID:desc', 'tokenID:asc'],
+			default: 'tokenID:asc',
+		},
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},

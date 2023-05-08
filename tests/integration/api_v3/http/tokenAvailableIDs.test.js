@@ -21,7 +21,7 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	goodResponseSchemaFortokenAvailableIDs,
+	goodResponseSchemaForTokenAvailableIDs,
 } = require('../../../schemas/api_v3/tokenAvailableIDs.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -31,28 +31,42 @@ const endpoint = `${baseUrlV3}/token/available-ids`;
 describe('Token IDs API', () => {
 	it('should retrieve available token ids when called without any params', async () => {
 		const response = await api.get(endpoint);
-		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
+		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve available token ids when called with sort=tokenID:asc', async () => {
+		const response = await api.get(`${endpoint}?sort=tokenID:asc`);
+		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
+		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve available token ids when called with sort=tokenID:desc', async () => {
+		const response = await api.get(`${endpoint}?sort=tokenID:desc`);
+		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
 	it('should retrieve available token ids when called with offset=1', async () => {
 		const response = await api.get(`${endpoint}?offset=1`);
-		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
 
 	it('should retrieve available token ids when called with limit=5', async () => {
 		const response = await api.get(`${endpoint}?limit=5`);
-		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
 	it('should retrieve available token ids when called with offset=1 and limit=5', async () => {
 		const response = await api.get(`${endpoint}?offset=1&limit=5`);
-		expect(response).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
