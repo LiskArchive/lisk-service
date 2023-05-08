@@ -29,6 +29,9 @@ Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.bra
 :url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_websocket: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_subapi: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/websocket_subscribe_api.md
+:url_postman: https://www.postman.com/
+:url_curl: https://curl.se/
+:url_httpie: https://httpie.io/
 
 
 :url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
@@ -126,7 +129,7 @@ The following diagram below depicts an overview of the microservice architecture
 The inter-microservice communications are enabled with a message broker.
 This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
 
-== Microservices Architecture Overview
+=== Microservices Architecture Overview
 
 image::mservice_architecture.png[]
 
@@ -150,6 +153,14 @@ The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards
 It uses a two-way streaming connection, which can notify the client about new data instantly as it arrives.
 It is responsible for updating users regarding changes in the blockchain network and markets.
 |===
+
+== Installation
+
+The default port for REST API requests and Socket.IO-based communication is `9901`.
+The API is accessible through the URL `http://localhost:9901` when running locally.
+The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
+
+
 
 [[usage]]
 == APIs & Usage
