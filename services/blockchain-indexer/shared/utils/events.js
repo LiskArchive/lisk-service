@@ -112,8 +112,3 @@ module.exports = {
 	getEventsInfoToIndex,
 	deleteEventStrTillHeight,
 };
-
-module.exports = {
-	getEventsInfoToIndex,
-	deleteEventStrTillHeight,
-};

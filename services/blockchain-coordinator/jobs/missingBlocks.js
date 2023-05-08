@@ -31,7 +31,7 @@ module.exports = [
 				await scheduleMissingBlocksIndexing();
 				logger.info('Successfully scheduled missing blocks indexing.');
 			} catch (err) {
-				logger.warn(`Schedule missing blocks indexing failed due to: ${err.message}.`);
+				logger.warn(`Failed to schedule missing blocks indexing due to: ${err.message}.`);
 				logger.trace(err.stack);
 			}
 		},
