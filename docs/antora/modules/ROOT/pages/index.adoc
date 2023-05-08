@@ -21,6 +21,7 @@ Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.bra
 :url_lisk_wallet: https://lisk.com/wallet
 :url_moleculer: https://moleculer.services/
 :url_nats: http://nats.io/
+:url_redis: http://redis.io
 :url_npm_socketio_client: https://www.npmjs.com/package/socket.io-client
 :url_services_directory: https://github.com/LiskHQ/lisk-service/tree/development/services
 :url_app_registry: https://github.com/LiskHQ/app-registry
@@ -121,9 +122,9 @@ The objective of the Template service is to reduce code duplication and increase
 * Please note that certain token conversion rates in the Market service require their API keys.
 * For the events information to be always available in the API, please set the `system.keepEventsForHeights: -1` in the Lisk application node config.
 
-The following diagram below depicts the microservice architecture.
+The following diagram below depicts an overview of the microservice architecture.
 The inter-microservice communications are enabled with a message broker.
-This is generally an instance of Redis or NATS.
+This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
 
 == Microservices Architecture Overview
 
