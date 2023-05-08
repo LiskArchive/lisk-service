@@ -42,14 +42,10 @@ describe('Token IDs API', () => {
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 
-		const { tokenIDs } = response.data;
-		const isSortedAscending = tokenIDs.every((tokenID, index) => {
-			if (index === 0) {
-				return true;
-			}
-			return tokenID >= tokenIDs[index - 1];
+		const isSortedAscending = response.data.tokenIDs.every((tokenID, index) => {
+			if (index === 0) return true;
+			return tokenID.localeCompare(response.data.tokenIDs[index - 1], 'en') >= 0;
 		});
-
 		expect(isSortedAscending).toBe(true);
 	});
 
@@ -59,15 +55,11 @@ describe('Token IDs API', () => {
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
 
-		const { tokenIDs } = response.data;
-		const isSortedDecending = tokenIDs.every((tokenID, index) => {
-			if (index === 0) {
-				return true;
-			}
-			return tokenID <= tokenIDs[index - 1];
+		const isSortedDescending = response.data.tokenIDs.every((tokenID, index) => {
+			if (index === 0) return true;
+			return tokenID.localeCompare(response.data.tokenIDs[index - 1], 'en') <= 0;
 		});
-
-		expect(isSortedDecending).toBe(true);
+		expect(isSortedDescending).toBe(true);
 	});
 
 	it('should retrieve available token ids when called with offset=1', async () => {

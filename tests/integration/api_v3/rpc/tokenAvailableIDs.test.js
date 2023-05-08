@@ -49,14 +49,10 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 
-		const { tokenIDs } = result.data;
-		const isSortedAscending = tokenIDs.every((tokenID, index) => {
-			if (index === 0) {
-				return true;
-			}
-			return tokenID >= tokenIDs[index - 1];
+		const isSortedAscending = result.data.tokenIDs.every((tokenID, index) => {
+			if (index === 0) return true;
+			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') >= 0;
 		});
-
 		expect(isSortedAscending).toBe(true);
 	});
 
@@ -68,15 +64,11 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 
-		const { tokenIDs } = result.data;
-		const isSortedDecending = tokenIDs.every((tokenID, index) => {
-			if (index === 0) {
-				return true;
-			}
-			return tokenID <= tokenIDs[index - 1];
+		const isSortedDescending = result.data.tokenIDs.every((tokenID, index) => {
+			if (index === 0) return true;
+			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') <= 0;
 		});
-
-		expect(isSortedDecending).toBe(true);
+		expect(isSortedDescending).toBe(true);
 	});
 
 	it('should retrieve available token ids when called with offset=1', async () => {
