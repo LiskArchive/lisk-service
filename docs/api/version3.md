@@ -1160,6 +1160,7 @@ Retrieves all the available token identifiers.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
+| sort | Enum | `["tokenID:desc", "tokenID:asc"]` | tokenID:asc |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 

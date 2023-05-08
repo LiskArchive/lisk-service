@@ -25,14 +25,14 @@ const tokenAvailableIDsMetaSchema = {
 };
 
 const tokenAvailableIDsSchema = {
-	tokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).min(1).required(),
+	tokenIDs: Joi.array().items(Joi.string().pattern(regex.TOKEN_ID)).min(0).required(),
 };
 
-const goodResponseSchemaFortokenAvailableIDs = Joi.object({
+const goodResponseSchemaForTokenAvailableIDs = Joi.object({
 	data: Joi.object(tokenAvailableIDsSchema).required(),
 	meta: Joi.object(tokenAvailableIDsMetaSchema).required(),
 }).required();
 
 module.exports = {
-	goodResponseSchemaFortokenAvailableIDs,
+	goodResponseSchemaForTokenAvailableIDs,
 };
