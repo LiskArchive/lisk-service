@@ -89,16 +89,16 @@ const getTokenConstants = async () => {
 };
 
 const getAvailableTokenIDs = async (params) => {
-	const constants = {
+	const tokenIDsResponse = {
 		data: {},
 		meta: {},
 	};
 
 	const response = await dataService.getAvailableTokenIDs(params);
-	if (response.data) constants.data = response.data;
-	if (response.meta) constants.meta = response.meta;
+	if (response.data) tokenIDsResponse.data = response.data;
+	if (response.meta) tokenIDsResponse.meta = response.meta;
 
-	return constants;
+	return tokenIDsResponse;
 };
 
 module.exports = {

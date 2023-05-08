@@ -88,7 +88,6 @@ const getTokenTopBalances = async (params) => {
 		meta: {},
 	};
 	const accountBalancesTable = await getAccountBalancesTable();
-
 	const queryParams = {
 		tokenID: params.tokenID,
 	};
