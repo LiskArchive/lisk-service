@@ -143,8 +143,6 @@ It uses a two-way streaming connection, which can notify the client about new da
 It is responsible for updating users regarding changes in the blockchain network and markets.
 |===
 
-
-
 [[usage]]
 == APIs & Usage
 
