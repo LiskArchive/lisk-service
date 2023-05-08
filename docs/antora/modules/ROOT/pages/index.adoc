@@ -125,7 +125,9 @@ The following diagram below depicts the microservice architecture.
 The inter-microservice communications are enabled with a message broker.
 This is generally an instance of Redis or NATS.
 
+== Microservices Architecture Overview
 
+image::mservice_architecture.png[]
 
 == API documentation
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
