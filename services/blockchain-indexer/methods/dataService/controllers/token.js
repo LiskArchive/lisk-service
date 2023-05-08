@@ -38,28 +38,18 @@ const getTokenBalances = async params => {
 	}
 };
 
-// TODO: fetch available tokens after indexing
-const getTokenTopBalances = () => ({
-	data: {
-		'0400000000000000': [
-			{
-				address: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
-				publicKey: 'b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd',
-				name: 'genesis_84',
-				balance: '10000000',
-				knowledge: {
-					owner: 'Genesis Account',
-					description: 'Initial supply',
-				},
-			},
-		],
-	},
-	meta: {
-		count: 1,
-		offset: 0,
-		total: 1,
-	},
-});
+const getTokenTopBalances = async (params) => {
+	const tokenTopBalances = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getTokenTopBalances(params);
+	if (response.data) tokenTopBalances.data = response.data;
+	if (response.meta) tokenTopBalances.meta = response.meta;
+
+	return tokenTopBalances;
+};
 
 const getTokenSummary = async params => {
 	const tokenSummary = {
@@ -98,19 +88,18 @@ const getTokenConstants = async () => {
 	return constants;
 };
 
-// TODO: fetch available tokens after indexing
-const getAvailableTokenIDs = async () => ({
-	data: {
-		tokenIDs: [
-			'0400000000000000',
-		],
-	},
-	meta: {
-		count: 1,
-		offset: 0,
-		total: 1,
-	},
-});
+const getAvailableTokenIDs = async (params) => {
+	const tokenIDsResponse = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getAvailableTokenIDs(params);
+	if (response.data) tokenIDsResponse.data = response.data;
+	if (response.meta) tokenIDsResponse.meta = response.meta;
+
+	return tokenIDsResponse;
+};
 
 module.exports = {
 	tokenHasUserAccount,

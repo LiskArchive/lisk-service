@@ -101,6 +101,7 @@ const getValidatorsTable = () => getTableInstance(
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
+const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -217,6 +218,9 @@ const indexBlock = async job => {
 				}
 			});
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+
+			// Schedule address balance updates from token module events
+			await scheduleAccountBalanceUpdateFromEvents(events);
 		}
 
 		const blockToIndex = {
@@ -316,6 +320,9 @@ const deleteIndexedBlocks = async job => {
 						}
 					});
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+
+					// Schedule address balance updates from token module events
+					await scheduleAccountBalanceUpdateFromEvents(events);
 				}
 
 				// Invalidate cached events of this block
@@ -342,9 +349,24 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 1);
-const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const indexBlocksQueue = Queue(
+	config.endpoints.cache,
+	config.queue.indexBlocks.name,
+	indexBlock,
+	config.queue.indexBlocks.concurrency,
+);
+const updateBlockIndexQueue = Queue(
+	config.endpoints.cache,
+	config.queue.updateBlockIndex.name,
+	updateBlockIndex,
+	config.queue.updateBlockIndex.concurrency,
+);
+const deleteIndexedBlocksQueue = Queue(
+	config.endpoints.cache,
+	config.queue.deleteIndexedBlocks.name,
+	deleteIndexedBlocks,
+	config.queue.deleteIndexedBlocks.concurrency,
+);
 
 const getLiveIndexingJobCount = async () => {
 	const { queue: bullQueue } = indexBlocksQueue;

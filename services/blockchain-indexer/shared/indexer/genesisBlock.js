@@ -15,13 +15,18 @@
  */
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
-const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
-const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
-const { requestConnector } = require('../utils/request');
+const {
+	MODULE,
+	MODULE_SUB_STORE,
+	getGenesisHeight,
+} = require('../constants');
 const {
 	updateTotalStake,
 	updateTotalSelfStake,
 } = require('./transactionProcessor/pos/stake');
+const { requestConnector } = require('../utils/request');
+const { updateAccountBalances } = require('./accountBalanceIndex');
+const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
@@ -62,6 +67,10 @@ const indexTokenModuleAssets = async (dbTrx) => {
 			}
 			tokenIDLockedAmountChangeMap[tokenID] += BigInt(lockedBalance.amount);
 		}
+
+		// Index account balance
+		// eslint-disable-next-line no-await-in-loop
+		await updateAccountBalances(userInfo.address);
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
