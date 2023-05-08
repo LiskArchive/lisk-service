@@ -88,14 +88,7 @@ const getTokenTopBalances = async (params) => {
 		meta: {},
 	};
 	const accountBalancesTable = await getAccountBalancesTable();
-	const queryParams = {
-		tokenID: params.tokenID,
-		sort: params.sort,
-		offset: params.offset,
-		limit: params.limit,
-	};
-
-	const tokenInfos = await accountBalancesTable.find(queryParams, ['address', 'balance']);
+	const tokenInfos = await accountBalancesTable.find({ ...params }, ['address', 'balance']);
 
 	response.data[params.tokenID] = await BluebirdPromise.map(
 		tokenInfos,
@@ -117,7 +110,7 @@ const getTokenTopBalances = async (params) => {
 	response.meta = {
 		count: response.data[params.tokenID].length,
 		offset: params.offset,
-		total: await accountBalancesTable.count(queryParams),
+		total: await accountBalancesTable.count({ ...params }),
 	};
 
 	return response;
@@ -215,13 +208,7 @@ const getAvailableTokenIDs = async (params) => {
 	const accountBalancesTable = await getAccountBalancesTable();
 
 	const tokenInfos = await accountBalancesTable.find(
-		{
-			distinct: 'tokenID',
-			sort: params.sort,
-			offset: params.offset,
-			limit: params.limit,
-		},
-		['tokenID'],
+		{ ...params, distinct: 'tokenID' }, ['tokenID'],
 	);
 
 	response.data.tokenIDs = tokenInfos.map(tokenInfo => tokenInfo.tokenID);

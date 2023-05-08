@@ -41,6 +41,16 @@ describe('Token IDs API', () => {
 		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
+
+		const { tokenIDs } = response.data;
+		const isSortedAscending = tokenIDs.every((tokenID, index) => {
+			if (index === 0) {
+				return true;
+			}
+			return tokenID >= tokenIDs[index - 1];
+		});
+
+		expect(isSortedAscending).toBe(true);
 	});
 
 	it('should retrieve available token ids when called with sort=tokenID:desc', async () => {
@@ -48,6 +58,16 @@ describe('Token IDs API', () => {
 		expect(response).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(response.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.tokenIDs.length).toBeLessThanOrEqual(10);
+
+		const { tokenIDs } = response.data;
+		const isSortedDecending = tokenIDs.every((tokenID, index) => {
+			if (index === 0) {
+				return true;
+			}
+			return tokenID <= tokenIDs[index - 1];
+		});
+
+		expect(isSortedDecending).toBe(true);
 	});
 
 	it('should retrieve available token ids when called with offset=1', async () => {

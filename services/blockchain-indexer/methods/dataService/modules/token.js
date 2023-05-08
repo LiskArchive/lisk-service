@@ -72,7 +72,7 @@ module.exports = [
 		name: 'token.available-ids',
 		controller: getAvailableTokenIDs,
 		params: {
-			sort: { optional: true, type: 'string', default: 'tokenID:asc' },
+			sort: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
