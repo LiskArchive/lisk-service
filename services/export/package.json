@@ -35,10 +35,10 @@
     "bluebird": "^3.7.2",
     "bull": "^3.29.2",
     "json2csv": "^5.0.6",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/30e8e8df1948ccb049e2dd54f779187445aeb7ad/framework/dist/lisk-service-framework-1.4.13.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03a155c9e0c71fab62645ab0c35a2af0d0d2d8ce/framework/dist/lisk-service-framework-1.4.14.tgz",
+    "minio": "^7.0.21",
     "moment": "^2.29.4",
     "moment-range": "^4.0.2",
-    "minio": "^7.0.21",
     "node-cron": "=2.0.3"
   },
   "devDependencies": {

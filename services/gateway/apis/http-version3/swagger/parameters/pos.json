@@ -27,10 +27,10 @@
 		"type": "string",
 		"minLength": 1
 	},
-	"validatorSearch": {
+	"search": {
 		"name": "search",
 		"in": "query",
-		"description": "Validator name text search phrase. Supports both partial and full text search.",
+		"description": "Search by name, address or public key. Supports both partial and full text search.",
 		"type": "string",
 		"minLength": 1,
 		"maxLength": 20
