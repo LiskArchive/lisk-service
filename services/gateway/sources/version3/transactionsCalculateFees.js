@@ -38,6 +38,6 @@ module.exports = {
 				high: '=,string',
 			},
 		},
-		meta: {},
+		meta: '=',
 	},
 };

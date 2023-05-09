@@ -24,7 +24,7 @@ const dynamicFeeEstimates = {
 };
 
 const genericFeeSchema = {
-	tokenID: Joi.string().pattern(regex.tokenID).required(),
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
 	amount: Joi.string().pattern(regex.DIGITS).required(),
 };
 
