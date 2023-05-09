@@ -13,41 +13,90 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
-const { isMainchain } = require('../../../shared/chain');
-
 describe('Test isMainchain method', () => {
+	const mockedFilePath = '../../../shared/dataService/business/network';
+	beforeEach(() => jest.resetModules());
+
 	it('should return false -> undefined chainID', async () => {
-		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: undefined } });
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID: undefined } };
+				},
+			};
+		});
+
+		const { isMainchain } = require('../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
 	});
 
 	it('should return false -> null chainID', async () => {
-		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: null } });
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID: null } };
+				},
+			};
+		});
+
+		const { isMainchain } = require('../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
 	});
 
 	it('should return true -> valid mainchain chainID', async () => {
-		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000000' } });
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID: '04000000' } };
+				},
+			};
+		});
+
+		const { isMainchain } = require('../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(true);
 	});
 
-	// TODO: Fix the following negative test cases
-	xit('should return false -> valid sidechain chainID', async () => {
-		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: '04000001' } });
+	it('should return false -> valid sidechain chainID', async () => {
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID: '04000001' } };
+				},
+			};
+		});
+
+		const { isMainchain } = require('../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
 	});
 
-	xit('should return false -> invalid chainID', async () => {
-		jest.spyOn(dataService, 'getNetworkStatus').mockReturnValue({ data: { chainID: 'xy000000' } });
+	it('should return false -> invalid chainID', async () => {
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID: 'invalid' } };
+				},
+			};
+		});
+
+		const { isMainchain } = require('../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);

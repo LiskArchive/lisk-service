@@ -27,6 +27,8 @@ const {
 	normalizeTransaction,
 	getEventsByHeight,
 	deleteEventsFromCache,
+	isMainchain,
+	resolveMainchainServiceURL,
 } = require('./business');
 
 const {
@@ -186,4 +188,7 @@ module.exports = {
 	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
+
+	isMainchain,
+	resolveMainchainServiceURL,
 };

@@ -13,11 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP } = require('lisk-service-framework');
+
+const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
+
 const { MODULE, COMMAND, EVENT } = require('../../constants');
+const regex = require('../../regex');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeesEstimator } = require('../../utils/request');
+
+const resolveChannelInfo = async (chainID) => {
+	if ((await isMainchain()) && !regex.MAINCHAIN_ID.test(chainID)) {
+		// Redirect call to the mainchain service
+		const serviceURL = await resolveMainchainServiceURL();
+		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
+		const channelInfo = await HTTP.post(invokeEndpoint, { endpoint: 'interoperability_getChannel', params: { chainID } });
+		return channelInfo;
+	}
+
+	const channelInfo = await requestConnector('getChannel', { chainID });
+	return channelInfo;
+};
 
 const calcMessageFee = async (transaction) => {
 	const { data: { events } } = (await dryRunTransactions({ transaction }));
@@ -27,8 +45,8 @@ const calcMessageFee = async (transaction) => {
 	const { ccm } = ccmSendSuccess.data;
 	const ccmEncoded = await requestConnector('encodeCCM', { ccm });
 	const ccmBuffer = Buffer.from(ccmEncoded, 'hex');
+	const channelInfo = await resolveChannelInfo(transaction.params.receivingChainID);
 
-	const channelInfo = await requestConnector('getChannel', { chainID: transaction.params.receivingChainID });
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
 		amount: BigInt(ccmBuffer.length) * BigInt(channelInfo.minReturnFeePerByte),
@@ -66,15 +84,14 @@ const calculateTransactionFees = async params => {
 		meta: {},
 	};
 
-	const transactionFeeEstimates = {};
-
 	const transaction = await requestConnector('formatTransaction', { transaction: params.transaction });
 
 	const { minFee, size } = transaction;
-	transactionFeeEstimates.minFee = minFee;
-
 	const feeEstimatePerByte = await requestFeesEstimator('estimates');
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
+
+	const transactionFeeEstimates = {};
+	transactionFeeEstimates.minFee = minFee;
 
 	const { feeTokenID } = feeEstimatePerByte;
 	transactionFeeEstimates.accountInitializationFee = transaction.module === MODULE.TOKEN

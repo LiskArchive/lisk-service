@@ -97,6 +97,7 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 const { calculateTransactionFees } = require('./transactionsCalculateFees');
+const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 
 module.exports = {
 	// Generators
@@ -181,4 +182,7 @@ module.exports = {
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
+
+	isMainchain,
+	resolveMainchainServiceURL,
 };
