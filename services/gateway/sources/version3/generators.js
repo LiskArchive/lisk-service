@@ -21,6 +21,7 @@ module.exports = {
 	params: {
 		limit: '=',
 		offset: '=',
+		search: '=,string',
 	},
 	definition: {
 		data: ['data', generators],

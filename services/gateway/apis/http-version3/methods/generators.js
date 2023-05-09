@@ -15,6 +15,7 @@
  */
 const generatorsSource = require('../../../sources/version3/generators');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const regex = require('../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
@@ -24,6 +25,7 @@ module.exports = {
 	params: {
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
+		search: { optional: true, type: 'string', min: 1, pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'search' },
 	},
 	tags: ['Generators'],
 	get schema() {

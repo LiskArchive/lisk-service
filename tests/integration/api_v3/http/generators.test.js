@@ -43,6 +43,12 @@ describe('Generators API', () => {
 	// 	numberStandbyValidators = response.numberStandbyValidators;
 	// });
 
+	let firstGenerator;
+	beforeAll(async () => {
+		const response = await api.get(`${endpoint}/generators`);
+		[firstGenerator] = response.data;
+	});
+
 	describe('GET /generators', () => {
 		it('retrieve generators list -> ok', async () => {
 			const response = await api.get(`${endpoint}/generators`);
@@ -91,6 +97,68 @@ describe('Generators API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.map(generator => expect(generator).toMap(generatorSchema));
 			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching with name -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(1);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching with address -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.address}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(1);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		xit('retrieve generators list by searching with public key -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(1);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching partially with name -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name.substring(0, 3)}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching partially with address -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.address.substring(0, 3)}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		xit('retrieve generators list by searching partially with public key -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey.substring(0, 3)}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid search -> 400', async () => {
+			const response = await api.get(`${endpoint}/generators?search=(*)`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {

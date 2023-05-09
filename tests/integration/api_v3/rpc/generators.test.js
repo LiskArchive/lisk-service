@@ -46,6 +46,12 @@ describe('Generators API', () => {
 	// 	numberStandbyValidators = constants.numberStandbyValidators;
 	// });
 
+	let firstGenerator;
+	beforeAll(async () => {
+		const { result } = await getGenerators();
+		[firstGenerator] = result.data;
+	});
+
 	describe('GET /generators', () => {
 		it('returns generators list -> ok', async () => {
 			const response = await getGenerators();
@@ -115,7 +121,81 @@ describe('Generators API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('limit=0 -> -32602', async () => {
+		it('retrieve generators list by searching with name -> ok', async () => {
+			const response = await getGenerators({ search: firstGenerator.name });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBe(1);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching with address -> ok', async () => {
+			const response = await getGenerators({ search: firstGenerator.address });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBe(1);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		xit('retrieve generators list by searching with public key -> ok', async () => {
+			const response = await getGenerators({ search: firstGenerator.publicKey });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBe(1);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching partially with name -> ok', async () => {
+			const response = await getGenerators({ search: firstGenerator.name.substring(0, 3) });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(103);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list by searching partially with address -> ok', async () => {
+			const response = await getGenerators({ search: firstGenerator.address.substring(0, 3) });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(103);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		xit('retrieve generators list by searching partially with public key -> ok', async () => {
+			const response = await getGenerators({ search: firstGenerator.publicKey.substring(0, 3) });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(103);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('search=(*) -> invalid param', async () => {
+			const response = await getGenerators({ limit: '(*)' }).catch(e => e);
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('limit=0 -> invalid param', async () => {
 			const response = await getGenerators({ limit: 0 }).catch(e => e);
 			expect(response).toMap(invalidParamsSchema);
 		});

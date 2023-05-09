@@ -513,6 +513,9 @@ const createApiDocsExpectedResponse = {
 				{
 					$ref: '#/parameters/offset',
 				},
+				{
+					$ref: '#/parameters/search',
+				},
 			],
 			responses: {
 				200: {

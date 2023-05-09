@@ -24,6 +24,7 @@ module.exports = [
 		params: {
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
+			search: { type: 'string', optional: true },
 		},
 	},
 ];

@@ -18,6 +18,14 @@ const { parseToJSONCompatObj } = require('../utils/parser');
 const dataService = require('./business');
 const { getAllValidators } = require('./pos/validators');
 
+const isPatternInCollection = (collection, pattern) => {
+	for (let i = 0; i < collection.length; i++) {
+		if (collection[i] && collection[i].toLowerCase().includes(pattern.toLowerCase())) return true;
+	}
+
+	return false;
+};
+
 const getGenerators = async params => {
 	const generators = {
 		data: [],
@@ -31,7 +39,7 @@ const getGenerators = async params => {
 
 	const validatorMap = new Map(validatorList.map(validator => [validator.address, validator]));
 	generatorsList.forEach(generator => {
-		if (validatorMap.has(generator.address)) {
+		if (validatorMap.has(generator.address) && (!('search' in params) || isPatternInCollection([generator.name, generator.address, generator.publicKey], params.search))) {
 			const validator = validatorMap.get(generator.address);
 			generators.data.push({ ...generator, status: validator.status });
 		}
