@@ -13,44 +13,32 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { codec } = require('@liskhq/lisk-codec');
-
-const { getSchemas } = require('./schemas');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 const { MODULE, COMMAND, EVENT } = require('../../constants');
-const { parseInputBySchema, parseToJSONCompatObj } = require('../../utils/parser');
+const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeesEstimator } = require('../../utils/request');
 
-const calcMessageFee = async (transaction, schemas) => {
+const calcMessageFee = async (transaction) => {
 	const { data: { events } } = (await dryRunTransactions({ transaction }));
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
-	// In case of decoded ccmParams, encode params (required to calculate ccm length)
-	const ccmParamsSchema = (schemas.commands
-		.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`)).schema;
+	// Encode ccm (required to calculate ccm length)
 	const { ccm } = ccmSendSuccess.data;
-	if (typeof ccm.params === 'object' && !Buffer.isBuffer(ccm.params)) {
-		ccm.params = codec.encode(ccmParamsSchema, parseInputBySchema(ccm.params, ccmParamsSchema));
-	}
-
-	// Encode ccm Buffer to calculate ccm length
-	const { schema: ccmSchema } = schemas.ccm;
-	const schemaCompliantCCM = parseInputBySchema(ccm, ccmSchema);
-	const ccmBuffer = codec.encode(ccmSchema, schemaCompliantCCM);
-	const ccmLength = ccmBuffer.length;
+	const ccmEncoded = await requestConnector('encodeCCM', { ccm });
+	const ccmBuffer = Buffer.from(ccmEncoded, 'hex');
 
 	const channelInfo = await requestConnector('getChannel', { chainID: transaction.params.receivingChainID });
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
-		amount: ccmLength * Number(channelInfo.minReturnFeePerByte),
+		amount: BigInt(ccmBuffer.length) * BigInt(channelInfo.minReturnFeePerByte),
 	};
 };
 
 const calcDynamicFeeEstimates = (feeEstimatePerByte, minFee, size) => ({
-	low: Number(minFee) + feeEstimatePerByte.low * Number(size),
-	medium: Number(minFee) + feeEstimatePerByte.med * Number(size),
-	high: Number(minFee) + feeEstimatePerByte.high * Number(size),
+	low: BigInt(minFee) + (BigInt(feeEstimatePerByte.low) * BigInt(size)),
+	medium: BigInt(minFee) + (BigInt(feeEstimatePerByte.med) * BigInt(size)),
+	high: BigInt(minFee) + (BigInt(feeEstimatePerByte.high) * BigInt(size)),
 });
 
 // eslint-disable-next-line consistent-return
@@ -80,47 +68,29 @@ const calculateTransactionFees = async params => {
 
 	const transactionFeeEstimates = {};
 
-	const { data: schemas } = (await getSchemas());
+	const transaction = await requestConnector('formatTransaction', { transaction: params.transaction });
 
-	// Decode binary payload
-	if (typeof params.transaction === 'string') {
-		const transactionSchema = schemas.transaction.schema;
-		const decodedTransaction = parseToJSONCompatObj(codec.decode(transactionSchema, Buffer.from(params.transaction, 'hex')));
-
-		const transactionParamsSchema = (schemas.commands
-			.find(e => e.moduleCommand === `${decodedTransaction.module}:${decodedTransaction.command}`)).schema;
-		const decodedTransactionParams = codec.decode(transactionParamsSchema, Buffer.from(decodedTransaction.params, 'hex'));
-
-		params.transaction = {
-			...decodedTransaction,
-			params: parseToJSONCompatObj(decodedTransactionParams),
-		};
-	}
-
-	const { minFee, size } = await requestConnector('getTransactionMinFeeAndSize', { transaction: params.transaction });
-	transactionFeeEstimates.minFee = minFee;
+	const { minFee, size } = transaction;
+	transactionFeeEstimates.minFee = transaction.minFee;
 
 	const feeEstimatePerByte = await requestFeesEstimator('estimates');
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
 
-	if (params.transaction.module === MODULE.TOKEN) {
-		if (params.transaction.command === COMMAND.CROSS_CHAIN_TRANSFER) {
-			transactionFeeEstimates.messageFee = await calcMessageFee(params.transaction, schemas);
-		} else if (params.transaction.command === COMMAND.TRANSFER) {
-			const { feeTokenID } = feeEstimatePerByte;
-			transactionFeeEstimates.accountInitializationFee = await calcAccountInitializationFees(
-				params.transaction,
-				feeTokenID,
-			);
-		}
-	}
+	const { feeTokenID } = feeEstimatePerByte;
+	transactionFeeEstimates.accountInitializationFee = transaction.module === MODULE.TOKEN
+		? await calcAccountInitializationFees(transaction, feeTokenID)
+		: {};
+
+	transactionFeeEstimates.messageFee = (transaction.command === COMMAND.CROSS_CHAIN_TRANSFER)
+		? await calcMessageFee(transaction)
+		: {};
 
 	calculateTransactionFeesRes.data = {
 		transactionFeeEstimates,
 		dynamicFeeEstimates,
 	};
 
-	return calculateTransactionFeesRes;
+	return parseToJSONCompatObj(calculateTransactionFeesRes);
 };
 
 module.exports = {

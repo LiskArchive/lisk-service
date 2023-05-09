@@ -24,6 +24,8 @@ const { parseInputBySchema } = require('../utils/parser');
 const {
 	getTransactionSchema,
 	getTransactionParamsSchema,
+	getCCMSchema,
+	getCCMParamsSchema,
 } = require('./schema');
 
 const logger = Logger();
@@ -59,6 +61,21 @@ const encodeTransaction = (transaction) => {
 	return txBuffer.toString('hex');
 };
 
+const encodeCCM = (ccm) => {
+	const ccmParamsSchema = getCCMParamsSchema(ccm);
+	const ccmSchema = getCCMSchema();
+
+	ccm.params = typeof ccm.params === 'object' && !Buffer.isBuffer(ccm.params)
+		? codec.encode(ccmParamsSchema, parseInputBySchema(ccm.params, ccmParamsSchema))
+		: Buffer.from(ccm.params, 'hex');
+
+	const parsedCCM = parseInputBySchema(ccm, ccmSchema);
+	const ccmBuffer = codec.encode(ccmSchema, parsedCCM);
+
+	return ccmBuffer.toString('hex');
+};
+
 module.exports = {
 	encodeTransaction,
+	encodeCCM,
 };

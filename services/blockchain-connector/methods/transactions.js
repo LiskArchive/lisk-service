@@ -19,7 +19,7 @@ const {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-	getTransactionMinFeeAndSize,
+	formatTransaction,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -63,10 +63,10 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getTransactionMinFeeAndSize',
-		controller: async ({ transaction }) => getTransactionMinFeeAndSize(transaction),
+		name: 'formatTransaction',
 		params: {
 			transaction: { optional: false, type: 'any' },
 		},
+		controller: ({ transaction }) => formatTransaction(transaction),
 	},
 ];

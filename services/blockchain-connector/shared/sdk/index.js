@@ -111,6 +111,9 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 
+const { formatTransaction } = require('./formatter');
+const { encodeCCM } = require('./encoder');
+
 const init = async () => {
 	// Initialize the local cache
 	await getNodeInfo(true);
@@ -160,7 +163,7 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-	getTransactionMinFeeAndSize,
+	formatTransaction,
 
 	// Tokens
 	tokenHasUserAccount,
@@ -225,4 +228,7 @@ module.exports = {
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
+
+	// CCM
+	encodeCCM,
 };
