@@ -13,24 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.token.balances.top',
-	params: {
-		address: '=,string',
-		tokenID: '=,string',
-		sort: '=,string',
-		offset: '=,number',
-		limit: '=,number',
+	tableName: 'account_balances',
+	primaryKey: ['address', 'tokenID'],
+	schema: {
+		address: { type: 'string', null: false },
+		tokenID: { type: 'string', null: false },
+		balance: { type: 'bigInteger', null: false, default: BigInt('0') },
 	},
-	definition: {
-		data: '=',
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
+	indexes: {
+		address: { type: 'key' },
+		tokenID: { type: 'key' },
 	},
+	purge: {},
 };

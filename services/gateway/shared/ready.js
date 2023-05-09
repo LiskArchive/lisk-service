@@ -13,12 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-const { MoleculerError } = require('moleculer').Errors;
+const {
+	Errors: { MoleculerError, ServiceNotFoundError },
+} = require('moleculer');
+const { Logger } = require('lisk-service-framework');
 
-const logger = require('lisk-service-framework').Logger();
+const BluebirdPromise = require('bluebird');
+
 const { getAppContext } = require('./appContext');
 const config = require('../config');
+
+const logger = Logger();
 
 const currentSvcStatus = {
 	indexer: false,
@@ -37,7 +42,11 @@ const updateSvcStatus = async () => {
 			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`)
 				.then((res) => res.isReady)
 				.catch((err) => {
-					logger.error(err);
+					if (err instanceof ServiceNotFoundError) {
+						logger.warn(err);
+					} else {
+						logger.error(err);
+					}
 					return false;
 				});
 		},

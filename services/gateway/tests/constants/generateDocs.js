@@ -601,40 +601,6 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/network/statistics': {
-		get: {
-			tags: [
-				'Network',
-			],
-			summary: 'Requests network statistics',
-			description: 'Returns network statistics data\n RPC => get.network.statistics',
-			responses: {
-				200: {
-					description: 'Returns the network statistics information',
-					schema: {
-						$ref: '#/definitions/NetworkStatistics',
-					},
-				},
-			},
-		},
-	},
-	'/network/status': {
-		get: {
-			tags: [
-				'Network',
-			],
-			summary: 'Requests network status',
-			description: 'Returns network status\n RPC => get.network.status',
-			responses: {
-				200: {
-					description: 'Returns the network status information',
-					schema: {
-						$ref: '#/definitions/NetworkStatus',
-					},
-				},
-			},
-		},
-	},
 	'/network/peers': {
 		get: {
 			tags: [
@@ -692,196 +658,38 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/token/account/exists': {
+	'/network/statistics': {
 		get: {
-			description: 'Returns existence of an account for the specified token.\n RPC => get.token.account.exists',
-			parameters: [
-				{
-					$ref: '#/parameters/address',
-				},
-				{
-					$ref: '#/parameters/publicKey',
-				},
-				{
-					$ref: '#/parameters/accountName',
-				},
-				{
-					$ref: '#/parameters/tokenID',
-				},
+			tags: [
+				'Network',
 			],
+			summary: 'Requests network statistics',
+			description: 'Returns network statistics data\n RPC => get.network.statistics',
 			responses: {
 				200: {
-					description: 'Returns existence of an account for the specified token.',
+					description: 'Returns the network statistics information',
 					schema: {
-						$ref: '#/definitions/tokenAccountExistsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
+						$ref: '#/definitions/NetworkStatistics',
 					},
 				},
 			},
-			summary: 'Requests to check existence of an account for the specified token.',
-			tags: [
-				'Token',
-			],
 		},
 	},
-	'/token/balances': {
+	'/network/status': {
 		get: {
-			description: 'Returns tokens information\n RPC => get.token.balances',
-			parameters: [
-				{
-					$ref: '#/parameters/address',
-				},
-				{
-					$ref: '#/parameters/tokenID',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
+			tags: [
+				'Network',
 			],
+			summary: 'Requests network status',
+			description: 'Returns network status\n RPC => get.network.status',
 			responses: {
 				200: {
-					description: 'Returns a list of supported tokens by the blockchain application',
+					description: 'Returns the network status information',
 					schema: {
-						$ref: '#/definitions/tokenWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
+						$ref: '#/definitions/NetworkStatus',
 					},
 				},
 			},
-			summary: 'Requests tokens information',
-			tags: [
-				'Token',
-			],
-		},
-	},
-	'/token/constants': {
-		get: {
-			description: 'Requests all the configured constants for the Token module.\n RPC => get.token.constants',
-			responses: {
-				200: {
-					description: 'Returns all the configured constants for the Token module.',
-					schema: {
-						$ref: '#/definitions/tokenConstantsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-			},
-			summary: 'Requests Token module constants.',
-			tags: [
-				'Token',
-			],
-		},
-	},
-	'/token/available-ids': {
-		get: {
-			description: 'Returns all the available token identifiers.\n RPC => get.token.available-ids',
-			parameters: [
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns all the available token identifiers.',
-					schema: {
-						$ref: '#/definitions/tokenAvailableIDsWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-			},
-			summary: 'Requests the list of available tokens identifiers.',
-			tags: [
-				'Token',
-			],
-		},
-	},
-	'/token/summary': {
-		get: {
-			description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.\n RPC => get.token.summary",
-			parameters: [],
-			responses: {
-				200: {
-					description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
-					schema: {
-						$ref: '#/definitions/tokenSummaryWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
-			},
-			summary: 'Requests the tokens summary for the current blockchain application.',
-			tags: [
-				'Token',
-			],
-		},
-	},
-	'/token/balances/top': {
-		get: {
-			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
-			parameters: [
-				{
-					$ref: '#/parameters/tokenID',
-				},
-				{
-					$ref: '#/parameters/limit',
-				},
-				{
-					$ref: '#/parameters/offset',
-				},
-				{
-					default: 'balance:desc',
-					description: 'Fields to sort results by.',
-					enum: [
-						'balance:desc',
-						'balance:asc',
-					],
-					in: 'query',
-					name: 'sort',
-					required: false,
-					type: 'string',
-				},
-			],
-			responses: {
-				200: {
-					description: 'Returns the list of top accounts for the specified tokenID.',
-					schema: {
-						$ref: '#/definitions/tokenTopBalancesWithEnvelope',
-					},
-				},
-			},
-			summary: 'Requests the list of top accounts for the specified tokenID.',
-			tags: [
-				'Token',
-			],
 		},
 	},
 	'/transactions': {
@@ -1221,6 +1029,212 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/account/exists': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests to check existence of an account for the specified token.',
+			description: 'Returns existence of an account for the specified token.\n RPC => get.token.account.exists',
+			parameters: [
+				{
+					$ref: '#/parameters/address',
+				},
+				{
+					$ref: '#/parameters/publicKey',
+				},
+				{
+					$ref: '#/parameters/accountName',
+				},
+				{
+					$ref: '#/parameters/tokenID',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns existence of an account for the specified token.',
+					schema: {
+						$ref: '#/definitions/tokenAccountExistsWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/available-ids': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests the list of available tokens identifiers.',
+			description: 'Returns all the available token identifiers.\n RPC => get.token.available-ids',
+			parameters: [
+				{
+					name: 'sort',
+					in: 'query',
+					description: 'Fields to sort results by.',
+					required: false,
+					type: 'string',
+					enum: [
+						'tokenID:desc',
+						'tokenID:asc',
+					],
+					default: 'tokenID:asc',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns all the available token identifiers.',
+					schema: {
+						$ref: '#/definitions/tokenAvailableIDsWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/balances': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests tokens information',
+			description: 'Returns tokens information\n RPC => get.token.balances',
+			parameters: [
+				{
+					$ref: '#/parameters/address',
+				},
+				{
+					$ref: '#/parameters/tokenID',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a list of supported tokens by the blockchain application',
+					schema: {
+						$ref: '#/definitions/tokenWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/constants': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests Token module constants.',
+			description: 'Requests all the configured constants for the Token module.\n RPC => get.token.constants',
+			responses: {
+				200: {
+					description: 'Returns all the configured constants for the Token module.',
+					schema: {
+						$ref: '#/definitions/tokenConstantsWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/summary': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests the tokens summary for the current blockchain application.',
+			description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.\n RPC => get.token.summary",
+			parameters: [
+
+			],
+			responses: {
+				200: {
+					description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
+					schema: {
+						$ref: '#/definitions/tokenSummaryWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/balances/top': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests the list of top accounts for the specified tokenID.',
+			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
+			parameters: [
+				{
+					$ref: '#/parameters/tokenID',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+				{
+					name: 'sort',
+					in: 'query',
+					description: 'Fields to sort results by.',
+					required: false,
+					type: 'string',
+					enum: [
+						'balance:desc',
+						'balance:asc',
+					],
+					default: 'balance:desc',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns the list of top accounts for the specified tokenID.',
+					schema: {
+						$ref: '#/definitions/tokenTopBalancesWithEnvelope',
 					},
 				},
 			},

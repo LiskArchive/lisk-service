@@ -248,7 +248,12 @@ const exportTransactionsCSV = async (job) => {
 	await staticFiles.write(csvFilename, csv);
 };
 
-const scheduleTransactionExportQueue = Queue(config.endpoints.redis, 'scheduleTransactionExportQueue', exportTransactionsCSV, 50);
+const scheduleTransactionExportQueue = Queue(
+	config.endpoints.redis,
+	config.queue.scheduleTransactionExport.name,
+	exportTransactionsCSV,
+	config.queue.scheduleTransactionExport.concurrency,
+);
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built

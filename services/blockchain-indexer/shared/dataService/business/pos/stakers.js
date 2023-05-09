@@ -96,10 +96,16 @@ const getStakers = async params => {
 	if (params.search) {
 		const stakerAccountsInfo = await accountsTable.find(
 			{
-				search: {
+				orSearch: [{
 					property: 'name',
 					pattern: params.search,
-				},
+				}, {
+					property: 'address',
+					pattern: params.search,
+				}, {
+					property: 'publicKey',
+					pattern: params.search,
+				}],
 			},
 			['name', 'address'],
 		);

@@ -18,8 +18,7 @@ const { ServiceBroker } = require('moleculer');
 const requestAll = require('../../../../shared/utils/requestAll');
 const request = require('../../../../shared/utils/request');
 const config = require('../../../../config');
-const { MODULE_SUB_STORE } = require('../../../../shared/indexer/genesisBlock');
-const { MODULE } = require('../../../../shared/constants');
+const { MODULE, MODULE_SUB_STORE } = require('../../../../shared/constants');
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,

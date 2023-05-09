@@ -25,7 +25,7 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	goodResponseSchemaFortokenAvailableIDs,
+	goodResponseSchemaForTokenAvailableIDs,
 } = require('../../../schemas/api_v3/tokenAvailableIDs.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -36,16 +36,46 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(result).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve available token ids when called with sort=tokenID:asc', async () => {
+		const response = await getTokensIDs({ sort: 'tokenID:asc' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenAvailableIDs);
+		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
+
+		const isSortedAscending = result.data.tokenIDs.every((tokenID, index) => {
+			if (index === 0) return true;
+			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') > 0;
+		});
+		expect(isSortedAscending).toBe(true);
+	});
+
+	it('should retrieve available token ids when called with sort=tokenID:desc', async () => {
+		const response = await getTokensIDs({ sort: 'tokenID:desc' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenAvailableIDs);
+		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
+
+		const isSortedDescending = result.data.tokenIDs.every((tokenID, index) => {
+			if (index === 0) return true;
+			return tokenID.localeCompare(result.data.tokenIDs[index - 1], 'en') < 0;
+		});
+		expect(isSortedDescending).toBe(true);
 	});
 
 	it('should retrieve available token ids when called with offset=1', async () => {
 		const response = await getTokensIDs({ offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(result).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(10);
 	});
@@ -54,7 +84,7 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({ limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(result).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
@@ -63,7 +93,7 @@ describe('get.token.available-ids', () => {
 		const response = await getTokensIDs({ offset: 1, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result).toMap(goodResponseSchemaFortokenAvailableIDs);
+		expect(result).toMap(goodResponseSchemaForTokenAvailableIDs);
 		expect(result.data.tokenIDs.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});

@@ -71,46 +71,60 @@ const getAddressByName = async (name) => {
 	return null;
 };
 
-const calcCommission = async (generatorAddress, reward) => {
+const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) => {
 	const commissionsTable = await getCommissionsTable();
-	const [{ commission: currentCommission } = {}] = await commissionsTable
-		.find({ address: generatorAddress, sort: 'height:desc', limit: 1 }, 'commission');
 
-	const rewardQ = q96(reward);
-	const currentCommissionQ = q96(BigInt(currentCommission || 0));
-	const commission = (rewardQ.mul(currentCommissionQ)).div(maxCommissionQ);
-	return commission.floor();
+	const queryParams = {
+		address: generatorAddress,
+		propBetweens: [{
+			property: 'height',
+			lowerThan: blockHeight,
+		}],
+		sort: 'height:desc',
+		limit: 1,
+	};
+	const [{ commission }] = await commissionsTable.find(queryParams, ['commission']);
+
+	const blockRewardQ = q96(blockReward);
+	const currentCommissionQ = q96(BigInt(commission));
+	const commissionAmount = blockRewardQ.muldiv(currentCommissionQ, maxCommissionQ);
+	return commissionAmount.floor();
 };
 
-const calcSelfStakeReward = async (generatorAddress, reward, commission) => {
-	let selfStakeReward = q96(BigInt('0'));
-
+const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmount) => {
 	const stakesTable = await getStakesTable();
 	const stakerInfo = await stakesTable.find(
-		{ validatorAddress: generatorAddress }, ['stakerAddress', 'amount'],
+		{ validatorAddress: generatorAddress },
+		['stakerAddress', 'amount'],
 	);
 
 	if (stakerInfo.length) {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);
-		const selfStakes = selfStakesInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount), BigInt('0'));
-		const totalStakes = stakerInfo.reduce((a, b) => BigInt(a.amount) + BigInt(b.amount), BigInt('0'));
+		const { amount: selfStakes } = selfStakesInfo.reduce(
+			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
+			{ amount: BigInt('0') },
+		);
+		const { amount: totalStakes } = stakerInfo.reduce(
+			(a, b) => ({ amount: BigInt(a.amount) + BigInt(b.amount) }),
+			{ amount: BigInt('0') },
+		);
 
-		const rewardQ = q96(reward);
-		const commissionQ = q96(commission);
 		const selfStakesQ = q96(selfStakes);
 		const totalStakesQ = q96(totalStakes);
-		const remCommissionQ = q96(maxCommissionQ.sub(commissionQ));
+		const blockRewardQ = q96(blockReward);
+		const commissionAmountQ = q96(commissionAmount);
+		const remBlockRewardQ = blockRewardQ.sub(commissionAmountQ);
 
-		const rewardFractionQ = rewardQ.mul(remCommissionQ);
-		selfStakeReward = (rewardFractionQ.mul(selfStakesQ)).div(totalStakesQ.mul(maxCommissionQ));
+		const selfStakeRewardQ = remBlockRewardQ.muldiv(selfStakesQ, totalStakesQ);
+		return selfStakeRewardQ.floor();
 	}
 
-	return selfStakeReward.floor();
+	return BigInt('0');
 };
 
 module.exports = {
 	getNameByAddress,
 	getAddressByName,
-	calcCommission,
+	calcCommissionAmount,
 	calcSelfStakeReward,
 };

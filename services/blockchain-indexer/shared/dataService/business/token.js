@@ -17,10 +17,15 @@ const {
 	Exceptions: {
 		InvalidParamsException,
 	},
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
+
+const config = require('../../../config');
+const accountBalancesTableSchema = require('../../database/schema/accountBalances');
 
 const { requestConnector } = require('../../utils/request');
-const { getLisk32AddressFromPublicKey } = require('../../utils/account');
+const { getLisk32AddressFromPublicKey, getIndexedAccountInfo } = require('../../utils/account');
 const { getAddressByName } = require('../../utils/validator');
 
 const {
@@ -28,6 +33,13 @@ const {
 	PATTERN_ANY_TOKEN_ID,
 	PATTERN_ANY_CHAIN_TOKEN_ID,
 } = require('../../constants');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getAccountBalancesTable = () => getTableInstance(
+	accountBalancesTableSchema.tableName,
+	accountBalancesTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 let moduleConstants = {};
 
@@ -56,7 +68,9 @@ const getTokenBalances = async (params) => {
 		if (response.balances) tokensInfo.push(...response.balances);
 	}
 
-	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);
+	tokens.data = 'offset' in params && 'limit' in params
+		? tokensInfo.slice(params.offset, params.offset + params.limit)
+		: tokensInfo;
 
 	tokens.meta = {
 		address: params.address,
@@ -66,6 +80,40 @@ const getTokenBalances = async (params) => {
 	};
 
 	return tokens;
+};
+
+const getTokenTopBalances = async (params) => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+	const accountBalancesTable = await getAccountBalancesTable();
+	const tokenInfos = await accountBalancesTable.find({ ...params }, ['address', 'balance']);
+
+	response.data[params.tokenID] = await BluebirdPromise.map(
+		tokenInfos,
+		async tokenInfo => {
+			const accountInfo = await getIndexedAccountInfo({ address: tokenInfo.address }, ['publicKey', 'name']);
+			return {
+				address: tokenInfo.address,
+				publicKey: accountInfo.publicKey,
+				name: accountInfo.name,
+				balance: tokenInfo.balance,
+				knowledge: {
+					// TODO: Integrate knowledge information
+				},
+			};
+		},
+		{ concurrency: tokenInfos.length },
+	);
+
+	response.meta = {
+		count: response.data[params.tokenID].length,
+		offset: params.offset,
+		total: await accountBalancesTable.count({ ...params }),
+	};
+
+	return response;
 };
 
 const getTokenSummary = async () => {
@@ -152,9 +200,32 @@ const getTokenConstants = async () => {
 	};
 };
 
+const getAvailableTokenIDs = async (params) => {
+	const response = {
+		data: {},
+		meta: {},
+	};
+	const accountBalancesTable = await getAccountBalancesTable();
+
+	const tokenInfos = await accountBalancesTable.find(
+		{ ...params, distinct: 'tokenID' }, ['tokenID'],
+	);
+
+	response.data.tokenIDs = tokenInfos.map(tokenInfo => tokenInfo.tokenID);
+	response.meta = {
+		count: response.data.tokenIDs.length,
+		offset: params.offset,
+		total: await accountBalancesTable.count({ distinct: 'tokenID' }),
+	};
+
+	return response;
+};
+
 module.exports = {
 	tokenHasUserAccount,
+	getAvailableTokenIDs,
 	getTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getTokenTopBalances,
 };
