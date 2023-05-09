@@ -201,7 +201,11 @@ Retrieve the latest release from the {url_repo}[official repository^].
 
 Unpack the source code archive by executing the following commands listed below:
 
-
+[source,bash]
+----
+tar -xf lisk-service-x.y.z.tar.gz
+cd lisk-service
+----
 
 
 
