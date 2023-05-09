@@ -25,7 +25,7 @@ module.exports = {
 	params: {
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
-		search: { optional: true, type: 'string', min: 1, pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'search' },
+		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'search' },
 	},
 	tags: ['Generators'],
 	get schema() {
