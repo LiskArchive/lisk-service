@@ -33,6 +33,14 @@ Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.bra
 :url_curl: https://curl.se/
 :url_httpie: https://httpie.io/
 :url_socket: https://socket.io/
+:url_nodejs: https://github.com/nodejs/release#release-schedule
+:url_mysql: https://dev.mysql.com/doc/relnotes/mysql/8.0/en/
+:url_docker: https://www.docker.com/
+:url_docker_compose: https://docs.docker.com/compose/install/
+:url_gnu_make: https://www.gnu.org/software/make/
+:url_gnu_tar: https://www.gnu.org/software/tar/
+
+
 
 :url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
 :url_api_http:  ROOT::api/lisk-service-http.adoc
@@ -161,6 +169,17 @@ The API is accessible through the URL `http://localhost:9901` when running local
 The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
 
 With regard to WebSocket-based APIs, these can be used via the {url_socket}[Socket.IO^] library which is available for many programming languages and frameworks,
+
+To perform the installation ensure the following dependencies listed below are installed:
+
+* {url_nodejs}[NodeJS Active LTS - v16.15.0^]
+* {url_mysql}[MySQL - v8.0.29^]
+* {url_docker}[Docker] with {url_docker_compose}[Docker compose]
+* {url_gnu_make}[GNU Make] and {url_gnu_tar}[GNU Tar]
+
+In order to obtain comprehensive guidance on installing the necessary dependencies for different operating systems, adhere to the instructions outlined in relevant links below:
+
+
 
 
 [[usage]]
