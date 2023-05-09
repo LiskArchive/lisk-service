@@ -56,7 +56,7 @@ const getBlockchainAppsStatistics = async () => {
 	// Redirect call to the mainchain service
 	const serviceURL = await resolveMainchainServiceURL();
 	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`;
-	const response = HTTP.get(blockchainAppsStatsEndpoint);
+	const { data: response } = HTTP.get(blockchainAppsStatsEndpoint);
 	return response;
 };
 
