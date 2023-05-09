@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-describe('Test isMainchain method', () => {
-	const mockedFilePath = '../../../shared/dataService/business/network';
-	beforeEach(() => jest.resetModules());
+const config = require('../../../config');
 
+const mockedFilePath = '../../../shared/dataService/business/network';
+
+beforeEach(() => jest.resetModules());
+
+describe('Test isMainchain method', () => {
 	it('should return false -> undefined chainID', async () => {
 		jest.mock(mockedFilePath, () => {
 			const actual = jest.requireActual('../../../shared/dataService/business/network');
@@ -100,5 +103,61 @@ describe('Test isMainchain method', () => {
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
+	});
+});
+
+describe('Test resolveMainchainServiceURL method', () => {
+	it('should return devnet mainchain URL -> valid devnet mainchain chainID', async () => {
+		const chainID = '04000000';
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID } };
+				},
+			};
+		});
+
+		const { resolveMainchainServiceURL } = require('../../../shared/dataService');
+		const result = await resolveMainchainServiceURL();
+
+		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
+		expect(result).toBe(serviceURL);
+	});
+
+	it('should return betanet mainchain URL -> valid devnet mainchain chainID', async () => {
+		const chainID = '02000000';
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID } };
+				},
+			};
+		});
+
+		const { resolveMainchainServiceURL } = require('../../../shared/dataService');
+		const result = await resolveMainchainServiceURL();
+
+		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
+		expect(result).toBe(serviceURL);
+	});
+
+	it('should return undefined -> invalid chainID', async () => {
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			return {
+				...actual,
+				getNetworkStatus() {
+					return { data: { chainID: 'invalid' } };
+				},
+			};
+		});
+
+		const { resolveMainchainServiceURL } = require('../../../shared/dataService');
+		const result = await resolveMainchainServiceURL();
+		expect(result).toBe(undefined);
 	});
 });
