@@ -179,7 +179,7 @@ To perform the installation ensure the following dependencies listed below are i
 * {url_docker}[Docker] with {url_docker_compose}[Docker compose]
 * {url_gnu_make}[GNU Make] and {url_gnu_tar}[GNU Tar]
 
-In order to obtain comprehensive guidance on installing the necessary dependencies for the different operating systems, adhere to the relevant instructions that pertain to your specific operating system, as shown below:
+In order to obtain comprehensive guidance on installing the necessary dependencies for the different operating systems, adhere to the relevant instructions that pertain to your specific operating system as shown below:
 
 [tabs]
 ====
@@ -194,6 +194,11 @@ MacOS::
 * {url_macos}[MacOS 10.15 Catalina^]
 --
 ====
+
+Retrieve the latest release from the official repository.
+
+Unpack the source code archive by executing the following commands listed below:
+
 
 
 
