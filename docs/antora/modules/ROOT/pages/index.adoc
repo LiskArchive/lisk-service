@@ -215,7 +215,7 @@ tar -xf lisk-service-x.y.z.tar.gz
 cd lisk-service
 ----
 
-Although the above commands retrieve the entire source code, however, this does not cover building a custom version of Lisk Service.
+The above commands retrieve the entire source code, however, this does not cover building a custom version of Lisk Service.
 For more information refer to this document: {url_service-source}[Building Lisk Service from source^].
 
 ==== Docker image build
