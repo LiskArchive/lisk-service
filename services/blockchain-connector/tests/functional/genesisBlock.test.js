@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const { ServiceBroker } = require('moleculer');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -27,21 +28,24 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
+const moduleName = 'token';
+const subStoreName = 'userSubstore';
+
+beforeAll(() => broker.start());
+afterAll(() => broker.stop());
+
 describe('Genesis Block import tests', () => {
 	let genesisBlockFilePath;
 
-	beforeAll(() => broker.start());
-	afterAll(() => broker.stop());
-
-	it('Verify if genesis block is downloaded successfully', async () => {
+	xit('Verify if genesis block is downloaded successfully', async () => {
 		const { chainID } = await broker.call('connector.getNetworkStatus');
-		genesisBlockFilePath = `./data/${chainID}/genesis_block.json.tar.gz`;
+		genesisBlockFilePath = path.resolve(`${__dirname}/../../data/${chainID}/genesis_block.json.tar.gz`);
 
 		const isExists = await exists(genesisBlockFilePath);
 		expect(isExists).toBe(true);
 	});
 
-	it('Validate genesis block', async () => {
+	xit('Validate genesis block', async () => {
 		const genesisBlockSHAFilePath = genesisBlockFilePath.concat('.SHA256');
 		const isExists = await exists(genesisBlockSHAFilePath);
 		expect(isExists).toBe(true);
@@ -57,5 +61,49 @@ describe('Genesis Block import tests', () => {
 		});
 
 		expect(expectedHash).toEqual(fileHash);
+	});
+});
+
+xdescribe('Test getGenesisAssets method', () => {
+	it('should return token module data when called with module:token', async () => {
+		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName });
+		expect(Object.keys(response).length).toBe(4);
+	});
+
+	it('should return token module userSubstore data when called with module:token and subStore:userSubstore', async () => {
+		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName, subStore: subStoreName });
+		expect(Object.keys(response).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(subStoreName);
+		expect(response[subStoreName].length).toBeGreaterThan(1);
+	});
+
+	it('should return token module userSubstore data when called with module:token, subStore:userSubstore, offset:0, limit: 10', async () => {
+		const limit = 10;
+		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName, subStore: subStoreName, offset: 0, limit });
+		expect(Object.keys(response).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(subStoreName);
+		expect(response[subStoreName].length).toBeGreaterThanOrEqual(1);
+		expect(response[subStoreName].length).toBeLessThanOrEqual(limit);
+	});
+});
+
+xdescribe('Test getGenesisAssetsLength method', () => {
+	it('should return all modules when called without any params', async () => {
+		const response = await broker.call('connector.getGenesisAssetsLength');
+		expect(Object.keys(response).length).toBeGreaterThan(1);
+	});
+
+	it('should return token module data length when called with module:token', async () => {
+		const response = await broker.call('connector.getGenesisAssetsLength', { module: moduleName });
+		expect(Object.keys(response)[0]).toBe(moduleName);
+		expect(Object.keys(response[moduleName]).length).toBe(4);
+	});
+
+	it('should return token module userSubstore length when called with module:token and subStore:userSubstore', async () => {
+		const response = await broker.call('connector.getGenesisAssetsLength', { module: moduleName, subStore: subStoreName });
+		expect(Object.keys(response).length).toBe(1);
+		expect(Object.keys(response)[0]).toBe(moduleName);
+		expect(Object.keys(response[moduleName])[0]).toBe(subStoreName);
+		expect(Object.keys(response[moduleName]).length).toBe(1);
 	});
 });

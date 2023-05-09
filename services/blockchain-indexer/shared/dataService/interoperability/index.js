@@ -15,11 +15,13 @@
  */
 const { getBlockchainApps } = require('./blockchainApps');
 const { getChainAccount } = require('./chainAccount');
+const { getMainchainID } = require('./mainchain');
 const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
 
 module.exports = {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
+	getMainchainID,
 	reloadBlockchainAppsStats,
 };

@@ -57,7 +57,7 @@ describe('Blockchain applications metadata API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.length).toBeLessThanOrEqual(5);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
@@ -67,7 +67,7 @@ describe('Blockchain applications metadata API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.length).toBeLessThanOrEqual(5);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
@@ -77,7 +77,7 @@ describe('Blockchain applications metadata API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(response.data.length).toBeLessThanOrEqual(5);
 		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(response.meta).toMap(metaSchema);
 	});

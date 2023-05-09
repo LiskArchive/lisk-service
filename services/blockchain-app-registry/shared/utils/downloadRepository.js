@@ -28,9 +28,9 @@ const {
 	Signals,
 } = require('lisk-service-framework');
 
-const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
-const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
-const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fsUtils');
+const { resolveChainNameByNetworkAppDir } = require('./chain');
+const { downloadAndExtractTarball, downloadFile } = require('./download');
+const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fs');
 
 const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
@@ -411,6 +411,7 @@ module.exports = {
 	downloadRepositoryToFS,
 	getRepoInfoFromURL,
 	syncWithRemoteRepo,
+	isMetadataFile,
 
 	// For testing
 	getRepoDownloadURL,
@@ -421,4 +422,5 @@ module.exports = {
 	getFileDownloadURL,
 	getDiff,
 	buildEventPayload,
+	getModifiedFileNames,
 };

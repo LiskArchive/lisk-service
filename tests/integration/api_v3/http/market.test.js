@@ -19,12 +19,12 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	metaSchema,
 	serviceUnavailableSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	marketPriceSchema,
+	marketPriceMetaSchema,
 } = require('../../../schemas/api_v3/marketPrice.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -40,7 +40,7 @@ describe('Market API', () => {
 				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBeGreaterThanOrEqual(1);
 				response.data.forEach(account => expect(account).toMap(marketPriceSchema));
-				expect(response.meta).toMap(metaSchema);
+				expect(response.meta).toMap(marketPriceMetaSchema);
 			} catch (_) {
 				const expectedResponseCode = 503;
 				const response = await api.get(`${endpoint}`, expectedResponseCode);

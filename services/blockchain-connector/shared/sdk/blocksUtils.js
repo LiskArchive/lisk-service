@@ -17,7 +17,10 @@ const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
 
-const { Logger } = require('lisk-service-framework');
+const {
+	Logger,
+	Exceptions: { NotFoundException },
+} = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
 const { formatBlock } = require('./formatter');
@@ -32,6 +35,8 @@ let readStream;
 let genesisBlockUrl;
 let genesisBlockFilePath;
 let genesisBlock = { header: {} };
+
+let isGenesisBlockURLNotFound = false;
 
 const parseStream = json.createParseStream();
 
@@ -106,18 +111,24 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 			// Delete all previous files including the containing directory if genesis block is not valid
 			await rm(directoryPath, { recursive: true, force: true });
 		} catch (err) {
-			logger.error('Error while downloading and validating genesis block');
+			logger.error('Error while downloading and validating genesis block.');
 			logger.error(err.message);
+			if (err instanceof NotFoundException) {
+				isGenesisBlockURLNotFound = true;
+				throw err;
+			}
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
-	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}`);
-	logger.fatal('Exiting the application');
+	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}.`);
+	logger.fatal('Exiting the application.');
 	process.exit(1);
 };
 
 const getGenesisBlockFromFS = async () => {
+	if (isGenesisBlockURLNotFound) throw new NotFoundException();
+
 	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
 		if (!(await exists(genesisBlockFilePath))) {

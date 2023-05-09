@@ -34,10 +34,10 @@ const {
 	getHexAddress,
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
-} = require('../../utils/accountUtils');
+} = require('../../utils/account');
 const { getLastBlock } = require('../blocks');
 const { MODULE, COMMAND } = require('../../constants');
-const { sortComparator } = require('../../utils/arrayUtils');
+const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -176,6 +176,14 @@ const getAllValidators = async () => {
 	return validatorList;
 };
 
+const isPatternInCollection = (collection, pattern) => {
+	for (let i = 0; i < collection.length; i++) {
+		if (collection[i] && collection[i].toLowerCase().includes(pattern.toLowerCase())) return true;
+	}
+
+	return false;
+};
+
 const getPosValidators = async params => {
 	const validators = {
 		data: [],
@@ -211,9 +219,11 @@ const getPosValidators = async params => {
 		if (addressSet.size && !addressSet.has(validator.address)) return false;
 		if (nameSet.size && !nameSet.has(validator.name)) return false;
 		if (statusSet.size && !statusSet.has(validator.status)) return false;
-		if (params.search && !validator.name.toLowerCase().includes(params.search.toLowerCase())) {
+		if (params.search && !isPatternInCollection(
+			[validator.name, validator.address, validator.publicKey], params.search)) {
 			return false;
 		}
+
 		return true;
 	});
 

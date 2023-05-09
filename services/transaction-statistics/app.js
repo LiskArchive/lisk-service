@@ -52,9 +52,9 @@ app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(async () => {
-	logger.info(`Service started ${packageJson.name}`);
+	logger.info(`Service started ${packageJson.name}.`);
 }).catch(err => {
-	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 	logger.fatal(err.stack);
 	process.exit(1);
 });

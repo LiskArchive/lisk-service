@@ -66,8 +66,43 @@ describe('Stakes API', () => {
 			expect(response.data.stakes[0].address).toBe(refValidator.address);
 		});
 
+		it('Returns list of stakes when requested with search param (exact staker public key)', async () => {
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.publicKey}`);
+			expect(response).toMap(stakesResponseSchema);
+			expect(response.data.stakes.length).toBe(1);
+			expect(response.data.stakes[0].address).toBe(refValidator.address);
+		});
+
+		it('Returns list of stakes when requested with search param (exact staker address)', async () => {
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.address}`);
+			expect(response).toMap(stakesResponseSchema);
+			expect(response.data.stakes.length).toBe(1);
+			expect(response.data.stakes[0].address).toBe(refValidator.address);
+		});
+
 		it('Returns list of stakes when requested with search param (partial staker name)', async () => {
-			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${refValidator.name[0]}`);
+			const searchParam = refValidator.name ? refValidator.name.substring(0, 3) : '';
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${searchParam}`);
+			expect(response).toMap(stakesResponseSchema);
+			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+			expect(response.data.stakes.some(staker => staker.address === refValidator.address))
+				.toBe(true);
+		});
+
+		it('Returns list of stakes when requested with search param (partial staker public key)', async () => {
+			const searchParam = refValidator.publicKey ? refValidator.publicKey.substring(0, 3) : '';
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${searchParam}`);
+			expect(response).toMap(stakesResponseSchema);
+			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+			expect(response.data.stakes.some(staker => staker.address === refValidator.address))
+				.toBe(true);
+		});
+
+		it('Returns list of stakes when requested with search param (partial staker address)', async () => {
+			const searchParam = refValidator.address ? refValidator.address.substring(0, 3) : '';
+			const response = await api.get(`${endpoint}?address=${refStaker.address}&search=${searchParam}`);
 			expect(response).toMap(stakesResponseSchema);
 			expect(response.data.stakes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);

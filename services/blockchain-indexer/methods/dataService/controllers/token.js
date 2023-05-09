@@ -38,6 +38,19 @@ const getTokenBalances = async params => {
 	}
 };
 
+const getTokenTopBalances = async (params) => {
+	const tokenTopBalances = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getTokenTopBalances(params);
+	if (response.data) tokenTopBalances.data = response.data;
+	if (response.meta) tokenTopBalances.meta = response.meta;
+
+	return tokenTopBalances;
+};
+
 const getTokenSummary = async params => {
 	const tokenSummary = {
 		data: {},
@@ -75,9 +88,24 @@ const getTokenConstants = async () => {
 	return constants;
 };
 
+const getAvailableTokenIDs = async (params) => {
+	const tokenIDsResponse = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getAvailableTokenIDs(params);
+	if (response.data) tokenIDsResponse.data = response.data;
+	if (response.meta) tokenIDsResponse.meta = response.meta;
+
+	return tokenIDsResponse;
+};
+
 module.exports = {
 	tokenHasUserAccount,
 	getTokenBalances,
+	getTokenTopBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getAvailableTokenIDs,
 };

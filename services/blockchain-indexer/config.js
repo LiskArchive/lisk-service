@@ -38,7 +38,7 @@ config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://loc
 config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
 config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
-config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL;
+config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL; // For custom deployments
 
 /**
  * LOGGING
@@ -61,14 +61,42 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
  * Message queue options
  */
 config.queue = {
+	accountBalanceIndex: {
+		name: 'AccountBalanceIndex',
+		concurrency: 1,
+	},
 	accounts: {
 		name: 'Accounts',
+	},
+	accountQueueByAddress: {
+		name: 'AccountQueueByAddress',
+		concurrency: 1,
+	},
+	accountQueueDirect: {
+		name: 'AccountQueueDirect',
+		concurrency: 1,
+	},
+	accountQueueByPublicKey: {
+		name: 'AccountQueueByPublicKey',
+		concurrency: 1,
 	},
 	blocks: {
 		name: 'Blocks',
 	},
+	deleteIndexedBlocks: {
+		name: 'DeleteIndexedBlocksQueue',
+		concurrency: 1,
+	},
 	events: {
 		name: 'Events',
+	},
+	indexBlocks: {
+		name: 'IndexBlocksQueue',
+		concurrency: 1,
+	},
+	updateBlockIndex: {
+		name: 'UpdateBlockIndexQueue',
+		concurrency: 1,
 	},
 	defaultJobOptions: {
 		attempts: 5,

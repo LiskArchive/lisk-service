@@ -38,25 +38,25 @@ const config = require('../../config');
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
-const getConnectedPeers = async () => {
+const getNetworkConnectedPeers = async () => {
 	try {
 		const connectedPeers = await invokeEndpoint('network_getConnectedPeers');
 		return connectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getConnectedPeers\'.');
+			throw new TimeoutException('Request timed out when calling \'getNetworkConnectedPeers\'.');
 		}
 		throw err;
 	}
 };
 
-const getDisconnectedPeers = async () => {
+const getNetworkDisconnectedPeers = async () => {
 	try {
 		const disconnectedPeers = await invokeEndpoint('network_getDisconnectedPeers');
 		return disconnectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getDisconnectedPeers\'.');
+			throw new TimeoutException('Request timed out when calling \'getNetworkDisconnectedPeers\'.');
 		}
 		throw err;
 	}
@@ -301,8 +301,8 @@ module.exports = {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
-	getConnectedPeers,
-	getDisconnectedPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
 	getGeneratorStatus,
 	updateGeneratorStatus,
 	getLastBlock,

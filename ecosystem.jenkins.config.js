@@ -40,7 +40,7 @@ module.exports = {
 				WS_RATE_LIMIT_DURATION: 1, // in seconds
 				ENABLE_REQUEST_CACHING: 'true',
 				JSON_RPC_STRICT_MODE: 'false',
-				HTTP_RATE_LIMIT_ENABLE: 'true',
+				HTTP_RATE_LIMIT_ENABLE: 'false',
 				HTTP_RATE_LIMIT_CONNECTIONS: 200,
 				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 				HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
@@ -64,9 +64,6 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				ENABLE_REBUILD_INDEX_AT_INIT: 'false',
-				GITHUB_APP_REGISTRY_REPO: 'https://github.com/LiskHQ/app-registry',
-				GITHUB_APP_REGISTRY_REPO_BRANCH: 'main',
-				GITHUB_ACCESS_TOKEN: '',
 			},
 		},
 		{
@@ -84,10 +81,10 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				LISK_APP_WS: 'ws://localhost:5001',
+				LISK_APP_WS: 'ws://localhost:7887',
 				GEOIP_JSON: 'https://geoip.lisk.com/json',
-				USE_LISK_IPC_CLIENT: 'true',
-				LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				// USE_LISK_IPC_CLIENT: 'true',
+				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
 				ENABLE_TESTING_MODE: 'true',
 			},
 		},

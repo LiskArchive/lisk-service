@@ -41,6 +41,28 @@
 				"type": "integer",
 				"example": 1616008148,
 				"description": "timestamp"
+			},
+			"escrow": {
+				"type": "array",
+				"required": [
+					"tokenID",
+					"amount"
+				],
+				"items": {
+					"type": "object",
+					"properties": {
+						"tokenID": {
+							"type": "string",
+							"example": "0000000000000000",
+							"description": "The universal token identifier for the escrowed tokens within the Lisk ecosystem."
+						},
+						"amount": {
+							"type": "string",
+							"example": "50000000000",
+							"description": "The escrowed amount."
+						}
+					}
+				}
 			}
 		}
 	},
@@ -93,11 +115,11 @@
 						"type": "string",
 						"example": "5000000"
 					},
-					"stakedLSK": {
+					"totalStakedLSK": {
 						"type": "string",
 						"example": "3000000"
 					},
-					"inflationRate": {
+					"currentAnnualInflationRate": {
 						"type": "string",
 						"example": "4.50"
 					}
@@ -334,12 +356,12 @@
 			},
 			"tokenID": {
 				"type": "string",
-				"example": "Lisk",
+				"example": "0000000000000000",
 				"description": "The universal identifier for the token within the Lisk ecosystem."
 			},
 			"tokenName": {
 				"type": "string",
-				"example": "00000000",
+				"example": "Lisk",
 				"description": "The name of the token. For example Lisk"
 			},
 			"networkType": {
@@ -383,8 +405,8 @@
 			},
 			"displayDenom": {
 				"type": "string",
-				"example": "LSK",
-				"description": "The human friendly denomination unit of the token. Must be a 'denom' in denomUnits. Example: LSK"
+				"example": "lsk",
+				"description": "The human friendly denomination unit of the token. Must be a 'denom' in denomUnits. Example: lsk"
 			},
 			"baseDenom": {
 				"type": "string",

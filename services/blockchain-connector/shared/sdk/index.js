@@ -18,6 +18,8 @@ const {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 } = require('./genesisBlock');
 
 const {
@@ -47,13 +49,6 @@ const {
 	postTransaction,
 	dryRunTransaction,
 } = require('./transactions');
-
-const {
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
-} = require('./peers');
 
 const {
 	tokenHasUserAccount,
@@ -98,6 +93,7 @@ const {
 
 const {
 	getChainAccount,
+	getMainchainID,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -105,11 +101,17 @@ const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
 const { getValidator, validateBLSKey } = require('./validators');
-const { refreshNetworkStatus, getNetworkStatus } = require('./network');
+const {
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
+} = require('./network');
 
 const init = async () => {
 	// Initialize the local cache
-	await refreshNetworkStatus();
+	await getNodeInfo(true);
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 
@@ -129,6 +131,8 @@ module.exports = {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
+	getGenesisAssetsLength,
 
 	// Endpoints
 	getGenerators,
@@ -154,12 +158,6 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-
-	// Peers
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
 
 	// Tokens
 	tokenHasUserAccount,
@@ -198,6 +196,7 @@ module.exports = {
 
 	// Interoperability
 	getChainAccount,
+	getMainchainID,
 
 	// Legacy
 	getLegacyAccount,
@@ -217,6 +216,9 @@ module.exports = {
 	validateBLSKey,
 
 	// Network
-	refreshNetworkStatus,
 	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };

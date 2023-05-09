@@ -57,6 +57,10 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
 config.queue = {
+	transactionStats: {
+		name: 'TransactionStats',
+		concurrency: 1,
+	},
 	default: {
 		defaultJobOptions: {
 			attempts: 5,

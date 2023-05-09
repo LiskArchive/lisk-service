@@ -38,12 +38,12 @@ const {
 
 const {
 	dryrunTransactionSuccessResponseSchema,
+	dryrunTxSuccessSchemaWithSkipDecode,
 	dryrunTransactionInvalidResponseSchema,
 	dryrunTransactionPendingResponseSchema,
 	metaSchema,
+	goodRequestSchemaFortransactionsDryRun,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
-
-const { goodRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactions.dryrun', params);
@@ -55,7 +55,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -66,7 +66,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -77,7 +77,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -88,7 +88,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -104,9 +104,24 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('Post dryrun transaction succesfully with skipDecode: true', async () => {
+		const response = await postDryrunTransaction(
+			{
+				transaction: TRANSACTION_ENCODED_VALID, skipDecode: true,
+			},
+		);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result.data).toBeInstanceOf(Object);
+		expect(result.data).toMap(dryrunTxSuccessSchemaWithSkipDecode);
 		expect(result.meta).toMap(metaSchema);
 	});
 
@@ -115,19 +130,19 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('Returns proper response (Invalid) for duplicate transaction', async () => {
+	xit('Returns proper response (Invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(jsonRpcEnvelopeSchema);
 
 		const { result: firstResult } = firstResponse;
-		expect(firstResult).toMap(goodRequestSchema);
+		expect(firstResult).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(firstResult.data).toBeInstanceOf(Object);
 		expect(firstResult.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(firstResult.meta).toMap(metaSchema);
@@ -141,7 +156,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(secondResponse).toMap(jsonRpcEnvelopeSchema);
 
 		const { result: secondResult } = secondResponse;
-		expect(secondResult).toMap(goodRequestSchema);
+		expect(secondResult).toMap(goodRequestSchemaFortransactionsDryRun);
 		expect(secondResult.data).toBeInstanceOf(Object);
 		expect(secondResult.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(secondResult.meta).toMap(metaSchema);

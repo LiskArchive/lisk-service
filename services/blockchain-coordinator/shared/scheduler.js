@@ -24,8 +24,7 @@ const logger = Logger();
 
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
-	isGenesisBlockIndexed,
-	getMissingblocks,
+	getMissingBlocks,
 	getCurrentHeight,
 	getGenesisHeight,
 	getIndexVerifiedHeight,
@@ -54,12 +53,6 @@ const accountIndexQueue = new MessageQueue(
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
-const scheduleGenesisBlockIndexing = async () => {
-	const genesisHeight = await getGenesisHeight();
-	await blockIndexQueue.add({ height: genesisHeight });
-	logger.info('Finished scheduling of genesis block indexing.');
-};
-
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
@@ -87,7 +80,12 @@ const scheduleValidatorsIndexing = async (validators) => {
 		{ concurrency: validators.length },
 	);
 
-	logger.info('Finished scheduling of validators indexing');
+	logger.info('Finished scheduling of validators indexing.');
+};
+
+const indexGenesisBlock = async () => {
+	const genesisHeight = await getGenesisHeight();
+	await scheduleBlocksIndexing(genesisHeight);
 };
 
 const initIndexingScheduler = async () => {
@@ -100,16 +98,10 @@ const initIndexingScheduler = async () => {
 		await scheduleValidatorsIndexing(validators);
 	}
 
-	// Check if genesis block is already indexed and schedule indexing if not indexed
-	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
-	if (!isGenesisBlockAlreadyIndexed) {
-		await scheduleGenesisBlockIndexing();
-	}
-
 	// Check for missing blocks
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
-	const missingBlocksByHeight = await getMissingblocks(genesisHeight, currentHeight);
+	const missingBlocksByHeight = await getMissingBlocks(genesisHeight + 1, currentHeight);
 
 	// Schedule indexing for the missing blocks
 	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
@@ -121,7 +113,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	// Missing blocks are being checked during regualar interval
+	// Missing blocks are being checked during regular interval
 	// By default they are checked from the blockchain's beginning
 	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
 
@@ -129,7 +121,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const blockIndexHigherRange = currentHeight;
 	const blockIndexLowerRange = lastVerifiedHeight;
 
-	const missingBlocksByHeight = await getMissingblocks(
+	const missingBlocksByHeight = await getMissingBlocks(
 		blockIndexLowerRange,
 		blockIndexHigherRange,
 	);
@@ -153,6 +145,7 @@ const scheduleMissingBlocksIndexing = async () => {
 };
 
 const init = async () => {
+	await indexGenesisBlock();
 	await initIndexingScheduler();
 	await initEventsScheduler();
 };

@@ -43,21 +43,20 @@ const {
 } = require('./pendingTransactions');
 
 const {
-	getPeersStatistics,
-} = require('./peers');
-
-const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
 	getChainAccount,
+	getMainchainID,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
 const {
 	tokenHasUserAccount,
+	getAvailableTokenIDs,
 	getTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getTokenTopBalances,
 } = require('./token');
 
 const {
@@ -90,6 +89,13 @@ const {
 } = require('./events');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { getValidator, validateBLSKey } = require('./validator');
+const {
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
+} = require('./network');
 
 module.exports = {
 	// Generators
@@ -125,14 +131,17 @@ module.exports = {
 	// Interoperability
 	getBlockchainApps,
 	getChainAccount,
+	getMainchainID,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 
 	// Token
 	tokenHasUserAccount,
+	getAvailableTokenIDs,
 	getTokenBalances,
 	getTokenSummary,
 	getTokenConstants,
+	getTokenTopBalances,
 
 	// PoS
 	getPosValidators,
@@ -159,10 +168,15 @@ module.exports = {
 	getValidator,
 	validateBLSKey,
 
-	// Peers
-	getPeersStatistics,
-
+	// Dynamic Reward
 	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
+
+	// Network
+	getNetworkStatus,
+	getNetworkPeers,
+	getNetworkConnectedPeers,
+	getNetworkDisconnectedPeers,
+	getNetworkPeersStatistics,
 };

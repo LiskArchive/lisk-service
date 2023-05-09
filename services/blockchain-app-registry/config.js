@@ -73,7 +73,7 @@ config.dataDir = `${__dirname}/data`;
 
 config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 
-const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
+const DEFAULT_LISK_APPS = ['Lisk'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
@@ -82,6 +82,9 @@ config.FILENAME = Object.freeze({
 	APP_JSON: 'app.json',
 	NATIVETOKENS_JSON: 'nativetokens.json',
 });
+
+config.ALLOWED_FILES = Object.values(config.FILENAME);
+config.ALLOWED_FILE_EXTENSIONS = ['.png', '.svg'];
 
 config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'00': 'mainnet',

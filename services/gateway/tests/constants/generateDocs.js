@@ -68,12 +68,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -95,7 +89,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/blockchainAppStatus',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/blockchainAppSearch',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -117,19 +111,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta/list': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests list of blockchain applications for which the off-chain metadata is available',
 			description: 'Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list',
@@ -175,19 +163,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata',
 			description: 'Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta',
@@ -241,12 +223,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -264,16 +240,13 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/blockchainAppsStatsEnvelope',
 					},
 				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		},
 	},
 	'/blockchain/apps/meta/tokens': {
 		get: {
 			tags: [
-				'Interoperability',
+				'Application Off-Chain Metadata',
 			],
 			summary: 'Requests blockchain applications off-chain metadata for tokens',
 			description: 'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
@@ -328,10 +301,50 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
+			},
+		},
+	},
+	'/blockchain/apps/meta/tokens/supported': {
+		get: {
+			tags: [
+				'Application Off-Chain Metadata',
+			],
+			summary: 'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+			description: 'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.\n RPC => get.blockchain.apps.meta.tokens.supported',
+			parameters: [
+				{
+					$ref: '#/parameters/chainID',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+				{
+					name: 'sort',
+					in: 'query',
+					description: 'Fields to sort results by.',
+					required: false,
+					type: 'string',
+					enum: [
+						'tokenID:asc',
+						'tokenID:desc',
+					],
+					default: 'tokenID:asc',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a list of blockchain applications off-chain metadata for tokens supported on the specified chainID.',
 					schema: {
-						$ref: '#/definitions/notFound',
+						$ref: '#/definitions/BlockchainAppsTokenMetadataWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
 					},
 				},
 			},
@@ -389,12 +402,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -472,12 +479,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -494,9 +495,6 @@ const createApiDocsExpectedResponse = {
 					schema: {
 						$ref: '#/definitions/FeeEstimateEnvelope',
 					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
 				},
 			},
 		},
@@ -529,12 +527,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -552,9 +544,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/IndexStatus',
 					},
 				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
 			},
 		},
 	},
@@ -564,7 +553,7 @@ const createApiDocsExpectedResponse = {
 				'Proxy',
 			],
 			summary: 'Proxy request to directly invoke application endpoint',
-			description: 'Returns endpoint response from the blockchain application in its original form\n RPC => post.invoke',
+			description: 'Returns endpoint response from the blockchain application in its original form.\n RPC => post.invoke',
 			parameters: [
 				{
 					$ref: '#/parameters/invokeParams',
@@ -572,7 +561,7 @@ const createApiDocsExpectedResponse = {
 			],
 			responses: {
 				200: {
-					description: 'Returns endpoint response from the blockchain application in its original form',
+					description: 'Returns endpoint response from the blockchain application in its original form.',
 					schema: {
 						$ref: '#/definitions/invokeWithEnvelope',
 					},
@@ -609,62 +598,16 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
-	'/network/statistics': {
+	'/network/peers': {
 		get: {
 			tags: [
 				'Network',
-			],
-			summary: 'Requests network statistics',
-			description: 'Returns network statistics data\n RPC => get.network.statistics',
-			responses: {
-				200: {
-					description: 'Returns the network statistics information',
-					schema: {
-						$ref: '#/definitions/NetworkStatistics',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/network/status': {
-		get: {
-			tags: [
-				'Network',
-			],
-			summary: 'Requests network status',
-			description: 'Returns network status\n RPC => get.network.status',
-			responses: {
-				200: {
-					description: 'Returns the network status information',
-					schema: {
-						$ref: '#/definitions/NetworkStatus',
-					},
-				},
-				404: {
-					$ref: '#/responses/notFound',
-				},
-			},
-		},
-	},
-	'/peers': {
-		get: {
-			tags: [
-				'Peers',
 			],
 			summary: 'Requests peers data',
-			description: 'Returns peers data\n RPC => get.peers',
+			description: 'Returns peers data\n RPC => get.network.peers',
 			parameters: [
 				{
 					$ref: '#/parameters/ip',
@@ -712,10 +655,38 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
+			},
+		},
+	},
+	'/network/statistics': {
+		get: {
+			tags: [
+				'Network',
+			],
+			summary: 'Requests network statistics',
+			description: 'Returns network statistics data\n RPC => get.network.statistics',
+			responses: {
+				200: {
+					description: 'Returns the network statistics information',
 					schema: {
-						$ref: '#/definitions/notFound',
+						$ref: '#/definitions/NetworkStatistics',
+					},
+				},
+			},
+		},
+	},
+	'/network/status': {
+		get: {
+			tags: [
+				'Network',
+			],
+			summary: 'Requests network status',
+			description: 'Returns network status\n RPC => get.network.status',
+			responses: {
+				200: {
+					description: 'Returns the network status information',
+					schema: {
+						$ref: '#/definitions/NetworkStatus',
 					},
 				},
 			},
@@ -805,12 +776,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 		post: {
@@ -864,12 +829,6 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
-					},
-				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
 					},
 				},
 			},
@@ -928,6 +887,12 @@ const createApiDocsExpectedResponse = {
 						'month',
 					],
 				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
 			],
 			responses: {
 				200: {
@@ -942,10 +907,10 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
+				503: {
+					description: 'Service Unavailable',
 					schema: {
-						$ref: '#/definitions/notFound',
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},
@@ -976,12 +941,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
@@ -1010,22 +969,16 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
-					schema: {
-						$ref: '#/definitions/notFound',
-					},
-				},
 			},
 		},
 	},
-	'/validator/validateBLSKey': {
+	'/validator/validate-bls-key': {
 		post: {
 			tags: [
 				'Validator',
 			],
 			summary: 'Validates a BLS key against its corresponding Proof of Possession.',
-			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validateBLSKey',
+			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validate-bls-key',
 			parameters: [
 				{
 					$ref: '#/parameters/validateBLSKeyParams',
@@ -1044,10 +997,210 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
-				404: {
-					description: 'Not found',
+			},
+		},
+	},
+	'/token/account/exists': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests to check existence of an account for the specified token.',
+			description: 'Returns existence of an account for the specified token.\n RPC => get.token.account.exists',
+			parameters: [
+				{
+					$ref: '#/parameters/address',
+				},
+				{
+					$ref: '#/parameters/publicKey',
+				},
+				{
+					$ref: '#/parameters/accountName',
+				},
+				{
+					$ref: '#/parameters/tokenID',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns existence of an account for the specified token.',
 					schema: {
-						$ref: '#/definitions/notFound',
+						$ref: '#/definitions/tokenAccountExistsWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/available-ids': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests the list of available tokens identifiers.',
+			description: 'Returns all the available token identifiers.\n RPC => get.token.available-ids',
+			parameters: [
+				{
+					name: 'sort',
+					in: 'query',
+					description: 'Fields to sort results by.',
+					required: false,
+					type: 'string',
+					enum: [
+						'tokenID:desc',
+						'tokenID:asc',
+					],
+					default: 'tokenID:asc',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns all the available token identifiers.',
+					schema: {
+						$ref: '#/definitions/tokenAvailableIDsWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/balances': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests tokens information',
+			description: 'Returns tokens information\n RPC => get.token.balances',
+			parameters: [
+				{
+					$ref: '#/parameters/address',
+				},
+				{
+					$ref: '#/parameters/tokenID',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns a list of supported tokens by the blockchain application',
+					schema: {
+						$ref: '#/definitions/tokenWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/constants': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests Token module constants.',
+			description: 'Requests all the configured constants for the Token module.\n RPC => get.token.constants',
+			responses: {
+				200: {
+					description: 'Returns all the configured constants for the Token module.',
+					schema: {
+						$ref: '#/definitions/tokenConstantsWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/summary': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests the tokens summary for the current blockchain application.',
+			description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.\n RPC => get.token.summary",
+			parameters: [
+
+			],
+			responses: {
+				200: {
+					description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
+					schema: {
+						$ref: '#/definitions/tokenSummaryWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+			},
+		},
+	},
+	'/token/balances/top': {
+		get: {
+			tags: [
+				'Token',
+			],
+			summary: 'Requests the list of top accounts for the specified tokenID.',
+			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
+			parameters: [
+				{
+					$ref: '#/parameters/tokenID',
+				},
+				{
+					$ref: '#/parameters/limit',
+				},
+				{
+					$ref: '#/parameters/offset',
+				},
+				{
+					name: 'sort',
+					in: 'query',
+					description: 'Fields to sort results by.',
+					required: false,
+					type: 'string',
+					enum: [
+						'balance:desc',
+						'balance:asc',
+					],
+					default: 'balance:desc',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns the list of top accounts for the specified tokenID.',
+					schema: {
+						$ref: '#/definitions/tokenTopBalancesWithEnvelope',
 					},
 				},
 			},

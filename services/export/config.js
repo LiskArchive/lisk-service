@@ -66,7 +66,14 @@ config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
 config.csv.baseUrl = '/api/v3/exports';
 
+/**
+ * Message queue options
+ */
 config.queue = {
+	scheduleTransactionExport: {
+		name: 'ScheduleTransactionExportQueue',
+		concurrency: 50,
+	},
 	defaults: {
 		jobOptions: {
 			attempts: 5,

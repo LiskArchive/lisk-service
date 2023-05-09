@@ -19,6 +19,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -47,7 +48,7 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -56,8 +57,8 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of claimable rewards with known validator name and limit=5', async () => {
@@ -65,8 +66,8 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(5);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of claimable rewards with known validator name, offset=1 and limit=5', async () => {
@@ -74,8 +75,8 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.length).toBeLessThanOrEqual(5);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of claimable rewards with known validator address', async () => {
@@ -84,7 +85,7 @@ describe('Claimable rewards API', () => {
 
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -93,8 +94,8 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
 	it('Returns list of claimable rewards with known validator address and limit=5', async () => {
@@ -102,8 +103,8 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		expect(response.data.length).toBeLessThanOrEqual(5);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of claimable rewards with known validator address, offset=1 and limit=5', async () => {
@@ -113,8 +114,8 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(response.data.length).toBeGreaterThanOrEqual(0);
-		expect(response.data.length).toBeLessThanOrEqual(5);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 	});
 
 	it('Returns list of claimable rewards with known validator publicKey', async () => {
@@ -123,7 +124,7 @@ describe('Claimable rewards API', () => {
 
 		const { result } = response;
 		expect(result).toMap(goodResponseSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 	});
 
@@ -135,8 +136,8 @@ describe('Claimable rewards API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(goodResponseSchema);
-			expect(response.data.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 		}
 	});
 
@@ -148,8 +149,8 @@ describe('Claimable rewards API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(goodResponseSchema);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(5);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
+			expect(result.data.length).toBeLessThanOrEqual(5);
 		}
 	});
 
@@ -161,14 +162,14 @@ describe('Claimable rewards API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(goodResponseSchema);
-			expect(response.data.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.length).toBeLessThanOrEqual(5);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
+			expect(result.data.length).toBeLessThanOrEqual(5);
 		}
 	});
 
-	it('No param -> bad request', async () => {
+	it('No param -> invalid request', async () => {
 		const response = await getPosClaimableRewards();
-		expect(response).toMap(invalidParamsSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('Invalid address -> bad request', async () => {

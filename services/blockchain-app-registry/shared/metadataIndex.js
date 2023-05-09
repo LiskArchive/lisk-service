@@ -30,7 +30,7 @@ const {
 const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
 const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 
-const { getDirectories, read, getFiles, exists } = require('./utils/fsUtils');
+const { getDirectories, read, getFiles, exists } = require('./utils/fs');
 
 const config = require('../config');
 const constants = require('./constants');
@@ -66,6 +66,7 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 				network: tokenMeta.network,
 				localID: token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
 				tokenName: token.tokenName,
+				tokenID: token.tokenID,
 			};
 			return result;
 		},
@@ -246,4 +247,10 @@ module.exports = {
 	indexAllBlockchainAppsMeta,
 	indexMetadataFromFile,
 	deleteIndexedMetadataFromFile,
+
+	// For testing
+	indexAppMeta,
+	indexTokensMeta,
+	deleteAppMeta,
+	deleteTokensMeta,
 };

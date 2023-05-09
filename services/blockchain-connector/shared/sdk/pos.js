@@ -20,7 +20,7 @@ const {
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const { MODULE_NAME_POS } = require('./constants/names');
-const { getBlockByHeight } = require('./endpoints');
+const { getBlockByHeight } = require('./blocks');
 const regex = require('../utils/regex');
 
 const logger = Logger();

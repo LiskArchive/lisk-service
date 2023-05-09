@@ -197,7 +197,7 @@ ENABLE_FEE_ESTIMATOR_QUICK=true
 # Enable full algorithm
 ENABLE_FEE_ESTIMATOR_FULL=false
 
-# How many blocks are analyzed during coldstart
+# How many blocks are analyzed during cold start
 FEE_EST_COLD_START_BATCH_SIZE=1
 
 # At what height does the blockchain start using dynamic fees

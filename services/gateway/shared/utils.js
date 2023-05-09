@@ -61,12 +61,6 @@ const response = {
 			$ref: '#/definitions/badRequest',
 		},
 	},
-	404: {
-		description: 'Not found',
-		schema: {
-			$ref: '#/definitions/notFound',
-		},
-	},
 };
 
 const requireAllJson = apiName => {

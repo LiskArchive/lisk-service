@@ -51,7 +51,6 @@ config.liskAppDataPath = process.env.LISK_APP_DATA_PATH || '~/.lisk/lisk-core';
 config.constants.GENESIS_BLOCK_URL_DEFAULT = '';
 config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL
 	|| config.constants.GENESIS_BLOCK_URL_DEFAULT;
-config.genesisHeight = Number(process.env.GENESIS_HEIGHT || 0);
 config.networks = {
 	LISK: [
 		{
