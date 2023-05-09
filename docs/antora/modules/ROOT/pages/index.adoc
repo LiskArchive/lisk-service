@@ -1,5 +1,5 @@
 = Lisk Service
-Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.braithwaite@lightcure.io>
+Mona Bärenfänger <mona@lightcurve.io>
 :description: Describes the general purpose, architecture and usage of Lisk Service.
 :toc:
 :idseparator: -
