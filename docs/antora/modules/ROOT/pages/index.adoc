@@ -187,12 +187,14 @@ In order to obtain comprehensive guidance on installing the necessary dependenci
 [tabs]
 =====
 Linux::
++
 --
 * {url_ubuntu18}[Ubuntu 18.04 LTS Bionic Beaver^]
 * {url_ubuntu20}[Ubuntu 20.04 LTS Focal Fossa^]
 * {url_debian}[Debian 10 Buster^]
 --
 MacOS::
++
 --
 * {url_macos}[MacOS 10.15 Catalina^]
 --
