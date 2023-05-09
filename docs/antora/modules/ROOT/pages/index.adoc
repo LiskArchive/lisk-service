@@ -143,7 +143,7 @@ This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
 
 === Microservices Architecture Overview
 
-image::mservice_architecture.png[]
+// image::mservice_architecture.png[]
 
 == API documentation
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
