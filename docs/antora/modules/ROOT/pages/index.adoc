@@ -44,14 +44,16 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_debian: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/prerequisites_docker_debian.md
 :url_macos: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/prerequisites_docker_macos.md
 :url_repo: https://github.com/LiskHQ/lisk-service/releases
+:url_service-source: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/build_from_source.md
 
 
-// :url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
-// :url_api_http:  ROOT::api/lisk-service-http.adoc
-// :url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
-// :url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
+
+:url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
+:url_api_http:  ROOT::api/lisk-service-http.adoc
+:url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
+:url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
 :url_config:  configuration/docker.adoc
-// :url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
+:url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
 :url_setup:  setup/docker.adoc
 
 {url_github_lisk_service}[Lisk Service^] is a web application middleware that allows interaction with various blockchain networks based on the xref:{url_protocol}[Lisk] protocol.
@@ -211,6 +213,19 @@ Unpack the source code archive by executing the following commands listed below:
 ----
 tar -xf lisk-service-x.y.z.tar.gz
 cd lisk-service
+----
+
+Although the above commands retrieve the entire source code, however, this does not cover building a custom version of Lisk Service.
+For more information refer to this document: {url_service-source}[Building Lisk Service from source^].
+
+==== Docker image build
+
+Building a Docker image is optional.
+However, if you wish to build the local version of Lisk Service execute the following command below:
+
+[source,bash]
+----
+make build
 ----
 
 
