@@ -46,12 +46,12 @@ Mona Bärenfänger <mona@lightcurve.io> Christopher Braithwaite <christopher.bra
 :url_repo: https://github.com/LiskHQ/lisk-service/releases
 
 
-:url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
-:url_api_http:  ROOT::api/lisk-service-http.adoc
-:url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
-:url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
+// :url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
+// :url_api_http:  ROOT::api/lisk-service-http.adoc
+// :url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
+// :url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
 :url_config:  configuration/docker.adoc
-:url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
+// :url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
 :url_setup:  setup/docker.adoc
 
 {url_github_lisk_service}[Lisk Service^] is a web application middleware that allows interaction with various blockchain networks based on the xref:{url_protocol}[Lisk] protocol.
