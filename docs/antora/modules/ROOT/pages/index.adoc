@@ -183,19 +183,23 @@ To perform the installation ensure the following dependencies listed below are i
 
 In order to obtain comprehensive guidance on installing the necessary dependencies for the different operating systems, adhere to the relevant instructions that pertain to your specific operating system as shown below:
 
-// [tabs]
-// ====
-// Linux::
-// --
-// * {url_ubuntu18}[Ubuntu 18.04 LTS Bionic Beaver^]
-// * {url_ubuntu20}[Ubuntu 20.04 LTS Focal Fossa^]
-// * {url_debian}[Debian 10 Buster^]
-// --
-// MacOS::
-// --
-// * {url_macos}[MacOS 10.15 Catalina^]
-// --
-// ====
+
+[tabs]
+=====
+Linux::
+--
+* {url_ubuntu18}[Ubuntu 18.04 LTS Bionic Beaver^]
+* {url_ubuntu20}[Ubuntu 20.04 LTS Focal Fossa^]
+* {url_debian}[Debian 10 Buster^]
+--
+MacOS::
+--
+* {url_macos}[MacOS 10.15 Catalina^]
+--
+=====
+
+
+
 
 Retrieve the latest release from the {url_repo}[official repository^].
 
