@@ -71,7 +71,7 @@ const calculateTransactionFees = async params => {
 	const transaction = await requestConnector('formatTransaction', { transaction: params.transaction });
 
 	const { minFee, size } = transaction;
-	transactionFeeEstimates.minFee = transaction.minFee;
+	transactionFeeEstimates.minFee = minFee;
 
 	const feeEstimatePerByte = await requestFeesEstimator('estimates');
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
@@ -95,4 +95,7 @@ const calculateTransactionFees = async params => {
 
 module.exports = {
 	calculateTransactionFees,
+
+	// Export for the unit test
+	calcDynamicFeeEstimates,
 };

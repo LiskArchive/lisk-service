@@ -25,7 +25,6 @@ const {
 	getTransactionSchema,
 	getTransactionParamsSchema,
 	getCCMSchema,
-	getCCMParamsSchema,
 } = require('./schema');
 
 const logger = Logger();
@@ -62,14 +61,16 @@ const encodeTransaction = (transaction) => {
 };
 
 const encodeCCM = (ccm) => {
-	const ccmParamsSchema = getCCMParamsSchema(ccm);
 	const ccmSchema = getCCMSchema();
-
-	ccm.params = typeof ccm.params === 'object' && !Buffer.isBuffer(ccm.params)
-		? codec.encode(ccmParamsSchema, parseInputBySchema(ccm.params, ccmParamsSchema))
-		: Buffer.from(ccm.params, 'hex');
-
 	const parsedCCM = parseInputBySchema(ccm, ccmSchema);
+
+	try {
+		validator.validate(ccmSchema, parsedCCM);
+	} catch (err) {
+		logger.warn(`CCM schema validation failed.\nError:${err}`);
+		throw new InvalidParamsException(err);
+	}
+
 	const ccmBuffer = codec.encode(ccmSchema, parsedCCM);
 
 	return ccmBuffer.toString('hex');

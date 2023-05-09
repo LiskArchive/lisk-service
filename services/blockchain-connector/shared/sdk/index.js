@@ -48,7 +48,6 @@ const {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-	getTransactionMinFeeAndSize,
 } = require('./transactions');
 
 const {

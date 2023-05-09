@@ -16,11 +16,11 @@
 const { encodeCCM } = require('../shared/sdk');
 
 module.exports = [
-    {
-        name: 'encodeCCM',
-        controller: async ({ ccm }) => encodeCCM(ccm),
-        params: {
-            ccm: { optional: false, type: 'object' },
-        },
-    },
+	{
+		name: 'encodeCCM',
+		controller: async ({ ccm }) => encodeCCM(ccm),
+		params: {
+			ccm: { optional: false, type: 'object' },
+		},
+	},
 ];
