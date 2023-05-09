@@ -672,7 +672,7 @@
 									"amount": {
 										"type": "string",
 										"example": "343000",
-										"description": "TBC."
+										"description": "The fee required for CCM execution."
 									}
 								}
 							}

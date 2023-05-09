@@ -25,6 +25,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [Transactions](#transactions)
     - [Transaction search](#transaction-search)
     - [Transaction Dryrun](#transaction-dryrun)
+    - [Transaction Calculate Fees](#transaction-calculate-fees)
     - [Transaction Broadcast](#transaction-broadcast)
     - [Transaction Statistics](#transaction-statistics)
   - [Events](#events)
@@ -472,6 +473,95 @@ or
         "height": 10
       }
     ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+500 Internal Server Error
+```jsonc
+{
+  "error": true,
+  "message": "Unable to reach a network node."
+}
+```
+
+### Transaction Calculate Fees
+
+Calculate transaction fees.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/transactions/calculate-fees`
+- RPC `post.transactions.calculate-fees`
+
+
+#### Request parameters
+
+No parameters are required.
+
+Request payload:
+
+```jsonc
+{
+  "transaction": {
+    "module": "token",
+    "command": "transfer",
+    "fee": "100000000",
+    "nonce": "0",
+    "senderPublicKey": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
+    "signatures": [
+      "48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
+    ],
+    "params": {
+      "recipientAddress": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
+      "amount": "10000000000",
+      "tokenID": "0000000000000000",
+      "data": "Token transfer tx"
+    }
+  }
+}
+```
+
+or
+
+```jsonc
+{
+  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
+}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "transactionFeeEstimates": {
+      "minFee": "135000",
+      "accountInitializationFee": {
+        "tokenID": "0000000000000000",
+        "amount": "5000000"
+      },
+      "messageFee": {
+        "tokenID": "0000000000000000",
+        "amount": "343000"
+      }
+    },
+    "dynamicFeeEstimates": {
+      "low": "135000",
+      "medium": "270000",
+      "high": "405000"
+    }
   },
   "meta": {}
 }
