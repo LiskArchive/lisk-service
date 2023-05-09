@@ -45,7 +45,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_macos: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/prerequisites_docker_macos.md
 :url_repo: https://github.com/LiskHQ/lisk-service/releases
 :url_service-source: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/build_from_source.md
-
+:url_service_config: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/config_options.md
 
 
 :url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
@@ -227,8 +227,42 @@ However, if you wish to build the local version of Lisk Service execute the foll
 ----
 make build
 ----
+Please note that this step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub.
+The installation script chooses the last available stable version on the Docker Hub, *unless* there is no local image.
 
+If you are unsure about any local builds, use the `make clean` command to remove all locally built docker images.
 
+=== Configuration
+
+The default configuration is sufficient to run Lisk Service against the local node.
+
+Before running the application copy the default docker-compose environment file as shown in the command below:
+
+[source,bash]
+----
+cp docker/example.env .env
+----
+
+Set the required environment variables as shown in the command below:
+
+[source,bash]
+----
+$EDITOR .env
+----
+
+The example snippet below assumes that the Lisk Core (or any Lisk protocol-compliant blockchain application), node is running on the host machine and not inside of a Docker container.
+
+[source,bash]
+----
+## Required
+# The local Lisk Core node WebSocket API port
+export LISK_APP_WS="ws://host.docker.internal:7667"
+----
+
+When running a node inside of a Docker container, the variable needs to refer to the container as shown below:
+`LISK_APP_WS="ws://<your_docker_container>:7667"`.
+
+For more information, the configuration options are described here in the {url_service_config}[Lisk Service Configuration Reference^], which may also be helpful with regard to PM2-based installations.
 
 
 [[usage]]
@@ -258,12 +292,12 @@ Lisk Testnet::
 
 [NOTE]
 ====
-In the Public API base URLs listed above, in order to fetch the required entities it is necessary to add them at the end of the respective URL. e.g. `/blocks`, and `/transactions`, etc.
+In the Public API base URLs listed above, in order to fetch the required entities it is necessary to add them at the end of the respective URL. e.g., `/blocks`, and `/transactions`, etc.
 
 For example:
 
-* https://service.lisk.com/api/v2/transactions
-* https://testnet-service.lisk.com/api/v2/transactions
+* https://service.lisk.com/api/v3/transactions
+* https://testnet-service.lisk.com/api/v3/transactions
 ====
 
 ==== Example: Request data with curl
