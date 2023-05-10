@@ -28,6 +28,7 @@ const business = require('../business');
 const config = require('../../../config');
 const accountsIndexSchema = require('../../database/schema/accounts');
 const validatorsIndexSchema = require('../../database/schema/validators');
+const { isPatternInCollection } = require('../../utils/array');
 
 const {
 	getLisk32AddressFromPublicKey,
@@ -174,14 +175,6 @@ const reloadValidatorCache = async () => {
 const getAllValidators = async () => {
 	if (validatorList.length === 0) await reloadValidatorCache();
 	return validatorList;
-};
-
-const isPatternInCollection = (collection, pattern) => {
-	for (let i = 0; i < collection.length; i++) {
-		if (collection[i] && collection[i].toLowerCase().includes(pattern.toLowerCase())) return true;
-	}
-
-	return false;
 };
 
 const getPosValidators = async params => {

@@ -23,9 +23,9 @@ module.exports = {
 	swaggerApiPath: '/generators',
 	rpcMethod: 'get.generators',
 	params: {
+		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'search' },
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
-		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'search' },
 	},
 	tags: ['Generators'],
 	get schema() {

@@ -508,13 +508,13 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns generators list\n RPC => get.generators',
 			parameters: [
 				{
+					$ref: '#/parameters/search',
+				},
+				{
 					$ref: '#/parameters/limit',
 				},
 				{
 					$ref: '#/parameters/offset',
-				},
-				{
-					$ref: '#/parameters/search',
 				},
 			],
 			responses: {

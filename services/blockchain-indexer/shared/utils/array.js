@@ -44,8 +44,17 @@ const sortComparator = (sortParam) => {
 	return comparator;
 };
 
+const isPatternInCollection = (collection, pattern) => {
+	for (let i = 0; i < collection.length; i++) {
+		if (collection[i] && collection[i].toLowerCase().includes(pattern.toLowerCase())) return true;
+	}
+
+	return false;
+};
+
 module.exports = {
 	dropDuplicates,
 	range,
 	sortComparator,
+	isPatternInCollection,
 };

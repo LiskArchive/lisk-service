@@ -19,9 +19,9 @@ module.exports = {
 	type: 'moleculer',
 	method: 'indexer.generators',
 	params: {
-		limit: '=',
-		offset: '=',
 		search: '=,string',
+		limit: '=,number',
+		offset: '=,number',
 	},
 	definition: {
 		data: ['data', generators],
