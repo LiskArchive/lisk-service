@@ -25,7 +25,7 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
 const resolveChannelInfo = async (chainID) => {
-	if ((await isMainchain()) && !regex.MAINCHAIN_ID.test(chainID)) {
+	if (!(await isMainchain()) && !regex.MAINCHAIN_ID.test(chainID)) {
 		// Redirect call to the mainchain service
 		const serviceURL = await resolveMainchainServiceURL();
 		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
