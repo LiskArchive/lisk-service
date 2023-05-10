@@ -45,11 +45,7 @@ const sortComparator = (sortParam) => {
 };
 
 const isSubstringOfArray = (collection, pattern) => {
-	for (let i = 0; i < collection.length; i++) {
-		if (collection[i] && collection[i].toLowerCase().includes(pattern.toLowerCase())) return true;
-	}
-
-	return false;
+	return collection.some((item) => item && item.toLowerCase().includes(pattern.toLowerCase()));
 };
 
 module.exports = {
