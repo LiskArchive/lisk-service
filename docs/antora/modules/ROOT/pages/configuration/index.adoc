@@ -1,21 +1,14 @@
 = Lisk Service Configuration Reference
 Muhammad Talha <muhammad.talha@lightcurve.io>
 :toc:
+:url_microservices: index.adoc#microservices
 
-On the Introduction to Lisk Service page, we have discussed the various microservices that combine together to form Lisk Service. On this page, we will thoroughly discuss the configuration options available for Lisk Service.
-
-// * <<gateway>>
-// * <<connector>>
-// * <<coordinator>>
-// * <<indexer>>
-// * <<blockchain-application-registry>>
-// * <<fee-estimator>>
-// * <<transaction-statistics>>
-// * <<market>>
-// * <<export>>
+On the Introduction to Lisk Service page, we have discussed the various xref:{url_microservices}[microservices] that combine together to form Lisk Service. On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
 By default, a Lisk Service installation will have a `ecosystem.config.js` file with all the default configurations.
+The value of various environment variables are automatically picked by the microservice based on the installation environment.
+Other than that, many environment variables can be configured as per need and the details of which have been described with each microservice. 
 
 .`ecosystem.config.js`
 [%collapsible]
