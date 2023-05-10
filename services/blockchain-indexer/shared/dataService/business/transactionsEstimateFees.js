@@ -15,7 +15,7 @@
  */
 const { HTTP } = require('lisk-service-framework');
 
-const { isMainchain, resolveMainchainServiceURL } = require('./interoperability');
+const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 
@@ -29,7 +29,12 @@ const resolveChannelInfo = async (chainID) => {
 		// Redirect call to the mainchain service
 		const serviceURL = await resolveMainchainServiceURL();
 		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
-		const channelInfo = await HTTP.post(invokeEndpoint, { endpoint: 'interoperability_getChannel', params: { chainID } });
+		const { data: { data: channelInfo } } = await HTTP.post(
+			invokeEndpoint,
+			{
+				endpoint: 'interoperability_getChannel',
+				params: { chainID },
+			});
 		return channelInfo;
 	}
 
@@ -59,7 +64,6 @@ const calcDynamicFeeEstimates = (feeEstimatePerByte, minFee, size) => ({
 	high: BigInt(minFee) + (BigInt(feeEstimatePerByte.high) * BigInt(size)),
 });
 
-// eslint-disable-next-line consistent-return
 const calcAccountInitializationFees = async (transaction, tokenID) => {
 	const { data: { isExists: isUserAccountInitialized } } = (await tokenHasUserAccount(
 		{
@@ -76,6 +80,10 @@ const calcAccountInitializationFees = async (transaction, tokenID) => {
 			amount: extraCommandFees.userAccountInitializationFee,
 		};
 	}
+	return {
+		tokenID,
+		amount: BigInt('0'),
+	};
 };
 
 const estimateTransactionFees = async params => {
@@ -94,11 +102,13 @@ const estimateTransactionFees = async params => {
 	transactionFeeEstimates.minFee = minFee;
 
 	const { feeTokenID } = feeEstimatePerByte;
-	transactionFeeEstimates.accountInitializationFee = transaction.module === MODULE.TOKEN
-		? await calcAccountInitializationFees(transaction, feeTokenID)
-		: {};
+	transactionFeeEstimates.accountInitializationFee = await calcAccountInitializationFees(
+		transaction,
+		feeTokenID,
+	);
 
-	transactionFeeEstimates.messageFee = (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN)
+	transactionFeeEstimates.messageFee = transaction.module === MODULE.TOKEN
+		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
 		? await calcMessageFee(transaction)
 		: {};
 

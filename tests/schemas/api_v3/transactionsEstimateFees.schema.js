@@ -30,7 +30,7 @@ const genericFeeSchema = {
 
 const transactionFeeEstimates = {
 	minFee: Joi.string().required(),
-	accountInitializationFee: Joi.object(genericFeeSchema).optional(),
+	accountInitializationFee: Joi.object(genericFeeSchema).required(),
 	messageFee: Joi.object(genericFeeSchema).optional(),
 };
 
