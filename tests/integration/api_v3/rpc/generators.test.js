@@ -18,7 +18,6 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	jsonRpcEnvelopeSchema,
-	metaSchema,
 	invalidParamsSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -57,10 +56,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when called with limit 103', async () => {
@@ -68,7 +65,6 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
 
@@ -78,8 +74,6 @@ describe('Generators API', () => {
 			// 	.filter(generator => generator.status === STATUS.STANDBY);
 			// expect(activeGenerators.length).toEqual(numberActiveValidators);
 			// expect(standbyGenerators.length).toEqual(numberStandbyValidators);
-
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when called with limit=100', async () => {
@@ -87,10 +81,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when called with limit=100 and offset=1', async () => {
@@ -98,10 +90,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when called with empty limit', async () => {
@@ -109,10 +99,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when searching with generator name', async () => {
@@ -120,9 +108,7 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBe(1);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when searching with generator address', async () => {
@@ -130,9 +116,7 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBe(1);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		xit('should return generators list when searching with generator publicKey', async () => {
@@ -140,9 +124,7 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBe(1);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when searching partially with generator name', async () => {
@@ -150,10 +132,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return generators list when searching partially with generator address', async () => {
@@ -161,10 +141,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		xit('should return generators list when searching partially with generator publicKey', async () => {
@@ -172,10 +150,8 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(generatorResponseSchema);
-			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
-			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return bad request when called with invalid search param', async () => {

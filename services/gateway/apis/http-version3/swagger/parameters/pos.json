@@ -27,14 +27,6 @@
 		"type": "string",
 		"minLength": 1
 	},
-	"search": {
-		"name": "search",
-		"in": "query",
-		"description": "Case-insensitive search by name, address or publicKey. Supports both partial and full text search.",
-		"type": "string",
-		"minLength": 1,
-		"maxLength": 20
-	},
 	"isLocked": {
 		"name": "isLocked",
 		"in": "query",
