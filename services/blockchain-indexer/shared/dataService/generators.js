@@ -15,9 +15,9 @@
  */
 const { parseToJSONCompatObj } = require('../utils/parser');
 
-const dataService = require('./business');
+const business = require('./business');
 const { getAllValidators } = require('./pos/validators');
-const { isPatternInCollection } = require('../utils/array');
+const { isSubstringOfArray } = require('../utils/array');
 
 const getGenerators = async params => {
 	const generators = {
@@ -27,13 +27,13 @@ const getGenerators = async params => {
 
 	const { offset, limit } = params;
 
-	const generatorsList = await dataService.getGenerators();
+	const generatorsList = await business.getGenerators();
 	const validatorList = await getAllValidators();
 
 	const validatorMap = new Map(validatorList.map(validator => [validator.address, validator]));
 	generatorsList.forEach(generator => {
 		if (validatorMap.has(generator.address)
-			&& (!('search' in params) || isPatternInCollection([generator.name, generator.address, generator.publicKey], params.search))) {
+			&& (!('search' in params) || isSubstringOfArray([generator.name, generator.address, generator.publicKey], params.search))) {
 			const validator = validatorMap.get(generator.address);
 			generators.data.push({ ...generator, status: validator.status });
 		}

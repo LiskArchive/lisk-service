@@ -30,7 +30,7 @@
 	"search": {
 		"name": "search",
 		"in": "query",
-		"description": "Search by name, address or public key. Supports both partial and full text search.",
+		"description": "Case-insensitive search by name, address or publicKey. Supports both partial and full text search.",
 		"type": "string",
 		"minLength": 1,
 		"maxLength": 20
