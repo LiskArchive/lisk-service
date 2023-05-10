@@ -7,7 +7,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :imagesdir: ../assets/images
 :page-no-previous: true
 // :docs_general: ROOT::
-:lisk_docs: beta@ROOT::
+:lisk-docs: beta@ROOT::
 
 :url_api_mainnet: https://service.lisk.com/api/v3
 :url_api_testnet: https://testnet-service.lisk.com/api/v3
