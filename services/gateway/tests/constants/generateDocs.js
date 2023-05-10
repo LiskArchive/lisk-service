@@ -811,19 +811,19 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
-	'/transactions/calculate-fees': {
+	'/transactions/estimate-fees': {
 		post: {
-			description: 'Calculate estimated fees for the transaction.\n RPC => post.transactions.calculate-fees',
+			description: 'Returns estimated fees for the transaction.\n RPC => post.transactions.estimate-fees',
 			parameters: [
 				{
-					$ref: '#/parameters/transactionCalculateFees',
+					$ref: '#/parameters/transactionEstimateFees',
 				},
 			],
 			responses: {
 				200: {
-					description: 'Returns estimated fees required for the given transaction.',
+					description: 'Returns estimated fees for the given transaction.',
 					schema: {
-						$ref: '#/definitions/txCalculateFeesWithEnvelope',
+						$ref: '#/definitions/txEstimateFeesWithEnvelope',
 					},
 				},
 				400: {
@@ -839,7 +839,7 @@ const createApiDocsExpectedResponse = {
 					},
 				},
 			},
-			summary: 'Calculate estimated fees for the transaction.',
+			summary: 'Requests estimated fees for the transaction.',
 			tags: [
 				'Transactions',
 			],

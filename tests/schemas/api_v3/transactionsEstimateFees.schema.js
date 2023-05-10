@@ -41,11 +41,11 @@ const dataSchema = {
 
 const metaSchema = {};
 
-const transactionCalculateFees = {
+const transactionEstimateFees = {
 	data: Joi.object(dataSchema).required(),
 	meta: Joi.object(metaSchema).required(),
 };
 
 module.exports = {
-	transactionCalculateFees: Joi.object(transactionCalculateFees).required(),
+	transactionEstimateFees: Joi.object(transactionEstimateFees).required(),
 };

@@ -25,21 +25,21 @@ const {
 	wrongInputParamSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
-const { transactionCalculateFees } = require('../../../schemas/api_v3/transactionsCalculateFees.schema');
+const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/transactions/calculate-fees`;
+const endpoint = `${baseUrlV3}/transactions/estimate-fees`;
 
-describe('Post calculate-fees transactions API', () => {
+describe('Post estimate-fees transactions API', () => {
 	it('should return transaction fees with valid transaction object', async () => {
 		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
-		expect(response).toMap(transactionCalculateFees);
+		expect(response).toMap(transactionEstimateFees);
 	});
 
 	it('should return transaction fees with valid transaction string', async () => {
 		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_VALID });
-		expect(response).toMap(transactionCalculateFees);
+		expect(response).toMap(transactionEstimateFees);
 	});
 
 	it('should throw error in case of invalid transaction', async () => {

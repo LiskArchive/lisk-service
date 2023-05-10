@@ -13,31 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	type: 'moleculer',
-	method: 'indexer.transactions.calculate-fees',
-	params: {
-		transaction: '=',
-	},
-	definition: {
-		data: {
-			transactionFeeEstimates: {
-				minFee: '=,string',
-				accountInitializationFee: {
-					tokenID: '=,string',
-					amount: '=,string',
-				},
-				messageFee: {
-					tokenID: '=,string',
-					amount: '=,string',
-				},
-			},
-			dynamicFeeEstimates: {
-				low: '=,string',
-				medium: '=,string',
-				high: '=,string',
-			},
+const { formatTransaction } = require('../shared/sdk');
+
+module.exports = [
+	{
+		name: 'formatTransaction',
+		params: {
+			transaction: { optional: false, type: 'any' },
 		},
-		meta: '=',
+		controller: ({ transaction }) => formatTransaction(transaction),
 	},
-};
+];

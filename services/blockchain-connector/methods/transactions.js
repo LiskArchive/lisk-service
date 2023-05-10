@@ -19,7 +19,6 @@ const {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
-	formatTransaction,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -61,12 +60,5 @@ module.exports = [
 			skipVerify: { optional: true, type: 'boolean', default: false },
 			skipDecode: { optional: true, type: 'boolean', default: false },
 		},
-	},
-	{
-		name: 'formatTransaction',
-		params: {
-			transaction: { optional: false, type: 'any' },
-		},
-		controller: ({ transaction }) => formatTransaction(transaction),
 	},
 ];

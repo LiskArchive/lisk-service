@@ -73,7 +73,7 @@ const {
 	postTransactions,
 	getTransactionsByBlockID,
 	dryRunTransactions,
-	calculateTransactionFees,
+	estimateTransactionFees,
 } = require('./transactions');
 
 const {
@@ -132,7 +132,7 @@ module.exports = {
 	postTransactions,
 	getTransactionsByBlockID,
 	dryRunTransactions,
-	calculateTransactionFees,
+	estimateTransactionFees,
 
 	// Interoperability
 	getBlockchainApps,

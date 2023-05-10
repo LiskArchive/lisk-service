@@ -78,8 +78,8 @@ const calcAccountInitializationFees = async (transaction, tokenID) => {
 	}
 };
 
-const calculateTransactionFees = async params => {
-	const calculateTransactionFeesRes = {
+const estimateTransactionFees = async params => {
+	const estimateTransactionFeesRes = {
 		data: [],
 		meta: {},
 	};
@@ -98,20 +98,20 @@ const calculateTransactionFees = async params => {
 		? await calcAccountInitializationFees(transaction, feeTokenID)
 		: {};
 
-	transactionFeeEstimates.messageFee = (transaction.command === COMMAND.CROSS_CHAIN_TRANSFER)
+	transactionFeeEstimates.messageFee = (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN)
 		? await calcMessageFee(transaction)
 		: {};
 
-	calculateTransactionFeesRes.data = {
+	estimateTransactionFeesRes.data = {
 		transactionFeeEstimates,
 		dynamicFeeEstimates,
 	};
 
-	return parseToJSONCompatObj(calculateTransactionFeesRes);
+	return parseToJSONCompatObj(estimateTransactionFeesRes);
 };
 
 module.exports = {
-	calculateTransactionFees,
+	estimateTransactionFees,
 
 	// Export for the unit test
 	calcDynamicFeeEstimates,

@@ -29,18 +29,18 @@ const {
 	serverErrorSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const { transactionCalculateFees } = require('../../../schemas/api_v3/transactionsCalculateFees.schema');
+const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const calculateTransactionFees = async params => request(wsRpcUrl, 'post.transactions.calculate-fees', params);
+const calculateTransactionFees = async params => request(wsRpcUrl, 'post.transactions.estimate-fees', params);
 
-describe('Method post.transactions.calculate-fees', () => {
+describe('Method post.transactions.estimate-fees', () => {
 	it('should return transaction fees with valid transaction object', async () => {
 		const response = await calculateTransactionFees({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(transactionCalculateFees);
+		expect(result).toMap(transactionEstimateFees);
 	});
 
 	it('should return transaction fees with valid transaction string', async () => {
@@ -48,7 +48,7 @@ describe('Method post.transactions.calculate-fees', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(transactionCalculateFees);
+		expect(result).toMap(transactionEstimateFees);
 	});
 
 	it('should throw error in case of invalid transaction', async () => {

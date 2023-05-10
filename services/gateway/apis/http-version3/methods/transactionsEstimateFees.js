@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsCalculateFeesSource = require('../../../sources/version3/transactionsCalculateFees');
+const transactionsEstimateFeesSource = require('../../../sources/version3/transactionsEstimateFees');
 const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/transactions/calculate-fees',
+	swaggerApiPath: '/transactions/estimate-fees',
 	httpMethod: 'POST',
-	rpcMethod: 'post.transactions.calculate-fees',
+	rpcMethod: 'post.transactions.estimate-fees',
 	tags: ['Transactions'],
 	params: {
 		transaction: [
@@ -42,20 +42,20 @@ module.exports = {
 		],
 	},
 	get schema() {
-		const transactionCalculateFeesSchema = {};
-		transactionCalculateFeesSchema[this.swaggerApiPath] = { post: {} };
-		transactionCalculateFeesSchema[this.swaggerApiPath].post.tags = this.tags;
-		transactionCalculateFeesSchema[this.swaggerApiPath].post.summary = 'Calculate estimated fees for the transaction.';
-		transactionCalculateFeesSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
+		const transactionsEstimateFeesSchema = {};
+		transactionsEstimateFeesSchema[this.swaggerApiPath] = { post: {} };
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.tags = this.tags;
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.summary = 'Requests estimated fees for the transaction.';
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Calculate estimated fees for the transaction.',
+			description: 'Returns estimated fees for the transaction.',
 		});
-		transactionCalculateFeesSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transactionCalculateFees' }];
-		transactionCalculateFeesSchema[this.swaggerApiPath].post.responses = {
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transactionEstimateFees' }];
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.responses = {
 			200: {
-				description: 'Returns estimated fees required for the given transaction.',
+				description: 'Returns estimated fees for the given transaction.',
 				schema: {
-					$ref: '#/definitions/txCalculateFeesWithEnvelope',
+					$ref: '#/definitions/txEstimateFeesWithEnvelope',
 				},
 			},
 			400: {
@@ -71,7 +71,7 @@ module.exports = {
 				},
 			},
 		};
-		return transactionCalculateFeesSchema;
+		return transactionsEstimateFeesSchema;
 	},
-	source: transactionsCalculateFeesSource,
+	source: transactionsEstimateFeesSource,
 };

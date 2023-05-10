@@ -96,7 +96,7 @@ const {
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
 } = require('./network');
-const { calculateTransactionFees } = require('./transactionsCalculateFees');
+const { estimateTransactionFees } = require('./transactionsEstimateFees');
 const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 
 module.exports = {
@@ -124,7 +124,7 @@ module.exports = {
 	loadAllPendingTransactions,
 	postTransactions,
 	dryRunTransactions,
-	calculateTransactionFees,
+	estimateTransactionFees,
 
 	// Events
 	getEvents,

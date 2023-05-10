@@ -107,7 +107,7 @@ const COMMAND = Object.freeze({
 	REGISTER_VALIDATOR: 'registerValidator',
 	STAKE: 'stake',
 	TRANSFER: 'transfer',
-	CROSS_CHAIN_TRANSFER: 'transferCrossChain',
+	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
 });
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
