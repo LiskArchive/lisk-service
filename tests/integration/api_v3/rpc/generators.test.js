@@ -82,7 +82,7 @@ describe('Generators API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should retrieve generators list when called with limit=100', async () => {
+		it('should return generators list when called with limit=100', async () => {
 			const response = await getGenerators({ limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -93,7 +93,7 @@ describe('Generators API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should retrieve generators list when called with limit=100 and offset=1', async () => {
+		it('should return generators list when called with limit=100 and offset=1', async () => {
 			const response = await getGenerators({ limit: 100, offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

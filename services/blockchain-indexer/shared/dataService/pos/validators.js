@@ -28,7 +28,7 @@ const business = require('../business');
 const config = require('../../../config');
 const accountsIndexSchema = require('../../database/schema/accounts');
 const validatorsIndexSchema = require('../../database/schema/validators');
-const { isSubstringOfArray } = require('../../utils/array');
+const { isSubstringInArray } = require('../../utils/array');
 
 const {
 	getLisk32AddressFromPublicKey,
@@ -212,7 +212,7 @@ const getPosValidators = async params => {
 		if (addressSet.size && !addressSet.has(validator.address)) return false;
 		if (nameSet.size && !nameSet.has(validator.name)) return false;
 		if (statusSet.size && !statusSet.has(validator.status)) return false;
-		if (params.search && !isSubstringOfArray(
+		if (params.search && !isSubstringInArray(
 			[validator.name, validator.address, validator.publicKey], params.search)) {
 			return false;
 		}

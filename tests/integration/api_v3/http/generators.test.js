@@ -76,7 +76,7 @@ describe('Generators API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should retrieve generators list when called with limit=100', async () => {
+		it('should return generators list when called with limit=100', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=100`);
 			expect(response).toMap(generatorResponseSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -85,7 +85,7 @@ describe('Generators API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should retrieve generators list when called with limit=100 and offset=1', async () => {
+		it('should return generators list when called with limit=100 and offset=1', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=100&offset=1`);
 			expect(response).toMap(generatorResponseSchema);
 			expect(response.data).toBeInstanceOf(Array);
