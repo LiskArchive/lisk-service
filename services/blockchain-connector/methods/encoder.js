@@ -14,13 +14,27 @@
  *
  */
 const { encodeCCM } = require('../shared/sdk');
+const regex = require('../shared/utils/regex');
 
 module.exports = [
 	{
 		name: 'encodeCCM',
 		controller: async ({ ccm }) => encodeCCM(ccm),
 		params: {
-			ccm: { optional: false, type: 'object' },
+			ccm: {
+				optional: false,
+				type: 'object',
+				props: {
+					module: { optional: false, type: 'string', pattern: regex.MODULE },
+					crossChainCommand: { optional: false, type: 'string', pattern: regex.COMMAND },
+					nonce: { optional: false, type: 'string', pattern: regex.NONCE },
+					fee: { optional: false, type: 'string' },
+					sendingChainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
+					receivingChainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
+					params: { optional: false, type: 'string', pattern: regex.HEX_STRING },
+					status: { optional: false, type: 'number' },
+				},
+			},
 		},
 	},
 ];

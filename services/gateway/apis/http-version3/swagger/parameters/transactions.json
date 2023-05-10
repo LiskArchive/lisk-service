@@ -62,7 +62,7 @@
         "required": true,
         "description": "The request body can only contain one property:\n- transaction (required): Binary payload or a transaction object",
         "schema": {
-            "$ref": "#/definitions/transactionEstimateFeesParamEnvelope"
+            "$ref": "#/definitions/transactionEstimateFeesRequestBody"
         }
     }
 }

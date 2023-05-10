@@ -15,14 +15,14 @@
  */
 const { HTTP } = require('lisk-service-framework');
 
-const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
+const { isMainchain, resolveMainchainServiceURL } = require('./interoperability');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 
 const { MODULE, COMMAND, EVENT } = require('../../constants');
 const regex = require('../../regex');
 const { parseToJSONCompatObj } = require('../../utils/parser');
-const { requestConnector, requestFeesEstimator } = require('../../utils/request');
+const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
 const resolveChannelInfo = async (chainID) => {
 	if ((await isMainchain()) && !regex.MAINCHAIN_ID.test(chainID)) {
@@ -87,7 +87,7 @@ const estimateTransactionFees = async params => {
 	const transaction = await requestConnector('formatTransaction', { transaction: params.transaction });
 
 	const { minFee, size } = transaction;
-	const feeEstimatePerByte = await requestFeesEstimator('estimates');
+	const feeEstimatePerByte = await requestFeeEstimator('estimates');
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
 
 	const transactionFeeEstimates = {};

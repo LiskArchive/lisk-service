@@ -557,12 +557,18 @@
 			}
 		}
 	},
-	"transactionEstimateFeesParamEnvelope": {
+	"transactionEstimateFeesRequestBody": {
 		"type": "object",
 		"properties": {
 			"transaction": {
 				"type": "object",
 				"description": "Binary payload or the transaction object.",
+				"required": [
+					"module",
+					"command",
+					"nonce",
+					"params"
+				],
 				"properties": {
 					"module": {
 						"type": "string",
@@ -656,6 +662,9 @@
 				"properties": {
 					"transactionFeeEstimates": {
 						"type": "object",
+						"required": [
+							"minFee"
+						],
 						"properties": {
 							"minFee": {
 								"type": "string",
@@ -663,6 +672,10 @@
 							},
 							"accountInitializationFee": {
 								"type": "object",
+								"required": [
+									"tokenID",
+									"amount"
+								],
 								"properties": {
 									"tokenID": {
 										"type": "string",
@@ -678,6 +691,10 @@
 							},
 							"messageFee": {
 								"type": "object",
+								"required": [
+									"tokenID",
+									"amount"
+								],
 								"properties": {
 									"tokenID": {
 										"type": "string",
@@ -695,6 +712,11 @@
 					},
 					"dynamicFeeEstimates": {
 						"type": "object",
+						"required": [
+							"low",
+							"medium",
+							"high"
+						],
 						"description": "Estimated fees based on priority.",
 						"properties": {
 							"low": {

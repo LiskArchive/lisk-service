@@ -15,6 +15,7 @@
  */
 const transactionsEstimateFeesSource = require('../../../sources/version3/transactionsEstimateFees');
 const { getSwaggerDescription } = require('../../../shared/utils');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -24,19 +25,19 @@ module.exports = {
 	tags: ['Transactions'],
 	params: {
 		transaction: [
-			{ optional: false, type: 'string' },
+			{ optional: false, type: 'string', pattern: regex.HEX_STRING },
 			{
 				optional: false,
 				type: 'object',
 				props: {
-					id: { type: 'string' },
-					module: { type: 'string' },
-					command: { type: 'string' },
-					fee: { type: 'string' },
-					nonce: { type: 'string' },
-					senderPublicKey: { type: 'string' },
-					signatures: { type: 'array', items: 'string' },
-					params: { type: 'object' },
+					id: { optional: true, type: 'string', pattern: regex.HASH_SHA256 },
+					module: { optional: false, type: 'string', pattern: regex.MODULE },
+					command: { optional: false, type: 'string', pattern: regex.COMMAND },
+					fee: { optional: true, type: 'string' },
+					nonce: { optional: false, type: 'string', pattern: regex.NONCE },
+					senderPublicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
+					signatures: { optional: true, type: 'array', items: 'string' },
+					params: { optional: false, type: 'object' },
 				},
 			},
 		],

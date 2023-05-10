@@ -13,16 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../../config');
+const config = require('../../../../../config');
 
-const mockedFilePath = '../../../shared/dataService/business/network';
+const mockedFilePath = '../../../../../shared/dataService/business/network';
 
 beforeEach(() => jest.resetModules());
 
 describe('Test isMainchain method', () => {
+	jest.mock('lisk-service-framework', () => {
+		const actual = jest.requireActual('lisk-service-framework');
+		return {
+			...actual,
+			CacheRedis: jest.fn(),
+			CacheLRU: jest.fn(),
+		};
+	});
+
 	it('should return false -> undefined chainID', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -31,7 +40,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../shared/dataService');
+		const { isMainchain } = require('../../../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -39,7 +48,7 @@ describe('Test isMainchain method', () => {
 
 	it('should return false -> null chainID', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -48,7 +57,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../shared/dataService');
+		const { isMainchain } = require('../../../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -56,7 +65,7 @@ describe('Test isMainchain method', () => {
 
 	it('should return true -> valid mainchain chainID', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -65,7 +74,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../shared/dataService');
+		const { isMainchain } = require('../../../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(true);
@@ -73,7 +82,7 @@ describe('Test isMainchain method', () => {
 
 	it('should return false -> valid sidechain chainID', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -82,7 +91,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../shared/dataService');
+		const { isMainchain } = require('../../../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -90,7 +99,7 @@ describe('Test isMainchain method', () => {
 
 	it('should return false -> invalid chainID', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -99,7 +108,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../shared/dataService');
+		const { isMainchain } = require('../../../../../shared/dataService');
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -110,7 +119,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 	it('should return devnet mainchain URL -> valid devnet mainchain chainID', async () => {
 		const chainID = '04000000';
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -119,7 +128,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require('../../../shared/dataService');
+		const { resolveMainchainServiceURL } = require('../../../../../shared/dataService');
 		const result = await resolveMainchainServiceURL();
 
 		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
@@ -129,7 +138,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 	it('should return betanet mainchain URL -> valid devnet mainchain chainID', async () => {
 		const chainID = '02000000';
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -138,7 +147,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require('../../../shared/dataService');
+		const { resolveMainchainServiceURL } = require('../../../../../shared/dataService');
 		const result = await resolveMainchainServiceURL();
 
 		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
@@ -147,7 +156,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 
 	it('should return undefined -> invalid chainID', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../shared/dataService/business/network');
+			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -156,7 +165,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require('../../../shared/dataService');
+		const { resolveMainchainServiceURL } = require('../../../../../shared/dataService');
 		const result = await resolveMainchainServiceURL();
 		expect(result).toBe(undefined);
 	});

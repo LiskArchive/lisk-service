@@ -496,7 +496,7 @@ or
 
 ### Transaction Estimate Fees
 
-Retrieves estimated transaction fees.
+Estimate transaction fees.
 
 #### Endpoints
 
@@ -506,7 +506,7 @@ Retrieves estimated transaction fees.
 
 #### Request parameters
 
-No parameters are required.
+No request query parameters required.
 
 Request payload:
 
@@ -556,7 +556,7 @@ or
         "tokenID": "0000000000000000",
         "amount": "5000000"
       },
-      "messageFee": {
+      "messageFee": { // Optional: Available only for a 'token:transferCrossChain' transaction
         "tokenID": "0000000000000000",
         "amount": "343000"
       }

@@ -16,7 +16,7 @@
 const { getNetworkStatus } = require('./network');
 const regex = require('../../regex');
 const config = require('../../../config');
-const { LENGTH_CHAIN_ID } = require('../../constants');
+const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../constants');
 
 let chainID;
 
@@ -36,7 +36,7 @@ const resolveMainchainServiceURL = async () => {
 		chainID = networkStatus.chainID;
 	}
 
-	const networkID = chainID.substring(0, 2);
+	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
 	const mainchainID = networkID.padEnd(LENGTH_CHAIN_ID, '0');
 	const [{ serviceURL } = {}] = config.networks.LISK
 		.filter(networkInfo => networkInfo.chainID === mainchainID);
