@@ -304,10 +304,10 @@ For example:
 
 ==== Example: Request data with curl
 
-.Example request: Obtain a list of all 103 currently forging delegates
+.Example request: Obtain a list of the block generators in the current round.
 [source,bash]
 ----
-curl -X GET "http://localhost:9901/api/v3/forgers" -H  "accept: application/json"
+curl -X GET "http://localhost:9901/api/v3/generators" -H  "accept: application/json"
 ----
 
 .Example response
@@ -316,33 +316,23 @@ curl -X GET "http://localhost:9901/api/v3/forgers" -H  "accept: application/json
 {
   "data": [
     {
-      "username": "spaceone_pool",
-      "totalVotesReceived": "24200000000000",
-      "address": "lsk52ox9f8t7oghqtbtytvpkqzv4wf2srjsvoaff7",
-      "minActiveHeight": 16357328,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1635159800
+      "address": "lsk2jjg9ob4qh7jokpdbf7hjgqftkaq4b2925f422",
+      "name": "genesis_3",
+      "publicKey": "d16699888782b26c3e4cffd2a94910ec11d59476b2358adc442e010650afe4a9",
+      "nextAllocatedTime": 1683716840,
+      "status": "active"
     },
+    ...
     {
-      "username": "btf",
-      "totalVotesReceived": "17250000000000",
-      "address": "lsk49cfgah7bz84ncoqkhsvg5o2bsmj23x3vqo9y5",
-      "minActiveHeight": 16486490,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1635159810
+      "address": "lskx7rscmxc3k9yokbqpxspjj92zz6fue84e2xw92",
+      "name": "genesis_1",
+      "publicKey": "44e2b746594f74272d15b6f7d18dffbf83c749bbf1babc5f1d314bdbd08f8215",
+      "nextAllocatedTime": 1683716850,
+      "status": "active"
     },
-    // ...
-    {
-      "username": "gregoryh",
-      "totalVotesReceived": "21998000000000",
-      "address": "lskfkvo54opxs7cn6aefjhuupbr6zv7yegyow9sb4",
-      "minActiveHeight": 16467538,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1635160820
-    }
   ],
   "meta": {
-    "count": 103,
+    "count": 10,
     "offset": 0,
     "total": 103
   }
