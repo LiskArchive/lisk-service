@@ -19,7 +19,7 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const logger = Logger();
 

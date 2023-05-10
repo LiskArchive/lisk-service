@@ -25,7 +25,7 @@ const {
 const config = require('../../../../config');
 const keyValueTable = require('../../../../shared/database/mysqlKVStore');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const KEY_1 = 'KEY_1';
 const KEY_2 = 'KEY_2';

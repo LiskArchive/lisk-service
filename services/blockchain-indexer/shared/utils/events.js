@@ -30,7 +30,7 @@ const { getGenesisHeight } = require('../constants');
 const keyValueTable = require('../database/mysqlKVStore');
 const eventsTableSchema = require('../database/schema/events');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';

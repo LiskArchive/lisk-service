@@ -21,7 +21,7 @@ const keyValueStoreSchema = require('./schema/kvStore');
 
 const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getKeyValueTable = () => getTableInstance(
 	keyValueStoreSchema.tableName,

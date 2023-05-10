@@ -21,7 +21,7 @@ const config = require('../../../../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');

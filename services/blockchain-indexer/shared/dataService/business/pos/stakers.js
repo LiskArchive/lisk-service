@@ -29,7 +29,7 @@ const {
 	getLisk32AddressFromPublicKey,
 } = require('../../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getStakesTable = () => getTableInstance(
 	stakesIndexSchema.tableName,

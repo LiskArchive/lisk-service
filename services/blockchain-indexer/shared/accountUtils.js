@@ -27,7 +27,7 @@ const parseAddress = address => isStringType(address) ? address.toUpperCase() : 
 
 const validateLisk32Address = address => (typeof address === 'string' && regex.ADDRESS_LISK32.test(address));
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const getAccountsTable = async () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,

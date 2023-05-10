@@ -34,7 +34,7 @@ const {
 	PATTERN_ANY_CHAIN_TOKEN_ID,
 } = require('../../constants');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const getAccountBalancesTable = () => getTableInstance(
 	accountBalancesTableSchema.tableName,
 	accountBalancesTableSchema,

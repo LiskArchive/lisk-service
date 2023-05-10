@@ -30,7 +30,7 @@ const stakesTableSchema = require('../../../database/schema/stakes');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema.tableName,

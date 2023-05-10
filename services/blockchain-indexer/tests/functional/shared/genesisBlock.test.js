@@ -34,7 +34,7 @@ const {
 	indexGenesisBlockAssets,
 } = require('../../../shared/indexer/genesisBlock');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,

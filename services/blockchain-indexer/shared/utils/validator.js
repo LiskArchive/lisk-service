@@ -25,7 +25,7 @@ const accountsIndexSchema = require('../database/schema/accounts');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 

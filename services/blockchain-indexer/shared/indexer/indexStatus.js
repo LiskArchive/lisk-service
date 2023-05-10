@@ -44,7 +44,7 @@ const blocksTableSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getBlocksTable = () => getTableInstance(
 	blocksTableSchema.tableName,

@@ -24,7 +24,7 @@ const config = require('../../../../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainInfo } = require('./registerMainchain');

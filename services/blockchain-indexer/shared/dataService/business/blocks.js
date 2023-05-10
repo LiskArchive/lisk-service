@@ -38,7 +38,7 @@ const { getNameByAddress } = require('../../utils/validator');
 
 const config = require('../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema.tableName,

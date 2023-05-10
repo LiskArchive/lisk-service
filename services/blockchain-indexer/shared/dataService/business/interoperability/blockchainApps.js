@@ -21,7 +21,7 @@ const { LENGTH_NETWORK_ID, LENGTH_TOKEN_ID } = require('../../../constants');
 
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 

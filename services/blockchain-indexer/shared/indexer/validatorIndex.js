@@ -23,7 +23,7 @@ const stakesTableSchema = require('../database/schema/stakes');
 
 const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,

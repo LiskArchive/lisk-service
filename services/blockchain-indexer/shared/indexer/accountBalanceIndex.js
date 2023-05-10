@@ -24,7 +24,7 @@ const { MODULE } = require('../constants');
 const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const getAccountBalancesTable = () => getTableInstance(
 	accountBalancesTableSchema.tableName,
 	accountBalancesTableSchema,

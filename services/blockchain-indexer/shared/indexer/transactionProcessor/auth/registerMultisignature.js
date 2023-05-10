@@ -26,7 +26,7 @@ const {
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const multisignatureTableSchema = require('../../../database/schema/multisignature');
 
 const getMultisignatureTable = () => getTableInstance(

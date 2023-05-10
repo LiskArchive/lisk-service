@@ -32,7 +32,7 @@ const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getAccountIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,

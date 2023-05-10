@@ -35,7 +35,7 @@ const { getFinalizedHeight } = require('../../constants');
 const transactionsIndexSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
