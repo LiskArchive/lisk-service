@@ -6,6 +6,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :idprefix:
 :imagesdir: ../assets/images
 :page-no-previous: true
+// :docs_general: ROOT::
+:lisk_docs: beta@ROOT::
 
 :url_api_mainnet: https://service.lisk.com/api/v3
 :url_api_testnet: https://testnet-service.lisk.com/api/v3
@@ -13,7 +15,6 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_rpc_api_testnet: wss://testnet-service.lisk.com/rpc-v3
 :url_subscribe_api_mainnet: wss://service.lisk.com/blockchain
 :url_subscribe_api_testnet: wss://testnet-service.lisk.com/blockchain
-// :url_bitcoin: https://en.bitcoin.it/wiki/Protocol_documentation
 :url_electrumx_docs: https://electrumx.readthedocs.io/en/latest/
 :url_github_lisk_explorer: https://github.com/LiskHQ/lisk-explorer
 :url_github_lisk_service: https://github.com/LiskHQ/lisk-service
@@ -48,12 +49,12 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_service_config: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/config_options.md
 
 
-:url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
-:url_api_http:  ROOT::api/lisk-service-http.adoc
-:url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
-:url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
+:url_api_http_testnet:  {lisk-docs}api/lisk-service-http-testnet.adoc
+:url_api_http:  {lisk-docs}api/lisk-service-http.adoc
+:url_api_rpc: {lisk-docs}api/lisk-service-rpc.adoc
+:url_api_subscribe:  {lisk-docs}api/lisk-service-pubsub.adoc
 :url_config:  configuration/docker.adoc
-:url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
+:url_protocol:  {lisk-docs}understand-blockchain/lisk-protocol/index.adoc
 :url_setup:  setup/docker.adoc
 
 {url_github_lisk_service}[Lisk Service^] is a web application middleware that allows interaction with various blockchain networks based on the xref:{url_protocol}[Lisk] protocol.
@@ -351,9 +352,9 @@ curl -X GET "http://localhost:9901/api/v3/forgers" -H  "accept: application/json
 === The JSON-RPC API
 
 The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
-The API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard.
+The API uses the `socket.io` library and is compatible with JSON-RPC 2.0 standard.
 
-Check out the xref:{url_api_rpc}[] reference for an overview of all available RPC requests.
+Check out the xref:{url_api_rpc}[RPC-API] reference for an overview of all available RPC requests.
 
 Lisk Mainnet::
 * Public API: `{url_rpc_api_mainnet}`
