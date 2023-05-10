@@ -40,7 +40,7 @@ const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlRead;
 
 const getAccountsTable = () => getTableInstance(
 	accountsIndexSchema.tableName,
