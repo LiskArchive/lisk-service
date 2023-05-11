@@ -29,7 +29,7 @@ const testDir = 'testDir';
 
 const getIndex = () => getTableInstance(tableName, schema, testDir);
 
-const { block, blockWithTransaction } = require('../constants/blocks');
+const { blockWithoutTransaction, blockWithTransaction } = require('../constants/blocks');
 
 describe('Test MySQL', () => {
 	let testTable;
@@ -55,13 +55,13 @@ describe('Test MySQL', () => {
 		afterAll(() => testTable.rawQuery(`DELETE FROM ${tableName}`));
 
 		it('Insert row', async () => {
-			await testTable.upsert([block.header]);
+			await testTable.upsert([blockWithoutTransaction.header]);
 			const result = await testTable.find();
 			expect(result.length).toBe(1);
 		});
 
 		it('Fetch rows', async () => {
-			const { id } = block.header;
+			const { id } = blockWithoutTransaction.header;
 			const result = await testTable.find({ id }, ['id']);
 			expect(result.length).toBe(1);
 
@@ -90,7 +90,7 @@ describe('Test MySQL', () => {
 		});
 
 		it('Increase column value', async () => {
-			const { id } = block.header;
+			const { id } = blockWithoutTransaction.header;
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: { id },
@@ -98,7 +98,7 @@ describe('Test MySQL', () => {
 
 			const [retrievedBlock] = await testTable.find({ id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
-			expect(retrievedBlock.timestamp).toBe(5 + block.header.timestamp);
+			expect(retrievedBlock.timestamp).toBe(5 + blockWithoutTransaction.header.timestamp);
 		});
 
 		it('Delete row by primary key', async () => {
@@ -113,7 +113,7 @@ describe('Test MySQL', () => {
 		});
 
 		it('Delete rows', async () => {
-			await testTable.upsert([block.header, blockWithTransaction.header]);
+			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
 			const existingBlockCount = await testTable.count();
 
@@ -126,7 +126,7 @@ describe('Test MySQL', () => {
 		});
 
 		it('Delete row', async () => {
-			await testTable.upsert([block.header]);
+			await testTable.upsert([blockWithoutTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
 			const existingBlockCount = await testTable.count();
 
@@ -139,7 +139,7 @@ describe('Test MySQL', () => {
 		});
 
 		it('Batch row insert', async () => {
-			await testTable.upsert([block.header, blockWithTransaction.header]);
+			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
 			const result = await testTable.find();
 			expect(result.length).toBe(2);
 		});
@@ -151,14 +151,14 @@ describe('Test MySQL', () => {
 		it('Insert row', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
-			await testTable.upsert([block.header], trx);
+			await testTable.upsert([blockWithoutTransaction.header], trx);
 			await commitDbTransaction(trx);
 			const result = await testTable.find();
 			expect(result.length).toBe(1);
 		});
 
 		it('Fetch rows', async () => {
-			const { id } = block.header;
+			const { id } = blockWithoutTransaction.header;
 			const result = await testTable.find({ id }, ['id']);
 			expect(result.length).toBe(1);
 
@@ -192,7 +192,7 @@ describe('Test MySQL', () => {
 		it('Increase column value', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
-			const { id } = block.header;
+			const { id } = blockWithoutTransaction.header;
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: { id },
@@ -200,7 +200,7 @@ describe('Test MySQL', () => {
 			await commitDbTransaction(trx);
 			const [retrievedBlock] = await testTable.find({ id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
-			expect(retrievedBlock.timestamp).toBe(5 + block.header.timestamp);
+			expect(retrievedBlock.timestamp).toBe(5 + blockWithoutTransaction.header.timestamp);
 		});
 
 		it('Delete row by primary key', async () => {
@@ -222,7 +222,7 @@ describe('Test MySQL', () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 
-			await testTable.upsert([block.header, blockWithTransaction.header]);
+			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
 			const existingBlockCount = await testTable.count();
 
@@ -240,7 +240,7 @@ describe('Test MySQL', () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 
-			await testTable.upsert([block.header]);
+			await testTable.upsert([blockWithoutTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
 			const existingBlockCount = await testTable.count();
 
@@ -257,7 +257,7 @@ describe('Test MySQL', () => {
 		it('Batch row insert', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
-			await testTable.upsert([block.header, blockWithTransaction.header], trx);
+			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header], trx);
 			await commitDbTransaction(trx);
 			const result = await testTable.find();
 			expect(result.length).toBe(2);

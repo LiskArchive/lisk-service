@@ -80,7 +80,7 @@ const getTransactionByIDFromCache = async (transactionID) => {
 	const [{ blockID }] = await txToBlockCache.find({ transactionID }, ['blockID']);
 	if (!blockID) return null;
 	const block = await getBlockByIDFromCache(blockID);
-	const transaction = block.transactions.find(tx => tx === transactionID);
+	const transaction = block.transactions.find(tx => tx.id === transactionID);
 	return transaction;
 };
 
