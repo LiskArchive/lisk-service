@@ -38,7 +38,7 @@
 	"height": {
 		"name": "height",
 		"in": "query",
-		"description": "Query by height or a height range (fromHeight:toHeight, both inclusive).",
+		"description": "Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive.",
 		"type": "string",
 		"minimum": 0
 	},
@@ -52,7 +52,7 @@
 	"timestamp": {
 		"name": "timestamp",
 		"in": "query",
-		"description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive).",
+		"description": "Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive.",
 		"type": "string",
 		"minLength": 1
 	},
