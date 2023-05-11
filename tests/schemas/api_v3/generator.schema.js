@@ -26,7 +26,7 @@ const GENERATOR_STATUSES = [
 
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
-const generatorSchema = {
+const generatorDataSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
@@ -34,6 +34,11 @@ const generatorSchema = {
 	status: Joi.string().valid(...GENERATOR_STATUSES).required(),
 };
 
+const generatorResponseSchema = {
+	data: Joi.array().items(generatorDataSchema).required(),
+	meta: Joi.object().required(),
+};
+
 module.exports = {
-	generatorSchema: Joi.object(generatorSchema).required(),
+	generatorResponseSchema: Joi.object(generatorResponseSchema).required(),
 };

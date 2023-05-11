@@ -14,6 +14,7 @@
  *
  */
 const dryRunTransactionsSource = require('../../../sources/version3/transactionsDryRun');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
@@ -76,4 +77,5 @@ module.exports = {
 		return dryRunTransactionSchema;
 	},
 	source: dryRunTransactionsSource,
+	envelope,
 };

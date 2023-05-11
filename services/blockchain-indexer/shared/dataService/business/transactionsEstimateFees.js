@@ -29,8 +29,8 @@ const regex = require('../../regex');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
-const SIZE_SIGNATURE_BYTE = 64;
-const SIZE_ID_BYTE = 32;
+const SIZE_BYTE_SIGNATURE = 64;
+const SIZE_BYTE_ID = 32;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: 'fee',
@@ -47,10 +47,10 @@ const mockOptionalProperties = (transaction) => {
 			transaction.fee = 0;
 		}
 		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.SIGNATURES) {
-			transaction.signatures = [getRandomBytes(SIZE_SIGNATURE_BYTE).toString('hex')];
+			transaction.signatures = [getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')];
 		}
 		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.ID) {
-			transaction.id = getRandomBytes(SIZE_ID_BYTE).toString('hex');
+			transaction.id = getRandomBytes(SIZE_BYTE_ID).toString('hex');
 		}
 	});
 
@@ -84,7 +84,7 @@ const calcMessageFee = async (transaction) => {
 	const { data: { events } } = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
-	// Encode ccm (required to calculate ccm length)
+	// Encode CCM (required to calculate ccm length)
 	const { ccm } = ccmSendSuccess.data;
 	const ccmEncoded = await requestConnector('encodeCCM', { ccm });
 	const ccmBuffer = Buffer.from(ccmEncoded, 'hex');

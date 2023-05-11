@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -16,10 +16,12 @@
 const {
 	dropDuplicates,
 	range,
+	sortComparator,
+	isSubstringInArray,
 } = require('../../../../shared/utils/array');
 
 describe('Unit tests for array utilities', () => {
-	describe('Test \'range\'', () => {
+	describe('Test range method', () => {
 		it('With single input: length 0', async () => {
 			const n = 0;
 			const result = range(n);
@@ -96,7 +98,7 @@ describe('Unit tests for array utilities', () => {
 		});
 	});
 
-	describe('Test \'dropDuplicates\'', () => {
+	describe('Test dropDuplicates method', () => {
 		const isEveryElementUnique = (array) => array
 			.every((e, i, a) => a.filter(n => n === e).length === 1);
 
@@ -115,6 +117,123 @@ describe('Unit tests for array utilities', () => {
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(input.length);
 			expect(isEveryElementUnique(result)).toBeTruthy();
+		});
+	});
+
+	describe('Test sortComparator method', () => {
+		const data = [
+			{ name: 'Alice', age: 25 },
+			{ name: 'Bob', age: 30 },
+			{ name: 'Charlie', age: 20 },
+		];
+
+		it('should sort by numeric property in ascending order', () => {
+			const comparator = sortComparator('age:asc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Charlie', age: 20 },
+				{ name: 'Alice', age: 25 },
+				{ name: 'Bob', age: 30 },
+			]);
+		});
+
+		it('should sort by numeric property in descending order', () => {
+			const comparator = sortComparator('age:desc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+				{ name: 'Charlie', age: 20 },
+			]);
+		});
+
+		it('should sort by numeric property in decending order when order is not passed', () => {
+			const comparator = sortComparator('age');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+				{ name: 'Charlie', age: 20 },
+			]);
+		});
+
+		it('should sort by string property in ascending order', () => {
+			const comparator = sortComparator('name:asc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Alice', age: 25 },
+				{ name: 'Bob', age: 30 },
+				{ name: 'Charlie', age: 20 },
+			]);
+		});
+
+		it('should sort by string property in descending order', () => {
+			const comparator = sortComparator('name:desc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Charlie', age: 20 },
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+			]);
+		});
+
+		it('should sort by string property in descending order when order is not passed', () => {
+			const comparator = sortComparator('name');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Charlie', age: 20 },
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+			]);
+		});
+
+		it('should throw error if sortProp is not a valid property in the object', () => {
+			const comparator = sortComparator('gender:asc');
+			expect(() => data.sort(comparator)).toThrow();
+		});
+	});
+
+	describe('Test isSubstringInArray method', () => {
+		it('should return true if pattern is a substring of any item in the array', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = 'ban';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
+		});
+
+		it('should return true if pattern is a substring of any item in the array with ignoring case', () => {
+			const collection = ['Apple', 'BaNaNa', 'Cherry'];
+			const pattern = 'bAn';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
+		});
+
+		it('should return false if pattern is not a substring of any item in the array', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = 'orange';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(false);
+		});
+
+		it('should return true if pattern is present in the array', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = 'banana';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
+		});
+
+		it('should return false if collection is empty', () => {
+			const collection = [];
+			const pattern = 'banana';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(false);
+		});
+
+		it('should return true if pattern is empty and collection is not empty', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = '';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
 		});
 	});
 });

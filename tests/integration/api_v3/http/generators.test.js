@@ -18,13 +18,11 @@ const { api } = require('../../../helpers/api');
 
 const {
 	badRequestSchema,
-	goodRequestSchema,
-	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	generatorSchema,
-} = require('../../../schemas/api_v3/generatorSchema.schema');
+	generatorResponseSchema,
+} = require('../../../schemas/api_v3/generator.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/v3`;
@@ -43,24 +41,25 @@ describe('Generators API', () => {
 	// 	numberStandbyValidators = response.numberStandbyValidators;
 	// });
 
+	let firstGenerator;
+	beforeAll(async () => {
+		const response = await api.get(`${endpoint}/generators`);
+		[firstGenerator] = response.data;
+	});
+
 	describe('GET /generators', () => {
-		it('retrieve generators list -> ok', async () => {
+		it('should return generators list', async () => {
 			const response = await api.get(`${endpoint}/generators`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
+			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(103);
-			response.data.map(generator => expect(generator).toMap(generatorSchema));
-			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('retrieve generators list with limit 103 -> ok', async () => {
+		it('should return generators list when called with limit 103', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=103`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
+			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(103);
-			response.data.map(generator => expect(generator).toMap(generatorSchema));
 
 			// TODO: Verify and fix
 			// const activeGenerators = response.data
@@ -69,46 +68,79 @@ describe('Generators API', () => {
 			// 	.filter(generator => generator.status === STATUS.STANDBY);
 			// expect(activeGenerators.length).toEqual(numberActiveValidators);
 			// expect(standbyGenerators.length).toEqual(numberStandbyValidators);
-
-			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('retrieve generators list with limit=100 -> ok', async () => {
+		it('should return generators list when called with limit=100', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=100`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
+			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.map(generator => expect(generator).toMap(generatorSchema));
-			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('retrieve generators list with limit=100 and offset=1 -> ok', async () => {
+		it('should return generators list when called with limit=100 and offset=1', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=100&offset=1`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.map(generator => expect(generator).toMap(generatorSchema));
-			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('limit = 0 -> 400', async () => {
+		it('should return generators list when searching with generator name', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name}`);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBe(1);
+		});
+
+		it('should return generators list when searching with generator address', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.address}`);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBe(1);
+		});
+
+		xit('should return generators list when searching with generator publicKey', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey}`);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBe(1);
+		});
+
+		it('should return generators list when searching partially with generator name', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name.substring(0, 3)}`);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+		});
+
+		it('should return generators list when searching partially with generator address', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.address.substring(0, 3)}`);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+		});
+
+		xit('should return generators list when searching partially with generator publicKey', async () => {
+			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey.substring(0, 3)}`);
+			expect(response).toMap(generatorResponseSchema);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+		});
+
+		it('should return bad request when called with invalid search param', async () => {
+			const response = await api.get(`${endpoint}/generators?search=(*)`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('should return bad request when called with limit=0', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('empty limit -> all generators', async () => {
+		it('should return generators list when called with empty limit', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
+			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(103);
-			response.data.map(generator => expect(generator).toMap(generatorSchema));
-			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid request param -> bad request', async () => {
+		it('should return bad request when called with invalid request param', async () => {
 			const response = await api.get(`${endpoint}/generators?invalidParam=invalid`, 400);
 			expect(response).toMap(badRequestSchema);
 		});

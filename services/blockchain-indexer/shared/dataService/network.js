@@ -13,17 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('./business');
+const business = require('./business');
 
-const getNetworkStatus = async () => dataService.getNetworkStatus();
+const getNetworkStatus = async () => business.getNetworkStatus();
 
-const getNetworkPeers = async params => dataService.getNetworkPeers(params);
+const getNetworkPeers = async params => business.getNetworkPeers(params);
 
-const getNetworkConnectedPeers = async params => dataService.getNetworkConnectedPeers(params);
+const getNetworkConnectedPeers = async params => business.getNetworkConnectedPeers(params);
 
-const getNetworkDisconnectedPeers = async params => dataService.getNetworkDisconnectedPeers(params);
+const getNetworkDisconnectedPeers = async params => business.getNetworkDisconnectedPeers(params);
 
-const getNetworkPeersStatistics = async () => dataService.getNetworkPeersStatistics();
+const getNetworkPeersStatistics = async () => business.getNetworkPeersStatistics();
 
 module.exports = {
 	getNetworkStatus,
