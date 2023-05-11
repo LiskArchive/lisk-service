@@ -23,7 +23,7 @@ module.exports = {
 	swaggerApiPath: '/generators',
 	rpcMethod: 'get.generators',
 	params: {
-		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubkey' },
+		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubKey' },
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},

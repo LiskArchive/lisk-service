@@ -63,7 +63,7 @@
         "type": "string",
         "minLength": 1
     },
-    "searchByNameAddressPubkey": {
+    "searchByNameAddressPubKey": {
 		"name": "search",
 		"in": "query",
 		"description": "Case-insensitive search by name, address or publicKey. Supports both partial and full text search.",

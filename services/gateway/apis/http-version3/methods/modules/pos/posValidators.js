@@ -28,7 +28,7 @@ module.exports = {
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
 		name: { optional: true, type: 'string', pattern: regex.NAME_CSV, max: 209, altSwaggerKey: 'validatorNameCsv' },
 		status: { optional: true, type: 'string', pattern: regex.POS_VALIDATOR_STATUS, altSwaggerKey: 'validatorStatus' },
-		search: { optional: true, type: 'string', min: 1, pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubkey' },
+		search: { optional: true, type: 'string', min: 1, pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubKey' },
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
