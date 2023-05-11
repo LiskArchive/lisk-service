@@ -51,5 +51,13 @@
         "description": "Chain name to query.",
         "type": "string",
         "minLength": 1
+    },
+    "searchByChainName": {
+        "name": "search",
+        "in": "query",
+        "description": "Case-insensitive search by chain name. Supports both partial and full text search.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20
     }
 }

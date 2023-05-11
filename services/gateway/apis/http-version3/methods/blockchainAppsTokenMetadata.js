@@ -29,7 +29,7 @@ module.exports = {
 		tokenName: { optional: true, type: 'string', pattern: regex.NAME_CSV },
 		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID_CSV, altSwaggerKey: 'tokenIDCSV' },
 		network: { optional: true, type: 'string', pattern: regex.NETWORK_CSV },
-		search: { optional: true, type: 'string' },
+		search: { optional: true, type: 'string', pattern: regex.NAME, altSwaggerKey: 'searchByChainName' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
