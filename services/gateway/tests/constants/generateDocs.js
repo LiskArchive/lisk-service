@@ -129,7 +129,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/network',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/searchByChainName',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -187,7 +187,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/network',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/searchByChainName',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -267,7 +267,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/network',
 				},
 				{
-					$ref: '#/parameters/search',
+					$ref: '#/parameters/searchByChainName',
 				},
 				{
 					$ref: '#/parameters/limit',
