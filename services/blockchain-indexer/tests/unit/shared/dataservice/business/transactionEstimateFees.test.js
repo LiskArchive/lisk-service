@@ -26,7 +26,7 @@ jest.mock('lisk-service-framework', () => {
 
 const {
 	calcDynamicFeeEstimates,
-	mockOptionalParams,
+	mockOptionalProperties,
 } = require('../../../../../shared/dataService/business/transactionsEstimateFees');
 
 describe('Test calcDynamicFeeEstimates method', () => {
@@ -83,15 +83,15 @@ describe('Test calcDynamicFeeEstimates method', () => {
 	});
 });
 
-describe('Test mockOptionalParams method', () => {
+describe('Test mockOptionalProperties method', () => {
 	it('should return transaction when called with all valid params', async () => {
-		const transaction = mockOptionalParams(inputTransaction);
+		const transaction = mockOptionalProperties(inputTransaction);
 		expect(transaction).toMatchObject(inputTransaction);
 	});
 
 	it('should return transaction when called transaction without id', async () => {
 		const { id, ...remParams } = inputTransaction;
-		const transaction = mockOptionalParams(remParams);
+		const transaction = mockOptionalProperties(remParams);
 
 		const expectedResponse = {
 			...inputTransaction,
@@ -103,7 +103,7 @@ describe('Test mockOptionalParams method', () => {
 
 	it('should return transaction when called transaction without fee', async () => {
 		const { fee, ...remParams } = inputTransaction;
-		const transaction = mockOptionalParams(remParams);
+		const transaction = mockOptionalProperties(remParams);
 
 		const expectedResponse = {
 			...inputTransaction,
@@ -115,7 +115,7 @@ describe('Test mockOptionalParams method', () => {
 
 	it('should return transaction when called transaction without signatures', async () => {
 		const { signatures, ...remParams } = inputTransaction;
-		const transaction = mockOptionalParams(remParams);
+		const transaction = mockOptionalProperties(remParams);
 
 		const expectedResponse = {
 			...inputTransaction,
@@ -126,10 +126,10 @@ describe('Test mockOptionalParams method', () => {
 	});
 
 	it('should throw error when transaction is undefined', async () => {
-		expect(() => { mockOptionalParams(undefined); }).toThrow(TypeError);
+		expect(() => { mockOptionalProperties(undefined); }).toThrow(TypeError);
 	});
 
 	it('should throw error when transaction is null', async () => {
-		expect(() => { mockOptionalParams(null); }).toThrow(TypeError);
+		expect(() => { mockOptionalProperties(null); }).toThrow(TypeError);
 	});
 });
