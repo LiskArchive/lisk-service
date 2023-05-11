@@ -5780,7 +5780,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
@@ -5839,7 +5839,7 @@ _Supports pagination._
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
@@ -5928,7 +5928,7 @@ _Supports pagination._
 | tokenName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Can be expressed as CSV. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc]` | chainName:asc |  |
