@@ -1,0 +1,15 @@
+[mysqld]
+
+# skip-name-resolve
+default_authentication_plugin = mysql_native_password
+
+server_id = 2
+log_bin=mysql-bin.log
+
+# Set the relay log file base name used by replica. This is needed to avoid error incase hostname is changed in future
+# relay_log=mysql-relay-bin.log
+gtid_mode=ON
+enforce_gtid_consistency=ON
+
+# log-replica-updates=ON
+# skip-replica-start=ON

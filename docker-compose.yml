@@ -30,12 +30,13 @@ services:
     healthcheck:
       test: redis-cli ping
 
-  mysql:
+  mysql-primary:
     image: mysql:8
     platform: linux/amd64
     command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/primary/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - mysql-primary-data:/var/lib/mysql
       - ./docker/mysql-init:/docker-entrypoint-initdb.d
     restart: always
     networks:
@@ -44,6 +45,34 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
       - MYSQL_PASSWORD=password
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-hlocalhost",
+          "-ppassword"
+        ]
+      timeout: 20s
+      retries: 10
+
+  mysql-read:
+    image: mysql:8
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+    platform: linux/amd64
+    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
+    volumes:
+      - ./docker/mysql/read/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - mysql-read-data:/var/lib/mysql
+      - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      - services_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
     healthcheck:
       test:
         [
@@ -79,7 +108,7 @@ services:
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
-      - LISK_APP_WS=${LISK_APP_WS}
+      - LISK_APP_WS=ws://host.docker.internal:7887
       # - GENESIS_BLOCK_URL=
       # - ENABLE_TESTING_MODE=
     restart: always
@@ -95,7 +124,7 @@ services:
         condition: service_healthy
       redis_volatile:
         condition: service_healthy
-      mysql:
+      mysql-primary:
         condition: service_healthy
     networks:
       - services_network
@@ -104,7 +133,8 @@ services:
       - SERVICE_INDEXER_CACHE_REDIS=redis://redis_persistent:6379/0
       - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
-      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk 
+      # - SERVICE_INDEXER_MYSQL_READ=mysql://lisk:password@mysql-read:3306/lisk 
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
       - ENABLE_PERSIST_EVENTS=${ENABLE_PERSIST_EVENTS}
@@ -133,7 +163,7 @@ services:
         condition: service_started
       redis_persistent:
         condition: service_healthy
-      mysql:
+      mysql-primary:
         condition: service_healthy
     networks:
       - services_network
@@ -233,6 +263,7 @@ networks:
 
 
 volumes:
-  mysql-data:
+  mysql-primary-data:
+  mysql-read-data:
   redis-data:
   export-data:
