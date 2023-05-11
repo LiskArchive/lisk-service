@@ -1,7 +1,7 @@
-# create databases
+# Create databases.
 CREATE DATABASE IF NOT EXISTS `lisk`;
 
-# create lisk user and grant rights
+# Create lisk user and grant rights.
 GRANT ALL PRIVILEGES ON *.* TO 'lisk'@'%';
 
 -- Create user for read replica and grant replication privilage

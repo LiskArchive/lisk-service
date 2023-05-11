@@ -1,7 +1,5 @@
 [mysqld]
 
-default_authentication_plugin = mysql_native_password
-
 # Unique identifying number of the server.
 server_id = 1
 
@@ -11,6 +9,6 @@ log_bin=mysql-bin.log
 # Log row changes for replication. Other possible way is to log statements.
 binlog_format = ROW
 
-# Enable Global Transaction ID to track and log transactions for replication
+# Enable Global Transaction ID to track and log transactions for replication.
 gtid_mode=ON
 enforce_gtid_consistency=ON
