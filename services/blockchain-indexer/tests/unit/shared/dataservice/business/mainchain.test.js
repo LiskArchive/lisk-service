@@ -13,10 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
 const config = require('../../../../../config');
 
 const mockedFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
+const dataServicePath = resolve(`${__dirname}/../../../../../shared/dataService`);
 
 beforeEach(() => jest.resetModules());
 
@@ -41,7 +43,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../../../shared/dataService');
+		const { isMainchain } = require(dataServicePath);
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -58,7 +60,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../../../shared/dataService');
+		const { isMainchain } = require(dataServicePath);
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -75,7 +77,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../../../shared/dataService');
+		const { isMainchain } = require(dataServicePath);
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(true);
@@ -92,7 +94,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../../../shared/dataService');
+		const { isMainchain } = require(dataServicePath);
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -109,7 +111,7 @@ describe('Test isMainchain method', () => {
 			};
 		});
 
-		const { isMainchain } = require('../../../../../shared/dataService');
+		const { isMainchain } = require(dataServicePath);
 		const result = await isMainchain();
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
@@ -129,7 +131,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require('../../../../../shared/dataService');
+		const { resolveMainchainServiceURL } = require(dataServicePath);
 		const result = await resolveMainchainServiceURL();
 
 		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
@@ -148,7 +150,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require('../../../../../shared/dataService');
+		const { resolveMainchainServiceURL } = require(dataServicePath);
 		const result = await resolveMainchainServiceURL();
 
 		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
@@ -166,7 +168,7 @@ describe('Test resolveMainchainServiceURL method', () => {
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require('../../../../../shared/dataService');
+		const { resolveMainchainServiceURL } = require(dataServicePath);
 		const result = await resolveMainchainServiceURL();
 		expect(result).toBe(undefined);
 	});

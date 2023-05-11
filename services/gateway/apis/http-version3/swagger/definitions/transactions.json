@@ -562,11 +562,12 @@
 		"properties": {
 			"transaction": {
 				"type": "object",
-				"description": "Binary payload or the transaction object.",
+				"description": "Transaction object.\n\n Note: The transaction object must contain these following properties: module, command, nonce, senderPublicKey and params",
 				"required": [
 					"module",
 					"command",
 					"nonce",
+					"senderPublicKey",
 					"params"
 				],
 				"properties": {
@@ -668,7 +669,8 @@
 						"properties": {
 							"minFee": {
 								"type": "string",
-								"example": "135000"
+								"example": "135000",
+								"description": "Minimum required transaction fee."
 							},
 							"accountInitializationFee": {
 								"type": "object",
@@ -722,17 +724,17 @@
 							"low": {
 								"type": "string",
 								"description": "Estimated transaction fee with low priority.",
-								"example": "0"
+								"example": "135000"
 							},
 							"medium": {
 								"type": "string",
 								"description": "Estimated transaction fee with medium priority.",
-								"example": "1000"
+								"example": "207000"
 							},
 							"high": {
 								"type": "string",
 								"description": "Estimated transaction fee with high priority.",
-								"example": "2000"
+								"example": "405000"
 							}
 						}
 					}

@@ -35,7 +35,7 @@ module.exports = {
 				fee: { optional: true, type: 'string' },
 				nonce: { optional: false, type: 'string', pattern: regex.NONCE },
 				senderPublicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
-				signatures: { optional: true, type: 'array', items: { type: 'string' } },
+				signatures: { optional: true, type: 'array', min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
 				params: { optional: false, type: 'object' },
 			},
 		},
