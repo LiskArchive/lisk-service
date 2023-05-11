@@ -41,37 +41,37 @@ describe('Test calcDynamicFeeEstimates method', () => {
 		expect(dynamicFeeEstimates).toMatchObject(expectResponse);
 	});
 
-	it('should throw error -> undefined feeEstimatePerByte', async () => {
+	it('should throw error when feeEstimatePerByte is undefined', async () => {
 		expect(() => {
 			calcDynamicFeeEstimates(undefined, minFee, size);
 		}).toThrow(TypeError);
 	});
 
-	it('should throw error -> undefined minFee', async () => {
+	it('should throw error when minFee is undefined', async () => {
 		expect(() => {
 			calcDynamicFeeEstimates(feeEstimatePerByte, undefined, size);
 		}).toThrow(TypeError);
 	});
 
-	it('should throw error -> undefined size', async () => {
+	it('should throw error when transaction size is undefined', async () => {
 		expect(() => {
 			calcDynamicFeeEstimates(feeEstimatePerByte, minFee, undefined);
 		}).toThrow(TypeError);
 	});
 
-	it('should throw error -> null feeEstimatePerByte', async () => {
+	it('should throw error when feeEstimatePerByte is null', async () => {
 		expect(() => {
 			calcDynamicFeeEstimates(null, minFee, size);
 		}).toThrow(TypeError);
 	});
 
-	it('should throw error -> null minFee', async () => {
+	it('should throw error when minFee is null', async () => {
 		expect(() => {
 			calcDynamicFeeEstimates(feeEstimatePerByte, null, size);
 		}).toThrow(TypeError);
 	});
 
-	it('should throw error -> null size', async () => {
+	it('should throw error when transaction size is null', async () => {
 		expect(() => {
 			calcDynamicFeeEstimates(feeEstimatePerByte, minFee, null);
 		}).toThrow(TypeError);

@@ -18,9 +18,9 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const dynamicFeeEstimates = {
-	low: Joi.number().min(0).required(),
-	medium: Joi.number().min(0).required(),
-	high: Joi.number().min(0).required(),
+	low: Joi.string().min(0).required(),
+	medium: Joi.string().min(0).required(),
+	high: Joi.string().min(0).required(),
 };
 
 const genericFeeSchema = {
@@ -29,7 +29,7 @@ const genericFeeSchema = {
 };
 
 const transactionFeeEstimates = {
-	minFee: Joi.string().required(),
+	minFee: Joi.string().pattern(regex.DIGITS).required(),
 	accountInitializationFee: Joi.object(genericFeeSchema).required(),
 	messageFee: Joi.object(genericFeeSchema).optional(),
 };

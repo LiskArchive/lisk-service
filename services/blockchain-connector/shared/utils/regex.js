@@ -20,7 +20,7 @@ const KEY_NOT_EXIST = /^Key [a-f0-9]+ does not exist\.$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
 const COMMAND = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const NONCE = /^[0-9]+$/;
+const NONCE = /^\d+$/;
 const HEX_STRING = /^([a-fA-F0-9]+)$/;
 
 module.exports = {

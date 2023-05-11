@@ -13,9 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { resolve } = require('path');
 const config = require('../../../../../config');
 
-const mockedFilePath = '../../../../../shared/dataService/business/network';
+const mockedFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
 
 beforeEach(() => jest.resetModules());
 
@@ -29,9 +30,9 @@ describe('Test isMainchain method', () => {
 		};
 	});
 
-	it('should return false -> undefined chainID', async () => {
+	it('should return false when chainID is undefined', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -46,9 +47,9 @@ describe('Test isMainchain method', () => {
 		expect(result).toBe(false);
 	});
 
-	it('should return false -> null chainID', async () => {
+	it('should return false when chainID is null', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -63,9 +64,9 @@ describe('Test isMainchain method', () => {
 		expect(result).toBe(false);
 	});
 
-	it('should return true -> valid mainchain chainID', async () => {
+	it('should return true when mainchain chainID is valid', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -80,9 +81,9 @@ describe('Test isMainchain method', () => {
 		expect(result).toBe(true);
 	});
 
-	it('should return false -> valid sidechain chainID', async () => {
+	it('should return false when sidechain chainID is valid', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -97,9 +98,9 @@ describe('Test isMainchain method', () => {
 		expect(result).toBe(false);
 	});
 
-	it('should return false -> invalid chainID', async () => {
+	it('should return false when chainID is valid', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -116,10 +117,10 @@ describe('Test isMainchain method', () => {
 });
 
 describe('Test resolveMainchainServiceURL method', () => {
-	it('should return devnet mainchain URL -> valid devnet mainchain chainID', async () => {
+	it('should return devnet mainchain URL when devnet mainchain chainID is valid', async () => {
 		const chainID = '04000000';
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -135,10 +136,10 @@ describe('Test resolveMainchainServiceURL method', () => {
 		expect(result).toBe(serviceURL);
 	});
 
-	it('should return betanet mainchain URL -> valid devnet mainchain chainID', async () => {
+	it('should return betanet mainchain URL when betanet mainchain chainID is valid', async () => {
 		const chainID = '02000000';
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
@@ -154,9 +155,9 @@ describe('Test resolveMainchainServiceURL method', () => {
 		expect(result).toBe(serviceURL);
 	});
 
-	it('should return undefined -> invalid chainID', async () => {
+	it('should return undefined when chainID is invalid', async () => {
 		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual('../../../../../shared/dataService/business/network');
+			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {

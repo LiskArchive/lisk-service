@@ -721,17 +721,17 @@
 						"properties": {
 							"low": {
 								"type": "string",
-								"description": "low estimated fees.",
+								"description": "Estimated transaction fee with low priority.",
 								"example": "0"
 							},
 							"medium": {
 								"type": "string",
-								"description": "medium estimated fees.",
+								"description": "Estimated transaction fee with medium priority.",
 								"example": "1000"
 							},
 							"high": {
 								"type": "string",
-								"description": "high estimated fees.",
+								"description": "Estimated transaction fee with high priority.",
 								"example": "2000"
 							}
 						}

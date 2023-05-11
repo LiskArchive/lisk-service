@@ -133,8 +133,16 @@ const dryRunTransactions = async params => {
 };
 
 const estimateTransactionFees = async params => {
+	const estimateTransactionFeesRes = {
+		data: {},
+		meta: {},
+	};
+
 	const response = await dataService.estimateTransactionFees(params);
-	return response;
+	if (response.data) estimateTransactionFeesRes.data = response.data;
+	if (response.meta) estimateTransactionFeesRes.meta = response.meta;
+
+	return estimateTransactionFeesRes;
 };
 
 module.exports = {

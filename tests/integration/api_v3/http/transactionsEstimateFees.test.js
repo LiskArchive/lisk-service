@@ -42,17 +42,17 @@ describe('Post estimate-fees transactions API', () => {
 		expect(response).toMap(transactionEstimateFees);
 	});
 
-	it('should throw error in case of invalid transaction', async () => {
+	it('should return bad request when called with invalid transaction', async () => {
 		const response = await api.post(endpoint, { transaction: 'INVALID_TRANSACTION' }, 500);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('No transaction -> bad request', async () => {
+	it('should return bad request when called with empty transaction', async () => {
 		const response = await api.post(endpoint, {}, 400);
 		expect(response).toMap(wrongInputParamSchema);
 	});
 
-	it('Returns error in case of invalid query params', async () => {
+	it('should return bad request when called with invalid query params', async () => {
 		const response = await api.post(
 			endpoint,
 			{

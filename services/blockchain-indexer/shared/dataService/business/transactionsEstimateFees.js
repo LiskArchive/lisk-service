@@ -88,7 +88,7 @@ const calcAccountInitializationFees = async (transaction, tokenID) => {
 
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
-		data: [],
+		data: {},
 		meta: {},
 	};
 
