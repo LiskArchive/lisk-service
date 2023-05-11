@@ -94,7 +94,7 @@ services:
       - services_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
     restart: always
 
@@ -170,7 +170,7 @@ services:
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
-      - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
     restart: always
 

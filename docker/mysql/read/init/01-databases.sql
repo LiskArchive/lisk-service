@@ -3,14 +3,9 @@ CREATE USER 'reader'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
 GRANT SELECT ON *.* TO 'reader'@'%';
 FLUSH PRIVILEGES;
 
--- SET @@GLOBAL.read_only = ON;
-
 CHANGE REPLICATION SOURCE TO
     SOURCE_HOST = 'mysql-primary',
     SOURCE_PORT = 3306,
-    SOURCE_USER = 'read_replica',
+    SOURCE_USER = 'replica',
     SOURCE_PASSWORD = 'password',
     SOURCE_AUTO_POSITION = 1;
-
--- SET @@GLOBAL.read_only = OFF;
-
