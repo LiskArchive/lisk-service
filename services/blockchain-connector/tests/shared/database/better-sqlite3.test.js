@@ -13,23 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { rm } = require('../../shared/utils/fs');
+const { rm } = require('../../../shared/utils/fs');
 
 const {
 	getTableInstance,
 	startDbTransaction,
 	commitDbTransaction,
 	getDbConnection,
-} = require('../../shared/database/better-sqlite3');
+} = require('../../../shared/database/better-sqlite3');
 
-const schema = require('../constants/blocksSchema');
+const schema = require('../../constants/blocksSchema');
 
 const tableName = 'functional_test';
 const testDir = 'testDir';
 
 const getIndex = () => getTableInstance(tableName, schema, testDir);
 
-const { blockWithoutTransaction, blockWithTransaction } = require('../constants/blocks');
+const { blockWithoutTransaction, blockWithTransaction } = require('../../constants/blocks');
 
 describe('Test MySQL', () => {
 	let testTable;

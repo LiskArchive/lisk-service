@@ -105,9 +105,7 @@ const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
-		if (config.caching.isEnabled) {
-			await cacheBlocks(block);
-		}
+		if (config.caching.isEnabled) await cacheBlocks(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -137,9 +135,7 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		}
 
 		const blocks = ([blocksArr[0], ...blocksArr[1]]);
-		if (config.caching.isEnabled) {
-			await cacheBlocks(blocks);
-		}
+		if (config.caching.isEnabled) await cacheBlocks(blocks);
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -160,9 +156,7 @@ const getBlockByID = async (id, includeGenesisAssets = false) => {
 		if (blockFromCache) return blockFromCache;
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
-		if (config.caching.isEnabled) {
-			await cacheBlocks(block);
-		}
+		if (config.caching.isEnabled) await cacheBlocks(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -191,9 +185,7 @@ const getBlocksByIDs = async (ids) => {
 		if (blocksFromCache) return blocksFromCache;
 
 		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
-		if (config.caching.isEnabled) {
-			await cacheBlocks(blocks);
-		}
+		if (config.caching.isEnabled) await cacheBlocks(blocks);
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

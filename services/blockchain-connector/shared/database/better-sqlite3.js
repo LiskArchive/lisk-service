@@ -91,8 +91,8 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
-		'sort', 'limit', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'offset',
-		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf',
+		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -195,6 +195,23 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 		if (columns) query.select(columns);
 		query.where(queryParams);
 
+		if (params.distinct) {
+			const distinctParams = params.distinct.split(',');
+			query.distinct(distinctParams);
+		}
+
+		if (params.sort) {
+			const [sortColumn, sortDirection] = params.sort.split(':');
+			query.whereNotNull(sortColumn);
+			query.select(sortColumn).orderBy(sortColumn, sortDirection);
+		}
+
+		if (params.order) {
+			const [orderColumn, orderDirection] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+			query.select(orderColumn).orderBy(orderColumn, orderDirection);
+		}
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -206,24 +223,23 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 				});
 		}
 
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			query.orderBy(sortProp, sortOrder);
-			query.whereNotNull(sortProp);
-		}
-
 		if (params.whereIn) {
-			const { property, values } = params.whereIn;
-			query.whereIn(property, values);
+			const { whereIn } = params;
+			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
+
+			whereIns.forEach(param => {
+				const { property, values } = param;
+				query.whereIn(property, values);
+			});
 		}
 
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, val0);
+				this.whereJsonSupersetOf(property, [val0]);
 				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, value);
+					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
 		}
@@ -248,8 +264,34 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 		}
 
 		if (params.search) {
-			const { property, pattern } = params.search;
-			query.where(`${property}`, 'like', `%${pattern}%`);
+			params.search = Array.isArray(params.search) ? params.search : [params.search];
+
+			params.search.forEach(search => {
+				const { property, pattern, startsWith, endsWith } = search;
+				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+			});
+		}
+
+		if (params.orSearch) {
+			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
+
+			query.andWhere(function () {
+				params.orSearch.forEach((orSearch, index) => {
+					const { property, pattern, startsWith, endsWith } = orSearch;
+
+					if (index === 0) {
+						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
+					} else {
+						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
+					}
+				});
+			});
 		}
 
 		if (params.aggregate) {
@@ -329,12 +371,51 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 		return query;
 	};
 
+	const update = async (params, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const { where, updates } = params;
+		const query = queryBuilder({ ...where }, tableConfig.primaryKey, trx).update({ ...updates });
+		if (isDefaultTrx) return query
+			.then(async result => {
+				await trx.commit();
+				return result;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+		return query;
+	};
 	const count = async (params = {}) => {
 		const trx = await createDefaultTransaction(knex);
-		const query = knex(tableName).transacting(trx).count(`${tableConfig.primaryKey} as count`);
+		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
+
+		if (params.distinct) {
+			query.countDistinct(`${params.distinct} as count`);
+		} else {
+			const countColumnName = Array.isArray(tableConfig.primaryKey)
+				? tableConfig.primaryKey[0]
+				: tableConfig.primaryKey;
+			query.count(`${countColumnName} as count`);
+		}
+
+		if (params.sort) {
+			const [sortProp] = params.sort.split(':');
+			query.whereNotNull(sortProp);
+		}
+
+		if (params.order) {
+			const [orderColumn] = params.order.split(':');
+			query.whereNotNull(orderColumn);
+		}
 
 		if (params.propBetweens) {
 			const { propBetweens } = params;
@@ -347,23 +428,23 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 				});
 		}
 
-		if (params.sort) {
-			const [sortProp] = params.sort.split(':');
-			query.whereNotNull(sortProp);
-		}
-
 		if (params.whereIn) {
-			const { property, values } = params.whereIn;
-			query.whereIn(property, values);
+			const { whereIn } = params;
+			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
+
+			whereIns.forEach(param => {
+				const { property, values } = param;
+				query.whereIn(property, values);
+			});
 		}
 
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, val0);
+				this.whereJsonSupersetOf(property, [val0]);
 				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, value);
+					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
 		}
@@ -388,8 +469,34 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 		}
 
 		if (params.search) {
-			const { property, pattern } = params.search;
-			query.where(`${property}`, 'like', `%${pattern}%`);
+			params.search = Array.isArray(params.search) ? params.search : [params.search];
+
+			params.search.forEach(search => {
+				const { property, pattern, startsWith, endsWith } = search;
+				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+			});
+		}
+
+		if (params.orSearch) {
+			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
+
+			query.andWhere(function () {
+				params.orSearch.forEach((orSearch, index) => {
+					const { property, pattern, startsWith, endsWith } = orSearch;
+
+					if (index === 0) {
+						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
+					} else {
+						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
+					}
+				});
+			});
 		}
 
 		return query
@@ -471,6 +578,7 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.dbDat
 		find,
 		delete: deleteByParams,
 		deleteByPrimaryKey,
+		update,
 		count,
 		rawQuery,
 		increment,

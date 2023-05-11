@@ -18,24 +18,24 @@ const BluebirdPromise = require('bluebird');
 const { getTableInstance } = require('../database/better-sqlite3');
 
 const cacheBlockSchema = require('../database/schema/blocks');
-const mapTxIDtoBlockIDSchema = require('../database/schema/transactions');
+const cacheTrxIDToBlockIDSchema = require('../database/schema/transactions');
 
 const getBlocksCacheIndex = () => getTableInstance(
 	cacheBlockSchema.tableName,
 	cacheBlockSchema,
 );
 
-const getTxIDtoBlockIDCacheIndex = () => getTableInstance(
-	mapTxIDtoBlockIDSchema.tableName,
-	mapTxIDtoBlockIDSchema,
+const getTrxIDtoBlockIDCacheIndex = () => getTableInstance(
+	cacheTrxIDToBlockIDSchema.tableName,
+	cacheTrxIDToBlockIDSchema,
 );
 
 const mapTransactionIDstoBlockID = async (transactions, blockID) => {
-	const txToBlockCache = await getTxIDtoBlockIDCacheIndex();
+	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCacheIndex();
 
 	await BluebirdPromise.map(
 		transactions,
-		async transaction => txToBlockCache.upsert({ transactionID: transaction.id, blockID }),
+		async transaction => trxIDToBlockIDCache.upsert({ transactionID: transaction.id, blockID }),
 		{ concurrency: transactions.length },
 	);
 };
@@ -76,8 +76,8 @@ const getBlockByIDsFromCache = async (blockIDs) => {
 };
 
 const getTransactionByIDFromCache = async (transactionID) => {
-	const txToBlockCache = await getTxIDtoBlockIDCacheIndex();
-	const [{ blockID }] = await txToBlockCache.find({ transactionID }, ['blockID']);
+	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCacheIndex();
+	const [{ blockID }] = await trxIDToBlockIDCache.find({ transactionID }, ['blockID']);
 	if (!blockID) return null;
 	const block = await getBlockByIDFromCache(blockID);
 	const transaction = block.transactions.find(tx => tx.id === transactionID);
