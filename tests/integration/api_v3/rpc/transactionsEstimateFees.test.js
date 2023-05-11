@@ -26,7 +26,6 @@ const {
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	serverErrorSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
@@ -35,7 +34,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const calculateTransactionFees = async params => request(wsRpcUrl, 'post.transactions.estimate-fees', params);
 
 describe('Method post.transactions.estimate-fees', () => {
-	it('should return transaction fees with valid transaction object', async () => {
+	it('should return transaction fees when called with valid transaction object', async () => {
 		const response = await calculateTransactionFees({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -43,25 +42,49 @@ describe('Method post.transactions.estimate-fees', () => {
 		expect(result).toMap(transactionEstimateFees);
 	});
 
-	it('should return transaction fees with valid transaction string', async () => {
-		const response = await calculateTransactionFees({ transaction: TRANSACTION_ENCODED_VALID });
+	it('should return transaction fees when called with valid transaction object without id', async () => {
+		const { id, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		const response = await calculateTransactionFees({ transaction: remTransactionObject });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
 		expect(result).toMap(transactionEstimateFees);
 	});
 
-	it('should throw error in case of invalid transaction', async () => {
-		const response = await calculateTransactionFees({ transaction: 'INVALID_TRANSACTION' });
-		expect(response).toMap(serverErrorSchema);
+	it('should return transaction fees when called with valid transaction object without signatures', async () => {
+		const { signatures, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		const response = await calculateTransactionFees({ transaction: remTransactionObject });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(transactionEstimateFees);
 	});
 
-	it('No transaction -> invalid param', async () => {
+	it('should return transaction fees when called with valid transaction object without fee', async () => {
+		const { fee, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		const response = await calculateTransactionFees({ transaction: remTransactionObject });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(transactionEstimateFees);
+	});
+
+	it('should return invalid params when called with valid transaction string', async () => {
+		const response = await calculateTransactionFees({ transaction: TRANSACTION_ENCODED_VALID });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when called with invalid transaction', async () => {
+		const response = await calculateTransactionFees({ transaction: 'INVALID_TRANSACTION' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when called with no params', async () => {
 		const response = await calculateTransactionFees();
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid query parameter -> -32602', async () => {
+	it('should return invalid params when called with invalid query params', async () => {
 		const response = await calculateTransactionFees({ transactions: TRANSACTION_OBJECT_VALID });
 		expect(response).toMap(invalidParamsSchema);
 	});

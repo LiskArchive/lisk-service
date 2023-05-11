@@ -62,8 +62,6 @@ const formatTransaction = (transaction) => {
 
 	// Calculate transaction min fee
 	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
-
-	// TODO: Verify transaction minFee
 	const schemaCompliantTransactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
 	const nonEmptySignatureCount = transaction.signatures.filter(s => s).length;
 	const transactionMinFee = computeMinFee(

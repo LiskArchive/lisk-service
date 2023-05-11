@@ -37,13 +37,31 @@ describe('Post estimate-fees transactions API', () => {
 		expect(response).toMap(transactionEstimateFees);
 	});
 
-	it('should return transaction fees with valid transaction string', async () => {
-		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_VALID });
+	it('should return transaction fees with valid transaction object without id', async () => {
+		const { id, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		const response = await api.post(endpoint, { transaction: remTransactionObject });
 		expect(response).toMap(transactionEstimateFees);
 	});
 
+	it('should return transaction fees with valid transaction object without signatures', async () => {
+		const { signatures, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		const response = await api.post(endpoint, { transaction: remTransactionObject });
+		expect(response).toMap(transactionEstimateFees);
+	});
+
+	it('should return transaction fees with valid transaction object without fee', async () => {
+		const { fee, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		const response = await api.post(endpoint, { transaction: remTransactionObject });
+		expect(response).toMap(transactionEstimateFees);
+	});
+
+	it('should return bad request when called with valid transaction string', async () => {
+		const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_VALID }, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
 	it('should return bad request when called with invalid transaction', async () => {
-		const response = await api.post(endpoint, { transaction: 'INVALID_TRANSACTION' }, 500);
+		const response = await api.post(endpoint, { transaction: 'INVALID_TRANSACTION' }, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 

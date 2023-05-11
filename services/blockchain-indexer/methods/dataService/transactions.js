@@ -75,7 +75,7 @@ module.exports = [
 		name: 'transactions.estimate-fees',
 		controller: estimateTransactionFees,
 		params: {
-			transaction: { optional: false, type: 'any' },
+			transaction: { optional: false, type: 'object' },
 		},
 	},
 ];

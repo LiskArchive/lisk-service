@@ -14,6 +14,7 @@
  *
  */
 const transactionsEstimateFeesSource = require('../../../sources/version3/transactionsEstimateFees');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { getSwaggerDescription } = require('../../../shared/utils');
 const regex = require('../../../shared/regex');
 
@@ -24,23 +25,20 @@ module.exports = {
 	rpcMethod: 'post.transactions.estimate-fees',
 	tags: ['Transactions'],
 	params: {
-		transaction: [
-			{ optional: false, type: 'string', pattern: regex.HEX_STRING },
-			{
-				optional: false,
-				type: 'object',
-				props: {
-					id: { optional: true, type: 'string', pattern: regex.HASH_SHA256 },
-					module: { optional: false, type: 'string', pattern: regex.MODULE },
-					command: { optional: false, type: 'string', pattern: regex.COMMAND },
-					fee: { optional: true, type: 'string' },
-					nonce: { optional: false, type: 'string', pattern: regex.NONCE },
-					senderPublicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
-					signatures: { optional: true, type: 'array', items: { type: 'string', pattern: regex.HASH_SHA256 } },
-					params: { optional: false, type: 'object' },
-				},
+		transaction: {
+			optional: false,
+			type: 'object',
+			props: {
+				id: { optional: true, type: 'string', pattern: regex.HASH_SHA256 },
+				module: { optional: false, type: 'string', pattern: regex.MODULE },
+				command: { optional: false, type: 'string', pattern: regex.COMMAND },
+				fee: { optional: true, type: 'string' },
+				nonce: { optional: false, type: 'string', pattern: regex.NONCE },
+				senderPublicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
+				signatures: { optional: true, type: 'array', items: { type: 'string' } },
+				params: { optional: false, type: 'object' },
 			},
-		],
+		},
 	},
 	get schema() {
 		const transactionsEstimateFeesSchema = {};
@@ -75,4 +73,5 @@ module.exports = {
 		return transactionsEstimateFeesSchema;
 	},
 	source: transactionsEstimateFeesSource,
+	envelope,
 };

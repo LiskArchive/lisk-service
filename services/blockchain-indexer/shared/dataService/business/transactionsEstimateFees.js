@@ -13,6 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	utils: { getRandomBytes },
+} = require('@liskhq/lisk-cryptography');
+
 const { HTTP } = require('lisk-service-framework');
 
 const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
@@ -24,26 +28,56 @@ const regex = require('../../regex');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
+const DEFAULT_SIGNATURE_BYTE_SIZE = 64;
+const DEFAULT_ID_BYTE_SIZE = 32;
+
+const OPTIONAL_TRANSACTION_PARAMS = Object.freeze({
+	FEE: 'fee',
+	SIGNATURES: 'signatures',
+	ID: 'id',
+});
+
+const mockOptionalParams = (transaction) => {
+	const missingParams = Object.values(OPTIONAL_TRANSACTION_PARAMS)
+		.filter((e) => Object.keys(transaction).indexOf(e) === -1);
+
+	missingParams.forEach(e => {
+		if (e === OPTIONAL_TRANSACTION_PARAMS.FEE) {
+			transaction.fee = 0;
+		}
+		if (e === OPTIONAL_TRANSACTION_PARAMS.SIGNATURES) {
+			transaction.signatures = [getRandomBytes(DEFAULT_SIGNATURE_BYTE_SIZE).toString('hex')];
+		}
+		if (e === OPTIONAL_TRANSACTION_PARAMS.ID) {
+			transaction.id = getRandomBytes(DEFAULT_ID_BYTE_SIZE).toString('hex');
+		}
+	});
+
+	return transaction;
+};
+
 const resolveChannelInfo = async (chainID) => {
-	if (!(await isMainchain()) && !regex.MAINCHAIN_ID.test(chainID)) {
-		// Redirect call to the mainchain service
-		const serviceURL = await resolveMainchainServiceURL();
-		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
-		const { data: { data: channelInfo } } = await HTTP.post(
-			invokeEndpoint,
-			{
-				endpoint: 'interoperability_getChannel',
-				params: { chainID },
-			});
+	if (await isMainchain() && !regex.MAINCHAIN_ID.test(chainID)) {
+		const channelInfo = await requestConnector('getChannel', { chainID });
 		return channelInfo;
 	}
 
-	const channelInfo = await requestConnector('getChannel', { chainID });
+	// Redirect call to the mainchain service
+	const serviceURL = await resolveMainchainServiceURL();
+	const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
+	const { data: { data: channelInfo } } = await HTTP.post(
+		invokeEndpoint,
+		{
+			endpoint: 'interoperability_getChannel',
+			params: { chainID },
+		},
+	);
+
 	return channelInfo;
 };
 
 const calcMessageFee = async (transaction) => {
-	const { data: { events } } = (await dryRunTransactions({ transaction }));
+	const { data: { events } } = (await dryRunTransactions({ transaction, skipVerify: true }));
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
 	// Encode ccm (required to calculate ccm length)
@@ -92,7 +126,8 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	const transaction = await requestConnector('formatTransaction', { transaction: params.transaction });
+	const trxWithMockParams = mockOptionalParams(params.transaction);
+	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockParams });
 
 	const { minFee, size } = transaction;
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
@@ -125,4 +160,5 @@ module.exports = {
 
 	// Export for the unit test
 	calcDynamicFeeEstimates,
+	mockOptionalParams,
 };

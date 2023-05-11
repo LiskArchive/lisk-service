@@ -13,24 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { inputTransaction } = require('../../../../constants/transactions');
+
+jest.mock('lisk-service-framework', () => {
+	const actual = jest.requireActual('lisk-service-framework');
+	return {
+		...actual,
+		CacheRedis: jest.fn(),
+		CacheLRU: jest.fn(),
+	};
+});
+
+const {
+	calcDynamicFeeEstimates,
+	mockOptionalParams,
+} = require('../../../../../shared/dataService/business/transactionsEstimateFees');
+
 describe('Test calcDynamicFeeEstimates method', () => {
-	jest.mock('lisk-service-framework', () => {
-		const actual = jest.requireActual('lisk-service-framework');
-		return {
-			...actual,
-			CacheRedis: jest.fn(),
-			CacheLRU: jest.fn(),
-		};
-	});
-
-	const { calcDynamicFeeEstimates } = require('../../../../../shared/dataService/business/transactionsEstimateFees');
-
 	const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
 	const minFee = 150000;
 	const size = 150;
 
 	it('should return dynamic fee estimates', async () => {
-		const expectResponse = {
+		const expectedResponse = {
 			low: BigInt('150000'),
 			medium: BigInt('151500'),
 			high: BigInt('157500'),
@@ -38,7 +43,7 @@ describe('Test calcDynamicFeeEstimates method', () => {
 
 		const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
 		expect(Object.getOwnPropertyNames(dynamicFeeEstimates).length).toBe(3);
-		expect(dynamicFeeEstimates).toMatchObject(expectResponse);
+		expect(dynamicFeeEstimates).toMatchObject(expectedResponse);
 	});
 
 	it('should throw error when feeEstimatePerByte is undefined', async () => {
@@ -75,5 +80,56 @@ describe('Test calcDynamicFeeEstimates method', () => {
 		expect(() => {
 			calcDynamicFeeEstimates(feeEstimatePerByte, minFee, null);
 		}).toThrow(TypeError);
+	});
+});
+
+describe('Test mockOptionalParams method', () => {
+	it('should return transaction when called with all valid params', async () => {
+		const transaction = mockOptionalParams(inputTransaction);
+		expect(transaction).toMatchObject(inputTransaction);
+	});
+
+	it('should return transaction when called transaction without id', async () => {
+		const { id, ...remParams } = inputTransaction;
+		const transaction = mockOptionalParams(remParams);
+
+		const expectedResponse = {
+			...inputTransaction,
+			id: transaction.id,
+		};
+
+		expect(transaction).toMatchObject(expectedResponse);
+	});
+
+	it('should return transaction when called transaction without fee', async () => {
+		const { fee, ...remParams } = inputTransaction;
+		const transaction = mockOptionalParams(remParams);
+
+		const expectedResponse = {
+			...inputTransaction,
+			fee: 0,
+		};
+
+		expect(transaction).toMatchObject(expectedResponse);
+	});
+
+	it('should return transaction when called transaction without signatures', async () => {
+		const { signatures, ...remParams } = inputTransaction;
+		const transaction = mockOptionalParams(remParams);
+
+		const expectedResponse = {
+			...inputTransaction,
+			signatures: transaction.signatures,
+		};
+
+		expect(transaction).toMatchObject(expectedResponse);
+	});
+
+	it('should throw error when transaction is undefined', async () => {
+		expect(() => { mockOptionalParams(undefined); }).toThrow(TypeError);
+	});
+
+	it('should throw error when transaction is null', async () => {
+		expect(() => { mockOptionalParams(null); }).toThrow(TypeError);
 	});
 });
