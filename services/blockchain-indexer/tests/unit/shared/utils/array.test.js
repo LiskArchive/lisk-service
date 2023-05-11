@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -16,6 +16,7 @@
 const {
 	dropDuplicates,
 	range,
+	isSubstringInArray,
 } = require('../../../../shared/utils/array');
 
 describe('Unit tests for array utilities', () => {
@@ -115,6 +116,50 @@ describe('Unit tests for array utilities', () => {
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(input.length);
 			expect(isEveryElementUnique(result)).toBeTruthy();
+		});
+	});
+
+	describe('Test \'isSubstringInArray\'', () => {
+		it('should return true if pattern is a substring of any item in the array', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = 'ban';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
+		});
+
+		it('should return true if pattern is a substring of any item in the array with ignoring case', () => {
+			const collection = ['Apple', 'BaNaNa', 'Cherry'];
+			const pattern = 'bAn';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
+		});
+
+		it('should return false if pattern is not a substring of any item in the array', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = 'orange';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(false);
+		});
+
+		it('should return true if pattern is present in the array', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = 'banana';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
+		});
+
+		it('should return false if collection is empty', () => {
+			const collection = [];
+			const pattern = 'banana';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(false);
+		});
+
+		it('should return true if pattern is empty and collection is not empty', () => {
+			const collection = ['apple', 'banana', 'cherry'];
+			const pattern = '';
+
+			expect(isSubstringInArray(collection, pattern)).toBe(true);
 		});
 	});
 });

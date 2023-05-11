@@ -1,73 +1,74 @@
 {
-    "addressCsv": {
-        "name": "address",
-        "in": "query",
-        "description": "Address of the account to query (can be expressed as CSV).",
-        "type": "string",
-        "format": "address",
-        "minLength": 41
-    },
-    "address": {
-        "name": "address",
-        "in": "query",
-        "description": "Lisk account address.",
-        "type": "string",
-        "format": "address",
-        "minLength": 41,
-        "maxLength": 41
-    },
-    "limit": {
-        "in": "query",
-        "name": "limit",
-        "description": "Limit to apply to the query results.",
-        "type": "integer",
-        "format": "int32",
-        "minimum": 1,
-        "maximum": 100,
-        "default": 10
-    },
-    "offset": {
-        "name": "offset",
-        "in": "query",
-        "description": "Offset to apply to the query results.",
-        "type": "integer",
-        "format": "int32",
-        "minimum": 0,
-        "default": 0
-    },
-    "height": {
-        "name": "height",
-        "in": "query",
-        "description": "Query by height or a height range (fromHeight:toHeight, both inclusive).",
-        "type": "string",
-        "minimum": 0
-    },
-    "blockHeight": {
-        "name": "height",
-        "in": "query",
-        "description": "Block height to query.",
-        "type": "number",
-        "minimum": 0
-    },
-    "timestamp": {
-        "name": "timestamp",
-        "in": "query",
-        "description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive).",
-        "type": "string",
-        "minLength": 1
-    },
-    "search": {
-        "in": "query",
-        "name": "search",
-        "description": "Search query. Supports both partial and full case-insensitive text search.",
-        "type": "string",
-        "minLength": 1
-    },
-    "searchByNameAddressPubKey": {
+	"addressCsv": {
+		"name": "address",
+		"in": "query",
+		"description": "Address of the account to query (can be expressed as CSV).",
+		"type": "string",
+		"format": "address",
+		"minLength": 41
+	},
+	"address": {
+		"name": "address",
+		"in": "query",
+		"description": "Lisk account address.",
+		"type": "string",
+		"format": "address",
+		"minLength": 41,
+		"maxLength": 41
+	},
+	"limit": {
+		"in": "query",
+		"name": "limit",
+		"description": "Limit to apply to the query results.",
+		"type": "integer",
+		"format": "int32",
+		"minimum": 1,
+		"maximum": 100,
+		"default": 10
+	},
+	"offset": {
+		"name": "offset",
+		"in": "query",
+		"description": "Offset to apply to the query results.",
+		"type": "integer",
+		"format": "int32",
+		"minimum": 0,
+		"default": 0
+	},
+	"height": {
+		"name": "height",
+		"in": "query",
+		"description": "Query by height or a height range (fromHeight:toHeight, both inclusive).",
+		"type": "string",
+		"minimum": 0
+	},
+	"blockHeight": {
+		"name": "height",
+		"in": "query",
+		"description": "Block height to query.",
+		"type": "number",
+		"minimum": 0
+	},
+	"timestamp": {
+		"name": "timestamp",
+		"in": "query",
+		"description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive).",
+		"type": "string",
+		"minLength": 1
+	},
+	"search": {
+		"in": "query",
+		"name": "search",
+		"description": "Search query. Supports both partial and full case-insensitive text search.",
+		"type": "string",
+		"minLength": 1
+	},
+	"searchByNameAddressPubKey": {
 		"name": "search",
 		"in": "query",
 		"description": "Case-insensitive search by name, address or publicKey. Supports both partial and full text search.",
 		"type": "string",
-		"minLength": 1
+		"minLength": 1,
+		"maxLength": 64
 	}
 }
