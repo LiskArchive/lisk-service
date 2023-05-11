@@ -85,18 +85,18 @@ services:
       timeout: 20s
       retries: 10
 
-  blockchain-app-registry:
-    image: lisk/service_blockchain_app_registry
-    depends_on:
-      nats:
-        condition: service_started
-    networks:
-      - services_network
-    environment:
-      - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql:3306/lisk
-      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
-    restart: always
+  # blockchain-app-registry:
+  #   image: lisk/service_blockchain_app_registry
+  #   depends_on:
+  #     nats:
+  #       condition: service_started
+  #   networks:
+  #     - services_network
+  #   environment:
+  #     - SERVICE_BROKER=nats://nats:4222
+  #     - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql:3306/lisk
+  #     - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+  #   restart: always
 
   blockchain-connector:
     image: lisk/service_blockchain_connector
@@ -134,7 +134,7 @@ services:
       - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
       - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk 
-      # - SERVICE_INDEXER_MYSQL_READ=mysql://lisk:password@mysql-read:3306/lisk 
+      - SERVICE_INDEXER_MYSQL_READ=mysql://reader:password@mysql-read:3306/lisk 
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
       - ENABLE_PERSIST_EVENTS=${ENABLE_PERSIST_EVENTS}
@@ -156,40 +156,40 @@ services:
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
     restart: always
 
-  transaction-statistics:
-    image: lisk/service_transaction_statistics
-    depends_on:
-      nats:
-        condition: service_started
-      redis_persistent:
-        condition: service_healthy
-      mysql-primary:
-        condition: service_healthy
-    networks:
-      - services_network
-    environment:
-      - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
-      - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql:3306/lisk
-      - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
-    restart: always
+  # transaction-statistics:
+  #   image: lisk/service_transaction_statistics
+  #   depends_on:
+  #     nats:
+  #       condition: service_started
+  #     redis_persistent:
+  #       condition: service_healthy
+  #     mysql-primary:
+  #       condition: service_healthy
+  #   networks:
+  #     - services_network
+  #   environment:
+  #     - SERVICE_BROKER=nats://nats:4222
+  #     - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
+  #     - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql:3306/lisk
+  #     - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
+  #   restart: always
 
-  fee-estimator:
-    image: lisk/service_fee_estimator
-    depends_on:
-      nats:
-        condition: service_started
-      redis_persistent:
-        condition: service_healthy
-    networks:
-      - services_network
-    environment:
-      - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
-      - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
-      - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
-      - FEE_EST_COLD_START_BATCH_SIZE=${ENABLE_FEE_ESTIMATOR_FULL}
-    restart: always
+  # fee-estimator:
+  #   image: lisk/service_fee_estimator
+  #   depends_on:
+  #     nats:
+  #       condition: service_started
+  #     redis_persistent:
+  #       condition: service_healthy
+  #   networks:
+  #     - services_network
+  #   environment:
+  #     - SERVICE_BROKER=nats://nats:4222
+  #     - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
+  #     - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
+  #     - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
+  #     - FEE_EST_COLD_START_BATCH_SIZE=${ENABLE_FEE_ESTIMATOR_FULL}
+  #   restart: always
 
   gateway:
     image: lisk/service_gateway
@@ -220,43 +220,43 @@ services:
     healthcheck:
       test: curl --fail http://gateway:9901/api/v3/blocks
 
-  market:
-    image: lisk/service_market
-    depends_on:
-      nats:
-        condition: service_started
-      redis_persistent:
-        condition: service_healthy
-    networks:
-      - services_network
-    environment:
-      - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
-      - EXCHANGERATESAPI_IO_API_KEY=${EXCHANGERATESAPI_IO_API_KEY}
-      - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
-      - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
-    restart: always
+  # market:
+  #   image: lisk/service_market
+  #   depends_on:
+  #     nats:
+  #       condition: service_started
+  #     redis_persistent:
+  #       condition: service_healthy
+  #   networks:
+  #     - services_network
+  #   environment:
+  #     - SERVICE_BROKER=nats://nats:4222
+  #     - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
+  #     - EXCHANGERATESAPI_IO_API_KEY=${EXCHANGERATESAPI_IO_API_KEY}
+  #     - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
+  #     - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
+  #   restart: always
 
-  export:
-    image: lisk/service_export
-    depends_on:
-      nats:
-        condition: service_started
-      redis_persistent:
-        condition: service_healthy
-      redis_volatile:
-        condition: service_healthy
-    networks:
-      - services_network
-    environment:
-      - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
-      - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
-      - SERVICE_EXPORT_PARTIALS=/home/lisk/lisk-service/export/data/partials
-      - SERVICE_EXPORT_STATIC=/home/lisk/lisk-service/export/data/static
-    volumes:
-      - export-data:/home/lisk/lisk-service/export/data
-    restart: always
+  # export:
+  #   image: lisk/service_export
+  #   depends_on:
+  #     nats:
+  #       condition: service_started
+  #     redis_persistent:
+  #       condition: service_healthy
+  #     redis_volatile:
+  #       condition: service_healthy
+  #   networks:
+  #     - services_network
+  #   environment:
+  #     - SERVICE_BROKER=nats://nats:4222
+  #     - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
+  #     - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
+  #     - SERVICE_EXPORT_PARTIALS=/home/lisk/lisk-service/export/data/partials
+  #     - SERVICE_EXPORT_STATIC=/home/lisk/lisk-service/export/data/static
+  #   volumes:
+  #     - export-data:/home/lisk/lisk-service/export/data
+  #   restart: always
 
 networks:
   services_network:

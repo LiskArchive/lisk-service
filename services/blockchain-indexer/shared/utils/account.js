@@ -73,6 +73,11 @@ const updateAccountPublicKey = async (publicKey) => {
 	});
 };
 
+const updateAccountInfo = async (accountInfo) => {
+	const accountsTable = await getAccountsTable();
+	await accountsTable.upsert(accountInfo);
+};
+
 module.exports = {
 	getIndexedAccountInfo,
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
@@ -82,4 +87,5 @@ module.exports = {
 	updateAccountPublicKey,
 	getHexAddress,
 	getAccountsTable,
+	updateAccountInfo,
 };

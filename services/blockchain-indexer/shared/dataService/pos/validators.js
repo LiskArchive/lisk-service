@@ -26,7 +26,6 @@ const {
 const { getPosConstants } = require('../business');
 const business = require('../business');
 const config = require('../../../config');
-const accountsIndexSchema = require('../../database/schema/accounts');
 const validatorsIndexSchema = require('../../database/schema/validators');
 
 const {
@@ -34,6 +33,7 @@ const {
 	getHexAddress,
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
+	updateAccountInfo,
 } = require('../../utils/account');
 const { getLastBlock } = require('../blocks');
 const { MODULE, COMMAND } = require('../../constants');
@@ -41,12 +41,6 @@ const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlRead;
-
-const getAccountsTable = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsIndexSchema.tableName,
@@ -143,14 +137,13 @@ const loadAllPosValidators = async () => {
 		validatorList = await business.getAllPosValidators();
 
 		// Cache and index all the necessary information
-		const accountsTable = await getAccountsTable();
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
 				const { address, name } = validator;
 				await validatorCache.set(address, name);
 				await validatorCache.set(name, address);
-				await accountsTable.upsert({ address, name, isValidator: true });
+				await updateAccountInfo({ address, name, isValidator: true });
 			},
 			{ concurrency: validatorList.length },
 		);

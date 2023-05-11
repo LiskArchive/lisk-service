@@ -1,17 +1,16 @@
 [mysqld]
 
-# skip-name-resolve
 default_authentication_plugin = mysql_native_password
 
+# Unique identifying number of the server.
 server_id = 1
+
+# Set binary log file base name.
 log_bin=mysql-bin.log
-# binlog_format = ROW
-# binlog_do_db = lisk
+
+# Log row changes for replication. Other possible way is to log statements.
+binlog_format = ROW
+
+# Enable Global Transaction ID to track and log transactions for replication
 gtid_mode=ON
 enforce_gtid_consistency=ON
-
-
-
-# suggested -> log_bin=/var/log/mysql/mysql-bin.log
-# log_bin=mysql-bin.log
-log-slave-updates='ON'
