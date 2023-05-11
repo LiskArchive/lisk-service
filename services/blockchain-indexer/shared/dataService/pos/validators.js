@@ -40,7 +40,7 @@ const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlRead;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsIndexSchema.tableName,

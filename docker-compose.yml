@@ -57,7 +57,7 @@ services:
       timeout: 20s
       retries: 10
 
-  mysql-read:
+  mysql-replica:
     image: mysql:8
     depends_on:
       mysql-primary:
@@ -66,7 +66,7 @@ services:
     command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
     volumes:
       - ./docker/mysql/read/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
-      - mysql-read-data:/var/lib/mysql
+      - mysql-replica-data:/var/lib/mysql
       - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
     restart: always
     networks:
@@ -134,7 +134,7 @@ services:
       - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
       - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk 
-      - SERVICE_INDEXER_MYSQL_READ=mysql://reader:password@mysql-read:3306/lisk 
+      - SERVICE_INDEXER_MYSQL_REPLICA=mysql://reader:password@mysql-replica:3306/lisk
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
       - ENABLE_PERSIST_EVENTS=${ENABLE_PERSIST_EVENTS}
@@ -264,6 +264,6 @@ networks:
 
 volumes:
   mysql-primary-data:
-  mysql-read-data:
+  mysql-replica-data:
   redis-data:
   export-data:

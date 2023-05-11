@@ -40,7 +40,7 @@ config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redi
 // Master database. Used for write operations
 config.endpoints.mysqlPrimary = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 // Replica database. Used for read operations
-config.endpoints.mysqlRead = process.env.SERVICE_INDEXER_MYSQL_READ
+config.endpoints.mysqlReplica = process.env.SERVICE_INDEXER_MYSQL_REPLICA
 	|| config.endpoints.mysqlPrimary;
 config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL; // For custom deployments
 
