@@ -107,17 +107,17 @@ const postTransactions = async params => {
 	try {
 		const response = await business.postTransactions(params);
 		return {
-			message: 'Transaction payload was successfully passed to the network node',
+			message: 'Transaction payload was successfully passed to the network node.',
 			transactionID: response.transactionId,
 		};
 	} catch (err) {
 		if (err.message.includes('ECONNREFUSED')) return {
-			data: { error: 'Unable to reach a network node' },
+			data: { error: 'Unable to reach a network node.' },
 			status: 'INTERNAL_SERVER_ERROR',
 		};
 
 		return {
-			data: { error: `Transaction payload was rejected by the network node: ${err.message}` },
+			data: { error: `Transaction payload was rejected by the network node: ${err.message}.` },
 			status: 'BAD_REQUEST',
 		};
 	}

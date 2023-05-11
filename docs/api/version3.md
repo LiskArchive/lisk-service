@@ -5855,7 +5855,7 @@ _Supports pagination._
       "chainID": "00000000",
       "title": "Lisk blockchain application",
       "status": "active",
-      "description": "Lisk is a blockchain application platform",
+      "description": "Lisk is a blockchain application platform.",
       "networkType": "mainnet",
       "isDefault": true,
       "genesisURL": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
