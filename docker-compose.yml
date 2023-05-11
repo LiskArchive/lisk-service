@@ -37,7 +37,7 @@ services:
     volumes:
       - ./docker/mysql/primary/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
       - mysql-primary-data:/var/lib/mysql
-      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/primary/init:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - services_network
