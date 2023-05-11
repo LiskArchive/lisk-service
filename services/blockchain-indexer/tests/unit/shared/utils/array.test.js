@@ -16,6 +16,7 @@
 const {
 	dropDuplicates,
 	range,
+	sortComparator,
 	isSubstringInArray,
 } = require('../../../../shared/utils/array');
 
@@ -116,6 +117,79 @@ describe('Unit tests for array utilities', () => {
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(input.length);
 			expect(isEveryElementUnique(result)).toBeTruthy();
+		});
+	});
+
+	describe('Test \'sortComparator\'', () => {
+		const data = [
+			{ name: 'Alice', age: 25 },
+			{ name: 'Bob', age: 30 },
+			{ name: 'Charlie', age: 20 },
+		];
+
+		test('should sort by numeric property in ascending order', () => {
+			const comparator = sortComparator('age:asc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Charlie', age: 20 },
+				{ name: 'Alice', age: 25 },
+				{ name: 'Bob', age: 30 },
+			]);
+		});
+
+		test('should sort by numeric property in descending order', () => {
+			const comparator = sortComparator('age:desc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+				{ name: 'Charlie', age: 20 },
+			]);
+		});
+
+		test('should sort by numeric property in decending order when order is not passed', () => {
+			const comparator = sortComparator('age');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+				{ name: 'Charlie', age: 20 },
+			]);
+		});
+
+		test('should sort by string property in ascending order', () => {
+			const comparator = sortComparator('name:asc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Alice', age: 25 },
+				{ name: 'Bob', age: 30 },
+				{ name: 'Charlie', age: 20 },
+			]);
+		});
+
+		test('should sort by string property in descending order', () => {
+			const comparator = sortComparator('name:desc');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Charlie', age: 20 },
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+			]);
+		});
+
+		test('should sort by string property in descending order when order is not passed', () => {
+			const comparator = sortComparator('name');
+			const sorted = data.sort(comparator);
+			expect(sorted).toEqual([
+				{ name: 'Charlie', age: 20 },
+				{ name: 'Bob', age: 30 },
+				{ name: 'Alice', age: 25 },
+			]);
+		});
+
+		test('should throw error if sortProp is not a valid property in the object', () => {
+			const comparator = sortComparator('gender:asc');
+			expect(() => data.sort(comparator)).toThrow();
 		});
 	});
 
