@@ -32,7 +32,7 @@ module.exports = {
 				id: { optional: true, type: 'string', pattern: regex.HASH_SHA256 },
 				module: { optional: false, type: 'string', pattern: regex.MODULE },
 				command: { optional: false, type: 'string', pattern: regex.COMMAND },
-				fee: { optional: true, type: 'string' },
+				fee: { optional: true, type: 'string', pattern: regex.FEE },
 				nonce: { optional: false, type: 'string', pattern: regex.NONCE },
 				senderPublicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
 				signatures: { optional: true, type: 'array', min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },

@@ -17,7 +17,7 @@ const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const ADDRESS_LISK32_CSV = /^(lsk[a-hjkm-z2-9]{38}){1}(,lsk[a-hjkm-z2-9]{38})*$/;
 const PARTIAL_SEARCH = /^[\w!@$&.]{1,64}$/; // Supports address, publicKey & name
-const NONCE = /^[0-9]+$/;
+const NONCE = /^\d+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const NAME = /^[\w!@$&.]{3,20}$/;
@@ -39,7 +39,6 @@ const TOKEN_ID_CSV = /^\b[a-fA-F0-9,]{16,}\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
-const COMMAND = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
 const TOPIC = /^\b(?:(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}),?)+\b$/;
 const HEX_STRING = /^([a-fA-F0-9]+)$/;
 
@@ -71,6 +70,7 @@ module.exports = {
 	PROOF_OF_POSSESSION,
 	MODULE,
 	TOPIC,
-	COMMAND,
+	COMMAND: MODULE,
 	HEX_STRING,
+	FEE: NONCE,
 };

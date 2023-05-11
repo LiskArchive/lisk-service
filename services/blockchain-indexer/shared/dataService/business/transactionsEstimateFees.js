@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const _ = require('lodash');
 const {
 	utils: { getRandomBytes },
 } = require('@liskhq/lisk-cryptography');
@@ -28,28 +29,28 @@ const regex = require('../../regex');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
-const DEFAULT_SIGNATURE_BYTE_SIZE = 64;
-const DEFAULT_ID_BYTE_SIZE = 32;
+const SIZE_SIGNATURE_BYTE = 64;
+const SIZE_ID_BYTE = 32;
 
-const OPTIONAL_TRANSACTION_PARAMS = Object.freeze({
+const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: 'fee',
 	SIGNATURES: 'signatures',
 	ID: 'id',
 });
 
-const mockOptionalParams = (transaction) => {
-	const missingParams = Object.values(OPTIONAL_TRANSACTION_PARAMS)
-		.filter((e) => Object.keys(transaction).indexOf(e) === -1);
+const mockOptionalProperties = (transaction) => {
+	const missingProps = Object.values(OPTIONAL_TRANSACTION_PROPERTIES)
+		.filter((optionalProp) => !Object.keys(transaction).includes(optionalProp));
 
-	missingParams.forEach(e => {
-		if (e === OPTIONAL_TRANSACTION_PARAMS.FEE) {
+	missingProps.forEach(prop => {
+		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.FEE) {
 			transaction.fee = 0;
 		}
-		if (e === OPTIONAL_TRANSACTION_PARAMS.SIGNATURES) {
-			transaction.signatures = [getRandomBytes(DEFAULT_SIGNATURE_BYTE_SIZE).toString('hex')];
+		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.SIGNATURES) {
+			transaction.signatures = [getRandomBytes(SIZE_SIGNATURE_BYTE).toString('hex')];
 		}
-		if (e === OPTIONAL_TRANSACTION_PARAMS.ID) {
-			transaction.id = getRandomBytes(DEFAULT_ID_BYTE_SIZE).toString('hex');
+		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.ID) {
+			transaction.id = getRandomBytes(SIZE_ID_BYTE).toString('hex');
 		}
 	});
 
@@ -77,7 +78,10 @@ const resolveChannelInfo = async (chainID) => {
 };
 
 const calcMessageFee = async (transaction) => {
-	const { data: { events } } = (await dryRunTransactions({ transaction, skipVerify: true }));
+	if (transaction.module !== MODULE.TOKEN
+		&& transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return {};
+
+	const { data: { events } } = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
 	// Encode ccm (required to calculate ccm length)
@@ -92,31 +96,26 @@ const calcMessageFee = async (transaction) => {
 	};
 };
 
-const calcDynamicFeeEstimates = (feeEstimatePerByte, minFee, size) => ({
-	low: BigInt(minFee) + (BigInt(feeEstimatePerByte.low) * BigInt(size)),
-	medium: BigInt(minFee) + (BigInt(feeEstimatePerByte.med) * BigInt(size)),
-	high: BigInt(minFee) + (BigInt(feeEstimatePerByte.high) * BigInt(size)),
+const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
+	low: BigInt(minFee) + (BigInt(estimatePerByte.low) * BigInt(size)),
+	medium: BigInt(minFee) + (BigInt(estimatePerByte.med) * BigInt(size)),
+	high: BigInt(minFee) + (BigInt(estimatePerByte.high) * BigInt(size)),
 });
 
 const calcAccountInitializationFees = async (transaction, tokenID) => {
-	const { data: { isExists: isUserAccountInitialized } } = (await tokenHasUserAccount(
-		{
-			tokenID,
-			publicKey: transaction.senderPublicKey,
+	const { data: { isExists } } = await tokenHasUserAccount({
+		tokenID,
+		publicKey: transaction.senderPublicKey,
+	});
 
-		},
-	));
-
-	if (!isUserAccountInitialized) {
-		const { data: { extraCommandFees } } = (await getTokenConstants());
-		return {
-			tokenID,
-			amount: extraCommandFees.userAccountInitializationFee,
-		};
+	if (isExists) {
+		return { tokenID, amount: BigInt('0') };
 	}
+
+	const { data: { extraCommandFees } } = await getTokenConstants();
 	return {
 		tokenID,
-		amount: BigInt('0'),
+		amount: extraCommandFees.userAccountInitializationFee,
 	};
 };
 
@@ -126,8 +125,9 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	const trxWithMockParams = mockOptionalParams(params.transaction);
-	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockParams });
+	const transactionCopy = _.cloneDeep(params.transaction);
+	const trxWithMockProps = mockOptionalProperties(transactionCopy);
+	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
 	const { minFee, size } = transaction;
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
@@ -142,10 +142,7 @@ const estimateTransactionFees = async params => {
 		feeTokenID,
 	);
 
-	transactionFeeEstimates.messageFee = transaction.module === MODULE.TOKEN
-		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
-		? await calcMessageFee(transaction)
-		: {};
+	transactionFeeEstimates.messageFee = await calcMessageFee(transaction);
 
 	estimateTransactionFeesRes.data = {
 		transactionFeeEstimates,
@@ -160,5 +157,5 @@ module.exports = {
 
 	// Export for the unit test
 	calcDynamicFeeEstimates,
-	mockOptionalParams,
+	mockOptionalProperties,
 };

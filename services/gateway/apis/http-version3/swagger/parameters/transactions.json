@@ -60,7 +60,7 @@
         "name": "transaction",
         "in": "body",
         "required": true,
-        "description": "The request body can only contain one property:\n- transaction (required): Transaction object\n\n Note: The transaction object must contain these following properties: module, command, nonce, senderPublicKey and params",
+        "description": "The request body can only contain one property:\n- transaction (required): Transaction object\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.",
         "schema": {
             "$ref": "#/definitions/transactionEstimateFeesRequestBody"
         }

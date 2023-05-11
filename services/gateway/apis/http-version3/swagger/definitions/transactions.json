@@ -618,7 +618,7 @@
 							"amount": {
 								"type": "string",
 								"example": "10000000000",
-								"description": "Amount of Lisk (in Beddows) to be transferred in this transaction."
+								"description": "Amount of tokens to be transferred in this transaction."
 							},
 							"tokenID": {
 								"type": "string",
