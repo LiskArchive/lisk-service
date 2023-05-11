@@ -21,7 +21,7 @@ const {
 } = require('../../../../shared/utils/array');
 
 describe('Unit tests for array utilities', () => {
-	describe('Test \'range\'', () => {
+	describe('Test range method', () => {
 		it('With single input: length 0', async () => {
 			const n = 0;
 			const result = range(n);
@@ -98,7 +98,7 @@ describe('Unit tests for array utilities', () => {
 		});
 	});
 
-	describe('Test \'dropDuplicates\'', () => {
+	describe('Test dropDuplicates method', () => {
 		const isEveryElementUnique = (array) => array
 			.every((e, i, a) => a.filter(n => n === e).length === 1);
 
@@ -120,14 +120,14 @@ describe('Unit tests for array utilities', () => {
 		});
 	});
 
-	describe('Test \'sortComparator\'', () => {
+	describe('Test sortComparator method', () => {
 		const data = [
 			{ name: 'Alice', age: 25 },
 			{ name: 'Bob', age: 30 },
 			{ name: 'Charlie', age: 20 },
 		];
 
-		test('should sort by numeric property in ascending order', () => {
+		it('should sort by numeric property in ascending order', () => {
 			const comparator = sortComparator('age:asc');
 			const sorted = data.sort(comparator);
 			expect(sorted).toEqual([
@@ -137,7 +137,7 @@ describe('Unit tests for array utilities', () => {
 			]);
 		});
 
-		test('should sort by numeric property in descending order', () => {
+		it('should sort by numeric property in descending order', () => {
 			const comparator = sortComparator('age:desc');
 			const sorted = data.sort(comparator);
 			expect(sorted).toEqual([
@@ -147,7 +147,7 @@ describe('Unit tests for array utilities', () => {
 			]);
 		});
 
-		test('should sort by numeric property in decending order when order is not passed', () => {
+		it('should sort by numeric property in decending order when order is not passed', () => {
 			const comparator = sortComparator('age');
 			const sorted = data.sort(comparator);
 			expect(sorted).toEqual([
@@ -157,7 +157,7 @@ describe('Unit tests for array utilities', () => {
 			]);
 		});
 
-		test('should sort by string property in ascending order', () => {
+		it('should sort by string property in ascending order', () => {
 			const comparator = sortComparator('name:asc');
 			const sorted = data.sort(comparator);
 			expect(sorted).toEqual([
@@ -167,7 +167,7 @@ describe('Unit tests for array utilities', () => {
 			]);
 		});
 
-		test('should sort by string property in descending order', () => {
+		it('should sort by string property in descending order', () => {
 			const comparator = sortComparator('name:desc');
 			const sorted = data.sort(comparator);
 			expect(sorted).toEqual([
@@ -177,7 +177,7 @@ describe('Unit tests for array utilities', () => {
 			]);
 		});
 
-		test('should sort by string property in descending order when order is not passed', () => {
+		it('should sort by string property in descending order when order is not passed', () => {
 			const comparator = sortComparator('name');
 			const sorted = data.sort(comparator);
 			expect(sorted).toEqual([
@@ -187,13 +187,13 @@ describe('Unit tests for array utilities', () => {
 			]);
 		});
 
-		test('should throw error if sortProp is not a valid property in the object', () => {
+		it('should throw error if sortProp is not a valid property in the object', () => {
 			const comparator = sortComparator('gender:asc');
 			expect(() => data.sort(comparator)).toThrow();
 		});
 	});
 
-	describe('Test \'isSubstringInArray\'', () => {
+	describe('Test isSubstringInArray method', () => {
 		it('should return true if pattern is a substring of any item in the array', () => {
 			const collection = ['apple', 'banana', 'cherry'];
 			const pattern = 'ban';
