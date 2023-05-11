@@ -28,7 +28,7 @@ module.exports = {
 		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV, altSwaggerKey: 'chainIDCSV' },
 		isDefault: { optional: true, type: 'boolean' },
 		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK_CSV },
-		search: { optional: true, type: 'string' },
+		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH_NAME, altSwaggerKey: 'searchByChainName' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {

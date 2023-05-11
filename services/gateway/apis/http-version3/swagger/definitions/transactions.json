@@ -323,7 +323,7 @@
 		"properties": {
 			"message": {
 				"type": "string",
-				"example": "Transaction payload was successfully passed to the network node"
+				"example": "Transaction payload was successfully passed to the network node."
 			},
 			"transactionID": {
 				"type": "string",
@@ -341,7 +341,7 @@
 			},
 			"message": {
 				"type": "string",
-				"example": "Transaction payload was rejected by the network node"
+				"example": "Transaction payload was rejected by the network node."
 			}
 		}
 	},
@@ -354,7 +354,7 @@
 			},
 			"message": {
 				"type": "string",
-				"example": "Unable to reach a network node"
+				"example": "Unable to reach a network node."
 			}
 		}
 	},
