@@ -3,12 +3,12 @@ Muhammad Talha <muhammad.talha@lightcurve.io>
 :toc:
 :url_microservices: index.adoc#microservices
 
-On the Introduction to Lisk Service page, we have discussed the various xref:{url_microservices}[microservices] that combine together to form Lisk Service. On this page, we will thoroughly discuss the configuration options available for each service.
+On the Introduction to Lisk Service page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service. On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
-By default, a Lisk Service installation will have a `ecosystem.config.js` file with all the default configurations.
-The value of various environment variables are automatically picked by the microservice based on the installation environment.
-Other than that, many environment variables can be configured as per need and the details of which have been described with each microservice. 
+By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations.
+The values of various environment variables are automatically picked by the microservice based on the installation environment.
+Other than that, many environment variables can be configured as per need, the details of which have been described with each microservice. 
 
 .`ecosystem.config.js`
 [%collapsible]
@@ -241,37 +241,39 @@ Properties::
 | ✔
 | URL of the microservice message broker (NATS or Redis).
 Must be identical for all micro-services.
-Make sure that all micro-services are able to connect with the common Redis.
+Make sure that all micro-services can connect with the common Redis.
 | redis://localhost:6379/0
  
 | `SERVICE_LOG_LEVEL`
 | string
 | ✔
-| Default log level; Available options are `trace`, `debug`, `info`, `warn`, `error` and `fatal`.
+| Default log level; Available options are `trace`, `debug`, `info`, `warn`, `error`, and `fatal`.
 | info
  
 | `SERVICE_LOG_STDOUT`
 | string
 | ✔
-| Enable asynchronous console output such as non-blocking or preferred.
+| Enable asynchronous console output such as "non-blocking" or "preferred" with a boolean value.
 | true
 
 | `SERVICE_LOG_CONSOLE`
 | string
 | ✔
-| Plain JavaScript console.log() output (blocking),  only for debug
+| Enable plain JavaScript `console.log()` output (blocking).
+This property should be enabled only for debugging purposes.
 | false
 
 | `SERVICE_LOG_FILE`
 | string
 | ✔
-| File path to the service log file. ./logs/service.log
+| Enable file path to the service log file such as: './logs/service.log'
 | false
 
 | `SERVICE_LOG_GELF`
 | string
 | ✔
-| Log output in GELF for remote logging. Graylog localhost:12201/udp
+| Enable log output in GELF for remote logging.
+For example, Graylog 'localhost:12201/udp'
 | false
 |===
 
@@ -284,21 +286,29 @@ Sample::
 module.exports = {
 	apps: [
 		{
-            // Other types of configurations.
-            {
-                name: 'lisk-service-gateway',
-                // [...]
-                env: {
-                    // --- Remember to set the properties below
-                    SERVICE_BROKER: 'redis://localhost:6379/0',
-                    ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
-                    ENABLE_WS_API: 'blockchain,rpc-v3',
-                    JSON_RPC_STRICT_MODE: 'false',
-                    // [...]
-                },
-		    },
-            // Other types of configurations.
-        }
+			// Other types of configurations.
+			{
+			name: 'lisk-service-gateway',
+			// [...]
+			env: {
+				// --- Remember to set the properties below
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_LOG_LEVEL: 'info',
+				// [...]
+			},
+		},
+		{
+			name: 'lisk-service-transaction-statistics',
+			// [...]
+			env: {
+				// --- Remember to set the properties below
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_LOG_LEVEL: 'info',
+				// [...]
+			},
+		},
+		// Other types of configurations.
+	}
 	],
 };
 ----
@@ -329,49 +339,57 @@ Properties::
 | `HOST`
 | string
 | ✔
-| URL fo the host.
+| URL of the host.
 | 127.0.0.1
  
+| `SERVICE_BROKER`
+| string
+| ✔
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+
 | `JSON_RPC_STRICT_MODE`
 | string
 | ✔
-| Makes JSON-RPC require a valid JSON-RPC 2.0 envelope.
+| Ensures that JSON-RPC accepts a valid JSON-RPC 2.0 envelope.
 | false
  
 | `ENABLE_HTTP_API`
 | string
 | ✔
-| Enables particular HTTP APIs listed by a comma.
+| Enables particular HTTP APIs.
+APIs must be listed as comma-separated values.
 | http-status,http-version3,http-exports
 
 | `ENABLE_WS_API`
 | string
 | ✔
-| Enables particular JSON-RPC APIs listed by a comma.
+| Enables particular WebSocket APIs.
+APIs must be listed as comma-separated values.
 | blockchain,rpc-v3
 
 | `SERVICE_GATEWAY_REDIS_VOLATILE`
 | string
 | ✗
-| 
+| URL of the volatile cache storage (Redis).
 | redis://localhost:6379/5
 
 | `GATEWAY_DEPENDENCIES`
 | string
 | ✗
-| Describes the microservices on which the gateway service depends on.
+| Describes the microservices on which the `gateway` service depends.
 | indexer,connector
 
 | `WS_RATE_LIMIT_ENABLE`
 | string
 | ✗
-| To enable websocket rate limit, this environment variable is required to be true.
+| To enable the WebSocket rate limit, this environment variable is required to be true.
 | false
 
 | `WS_RATE_LIMIT_CONNECTIONS`
 | integer
 | ✗
-| Number of connections per second.
+| Once the rate limit is enabled, this variable contains the number of connections per second.
 | 5
 
 | `WS_RATE_LIMIT_DURATION`
@@ -389,25 +407,27 @@ Properties::
 | `HTTP_RATE_LIMIT_ENABLE`
 | string
 | ✗
-| To enable `HTTP Rate limit`, this environment variable is required to be true.
+| To enable the HTTP rate limit, this environment variable is required to be true.
 | false
 
 | `HTTP_RATE_LIMIT_CONNECTIONS`
 | integer
 | ✗
-| Max number of requests during window. Defaults to 200 requests
+| Defines the maximum number of HTTP requests during a period.
+Defaults to 200 requests per window.
 | 200
 
 | `HTTP_RATE_LIMIT_WINDOW`
 | integer
 | ✗
-| To keep a record of requests in the memory (in seconds). Defaults to 10 seconds
+| Defines the time for which a record of requests should be kept in the memory (in seconds).
+The default duration of a window is 10 seconds.
 | 10
 
 | `HTTP_CACHE_CONTROL_DIRECTIVES`
 | string
 | ✗
-| The Cache-Control directives can be overridden with this environment variable.
+| The Cache-Control directive can be overridden with this environment variable.
 | public, max-age=10
 
 | `ENABLE_HTTP_CACHE_CONTROL`
@@ -498,7 +518,7 @@ Properties::
 | `GEOIP_JSON`
 | string
 | ✔
-| URL of GeoIP server
+| URL of the GeoIP server
 | https://geoip.lisk.com/json
 
 | `USE_LISK_IPC_CLIENT`
@@ -510,7 +530,8 @@ Properties::
 | `GENESIS_BLOCK_URL`
 | string
 | ✔
-| URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
+| URL of the Lisk SDK-based application's genesis block.
+Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 | 
 
 | `LISK_APP_DATA_PATH`
@@ -585,7 +606,7 @@ Properties::
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | ✔
-| URL of the job queue to schedule the indexing jobs (Redis).
+| URL of the job queue to schedule the indexing jobs for Redis.
 | redis://localhost:6379/3
 
 |===
@@ -678,11 +699,8 @@ Properties::
 | `SERVICE_INDEXER_CACHE_REDIS`
 | string
 | ✗
-| 
+| URL of the cache storage (Redis).
 | redis://localhost:6379/1
-
-
-
 |===
 
 --
@@ -825,13 +843,13 @@ Properties::
 | `FEE_EST_COLD_START_BATCH_SIZE`
 | string
 | ✔
-| How many blocks are analyzed during cold start.
+| Defines the number of blocks that are analyzed during cold start.
 | 1
 
 | `FEE_EST_DEFAULT_START_BLOCK_HEIGHT`
 | string
 | ✔
-| At what height does the blockchain start using dynamic fees.
+| Defines the height at which the blockchain starts using dynamic fees.
 | 1
 
 |===
@@ -855,6 +873,8 @@ module.exports = {
 				SERVICE_FEE_ESTIMATOR_CACHE: 'redis://localhost:6379/1',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
+				FEE_EST_COLD_START_BATCH_SIZE: '1',
+				FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
                 },
 		    },
             // Other types of configurations.
@@ -964,26 +984,26 @@ Properties::
 | URL of the cache storage (Redis).
 | redis://localhost:6379/2
 
-
 | `SERVICE_MARKET_FIAT_CURRENCIES`
 | string
 | ✗
-| Fiat currencies used for price calculation. 
-All FIAT currencies used here need to be comma separated
+| Fiat currencies are used for price calculation. 
+All Fiat currencies used here need to be comma separated.
 | EUR,USD,CHF,GBP,RUB 
 
 | `SERVICE_MARKET_TARGET_PAIRS`
 | string
 | ✗
-| Exchange rates exposed to the Gateway. Must be comma separated
+| Exchange rates exposed to the Gateway.
+The values listed here must be comma separated.
 | LSK_BTC,LSK_EUR,BTC_CHF
 
 | `EXCHANGERATESAPI_IO_API_KEY`
 | string
 | ✔
-| Optional API key for https://exchangeratesapi.io/
-`/market/prices` endpoint will respond with additional data, specifically the exchange rates for various cryptocurrencies in other fiat currencies.
-The free plan would suffice for the purpose of Lisk Service.
+| Optional API key for https://exchangeratesapi.io/.
+The `/market/prices` endpoint will respond with additional data, specifically the exchange rates for various cryptocurrencies in other fiat currencies.
+The free plan would suffice for Lisk Service.
 |  
 
 
@@ -1083,7 +1103,7 @@ module.exports = {
 
 == Lisk Settings
 
-Configurable environment variables related to Lisk Node.
+Configurable environment variables related to Lisk node.
 
 === Node settings
 
@@ -1096,21 +1116,19 @@ Configurable environment variables related to Lisk Node.
 
 | `LISK_CORE_WS`
 | string
-| Lisk Core WebSocket RPC API.
+| URL for Lisk Core WebSocket RPC API.
+The URL will differ according to the environment i.e. docker, or server installation.
 | ws://localhost:7887 or ws://host.docker.internal:7887
  
 | `LISK_CORE_CLIENT_TIMEOUT`
 | string
-| Lisk Core client timeout (in seconds)
+| Lisk Core client timeout (in seconds).
 | 30
 |===
 
 
-
-
-
 === MySQL Snapshot settings for Docker
-Configurations to sync Lisk Service from an existing snapshot and to speed up the sync process in the Docker environment.
+Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
 
 [cols="2,1,3,3",options="header",stripes="hover"]
 |===
@@ -1121,23 +1139,23 @@ Configurations to sync Lisk Service from an existing snapshot and to speed up th
 
 | `ENABLE_APPLY_SNAPSHOT`
 | string
-| Enable or disable apply snapshot feature
+| Enable or disable apply snapshot feature.
 | true
  
 | `INDEX_SNAPSHOT_URL`
 | string
-| Custom snapshot url (Expected to end with sql.gz)
+| Custom snapshot URL: expected to end with "sql.gz".
 | https://snapshots.lisk.io/mainnet/service.sql.gz
 
 | `DOCKER_COMPOSE_FILEPATH`
 | string
-| When the MySQL is hosted as a docker-compose service, set the following environment variables.
-Set docker-compose file path (use absolute path)
+| When MySQL is hosted as a docker-compose service, set the following environment variables.
+Set docker-compose file path by using the absolute path.
 | /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
 
 | `DOCKER_MYSQL_SERVICE_NAME`
 | string
-| Set MySQL service name as defined in the above docker-compose file
+| Set MySQL service name as defined in the above docker-compose file.
 | mysql
 
 |===
@@ -1146,8 +1164,6 @@ Set docker-compose file path (use absolute path)
 
 
 == External services
-
-
 
 [cols="2,1,3,3",options="header",stripes="hover"]
 |===
@@ -1158,12 +1174,12 @@ Set docker-compose file path (use absolute path)
 
 | `LISK_STATIC`
 | string
-| Lisk static assets, i.e. known account lists
+| Lisk static assets, i.e. known account lists.
 | https://static-data.lisk.com
  
 | `GEOIP_JSON`
 | string
-| Lisk Service geolocation backend
+| Lisk Service geo-location backend.
 | https://geoip.lisk.com/json
 |===
 
