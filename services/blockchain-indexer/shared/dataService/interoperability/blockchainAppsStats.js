@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getBlockchainAppsStatistics = async params => {
-	const response = await dataService.getBlockchainAppsStatistics(params);
+	const response = await business.getBlockchainAppsStatistics(params);
 	return response;
 };
 
-const reloadBlockchainAppsStats = async () => dataService.reloadBlockchainAppsStats();
+const reloadBlockchainAppsStats = async () => business.reloadBlockchainAppsStats();
 
 module.exports = {
 	getBlockchainAppsStatistics,
