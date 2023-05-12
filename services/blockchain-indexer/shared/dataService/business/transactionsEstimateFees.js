@@ -48,7 +48,9 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	},
 });
 
-const mockOptionalProperties = (transaction) => {
+const mockOptionalProperties = (_transaction) => {
+	const transaction = _.cloneDeep(_transaction);
+
 	Object
 		.values(OPTIONAL_TRANSACTION_PROPERTIES)
 		.forEach(optionalPropInfo => {
@@ -56,6 +58,7 @@ const mockOptionalProperties = (transaction) => {
 				transaction[optionalPropInfo.propName] = optionalPropInfo.defaultValue;
 			}
 		});
+
 	return transaction;
 };
 
@@ -107,19 +110,23 @@ const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
 const calcAccountInitializationFees = async (transaction, tokenID) => {
 	if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 		const mainchainServiceURL = await resolveMainchainServiceURL();
-		const blockchainAppMetadata = await HTTP.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
+		const { data: appMetadataResponse } = await HTTP
+			.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
+		const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
 
-		const { data: { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } } = blockchainAppMetadata;
+		const { data: feesResponse } = await HTTP.get(`${mainchainServiceURL}/api/v3/fees`);
+		const { data: { feeTokenID } } = feesResponse;
 
-		const { data: { data: { feeTokenID } } } = await HTTP.get(`${mainchainServiceURL}/api/v3/fees`);
+		const { data: accountExistsResponse } = await HTTP
+			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${feeTokenID}&publicKey=${transaction.senderPublicKey}`);
+		const { data: { isExists } } = accountExistsResponse;
 
-		const {
-			data: { data: { isExists } },
-		} = await HTTP.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${feeTokenID}&publicKey=${transaction.senderPublicKey}`);
-
+		// Account already exists, no extra fee necessary
 		if (isExists) return { tokenID, amount: BigInt('0') };
 
-		const { data: { data: { extraCommandFees } } } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
+		const { data: tokenConstantsResponse } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
+		const { data: { extraCommandFees } } = tokenConstantsResponse;
+
 		return {
 			tokenID,
 			amount: extraCommandFees.userAccountInitializationFee,
@@ -131,6 +138,7 @@ const calcAccountInitializationFees = async (transaction, tokenID) => {
 		publicKey: transaction.senderPublicKey,
 	});
 
+	// Account already exists, no extra fee necessary
 	if (isExists) return { tokenID, amount: BigInt('0') };
 
 	const { data: { extraCommandFees } } = await getTokenConstants();
@@ -146,8 +154,7 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	const transactionCopy = _.cloneDeep(params.transaction);
-	const trxWithMockProps = mockOptionalProperties(transactionCopy);
+	const trxWithMockProps = mockOptionalProperties(params.transaction);
 	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
 	const { minFee, size } = transaction;
