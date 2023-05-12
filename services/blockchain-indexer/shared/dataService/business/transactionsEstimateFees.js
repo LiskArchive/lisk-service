@@ -36,7 +36,7 @@ const SIZE_BYTE_ID = 32;
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: {
 		propName: 'fee',
-		defaultValue: 0,
+		defaultValue: '0',
 	},
 	SIGNATURES: {
 		propName: 'signatures',
@@ -107,18 +107,17 @@ const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
 	high: BigInt(minFee) + (BigInt(estimatePerByte.high) * BigInt(size)),
 });
 
-const calcAccountInitializationFees = async (transaction, tokenID) => {
+const calcAccountInitializationFees = async (transaction) => {
+	const { tokenID } = transaction.params;
+
 	if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 		const mainchainServiceURL = await resolveMainchainServiceURL();
 		const { data: appMetadataResponse } = await HTTP
 			.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
 		const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
 
-		const { data: feesResponse } = await HTTP.get(`${mainchainServiceURL}/api/v3/fees`);
-		const { data: { feeTokenID } } = feesResponse;
-
 		const { data: accountExistsResponse } = await HTTP
-			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${feeTokenID}&publicKey=${transaction.senderPublicKey}`);
+			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&publicKey=${transaction.senderPublicKey}`);
 		const { data: { isExists } } = accountExistsResponse;
 
 		// Account already exists, no extra fee necessary
@@ -158,19 +157,15 @@ const estimateTransactionFees = async params => {
 	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
 	const { minFee, size } = transaction;
+
+	const transactionFeeEstimates = {
+		minFee,
+		accountInitializationFee: await calcAccountInitializationFees(transaction),
+		messageFee: await calcMessageFee(transaction),
+	};
+
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
-
-	const transactionFeeEstimates = {};
-	transactionFeeEstimates.minFee = minFee;
-
-	const { feeTokenID } = feeEstimatePerByte;
-	transactionFeeEstimates.accountInitializationFee = await calcAccountInitializationFees(
-		transaction,
-		feeTokenID,
-	);
-
-	transactionFeeEstimates.messageFee = await calcMessageFee(transaction);
 
 	estimateTransactionFeesRes.data = {
 		transactionFeeEstimates,
