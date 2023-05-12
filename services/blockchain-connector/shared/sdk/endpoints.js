@@ -33,7 +33,7 @@ const {
 	getBlockByIDsFromCache,
 	getTransactionByIDFromCache,
 	getTransactionByIDsFromCache,
-} = require('../utils/cache');
+} = require('./cache');
 const config = require('../../config');
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');

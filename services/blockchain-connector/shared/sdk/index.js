@@ -109,6 +109,8 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 
+const { cacheCleanup } = require('./cache');
+
 const init = async () => {
 	// Initialize the local cache
 	await getNodeInfo(true);
@@ -221,4 +223,6 @@ module.exports = {
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
+
+	cacheCleanup,
 };

@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const moment = require('moment');
 const BluebirdPromise = require('bluebird');
 
 const { getTableInstance } = require('../database/better-sqlite3');
@@ -20,18 +21,18 @@ const { getTableInstance } = require('../database/better-sqlite3');
 const cacheBlockSchema = require('../database/schema/blocks');
 const cacheTrxIDToBlockIDSchema = require('../database/schema/transactions');
 
-const getBlocksCacheIndex = () => getTableInstance(
+const getBlocksCache = () => getTableInstance(
 	cacheBlockSchema.tableName,
 	cacheBlockSchema,
 );
 
-const getTrxIDtoBlockIDCacheIndex = () => getTableInstance(
+const getTrxIDtoBlockIDCache = () => getTableInstance(
 	cacheTrxIDToBlockIDSchema.tableName,
 	cacheTrxIDToBlockIDSchema,
 );
 
 const mapTransactionIDstoBlockID = async (transactions, blockID) => {
-	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCacheIndex();
+	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 
 	await BluebirdPromise.map(
 		transactions,
@@ -41,7 +42,7 @@ const mapTransactionIDstoBlockID = async (transactions, blockID) => {
 };
 
 const cacheBlocks = async (blocks) => {
-	const blocksCache = await getBlocksCacheIndex();
+	const blocksCache = await getBlocksCache();
 
 	const blocksToCache = Array.isArray(blocks) ? blocks : [blocks];
 
@@ -58,9 +59,9 @@ const cacheBlocks = async (blocks) => {
 };
 
 const getBlockByIDFromCache = async (id) => {
-	const blocksCache = await getBlocksCacheIndex();
+	const blocksCache = await getBlocksCache();
 	const [{ block } = {}] = await blocksCache.find({ id }, ['block']);
-	if (Object.keys(block).length === 0) return null;
+	if (!block || Object.keys(block).length === 0) return null;
 	const parsedBlock = JSON.parse(block);
 	return parsedBlock;
 };
@@ -76,7 +77,7 @@ const getBlockByIDsFromCache = async (blockIDs) => {
 };
 
 const getTransactionByIDFromCache = async (transactionID) => {
-	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCacheIndex();
+	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 	const [{ blockID }] = await trxIDToBlockIDCache.find({ transactionID }, ['blockID']);
 	if (!blockID) return null;
 	const block = await getBlockByIDFromCache(blockID);
@@ -94,10 +95,35 @@ const getTransactionByIDsFromCache = async (transactionIDs) => {
 	return transactions;
 };
 
+const cacheCleanup = async (expiryInDays) => {
+	const blocksCache = await getBlocksCache();
+	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
+
+	const propBetweens = [{
+		property: 'timestamp',
+		to: moment().subtract(expiryInDays, 'days').unix(),
+	}];
+
+	const resultSet = await blocksCache.find({ propBetweens }, 'id');
+	const blockIDs = resultSet.map(e => e.id);
+
+	// Cleanup block cache
+	await blocksCache.deleteByPrimaryKey(blockIDs);
+
+	// Cleanup transaction cache
+	await trxIDToBlockIDCache.delete({
+		whereIn: {
+			property: 'blockID',
+			values: blockIDs,
+		},
+	});
+};
+
 module.exports = {
 	cacheBlocks,
 	getBlockByIDFromCache,
 	getBlockByIDsFromCache,
 	getTransactionByIDFromCache,
 	getTransactionByIDsFromCache,
+	cacheCleanup,
 };

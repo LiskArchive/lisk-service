@@ -22,6 +22,7 @@ module.exports = {
 	},
 	indexes: {
 		transactionID: { type: 'key' },
+		blockID: { type: 'key' },
 	},
 	purge: {},
 };

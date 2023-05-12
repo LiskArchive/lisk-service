@@ -92,6 +92,7 @@ config.enableTestingMode = Boolean(String(process.env.ENABLE_TESTING_MODE).toLow
 
 config.caching = {
 	isEnabled: Boolean(String(process.env.ENABLE_CACHING).toLowerCase() !== 'false'), // Enabled by default
+	expiryInDays: process.env.EXPIRY_IN_DAYS || 1,
 };
 
 config.dbDataDir = process.env.CACHING_DATA_DIRECTORY || 'db_data';
