@@ -107,7 +107,7 @@ describe('Test mockOptionalProperties method', () => {
 
 		const expectedResponse = {
 			...inputTransaction,
-			fee: 0,
+			fee: '0',
 		};
 
 		expect(transaction).toMatchObject(expectedResponse);
