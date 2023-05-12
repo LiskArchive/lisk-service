@@ -54,7 +54,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		name: tx.params.name,
 		isValidator: true,
 		blsKey: tx.params.blsKey,
-		proofOfPosession: tx.params.proofOfPosession,
+		proofOfPossession: tx.params.proofOfPossession,
 		generatorKey: tx.params.generatorKey,
 	};
 
@@ -79,7 +79,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		name: null,
 		isValidator: false,
 		blsKey: null,
-		proofOfPosession: null,
+		proofOfPossession: null,
 		generatorKey: null,
 	};
 

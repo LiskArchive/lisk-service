@@ -13,10 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getIndexedAccountInfo,
-} = require('../../../utils/account');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
+const config = require('../../../../config');
+const validatorsTableSchema = require('../../../database/schema/validators');
+
 const { requestConnector } = require('../../../utils/request');
+const { getIndexedAccountInfo } = require('../../../utils/account');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getValidatorsTable = () => getTableInstance(
+	validatorsTableSchema.tableName,
+	validatorsTableSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getValidator = async params => {
 	const validator = {
@@ -24,11 +35,19 @@ const getValidator = async params => {
 		meta: {},
 	};
 
-	validator.data = await requestConnector('getValidator', { address: params.address });
+	const { address } = params;
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);
+	const validatorsTable = await getValidatorsTable();
+	const [{ proofOfPossession } = {}] = await validatorsTable.find({ address, limit: 1 }, ['proofOfPossession']);
+
+	validator.data = {
+		...await requestConnector('getValidator', { address }),
+		proofOfPossession,
+	};
+
+	const accountInfo = await getIndexedAccountInfo({ address, limit: 1 }, ['name', 'publicKey']);
 	validator.meta = {
-		address: params.address,
+		address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,
 		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
 	};
