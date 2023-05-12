@@ -59,7 +59,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Indexing mainchain (${mainchainID}) registration information.`);
 	const appInfo = {
 		chainID: mainchainID,
-		name: mainchainInfo.name,
+		chainName: mainchainInfo.name,
 		status: mainchainInfo.status,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,

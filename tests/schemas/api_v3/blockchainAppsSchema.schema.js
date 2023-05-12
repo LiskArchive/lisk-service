@@ -40,7 +40,7 @@ const escrow = {
 };
 
 const blockchainAppSchema = {
-	name: Joi.string().pattern(regex.NAME).required(),
+	chainName: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	status: Joi.string().valid(...validStatuses).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
