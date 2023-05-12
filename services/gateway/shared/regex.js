@@ -17,8 +17,8 @@ const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const ADDRESS_LISK32_CSV = /^(lsk[a-hjkm-z2-9]{38}){1}(,lsk[a-hjkm-z2-9]{38})*$/;
 const PARTIAL_SEARCH = /^[\w!@$&.]{1,64}$/; // Supports address, publicKey & name
+const NONCE = /^\d+$/;
 const PARTIAL_SEARCH_NAME = /^[\w!@$&.]{1,20}$/;
-const NONCE = /^[0-9]+$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const NAME = /^[\w!@$&.]{3,20}$/;
@@ -26,6 +26,7 @@ const NAME_CSV = /^[\w!@$&.,]{3,}$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
+const HASH_SHA512 = /^\b([A-Fa-f0-9]){128}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,)+\b$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
 const NETWORK_CSV = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
@@ -39,6 +40,7 @@ const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
 const TOPIC = /^\b(?:(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}),?)+\b$/;
+const HEX_STRING = /^([a-fA-F0-9]+)$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -52,6 +54,7 @@ module.exports = {
 	TRANSACTION_EXECUTION_STATUS,
 	POS_VALIDATOR_STATUS,
 	HASH_SHA256,
+	HASH_SHA512,
 	TIMESTAMP_RANGE,
 	HEIGHT_RANGE,
 	CCM_STATUS,
@@ -67,4 +70,7 @@ module.exports = {
 	PROOF_OF_POSSESSION,
 	MODULE,
 	TOPIC,
+	COMMAND: MODULE,
+	HEX_STRING,
+	FEE: NONCE,
 };

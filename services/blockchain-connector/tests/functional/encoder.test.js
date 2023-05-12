@@ -25,6 +25,12 @@ const {
 	encodedTransaction,
 } = require('../constants/transactions');
 
+const {
+	decodedCCM,
+	encodedCCM,
+	invalidCCM,
+} = require('../constants/ccm');
+
 const config = require('../../config');
 
 const broker = new ServiceBroker({
@@ -34,21 +40,33 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-xdescribe('Functional tests for encoder', () => {
-	beforeAll(() => broker.start());
-	afterAll(() => broker.stop());
+beforeAll(() => broker.start());
+afterAll(() => broker.stop());
 
-	it('encode transaction', async () => {
+xdescribe('Encode transaction', () => {
+	it('should encode transaction', async () => {
 		const result = await broker.call('connector.encodeTransaction', { transaction: decodedTransaction });
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedTransaction);
 	});
 
-	it('throws error when encoding invalid transaction', async () => {
+	it('should throw error when encoding invalid transaction', async () => {
 		expect(broker.call('connector.encodeTransaction', { transaction: invalidTransaction })).rejects.toThrow();
 	});
 
-	it('throws error when encoding invalid block', async () => {
+	it('should throw error when encoding invalid block', async () => {
 		expect(broker.call('connector.encodeTransaction', { block: invalidBlock })).rejects.toThrow();
+	});
+});
+
+describe('Encode CCM', () => {
+	it('should encode CCM', async () => {
+		const result = await broker.call('connector.encodeCCM', { ccm: decodedCCM });
+		expect(typeof result).toBe('string');
+		expect(result).toEqual(encodedCCM);
+	});
+
+	it('should throw error when encoding invalid ccm', async () => {
+		expect(broker.call('connector.encodeCCM', { ccm: invalidCCM })).rejects.toThrow();
 	});
 });

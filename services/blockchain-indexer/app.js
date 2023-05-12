@@ -45,6 +45,7 @@ const defaultBrokerConfig = {
 	},
 	dependencies: [
 		'connector',
+		'fees',
 	],
 };
 

@@ -814,6 +814,40 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 	},
+	'/transactions/estimate-fees': {
+		post: {
+			description: 'Returns estimated fees for the transaction.\n RPC => post.transactions.estimate-fees',
+			parameters: [
+				{
+					$ref: '#/parameters/transactionEstimateFees',
+				},
+			],
+			responses: {
+				200: {
+					description: 'Returns estimated fees for the given transaction.',
+					schema: {
+						$ref: '#/definitions/txEstimateFeesWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
+				500: {
+					description: 'Internal server error',
+					schema: {
+						$ref: '#/definitions/serverErrorEnvelope',
+					},
+				},
+			},
+			summary: 'Requests estimated fees for the transaction.',
+			tags: [
+				'Transactions',
+			],
+		},
+	},
 	'/schemas': {
 		get: {
 			tags: [

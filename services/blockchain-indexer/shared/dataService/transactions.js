@@ -132,6 +132,19 @@ const dryRunTransactions = async params => {
 	return response;
 };
 
+const estimateTransactionFees = async params => {
+	const estimateTransactionFeesRes = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await business.estimateTransactionFees(params);
+	if (response.data) estimateTransactionFeesRes.data = response.data;
+	if (response.meta) estimateTransactionFeesRes.meta = response.meta;
+
+	return estimateTransactionFeesRes;
+};
+
 module.exports = {
 	getTransactions,
 	getPendingTransactions,
@@ -140,4 +153,8 @@ module.exports = {
 	postTransactions,
 	getTransactionsByBlockID: business.getTransactionsByBlockID,
 	dryRunTransactions,
+	estimateTransactionFees,
+
+	// Export for the unit tests
+	isIncludePendingTransactions,
 };

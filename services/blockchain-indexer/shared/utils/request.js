@@ -31,8 +31,11 @@ const requestConnector = async (method, params) => requestRpc('connector', metho
 
 const requestAppRegistry = async (method, params) => requestRpc('app-registry', method, params);
 
+const requestFeeEstimator = async (method, params) => requestRpc('fees', method, params);
+
 module.exports = {
 	setAppContext,
 	requestConnector,
 	requestAppRegistry,
+	requestFeeEstimator,
 };

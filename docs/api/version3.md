@@ -25,6 +25,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [Transactions](#transactions)
     - [Transaction search](#transaction-search)
     - [Transaction Dryrun](#transaction-dryrun)
+    - [Transaction Estimate Fees](#transaction-estimate-fees)
     - [Transaction Broadcast](#transaction-broadcast)
     - [Transaction Statistics](#transaction-statistics)
   - [Events](#events)
@@ -472,6 +473,99 @@ or
         "height": 10
       }
     ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+500 Internal Server Error
+```jsonc
+{
+  "error": true,
+  "message": "Unable to reach a network node."
+}
+```
+
+### Transaction Estimate Fees
+
+Estimate transaction fees.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/transactions/estimate-fees`
+- RPC `post.transactions.estimate-fees`
+
+
+#### Request parameters
+
+No request query parameters required.
+
+Request payload:
+
+```jsonc
+{
+  "transaction":  {
+    "module": "token",
+    "command": "transferCrossChain",
+    "fee": "100000000",
+    "nonce": "1",
+    "senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
+    "signatures": [
+      "0f0af2be5a18593f76dbd7a5d43e29cb9cce7a056dc28f818cc2d75e671bde9e5cccaf924b2a86415dc49be14c8b6bbf348a8918521b7a028bea1d9637bec905"
+    ],
+    "params": {
+      "tokenID": "0000000000000000",
+      "amount": "100000000000",
+      "receivingChainID": "00000001",
+      "recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+      "data": "",
+      "messageFee": "10000000",
+      "messageFeeTokenID": "0000000000000000"
+    },
+    "id": "0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395"
+  }
+}
+```
+
+or
+
+```jsonc
+{
+  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
+}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "transactionFeeEstimates": {
+      "minFee": "135000",
+      "accountInitializationFee": {
+        "tokenID": "0000000000000000",
+        "amount": "5000000"
+      },
+      "messageFee": { // Optional: Available only for a 'token:transferCrossChain' transaction
+        "tokenID": "0000000000000000",
+        "amount": "343000"
+      }
+    },
+    "dynamicFeeEstimates": {
+      "low": "135000",
+      "medium": "270000",
+      "high": "405000"
+    }
   },
   "meta": {}
 }
