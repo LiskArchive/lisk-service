@@ -154,4 +154,7 @@ module.exports = {
 	getTransactionsByBlockID: business.getTransactionsByBlockID,
 	dryRunTransactions,
 	estimateTransactionFees,
+
+	// Export for the unit tests
+	isIncludePendingTransactions,
 };

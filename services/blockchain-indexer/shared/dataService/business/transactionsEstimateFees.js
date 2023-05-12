@@ -26,6 +26,7 @@ const { tokenHasUserAccount, getTokenConstants } = require('./token');
 
 const { MODULE, COMMAND, EVENT } = require('../../constants');
 const regex = require('../../regex');
+
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
@@ -33,27 +34,28 @@ const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
-	FEE: 'fee',
-	SIGNATURES: 'signatures',
-	ID: 'id',
+	FEE: {
+		propName: 'fee',
+		defaultValue: 0,
+	},
+	SIGNATURES: {
+		propName: 'signatures',
+		defaultValue: [getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')],
+	},
+	ID: {
+		propName: 'id',
+		defaultValue: getRandomBytes(SIZE_BYTE_ID).toString('hex'),
+	},
 });
 
 const mockOptionalProperties = (transaction) => {
-	const missingProps = Object.values(OPTIONAL_TRANSACTION_PROPERTIES)
-		.filter((optionalProp) => !Object.keys(transaction).includes(optionalProp));
-
-	missingProps.forEach(prop => {
-		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.FEE) {
-			transaction.fee = 0;
-		}
-		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.SIGNATURES) {
-			transaction.signatures = [getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')];
-		}
-		if (prop === OPTIONAL_TRANSACTION_PROPERTIES.ID) {
-			transaction.id = getRandomBytes(SIZE_BYTE_ID).toString('hex');
-		}
-	});
-
+	Object
+		.values(OPTIONAL_TRANSACTION_PROPERTIES)
+		.forEach(optionalPropInfo => {
+			if (!(optionalPropInfo.propName in transaction)) {
+				transaction[optionalPropInfo.propName] = optionalPropInfo.defaultValue;
+			}
+		});
 	return transaction;
 };
 
@@ -79,7 +81,7 @@ const resolveChannelInfo = async (chainID) => {
 
 const calcMessageFee = async (transaction) => {
 	if (transaction.module !== MODULE.TOKEN
-		&& transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return {};
+		|| transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return {};
 
 	const { data: { events } } = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
@@ -103,14 +105,33 @@ const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
 });
 
 const calcAccountInitializationFees = async (transaction, tokenID) => {
+	if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+		const mainchainServiceURL = await resolveMainchainServiceURL();
+		const blockchainAppMetadata = await HTTP.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
+
+		const { data: { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } } = blockchainAppMetadata;
+
+		const { data: { data: { feeTokenID } } } = await HTTP.get(`${mainchainServiceURL}/api/v3/fees`);
+
+		const {
+			data: { data: { isExists } },
+		} = await HTTP.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${feeTokenID}&publicKey=${transaction.senderPublicKey}`);
+
+		if (isExists) return { tokenID, amount: BigInt('0') };
+
+		const { data: { data: { extraCommandFees } } } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
+		return {
+			tokenID,
+			amount: extraCommandFees.userAccountInitializationFee,
+		};
+	}
+
 	const { data: { isExists } } = await tokenHasUserAccount({
 		tokenID,
 		publicKey: transaction.senderPublicKey,
 	});
 
-	if (isExists) {
-		return { tokenID, amount: BigInt('0') };
-	}
+	if (isExists) return { tokenID, amount: BigInt('0') };
 
 	const { data: { extraCommandFees } } = await getTokenConstants();
 	return {
@@ -155,7 +176,7 @@ const estimateTransactionFees = async params => {
 module.exports = {
 	estimateTransactionFees,
 
-	// Export for the unit test
+	// Export for the unit tests
 	calcDynamicFeeEstimates,
 	mockOptionalProperties,
 };
