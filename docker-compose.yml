@@ -126,6 +126,8 @@ services:
         condition: service_healthy
       mysql-primary:
         condition: service_healthy
+      mysql-replica:
+        condition: service_healthy
     networks:
       - services_network
     environment:
