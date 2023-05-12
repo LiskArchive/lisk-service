@@ -284,32 +284,30 @@ Sample::
 [source,js]
 ----
 module.exports = {
-	apps: [
-		{
-			// Other types of configurations.
-			{
-			name: 'lisk-service-gateway',
-			// [...]
-			env: {
-				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_LOG_LEVEL: 'info',
-				// [...]
-			},
-		},
-		{
-			name: 'lisk-service-transaction-statistics',
-			// [...]
-			env: {
-				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_LOG_LEVEL: 'info',
-				// [...]
-			},
-		},
-		// Other types of configurations.
-	}
-	],
+  apps: [
+    // Other types of configurations.
+    {
+      name: 'lisk-service-gateway',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_LOG_LEVEL: 'info',
+        // [...]
+      },
+    },
+    {
+      name: 'lisk-service-transaction-statistics',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_LOG_LEVEL: 'info',
+        // [...]
+      },
+    },
+    // Other types of configurations.
+  ],
 };
 ----
 --
