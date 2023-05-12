@@ -29,7 +29,7 @@
                     "proofOfPossession": {
                         "type": "string",
                         "example": "96c5b026b1030eb73e5dfd9bfe78b0fb35e6bc7add5793fdca3d3e6a1dacb77390e998178b89f80ab8892212838bd5b2",
-                        "description": "The Proof of Possession corresponding to the specified BLS key."
+                        "description": "The Proof of Possession corresponding to the BLS key."
                     }
                 }
             },
