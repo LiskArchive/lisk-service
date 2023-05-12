@@ -25,6 +25,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [Transactions](#transactions)
     - [Transaction search](#transaction-search)
     - [Transaction Dryrun](#transaction-dryrun)
+    - [Transaction Estimate Fees](#transaction-estimate-fees)
     - [Transaction Broadcast](#transaction-broadcast)
     - [Transaction Statistics](#transaction-statistics)
   - [Events](#events)
@@ -140,8 +141,8 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -231,8 +232,8 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -312,8 +313,8 @@ _Supports pagination._
 | recipientAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
 | nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -472,6 +473,99 @@ or
         "height": 10
       }
     ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+500 Internal Server Error
+```jsonc
+{
+  "error": true,
+  "message": "Unable to reach a network node."
+}
+```
+
+### Transaction Estimate Fees
+
+Estimate transaction fees.
+
+#### Endpoints
+
+- HTTP POST `/api/v3/transactions/estimate-fees`
+- RPC `post.transactions.estimate-fees`
+
+
+#### Request parameters
+
+No request query parameters required.
+
+Request payload:
+
+```jsonc
+{
+  "transaction":  {
+    "module": "token",
+    "command": "transferCrossChain",
+    "fee": "100000000",
+    "nonce": "1",
+    "senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
+    "signatures": [
+      "0f0af2be5a18593f76dbd7a5d43e29cb9cce7a056dc28f818cc2d75e671bde9e5cccaf924b2a86415dc49be14c8b6bbf348a8918521b7a028bea1d9637bec905"
+    ],
+    "params": {
+      "tokenID": "0000000000000000",
+      "amount": "100000000000",
+      "receivingChainID": "00000001",
+      "recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+      "data": "",
+      "messageFee": "10000000",
+      "messageFeeTokenID": "0000000000000000"
+    },
+    "id": "0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395"
+  }
+}
+```
+
+or
+
+```jsonc
+{
+  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
+}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+    "transactionFeeEstimates": {
+      "minFee": "135000",
+      "accountInitializationFee": {
+        "tokenID": "0000000000000000",
+        "amount": "5000000"
+      },
+      "messageFee": { // Optional: Available only for a 'token:transferCrossChain' transaction
+        "tokenID": "0000000000000000",
+        "amount": "343000"
+      }
+    },
+    "dynamicFeeEstimates": {
+      "low": "135000",
+      "medium": "270000",
+      "high": "405000"
+    }
   },
   "meta": {}
 }
@@ -654,8 +748,8 @@ _Supports pagination._
 | senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | topic | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Can be expressed as a CSV |
 | blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `1:20` or `1:` or `:20` |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Can be expressed as an interval i.e. `100000:200000` or `100000:` or `:200000` |
+| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |  |
@@ -734,6 +828,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
+| search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,103]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -859,9 +954,9 @@ Retrieves user-specific details from the Validator module.
 ```jsonc
 {
   "data": {
-    "generatorKey": "4f3034d6704e8a38098083695822a3da",
-    "blsKey": "3c95f7931d61909ff092375fc8ad2bc35e393b62d5cca902",
-    "proofOfPossession": "96c5b026b1030eb73e5dfd9bfe78b0fb35e6bc7add5793fdca3d3e6a1dacb77390e998178b89f80ab8892212838bd5b2"
+    "generatorKey": "59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf",
+    "blsKey": "8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32",
+    "proofOfPossession": "abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996"
   },
   "meta": {
     "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
@@ -1504,7 +1599,7 @@ _Supports pagination._
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -1566,7 +1661,7 @@ Retrieves the list of stakes sent by the specified user by their address, public
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 
 #### Response example
 
@@ -1694,7 +1789,7 @@ _Supports pagination._
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,)+\b$/` | *(empty)* | Can be expressed as CSV |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["commission:asc", "commission:desc", "validatorWeight:desc", "validatorWeight:asc", "rank:asc", "rank:desc", "name:asc", "name:desc"]` | commission:asc |  |
@@ -5780,7 +5875,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
@@ -5839,7 +5934,7 @@ _Supports pagination._
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
@@ -5855,7 +5950,7 @@ _Supports pagination._
       "chainID": "00000000",
       "title": "Lisk blockchain application",
       "status": "active",
-      "description": "Lisk is a blockchain application platform",
+      "description": "Lisk is a blockchain application platform.",
       "networkType": "mainnet",
       "isDefault": true,
       "genesisURL": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
@@ -5928,7 +6023,7 @@ _Supports pagination._
 | tokenName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Can be expressed as CSV. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc]` | chainName:asc |  |

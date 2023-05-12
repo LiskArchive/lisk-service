@@ -13,15 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getValidator = async params => {
-	const response = await dataService.getValidator(params);
+	const response = await business.getValidator(params);
 	return response;
 };
 
 const validateBLSKey = async params => {
-	const response = await dataService.validateBLSKey(params);
+	const response = await business.validateBLSKey(params);
 	return response;
 };
 

@@ -94,6 +94,7 @@ const {
 const {
 	getChainAccount,
 	getMainchainID,
+	getChannel,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -110,6 +111,8 @@ const {
 } = require('./network');
 
 const { cacheCleanup } = require('./cache');
+const { formatTransaction } = require('./formatter');
+const { encodeCCM } = require('./encoder');
 
 const init = async () => {
 	// Initialize the local cache
@@ -160,6 +163,7 @@ module.exports = {
 	getTransactionsFromPool,
 	postTransaction,
 	dryRunTransaction,
+	formatTransaction,
 
 	// Tokens
 	tokenHasUserAccount,
@@ -199,6 +203,7 @@ module.exports = {
 	// Interoperability
 	getChainAccount,
 	getMainchainID,
+	getChannel,
 
 	// Legacy
 	getLegacyAccount,
@@ -224,5 +229,9 @@ module.exports = {
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
 
+	// CCM
+	encodeCCM,
+
+	// Cache
 	cacheCleanup,
 };

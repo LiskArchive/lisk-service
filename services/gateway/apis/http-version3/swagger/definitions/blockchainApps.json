@@ -210,7 +210,7 @@
 			},
 			"description": {
 				"type": "string",
-				"example": "Lisk is a blockchain application platform"
+				"example": "Lisk is a blockchain application platform."
 			},
 			"networkType": {
 				"type": "string",

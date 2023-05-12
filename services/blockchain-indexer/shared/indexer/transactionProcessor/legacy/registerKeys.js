@@ -53,7 +53,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		publicKey: tx.senderPublicKey,
 		isValidator: true,
 		blsKey: tx.params.blsKey,
-		proofOfPosession: tx.params.proofOfPosession,
+		proofOfPossession: tx.params.proofOfPossession,
 		generatorKey: tx.params.generatorKey,
 	};
 
@@ -77,7 +77,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		publicKey: tx.senderPublicKey,
 		isValidator: true,
 		blsKey: null,
-		proofOfPosession: null,
+		proofOfPossession: null,
 		generatorKey: null,
 	};
 

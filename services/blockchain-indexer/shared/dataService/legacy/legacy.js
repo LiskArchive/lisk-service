@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getLegacyAccountInfo = async (params) => {
-	const legacyAccountInfo = await dataService.getLegacyAccountInfo(params);
+	const legacyAccountInfo = await business.getLegacyAccountInfo(params);
 	return legacyAccountInfo;
 };
 
