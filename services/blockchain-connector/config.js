@@ -37,7 +37,6 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 config.endpoints.liskHttp = `${(process.env.LISK_APP_HTTP || 'http://127.0.0.1:7887')}/api`;
 config.endpoints.liskWs = process.env.LISK_APP_WS || config.endpoints.liskHttp.replace('http', 'ws').replace('/api', '');
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json';
-config.endpoints.cache = process.env.SERVICE_CONNETOR_CACHE_REDIS || 'redis://localhost:6379/2';
 
 /**
  * API Client related settings

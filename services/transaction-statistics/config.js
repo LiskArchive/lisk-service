@@ -89,4 +89,16 @@ config.networks = [
 	},
 ];
 
+config.jobs = {
+	// Interval takes priority over schedule
+	refreshTransactionStats: {
+		interval: process.env.REFRESH_TRANSACTION_STATS_INTERVAL || 0,
+		schedule: process.env.REFRESH_TRANSACTION_STATS_SCHEDULE || '*/30 * * * *',
+	},
+	verifyTransactionStats: {
+		interval: process.env.VERIFY_TRANSACTION_STATS_INTERVAL || 0,
+		schedule: process.env.VERIFY_TRANSACTION_STATS_SCHEDULE || '15 */3 * * *',
+	},
+};
+
 module.exports = config;
