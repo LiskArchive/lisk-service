@@ -954,9 +954,9 @@ Retrieves user-specific details from the Validator module.
 ```jsonc
 {
   "data": {
-    "generatorKey": "4f3034d6704e8a38098083695822a3da",
-    "blsKey": "3c95f7931d61909ff092375fc8ad2bc35e393b62d5cca902",
-    "proofOfPossession": "96c5b026b1030eb73e5dfd9bfe78b0fb35e6bc7add5793fdca3d3e6a1dacb77390e998178b89f80ab8892212838bd5b2"
+    "generatorKey": "59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf",
+    "blsKey": "8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32",
+    "proofOfPossession": "abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996"
   },
   "meta": {
     "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
