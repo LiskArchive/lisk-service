@@ -19,8 +19,8 @@ module.exports = {
 	tableName: 'blocks',
 	primaryKey: 'id',
 	schema: {
-		id: { type: 'string' },
-		block: { type: 'json' },
+		id: { type: 'string', null: false },
+		block: { type: 'json', null: false },
 		timestamp: { type: 'integer', null: false, defaultValue: currentTimestamp() },
 	},
 	indexes: {

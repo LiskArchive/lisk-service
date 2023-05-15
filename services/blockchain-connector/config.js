@@ -90,7 +90,7 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 config.enableTestingMode = Boolean(String(process.env.ENABLE_TESTING_MODE).toLowerCase() === 'true');
 
 config.caching = {
-	isEnabled: Boolean(String(process.env.ENABLE_CACHING).toLowerCase() !== 'false'), // Enabled by default
+	isBlockCachingEnabled: Boolean(String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false'), // Enabled by default
 	expiryInDays: process.env.EXPIRY_IN_DAYS || 1,
 };
 

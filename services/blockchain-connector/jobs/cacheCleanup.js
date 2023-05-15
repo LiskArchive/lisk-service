@@ -22,7 +22,7 @@ module.exports = [
 	{
 		name: 'cache.cleanup',
 		description: 'Prunes the cache regularly.',
-		schedule: '0 0 * * *', // At midnight everyday
+		schedule: '0 */12 * * *', // every 12 hours
 		controller: async () => {
 			logger.debug('Cleaning cache...');
 			try {

@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const {
 	Exceptions: {
 		TimeoutException,
@@ -28,15 +30,14 @@ const {
 	getSystemMetadata,
 } = require('./endpoints_1');
 const {
-	cacheBlocks,
+	cacheBlocksIfEnabled,
 	getBlockByIDFromCache,
-	getBlockByIDsFromCache,
 	getTransactionByIDFromCache,
-	getTransactionByIDsFromCache,
 } = require('./cache');
-const config = require('../../config');
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
+
+const config = require('../../config');
 
 const getNetworkConnectedPeers = async () => {
 	try {
@@ -105,7 +106,8 @@ const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
-		if (config.caching.isEnabled) await cacheBlocks(block);
+		await cacheBlocksIfEnabled(block);
+
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -135,7 +137,7 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		}
 
 		const blocks = ([blocksArr[0], ...blocksArr[1]]);
-		if (config.caching.isEnabled) await cacheBlocks(blocks);
+		await cacheBlocksIfEnabled(blocks);
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -156,7 +158,7 @@ const getBlockByID = async (id, includeGenesisAssets = false) => {
 		if (blockFromCache) return blockFromCache;
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
-		if (config.caching.isEnabled) await cacheBlocks(block);
+		await cacheBlocksIfEnabled(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -181,11 +183,10 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks;
 		}
 
-		const blocksFromCache = await getBlockByIDsFromCache(ids);
-		if (blocksFromCache) return blocksFromCache;
+		const blocks = config.caching.isBlockCachingEnabled
+			? await BluebirdPromise.map(ids, async (id) => getBlockByID(id), { concurrency: 1 })
+			: await invokeEndpoint('chain_getBlocksByIDs', { ids });
 
-		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
-		if (config.caching.isEnabled) await cacheBlocks(blocks);
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -224,11 +225,11 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const transactionsFromCache = await getTransactionByIDsFromCache(ids);
-		if (transactionsFromCache) return transactionsFromCache;
+		const transactions = config.caching.isBlockCachingEnabled
+			? await BluebirdPromise.map(ids, async (id) => getTransactionByID(id), { concurrency: 1 })
+			: await invokeEndpoint('chain_getTransactionsByIDs', { ids });
 
-		const transaction = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
-		return transaction;
+		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}.`);

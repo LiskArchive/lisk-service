@@ -21,6 +21,7 @@ const logger = Logger();
 
 const connectionPool = {};
 const tablePool = {};
+const SQLITE3_DB_FILE_EXTENSION = 'sqlite3';
 
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
@@ -48,7 +49,7 @@ const createDbConnection = async (dbDataDir, tableName) => {
 	const knex = require('knex')({
 		client: 'better-sqlite3',
 		connection: {
-			filename: `./${dbDataDir}/${tableName}_db.sqlite3`,
+			filename: `./${dbDataDir}/${tableName}_db.${SQLITE3_DB_FILE_EXTENSION}`,
 		},
 		useNullAsDefault: true,
 		pool: {

@@ -285,7 +285,7 @@ const deleteIndexedBlocks = async job => {
 					);
 				}
 
-				const forkedTransactionIDs = await getTransactionIDsByBlockID(block.header.id);
+				const forkedTransactionIDs = await getTransactionIDsByBlockID(block.id);
 				if (!Array.isArray(forkedTransactions)) {
 					const deletedTransactions = await BluebirdPromise.map(
 						forkedTransactionIDs,

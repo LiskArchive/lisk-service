@@ -16,10 +16,13 @@
 const moment = require('moment');
 const BluebirdPromise = require('bluebird');
 
-const { getTableInstance } = require('../database/better-sqlite3');
+const { getNodeInfo } = require('./endpoints_1');
 
+const { getTableInstance } = require('../database/better-sqlite3');
 const cacheBlockSchema = require('../database/schema/blocks');
 const cacheTrxIDToBlockIDSchema = require('../database/schema/transactions');
+
+const config = require('../../config');
 
 const getBlocksCache = () => getTableInstance(
 	cacheBlockSchema.tableName,
@@ -31,68 +34,62 @@ const getTrxIDtoBlockIDCache = () => getTableInstance(
 	cacheTrxIDToBlockIDSchema,
 );
 
-const mapTransactionIDstoBlockID = async (transactions, blockID) => {
-	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
+const blocksToCache = [];
 
-	await BluebirdPromise.map(
-		transactions,
-		async transaction => trxIDToBlockIDCache.upsert({ transactionID: transaction.id, blockID }),
-		{ concurrency: transactions.length },
-	);
+const cacheBlocksIfEnabled = async (blocks) => {
+	if (!config.caching.isBlockCachingEnabled || typeof blocks !== 'object') return;
+
+	const blockList = Array.isArray(blocks) ? blocks : [blocks];
+	const networkStatus = await getNodeInfo();
+
+	blockList.forEach(block => {
+		// Cache non-finalized blocks only
+		if (block.header.height > networkStatus.finalizedHeight) {
+			blocksToCache.push(block);
+		}
+	});
 };
 
-const cacheBlocks = async (blocks) => {
+const initCacheBlocksProcess = async () => {
 	const blocksCache = await getBlocksCache();
+	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 
-	const blocksToCache = Array.isArray(blocks) ? blocks : [blocks];
+	/* eslint-disable no-await-in-loop */
+	while (blocksToCache.length) {
+		const block = blocksToCache.shift();
+		await BluebirdPromise.map(
+			block.transactions,
+			async transaction => trxIDToBlockIDCache.upsert({
+				transactionID: transaction.id, blockID: block.header.id,
+			}),
+			{ concurrency: 1 },
+		);
+		await blocksCache.upsert({ id: block.header.id, block });
+	}
+	/* eslint-enable no-await-in-loop */
 
-	await BluebirdPromise.map(
-		blocksToCache,
-		async block => {
-			await blocksCache.upsert({ id: block.header.id, block });
-			if (block.transactions.length) {
-				await mapTransactionIDstoBlockID(block.transactions, block.header.id);
-			}
-		},
-		{ concurrency: blocksToCache.length },
-	);
+	setTimeout(initCacheBlocksProcess, 15 * 1000);
 };
 
 const getBlockByIDFromCache = async (id) => {
 	const blocksCache = await getBlocksCache();
-	const [{ block } = {}] = await blocksCache.find({ id }, ['block']);
-	if (!block || Object.keys(block).length === 0) return null;
+	const resultSet = await blocksCache.find({ id }, ['block']);
+	if (!resultSet.length) return null;
+
+	const [{ block }] = resultSet;
 	const parsedBlock = JSON.parse(block);
 	return parsedBlock;
 };
 
-const getBlockByIDsFromCache = async (blockIDs) => {
-	const blocks = await BluebirdPromise.map(
-		blockIDs,
-		async blockID => getBlockByIDFromCache(blockID),
-		{ concurrency: blockIDs.length },
-	);
-
-	return blocks;
-};
-
 const getTransactionByIDFromCache = async (transactionID) => {
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
-	const [{ blockID }] = await trxIDToBlockIDCache.find({ transactionID }, ['blockID']);
-	if (!blockID) return null;
+	const resultSet = await trxIDToBlockIDCache.find({ transactionID }, ['blockID']);
+	if (!resultSet.length) return null;
+
+	const [{ blockID }] = resultSet;
 	const block = await getBlockByIDFromCache(blockID);
 	const transaction = block.transactions.find(tx => tx.id === transactionID);
 	return transaction;
-};
-
-const getTransactionByIDsFromCache = async (transactionIDs) => {
-	const transactions = await BluebirdPromise.map(
-		transactionIDs,
-		async transactionID => getTransactionByIDFromCache(transactionID),
-		{ concurrency: transactionIDs.length },
-	);
-
-	return transactions;
 };
 
 const cacheCleanup = async (expiryInDays) => {
@@ -119,11 +116,12 @@ const cacheCleanup = async (expiryInDays) => {
 	});
 };
 
+initCacheBlocksProcess();
+
 module.exports = {
-	cacheBlocks,
+	cacheBlocksIfEnabled,
+	initCacheBlocksProcess,
 	getBlockByIDFromCache,
-	getBlockByIDsFromCache,
 	getTransactionByIDFromCache,
-	getTransactionByIDsFromCache,
 	cacheCleanup,
 };

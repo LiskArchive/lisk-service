@@ -27,16 +27,16 @@ const schema = require('../../constants/blocksSchema');
 const tableName = 'functional_test';
 const testDir = 'testDir';
 
-const getIndex = () => getTableInstance(tableName, schema, testDir);
+const getTable = () => getTableInstance(tableName, schema, testDir);
 
 const { blockWithoutTransaction, blockWithTransaction } = require('../../constants/blocks');
 
-describe('Test MySQL', () => {
+describe('Test better-sqlite3 implementation', () => {
 	let testTable;
 
 	beforeAll(async () => {
 		// Create table
-		testTable = await getIndex();
+		testTable = await getTable();
 	});
 
 	afterAll(async () => {
@@ -54,13 +54,13 @@ describe('Test MySQL', () => {
 	describe('With IMPLICIT DB transaction (auto-commit mode)', () => {
 		afterAll(() => testTable.rawQuery(`DELETE FROM ${tableName}`));
 
-		it('Insert row', async () => {
+		it('should insert row', async () => {
 			await testTable.upsert([blockWithoutTransaction.header]);
 			const result = await testTable.find();
 			expect(result.length).toBe(1);
 		});
 
-		it('Fetch rows', async () => {
+		it('should fetch row', async () => {
 			const { id } = blockWithoutTransaction.header;
 			const result = await testTable.find({ id }, ['id']);
 			expect(result.length).toBe(1);
@@ -69,7 +69,7 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.id).toBe(id);
 		});
 
-		it('Update row', async () => {
+		it('should update row', async () => {
 			const { id } = blockWithTransaction.header;
 			await testTable.upsert([{ ...blockWithTransaction.header, height: 10 }]);
 
@@ -78,18 +78,18 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.height).toBe(10);
 		});
 
-		it('Row count', async () => {
+		it('should return row coutn without params', async () => {
 			const count = await testTable.count();
 			expect(count).toBe(2);
 		});
 
-		it('Conditional row count', async () => {
+		it('should return row count by params', async () => {
 			const { id } = blockWithTransaction.header;
 			const count = await testTable.count({ id });
 			expect(count).toEqual(1);
 		});
 
-		it('Increase column value', async () => {
+		it('should increment column value', async () => {
 			const { id } = blockWithoutTransaction.header;
 			await testTable.increment({
 				increment: { timestamp: 5 },
@@ -101,7 +101,7 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.timestamp).toBe(5 + blockWithoutTransaction.header.timestamp);
 		});
 
-		it('Delete row by primary key', async () => {
+		it('should delete row by primary key', async () => {
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
 			const count = await testTable.deleteByPrimaryKey([existingBlockId]);
@@ -112,7 +112,7 @@ describe('Test MySQL', () => {
 			expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
 		});
 
-		it('Delete rows', async () => {
+		it('should delete rows', async () => {
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
 			const existingBlockCount = await testTable.count();
@@ -125,7 +125,7 @@ describe('Test MySQL', () => {
 			expect(count).toBe(0);
 		});
 
-		it('Delete row', async () => {
+		it('should delete row', async () => {
 			await testTable.upsert([blockWithoutTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
 			const existingBlockCount = await testTable.count();
@@ -138,7 +138,7 @@ describe('Test MySQL', () => {
 			expect(count).toBe(0);
 		});
 
-		it('Batch row insert', async () => {
+		it('should insert rows in a batch', async () => {
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
 			const result = await testTable.find();
 			expect(result.length).toBe(2);
@@ -148,7 +148,7 @@ describe('Test MySQL', () => {
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
 		afterAll(() => testTable.rawQuery(`DELETE FROM ${tableName}`));
 
-		it('Insert row', async () => {
+		it('should insert row', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 			await testTable.upsert([blockWithoutTransaction.header], trx);
@@ -157,7 +157,7 @@ describe('Test MySQL', () => {
 			expect(result.length).toBe(1);
 		});
 
-		it('Fetch rows', async () => {
+		it('should fetch row', async () => {
 			const { id } = blockWithoutTransaction.header;
 			const result = await testTable.find({ id }, ['id']);
 			expect(result.length).toBe(1);
@@ -166,7 +166,7 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.id).toBe(id);
 		});
 
-		it('Update row', async () => {
+		it('should update row', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 			const { id } = blockWithTransaction.header;
@@ -178,18 +178,18 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.height).toBe(20);
 		});
 
-		it('Row count', async () => {
+		it('should return row count without params', async () => {
 			const count = await testTable.count();
 			expect(count).toBe(2);
 		});
 
-		it('Conditional row count', async () => {
+		it('should row count by params', async () => {
 			const { id } = blockWithTransaction.header;
 			const count = await testTable.count({ id });
 			expect(count).toEqual(1);
 		});
 
-		it('Increase column value', async () => {
+		it('should increment column value', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 			const { id } = blockWithoutTransaction.header;
@@ -203,7 +203,7 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.timestamp).toBe(5 + blockWithoutTransaction.header.timestamp);
 		});
 
-		it('Delete row by primary key', async () => {
+		it('should delete row by primary key', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 			const [existingBlock] = await testTable.find();
@@ -218,7 +218,7 @@ describe('Test MySQL', () => {
 			expect(count).toBe(0);
 		});
 
-		it('Delete rows', async () => {
+		it('should delete rows', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 
@@ -236,7 +236,7 @@ describe('Test MySQL', () => {
 			expect(count).toBe(0);
 		});
 
-		it('Delete row', async () => {
+		it('should delete row', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 
@@ -254,7 +254,7 @@ describe('Test MySQL', () => {
 			expect(count).toBe(0);
 		});
 
-		it('Batch row insert', async () => {
+		it('should insert rows in a batch', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header], trx);

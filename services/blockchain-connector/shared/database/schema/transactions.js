@@ -17,8 +17,8 @@ module.exports = {
 	tableName: 'mapTransactionIDToBlockID',
 	primaryKey: 'transactionID',
 	schema: {
-		transactionID: { type: 'string' },
-		blockID: { type: 'string' },
+		transactionID: { type: 'string', null: false },
+		blockID: { type: 'string', null: false },
 	},
 	indexes: {
 		transactionID: { type: 'key' },
