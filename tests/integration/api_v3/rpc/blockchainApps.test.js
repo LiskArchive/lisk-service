@@ -42,7 +42,7 @@ describe('get.blockchain.apps', () => {
 		curChainID = response.result.data.chainID;
 	});
 
-	it('returns list of all blockchain applications', async () => {
+	it('should return list of all blockchain applications', async () => {
 		const response = await getBlockchainApps();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -53,7 +53,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications with limit=10', async () => {
+	it('should return list of all blockchain applications when called with limit=10', async () => {
 		const response = await getBlockchainApps({ limit: 10 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -64,7 +64,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications with limit=10 and offset=1', async () => {
+	it('should return list of all blockchain applications when called with limit=10 and offset=1', async () => {
 		const response = await getBlockchainApps({ limit: 10, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -75,7 +75,17 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications by chainID', async () => {
+	it('should return list of all blockchain applications when called by valid chainName', async () => {
+		const response = await getBlockchainApps({ chainName: 'enevti' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('should return list of all blockchain applications when called by valid chainID', async () => {
 		const response = await getBlockchainApps({ chainID: '04000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -85,7 +95,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications by CSV chainID', async () => {
+	it('should return list of all blockchain applications when called by chainIDs as CSV', async () => {
 		const response = await getBlockchainApps({ chainID: `04000001,${curChainID}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -95,7 +105,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications by status', async () => {
+	it('should return list of all blockchain applications when called by status', async () => {
 		const response = await getBlockchainApps({ status: 'registered' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -106,7 +116,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all blockchain applications by partial search', async () => {
+	it('should return list of all blockchain applications when called by partial search', async () => {
 		const response = await getBlockchainApps({ search: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -117,7 +127,7 @@ describe('get.blockchain.apps', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
+	it('should return invalid param when called with invalid request param ', async () => {
 		const response = await getBlockchainApps({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
