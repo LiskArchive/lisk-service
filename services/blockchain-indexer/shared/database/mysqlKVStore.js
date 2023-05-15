@@ -22,21 +22,16 @@ const keyValueStoreSchema = require('./schema/kvStore');
 const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlPrimary;
 
-const getKeyValueTable = () => getTableInstance(
+const getKeyValueTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
 	keyValueStoreSchema.tableName,
 	keyValueStoreSchema,
-	MYSQL_ENDPOINT_PRIMARY,
-);
-
-const getKeyValueTableReplica = () => getTableInstance(
-	keyValueStoreSchema.tableName,
-	keyValueStoreSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	dbEndpoint,
 );
 
 const set = async (key, value, dbTrx) => {
-	const keyValueTable = await getKeyValueTable();
+	const keyValueTable = await getKeyValueTable(MYSQL_ENDPOINT_PRIMARY);
 	const type = typeof (value);
 
 	if (!ALLOWED_VALUE_TYPES.includes(type)) {
@@ -60,9 +55,9 @@ const formatValue = (value, type) => {
 };
 
 const get = async (key) => {
-	const keyValueTableReplica = await getKeyValueTableReplica();
+	const keyValueTable = await getKeyValueTable(MYSQL_ENDPOINT_REPLICA);
 
-	const [{ value, type } = {}] = await keyValueTableReplica.find(
+	const [{ value, type } = {}] = await keyValueTable.find(
 		{ key, limit: 1 },
 		['value', 'type'],
 	);
@@ -71,9 +66,9 @@ const get = async (key) => {
 };
 
 const getByPattern = async (pattern) => {
-	const keyValueTableReplica = await getKeyValueTableReplica();
+	const keyValueTable = await getKeyValueTable(MYSQL_ENDPOINT_REPLICA);
 
-	const result = await keyValueTableReplica.find(
+	const result = await keyValueTable.find(
 		{ search: { property: 'key', pattern } },
 		['key', 'value', 'type'],
 	);
@@ -86,7 +81,7 @@ const getByPattern = async (pattern) => {
 };
 
 const deleteEntry = async (key, dbTrx) => {
-	const keyValueTable = await getKeyValueTable();
+	const keyValueTable = await getKeyValueTable(MYSQL_ENDPOINT_PRIMARY);
 	return keyValueTable.deleteByPrimaryKey([key], dbTrx);
 };
 

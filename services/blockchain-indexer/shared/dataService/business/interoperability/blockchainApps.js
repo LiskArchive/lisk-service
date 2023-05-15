@@ -21,14 +21,14 @@ const { LENGTH_NETWORK_ID, LENGTH_TOKEN_ID } = require('../../../constants');
 
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	MYSQL_ENDPOINT,
 );
 
 const getBlockchainApps = async (params) => {

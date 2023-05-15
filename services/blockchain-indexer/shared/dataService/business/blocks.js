@@ -38,12 +38,12 @@ const { getNameByAddress } = require('../../indexer/utils/validator');
 
 const config = require('../../../config');
 
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema.tableName,
 	blocksIndexSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	MYSQL_ENDPOINT,
 );
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);

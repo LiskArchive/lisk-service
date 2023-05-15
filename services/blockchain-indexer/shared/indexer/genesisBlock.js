@@ -32,12 +32,12 @@ const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const commissionsTableSchema = require('../database/schema/commissions');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const indexTokenModuleAssets = async (dbTrx) => {

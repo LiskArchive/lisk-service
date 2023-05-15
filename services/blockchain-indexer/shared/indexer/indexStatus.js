@@ -45,11 +45,12 @@ const blocksTableSchema = require('../database/schema/blocks');
 const config = require('../../config');
 
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getBlocksTable = () => getTableInstance(
 	blocksTableSchema.tableName,
 	blocksTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT_REPLICA,
 );
 
 let isIndexReady = false;

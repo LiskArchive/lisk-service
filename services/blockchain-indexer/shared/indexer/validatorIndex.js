@@ -23,18 +23,18 @@ const stakesTableSchema = require('../database/schema/stakes');
 
 const config = require('../../config');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema.tableName,
 	stakesTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const indexValidatorCommissionInfo = async (genesisBlock) => {

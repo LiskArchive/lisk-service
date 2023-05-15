@@ -19,7 +19,7 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const logger = Logger();
 
@@ -34,7 +34,7 @@ const entityTableSchema = require('../../../database/schema/transactions');
 const getEntityTable = () => getTableInstance(
 	entityTableSchema.tableName,
 	entityTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 // Declare and export the following command specific constants

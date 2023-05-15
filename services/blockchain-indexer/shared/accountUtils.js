@@ -27,11 +27,11 @@ const parseAddress = address => isStringType(address) ? address.toUpperCase() : 
 
 const validateLisk32Address = address => (typeof address === 'string' && regex.ADDRESS_LISK32.test(address));
 
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 const getAccountsTable = async () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	MYSQL_ENDPOINT,
 );
 
 const getCachedAccountBy = async (key, value) => {

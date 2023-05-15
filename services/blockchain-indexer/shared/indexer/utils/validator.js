@@ -32,19 +32,19 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const maxCommissionQ = q96(MAX_COMMISSION);
 
-const getAccountsIndex = () => getTableInstance(
+const getAccountsTable = () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
 	MYSQL_ENDPOINT_PRIMARY,
 );
 
-const getCommissionsTableReplica = () => getTableInstance(
+const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
 	MYSQL_ENDPOINT_REPLICA,
 );
 
-const getStakesTableReplica = () => getTableInstance(
+const getStakesTable = () => getTableInstance(
 	stakesTableSchema.tableName,
 	stakesTableSchema,
 	MYSQL_ENDPOINT_REPLICA,
@@ -55,7 +55,7 @@ const getNameByAddress = async (address) => {
 		const name = await validatorCache.get(address);
 		if (name) {
 			// Update the account index with the name asynchronously
-			const accountsTable = await getAccountsIndex();
+			const accountsTable = await getAccountsTable();
 			accountsTable.upsert({ address, name });
 
 			return name;
@@ -73,7 +73,7 @@ const getAddressByName = async (name) => {
 };
 
 const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) => {
-	const commissionsTableReplica = await getCommissionsTableReplica();
+	const commissionsTable = await getCommissionsTable();
 
 	const queryParams = {
 		address: generatorAddress,
@@ -84,7 +84,7 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 		sort: 'height:desc',
 		limit: 1,
 	};
-	const [{ commission }] = await commissionsTableReplica.find(queryParams, ['commission']);
+	const [{ commission }] = await commissionsTable.find(queryParams, ['commission']);
 
 	const blockRewardQ = q96(blockReward);
 	const currentCommissionQ = q96(BigInt(commission));
@@ -93,8 +93,8 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 };
 
 const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmount) => {
-	const stakesTableReplica = await getStakesTableReplica();
-	const stakerInfo = await stakesTableReplica.find(
+	const stakesTable = await getStakesTable();
+	const stakerInfo = await stakesTable.find(
 		{ validatorAddress: generatorAddress },
 		['stakerAddress', 'amount'],
 	);

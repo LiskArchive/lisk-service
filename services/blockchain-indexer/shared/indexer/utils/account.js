@@ -35,22 +35,16 @@ const config = require('../../../config');
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
-const getAccountsTable = () => getTableInstance(
+const getAccountsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
 	accountsTableSchema.tableName,
 	accountsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
-);
-
-const getAccountsTableReplica = () => getTableInstance(
-	accountsTableSchema.tableName,
-	accountsTableSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	dbEndpoint,
 );
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
-		const accountsTableReplica = await getAccountsTableReplica();
-		const [account = {}] = await accountsTableReplica.find({ limit: 1, ...params }, columns);
+		const accountsTable = await getAccountsTable(MYSQL_ENDPOINT_REPLICA);
+		const [account = {}] = await accountsTable.find({ limit: 1, ...params }, columns);
 		return account;
 	}
 	return {};
@@ -73,7 +67,7 @@ const getHexAddress = address => address.startsWith('lsk')
 	: address;
 
 const updateAccountPublicKey = async (publicKey) => {
-	const accountsTable = await getAccountsTable();
+	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT_PRIMARY);
 	await accountsTable.upsert({
 		address: getLisk32AddressFromPublicKey(publicKey),
 		publicKey,
@@ -89,7 +83,7 @@ const updateAccountInfo = async (params) => {
 		}
 	});
 
-	const accountsTable = await getAccountsTable();
+	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT_PRIMARY);
 	await accountsTable.upsert(accountInfo);
 };
 
@@ -101,6 +95,6 @@ module.exports = {
 	getLisk32Address,
 	updateAccountPublicKey,
 	getHexAddress,
-	getAccountsTableReplica,
+	getAccountsTable,
 	updateAccountInfo,
 };

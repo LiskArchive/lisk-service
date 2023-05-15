@@ -41,12 +41,12 @@ const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsIndexSchema.tableName,
 	validatorsIndexSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	MYSQL_ENDPOINT,
 );
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);

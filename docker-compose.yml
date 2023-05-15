@@ -37,7 +37,7 @@ services:
     platform: linux/amd64
     command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
     volumes:
-      - ./docker/mysql/primary/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - ./docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - mysql-primary-data:/var/lib/mysql
       - ./docker/mysql/primary/init:/docker-entrypoint-initdb.d
     restart: always
@@ -67,7 +67,7 @@ services:
     platform: linux/amd64
     command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
     volumes:
-      - ./docker/mysql/read/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - ./docker/mysql/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
     restart: always
     networks:

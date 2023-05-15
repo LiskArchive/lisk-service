@@ -23,7 +23,7 @@ const logger = Logger();
 const { APP_STATUS } = require('./constants');
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { requestConnector } = require('../../../utils/request');
@@ -34,7 +34,7 @@ const { getTotalStaked } = require('../../../utils/pos');
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	MYSQL_ENDPOINT,
 );
 
 let blockchainAppsStatsCache = {};
@@ -55,8 +55,12 @@ const reloadBlockchainAppsStats = async () => {
 		const blockchainAppsTable = await getBlockchainAppsTable();
 
 		const numActiveChains = await blockchainAppsTable.count({ status: APP_STATUS.ACTIVE });
-		const numRegisteredChains = await blockchainAppsTable.count({ status: APP_STATUS.REGISTERED });
-		const numTerminatedChains = await blockchainAppsTable.count({ status: APP_STATUS.TERMINATED });
+		const numRegisteredChains = await blockchainAppsTable.count({
+			status: APP_STATUS.REGISTERED,
+		});
+		const numTerminatedChains = await blockchainAppsTable.count({
+			status: APP_STATUS.TERMINATED,
+		});
 
 		const { totalSupply: [{ totalSupply }] } = await requestConnector('getTotalSupply');
 		const { data: { height } } = await getNetworkStatus();

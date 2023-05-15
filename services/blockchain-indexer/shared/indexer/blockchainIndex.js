@@ -65,38 +65,38 @@ const eventTopicsTableSchema = require('../database/schema/eventTopics');
 const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const logger = Logger();
 
 const getBlocksTable = () => getTableInstance(
 	blocksTableSchema.tableName,
 	blocksTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const getEventsTable = () => getTableInstance(
 	eventsTableSchema.tableName,
 	eventsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const getEventTopicsTable = () => getTableInstance(
 	eventTopicsTableSchema.tableName,
 	eventTopicsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const getTransactionsTable = () => getTableInstance(
 	transactionsTableSchema.tableName,
 	transactionsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const getValidatorsTable = () => getTableInstance(
 	validatorsTableSchema.tableName,
 	validatorsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
@@ -112,7 +112,7 @@ const indexBlock = async job => {
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection(MYSQL_ENDPOINT_PRIMARY);
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
@@ -260,7 +260,7 @@ const deleteIndexedBlocks = async job => {
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection(MYSQL_ENDPOINT_PRIMARY);
+	const connection = await getDbConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	try {

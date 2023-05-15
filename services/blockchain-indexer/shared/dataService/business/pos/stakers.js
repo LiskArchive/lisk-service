@@ -25,21 +25,21 @@ const stakesIndexSchema = require('../../../database/schema/stakes');
 const {
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
-	getAccountsTableReplica,
+	getAccountsTable,
 	getLisk32AddressFromPublicKey,
 } = require('../../../indexer/utils/account');
 
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getStakesTable = () => getTableInstance(
 	stakesIndexSchema.tableName,
 	stakesIndexSchema,
-	MYSQL_ENDPOINT_REPLICA,
+	MYSQL_ENDPOINT,
 );
 
 const getStakers = async params => {
 	const stakesTable = await getStakesTable();
-	const accountsTableReplica = await getAccountsTableReplica();
+	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT);
 	const stakersResponse = {
 		data: { stakers: [] },
 		meta: {
@@ -94,7 +94,7 @@ const getStakers = async params => {
 	const stakerAddressNameMap = {};
 	const stakerAddressQueryFilter = {};
 	if (params.search) {
-		const stakerAccountsInfo = await accountsTableReplica.find(
+		const stakerAccountsInfo = await accountsTable.find(
 			{
 				orSearch: [{
 					property: 'name',

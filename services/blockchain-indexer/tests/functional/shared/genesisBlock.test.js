@@ -34,7 +34,7 @@ const {
 	indexGenesisBlockAssets,
 } = require('../../../shared/indexer/genesisBlock');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,
@@ -61,7 +61,7 @@ beforeAll(async () => {
 		}),
 	});
 
-	connection = await getDbConnection(MYSQL_ENDPOINT_PRIMARY);
+	connection = await getDbConnection(MYSQL_ENDPOINT);
 
 	const tokenID = await getPosTokenID();
 	totalLockedKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);

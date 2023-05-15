@@ -25,7 +25,7 @@ const {
 const config = require('../../../../config');
 const keyValueTable = require('../../../../shared/database/mysqlKVStore');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const KEY_1 = 'KEY_1';
 const KEY_2 = 'KEY_2';
@@ -35,7 +35,7 @@ const VALUE_2 = 'VALUE_2';
 let dbConnection;
 
 beforeAll(async () => {
-	dbConnection = await getDbConnection(MYSQL_ENDPOINT_PRIMARY);
+	dbConnection = await getDbConnection(MYSQL_ENDPOINT);
 });
 
 afterEach(async () => {

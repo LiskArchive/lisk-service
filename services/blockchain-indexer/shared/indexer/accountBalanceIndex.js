@@ -24,11 +24,11 @@ const { MODULE } = require('../constants');
 const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const getAccountBalancesTable = () => getTableInstance(
 	accountBalancesTableSchema.tableName,
 	accountBalancesTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT,
 );
 
 const updateAccountBalances = async (address) => {
