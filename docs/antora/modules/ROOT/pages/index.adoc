@@ -339,7 +339,7 @@ curl -X GET "http://localhost:9901/api/v3/generators" -H  "accept: application/j
 }
 ----
 
-=== The JSON-RPC API
+=== The WebSocket JSON-RPC API
 
 The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
 The API uses the `socket.io` library and is compatible with JSON-RPC 2.0 standard.
