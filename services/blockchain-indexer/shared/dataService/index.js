@@ -27,6 +27,8 @@ const {
 	normalizeTransaction,
 	getEventsByHeight,
 	deleteEventsFromCache,
+	isMainchain,
+	resolveMainchainServiceURL,
 } = require('./business');
 
 const {
@@ -71,6 +73,7 @@ const {
 	postTransactions,
 	getTransactionsByBlockID,
 	dryRunTransactions,
+	estimateTransactionFees,
 } = require('./transactions');
 
 const {
@@ -129,6 +132,7 @@ module.exports = {
 	postTransactions,
 	getTransactionsByBlockID,
 	dryRunTransactions,
+	estimateTransactionFees,
 
 	// Interoperability
 	getBlockchainApps,
@@ -184,4 +188,7 @@ module.exports = {
 	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
+
+	isMainchain,
+	resolveMainchainServiceURL,
 };

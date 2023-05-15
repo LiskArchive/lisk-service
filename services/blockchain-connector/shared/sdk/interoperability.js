@@ -59,7 +59,21 @@ const getMainchainID = async () => {
 	}
 };
 
+const getChannel = async (chainID) => {
+	try {
+		const channelInfo = await invokeEndpoint('interoperability_getChannel', { chainID });
+		return channelInfo;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getChannel\'.');
+		}
+		logger.warn(`Error returned when invoking 'interoperability_getChannel' with chainID: ${chainID}.\n${err.stack}`);
+		throw err;
+	}
+};
+
 module.exports = {
 	getChainAccount,
 	getMainchainID,
+	getChannel,
 };

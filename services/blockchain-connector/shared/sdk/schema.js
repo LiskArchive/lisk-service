@@ -32,6 +32,8 @@ const getEventSchema = () => schemas.event;
 
 const getTransactionSchema = () => schemas.transaction;
 
+const getCCMSchema = () => schemas.ccm;
+
 const getTransactionParamsSchema = (transaction) => {
 	const moduleMetadata = metadata.modules.find(m => m.name === transaction.module);
 	const { params: schema } = moduleMetadata.commands.find(c => c.name === transaction.command);
@@ -75,4 +77,5 @@ module.exports = {
 	getTransactionSchema,
 	getTransactionParamsSchema,
 	getDataSchemaByEventName,
+	getCCMSchema,
 };

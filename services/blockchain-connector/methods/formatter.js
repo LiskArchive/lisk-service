@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,19 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('./dataService');
-const regex = require('./regex');
+const { formatTransaction } = require('../shared/sdk');
 
-let chainID;
-
-const isMainchain = async () => {
-	if (!chainID) {
-		const networkStatus = (await dataService.getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-	return regex.MAINCHAIN_ID.test(chainID);
-};
-
-module.exports = {
-	isMainchain,
-};
+module.exports = [
+	{
+		name: 'formatTransaction',
+		params: {
+			transaction: { optional: false, type: 'any' },
+		},
+		controller: ({ transaction }) => formatTransaction(transaction),
+	},
+];

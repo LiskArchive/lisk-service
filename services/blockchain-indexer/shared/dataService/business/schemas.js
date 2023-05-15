@@ -15,7 +15,6 @@
  */
 const { requestConnector } = require('../../utils/request');
 const { getAuthMultiSigRegMsgSchema } = require('./auth');
-const { ccmSchema } = require('./constants/schemas');
 
 let allSchemas;
 
@@ -77,9 +76,6 @@ const getAllSchemas = async () => {
 
 		// Assign messages schemas
 		Object.assign(allSchemas, { messages: schemas.messageSchemas });
-
-		// Assign ccm schema
-		Object.assign(allSchemas, { ccm: { schema: ccmSchema } });
 	}
 
 	return allSchemas;

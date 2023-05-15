@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
+const business = require('../business');
 
 const getChainAccount = async params => {
-	const response = await dataService.getChainAccount(params);
+	const response = await business.getChainAccount(params);
 	return response;
 };
 

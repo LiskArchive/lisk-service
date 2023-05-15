@@ -16,6 +16,8 @@
 const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
 const { invokeEndpoint } = require('./client');
 
+const { ccmSchema } = require('./constants/schemas');
+
 // Constants
 const timeoutMessage = 'Response not received in';
 
@@ -31,6 +33,8 @@ const getSchemas = async () => {
 	try {
 		if (!schema) {
 			schema = await invokeEndpoint('system_getSchema');
+			// TODO: Assign ccm schema, remove once this issue is closed https://github.com/LiskHQ/lisk-sdk/issues/8375
+			schema.ccm = ccmSchema;
 		}
 		return schema;
 	} catch (err) {
