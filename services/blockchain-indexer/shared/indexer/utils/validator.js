@@ -19,13 +19,14 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const config = require('../../config');
-const { MAX_COMMISSION } = require('../constants');
-const accountsIndexSchema = require('../database/schema/accounts');
-const commissionsTableSchema = require('../database/schema/commissions');
-const stakesTableSchema = require('../database/schema/stakes');
+const config = require('../../../config');
+const { MAX_COMMISSION } = require('../../constants');
+const accountsIndexSchema = require('../../database/schema/accounts');
+const commissionsTableSchema = require('../../database/schema/commissions');
+const stakesTableSchema = require('../../database/schema/stakes');
 
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
@@ -37,16 +38,16 @@ const getAccountsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT_PRIMARY,
 );
 
-const getCommissionsTable = () => getTableInstance(
+const getCommissionsTableReplica = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT_REPLICA,
 );
 
-const getStakesTable = () => getTableInstance(
+const getStakesTableReplica = () => getTableInstance(
 	stakesTableSchema.tableName,
 	stakesTableSchema,
-	MYSQL_ENDPOINT_PRIMARY,
+	MYSQL_ENDPOINT_REPLICA,
 );
 
 const getNameByAddress = async (address) => {
@@ -72,7 +73,7 @@ const getAddressByName = async (name) => {
 };
 
 const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) => {
-	const commissionsTable = await getCommissionsTable();
+	const commissionsTableReplica = await getCommissionsTableReplica();
 
 	const queryParams = {
 		address: generatorAddress,
@@ -83,7 +84,7 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 		sort: 'height:desc',
 		limit: 1,
 	};
-	const [{ commission }] = await commissionsTable.find(queryParams, ['commission']);
+	const [{ commission }] = await commissionsTableReplica.find(queryParams, ['commission']);
 
 	const blockRewardQ = q96(blockReward);
 	const currentCommissionQ = q96(BigInt(commission));
@@ -92,8 +93,8 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 };
 
 const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmount) => {
-	const stakesTable = await getStakesTable();
-	const stakerInfo = await stakesTable.find(
+	const stakesTableReplica = await getStakesTableReplica();
+	const stakerInfo = await stakesTableReplica.find(
 		{ validatorAddress: generatorAddress },
 		['stakerAddress', 'amount'],
 	);

@@ -29,6 +29,12 @@ const getKeyValueTable = () => getTableInstance(
 	MYSQL_ENDPOINT_PRIMARY,
 );
 
+const getKeyValueTableReplica = () => getTableInstance(
+	keyValueStoreSchema.tableName,
+	keyValueStoreSchema,
+	MYSQL_ENDPOINT_PRIMARY,
+);
+
 const set = async (key, value, dbTrx) => {
 	const keyValueTable = await getKeyValueTable();
 	const type = typeof (value);
@@ -54,9 +60,9 @@ const formatValue = (value, type) => {
 };
 
 const get = async (key) => {
-	const keyValueTable = await getKeyValueTable();
+	const keyValueTableReplica = await getKeyValueTableReplica();
 
-	const [{ value, type } = {}] = await keyValueTable.find(
+	const [{ value, type } = {}] = await keyValueTableReplica.find(
 		{ key, limit: 1 },
 		['value', 'type'],
 	);
@@ -65,9 +71,9 @@ const get = async (key) => {
 };
 
 const getByPattern = async (pattern) => {
-	const keyValueTable = await getKeyValueTable();
+	const keyValueTableReplica = await getKeyValueTableReplica();
 
-	const result = await keyValueTable.find(
+	const result = await keyValueTableReplica.find(
 		{ search: { property: 'key', pattern } },
 		['key', 'value', 'type'],
 	);

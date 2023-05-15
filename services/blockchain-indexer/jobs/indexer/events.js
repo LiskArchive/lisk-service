@@ -16,7 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 
 const { getFinalizedHeight } = require('../../shared/constants');
-const { deleteEventStrTillHeight } = require('../../shared/utils/events');
+const { deleteEventStrTillHeight } = require('../../shared/indexer/utils/events');
 const config = require('../../config');
 
 module.exports = [

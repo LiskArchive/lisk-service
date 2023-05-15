@@ -15,7 +15,7 @@
  */
 const {
 	getIndexedAccountInfo,
-} = require('../../../utils/account');
+} = require('../../../indexer/utils/account');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
 

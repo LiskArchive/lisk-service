@@ -29,12 +29,12 @@ const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getIndexedAccountInfo } = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../../indexer/utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { normalizeTransaction } = require('../../utils/transactions');
-const { getNameByAddress } = require('../../utils/validator');
+const { getNameByAddress } = require('../../indexer/utils/validator');
 
 const config = require('../../../config');
 

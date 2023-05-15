@@ -42,10 +42,10 @@ const {
 	range,
 } = require('../utils/array');
 
-const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('./utils/account');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
-const { getEventsInfoToIndex } = require('../utils/events');
-const { calcCommissionAmount, calcSelfStakeReward } = require('../utils/validator');
+const { getEventsInfoToIndex } = require('./utils/events');
+const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
 
 const {
 	getFinalizedHeight,
@@ -100,7 +100,7 @@ const getValidatorsTable = () => getTableInstance(
 );
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
-const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
+const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';

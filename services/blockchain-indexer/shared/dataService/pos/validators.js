@@ -34,7 +34,7 @@ const {
 	updateAccountPublicKey,
 	getIndexedAccountInfo,
 	updateAccountInfo,
-} = require('../../utils/account');
+} = require('../../indexer/utils/account');
 const { getLastBlock } = require('../blocks');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');

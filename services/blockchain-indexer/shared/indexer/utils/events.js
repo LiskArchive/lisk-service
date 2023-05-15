@@ -23,12 +23,12 @@ const {
 		rollbackDbTransaction,
 	},
 } = require('lisk-service-framework');
-const config = require('../../config');
+const config = require('../../../config');
 
-const { getGenesisHeight } = require('../constants');
+const { getGenesisHeight } = require('../../constants');
 
-const keyValueTable = require('../database/mysqlKVStore');
-const eventsTableSchema = require('../database/schema/events');
+const keyValueTable = require('../../database/mysqlKVStore');
+const eventsTableSchema = require('../../database/schema/events');
 
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const logger = Logger();

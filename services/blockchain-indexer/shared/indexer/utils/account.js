@@ -29,10 +29,11 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const accountsTableSchema = require('../database/schema/accounts');
-const config = require('../../config');
+const accountsTableSchema = require('../../database/schema/accounts');
+const config = require('../../../config');
 
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getAccountsTable = () => getTableInstance(
 	accountsTableSchema.tableName,
@@ -40,10 +41,16 @@ const getAccountsTable = () => getTableInstance(
 	MYSQL_ENDPOINT_PRIMARY,
 );
 
+const getAccountsTableReplica = () => getTableInstance(
+	accountsTableSchema.tableName,
+	accountsTableSchema,
+	MYSQL_ENDPOINT_REPLICA,
+);
+
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
-		const accountsTable = await getAccountsTable();
-		const [account = {}] = await accountsTable.find({ limit: 1, ...params }, columns);
+		const accountsTableReplica = await getAccountsTableReplica();
+		const [account = {}] = await accountsTableReplica.find({ limit: 1, ...params }, columns);
 		return account;
 	}
 	return {};
@@ -73,7 +80,15 @@ const updateAccountPublicKey = async (publicKey) => {
 	});
 };
 
-const updateAccountInfo = async (accountInfo) => {
+const updateAccountInfo = async (params) => {
+	const accountInfo = {};
+
+	accountsTableSchema.schema.forEach(columnName => {
+		if (columnName in params) {
+			accountInfo[columnName] = params[columnName];
+		}
+	});
+
 	const accountsTable = await getAccountsTable();
 	await accountsTable.upsert(accountInfo);
 };
@@ -86,6 +101,6 @@ module.exports = {
 	getLisk32Address,
 	updateAccountPublicKey,
 	getHexAddress,
-	getAccountsTable,
+	getAccountsTableReplica,
 	updateAccountInfo,
 };
