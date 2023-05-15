@@ -28,7 +28,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_app_registry: https://github.com/LiskHQ/app-registry
 :url_dynamic_fee: https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md
 :url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
-:url_websocket: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+:url_websocket_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_subapi: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/websocket_subscribe_api.md
 :url_postman: https://www.postman.com/
 :url_curl: https://curl.se/
