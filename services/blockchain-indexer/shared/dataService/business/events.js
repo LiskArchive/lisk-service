@@ -33,22 +33,22 @@ const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getBlocksTable = () => getTableInstance(
 	blocksTableSchema.tableName,
 	blocksTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_REPLICA,
 );
 const getEventsTable = () => getTableInstance(
 	eventsTableSchema.tableName,
 	eventsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_REPLICA,
 );
 const getEventTopicsTable = () => getTableInstance(
 	eventTopicsTableSchema.tableName,
 	eventTopicsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_REPLICA,
 );
 
 const eventCache = CacheLRU('events');

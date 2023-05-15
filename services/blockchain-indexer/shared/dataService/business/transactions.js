@@ -35,12 +35,12 @@ const { getFinalizedHeight } = require('../../constants');
 const transactionsIndexSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_REPLICA,
 );
 
 const getTransactionIDsByBlockID = async blockID => {

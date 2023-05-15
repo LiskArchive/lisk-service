@@ -30,7 +30,7 @@ const { getGenesisHeight } = require('../constants');
 const keyValueTable = require('../database/mysqlKVStore');
 const eventsTableSchema = require('../database/schema/events');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
@@ -38,7 +38,7 @@ const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 const getEventsTable = () => getTableInstance(
 	eventsTableSchema.tableName,
 	eventsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const getEventsInfoToIndex = async (block, events) => {
@@ -84,7 +84,7 @@ const deleteEventStrTillHeight = async (toHeight) => {
 	const eventsTable = await getEventsTable();
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
 
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
+	const connection = await getDbConnection(MYSQL_ENDPOINT_PRIMARY);
 	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
 

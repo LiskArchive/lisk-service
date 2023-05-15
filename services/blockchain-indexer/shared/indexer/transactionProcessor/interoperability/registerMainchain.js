@@ -24,7 +24,7 @@ const config = require('../../../../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainAccount, getMainchainID } = require('../../../dataService');
@@ -33,7 +33,7 @@ const { CHAIN_STATUS } = require('../../../dataService/business/interoperability
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 // Command specific constants

@@ -22,14 +22,14 @@ const { TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { getChainInfo } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 // Command specific constants

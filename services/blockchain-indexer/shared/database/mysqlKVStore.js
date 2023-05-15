@@ -21,12 +21,12 @@ const keyValueStoreSchema = require('./schema/kvStore');
 
 const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 
 const getKeyValueTable = () => getTableInstance(
 	keyValueStoreSchema.tableName,
 	keyValueStoreSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const set = async (key, value, dbTrx) => {

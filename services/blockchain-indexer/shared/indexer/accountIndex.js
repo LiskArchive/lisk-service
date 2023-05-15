@@ -32,12 +32,12 @@ const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 
 const getAccountIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const updateAccountInfoPk = async (job) => {

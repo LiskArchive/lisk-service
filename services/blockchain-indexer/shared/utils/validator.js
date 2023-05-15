@@ -25,7 +25,7 @@ const accountsIndexSchema = require('../database/schema/accounts');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
@@ -34,19 +34,19 @@ const maxCommissionQ = q96(MAX_COMMISSION);
 const getAccountsIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema.tableName,
 	stakesTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const getNameByAddress = async (address) => {

@@ -24,13 +24,13 @@ const config = require('../../../../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const commissionsTableSchema = require('../../../database/schema/commissions');
 
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
 	commissionsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 // Command specific constants

@@ -29,12 +29,12 @@ const {
 	getLisk32AddressFromPublicKey,
 } = require('../../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getStakesTable = () => getTableInstance(
 	stakesIndexSchema.tableName,
 	stakesIndexSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_REPLICA,
 );
 
 const getStakers = async params => {

@@ -21,7 +21,7 @@ const config = require('../../../../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 
 const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');
@@ -29,13 +29,13 @@ const transactionsTableSchema = require('../../../database/schema/transactions')
 const getAccountsTable = () => getTableInstance(
 	accountsTableSchema.tableName,
 	accountsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 const getTransactionsTable = () => getTableInstance(
 	transactionsTableSchema.tableName,
 	transactionsTableSchema,
-	MYSQL_ENDPOINT,
+	MYSQL_ENDPOINT_PRIMARY,
 );
 
 // Command specific constants
