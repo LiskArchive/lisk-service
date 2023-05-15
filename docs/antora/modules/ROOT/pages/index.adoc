@@ -175,7 +175,7 @@ The default port for REST API requests and Socket.IO-based communication is `990
 The API is accessible through the URL `http://localhost:9901` when running locally.
 The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
 
-With regard to WebSocket-based APIs, these can be used via the {url_socket}[Socket.IO^] library which is available for many programming languages and frameworks,
+The WebSocket-based APIs can be accessed with the help of the {url_socket}[Socket.IO^] library that is available for many programming languages and frameworks.
 
 To perform the installation ensure the following dependencies listed below are installed:
 
