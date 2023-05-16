@@ -94,6 +94,8 @@ _Before_ submitting a pull request, please make sure the following is done:
 	Follow the [JavaScript](https://github.com/airbnb/javascript) styleguide from
 	Airbnb with the
 	[lisk extension](https://github.com/LiskHQ/eslint-config-lisk-base).
+1. Format your code using [Prettier](https://prettier.io/). This can be performed manually
+   with `npm run format`.
 1. Submit a pull request via GitHub. Include issue numbers in the PR title, at
 	the end with: `Description - Closes #IssueNumber`.
 1. Check that Jenkins CI tests pass (pull request turns green). First time
