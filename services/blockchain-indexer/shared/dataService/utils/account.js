@@ -42,7 +42,7 @@ const getAccountsTable = () => getTableInstance(
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
-		const accountsTable = await getAccountsTable(MYSQL_ENDPOINT_REPLICA);
+		const accountsTable = await getAccountsTable();
 		const [account = {}] = await accountsTable.find({ limit: 1, ...params }, columns);
 		return account;
 	}

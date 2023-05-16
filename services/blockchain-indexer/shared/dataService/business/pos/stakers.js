@@ -39,7 +39,7 @@ const getStakesTable = () => getTableInstance(
 
 const getStakers = async params => {
 	const stakesTable = await getStakesTable();
-	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT);
+	const accountsTable = await getAccountsTable();
 	const stakersResponse = {
 		data: { stakers: [] },
 		meta: {
