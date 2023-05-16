@@ -45,6 +45,9 @@ services:
     restart: always
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - MYSQL_ROOT_PASSWORD=password
     ports:
