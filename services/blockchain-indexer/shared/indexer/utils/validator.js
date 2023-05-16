@@ -15,28 +15,16 @@
  */
 const { math: { q96 } } = require('@liskhq/lisk-utils');
 const {
-	CacheRedis,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const config = require('../../../config');
 const { MAX_COMMISSION } = require('../../constants');
-const accountsIndexSchema = require('../../database/schema/accounts');
 const commissionsTableSchema = require('../../database/schema/commissions');
 const stakesTableSchema = require('../../database/schema/stakes');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
-
-const validatorCache = CacheRedis('validator', config.endpoints.cache);
-
 const maxCommissionQ = q96(MAX_COMMISSION);
-
-const getAccountsTable = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT_PRIMARY,
-);
 
 const getCommissionsTable = () => getTableInstance(
 	commissionsTableSchema.tableName,
@@ -49,28 +37,6 @@ const getStakesTable = () => getTableInstance(
 	stakesTableSchema,
 	MYSQL_ENDPOINT_REPLICA,
 );
-
-const getNameByAddress = async (address) => {
-	if (address) {
-		const name = await validatorCache.get(address);
-		if (name) {
-			// Update the account index with the name asynchronously
-			const accountsTable = await getAccountsTable();
-			accountsTable.upsert({ address, name });
-
-			return name;
-		}
-	}
-	return null;
-};
-
-const getAddressByName = async (name) => {
-	if (name) {
-		const address = await validatorCache.get(name);
-		if (address) return address;
-	}
-	return null;
-};
 
 const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) => {
 	const commissionsTable = await getCommissionsTable();
@@ -124,8 +90,6 @@ const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmou
 };
 
 module.exports = {
-	getNameByAddress,
-	getAddressByName,
 	calcCommissionAmount,
 	calcSelfStakeReward,
 };

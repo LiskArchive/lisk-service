@@ -19,7 +19,7 @@ const { Logger } = require('lisk-service-framework');
 const { getPosConstants } = require('./pos');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
-const { getNameByAddress } = require('../../indexer/utils/validator');
+const { getNameByAddress } = require('../../utils/validator');
 
 const logger = Logger();
 

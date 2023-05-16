@@ -34,7 +34,7 @@ const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { normalizeTransaction } = require('../../utils/transactions');
-const { getNameByAddress } = require('../../indexer/utils/validator');
+const { getNameByAddress } = require('../../utils/validator');
 
 const config = require('../../../config');
 

@@ -18,7 +18,7 @@ const {
 	updateAccountPublicKey,
 } = require('../../utils/account');
 const { requestConnector } = require('../../../utils/request');
-const { getAddressByName } = require('../../../indexer/utils/validator');
+const { getAddressByName } = require('../../utils/validator');
 
 const getPosClaimableRewards = async params => {
 	const claimableRewards = {
