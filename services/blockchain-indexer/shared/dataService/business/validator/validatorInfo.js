@@ -19,7 +19,7 @@ const config = require('../../../../config');
 const validatorsTableSchema = require('../../../database/schema/validators');
 
 const { requestConnector } = require('../../../utils/request');
-const { getIndexedAccountInfo } = require('../../../indexer/utils/account');
+const { getIndexedAccountInfo } = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 

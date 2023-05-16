@@ -27,7 +27,7 @@ const {
 	getIndexedAccountInfo,
 	getAccountsTable,
 	getLisk32AddressFromPublicKey,
-} = require('../../../indexer/utils/account');
+} = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 

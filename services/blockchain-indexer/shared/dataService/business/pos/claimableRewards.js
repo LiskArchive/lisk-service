@@ -16,7 +16,7 @@
 const {
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
-} = require('../../../indexer/utils/account');
+} = require('../../utils/account');
 const { requestConnector } = require('../../../utils/request');
 const { getAddressByName } = require('../../../indexer/utils/validator');
 

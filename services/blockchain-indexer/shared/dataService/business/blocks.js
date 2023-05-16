@@ -29,7 +29,7 @@ const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getIndexedAccountInfo } = require('../../indexer/utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');

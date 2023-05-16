@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 const { Logger } = require('lisk-service-framework');
 
 const { getPosConstants } = require('./pos');
-const { getIndexedAccountInfo } = require('../../indexer/utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../indexer/utils/validator');
 

@@ -25,7 +25,7 @@ const config = require('../../../config');
 const accountBalancesTableSchema = require('../../database/schema/accountBalances');
 
 const { requestConnector } = require('../../utils/request');
-const { getLisk32AddressFromPublicKey, getIndexedAccountInfo } = require('../../indexer/utils/account');
+const { getLisk32AddressFromPublicKey, getIndexedAccountInfo } = require('../utils/account');
 const { getAddressByName } = require('../../indexer/utils/validator');
 
 const {

@@ -26,7 +26,7 @@ const { getEventsByHeight } = require('./events');
 const {
 	getLisk32AddressFromPublicKey,
 	getIndexedAccountInfo,
-} = require('../../indexer/utils/account');
+} = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactions');

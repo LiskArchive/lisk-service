@@ -42,7 +42,7 @@ const {
 	range,
 } = require('../utils/array');
 
-const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('./utils/account');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
