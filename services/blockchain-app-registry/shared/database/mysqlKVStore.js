@@ -24,7 +24,6 @@ const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getKeyValueTable = () => getTableInstance(
-	keyValueStoreSchema.tableName,
 	keyValueStoreSchema,
 	MYSQL_ENDPOINT,
 );

@@ -169,8 +169,8 @@ const commitDbTransaction = async transaction => transaction.commit();
 
 const rollbackDbTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
-	const { primaryKey, schema } = tableConfig;
+const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+	const { tableName, primaryKey, schema } = tableConfig;
 
 	const knex = await getDbConnection(connEndpoint);
 

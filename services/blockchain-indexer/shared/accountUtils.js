@@ -29,7 +29,6 @@ const validateLisk32Address = address => (typeof address === 'string' && regex.A
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getAccountsTable = async () => getTableInstance(
-	accountsIndexSchema.tableName,
 	accountsIndexSchema,
 	MYSQL_ENDPOINT,
 );

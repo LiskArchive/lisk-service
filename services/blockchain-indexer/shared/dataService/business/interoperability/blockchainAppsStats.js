@@ -32,7 +32,6 @@ const { getNetworkStatus } = require('../network');
 const { getTotalStaked } = require('../../../utils/pos');
 
 const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
 	MYSQL_ENDPOINT,
 );

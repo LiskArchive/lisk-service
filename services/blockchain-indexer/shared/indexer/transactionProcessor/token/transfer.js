@@ -27,13 +27,11 @@ const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');
 
 const getAccountsTable = () => getTableInstance(
-	accountsTableSchema.tableName,
 	accountsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema.tableName,
 	transactionsTableSchema,
 	MYSQL_ENDPOINT,
 );

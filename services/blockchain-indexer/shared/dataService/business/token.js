@@ -36,7 +36,6 @@ const {
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getAccountBalancesTable = () => getTableInstance(
-	accountBalancesTableSchema.tableName,
 	accountBalancesTableSchema,
 	MYSQL_ENDPOINT,
 );

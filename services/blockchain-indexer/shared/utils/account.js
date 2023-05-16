@@ -35,7 +35,6 @@ const config = require('../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountsTable = () => getTableInstance(
-	accountsTableSchema.tableName,
 	accountsTableSchema,
 	MYSQL_ENDPOINT,
 );

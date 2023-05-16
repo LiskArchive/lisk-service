@@ -36,17 +36,14 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getBlocksTable = () => getTableInstance(
-	blocksTableSchema.tableName,
 	blocksTableSchema,
 	MYSQL_ENDPOINT,
 );
 const getEventsTable = () => getTableInstance(
-	eventsTableSchema.tableName,
 	eventsTableSchema,
 	MYSQL_ENDPOINT,
 );
 const getEventTopicsTable = () => getTableInstance(
-	eventTopicsTableSchema.tableName,
 	eventTopicsTableSchema,
 	MYSQL_ENDPOINT,
 );

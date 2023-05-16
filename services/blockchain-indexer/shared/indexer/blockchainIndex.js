@@ -70,31 +70,26 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const logger = Logger();
 
 const getBlocksTable = () => getTableInstance(
-	blocksTableSchema.tableName,
 	blocksTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getEventsTable = () => getTableInstance(
-	eventsTableSchema.tableName,
 	eventsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getEventTopicsTable = () => getTableInstance(
-	eventTopicsTableSchema.tableName,
 	eventTopicsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema.tableName,
 	transactionsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema.tableName,
 	validatorsTableSchema,
 	MYSQL_ENDPOINT,
 );

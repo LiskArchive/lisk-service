@@ -37,7 +37,7 @@ const initializeSearchIndex = async () => {
 		Object.values(indexSchemas),
 		async schema => {
 			logger.trace(`Initializing table: ${schema.tableName}.`);
-			return getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT);
+			return getTableInstance(schema, MYSQL_ENDPOINT);
 		},
 		{ concurrency: 1 },
 	);
@@ -50,7 +50,7 @@ const truncateAllTables = async () => {
 		Object.values(indexSchemas),
 		async schema => {
 			logger.trace(`Truncating table: ${schema.tableName}.`);
-			const db = await getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT);
+			const db = await getTableInstance(schema, MYSQL_ENDPOINT);
 			await db.rawQuery(`TRUNCATE TABLE ${schema.tableName};`);
 			logger.info(`Truncated table: ${schema.tableName}.`);
 		},

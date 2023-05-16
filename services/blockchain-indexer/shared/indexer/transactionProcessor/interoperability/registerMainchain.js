@@ -31,7 +31,6 @@ const { getChainAccount, getMainchainID } = require('../../../dataService');
 const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
 
 const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
 	MYSQL_ENDPOINT,
 );

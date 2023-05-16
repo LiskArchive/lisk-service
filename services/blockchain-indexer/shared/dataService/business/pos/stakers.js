@@ -32,7 +32,6 @@ const {
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getStakesTable = () => getTableInstance(
-	stakesIndexSchema.tableName,
 	stakesIndexSchema,
 	MYSQL_ENDPOINT,
 );

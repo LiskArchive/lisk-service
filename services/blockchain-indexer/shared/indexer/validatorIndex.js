@@ -26,13 +26,11 @@ const config = require('../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema.tableName,
 	commissionsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
 	stakesTableSchema,
 	MYSQL_ENDPOINT,
 );

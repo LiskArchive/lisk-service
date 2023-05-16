@@ -35,7 +35,6 @@ const config = require('../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getDBInstance = () => getTableInstance(
-	txStatisticsIndexSchema.tableName,
 	txStatisticsIndexSchema,
 	MYSQL_ENDPOINT,
 );

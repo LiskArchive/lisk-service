@@ -41,13 +41,11 @@ const knownMainchainIDs = Object
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
 const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema.tableName,
 	applicationMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getTokenMetadataIndex = () => getTableInstance(
-	tokenMetadataIndexSchema.tableName,
 	tokenMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );

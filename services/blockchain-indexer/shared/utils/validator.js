@@ -32,19 +32,16 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 const maxCommissionQ = q96(MAX_COMMISSION);
 
 const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
 	accountsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema.tableName,
 	commissionsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
 	stakesTableSchema,
 	MYSQL_ENDPOINT,
 );

@@ -33,7 +33,6 @@ const { getRewardTokenID } = require('../dynamicReward');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema.tableName,
 	validatorsTableSchema,
 	MYSQL_ENDPOINT,
 );

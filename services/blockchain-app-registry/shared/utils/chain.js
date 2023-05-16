@@ -24,7 +24,6 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const applicationMetadataIndexSchema = require('../database/schema/application_metadata');
 
 const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema.tableName,
 	applicationMetadataIndexSchema,
 	MYSQL_ENDPOINT,
 );

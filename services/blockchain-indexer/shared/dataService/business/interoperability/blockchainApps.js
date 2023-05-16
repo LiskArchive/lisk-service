@@ -26,7 +26,6 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
 const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
 	MYSQL_ENDPOINT,
 );

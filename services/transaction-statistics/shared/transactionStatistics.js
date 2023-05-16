@@ -32,7 +32,6 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 let numTrxTypes;
 
 const getDBInstance = () => getTableInstance(
-	txStatisticsIndexSchema.tableName,
 	txStatisticsIndexSchema,
 	MYSQL_ENDPOINT,
 );

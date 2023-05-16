@@ -35,7 +35,6 @@ const commissionsTableSchema = require('../database/schema/commissions');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema.tableName,
 	commissionsTableSchema,
 	MYSQL_ENDPOINT,
 );

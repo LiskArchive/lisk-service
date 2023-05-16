@@ -35,7 +35,6 @@ const accountsIndexSchema = require('../database/schema/accounts');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
 	accountsIndexSchema,
 	MYSQL_ENDPOINT,
 );

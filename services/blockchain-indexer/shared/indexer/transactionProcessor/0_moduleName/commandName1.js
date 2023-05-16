@@ -32,7 +32,6 @@ const logger = Logger();
 const entityTableSchema = require('../../../database/schema/transactions');
 
 const getEntityTable = () => getTableInstance(
-	entityTableSchema.tableName,
 	entityTableSchema,
 	MYSQL_ENDPOINT,
 );

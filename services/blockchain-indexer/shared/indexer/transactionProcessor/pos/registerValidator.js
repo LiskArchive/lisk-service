@@ -29,13 +29,11 @@ const accountsTableSchema = require('../../../database/schema/accounts');
 const validatorsTableSchema = require('../../../database/schema/validators');
 
 const getAccountsTable = () => getTableInstance(
-	accountsTableSchema.tableName,
 	accountsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema.tableName,
 	validatorsTableSchema,
 	MYSQL_ENDPOINT,
 );

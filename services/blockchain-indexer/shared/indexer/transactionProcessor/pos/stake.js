@@ -33,7 +33,6 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
 	stakesTableSchema,
 	MYSQL_ENDPOINT,
 );

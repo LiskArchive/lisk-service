@@ -44,13 +44,11 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountsTable = () => getTableInstance(
-	accountsIndexSchema.tableName,
 	accountsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
 const getValidatorsTable = () => getTableInstance(
-	validatorsIndexSchema.tableName,
 	validatorsIndexSchema,
 	MYSQL_ENDPOINT,
 );

@@ -30,7 +30,6 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const multisignatureTableSchema = require('../../../database/schema/multisignature');
 
 const getMultisignatureTable = () => getTableInstance(
-	multisignatureTableSchema.tableName,
 	multisignatureTableSchema,
 	MYSQL_ENDPOINT,
 );

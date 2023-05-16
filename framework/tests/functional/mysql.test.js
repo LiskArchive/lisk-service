@@ -27,8 +27,8 @@ const compositeKeySchema = require('../constants/compositeKeySchema');
 const tableName = 'functional_test';
 const compositeKeyTableName = 'composite_primary_key';
 
-const getIndex = () => getTableInstance(tableName, schema);
-const getCompositeKeyTableIndex = () => getTableInstance(compositeKeyTableName, compositeKeySchema);
+const getIndex = () => getTableInstance(schema);
+const getCompositeKeyTableIndex = () => getTableInstance(compositeKeySchema);
 
 const { emptyBlock, nonEmptyBlock } = require('../constants/blocks');
 
