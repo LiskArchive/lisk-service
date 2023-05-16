@@ -27,14 +27,15 @@ const { requestIndexer } = require('./utils/request');
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 let numTrxTypes;
 
-const getDBInstance = () => getTableInstance(
+const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
 	txStatisticsIndexSchema.tableName,
 	txStatisticsIndexSchema,
-	MYSQL_ENDPOINT,
+	dbEndpoint,
 );
 
 const getSelector = async (params) => {
@@ -61,14 +62,14 @@ const getSelector = async (params) => {
 };
 
 const getStatsTimeline = async params => {
-	const db = await getDBInstance();
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 	const tokenStatsTimeline = {};
 
 	await BluebirdPromise.map(
 		params.tokenIDs,
 		async tokenID => {
 			const queryParams = await getSelector(params);
-			const result = await db.find(
+			const result = await transactionStatisticsTable.find(
 				{
 					...queryParams,
 					whereIn: { property: 'tokenID', values: [tokenID, DB_CONSTANT.UNAVAILABLE] },
@@ -111,14 +112,14 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
-	const db = await getDBInstance();
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 	const tokenDistributionByAmount = {};
 
 	await BluebirdPromise.map(
 		params.tokenIDs,
 		async tokenID => {
 			const queryParams = await getSelector(params);
-			const result = (await db.find(
+			const result = (await transactionStatisticsTable.find(
 				{
 					...queryParams,
 					whereIn: { property: 'tokenID', values: [tokenID, DB_CONSTANT.UNAVAILABLE] },
@@ -149,9 +150,9 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
-	const db = await getDBInstance();
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 
-	const result = (await db.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
+	const result = (await transactionStatisticsTable.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -170,7 +171,7 @@ const getDistributionByType = async params => {
 };
 
 const getTransactionsStatistics = async params => {
-	const db = await getDBInstance();
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 
 	const transactionsStatistics = {
 		data: {},
@@ -187,7 +188,7 @@ const getTransactionsStatistics = async params => {
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
 
-	const tokens = await db.find({ distinct: 'tokenID' }, ['tokenID']);
+	const tokens = await transactionStatisticsTable.find({ distinct: 'tokenID' }, ['tokenID']);
 
 	const tokenIDs = tokens.map(e => e.tokenID);
 
@@ -204,7 +205,7 @@ const getTransactionsStatistics = async params => {
 
 	transactionsStatistics.data = { timeline, distributionByType, distributionByAmount };
 
-	const [{ date: minDate } = {}] = await db.find({ sort: 'date:asc' }, 'date');
+	const [{ date: minDate } = {}] = await transactionStatisticsTable.find({ sort: 'date:asc' }, 'date');
 	const total = minDate ? moment().diff(moment.unix(minDate), params.interval) : 0;
 
 	transactionsStatistics.meta = {

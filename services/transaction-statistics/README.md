@@ -27,7 +27,8 @@ To configure the different microservices, there are several environment variable
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
-- `SERVICE_STATISTICS_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
+- `SERVICE_STATISTICS_MYSQL`: Connection string of the (read/write) primary MySQL instance that the microservice connects to.
+- `SERVICE_STATISTICS_MYSQL_REPLICA`: Connection string of the (read only) replicated MySQL instance that the microservice connects to.
 - `SERVICE_STATISTICS_REDIS`: URL of the cache storage (Redis).
 - `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`: The number of days for which the transaction statistics need to be built in retrospect to the application init.
 

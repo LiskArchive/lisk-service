@@ -43,6 +43,9 @@ services:
     restart: always
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
@@ -72,6 +75,9 @@ services:
     restart: always
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - MYSQL_ROOT_PASSWORD=password
     healthcheck:
@@ -168,12 +174,15 @@ services:
         condition: service_healthy
       mysql-primary:
         condition: service_healthy
+      mysql-read-replica:
+        condition: service_healthy
     networks:
       - services_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
       - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
+      - SERVICE_STATISTICS_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica:3306/lisk
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
     restart: always
 
