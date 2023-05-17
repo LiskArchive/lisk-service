@@ -70,7 +70,7 @@ The data is served in JSON format and exposed by a xref:{url_api_http}[public RE
 
 == Architecture
 
-image::architecture.png[Architecture]
+image::architecture.png[Architecture][,400 ,align="center"]
 
 === Available Services
 
