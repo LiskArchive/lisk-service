@@ -21,12 +21,14 @@ const {
 
 const config = require('../../../../config');
 const stakesIndexSchema = require('../../../database/schema/stakes');
+const {
+	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
+} = require('../../../utils/account');
 
 const {
-	updateAccountPublicKey,
 	getIndexedAccountInfo,
 	getAccountsTable,
-	getLisk32AddressFromPublicKey,
 } = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;

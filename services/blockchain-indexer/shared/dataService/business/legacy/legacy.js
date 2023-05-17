@@ -13,12 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getLegacyAddressFromPublicKey,
-	getLisk32AddressFromPublicKey,
-} = require('../../utils/account');
+const { getLegacyAddressFromPublicKey } = require('../../utils/account');
 
 const { requestConnector } = require('../../../utils/request');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {
