@@ -145,6 +145,9 @@ describe('Test MySQL', () => {
 		});
 
 		it('Increase column value', async () => {
+			const [currentBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			const currentTimestamp = currentBlock.timestamp;
+
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: { id: emptyBlock.id },
@@ -152,7 +155,21 @@ describe('Test MySQL', () => {
 
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
-			expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
+			expect(retrievedBlock.timestamp).toBe(5 + currentTimestamp);
+		});
+
+		it('Decrease column value', async () => {
+			const [currentBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			const currentTimestamp = currentBlock.timestamp;
+
+			await testTable.decrement({
+				decrement: { timestamp: 5 },
+				where: { id: emptyBlock.id },
+			});
+
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
+			expect(retrievedBlock).toBeTruthy();
+			expect(retrievedBlock.timestamp).toBe(currentTimestamp - 5);
 		});
 
 		it('Delete row by primary key', async () => {

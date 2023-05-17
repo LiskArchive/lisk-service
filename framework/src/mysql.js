@@ -215,7 +215,12 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 		const queryParams = resolveQueryParams(params);
 
 		if (columns) query.select(columns);
-		query.where(queryParams);
+
+		if (params.where) {
+			query.where(params.where);
+		} else {
+			query.where(queryParams);
+		}
 
 		if (params.distinct) {
 			const distinctParams = params.distinct.split(',');
@@ -419,7 +424,11 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
-		query.where(queryParams);
+		if (params.where) {
+			query.where(params.where);
+		} else {
+			query.where(queryParams);
+		}
 
 		if (params.distinct) {
 			query.countDistinct(`${params.distinct} as count`);
@@ -556,10 +565,7 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 			isDefaultTrx = true;
 		}
 
-		const query = knex(tableName)
-			.transacting(trx)
-			.where(params.where)
-			.increment(params.increment);
+		const query = queryBuilder(params, false, trx).increment(params.increment);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -580,10 +586,7 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 			isDefaultTrx = true;
 		}
 
-		const query = knex(tableName)
-			.transacting(trx)
-			.where(params.where)
-			.decrement(params.decrement);
+		const query = queryBuilder(params, false, trx).decrement(params.decrement);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
