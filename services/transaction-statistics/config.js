@@ -36,7 +36,7 @@ config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://localh
 // Primary database. Used for both read-write operations.
 config.endpoints.mysqlPrimary = process.env.SERVICE_STATISTICS_MYSQL || 'mysql://lisk:password@mysql-primary:3306/lisk';
 // DB replicas against the primary. Used for read-only operations.
-config.endpoints.mysqlReplica = process.env.SERVICE_STATISTICS_MYSQL_REPLICA
+config.endpoints.mysqlReplica = process.env.SERVICE_STATISTICS_MYSQL_READ_REPLICA
 	|| config.endpoints.mysqlPrimary;
 
 config.transactionStatistics = {

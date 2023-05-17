@@ -17,12 +17,14 @@ const BluebirdPromise = require('bluebird');
 
 const {
 	getIndexedAccountInfo,
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
 } = require('../../utils/account');
 const { getAddressByName } = require('../../utils/validator');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
+const {
+	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
+} = require('../../../utils/account');
 
 const normalizeStake = stake => parseToJSONCompatObj(stake);
 

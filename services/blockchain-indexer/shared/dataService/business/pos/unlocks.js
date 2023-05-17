@@ -16,11 +16,10 @@
 const { getPosTokenID } = require('./constants');
 const {
 	getIndexedAccountInfo,
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
 } = require('../../utils/account');
 const { getAddressByName } = require('../../utils/validator');
 const { requestConnector } = require('../../../utils/request');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../../../utils/account');
 
 const getPosUnlocks = async params => {
 	const unlocks = {

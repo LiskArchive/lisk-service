@@ -43,9 +43,6 @@ services:
     restart: always
     networks:
       - services_network
-    deploy:
-      mode: replicated
-      replicas: 1
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
@@ -99,6 +96,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
@@ -112,6 +112,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
@@ -137,6 +140,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_INDEXER_CACHE_REDIS=redis://redis_persistent:6379/0
@@ -160,6 +166,9 @@ services:
         condition: service_started
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
@@ -178,6 +187,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
@@ -195,6 +207,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
@@ -216,6 +231,9 @@ services:
         condition: service_started
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
@@ -241,6 +259,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
@@ -260,6 +281,9 @@ services:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
