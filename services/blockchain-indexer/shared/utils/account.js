@@ -47,7 +47,7 @@ const updateAccountPublicKey = async (publicKey) => {
 const updateAccountInfo = async (params) => {
 	const accountInfo = {};
 
-	accountsTableSchema.schema.forEach(columnName => {
+	Object.keys(accountsTableSchema.schema).forEach(columnName => {
 		if (columnName in params) {
 			accountInfo[columnName] = params[columnName];
 		}

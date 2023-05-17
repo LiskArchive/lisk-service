@@ -30,16 +30,18 @@ const validatorsIndexSchema = require('../../database/schema/validators');
 const { isSubstringInArray } = require('../../utils/array');
 
 const {
-	getLisk32AddressFromPublicKey,
 	getHexAddress,
-	updateAccountPublicKey,
 	getIndexedAccountInfo,
-	updateAccountInfo,
 } = require('../utils/account');
 const { getLastBlock } = require('../blocks');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+const {
+	updateAccountInfo,
+	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
+} = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
