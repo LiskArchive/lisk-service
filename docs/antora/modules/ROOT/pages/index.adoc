@@ -27,7 +27,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_services_directory: https://github.com/LiskHQ/lisk-service/tree/development/services
 :url_app_registry: https://github.com/LiskHQ/app-registry
 :url_dynamic_fee: https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md
-:url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+// :url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+:url_http_api: reference/api.adoc
 :url_websocket_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_subscribe_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/websocket_subscribe_api.md
 :url_postman: https://www.postman.com/
@@ -158,7 +159,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 |===
 |API |Description
 
-|{url_http_api}[HTTP API^]
+|xref:{url_http_api}[HTTP API]
 | HTTP API is the public RESTful API that provides blockchain data in standardized JSON format.
 
 |{url_websocket_api}[WebSocket JSON-RPC API^]
