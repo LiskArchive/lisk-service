@@ -19,11 +19,10 @@ const { api } = require('../../../helpers/api');
 const {
 	badRequestSchema,
 	goodRequestSchema,
-	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	blockchainAppSchema,
+	blockchainAppsSchema,
 } = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -45,8 +44,7 @@ describe('Blockchain apps API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return list of all blockchain applications when called with limit=10', async () => {
@@ -55,8 +53,7 @@ describe('Blockchain apps API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return list of all blockchain applications when called with limit=10 and offset=1', async () => {
@@ -65,8 +62,7 @@ describe('Blockchain apps API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return blockchain application when called by valid chainName', async () => {
@@ -74,8 +70,7 @@ describe('Blockchain apps API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return blockchain application when called by valid chainID', async () => {
@@ -83,8 +78,7 @@ describe('Blockchain apps API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return blockchain application when called by valid chainIDs as CSV', async () => {
@@ -92,8 +86,7 @@ describe('Blockchain apps API', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return blockchain applications when called by status', async () => {
@@ -102,18 +95,25 @@ describe('Blockchain apps API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
-	it('should return blockchain applications when called by partial search', async () => {
-		const response = await api.get(`${endpoint}?search=`);
+	it('should return blockchain applications when called by partial search (partial chain name)', async () => {
+		const response = await api.get(`${endpoint}?search=ene`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppSchema));
-		expect(response.meta).toMap(metaSchema);
+		expect(response).toMap(blockchainAppsSchema);
+	});
+
+	it('should return blockchain applications when called by partial search (exact chain name)', async () => {
+		const response = await api.get(`${endpoint}?search=enevti`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(response).toMap(blockchainAppsSchema);
 	});
 
 	it('should return bad request when called with invalid request param', async () => {

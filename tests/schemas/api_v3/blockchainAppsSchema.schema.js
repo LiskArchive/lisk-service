@@ -16,6 +16,8 @@
 import Joi from 'joi';
 import regex from './regex';
 
+const { metaSchema } = require('../generics.schema');
+
 const validStatuses = ['registered', 'active', 'terminated', 'any'];
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
@@ -39,7 +41,7 @@ const escrow = {
 	amount: Joi.string().pattern(regex.DIGITS).required(),
 };
 
-const blockchainAppSchema = {
+const dataSchema = {
 	chainName: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	status: Joi.string().valid(...validStatuses).required(),
@@ -53,8 +55,13 @@ const blockchainAppSchema = {
 	escrow: Joi.array().items(escrow).min(1).required(),
 };
 
+const blockchainAppsSchema = {
+	data: Joi.array().items(dataSchema).required(),
+	meta: metaSchema,
+};
+
 module.exports = {
 	blockchainAppsStatsSchema: Joi.object(blockchainAppsStatsSchema).required(),
-	blockchainAppSchema: Joi.object(blockchainAppSchema).required(),
+	blockchainAppsSchema: Joi.object(blockchainAppsSchema).required(),
 	goodRequestSchemaForStats: Joi.object(goodRequestSchemaForStats).required(),
 };

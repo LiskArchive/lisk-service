@@ -26,9 +26,11 @@ module.exports = [
 		controller: async () => {
 			logger.debug('Cleaning cache...');
 			try {
-				logger.info('Starting to clean cache.');
-				await cacheCleanup(config.caching.expiryInDays);
-				logger.info('Cache has been successfully cleaned.');
+				if (config.cachine.isBlockCachingEnabled) {
+					logger.info('Starting to clean cache.');
+					await cacheCleanup(config.caching.expiryInDays);
+					logger.info('Cache has been successfully cleaned.');
+				}
 			} catch (err) {
 				logger.warn(`Cleaning cache failed due to: ${err.message}.`);
 			}

@@ -13,23 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { rm } = require('../../../shared/utils/fs');
+const { rm } = require('../../../../shared/utils/fs');
 
 const {
 	getTableInstance,
 	startDbTransaction,
 	commitDbTransaction,
 	getDbConnection,
-} = require('../../../shared/database/better-sqlite3');
+} = require('../../../../shared/database/better-sqlite3');
 
-const schema = require('../../constants/blocksSchema');
+const schema = require('../../../constants/blocksSchema');
 
 const tableName = 'functional_test';
 const testDir = 'testDir';
 
 const getTable = () => getTableInstance(tableName, schema, testDir);
 
-const { blockWithoutTransaction, blockWithTransaction } = require('../../constants/blocks');
+const { blockWithoutTransaction, blockWithTransaction } = require('../../../constants/blocks');
 
 describe('Test better-sqlite3 implementation', () => {
 	let testTable;
@@ -78,7 +78,7 @@ describe('Test better-sqlite3 implementation', () => {
 			expect(retrievedBlock.height).toBe(10);
 		});
 
-		it('should return row coutn without params', async () => {
+		it('should return row count without params', async () => {
 			const count = await testTable.count();
 			expect(count).toBe(2);
 		});
