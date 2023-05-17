@@ -17,10 +17,10 @@ const {
 	Logger,
 	MySQL: {
 		getTableInstance,
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 } = require('lisk-service-framework');
 const config = require('../../config');
@@ -83,8 +83,8 @@ const deleteEventStrTillHeight = async (toHeight) => {
 	const eventsTable = await getEventsTable();
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
 
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
 
 	try {
@@ -99,10 +99,10 @@ const deleteEventStrTillHeight = async (toHeight) => {
 		await eventsTable.update({ where: queryParams, updates: { eventStr: null } }, dbTrx);
 		await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight, dbTrx);
 
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete serialized events until height ${toHeight}.`);
 	} catch (_) {
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`);
 	}
 };

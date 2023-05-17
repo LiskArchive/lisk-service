@@ -15,10 +15,10 @@
  */
 const {
 	MySQL: {
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 } = require('lisk-service-framework');
 
@@ -35,7 +35,7 @@ const VALUE_2 = 'VALUE_2';
 let dbConnection;
 
 beforeAll(async () => {
-	dbConnection = await getDbConnection(MYSQL_ENDPOINT);
+	dbConnection = await getDBConnection(MYSQL_ENDPOINT);
 });
 
 afterEach(async () => {
@@ -62,13 +62,13 @@ describe('Test set and get methods', () => {
 		expect(responseBefore).toBe(undefined);
 
 		// Create transaction and set key
-		const dbTrx = await startDbTransaction(dbConnection);
+		const dbTrx = await startDBTransaction(dbConnection);
 		await keyValueTable.set(KEY_1, VALUE_1, dbTrx);
 		const responseBeforeCommit = await keyValueTable.get(KEY_1);
 		expect(responseBeforeCommit).toBe(undefined);
 
 		// Commit transaction and check key
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		const responseAfterCommit = await keyValueTable.get(KEY_1);
 		expect(responseAfterCommit).toBe(VALUE_1);
 	});
@@ -79,13 +79,13 @@ describe('Test set and get methods', () => {
 		expect(responseBefore).toBe(undefined);
 
 		// Create transaction and set key
-		const dbTrx = await startDbTransaction(dbConnection);
+		const dbTrx = await startDBTransaction(dbConnection);
 		await keyValueTable.set(KEY_1, VALUE_1, dbTrx);
 		const responseBeforeRollback = await keyValueTable.get(KEY_1);
 		expect(responseBeforeRollback).toBe(undefined);
 
 		// Commit transaction and check key
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		const responseAfterRollback = await keyValueTable.get(KEY_1);
 		expect(responseAfterRollback).toBe(undefined);
 	});
@@ -164,13 +164,13 @@ describe('Test delete method', () => {
 		expect(responseBefore).toEqual(VALUE_1);
 
 		// Create transaction and delete key
-		const dbTrx = await startDbTransaction(dbConnection);
+		const dbTrx = await startDBTransaction(dbConnection);
 		await keyValueTable.delete(KEY_1, dbTrx);
 		const responseBeforeCommit = await keyValueTable.get(KEY_1);
 		expect(responseBeforeCommit).toEqual(VALUE_1);
 
 		// Commit transaction
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		const responseAfterCommit = await keyValueTable.get(KEY_1);
 		expect(responseAfterCommit).toEqual(undefined);
 	});
@@ -182,13 +182,13 @@ describe('Test delete method', () => {
 		expect(responseBefore).toEqual(VALUE_1);
 
 		// Create transaction and delete key
-		const dbTrx = await startDbTransaction(dbConnection);
+		const dbTrx = await startDBTransaction(dbConnection);
 		await keyValueTable.delete(KEY_1, dbTrx);
 		const responseBeforeRollback = await keyValueTable.get(KEY_1);
 		expect(responseBeforeRollback).toEqual(VALUE_1);
 
 		// Rollback transaction
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		const responseAfterRollback = await keyValueTable.get(KEY_1);
 		expect(responseAfterRollback).toEqual(VALUE_1);
 	});

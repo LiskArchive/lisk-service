@@ -44,7 +44,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	return knex;
 };
 
-const createDbConnection = async connEndpoint => {
+const createDBConnection = async connEndpoint => {
 	const knex = require('knex')({
 		client: 'mysql2',
 		version: '8',
@@ -130,7 +130,7 @@ const getConnectionPoolKey = (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	return connPoolKey;
 };
 
-const getDbConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const getDBConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const defaultCharset = 'utf8mb4';
 
@@ -142,7 +142,7 @@ const getDbConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 				? `${connEndpoint}&charset=${defaultCharset}`
 				: `${connEndpoint}?charset=${defaultCharset}`;
 		}
-		connectionPool[connPoolKey] = await createDbConnection(connString);
+		connectionPool[connPoolKey] = await createDBConnection(connString);
 	}
 
 	const knex = connectionPool[connPoolKey];
@@ -157,24 +157,24 @@ const createTableIfNotExists = async (tableName,
 
 	if (!tablePool[connPoolKeyTable]) {
 		logger.info(`Creating schema for ${tableName}`);
-		const knex = await getDbConnection(connEndpoint);
+		const knex = await getDBConnection(connEndpoint);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
 	}
 };
 
-const startDbTransaction = async connection => connection.transaction();
+const startDBTransaction = async connection => connection.transaction();
 
-const commitDbTransaction = async transaction => transaction.commit();
+const commitDBTransaction = async transaction => transaction.commit();
 
-const rollbackDbTransaction = async transaction => transaction.rollback();
+const rollbackDBTransaction = async transaction => transaction.rollback();
 
 const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const { tableName, primaryKey, schema } = tableConfig;
 
-	const knex = await getDbConnection(connEndpoint);
+	const knex = await getDBConnection(connEndpoint);
 
-	const createDefaultTransaction = async connection => startDbTransaction(connection);
+	const createDefaultTransaction = async connection => startDBTransaction(connection);
 
 	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
 
@@ -615,9 +615,9 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 
 module.exports = {
 	default: getTableInstance,
-	getDbConnection,
+	getDBConnection,
 	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
+	startDBTransaction,
+	commitDBTransaction,
+	rollbackDBTransaction,
 };

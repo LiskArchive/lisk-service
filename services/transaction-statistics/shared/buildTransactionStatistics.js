@@ -21,11 +21,11 @@ const {
 	Logger,
 	Queue,
 	MySQL: {
-		getDbConnection,
+		getDBConnection,
 		getTableInstance,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -130,8 +130,8 @@ const transformStatsObjectToList = statsObject => (
 
 const insertToDB = async (statsList, date) => {
 	const db = await getDBInstance();
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const trx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const trx = await startDBTransaction(connection);
 	try {
 		try {
 			const [{ id }] = db.find({ date, limit: 1 }, ['id']);
@@ -149,11 +149,11 @@ const insertToDB = async (statsList, date) => {
 			return finalStats;
 		});
 		await db.upsert(statsList, trx);
-		await commitDbTransaction(trx);
+		await commitDBTransaction(trx);
 		const count = statsList.reduce((acc, row) => acc + row.count, 0);
 		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await rollbackDBTransaction(trx);
 		throw error;
 	}
 };

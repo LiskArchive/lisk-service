@@ -15,10 +15,10 @@
  */
 const {
 	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
-	getDbConnection,
-	rollbackDbTransaction,
+	startDBTransaction,
+	commitDBTransaction,
+	getDBConnection,
+	rollbackDBTransaction,
 } = require('../../src/mysql');
 
 const schema = require('../constants/blocksSchema');
@@ -243,10 +243,10 @@ describe('Test MySQL', () => {
 		afterAll(() => testTable.rawQuery(`TRUNCATE ${tableName}`));
 
 		it('Insert row', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
@@ -262,10 +262,10 @@ describe('Test MySQL', () => {
 		});
 
 		it('Fetch rows using whereIn', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			const params = {
 				whereIn: [{
@@ -286,10 +286,10 @@ describe('Test MySQL', () => {
 		});
 
 		it('Update row', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
@@ -301,10 +301,10 @@ describe('Test MySQL', () => {
 		});
 
 		it('Row count using whereIn', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			const params = {
 				whereIn: [{
@@ -326,25 +326,25 @@ describe('Test MySQL', () => {
 		});
 
 		it('Increase column value', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: { id: emptyBlock.id },
 			}, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
 			expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
 		});
 
 		it('Delete row by primary key', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
 			const numAffectedRows = await testTable.deleteByPrimaryKey([existingBlockId], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			expect(numAffectedRows).toEqual(1);
 
 			const count = await testTable
@@ -353,8 +353,8 @@ describe('Test MySQL', () => {
 		});
 
 		it('Delete rows', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([emptyBlock, nonEmptyBlock]);
 			const existingBlock = await testTable.find({}, ['id']);
@@ -362,7 +362,7 @@ describe('Test MySQL', () => {
 
 			const existingIds = existingBlock.map(block => block.id);
 			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingIds } }, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			expect(numAffectedRows).toEqual(existingBlockCount);
 
@@ -371,8 +371,8 @@ describe('Test MySQL', () => {
 		});
 
 		it('Delete row', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([emptyBlock]);
 			const existingBlock = await testTable.find({}, ['id']);
@@ -380,7 +380,7 @@ describe('Test MySQL', () => {
 
 			const existingId = existingBlock.map(block => block.id);
 			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingId } }, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			expect(numAffectedRows).toEqual(existingBlockCount);
 
@@ -389,20 +389,20 @@ describe('Test MySQL', () => {
 		});
 
 		it('Batch row insert', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(2);
 		});
 
 		it('Distinct query', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock, { ...nonEmptyBlock, id: emptyBlock.id }], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const result = await testTable.find();
 			const distinctResult = await testTable.find({ distinct: 'id' }, 'id');
 			expect(result.length).toBeGreaterThan(distinctResult.length);
@@ -412,8 +412,8 @@ describe('Test MySQL', () => {
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock.timestamp).toBe(emptyBlock.timestamp);
 
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 
 			const params = {
 				where: { height: emptyBlock.height },
@@ -421,7 +421,7 @@ describe('Test MySQL', () => {
 			};
 
 			await testTable.update(params, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock1.timestamp).toBe(params.updates.timestamp);
@@ -430,13 +430,13 @@ describe('Test MySQL', () => {
 
 	describe('Transactional atomicity guarantees (non-auto commit mode)', () => {
 		it('Successful transaction commit', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock], trx);
 			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 
 			// Expect all operations to be successful, commit the transaction
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			// Verify committed transaction has been successful
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
@@ -445,8 +445,8 @@ describe('Test MySQL', () => {
 		});
 
 		it('Successful transaction rollback - 1', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([{ ...emptyBlock, id: 'rollback' }], trx);
 			await testTable.increment({
 				increment: { size: 100 },
@@ -454,7 +454,7 @@ describe('Test MySQL', () => {
 			}, trx);
 
 			// Assume failure occurred, rollback the transaction
-			await rollbackDbTransaction(trx);
+			await rollbackDBTransaction(trx);
 
 			// Verify none of the above operations have been committed
 			const [retrievedBlock] = await testTable.find({ id: 'rollback' }, ['id']);
@@ -463,11 +463,11 @@ describe('Test MySQL', () => {
 
 		it('Successful transaction rollback - 2', async () => {
 			const height = 14555;
-			const connection = await getDbConnection();
-			const trx1 = await startDbTransaction(connection);
-			const trx2 = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx1 = await startDBTransaction(connection);
+			const trx2 = await startDBTransaction(connection);
 			await testTable.upsert([{ ...emptyBlock, height }], trx1);
-			await commitDbTransaction(trx1);
+			await commitDBTransaction(trx1);
 
 			// Start a new transaction, perform upsert/delete and rollback
 			await testTable
@@ -475,7 +475,7 @@ describe('Test MySQL', () => {
 			const numRowsAffected = await testTable.deleteByPrimaryKey([height], trx2);
 			expect(numRowsAffected).toEqual(1);
 
-			await rollbackDbTransaction(trx2);
+			await rollbackDBTransaction(trx2);
 
 			// The row must still be available
 			const [retrievedBlock2] = await testTable.find({ height }, ['height', 'timestamp']);
@@ -484,40 +484,40 @@ describe('Test MySQL', () => {
 		});
 
 		it('Additional operational on committed transaction throws error', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock], trx);
 			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 
 			// Expect all operations to be successful, commit the transaction
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			// Perform upsert using committed transaction
 			expect(testTable.upsert([{ ...emptyBlock, id: 'same transaction' }], trx)).rejects.toThrow();
 		});
 
 		it('Additional operational on rollback transaction throws error', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock], trx);
 			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 
 			// Assume failure occurred, rollback the transaction
-			await rollbackDbTransaction(trx);
+			await rollbackDBTransaction(trx);
 
 			// Perform upsert using rollback transaction
 			expect(testTable.upsert([{ ...emptyBlock, id: 'same transaction' }], trx)).rejects.toThrow();
 		});
 
 		it('Rolling back a committed transaction has no effect', async () => {
-			const connection = await getDbConnection();
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([emptyBlock], trx);
 			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 
 			// Expect all operations to be successful, commit the transaction
-			await commitDbTransaction(trx);
-			expect(rollbackDbTransaction(trx)).resolves.toBeUndefined();
+			await commitDBTransaction(trx);
+			expect(rollbackDBTransaction(trx)).resolves.toBeUndefined();
 		});
 	});
 });

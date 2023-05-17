@@ -20,10 +20,10 @@ const {
 	Queue,
 	MySQL: {
 		getTableInstance,
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -107,8 +107,8 @@ const indexBlock = async job => {
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
 	let blockReward = BigInt('0');
@@ -226,10 +226,10 @@ const indexBlock = async job => {
 		};
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
 	} catch (error) {
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
 		if (['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e))) {
@@ -255,8 +255,8 @@ const deleteIndexedBlocks = async job => {
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	try {
 		await BluebirdPromise.map(
@@ -326,11 +326,11 @@ const deleteIndexedBlocks = async job => {
 			});
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	} catch (error) {
 		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
 			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;

@@ -20,10 +20,10 @@ const {
 	Logger,
 	MySQL: {
 		getTableInstance,
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 } = require('lisk-service-framework');
 
@@ -217,16 +217,16 @@ const indexAllBlockchainAppsMeta = async () => {
 							const filename = file.split('/').pop();
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
-								const connection = await getDbConnection(MYSQL_ENDPOINT);
-								const dbTrx = await startDbTransaction(connection);
+								const connection = await getDBConnection(MYSQL_ENDPOINT);
+								const dbTrx = await startDBTransaction(connection);
 
 								try {
 									logger.debug('Created new MySQL transaction to index blockchain metadata information.');
 									await indexMetadataFromFile(file, dbTrx);
-									await commitDbTransaction(dbTrx);
+									await commitDBTransaction(dbTrx);
 									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
 								} catch (error) {
-									await rollbackDbTransaction(dbTrx);
+									await rollbackDBTransaction(dbTrx);
 									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
 								}
 							}

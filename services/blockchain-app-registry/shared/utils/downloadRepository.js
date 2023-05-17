@@ -20,10 +20,10 @@ const { Octokit } = require('octokit');
 const {
 	Logger,
 	MySQL: {
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -247,8 +247,8 @@ const getModifiedFileNames = (groupedFiles) => {
 };
 
 const syncWithRemoteRepo = async () => {
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 
 	try {
 		const dataDirectory = config.dataDir;
@@ -340,7 +340,7 @@ const syncWithRemoteRepo = async () => {
 		);
 
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 
 		// Delete files which are removed from remote
 		await BluebirdPromise.map(
@@ -369,7 +369,7 @@ const syncWithRemoteRepo = async () => {
 			Signals.get('metadataUpdated').dispatch(eventPayload);
 		}
 	} catch (error) {
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
 		logger.error(`Unable to sync changes due to: ${errorMsg}.`);
