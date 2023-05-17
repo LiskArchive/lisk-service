@@ -78,7 +78,9 @@ Lisk Service consists of various microservices which have been further expanded,
 The Gateway is required in order to expose the APIs provided by the specific services.
 
 Each microservice is independently managed and is stored separately under the {url_services_directory}[services^] directory.
-They contain their own `package.json` and `Dockerfile` that are beneficial when running the applications.
+They contain their own `package.json` and `Dockerfile` that are beneficial for managing dependencies, and packaging a service into a containerized format, whereby it can be easily deployed, and managed in a distributed environment.
+To summarize, these benefits include various aspects such as dependency management, reproducible builds, containerization, versioning, and scalability.
+
 An overview of each microservice is given in the following table listed below.
 
 [[microservices]]
