@@ -27,6 +27,9 @@ const compositeKeySchema = require('../constants/compositeKeySchema');
 const tableName = 'functional_test';
 const compositeKeyTableName = 'composite_primary_key';
 
+schema.tableName = tableName;
+compositeKeySchema.tableName = compositeKeyTableName;
+
 const getIndex = () => getTableInstance(schema);
 const getCompositeKeyTableIndex = () => getTableInstance(compositeKeySchema);
 
