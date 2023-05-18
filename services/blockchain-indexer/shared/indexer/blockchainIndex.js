@@ -513,13 +513,13 @@ const addBlockToQueue = async height => {
 
 const setIndexVerifiedHeight = async ({ height }) => {
 	const keyValueTable = await getKeyValueTableInstance();
-	return await keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
-}
+	return keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
+};
 
 const getIndexVerifiedHeight = async () => {
 	const keyValueTable = await getKeyValueTableInstance();
-	return await keyValueTable.get(INDEX_VERIFIED_HEIGHT);
-}
+	return keyValueTable.get(INDEX_VERIFIED_HEIGHT);
+};
 
 module.exports = {
 	indexNewBlock,

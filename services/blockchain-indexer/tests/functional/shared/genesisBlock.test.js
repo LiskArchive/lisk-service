@@ -36,7 +36,6 @@ const {
 	indexGenesisBlockAssets,
 } = require('../../../shared/indexer/genesisBlock');
 
-
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
 

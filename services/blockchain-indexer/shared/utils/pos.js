@@ -13,13 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getPosTokenID } = require('../dataService/business/pos/constants');
-
 const {
 	MySQLKVStore: {
 		getKeyValueTable,
 	},
 } = require('lisk-service-framework');
+const { getPosTokenID } = require('../dataService/business/pos/constants');
 
 const { KV_STORE_KEY } = require('../constants');
 const config = require('../../config');

@@ -22,7 +22,7 @@ const {
 } = require('lisk-service-framework');
 
 const { KV_STORE_KEY } = require('../constants');
-const config = require('../../config')
+const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
