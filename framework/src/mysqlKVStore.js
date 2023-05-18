@@ -20,8 +20,6 @@ const Logger = require('./logger').get;
 
 const logger = Logger();
 
-
-
 const formatValue = (value, type) => {
 	// Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#description
 	if (type === 'boolean') return Boolean(value);
@@ -39,42 +37,39 @@ const getKeyValueTable = async (tableName, connEndpoint = config.CONN_ENDPOINT_D
 	const keyValueTable = await getTableInstance(keyValueStoreSchema, connEndpoint);
 
 	const set = async (key, value, dbTrx) => {
-		//const keyValueTable = await getKeyValueTable();
 		const type = typeof (value);
-	
+
 		if (!config.KV_STORE_ALLOWED_VALUE_TYPES.includes(type)) {
 			logger.error(`Allowed 'value' types are: ${config.KV_STORE_ALLOWED_VALUE_TYPES.join()}`);
 		}
-	
+
 		const finalValue = value === undefined ? value : String(value);
 		await keyValueTable.upsert({ key, value: finalValue, type }, dbTrx);
 	};
-	
-	const get = async (key) => {
+
+	const get = async key => {
 		const [{ value, type } = {}] = await keyValueTable.find(
 			{ key, limit: 1 },
 			['value', 'type'],
 		);
-	
+
 		return formatValue(value, type);
 	};
-	
-	const getByPattern = async (pattern) => {
+
+	const getByPattern = async pattern => {
 		const result = await keyValueTable.find(
 			{ search: { property: 'key', pattern } },
 			['key', 'value', 'type'],
 		);
-	
+
 		const formattedResult = result.map(row => ({
 			key: row.key,
 			value: formatValue(row.value, row.type),
 		}));
 		return formattedResult;
 	};
-	
-	const deleteEntry = async (key, dbTrx) => {
-		return keyValueTable.deleteByPrimaryKey([key], dbTrx);
-	};
+
+	const deleteEntry = async (key, dbTrx) => keyValueTable.deleteByPrimaryKey([key], dbTrx);
 
 	return {
 		set,
@@ -82,10 +77,7 @@ const getKeyValueTable = async (tableName, connEndpoint = config.CONN_ENDPOINT_D
 		getByPattern,
 		delete: deleteEntry,
 	};
-
-}
-
-
+};
 
 module.exports = {
 	getKeyValueTable,

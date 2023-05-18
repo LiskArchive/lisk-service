@@ -36,7 +36,7 @@ let keyValueTable;
 
 beforeAll(async () => {
 	dbConnection = await getDBConnection(MYSQL_ENDPOINT);
-	keyValueTable = await getKeyValueTable('key_value_store', CONN_ENDPOINT_DEFAULT)
+	keyValueTable = await getKeyValueTable('key_value_store', CONN_ENDPOINT_DEFAULT);
 });
 
 afterEach(async () => {
