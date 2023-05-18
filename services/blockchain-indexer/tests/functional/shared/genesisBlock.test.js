@@ -19,11 +19,13 @@ const {
 		startDBTransaction,
 		commitDBTransaction,
 	},
+	MySQLKVStore: {
+		getKeyValueTable,
+	},
 } = require('lisk-service-framework');
 const { ServiceBroker } = require('moleculer');
 
 const { KV_STORE_KEY } = require('../../../shared/constants');
-const keyValueTable = require('../../../shared/database/mysqlKVStore');
 
 const request = require('../../../shared/utils/request');
 const config = require('../../../config');
@@ -34,7 +36,9 @@ const {
 	indexGenesisBlockAssets,
 } = require('../../../shared/indexer/genesisBlock');
 
+
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,
@@ -46,8 +50,10 @@ let connection;
 let totalLockedKey;
 let totalStakedKey;
 let totalSelfStakedKey;
+let keyValueTable;
 
 beforeAll(async () => {
+	keyValueTable = await getKeyValueTableInstance();
 	await broker.start();
 	await request.setAppContext({
 		requestRpc: (method, params) => new Promise((resolve, reject) => {

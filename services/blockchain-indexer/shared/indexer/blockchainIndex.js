@@ -26,6 +26,9 @@ const {
 		rollbackDBTransaction,
 	},
 	Signals,
+	MySQLKVStore: {
+		getKeyValueTable,
+	},
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
@@ -57,8 +60,6 @@ const {
 
 const config = require('../../config');
 
-const keyValueTable = require('../database/mysqlKVStore');
-
 const blocksTableSchema = require('../database/schema/blocks');
 const eventsTableSchema = require('../database/schema/events');
 const eventTopicsTableSchema = require('../database/schema/eventTopics');
@@ -66,6 +67,7 @@ const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
 
 const logger = Logger();
 
@@ -509,9 +511,15 @@ const addBlockToQueue = async height => {
 	indexBlocksQueue.add({ block });
 };
 
-const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
+const setIndexVerifiedHeight = async ({ height }) => {
+	const keyValueTable = await getKeyValueTableInstance();
+	return await keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
+}
 
-const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
+const getIndexVerifiedHeight = async () => {
+	const keyValueTable = await getKeyValueTableInstance();
+	return await keyValueTable.get(INDEX_VERIFIED_HEIGHT);
+}
 
 module.exports = {
 	indexNewBlock,

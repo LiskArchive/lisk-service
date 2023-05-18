@@ -21,7 +21,7 @@ const {
 const config = require('../../../../config');
 const accountBalancesTableSchema = require('../../../../shared/database/schema/accountBalances');
 const { updateAccountBalances, accountBalanceIndexQueue, scheduleAccountBalanceUpdateFromEvents } = require('../../../../shared/indexer/accountBalanceIndex');
-const { MODULE_SUB_STORE } = require('../../../../shared/indexer/genesisBlock');
+const { MODULE_SUB_STORE } = require('../../../../shared/constants');
 const request = require('../../../../shared/utils/request');
 const { MODULE } = require('../../../../shared/constants');
 const { eventsIncludingTokenModule } = require('../../../constants/events');

@@ -18,6 +18,9 @@ const BluebirdPromise = require('bluebird');
 const {
 	Logger,
 	MySQL: { getTableInstance },
+	MySQLKVStore: {
+		getKeyValueTable,
+	},
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
@@ -25,12 +28,12 @@ const { KV_STORE_KEY } = require('../../../constants');
 const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
 const config = require('../../../../config');
-const keyValueTable = require('../../../database/mysqlKVStore');
 const stakesTableSchema = require('../../../database/schema/stakes');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema,
@@ -93,6 +96,7 @@ const decrementStakeTrx = async (stake, trx) => {
 };
 
 const updateTotalStake = async (changeAmount, dbTrx) => {
+	const keyValueTable = await getKeyValueTableInstance();
 	const tokenID = await getPosTokenID();
 	const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
@@ -102,6 +106,7 @@ const updateTotalStake = async (changeAmount, dbTrx) => {
 };
 
 const updateTotalSelfStake = async (changeAmount, dbTrx) => {
+	const keyValueTable = await getKeyValueTableInstance();
 	const tokenID = await getPosTokenID();
 	const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_SELF_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
