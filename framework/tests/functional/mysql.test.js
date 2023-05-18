@@ -237,6 +237,112 @@ describe('Test MySQL', () => {
 			const [retrievedBlock1] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock1.timestamp).toBe(params.updates.timestamp);
 		});
+
+		it('should return records matching the superset of payload', async () => {
+			// Insert a test record.
+			await testTable.upsert([nonEmptyBlock]);
+
+			// Construct the query parameters.
+			const params = {
+				whereJsonSupersetOf: {
+					property: 'payload',
+					values: [ nonEmptyBlock.payload[0] ],
+				},
+			};
+
+			// Perform the query.
+			const result = await testTable.find(params, ['id']);
+
+			// Assert the result.
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(nonEmptyBlock.id);
+		});
+
+		it('should not return any records when there is no match in payload', async () => {
+			// Insert a test record.
+			await testTable.upsert([nonEmptyBlock]);
+
+			// Construct the query parameters.
+			const params = {
+				whereJsonSupersetOf: {
+					property: 'payload',
+					values: [{ invalidPayload: 1 }],
+				},
+			};
+
+			// Perform the query.
+			const result = await testTable.find(params, ['id']);
+
+			// Assert the result.
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(0);
+		});
+
+		it('should return records if any one of the provided values are present in payload', async () => {
+			// Insert a test record.
+			await testTable.upsert([nonEmptyBlock]);
+
+			// Construct the query parameters.
+			const params = {
+				whereJsonSupersetOf: {
+					property: 'payload',
+					values: [nonEmptyBlock.payload[0], { invalidPayload: 1 }],
+				},
+			};
+
+			// Perform the query.
+			const result = await testTable.find(params, ['id']);
+
+			// Assert the result.
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(nonEmptyBlock.id);
+		});
+
+		it('should not return records if all of the provided values are not present in payload', async () => {
+			// Insert a test record.
+			await testTable.upsert([nonEmptyBlock]);
+
+			// Construct the query parameters.
+			const params = {
+				whereJsonSupersetOf: {
+					property: 'payload',
+					values: [{ invalidPayload: 1 }, { invalidPayload: 2 }],
+				},
+			};
+
+			// Perform the query.
+			const result = await testTable.find(params, ['id']);
+
+			// Assert the result.
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(0);
+		});
+
+		it('should return records if any of the provided values are present in metadata', async () => {
+			// Insert a test record.
+			await testTable.upsert([nonEmptyBlock]);
+
+			// Construct the query parameters.
+			const params = {
+				whereJsonSupersetOf: {
+					property: 'payload',
+					values: [nonEmptyBlock.payload[0], nonEmptyBlock.payload[1], nonEmptyBlock.payload[2]],
+				},
+			};
+
+			// Perform the query.
+			const result = await testTable.find(params, ['id']);
+
+			// Assert the result.
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(nonEmptyBlock.id);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
