@@ -26,16 +26,21 @@ const {
 		rollbackDBTransaction,
 	},
 	Signals,
+	MySQLKVStore: {
+		getKeyValueTable
+	},
 } = require('lisk-service-framework');
 
 const { resolveChainNameByNetworkAppDir } = require('./chain');
 const { downloadAndExtractTarball, downloadFile } = require('./download');
 const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fs');
 
-const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
 
 const { KV_STORE_KEY } = require('../constants');
 
@@ -54,8 +59,6 @@ const GITHUB_FILE_STATUS = Object.freeze({
 	CHANGED: 'changed',
 	UNCHANGED: 'unchanged',
 });
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getRepoInfoFromURL = (url) => {
 	const urlInput = url || '';
@@ -86,6 +89,7 @@ const getLatestCommitHash = async () => {
 };
 
 const getCommitInfo = async () => {
+	const keyValueTable = await getKeyValueTableInstance();
 	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 	const latestCommitHash = await getLatestCommitHash();
 	return { lastSyncedCommitHash, latestCommitHash };
@@ -339,6 +343,7 @@ const syncWithRemoteRepo = async () => {
 			{ concurrency: Object.keys(groupedFiles).length },
 		);
 
+		const keyValueTable = getKeyValueTableInstance();
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
 		await commitDBTransaction(dbTrx);
 
@@ -380,6 +385,7 @@ const syncWithRemoteRepo = async () => {
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
+	const keyValueTable = getKeyValueTableInstance();
 	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 
 	if (lastSyncedCommitHash && await exists(appDirPath)) {
