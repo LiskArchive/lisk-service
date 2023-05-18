@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('./config');
+
 const Logger = require('./logger').get;
 
 const logger = Logger();
-
-const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
 
 const connectionPool = {};
 const tablePool = {};
@@ -123,14 +123,14 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	return rows;
 };
 
-const getConnectionPoolKey = (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const getConnectionPoolKey = (connEndpoint = config.CONN_ENDPOINT_DEFAULT) => {
 	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
 	return connPoolKey;
 };
 
-const getDBConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const getDBConnection = async (connEndpoint = config.CONN_ENDPOINT_DEFAULT) => {
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const defaultCharset = 'utf8mb4';
 
@@ -151,7 +151,7 @@ const getDBConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 
 const createTableIfNotExists = async (tableName,
 	tableConfig,
-	connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+	connEndpoint = config.CONN_ENDPOINT_DEFAULT) => {
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
@@ -169,7 +169,7 @@ const commitDBTransaction = async transaction => transaction.commit();
 
 const rollbackDBTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT_DEFAULT) => {
 	const { tableName, primaryKey, schema } = tableConfig;
 
 	const knex = await getDBConnection(connEndpoint);
