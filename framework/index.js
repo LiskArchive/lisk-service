@@ -28,6 +28,7 @@ module.exports = {
 	Queue: require('./src/queue'),
 	mapper: require('./src/mapper'),
 	MySQL: require('./src/mysql'),
+	MySQLKVStore: require('./src/mysqlKVStore'),
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
 		Data: require('./src/data'),
