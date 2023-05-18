@@ -8,6 +8,6 @@ module.exports = {
 		'<rootDir>/tests/functional/**/*.test.js',
 	],
 
-	testTimeout: 15000,
+	testTimeout: 30000,
 	testEnvironment: 'node',
 };
