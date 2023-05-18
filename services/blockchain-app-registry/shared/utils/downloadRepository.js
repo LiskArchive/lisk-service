@@ -27,7 +27,7 @@ const {
 	},
 	Signals,
 	MySQLKVStore: {
-		getKeyValueTable
+		getKeyValueTable,
 	},
 } = require('lisk-service-framework');
 

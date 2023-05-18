@@ -246,7 +246,7 @@ describe('Test MySQL', () => {
 			const params = {
 				whereJsonSupersetOf: {
 					property: 'payload',
-					values: [ nonEmptyBlock.payload[0] ],
+					values: [nonEmptyBlock.payload[0]],
 				},
 			};
 
