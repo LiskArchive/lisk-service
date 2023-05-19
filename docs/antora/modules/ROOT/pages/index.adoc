@@ -151,7 +151,8 @@ This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
 
 image::mservice_architecture.png[]
 
-== API documentation and Usage
+[[usage]]
+== APIs and Usage
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
 
 [cols="1,3", options="header"]
@@ -278,7 +279,7 @@ Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured], an
 
 Lisk Service provides the data through several alternative APIs:
 
-==== The HTTP API
+=== The HTTP API
 
 The xref:{url_api_http}[HTTP API] provides various additional endpoints as compared to the HTTP API of a normal Lisk node.
 This API can be utilized to build powerful wallets and user interfaces for blockchain applications which are built with the Lisk SDK.
@@ -342,7 +343,7 @@ For example:
 // }
 // ----
 
-==== The WebSocket JSON-RPC API
+=== The WebSocket JSON-RPC API
 
 // The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
 // The API uses the `socket.io` library and is compatible with JSON-RPC 2.0 standard.
@@ -407,7 +408,7 @@ Lisk Testnet::
 // node rpc.js
 // ----
 
-==== The Subscribe API
+=== The Subscribe API
 
 As also briefly covered in Table 2 above, the Subscribe API is particularly useful for providing the user with real-time data, e.g., real-time monitoring systems, notification services, and applications that need to react immediately to specific events that occur on the blockchain.
 
