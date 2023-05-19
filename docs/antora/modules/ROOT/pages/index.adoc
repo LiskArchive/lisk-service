@@ -172,101 +172,102 @@ It uses a two-way streaming connection, which can notify the client about new da
 It is responsible for updating users regarding changes in the blockchain network and markets.
 |===
 
-== Installation
+// This section below is commented out and may be used for the new docker setup guide.
+// == Installation
 
-The default port for REST API requests and Socket.IO-based communication is `9901`.
-The API is accessible through the URL `http://localhost:9901` when running locally.
-The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
+// The default port for REST API requests and Socket.IO-based communication is `9901`.
+// The API is accessible through the URL `http://localhost:9901` when running locally.
+// The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
 
-The WebSocket-based APIs can be accessed with the help of the {url_socket}[Socket.IO^] library that is available for many programming languages and frameworks.
+// The WebSocket-based APIs can be accessed with the help of the {url_socket}[Socket.IO^] library that is available for many programming languages and frameworks.
 
-To perform the installation ensure the following dependencies listed below are installed:
+// To perform the installation ensure the following dependencies listed below are installed:
 
-* {url_nodejs}[NodeJS Active LTS - v16.15.0^]
-* {url_mysql}[MySQL - v8.0.29^]
-* {url_docker}[Docker] with {url_docker_compose}[Docker compose]
-* {url_gnu_make}[GNU Make] and {url_gnu_tar}[GNU Tar]
+// * {url_nodejs}[NodeJS Active LTS - v16.15.0^]
+// * {url_mysql}[MySQL - v8.0.29^]
+// * {url_docker}[Docker] with {url_docker_compose}[Docker compose]
+// * {url_gnu_make}[GNU Make] and {url_gnu_tar}[GNU Tar]
 
-In order to obtain comprehensive guidance on installing the necessary dependencies for the different operating systems, adhere to the relevant instructions that pertain to your specific operating system as shown below:
-
-
-[tabs]
-=====
-Linux::
-+
---
-* {url_ubuntu18}[Ubuntu 18.04 LTS Bionic Beaver^]
-* {url_ubuntu20}[Ubuntu 20.04 LTS Focal Fossa^]
-* {url_debian}[Debian 10 Buster^]
---
-MacOS::
-+
---
-* {url_macos}[MacOS 10.15 Catalina^]
---
-=====
+//In order to obtain comprehensive guidance on installing the necessary dependencies for the different operating systems, adhere to the relevant instructions that pertain to your specific operating system as shown below:
 
 
+// [tabs]
+// =====
+// Linux::
+// +
+// --
+// * {url_ubuntu18}[Ubuntu 18.04 LTS Bionic Beaver^]
+// * {url_ubuntu20}[Ubuntu 20.04 LTS Focal Fossa^]
+// * {url_debian}[Debian 10 Buster^]
+// --
+// MacOS::
+// +
+// --
+// * {url_macos}[MacOS 10.15 Catalina^]
+// --
+// =====
 
 
-Retrieve the latest release from the {url_repo}[official repository^].
 
-Unpack the source code archive by executing the following commands listed below:
 
-[source,bash]
-----
-tar -xf lisk-service-x.y.z.tar.gz
-cd lisk-service
-----
+// Retrieve the latest release from the {url_repo}[official repository^].
 
-The above commands retrieve the entire source code, however, this does not cover building a custom version of Lisk Service.
-For more information refer to this document: {url_service-source}[Building Lisk Service from source^].
+// Unpack the source code archive by executing the following commands listed below:
 
-==== Docker image build
+// [source,bash]
+// ----
+// tar -xf lisk-service-x.y.z.tar.gz
+// cd lisk-service
+// ----
 
-Building a Docker image is optional.
-However, if you wish to build the local version of Lisk Service execute the following command below:
+// The above commands retrieve the entire source code, however, this does not cover building a custom version of Lisk Service.
+// For more information refer to this document: {url_service-source}[Building Lisk Service from source^].
 
-[source,bash]
-----
-make build
-----
-Please note, this step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub.
-The installation script chooses the last available stable version on the Docker Hub, *unless* there is no local image.
+// ==== Docker image build
 
-If you are unsure about any local builds, use the `make clean` command to remove all locally built docker images.
+// Building a Docker image is optional.
+// However, if you wish to build the local version of Lisk Service execute the following command below:
 
-=== Configuration
+// [source,bash]
+// ----
+// make build
+// ----
+// Please note, this step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub.
+// The installation script chooses the last available stable version on the Docker Hub, *unless* there is no local image.
 
-The default configuration is sufficient to run Lisk Service against the local node.
+// If you are unsure about any local builds, use the `make clean` command to remove all locally built docker images.
 
-Before running the application copy the default docker-compose environment file as shown in the command below:
+// === Configuration
 
-[source,bash]
-----
-cp docker/example.env .env
-----
+// The default configuration is sufficient to run Lisk Service against the local node.
 
-Set the required environment variables as shown in the command below:
+// Before running the application copy the default docker-compose environment file as shown in the command below:
 
-[source,bash]
-----
-$EDITOR .env
-----
+// [source,bash]
+// ----
+// cp docker/example.env .env
+// ----
 
-The example snippet below assumes that the Lisk Core (or any Lisk protocol-compliant blockchain application), node is running on the host machine and not inside of a Docker container.
+// Set the required environment variables as shown in the command below:
 
-[source,bash]
-----
-## Required
-# The local Lisk Core node WebSocket API port
-export LISK_APP_WS="ws://host.docker.internal:7667"
-----
+// [source,bash]
+// ----
+// $EDITOR .env
+// ----
 
-When running a node inside of a Docker container, the variable needs to refer to the container as shown below:
-`LISK_APP_WS="ws://<your_docker_container>:7667"`.
+// The example snippet below assumes that the Lisk Core (or any Lisk protocol-compliant blockchain application), node is running on the host machine and not inside of a Docker container.
 
-For more information, the configuration options are described here in the {url_service_config}[Lisk Service Configuration Reference^], which may also be helpful with regard to PM2-based installations.
+// [source,bash]
+// ----
+// ## Required
+// # The local Lisk Core node WebSocket API port
+// export LISK_APP_WS="ws://host.docker.internal:7667"
+// ----
+
+// When running a node inside of a Docker container, the variable needs to refer to the container as shown below:
+// `LISK_APP_WS="ws://<your_docker_container>:7667"`.
+
+// For more information, the configuration options are described here in the {url_service_config}[Lisk Service Configuration Reference^], which may also be helpful with regard to PM2-based installations.
 
 
 
