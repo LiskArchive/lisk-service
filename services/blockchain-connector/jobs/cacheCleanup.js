@@ -22,13 +22,14 @@ module.exports = [
 	{
 		name: 'cache.cleanup',
 		description: 'Prunes the cache regularly.',
-		schedule: '0 */12 * * *', // every 12 hours
+		interval: config.job.cacheCleanup.interval,
+		schedule: config.job.cacheCleanup.schedule,
 		controller: async () => {
 			logger.debug('Cleaning cache...');
 			try {
-				if (config.cachine.isBlockCachingEnabled) {
+				if (config.cache.isBlockCachingEnabled) {
 					logger.info('Starting to clean cache.');
-					await cacheCleanup(config.caching.expiryInDays);
+					await cacheCleanup(config.cache.expiryInHours);
 					logger.info('Cache has been successfully cleaned.');
 				}
 			} catch (err) {

@@ -89,11 +89,19 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
 config.enableTestingMode = Boolean(String(process.env.ENABLE_TESTING_MODE).toLowerCase() === 'true');
 
-config.caching = {
+config.cache = {
 	isBlockCachingEnabled: Boolean(String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false'), // Enabled by default
-	expiryInDays: process.env.EXPIRY_IN_DAYS || 1,
+	expiryInHours: process.env.EXPIRY_IN_HOURS || 12,
+	dbDataDir: 'data/db_cache',
+
 };
 
-config.dbDataDir = process.env.CACHING_DATA_DIRECTORY || 'db_data';
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
+	cacheCleanup: {
+		interval: process.env.CACHE_CLEANUP_INTERVAL || 0,
+		schedule: process.env.CACHE_CLEANUP_SCHEDULE || '0 */12 * * *',
+	},
+};
 
 module.exports = config;

@@ -23,7 +23,7 @@ const {
 const {
 	blockchainAppsStatsSchema,
 	goodRequestSchemaForStats,
-} = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
+} = require('../../../schemas/api_v3/blockchainApps.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

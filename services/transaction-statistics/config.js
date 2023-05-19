@@ -89,8 +89,8 @@ config.networks = [
 	},
 ];
 
-config.jobs = {
-	// Interval takes priority over schedule
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
 	refreshTransactionStats: {
 		interval: process.env.REFRESH_TRANSACTION_STATS_INTERVAL || 0,
 		schedule: process.env.REFRESH_TRANSACTION_STATS_SCHEDULE || '*/30 * * * *',

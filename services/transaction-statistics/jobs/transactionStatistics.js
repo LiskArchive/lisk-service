@@ -28,8 +28,8 @@ module.exports = [
 	{
 		name: 'refresh.transactions.statistics',
 		description: 'Keep the transaction statistics up-to-date',
-		interval: config.jobs.refreshTransactionStats.interval,
-		schedule: config.jobs.refreshTransactionStats.schedule,
+		interval: config.job.refreshTransactionStats.interval,
+		schedule: config.job.refreshTransactionStats.schedule,
 		updateOnInit: true,
 		init: async () => {
 			const indexReadyListener = async () => {
@@ -55,8 +55,8 @@ module.exports = [
 	{
 		name: 'verify.transactions.statistics',
 		description: 'Verify the accuracy and rebuild the transaction statistics, if necessary',
-		interval: config.jobs.verifyTransactionStats.interval,
-		schedule: config.jobs.verifyTransactionStats.schedule,
+		interval: config.job.verifyTransactionStats.interval,
+		schedule: config.job.verifyTransactionStats.schedule,
 		controller: async () => {
 			try {
 				logger.debug('Verifying the transaction stats...');

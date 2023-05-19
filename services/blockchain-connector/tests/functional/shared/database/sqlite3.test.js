@@ -20,7 +20,7 @@ const {
 	startDbTransaction,
 	commitDbTransaction,
 	getDbConnection,
-} = require('../../../../shared/database/better-sqlite3');
+} = require('../../../../shared/database/sqlite3');
 
 const schema = require('../../../constants/blocksSchema');
 
@@ -31,7 +31,7 @@ const getTable = () => getTableInstance(tableName, schema, testDir);
 
 const { blockWithoutTransaction, blockWithTransaction } = require('../../../constants/blocks');
 
-describe('Test better-sqlite3 implementation', () => {
+describe('Test sqlite3 implementation', () => {
 	let testTable;
 
 	beforeAll(async () => {
@@ -55,9 +55,11 @@ describe('Test better-sqlite3 implementation', () => {
 		afterAll(() => testTable.rawQuery(`DELETE FROM ${tableName}`));
 
 		it('should insert row', async () => {
+			const preUpsertResult = await testTable.find();
+			expect(preUpsertResult.length).toBe(0);
 			await testTable.upsert([blockWithoutTransaction.header]);
-			const result = await testTable.find();
-			expect(result.length).toBe(1);
+			const postUpsertResult = await testTable.find();
+			expect(postUpsertResult.length).toBe(1);
 		});
 
 		it('should fetch row', async () => {
@@ -139,9 +141,11 @@ describe('Test better-sqlite3 implementation', () => {
 		});
 
 		it('should insert rows in a batch', async () => {
+			const preUpsertResult = await testTable.find();
+			expect(preUpsertResult.length).toBe(0);
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
-			const result = await testTable.find();
-			expect(result.length).toBe(2);
+			const postUpsertResult = await testTable.find();
+			expect(postUpsertResult.length).toBe(2);
 		});
 	});
 
@@ -149,12 +153,14 @@ describe('Test better-sqlite3 implementation', () => {
 		afterAll(() => testTable.rawQuery(`DELETE FROM ${tableName}`));
 
 		it('should insert row', async () => {
+			const preUpsertResult = await testTable.find();
+			expect(preUpsertResult.length).toBe(0);
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
 			await testTable.upsert([blockWithoutTransaction.header], trx);
 			await commitDbTransaction(trx);
-			const result = await testTable.find();
-			expect(result.length).toBe(1);
+			const postUpsertResult = await testTable.find();
+			expect(postUpsertResult.length).toBe(1);
 		});
 
 		it('should fetch row', async () => {
@@ -257,10 +263,12 @@ describe('Test better-sqlite3 implementation', () => {
 		it('should insert rows in a batch', async () => {
 			const connection = await getDbConnection(tableName);
 			const trx = await startDbTransaction(connection);
+			const preUpsertResult = await testTable.find();
+			expect(preUpsertResult.length).toBe(0);
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header], trx);
 			await commitDbTransaction(trx);
-			const result = await testTable.find();
-			expect(result.length).toBe(2);
+			const postUpsertResult = await testTable.find();
+			expect(postUpsertResult.length).toBe(2);
 		});
 	});
 });

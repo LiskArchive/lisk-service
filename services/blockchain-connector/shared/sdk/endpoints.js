@@ -106,7 +106,7 @@ const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
-		await cacheBlocksIfEnabled(block);
+		cacheBlocksIfEnabled(block);
 
 		return block;
 	} catch (err) {
@@ -120,7 +120,7 @@ const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
 		const gHeight = await getGenesisHeight();
-		const blocksArr = [[], []];
+		const blocksNestedList = [[], []];
 
 		if (from < gHeight) {
 			throw new Error(`'from' cannot be lower than the genesis height (${gHeight}).`);
@@ -128,16 +128,16 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 
 		// File based Genesis block handling
 		if (Number(from) === gHeight) {
-			blocksArr[0] = await getBlockByHeight(gHeight);
+			blocksNestedList[0] = await getBlockByHeight(gHeight);
 			from++;
 		}
 
 		if (from <= to) {
-			blocksArr[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
+			blocksNestedList[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
 		}
 
-		const blocks = ([blocksArr[0], ...blocksArr[1]]);
-		await cacheBlocksIfEnabled(blocks);
+		const blocks = blocksNestedList.flat();
+		cacheBlocksIfEnabled(blocks);
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -158,7 +158,7 @@ const getBlockByID = async (id, includeGenesisAssets = false) => {
 		if (blockFromCache) return blockFromCache;
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
-		await cacheBlocksIfEnabled(block);
+		cacheBlocksIfEnabled(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -183,7 +183,7 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks;
 		}
 
-		const blocks = config.caching.isBlockCachingEnabled
+		const blocks = config.cache.isBlockCachingEnabled
 			? await BluebirdPromise.map(ids, async (id) => getBlockByID(id), { concurrency: 1 })
 			: await invokeEndpoint('chain_getBlocksByIDs', { ids });
 
@@ -225,7 +225,7 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const transactions = config.caching.isBlockCachingEnabled
+		const transactions = config.cache.isBlockCachingEnabled
 			? await BluebirdPromise.map(ids, async (id) => getTransactionByID(id), { concurrency: 1 })
 			: await invokeEndpoint('chain_getTransactionsByIDs', { ids });
 

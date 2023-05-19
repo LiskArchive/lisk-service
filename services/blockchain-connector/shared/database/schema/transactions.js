@@ -14,14 +14,13 @@
  *
  */
 module.exports = {
-	tableName: 'mapTransactionIDToBlockID',
+	tableName: 'transactions',
 	primaryKey: 'transactionID',
 	schema: {
 		transactionID: { type: 'string', null: false },
 		blockID: { type: 'string', null: false },
 	},
 	indexes: {
-		transactionID: { type: 'key' },
 		blockID: { type: 'key' },
 	},
 	purge: {},
