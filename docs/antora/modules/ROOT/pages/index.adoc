@@ -27,7 +27,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_services_directory: https://github.com/LiskHQ/lisk-service/tree/development/services
 :url_app_registry: https://github.com/LiskHQ/app-registry
 :url_dynamic_fee: https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md
-// :url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+:url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_http_api: reference/api.adoc
 :url_websocket_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_subscribe_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/websocket_subscribe_api.md
@@ -45,14 +45,14 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_ubuntu20: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_ubuntu.md
 :url_debian: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_debian.md
 :url_macos: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_macos.md
-:url_repo: https://github.com/LiskHQ/lisk-service/releases
+// :url_repo: https://github.com/LiskHQ/lisk-service/releases
 :url_service-source: https://github.com/LiskHQ/lisk-service/blob/development/docs/build_from_source.md
 :url_service_config: https://github.com/LiskHQ/lisk-service/blob/development/docs/config_options.md
 // TODO: update above GH lisk-service links to main when production is released
 
 :url_api_http_testnet:  {lisk-docs}api/lisk-service-http-testnet.adoc
 :url_api_http:  {lisk-docs}api/lisk-service-http.adoc
-:url_api_rpc:  {lisk-docs}api/lisk-service-rpc.adoc
+:url_api_rpc:  {lisk-docs}api/lisk-service-rpc-api.adoc
 :url_api_subscribe:  {lisk-docs}api/lisk-service-pubsub.adoc
 :url_config:  configuration/docker.adoc
 :url_protocol:  {lisk-docs}understand-blockchain/lisk-protocol/index.adoc
@@ -71,7 +71,7 @@ The data is served in JSON format and exposed by a xref:{url_api_http}[public RE
 
 == Architecture
 
-image::architecture.png[Architecture][,400 ,align="center"]
+image::architecture.png[Architecture][,500 ,align="center"]
 
 === Available Services
 
@@ -151,7 +151,7 @@ This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
 
 image::mservice_architecture.png[]
 
-== API documentation
+== API documentation and Usage
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
 
 [cols="1,3", options="header"]
@@ -271,17 +271,16 @@ It is responsible for updating users regarding changes in the blockchain network
 
 
 
-[[usage]]
-== APIs & Usage
+// [[usage]]
+// == APIs & Usage
 
-Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured] and started, it is possible to retrieve data from the blockchain network.
+Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured], and started, it is possible to retrieve data from the blockchain network.
 
 Lisk Service provides the data through several alternative APIs:
 
-=== The HTTP API
+==== The HTTP API
 
-The xref:{url_api_http}[HTTP API] offers a RESTful API with various additional endpoints as compared to the HTTP API of a normal Lisk node.
-
+The xref:{url_api_http}[HTTP API] provides various additional endpoints as compared to the HTTP API of a normal Lisk node.
 This API can be utilized to build powerful wallets and user interfaces for blockchain applications which are built with the Lisk SDK.
 
 ==== Public Lisk Service APIs
@@ -306,49 +305,49 @@ For example:
 * https://testnet-service.lisk.com/api/v3/transactions
 ====
 
-==== Example: Request data with curl
+// ==== Example: Request data with curl
 
-.Example request: Obtain a list of the block generators in the current round.
-[source,bash]
-----
-curl -X GET "http://localhost:9901/api/v3/generators" -H  "accept: application/json"
-----
+// .Example request: Obtain a list of the block generators in the current round.
+// [source,bash]
+// ----
+// curl -X GET "http://localhost:9901/api/v3/generators" -H  "accept: application/json"
+// ----
 
-.Example response
-[source,json]
-----
-{
-  "data": [
-    {
-      "address": "lsk2jjg9ob4qh7jokpdbf7hjgqftkaq4b2925f422",
-      "name": "genesis_3",
-      "publicKey": "d16699888782b26c3e4cffd2a94910ec11d59476b2358adc442e010650afe4a9",
-      "nextAllocatedTime": 1683716840,
-      "status": "active"
-    },
-    ...
-    {
-      "address": "lskx7rscmxc3k9yokbqpxspjj92zz6fue84e2xw92",
-      "name": "genesis_1",
-      "publicKey": "44e2b746594f74272d15b6f7d18dffbf83c749bbf1babc5f1d314bdbd08f8215",
-      "nextAllocatedTime": 1683716850,
-      "status": "active"
-    },
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 0,
-    "total": 103
-  }
-}
-----
+// .Example response
+// [source,json]
+// ----
+// {
+//   "data": [
+//     {
+//       "address": "lsk2jjg9ob4qh7jokpdbf7hjgqftkaq4b2925f422",
+//       "name": "genesis_3",
+//       "publicKey": "d16699888782b26c3e4cffd2a94910ec11d59476b2358adc442e010650afe4a9",
+//       "nextAllocatedTime": 1683716840,
+//       "status": "active"
+//     },
+//     ...
+//     {
+//       "address": "lskx7rscmxc3k9yokbqpxspjj92zz6fue84e2xw92",
+//      "name": "genesis_1",
+//       "publicKey": "44e2b746594f74272d15b6f7d18dffbf83c749bbf1babc5f1d314bdbd08f8215",
+//       "nextAllocatedTime": 1683716850,
+//       "status": "active"
+//     },
+//   ],
+//   "meta": {
+//     "count": 10,
+//     "offset": 0,
+//     "total": 103
+//   }
+// }
+// ----
 
-=== The WebSocket JSON-RPC API
+==== The WebSocket JSON-RPC API
 
-The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
-The API uses the `socket.io` library and is compatible with JSON-RPC 2.0 standard.
+// The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
+// The API uses the `socket.io` library and is compatible with JSON-RPC 2.0 standard.
 
-Check out the xref:{url_api_rpc}[RPC-API] reference for an overview of all available RPC requests.
+With regard to the WebSocket JSON-RPC API, as briefly described above in Table 2, the xref:{url_api_rpc}[RPC-API] reference provides an overview of all available RPC requests.
 
 Lisk Mainnet::
 * Public API: `{url_rpc_api_mainnet}`
@@ -356,61 +355,61 @@ Lisk Mainnet::
 Lisk Testnet::
 * Public API: `{url_rpc_api_testnet}`
 
-==== Example: Emit to remote-procedure calls with socket.io
+// ==== Example: Emit to remote-procedure calls with socket.io
 
-[source,bash]
-----
-node --version
-# v16.20.0
-npm i socket.io-client #<1>
-npm i jsome #<2>
-----
+// [source,bash]
+// ----
+// node --version
+// # v16.20.0
+// npm i socket.io-client #<1>
+// npm i jsome #<2>
+// ----
 
-<1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
-<2> Optionally install `jsome` to prettify the API response.
+// <1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
+// <2> Optionally install `jsome` to prettify the API response.
 
-.rpc.js
-[source,js]
-----
+// .rpc.js
+// [source,js]
+// ----
 // 1. Require the dependencies
-const io = require('socket.io-client'); // The socket.io client
-const jsome = require('jsome'); // Prettifies the JSON output
+// const io = require('socket.io-client'); // The socket.io client
+// const jsome = require('jsome'); // Prettifies the JSON output
 
-jsome.params.colored = true;
+// jsome.params.colored = true;
 
 // Use local Service node
-const WS_RPC_ENDPOINT = 'ws://localhost:9901/rpc-v3';
+// const WS_RPC_ENDPOINT = 'ws://localhost:9901/rpc-v3';
 //Use public Service node
 //const WS_RPC_ENDPOINT = "wss://service.lisk.com/rpc-v3";
 
 // 2. Connect to Lisk Service via WebSockets
-const socket = io(WS_RPC_ENDPOINT, {
-  forceNew: true,
-  transports: ['websocket']
-});
+// const socket = io(WS_RPC_ENDPOINT, {
+//   forceNew: true,
+//  transports: ['websocket']
+// });
 
 // 3. Emit the remote procedure call
-socket.emit('request', {
-  jsonrpc: '2.0',
-  method: 'get.forgers',
-  params: {limit: "5", offset: "0"} },
-  answer => {
-    // console.log(answer);
-    jsome(answer);
-    process.exit(0);
-});
-----
+// socket.emit('request', {
+//   jsonrpc: '2.0',
+//   method: 'get.forgers',
+//   params: {limit: "5", offset: "0"} },
+//   answer => {
+//     // console.log(answer);
+//     jsome(answer);
+//     process.exit(0);
+// });
+// ----
 
-Run the above script with Node.js to receive the API response in the terminal:
+// Run the above script with Node.js to receive the API response in the terminal:
 
-[source,bash]
-----
-node rpc.js
-----
+// [source,bash]
+// ----
+// node rpc.js
+// ----
 
-=== The Subscribe API
+==== The Subscribe API
 
-The Subscribe API, or sometimes called the Publish/Subscribe or Event-Driven API uses a two-way streaming connection, which means that not only the client can request the server for a data update, but also the server can notify the client about new data instantly as it arrives.
+As also briefly covered in Table 2 above, the Subscribe API is particularly useful for providing the user with real-time data, e.g., real-time monitoring systems, notification services, and applications that need to react immediately to specific events that occur on the blockchain.
 
 NOTE: Check out the xref:{url_api_subscribe}[] reference for an overview of all available RPC requests.
 
@@ -420,72 +419,73 @@ Lisk Mainnet::
 Lisk Testnet::
 * Public API: `{url_subscribe_api_testnet}`
 
-==== Example: Subscribe to events with socket.io
+//==== Example: Subscribe to events with socket.io
 
-Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
+// Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
 
-[source,bash]
-----
-npm i socket.io-client
-----
+// [source,bash]
+// ----
+// npm i socket.io-client
 
-.subscribe.js
-[source,js]
-----
-const io = require('socket.io-client');
-const jsome = require('jsome');
+// ----
 
-jsome.params.colored = true;
+// .subscribe.js
+// [source,js]
+// ----
+// const io = require('socket.io-client');
+// const jsome = require('jsome');
+
+// jsome.params.colored = true;
 
 // Uses local Service node
-const WS_SUBSCRIBE_ENDPOINT = 'ws://localhost:9901/blockchain';
+// const WS_SUBSCRIBE_ENDPOINT = 'ws://localhost:9901/blockchain';
 // Uses public Service node
 //const WS_SUBSCRIBE_ENDPOINT = "wss://service.lisk.com/blockchain";
 
-const socket = io(WS_SUBSCRIBE_ENDPOINT, {
-	forceNew: true,
-	transports: ['websocket'],
-});
+// const socket = io(WS_SUBSCRIBE_ENDPOINT, {
+// 	forceNew: true,
+// 	transports: ['websocket'],
+// });
 
-const subscribe = event => {
-	socket.on(event, answer => {
-		console.log(`====== ${event} ======`);
-		// console.log(answer);
-		jsome(answer);
-	});
-};
+// const subscribe = event => {
+// 	socket.on(event, answer => {
+// 		console.log(`====== ${event} ======`);
+// 		// console.log(answer);
+// 		jsome(answer);
+// 	});
+// };
 
-subscribe('update.block');
-subscribe('update.round');
-subscribe('update.forgers');
-subscribe('update.transactions.confirmed');
-subscribe('update.fee_estimates');
+// subscribe('update.block');
+// subscribe('update.round');
+// subscribe('update.forgers');
+// subscribe('update.transactions.confirmed');
+// subscribe('update.fee_estimates');
 
 // To log all events
-[
-	'connect', 'reconnect',
-	'connect_error', 'connect_timeout', 'error', 'disconnect',
-	'reconnect', 'reconnect_attempt',
-	'reconnecting', 'reconnect_error', 'reconnect_failed',
-].forEach(item => {
-	socket.on(item, res => {
-		console.log(`Event: ${item}, res: ${res || '-'}`);
-	});
-});
+// [
+// 	'connect', 'reconnect',
+// 	'connect_error', 'connect_timeout', 'error', 'disconnect',
+// 	'reconnect', 'reconnect_attempt',
+// 	'reconnecting', 'reconnect_error', 'reconnect_failed',
+// ].forEach(item => {
+// 	socket.on(item, res => {
+// 		console.log(`Event: ${item}, res: ${res || '-'}`);
+// 	});
+// });
 
 // To log incoming data
-['status'].forEach(eventName => {
-	socket.on(eventName, newData => {
-		console.log(
-			`Received data from ${WS_SUBSCRIBE_ENDPOINT}/${eventName}: ${newData}`,
-		);
-	});
-});
-----
+// ['status'].forEach(eventName => {
+// 	socket.on(eventName, newData => {
+// 		console.log(
+// 			`Received data from ${WS_SUBSCRIBE_ENDPOINT}/${eventName}: ${newData}`,
+// 		);
+// 	});
+// });
+// ----
 
-Run the above script with Node.js to receive all published events from the Subscribe API:
+// Run the above script with Node.js to receive all published events from the Subscribe API:
 
-[source,bash]
-----
-node subscribe.js
-----
+// [source,bash]
+// ----
+// node subscribe.js
+// ----
