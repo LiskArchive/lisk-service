@@ -92,7 +92,8 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch', 'count',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
+		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull'
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -320,6 +321,22 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
 					}
 				});
+			});
+		}
+
+		if (params.whereNull){
+			params.whereNull = Array.isArray(params.whereNull) ? params.whereNull : [params.whereNull];
+
+			params.whereNull.forEach((whereNullProperty) => {
+				query.whereNull(whereNullProperty);
+			});
+		}
+
+		if (params.whereNotNull){
+			params.whereNotNull = Array.isArray(params.whereNotNull) ? params.whereNotNull : [params.whereNotNull];
+
+			params.whereNotNull.forEach((whereNotNullProperty) => {
+				query.whereNotNull(whereNotNullProperty);
 			});
 		}
 

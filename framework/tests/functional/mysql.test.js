@@ -139,6 +139,41 @@ describe('Test MySQL', () => {
 			expect(result).toBe(1);
 		});
 
+		it('Row count using whereNotNull', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNotNull: ['generatorPublicKey', 'timestamp'],
+			};
+			const result = await testTable.count(params);
+			expect(result).toBe(2);
+		});
+
+		it('Row count using whereNull', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNull: ['isFinal'],
+			};
+			const result = await testTable.count(params);
+			expect(result).toBe(2);
+		});
+
+		it('Row count using whereIn and whereNull', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereIn: [{
+					property: 'height',
+					values: [emptyBlock.height, nonEmptyBlock.height],
+				},
+				{
+					property: 'id',
+					values: [emptyBlock.id],
+				}],
+				whereNull: ['isFinal'],
+			};
+			const result = await testTable.count(params);
+			expect(result).toBe(1);
+		});
+
 		it('Conditional row count', async () => {
 			const count = await testTable.count({ id: 'not_existing_id' });
 			expect(count).toEqual(0);
@@ -382,6 +417,47 @@ describe('Test MySQL', () => {
 					property: 'id',
 					values: [emptyBlock.id],
 				}],
+			};
+			const result = await testTable.find(params, ['id']);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(emptyBlock.id);
+		});
+
+		it('Fetch rows using whereNotNull', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNotNull: ['generatorPublicKey', 'timestamp'],
+			};
+			const result = await testTable.find(params, ['id']);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+		});
+
+		it('Fetch rows using whereNull', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNull: ['isFinal'],
+			};
+			const result = await testTable.find(params, ['id']);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+		});
+
+		it('Fetch rows using whereNotNull and whereIn', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereIn: [{
+					property: 'height',
+					values: [emptyBlock.height, nonEmptyBlock.height],
+				},
+				{
+					property: 'id',
+					values: [emptyBlock.id],
+				}],
+				whereNotNull: ['generatorPublicKey'],
 			};
 			const result = await testTable.find(params, ['id']);
 			expect(result).toBeInstanceOf(Array);
