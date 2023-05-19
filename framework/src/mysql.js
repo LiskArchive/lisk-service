@@ -92,7 +92,7 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch', 'count',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -214,7 +214,9 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
-		if (columns) query.select(columns);
+		if (columns && !params.count) query.select(columns);
+		else if (columns && params.count && !params.distinct) query.count(`${columns[0]} as count`);
+		else if (params.count && params.distinct) query.countDistinct(`${params.distinct} as count`);
 
 		if (params.where) {
 			query.where(params.where);
@@ -222,18 +224,18 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 			query.where(queryParams);
 		}
 
-		if (params.distinct) {
+		if (params.distinct && !params.count) {
 			const distinctParams = params.distinct.split(',');
 			query.distinct(distinctParams);
 		}
 
-		if (params.sort) {
+		if (params.sort && !params.count) {
 			const [sortColumn, sortDirection] = params.sort.split(':');
 			query.whereNotNull(sortColumn);
 			query.select(sortColumn).orderBy(sortColumn, sortDirection);
 		}
 
-		if (params.order) {
+		if (params.order && !params.count) {
 			const [orderColumn, orderDirection] = params.order.split(':');
 			query.whereNotNull(orderColumn);
 			query.select(orderColumn).orderBy(orderColumn, orderDirection);
@@ -321,40 +323,21 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 			});
 		}
 
-		if (params.aggregate) {
-			query.sum(`${params.aggregate} as total`);
-		}
+		if (!params.count) {
+			if (params.aggregate) {
+				query.sum(`${params.aggregate} as total`);
+			}
 
-		if (params.limit) {
-			query.limit(Number(params.limit));
-		} else {
-			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
-		}
+			if (params.limit) {
+				query.limit(Number(params.limit));
+			} else {
+				logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
+			}
 
-		if (params.offset) query.offset(Number(params.offset));
+			if (params.offset) query.offset(Number(params.offset));
+		}
 
 		return query;
-	};
-
-	const find = async (params = {}, columns) => {
-		const trx = await createDefaultTransaction(knex);
-		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			columns = [tableConfig.primaryKey];
-		}
-		const query = queryBuilder(params, columns, trx);
-		const debugSql = query.toSQL().toNative();
-		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-
-		return query
-			.then(async response => {
-				await trx.commit();
-				return response;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
 	};
 
 	const deleteByParams = async (params, trx) => {
@@ -419,117 +402,42 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 		return query;
 	};
 
-	const count = async (params = {}) => {
+	const find = async (params = {}, columns) => {
 		const trx = await createDefaultTransaction(knex);
-		const query = knex(tableName).transacting(trx);
-		const queryParams = resolveQueryParams(params);
+		if (!columns) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			columns = [tableConfig.primaryKey];
+		}
+		const query = queryBuilder(params, columns, trx);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
-		if (params.where) {
-			query.where(params.where);
+		return query
+			.then(async response => {
+				await trx.commit();
+				return response;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+	};
+
+	const count = async (params = {}, column) => {
+		const trx = await createDefaultTransaction(knex);
+		params.count = true;
+
+		if (!column) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			column = [tableConfig.primaryKey];
 		} else {
-			query.where(queryParams);
+			column = [column];
 		}
+		
 
-		if (params.distinct) {
-			query.countDistinct(`${params.distinct} as count`);
-		} else {
-			const countColumnName = Array.isArray(tableConfig.primaryKey)
-				? tableConfig.primaryKey[0]
-				: tableConfig.primaryKey;
-			query.count(`${countColumnName} as count`);
-		}
-
-		if (params.sort) {
-			const [sortProp] = params.sort.split(':');
-			query.whereNotNull(sortProp);
-		}
-
-		if (params.order) {
-			const [orderColumn] = params.order.split(':');
-			query.whereNotNull(orderColumn);
-		}
-
-		if (params.propBetweens) {
-			const { propBetweens } = params;
-			propBetweens.forEach(
-				propBetween => {
-					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
-					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
-					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
-				});
-		}
-
-		if (params.whereIn) {
-			const { whereIn } = params;
-			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
-
-			whereIns.forEach(param => {
-				const { property, values } = param;
-				query.whereIn(property, values);
-			});
-		}
-
-		if (params.whereJsonSupersetOf) {
-			const { property, values } = params.whereJsonSupersetOf;
-			query.where(function () {
-				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, [val0]);
-				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, [value]);
-				}));
-			});
-		}
-
-		if (params.andWhere) {
-			const { andWhere } = params;
-			query.where(function () {
-				this.where(andWhere);
-			});
-		}
-
-		if (params.orWhere) {
-			const { orWhere, orWhereWith } = params;
-			query.where(function () {
-				this.where(orWhere).orWhere(orWhereWith);
-			});
-		}
-
-		if (params.orWhereIn) {
-			const { property, values } = params.orWhereIn;
-			query.orWhereIn(property, values);
-		}
-
-		if (params.search) {
-			params.search = Array.isArray(params.search) ? params.search : [params.search];
-
-			params.search.forEach(search => {
-				const { property, pattern, startsWith, endsWith } = search;
-				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
-			});
-		}
-
-		if (params.orSearch) {
-			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
-
-			query.andWhere(function () {
-				params.orSearch.forEach((orSearch, index) => {
-					const { property, pattern, startsWith, endsWith } = orSearch;
-
-					if (index === 0) {
-						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
-					} else {
-						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
-					}
-				});
-			});
-		}
+		const query = queryBuilder(params, column, trx);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
 		return query
 			.then(async result => {

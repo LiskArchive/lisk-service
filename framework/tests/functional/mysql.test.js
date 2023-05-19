@@ -426,6 +426,26 @@ describe('Test MySQL', () => {
 			expect(result).toBe(1);
 		});
 
+		it('Row count of column using whereIn', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
+			await commitDBTransaction(trx);
+
+			const params = {
+				whereIn: [{
+					property: 'height',
+					values: [emptyBlock.height, nonEmptyBlock.height],
+				},
+				{
+					property: 'id',
+					values: [emptyBlock.id],
+				}],
+			};
+			const result = await testTable.count(params, 'height');
+			expect(result).toBe(1);
+		});
+
 		it('Conditional row count', async () => {
 			const count = await testTable.count({ id: 'not_existing_id' });
 			expect(count).toEqual(0);
