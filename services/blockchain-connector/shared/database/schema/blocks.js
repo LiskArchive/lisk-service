@@ -14,14 +14,15 @@
  *
  */
 module.exports = {
-	chainName: '=,string',
-	chainID: '=,string',
-	status: '=,string',
-	address: '=,string',
-	lastCertificateHeight: '=,number',
-	lastUpdated: '=,number',
-	escrow: ['escrow', {
-		tokenID: '=,string',
-		amount: '=,string',
-	}],
+	tableName: 'blocks',
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string', null: false },
+		block: { type: 'json', null: false },
+		timestamp: { type: 'integer', null: false },
+	},
+	indexes: {
+		timestamp: { type: 'range' },
+	},
+	purge: {},
 };

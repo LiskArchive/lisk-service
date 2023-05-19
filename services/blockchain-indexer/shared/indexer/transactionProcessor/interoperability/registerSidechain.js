@@ -46,7 +46,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.chainID,
-		name: tx.params.name,
+		chainName: tx.params.name,
 		status: chainInfo.status,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
