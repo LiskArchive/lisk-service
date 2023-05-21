@@ -93,7 +93,7 @@ const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
 		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
-		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull'
+		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -324,18 +324,19 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 			});
 		}
 
-		if (params.whereNull){
+		if (params.whereNull) {
 			params.whereNull = Array.isArray(params.whereNull) ? params.whereNull : [params.whereNull];
 
-			params.whereNull.forEach((whereNullProperty) => {
+			params.whereNull.forEach(whereNullProperty => {
 				query.whereNull(whereNullProperty);
 			});
 		}
 
-		if (params.whereNotNull){
-			params.whereNotNull = Array.isArray(params.whereNotNull) ? params.whereNotNull : [params.whereNotNull];
+		if (params.whereNotNull) {
+			params.whereNotNull = Array.isArray(params.whereNotNull)
+				? params.whereNotNull : [params.whereNotNull];
 
-			params.whereNotNull.forEach((whereNotNullProperty) => {
+			params.whereNotNull.forEach(whereNotNullProperty => {
 				query.whereNotNull(whereNotNullProperty);
 			});
 		}
@@ -450,7 +451,6 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 		} else {
 			column = [column];
 		}
-		
 
 		const query = queryBuilder(params, column, trx);
 		const debugSql = query.toSQL().toNative();

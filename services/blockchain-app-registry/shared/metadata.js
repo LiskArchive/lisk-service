@@ -399,7 +399,7 @@ const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) 
 		sort,
 	};
 	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
-	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams);
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	// Fetch the data
 	return { tokensMeta, total };
@@ -425,7 +425,7 @@ const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, of
 	};
 
 	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
-	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams);
 
 	// Fetch the data
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
