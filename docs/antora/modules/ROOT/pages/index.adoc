@@ -346,7 +346,7 @@ For example:
 === The WebSocket JSON-RPC API
 
 // The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
-// The API uses the `socket.io` library and is compatible with JSON-RPC 2.0 standard.
+// The API uses the `Socket.IO` library and is compatible with JSON-RPC 2.0 standard.
 
 With regard to the WebSocket JSON-RPC API, as briefly described above in Table 2, this enables efficient and seamless integration within the Lisk blockchain network, coupled with offering a more responsive, and efficient alternative to the traditional HTTP based APIs.
 The xref:{url_api_rpc}[RPC-API] reference provides an overview of all available RPC requests.
