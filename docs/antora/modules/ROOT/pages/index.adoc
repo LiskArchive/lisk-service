@@ -281,7 +281,7 @@ Lisk Service provides the data through several alternative APIs:
 
 === The HTTP API
 
-The xref:{url_api_http}[HTTP API] provides various additional endpoints as compared to the HTTP API of a normal Lisk node.
+The xref:{url_api_http}[HTTP API] provides various endpoints that offer more exhaustive information in comparison to the HTTP API of that of a normal Lisk node.
 This API can be utilized to build powerful wallets and user interfaces for blockchain applications which are built with the Lisk SDK.
 
 ==== Public Lisk Service APIs
