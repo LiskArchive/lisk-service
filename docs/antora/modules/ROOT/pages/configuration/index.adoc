@@ -85,9 +85,8 @@ module.exports = {
         SERVICE_BROKER: 'redis://localhost:6379/0',
         LISK_APP_WS: 'ws://localhost:7887',
         GEOIP_JSON: 'https://geoip.lisk.com/json',
-        USE_LISK_IPC_CLIENT: 'true',
+        // USE_LISK_IPC_CLIENT: 'true',
         // LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
-        // ENABLE_TESTING_MODE: 'false',
       },
     },
     {
@@ -230,7 +229,7 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
 |Configurable
 |Description
@@ -239,15 +238,15 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | ✔
-| URL of the microservice message broker (NATS or Redis).
+| URL of the microservice message broker.
 Must be identical for all microservices.
-Make sure that all microservices can connect with the common Redis.
+Make sure that all microservices can connect with the message broker. This could be a NATS or Redis instance.
 | redis://localhost:6379/0
  
 | `SERVICE_LOG_LEVEL`
 | string
 | ✔
-| Default log level; Available options are `trace`, `debug`, `info`, `warn`, `error`, and `fatal`.
+| Set the application logging level; Available options are `trace`, `debug`, `info`, `warn`, `error`, and `fatal`.
 | info
  
 | `SERVICE_LOG_STDOUT`
@@ -266,8 +265,8 @@ This property should be enabled only for debugging purposes.
 | `SERVICE_LOG_FILE`
 | string
 | ✔
-| Enable file path to the service log file such as: './logs/service.log'
-| false
+| File path to capture the logs.
+| './logs/app.log'
 
 | `SERVICE_LOG_GELF`
 | string
@@ -322,9 +321,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -355,21 +353,21 @@ Properties::
 | `ENABLE_HTTP_API`
 | string
 | ✔
-| Enables particular HTTP APIs.
-APIs must be listed as comma-separated values.
+| Enables particular HTTP API endpoints.
+Directories (under `gateway/apis/`) containing the API method definitions must be listed as comma-separated values.
 | http-status,http-version3,http-exports
 
 | `ENABLE_WS_API`
 | string
 | ✔
-| Enables particular WebSocket APIs.
+| Enables specified WebSocket API namespaces.
 APIs must be listed as comma-separated values.
 | blockchain,rpc-v3
 
 | `SERVICE_GATEWAY_REDIS_VOLATILE`
 | string
 | ✗
-| URL of the volatile cache storage (Redis).
+| URL of the volatile cache storage (Redis). Used to cache RPC requests. Required when `ENABLE_REQUEST_CACHING` is enabled.
 | redis://localhost:6379/5
 
 | `GATEWAY_DEPENDENCIES`
@@ -425,7 +423,7 @@ The default duration of a window is 10 seconds.
 | `HTTP_CACHE_CONTROL_DIRECTIVES`
 | string
 | ✗
-| The Cache-Control directive can be overridden with this environment variable.
+| The `Cache-Control` HTTP directive can be overridden with this environment variable.
 | public, max-age=10
 
 | `ENABLE_HTTP_CACHE_CONTROL`
@@ -487,9 +485,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+| Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -564,7 +561,6 @@ module.exports = {
         USE_LISK_IPC_CLIENT: "true",
         GENESIS_BLOCK_URL: "",
         LISK_APP_DATA_PATH: "~/.lisk/lisk-core",
-        // ENABLE_TESTING_MODE: 'false',
       },
     },
     // Other types of configurations.
@@ -585,9 +581,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -600,7 +595,7 @@ Properties::
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | ✔
-| URL of the job queue to schedule the indexing jobs for Redis.
+| URL of the Redis instance hosting the job queue to schedule the block indexing jobs.
 | redis://localhost:6379/3
 
 |===
@@ -640,9 +635,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -736,9 +730,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -798,9 +791,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -837,7 +829,7 @@ Properties::
 | `FEE_EST_DEFAULT_START_BLOCK_HEIGHT`
 | string
 | ✔
-| Defines the height at which the blockchain starts using dynamic fees.
+| Defines the block height at which the dynamic fee estimation algorithm starts.
 | 1
 
 |===
@@ -882,9 +874,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -950,9 +941,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
@@ -1030,9 +1020,8 @@ Properties::
 --
 [cols="2,1,1,3,3",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
-|Configurable
 |Description
 |Sample
 
