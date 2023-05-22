@@ -44,7 +44,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	return knex;
 };
 
-const createDbConnection = async (dbDataDir, tableName) => {
+const createDBConnection = async (dbDataDir, tableName) => {
 	const knex = require('knex')({
 		client: 'better-sqlite3',
 		connection: {
@@ -92,7 +92,8 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
+		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -122,10 +123,10 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	return rows;
 };
 
-const getDbConnection = async (tableName, dbDataDir) => {
+const getDBConnection = async (tableName, dbDataDir) => {
 	if (!connectionPool[tableName]) {
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
-		connectionPool[tableName] = await createDbConnection(dbDataDir, tableName);
+		connectionPool[tableName] = await createDBConnection(dbDataDir, tableName);
 	}
 
 	const knex = connectionPool[tableName];
@@ -135,24 +136,24 @@ const getDbConnection = async (tableName, dbDataDir) => {
 const createTableIfNotExists = async (tableName, tableConfig) => {
 	if (!tablePool[tableName]) {
 		logger.info(`Creating schema for ${tableName}`);
-		const knex = await getDbConnection(tableName);
+		const knex = await getDBConnection(tableName);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[tableName] = true;
 	}
 };
 
-const startDbTransaction = async connection => connection.transaction();
+const startDBTransaction = async connection => connection.transaction();
 
-const commitDbTransaction = async transaction => transaction.commit();
+const commitDBTransaction = async transaction => transaction.commit();
 
-const rollbackDbTransaction = async transaction => transaction.rollback();
+const rollbackDBTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache.dbDataDir) => {
-	const { primaryKey, schema } = tableConfig;
+const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir) => {
+	const { tableName, primaryKey, schema } = tableConfig;
 
-	const knex = await getDbConnection(tableName, dbDataDir);
+	const knex = await getDBConnection(tableName, dbDataDir);
 
-	const createDefaultTransaction = async connection => startDbTransaction(connection);
+	const createDefaultTransaction = async connection => startDBTransaction(connection);
 
 	await createTableIfNotExists(tableName, tableConfig);
 
@@ -192,21 +193,28 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache
 		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
-		if (columns) query.select(columns);
-		query.where(queryParams);
+		if (columns && !params.count) query.select(columns);
+		else if (columns && params.count && !params.distinct) query.count(`${columns[0]} as count`);
+		else if (params.count && params.distinct) query.countDistinct(`${params.distinct} as count`);
 
-		if (params.distinct) {
+		if (params.where) {
+			query.where(params.where);
+		} else {
+			query.where(queryParams);
+		}
+
+		if (params.distinct && !params.count) {
 			const distinctParams = params.distinct.split(',');
 			query.distinct(distinctParams);
 		}
 
-		if (params.sort) {
+		if (params.sort && !params.count) {
 			const [sortColumn, sortDirection] = params.sort.split(':');
 			query.whereNotNull(sortColumn);
 			query.select(sortColumn).orderBy(sortColumn, sortDirection);
 		}
 
-		if (params.order) {
+		if (params.order && !params.count) {
 			const [orderColumn, orderDirection] = params.order.split(':');
 			query.whereNotNull(orderColumn);
 			query.select(orderColumn).orderBy(orderColumn, orderDirection);
@@ -294,40 +302,38 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache
 			});
 		}
 
-		if (params.aggregate) {
-			query.sum(`${params.aggregate} as total`);
+		if (params.whereNull) {
+			params.whereNull = Array.isArray(params.whereNull) ? params.whereNull : [params.whereNull];
+
+			params.whereNull.forEach(whereNullProperty => {
+				query.whereNull(whereNullProperty);
+			});
 		}
 
-		if (params.limit) {
-			query.limit(Number(params.limit));
-		} else {
-			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
+		if (params.whereNotNull) {
+			params.whereNotNull = Array.isArray(params.whereNotNull)
+				? params.whereNotNull : [params.whereNotNull];
+
+			params.whereNotNull.forEach(whereNotNullProperty => {
+				query.whereNotNull(whereNotNullProperty);
+			});
 		}
 
-		if (params.offset) query.offset(Number(params.offset));
+		if (!params.count) {
+			if (params.aggregate) {
+				query.sum(`${params.aggregate} as total`);
+			}
+
+			if (params.limit) {
+				query.limit(Number(params.limit));
+			} else {
+				logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
+			}
+
+			if (params.offset) query.offset(Number(params.offset));
+		}
 
 		return query;
-	};
-
-	const find = async (params = {}, columns) => {
-		const trx = await createDefaultTransaction(knex);
-		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			columns = [tableConfig.primaryKey];
-		}
-		const query = queryBuilder(params, columns, trx);
-		const debugSql = query.toSQL().toNative();
-		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-
-		return query
-			.then(async response => {
-				await trx.commit();
-				return response;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
 	};
 
 	const deleteByParams = async (params, trx) => {
@@ -391,113 +397,42 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache
 			});
 		return query;
 	};
-	const count = async (params = {}) => {
+
+	const find = async (params = {}, columns) => {
 		const trx = await createDefaultTransaction(knex);
-		const query = knex(tableName).transacting(trx);
-		const queryParams = resolveQueryParams(params);
+		if (!columns) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			columns = Array.isArray(tableConfig.primaryKey) ? tableConfig.primaryKey : [tableConfig.primaryKey];
+		}
+		const query = queryBuilder(params, columns, trx);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
-		query.where(queryParams);
+		return query
+			.then(async response => {
+				await trx.commit();
+				return response;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+	};
 
-		if (params.distinct) {
-			query.countDistinct(`${params.distinct} as count`);
+	const count = async (params = {}, column) => {
+		const trx = await createDefaultTransaction(knex);
+		params.count = true;
+
+		if (!column) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			column = [tableConfig.primaryKey];
 		} else {
-			const countColumnName = Array.isArray(tableConfig.primaryKey)
-				? tableConfig.primaryKey[0]
-				: tableConfig.primaryKey;
-			query.count(`${countColumnName} as count`);
+			column = [column];
 		}
 
-		if (params.sort) {
-			const [sortProp] = params.sort.split(':');
-			query.whereNotNull(sortProp);
-		}
-
-		if (params.order) {
-			const [orderColumn] = params.order.split(':');
-			query.whereNotNull(orderColumn);
-		}
-
-		if (params.propBetweens) {
-			const { propBetweens } = params;
-			propBetweens.forEach(
-				propBetween => {
-					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
-					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
-					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
-				});
-		}
-
-		if (params.whereIn) {
-			const { whereIn } = params;
-			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
-
-			whereIns.forEach(param => {
-				const { property, values } = param;
-				query.whereIn(property, values);
-			});
-		}
-
-		if (params.whereJsonSupersetOf) {
-			const { property, values } = params.whereJsonSupersetOf;
-			query.where(function () {
-				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, [val0]);
-				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, [value]);
-				}));
-			});
-		}
-
-		if (params.andWhere) {
-			const { andWhere } = params;
-			query.where(function () {
-				this.where(andWhere);
-			});
-		}
-
-		if (params.orWhere) {
-			const { orWhere, orWhereWith } = params;
-			query.where(function () {
-				this.where(orWhere).orWhere(orWhereWith);
-			});
-		}
-
-		if (params.orWhereIn) {
-			const { property, values } = params.orWhereIn;
-			query.orWhereIn(property, values);
-		}
-
-		if (params.search) {
-			params.search = Array.isArray(params.search) ? params.search : [params.search];
-
-			params.search.forEach(search => {
-				const { property, pattern, startsWith, endsWith } = search;
-				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
-			});
-		}
-
-		if (params.orSearch) {
-			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
-
-			query.andWhere(function () {
-				params.orSearch.forEach((orSearch, index) => {
-					const { property, pattern, startsWith, endsWith } = orSearch;
-
-					if (index === 0) {
-						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
-					} else {
-						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
-					}
-				});
-			});
-		}
+		const query = queryBuilder(params, column, trx);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
 		return query
 			.then(async result => {
@@ -532,10 +467,7 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache
 			isDefaultTrx = true;
 		}
 
-		const query = knex(tableName)
-			.transacting(trx)
-			.where(params.where)
-			.increment(params.increment);
+		const query = queryBuilder(params, false, trx).increment(params.increment);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -556,10 +488,7 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache
 			isDefaultTrx = true;
 		}
 
-		const query = knex(tableName)
-			.transacting(trx)
-			.where(params.where)
-			.decrement(params.decrement);
+		const query = queryBuilder(params, false, trx).decrement(params.decrement);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -588,9 +517,9 @@ const getTableInstance = async (tableName, tableConfig, dbDataDir = config.cache
 
 module.exports = {
 	default: getTableInstance,
-	getDbConnection,
+	getDBConnection,
 	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
+	startDBTransaction,
+	commitDBTransaction,
+	rollbackDBTransaction,
 };

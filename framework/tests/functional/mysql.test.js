@@ -90,6 +90,16 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 		});
 
+		it('Fetch rows with composite table', async () => {
+			await compositeKeyTable.upsert([emptyBlock]);
+			const result = await compositeKeyTable.find({ id: emptyBlock.id });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(emptyBlock.id);
+		});
+
 		it('Fetch rows using whereIn', async () => {
 			await testTable.upsert([emptyBlock, nonEmptyBlock]);
 			const params = {
@@ -103,6 +113,26 @@ describe('Test MySQL', () => {
 				}],
 			};
 			const result = await testTable.find(params, ['id']);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(emptyBlock.id);
+		});
+
+		it('Fetch rows using whereIn with composite table', async () => {
+			await compositeKeyTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereIn: [{
+					property: 'height',
+					values: [emptyBlock.height, nonEmptyBlock.height],
+				},
+				{
+					property: 'id',
+					values: [emptyBlock.id],
+				}],
+			};
+			const result = await compositeKeyTable.find(params);
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
 
@@ -631,6 +661,7 @@ describe('Test MySQL', () => {
 	});
 
 	describe('Transactional atomicity guarantees (non-auto commit mode)', () => {
+		
 		it('Successful transaction commit', async () => {
 			const connection = await getDBConnection();
 			const trx = await startDBTransaction(connection);
@@ -645,6 +676,33 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
 		});
+
+		it('should find row before commiting transaction', async () => {
+			// Delete original entry if exists
+			await testTable.deleteByPrimaryKey([emptyBlock.height]);
+			let [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
+			expect(retrievedBlock).toBe(undefined);
+
+			// Create a new transaction and add an entry
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([emptyBlock], trx);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+
+			// Fetch the entry before commiting the transaction
+			[retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size'], trx);
+			expect(retrievedBlock.id).toBe(emptyBlock.id);
+			expect(retrievedBlock.size).toBe(50);
+
+			// Expect all operations to be successful, commit the transaction
+			await commitDBTransaction(trx);
+
+			// Fetch the entry after commiting the transaction
+			[retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
+			expect(retrievedBlock.id).toBe(emptyBlock.id);
+			expect(retrievedBlock.size).toBe(50);
+		});
+
 
 		it('Successful transaction rollback - 1', async () => {
 			const connection = await getDBConnection();

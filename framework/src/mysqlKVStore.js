@@ -47,10 +47,11 @@ const getKeyValueTable = async (tableName, connEndpoint = config.CONN_ENDPOINT_D
 		await keyValueTable.upsert({ key, value: finalValue, type }, dbTrx);
 	};
 
-	const get = async key => {
+	const get = async (key, dbTrx) => {
 		const [{ value, type } = {}] = await keyValueTable.find(
 			{ key, limit: 1 },
 			['value', 'type'],
+			dbTrx,
 		);
 
 		return formatValue(value, type);

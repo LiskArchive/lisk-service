@@ -420,17 +420,22 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 		return query;
 	};
 
-	const find = async (params = {}, columns) => {
-		const trx = await createDefaultTransaction(knex);
+	const find = async (params = {}, columns, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			columns = [tableConfig.primaryKey];
+			columns = Array.isArray(tableConfig.primaryKey) ? tableConfig.primaryKey : [tableConfig.primaryKey];
 		}
 		const query = queryBuilder(params, columns, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
-		return query
+		if (isDefaultTrx) return query
 			.then(async response => {
 				await trx.commit();
 				return response;
@@ -439,6 +444,8 @@ const getTableInstance = async (tableConfig, connEndpoint = config.CONN_ENDPOINT
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
 	const count = async (params = {}, column) => {
