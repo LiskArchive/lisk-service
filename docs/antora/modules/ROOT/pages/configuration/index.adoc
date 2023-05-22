@@ -2,11 +2,13 @@
 Muhammad Talha <muhammad.talha@lightcurve.io>
 :toc:
 :url_microservices: index.adoc#microservices
+:url_pm2: https://pm2.keymetrics.io/
+
 
 On the Introduction to Lisk Service page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service. On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
-By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations.
+By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2].
 The values of various environment variables are automatically picked by the microservice based on the installation environment.
 Aside from that, many environment variables can be configured to meet the specific requirements, and their details have been outlined with each microservice. 
 
@@ -219,8 +221,7 @@ module.exports = {
 In this section, we discuss the common and specific configurations of all the microservices of Lisk Service.
 
 === Common Configurations
-The common configurations described in this section can be added to any microservice.
-The value of each configuration defined below should be the same across all microservices.
+The common configurations described in this section are applicable to all the microservices within Lisk Service.
 
 [tabs]
 =====
@@ -237,7 +238,7 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker.
-Must be identical for all microservices.
+*Must be identical for all microservices.*
 Make sure that all microservices can connect with the message broker. This could be a NATS or Redis instance.
 | redis://localhost:6379/0
  
@@ -248,12 +249,12 @@ Make sure that all microservices can connect with the message broker. This could
  
 | `SERVICE_LOG_STDOUT`
 | string
-| Enable asynchronous console output such as "non-blocking" or "preferred" with a boolean value.
+| Enable posting logs to the standard output stream. Accepted values are `true` and `false`.
 | true
 
 | `SERVICE_LOG_CONSOLE`
 | string
-| Enable plain JavaScript `console.log()` output (blocking).
+| Enable posting logs to the JavaScript `console.log()` output (blocking).
 This property should be enabled only for debugging purposes.
 | false
 
@@ -266,7 +267,7 @@ This property should be enabled only for debugging purposes.
 | string
 | Enable log output in GELF for remote logging.
 For example, Graylog 'localhost:12201/udp'
-| false
+| 'localhost:12201/udp'
 |===
 
 --
