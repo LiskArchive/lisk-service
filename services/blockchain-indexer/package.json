@@ -37,7 +37,7 @@
     "bull": "^4.8.1",
     "camelcase": "^6.3.0",
     "ioredis": "^4.28.5",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/1188-improve-MySQL-implementation/framework/dist/lisk-service-framework-1.4.16.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/1e277b60945b22b5a28bd76a2a000716bad10a0a/framework/dist/lisk-service-framework-1.4.16.tgz",
     "lodash": "^4.17.21",
     "require-all": "^3.0.0"
   },

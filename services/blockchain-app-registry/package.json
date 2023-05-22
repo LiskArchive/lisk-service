@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/1188-improve-MySQL-implementation/framework/dist/lisk-service-framework-1.4.16.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/1e277b60945b22b5a28bd76a2a000716bad10a0a/framework/dist/lisk-service-framework-1.4.16.tgz",
     "octokit": "^2.0.4",
     "tar": "^6.1.11"
   },
