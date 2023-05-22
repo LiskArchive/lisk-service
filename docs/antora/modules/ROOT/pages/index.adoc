@@ -75,7 +75,9 @@ image::architecture.png[Architecture][,500 ,align="center"]
 
 === Available Services
 
-Lisk Service consists of various microservices which have been further expanded, and possess the ability to run independently of each other.
+Lisk Service consists of various microservices which have been further expanded.
+Briefly, microservices can be defined as an architectural style that structures an application as a collection of small, loosely coupled services, whereby each service can run its own process, and offers the user the ability to reduce the complexity into more manageable services that can be developed, and deployed independently.
+//offering the users the ability to build small independent services these enable the user to and are used and possess the ability to run independently of each other.
 The Gateway is required in order to expose the APIs provided by the specific services.
 
 Each microservice is independently managed and is stored separately under the {url_services_directory}[services^] directory.
