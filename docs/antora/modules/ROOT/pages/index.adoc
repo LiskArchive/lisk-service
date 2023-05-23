@@ -154,7 +154,7 @@ This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
 image::mservice_architecture.png[]
 
 [[usage]]
-== APIs and Usage
+== APIs
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
 
 [cols="1,3", options="header"]
