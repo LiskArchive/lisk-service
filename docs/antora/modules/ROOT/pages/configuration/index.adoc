@@ -301,8 +301,8 @@ Requires `LISK_APP_DATA_PATH` to be set.
 | `GENESIS_BLOCK_URL`
 | string
 | URL of the Lisk SDK-based application's genesis block.
-Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
-| 
+Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout
+| https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz
 
 |===
 
