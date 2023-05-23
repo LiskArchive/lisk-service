@@ -805,11 +805,11 @@ module.exports = {
 --
 =====
 
-== Lisk Settings
+// == Lisk Settings
 
-Configurable environment variables related to Lisk node.
+// Configurable environment variables related to Lisk node.
 
-TODO: needs verification from Sameer
+// TODO: needs verification from Sameer
 
 // === MySQL Snapshot settings for Docker
 // Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
