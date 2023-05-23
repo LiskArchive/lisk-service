@@ -398,17 +398,23 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		return query;
 	};
 
-	const find = async (params = {}, columns) => {
-		const trx = await createDefaultTransaction(knex);
+	const find = async (params = {}, columns, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			columns = Array.isArray(tableConfig.primaryKey) ? tableConfig.primaryKey : [tableConfig.primaryKey];
+			columns = Array.isArray(tableConfig.primaryKey)
+				? tableConfig.primaryKey : [tableConfig.primaryKey];
 		}
 		const query = queryBuilder(params, columns, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
-		return query
+		if (isDefaultTrx) return query
 			.then(async response => {
 				await trx.commit();
 				return response;
@@ -417,6 +423,8 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
 	const count = async (params = {}, column) => {
@@ -425,14 +433,17 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 
 		if (!column) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			column = [tableConfig.primaryKey];
+			column = Array.isArray(tableConfig.primaryKey)
+				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
 		} else {
-			column = [column];
+			column = Array.isArray(column) ? [column[0]] : [column];
 		}
 
 		const query = queryBuilder(params, column, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
+
+		params.count = false;
 
 		return query
 			.then(async result => {
@@ -522,4 +533,10 @@ module.exports = {
 	startDBTransaction,
 	commitDBTransaction,
 	rollbackDBTransaction,
+
+	// For backward compatibility
+	getDbConnection: getDBConnection,
+	startDbTransaction: startDBTransaction,
+	commitDbTransaction: commitDBTransaction,
+	rollbackDbTransaction: rollbackDBTransaction,
 };

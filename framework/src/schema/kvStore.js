@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'key_value_store',
 	primaryKey: 'key',
 	schema: {
 		key: { type: 'string' },

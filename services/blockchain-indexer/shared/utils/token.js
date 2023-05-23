@@ -23,7 +23,7 @@ const { KV_STORE_KEY } = require('../constants');
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
+const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const getTotalLocked = async () => {
 	const keyValueTable = await getKeyValueTableInstance();

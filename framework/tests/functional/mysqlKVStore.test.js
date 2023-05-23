@@ -36,7 +36,7 @@ let keyValueTable;
 
 beforeAll(async () => {
 	dbConnection = await getDBConnection(MYSQL_ENDPOINT);
-	keyValueTable = await getKeyValueTable('key_value_store', CONN_ENDPOINT_DEFAULT);
+	keyValueTable = await getKeyValueTable(CONN_ENDPOINT_DEFAULT);
 });
 
 afterEach(async () => {
@@ -90,7 +90,7 @@ describe('Test set and get methods', () => {
 		const responseAfterRollback = await keyValueTable.get(KEY_1);
 		expect(responseAfterRollback).toBe(undefined);
 	});
-	
+
 	it('should get value before transaction is committed if transaction param is passed', async () => {
 		// Check key is not defined
 		const responseBefore = await keyValueTable.get(KEY_1);

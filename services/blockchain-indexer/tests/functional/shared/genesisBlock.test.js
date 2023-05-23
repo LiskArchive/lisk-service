@@ -37,7 +37,7 @@ const {
 } = require('../../../shared/indexer/genesisBlock');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
+const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,

@@ -66,7 +66,7 @@ const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
+const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const logger = Logger();
 

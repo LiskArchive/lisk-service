@@ -143,6 +143,4 @@ config.networks = Object.freeze({
 
 config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true');
 
-config.kvStoreTableName = 'key_value_store';
-
 module.exports = config;

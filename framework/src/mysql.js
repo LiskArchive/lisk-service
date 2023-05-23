@@ -429,7 +429,8 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			columns = Array.isArray(tableConfig.primaryKey) ? tableConfig.primaryKey : [tableConfig.primaryKey];
+			columns = Array.isArray(tableConfig.primaryKey)
+				? tableConfig.primaryKey : [tableConfig.primaryKey];
 		}
 		const query = queryBuilder(params, columns, trx);
 		const debugSql = query.toSQL().toNative();
@@ -454,9 +455,10 @@ const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAUL
 
 		if (!column) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			Array.isArray(tableConfig.primaryKey) ? column = tableConfig.primaryKey : column = [tableConfig.primaryKey];
+			column = Array.isArray(tableConfig.primaryKey)
+				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
 		} else {
-			column = [column];
+			column = Array.isArray(column) ? [column[0]] : [column];
 		}
 
 		const query = queryBuilder(params, column, trx);

@@ -33,7 +33,7 @@ const stakesTableSchema = require('../../../database/schema/stakes');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
+const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const getStakesTable = () => getTableInstance(
 	stakesTableSchema,

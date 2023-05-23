@@ -40,7 +40,7 @@ const config = require('../../../../config');
 const { exists, rmdir } = require('../../../../shared/utils/fs');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(config.kvStoreTableName, MYSQL_ENDPOINT);
+const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const commitHashRegex = /^[a-f0-9]{40}$/;
 const enevtiAppFilePath = path.resolve(`${config.dataDir}/app-registry/devnet/Enevti/app.json`);

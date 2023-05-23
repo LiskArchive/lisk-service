@@ -34,8 +34,7 @@ const formatValue = (value, type) => {
 	return value;
 };
 
-const getKeyValueTable = async (tableName, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
-	keyValueStoreSchema.tableName = tableName;
+const getKeyValueTable = async (connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = 'default') => {
 	const keyValueTable = await getTableInstance(keyValueStoreSchema, connEndpoint);
 
 	const set = async (key, value, dbTrx) => {
@@ -46,12 +45,12 @@ const getKeyValueTable = async (tableName, connEndpoint = CONN_ENDPOINT_DEFAULT)
 		}
 
 		const finalValue = value === undefined ? value : String(value);
-		await keyValueTable.upsert({ key, value: finalValue, type }, dbTrx);
+		await keyValueTable.upsert({ key: `${prefix}_${key}`, value: finalValue, type }, dbTrx);
 	};
 
 	const get = async (key, dbTrx) => {
 		const [{ value, type } = {}] = await keyValueTable.find(
-			{ key, limit: 1 },
+			{ key: `${prefix}_${key}`, limit: 1 },
 			['value', 'type'],
 			dbTrx,
 		);
@@ -66,13 +65,13 @@ const getKeyValueTable = async (tableName, connEndpoint = CONN_ENDPOINT_DEFAULT)
 		);
 
 		const formattedResult = result.map(row => ({
-			key: row.key,
+			key: row.key.slice(prefix.length + 1),
 			value: formatValue(row.value, row.type),
 		}));
 		return formattedResult;
 	};
 
-	const deleteEntry = async (key, dbTrx) => keyValueTable.deleteByPrimaryKey([key], dbTrx);
+	const deleteEntry = async (key, dbTrx) => keyValueTable.deleteByPrimaryKey([`${prefix}_${key}`], dbTrx);
 
 	return {
 		set,

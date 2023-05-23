@@ -94,6 +94,4 @@ config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'04': 'devnet',
 });
 
-config.kvStoreTableName = 'key_value_store';
-
 module.exports = config;
