@@ -199,8 +199,8 @@ const buildEventPayload = async (allFilesModified) => {
 };
 
 const isMetadataFile = (filePath) => (
-	filePath !== undefined
-	&& (filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON))
+	!!(filePath
+	&& (filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON)))
 );
 
 /* Sorts the passed array and groups files by the network and app. Returns following structure:
