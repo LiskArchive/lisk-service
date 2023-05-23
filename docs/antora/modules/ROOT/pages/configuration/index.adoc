@@ -11,20 +11,17 @@ On the Introduction to Lisk Service page, we have discussed the various xref:{ur
 == Default configurations
 By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2].
 
-NOTE: The actual `*ecosystem.config.js*` file for Lisk Service can be seen in the {url_config_file}[lisk-service] github repository.
+NOTE: The actual `*ecosystem.config.js*` file for Lisk Service can be seen in the {url_config_file}[lisk-service] GitHub repository.
 
-The values of various environment variables are automatically picked by the microservice based on the installation environment.
-Aside from that, many environment variables can be configured to meet the specific requirements, and their details have been outlined with each microservice. 
-
-
+The values of various environment variables are automatically picked by the microservices based on the installation environment.
+Aside from that, many environment variables can be configured to meet the specific requirements, the details of which have been outlined with each microservice. 
 
 
-
-== Microservice Configurations
+== Microservice configurations
 In this section, we discuss the common and specific configurations of all the microservices of Lisk Service.
 
-=== Common Configurations
-The common configurations described in this section are applicable to all the microservices within Lisk Service.
+=== Common configurations
+The common configurations described in this section apply to all the microservices within Lisk Service.
 
 [tabs]
 =====
@@ -172,7 +169,7 @@ APIs must be listed as comma-separated values.
 
 | `WS_RATE_LIMIT_ENABLE`
 | string
-| To enable the WebSocket rate limit, this environment variable is required to be true.
+| To enable the WebSocket rate limit, this environment variable is required to be `true`.
 | false
 
 | `WS_RATE_LIMIT_CONNECTIONS`
@@ -187,12 +184,12 @@ APIs must be listed as comma-separated values.
 
 | `ENABLE_REQUEST_CACHING`
 | string
-| To enable RPC response caching, this environment variable is required to be true.
+| To enable RPC response caching, this environment variable is required to be `true`.
 | true
 
 | `HTTP_RATE_LIMIT_ENABLE`
 | string
-| To enable the HTTP rate limit, this environment variable is required to be true.
+| To enable the HTTP rate limit, this environment variable is required to be `true`.
 | false
 
 | `HTTP_RATE_LIMIT_CONNECTIONS`
@@ -209,7 +206,7 @@ The default duration of a window is 10 seconds.
 
 | `ENABLE_HTTP_CACHE_CONTROL`
 | string
-| To enable response caching, this environment variable is required to be true.
+| To enable response caching, this environment variable is required to be `true`.
 This would include the Cache-Control header within the responses.
 | true
 
@@ -282,18 +279,18 @@ Properties::
  
 | `LISK_APP_WS`
 | string
-| URL to connect with the Lisk SDK-based application node over WebSocket.
+| URL to connect with the Lisk application node over WebSocket.
 | ws://localhost:7887
 
 | `USE_LISK_IPC_CLIENT`
 | string
-| Boolean flag to enable IPC-based connection to the Lisk SDK-based application node.
+| Boolean flag to enable IPC-based connection to the Lisk application node.
 Requires `LISK_APP_DATA_PATH` to be set.
 | true 
 
 | `LISK_APP_DATA_PATH`
 | string
-| Data path to connect with the Lisk SDK-based application node over IPC.
+| Data path to connect with the Lisk application node over IPC.
 | ~/.lisk/lisk-core
 
 | `GEOIP_JSON`
