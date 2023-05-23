@@ -157,23 +157,6 @@ image::mservice_architecture.png[]
 == APIs
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
 
-[cols="1,3", options="header"]
-.The APIs
-|===
-|API |Description
-
-|xref:{url_http_api}[HTTP API]
-| HTTP API is the public RESTful API that provides blockchain data in standardized JSON format.
-
-|{url_websocket_api}[WebSocket JSON-RPC API^]
-|The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format.
-The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards.
-
-|{url_subscribe_api}[Subscribe API^]
-|The Subscribe API is an event-driven API.
-It uses a two-way streaming connection, which can notify the client about new data instantly as it arrives.
-It is responsible for updating users regarding changes in the blockchain network and markets.
-|===
 
 // This section below is commented out and may be used for the new docker setup guide.
 // == Installation
@@ -279,7 +262,7 @@ It is responsible for updating users regarding changes in the blockchain network
 
 Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured], and started, it is possible to retrieve data from the blockchain network.
 
-Lisk Service provides the data through several alternative APIs:
+Lisk Service provides the data through several alternative APIs described below:
 
 === The HTTP API
 
