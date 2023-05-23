@@ -280,11 +280,6 @@ Properties::
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
  
-| `LISK_APP_HTTP`
-| string
-| URL to connect with the Lisk SDK-based application node over HTTP.
-| http://127.0.0.1:7887
- 
 | `LISK_APP_WS`
 | string
 | URL to connect with the Lisk SDK-based application node over WebSocket.
@@ -312,10 +307,6 @@ Requires `LISK_APP_DATA_PATH` to be set.
 Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 | 
 
-| `ENABLE_TESTING_MODE`
-| string
-| 
-| false
 |===
 
 --
@@ -333,7 +324,6 @@ module.exports = {
       env: {
         // --- Remember to set the properties below
         SERVICE_BROKER: "redis://localhost:6379/0",
-        LISK_APP_HTTP: "http://127.0.0.1:7887",
         LISK_APP_WS: "ws://localhost:7887",
         GEOIP_JSON: "https://geoip.lisk.com/json",
         USE_LISK_IPC_CLIENT: "true",
