@@ -857,28 +857,6 @@ TODO: needs verification from Sameer
 
 
 
-== External services
-
-[cols="2,1,3,3",options="header",stripes="hover"]
-|===
-|Property's Name
-|Datatype
-|Description
-|Sample
-
-| `LISK_STATIC`
-| string
-| Lisk static assets, i.e., known account lists.
-| https://static-data.lisk.com
- 
-| `GEOIP_JSON`
-| string
-| Lisk Service geo-location backend.
-| https://geoip.lisk.com/json
-|===
-
-
-
 
 
 
