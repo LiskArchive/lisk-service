@@ -27,7 +27,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_services_directory: https://github.com/LiskHQ/lisk-service/tree/development/services
 :url_app_registry: https://github.com/LiskHQ/app-registry
 :url_dynamic_fee: https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md
-:url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+// :url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_http_api: reference/api.adoc
 :url_websocket_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
 :url_subscribe_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/websocket_subscribe_api.md
@@ -283,7 +283,9 @@ Lisk Service provides the data through several alternative APIs:
 
 === The HTTP API
 
-The xref:{url_api_http}[HTTP API] provides various endpoints that offer more extensive information in comparison to the HTTP API of that of a normal Lisk node.
+The xref:{url_http_api}[HTTP API] is the public RESTful API that provides blockchain data in standardized JSON format.
+
+The HTTP API provides various endpoints that offer more extensive information in comparison to the HTTP API of that of a normal Lisk node.
 This API can be utilized to build powerful wallets and user interfaces for blockchain applications which are built with the Lisk SDK.
 
 ==== Public Lisk Service APIs
@@ -350,8 +352,14 @@ For example:
 // The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
 // The API uses the `Socket.IO` library and is compatible with JSON-RPC 2.0 standard.
 
-With regard to the WebSocket JSON-RPC API, as briefly described above in Table 2, this enables efficient and seamless integration within the Lisk blockchain network, coupled with offering a more responsive, and efficient alternative to the traditional HTTP based APIs.
-The xref:{url_api_rpc}[RPC-API] reference provides an overview of all available RPC requests. Almost every HTTP endpoint exposes a corresponding RPC endpoint to query over a WebSocket connection. The only exception is the `/export/download` endpoint.
+The {url_websocket_api}[WebSocket JSON-RPC API^] provides blockchain data in standardized JSON format.
+The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards.
+This enables efficient and seamless integration within the Lisk blockchain network, coupled with offering a more responsive, and efficient alternative to the traditional HTTP based APIs.
+
+The xref:{url_api_rpc}[RPC-API] reference provides an overview of all available RPC requests.
+Almost every HTTP endpoint exposes a corresponding RPC endpoint to query over WS/WebSocket.
+The only exception is the `/export/download` endpoint.
+
 
 Lisk Mainnet::
 * Public API: `{url_rpc_api_mainnet}`
@@ -413,7 +421,9 @@ Lisk Testnet::
 
 === The Subscribe API
 
-As also briefly covered in Table 2 above, the Subscribe API is particularly useful for providing the user with real-time data, e.g., real-time monitoring systems, notification services, and applications that need to react immediately to specific events that occur on the blockchain.
+The {url_subscribe_api}[Subscribe API^] is an event-driven API that uses a two-way streaming connection, which can notify the client about new data instantly as it arrives.
+It is responsible for updating users regarding changes in the blockchain network and markets.
+The Subscribe API is particularly useful for providing the user with real-time data, e.g., real-time monitoring systems, notification services, and applications that need to react immediately to specific events that occur on the blockchain.
 
 NOTE: Check out the xref:{url_api_subscribe}[] reference for an overview of all available RPC requests.
 
