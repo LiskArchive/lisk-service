@@ -267,29 +267,11 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	if (params.tokenID) {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
-		const networkSet = new Set();
-
-		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
-			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
-			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
-
-			if (!('network' in params)) {
-				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
-				networkSet.add(network);
-			}
-
-			return [chainID, localID];
-		});
 
 		params.whereIn.push({
-			property: ['chainID', 'localID'],
-			values: chainIDlocalIDPairs,
+			property: 'tokenID',
+			values: tokenID.split(','),
 		});
-
-		// Set network if not already specified in the request params
-		if (!('network' in params)) {
-			params.network = Array.from(networkSet).join(',');
-		}
 	}
 
 	// Resolve network from chainID if present

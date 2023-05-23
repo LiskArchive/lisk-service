@@ -64,7 +64,6 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 				chainID: tokenMeta.chainID.toLowerCase(),
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				localID: token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
 				tokenName: token.tokenName,
 				tokenID: token.tokenID,
 			};
@@ -146,16 +145,14 @@ const deleteAppMeta = async (appMeta, dbTrx) => {
 const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 	const tokenMetadataTable = await getTokenMetadataIndex();
 	await BluebirdPromise.map(
-		tokenMeta.localIDs,
-		async (localID) => {
+		tokenMeta.tokenIDs,
+		async (tokenID) => {
 			const queryParams = {
-				network: tokenMeta.network,
-				chainName: tokenMeta.chainName,
-				localID,
+				tokenID,
 			};
 			await tokenMetadataTable.delete(queryParams, dbTrx);
 		},
-		{ concurrency: tokenMeta.localIDs.length },
+		{ concurrency: tokenMeta.tokenIDs.length },
 	);
 };
 
@@ -180,13 +177,9 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 		logger.trace('Reading tokens information.');
 		const tokenMetaString = await read(filePath);
 		const { tokens } = JSON.parse(tokenMetaString);
-		const localIDs = tokens.map(
-			token => token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
-		);
+		const tokenIDs = tokens.map(token => token.tokenID);
 		const tokenMeta = {
-			localIDs,
-			chainName: appMeta.chainName,
-			network,
+			tokenIDs,
 		};
 
 		logger.debug(`Deleting tokens information for the app: ${app} (${network}).`);

@@ -75,8 +75,8 @@ const appMetaQueryParams = {
 const tokenMetaQueryParams = {
 	...appMetaQueryParams,
 	whereIn: {
-		property: 'localID',
-		values: tokenMetaObj.tokens.map(token => token.tokenID.substring(LENGTH_CHAIN_ID)),
+		property: 'tokenID',
+		values: tokenMetaObj.tokens.map(token => token.tokenID),
 	},
 };
 
@@ -262,9 +262,7 @@ describe('Test deleteAppMeta method', () => {
 });
 
 describe('Test deleteTokenMeta method', () => {
-	const localIDs = tokenMetaObj.tokens.map(
-		token => token.tokenID.substring(LENGTH_CHAIN_ID),
-	);
+	const tokenIDs = tokenMetaObj.tokens.map(token => token.tokenID);
 
 	beforeEach(async () => indexTokensMeta({
 		chainID: appMetaObj.chainID,
@@ -281,10 +279,7 @@ describe('Test deleteTokenMeta method', () => {
 		expect(dbResponseBefore.length).toEqual(1);
 
 		await deleteTokensMeta({
-			...tokenMetaObj,
-			network: appMetaObj.networkType,
-			chainName: appMetaObj.chainName,
-			localIDs,
+			tokenIDs,
 		});
 
 		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
@@ -299,10 +294,7 @@ describe('Test deleteTokenMeta method', () => {
 		const dbTrx = await startDbTransaction(connection);
 		await deleteTokensMeta(
 			{
-				...tokenMetaObj,
-				network: appMetaObj.networkType,
-				chainName: appMetaObj.chainName,
-				localIDs,
+				tokenIDs,
 			},
 			dbTrx,
 		);
