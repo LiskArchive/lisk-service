@@ -91,7 +91,7 @@ describe('Test set and get methods', () => {
 		expect(responseAfterRollback).toBe(undefined);
 	});
 	
-	it('should get value before transaction is committed', async () => {
+	it('should get value before transaction is committed if transaction param is passed', async () => {
 		// Check key is not defined
 		const responseBefore = await keyValueTable.get(KEY_1);
 		expect(responseBefore).toBe(undefined);
@@ -105,6 +105,27 @@ describe('Test set and get methods', () => {
 		// Check value before commiting transaction
 		const responseBeforeCommit = await keyValueTable.get(KEY_1, dbTrx);
 		expect(responseBeforeCommit).toBe(VALUE_1);
+
+		// Commit transaction and check key
+		await commitDBTransaction(dbTrx);
+		const responseAfterCommit = await keyValueTable.get(KEY_1);
+		expect(responseAfterCommit).toBe(VALUE_1);
+	});
+
+	it('should get value before transaction is committed if transaction param is not passed', async () => {
+		// Check key is not defined
+		const responseBefore = await keyValueTable.get(KEY_1);
+		expect(responseBefore).toBe(undefined);
+
+		// Create transaction and set key
+		const dbTrx = await startDBTransaction(dbConnection);
+		await keyValueTable.set(KEY_1, VALUE_1, dbTrx);
+		const responseBeforeRollback = await keyValueTable.get(KEY_1);
+		expect(responseBeforeRollback).toBe(undefined);
+
+		// Check value before commiting transaction
+		const responseBeforeCommit = await keyValueTable.get(KEY_1);
+		expect(responseBeforeCommit).toBe(undefined);
 
 		// Commit transaction and check key
 		await commitDBTransaction(dbTrx);

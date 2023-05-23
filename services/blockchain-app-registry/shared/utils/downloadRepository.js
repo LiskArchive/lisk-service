@@ -343,7 +343,7 @@ const syncWithRemoteRepo = async () => {
 			{ concurrency: Object.keys(groupedFiles).length },
 		);
 
-		const keyValueTable = getKeyValueTableInstance();
+		const keyValueTable = await getKeyValueTableInstance();
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
 		await commitDBTransaction(dbTrx);
 
@@ -385,7 +385,7 @@ const syncWithRemoteRepo = async () => {
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
-	const keyValueTable = getKeyValueTableInstance();
+	const keyValueTable = await getKeyValueTableInstance();
 	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 
 	if (lastSyncedCommitHash && await exists(appDirPath)) {

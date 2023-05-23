@@ -15,10 +15,12 @@
  */
 const { getTableInstance } = require('./mysql');
 const keyValueStoreSchema = require('./schema/kvStore');
-const config = require('./config');
 const Logger = require('./logger').get;
 
 const logger = Logger();
+
+const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
+const KV_STORE_ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
 const formatValue = (value, type) => {
 	// Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#description
@@ -32,15 +34,15 @@ const formatValue = (value, type) => {
 	return value;
 };
 
-const getKeyValueTable = async (tableName, connEndpoint = config.CONN_ENDPOINT_DEFAULT) => {
+const getKeyValueTable = async (tableName, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	keyValueStoreSchema.tableName = tableName;
 	const keyValueTable = await getTableInstance(keyValueStoreSchema, connEndpoint);
 
 	const set = async (key, value, dbTrx) => {
 		const type = typeof (value);
 
-		if (!config.KV_STORE_ALLOWED_VALUE_TYPES.includes(type)) {
-			logger.error(`Allowed 'value' types are: ${config.KV_STORE_ALLOWED_VALUE_TYPES.join()}`);
+		if (!KV_STORE_ALLOWED_VALUE_TYPES.includes(type)) {
+			logger.error(`Allowed 'value' types are: ${KV_STORE_ALLOWED_VALUE_TYPES.join()}`);
 		}
 
 		const finalValue = value === undefined ? value : String(value);
