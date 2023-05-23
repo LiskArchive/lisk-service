@@ -52,7 +52,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 
 :url_api_http_testnet:  {lisk-docs}api/lisk-service-http-testnet.adoc
 :url_api_http:  {lisk-docs}api/lisk-service-http.adoc
-:url_api_rpc:  {lisk-docs}api/lisk-service-rpc-api.adoc
+:url_api_rpc:  {lisk-docs}reference/rpc-api.adoc
 :url_api_subscribe:  {lisk-docs}api/lisk-service-pubsub.adoc
 :url_config:  configuration/docker.adoc
 :url_protocol:  {lisk-docs}understand-blockchain/lisk-protocol/index.adoc
