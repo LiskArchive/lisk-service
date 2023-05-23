@@ -33,7 +33,6 @@ const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 const { getDirectories, read, getFiles, exists } = require('./utils/fs');
 
 const config = require('../config');
-const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 

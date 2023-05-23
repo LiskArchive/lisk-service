@@ -41,7 +41,6 @@ const {
 	tokenMetaObj,
 } = require('../../constants/metadataIndex');
 
-const { LENGTH_CHAIN_ID } = require('../../../shared/constants');
 const config = require('../../../config');
 
 const applicationMetadataIndexSchema = require('../../../shared/database/schema/application_metadata');
