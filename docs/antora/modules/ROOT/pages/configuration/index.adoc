@@ -148,13 +148,14 @@ Properties::
 | `ENABLE_HTTP_API`
 | string
 | Enables particular HTTP API endpoints.
-Directories (under `gateway/apis/`) containing the API method definitions must be listed as comma-separated values.
+Directories (under `gateway/apis/`) containing the API method definitions.
+Must be listed as comma-separated values.
 | http-status,http-version3,http-exports
 
 | `ENABLE_WS_API`
 | string
 | Enables specified WebSocket API namespaces.
-APIs must be listed as comma-separated values.
+Must be listed as comma-separated values.
 | blockchain,rpc-v3
 
 | `SERVICE_GATEWAY_REDIS_VOLATILE`
@@ -185,6 +186,7 @@ APIs must be listed as comma-separated values.
 | `ENABLE_REQUEST_CACHING`
 | string
 | To enable RPC response caching, this environment variable is required to be `true`.
+Requires `SERVICE_GATEWAY_REDIS_VOLATILE` to be set.
 | true
 
 | `HTTP_RATE_LIMIT_ENABLE`
@@ -359,6 +361,7 @@ Properties::
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | URL of the Redis instance hosting the job queue to schedule the block indexing jobs.
+Must match the value supplied for the `indexer` microservice.
 | redis://localhost:6379/3
 
 |===
@@ -416,6 +419,7 @@ Properties::
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis).
+Must match the value supplied for the `coordinator` microservice.
 | redis://localhost:6379/3
 
 | `SERVICE_INDEXER_REDIS_VOLATILE`
