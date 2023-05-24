@@ -2,20 +2,22 @@
 Muhammad Talha <muhammad.talha@lightcurve.io>
 :toc:
 :url_microservices: index.adoc#microservices
+:url_intro_services: index.adoc
 :url_pm2: https://pm2.keymetrics.io/
 :url_config_file: https://github.com/LiskHQ/lisk-service/blob/development/ecosystem.config.js
+:url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
 
 
-On the Introduction to Lisk Service page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service. On this page, we will thoroughly discuss the configuration options available for each service.
+On the xref:{url_intro_services}[introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
+On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
 By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2].
 
-NOTE: The actual `*ecosystem.config.js*` file for Lisk Service can be seen in the {url_config_file}[lisk-service] GitHub repository.
+NOTE: The actual {url_config_file}[`*ecosystem.config.js*`] file for Lisk Service can be found in the {url_lisk_service_repo}[lisk-service] GitHub repository.
 
 The values of various environment variables are automatically picked by the microservices based on the installation environment.
-Aside from that, many environment variables can be configured to meet the specific requirements, the details of which have been outlined with each microservice. 
-
+Aside from that, many environment variables can be configured to meet the specific requirements, the details of which have been outlined with each microservice.
 
 == Microservice configurations
 In this section, we discuss the common and specific configurations of all the microservices of Lisk Service.
@@ -39,7 +41,8 @@ Properties::
 | string
 | URL of the microservice message broker.
 *Must be identical for all microservices.*
-Make sure that all microservices can connect with the message broker. This could be a NATS or Redis instance.
+Make sure that all microservices can connect with the message broker.
+This could be a NATS or Redis instance.
 | redis://localhost:6379/0
 
 | `SERVICE_BROKER_TIMEOUT`
@@ -54,7 +57,8 @@ Make sure that all microservices can connect with the message broker. This could
  
 | `SERVICE_LOG_STDOUT`
 | string
-| Enable posting logs to the standard output stream. Accepted values are `true` and `false`.
+| Enable posting logs to the standard output stream.
+Accepted values are `true` and `false`.
 | true
 
 | `SERVICE_LOG_CONSOLE`
@@ -71,7 +75,7 @@ This property should be enabled only for debugging purposes.
 | `SERVICE_LOG_GELF`
 | string
 | Enable log output in GELF for remote logging.
-For example, Graylog 'localhost:12201/udp'
+For example, Graylog 'localhost:12201/udp'.
 | 'localhost:12201/udp'
 |===
 
@@ -83,7 +87,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-gateway',
       // [...]
@@ -104,7 +108,7 @@ module.exports = {
         // [...]
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -160,7 +164,9 @@ Must be listed as comma-separated values.
 
 | `SERVICE_GATEWAY_REDIS_VOLATILE`
 | string
-| URL of the volatile cache storage (Redis). Used to cache RPC requests. Required when `ENABLE_REQUEST_CACHING` is enabled.
+| URL of the volatile cache storage (Redis).
+Used to cache RPC requests.
+Required when `ENABLE_REQUEST_CACHING` is enabled.
 | redis://localhost:6379/5
 
 | `GATEWAY_DEPENDENCIES`
@@ -227,7 +233,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: "lisk-service-gateway",
       // [...]
@@ -252,7 +258,7 @@ module.exports = {
         ENABLE_HTTP_CACHE_CONTROL: "true",
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -297,13 +303,13 @@ Requires `LISK_APP_DATA_PATH` to be set.
 
 | `GEOIP_JSON`
 | string
-| URL of the GeoIP server
+| URL of the GeoIP server.
 | https://geoip.lisk.com/json
 
 | `GENESIS_BLOCK_URL`
 | string
 | URL of the Lisk SDK-based application's genesis block.
-Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout
+Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 | https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz
 
 |===
@@ -316,7 +322,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: "lisk-service-blockchain-connector",
       // [...]
@@ -330,7 +336,7 @@ module.exports = {
         LISK_APP_DATA_PATH: "~/.lisk/lisk-core",
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -374,7 +380,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-blockchain-coordinator',
       // [...]
@@ -384,7 +390,7 @@ module.exports = {
         SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -456,7 +462,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-blockchain-indexer',
       // [...]
@@ -472,7 +478,7 @@ module.exports = {
         ENABLE_PERSIST_EVENTS: 'false',
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -519,7 +525,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-blockchain-app-registry',
       // [...]
@@ -530,7 +536,7 @@ module.exports = {
         ENABLE_REBUILD_INDEX_AT_INIT: 'false',
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -592,7 +598,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-fee-estimator',
       // [...]
@@ -606,7 +612,7 @@ module.exports = {
         FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -659,7 +665,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-transaction-statistics',
       // [...]
@@ -671,7 +677,7 @@ module.exports = {
         TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -730,7 +736,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-market',
       // [...]
@@ -743,7 +749,7 @@ module.exports = {
         // EXCHANGERATESAPI_IO_API_KEY: ''
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
@@ -789,7 +795,7 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Other types of configurations.
+    // Configuration for other microservices.
     {
       name: 'lisk-service-export',
       // [...]
@@ -799,7 +805,7 @@ module.exports = {
         SERVICE_EXPORT_REDIS_VOLATILE: 'redis://localhost:6379/4',
       },
     },
-    // Other types of configurations.
+    // Configuration for other microservices.
   ],
 };
 ----
