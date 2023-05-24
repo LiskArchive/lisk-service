@@ -60,11 +60,10 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 		tokenMeta.tokens,
 		async (token) => {
 			const result = {
-				chainID: tokenMeta.chainID.toLowerCase(),
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
 				tokenName: token.tokenName,
-				tokenID: token.tokenID,
+				tokenID: token.tokenID.toLowerCase(),
 			};
 			return result;
 		},
@@ -120,7 +119,6 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
 			chainName: appMeta.chainName,
-			chainID: appMeta.chainID,
 			network,
 		};
 
@@ -147,7 +145,7 @@ const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 		tokenMeta.tokenIDs,
 		async (tokenID) => {
 			const queryParams = {
-				tokenID,
+				tokenID: tokenID.toLowerCase(),
 			};
 			await tokenMetadataTable.delete(queryParams, dbTrx);
 		},

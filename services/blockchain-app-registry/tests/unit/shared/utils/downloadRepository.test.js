@@ -13,13 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRepoInfoFromURL, getUniqueNetworkAppDirPairs, filterMetaConfigFilesByNetwork, getModifiedFileNames, isMetadataFile } = require('../../../../shared/utils/downloadRepository');
 const config = require('../../../../config');
+const {
+	getRepoInfoFromURL,
+	getUniqueNetworkAppDirPairs,
+	filterMetaConfigFilesByNetwork,
+	getModifiedFileNames,
+	isMetadataFile,
+} = require('../../../../shared/utils/downloadRepository');
 const {
 	getModifiedFileNamesInput,
 	getModifiedFileNamesExpectedResponse,
 } = require('../../../constants/downloadRepository');
-const { FILENAME } = require('../../../../config');
 
 describe('Test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {
@@ -195,12 +200,12 @@ describe('Test getModifiedFileNames method', () => {
 
 describe('Test isMetadataFile method', () => {
 	it('should return true when called with app.json', async () => {
-		const response = isMetadataFile(FILENAME.APP_JSON);
+		const response = isMetadataFile(config.FILENAME.APP_JSON);
 		expect(response).toEqual(true);
 	});
 
 	it('should return true when called with app.json', async () => {
-		const response = isMetadataFile(FILENAME.NATIVETOKENS_JSON);
+		const response = isMetadataFile(config.FILENAME.NATIVETOKENS_JSON);
 		expect(response).toEqual(true);
 	});
 

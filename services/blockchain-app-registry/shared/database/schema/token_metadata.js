@@ -17,14 +17,12 @@ module.exports = {
 	tableName: 'token_metadata',
 	primaryKey: ['tokenID'],
 	schema: {
-		chainID: { type: 'string' },
 		chainName: { type: 'string' },
 		network: { type: 'string' },
 		tokenName: { type: 'string' },
 		tokenID: { type: 'string' },
 	},
 	indexes: {
-		chainID: { type: 'key' },
 		chainName: { type: 'key' },
 		tokenName: { type: 'key' },
 		network: { type: 'key' },
