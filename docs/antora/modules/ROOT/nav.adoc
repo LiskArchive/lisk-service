@@ -1,3 +1,4 @@
 * Setup
 ** xref:setup/source.adoc[]
 
+* xref:configuration/index.adoc[Configuration]
