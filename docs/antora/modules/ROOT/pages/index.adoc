@@ -340,7 +340,7 @@ The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards
 This enables efficient and seamless integration within the Lisk blockchain network, coupled with offering a more responsive, and efficient alternative to the traditional HTTP based APIs.
 
 The xref:{url_api_rpc}[RPC-API] reference provides an overview of all available RPC requests.
-Almost every HTTP endpoint exposes a corresponding RPC endpoint to query over WS/WebSocket.
+Almost every HTTP endpoint exposes a corresponding JSON-RPC endpoint to query over WebSocket.
 The only exception is the `/export/download` endpoint.
 
 
