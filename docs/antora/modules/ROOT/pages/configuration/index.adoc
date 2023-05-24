@@ -8,7 +8,7 @@ Muhammad Talha <muhammad.talha@lightcurve.io>
 :url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
 
 
-On the xref:{url_intro_services}[introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
+On the xref:{url_intro_services}[Introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
 On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
@@ -40,9 +40,9 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker.
-*Must be identical for all microservices.*
+*Must be identical for all the microservices.*
 Make sure that all microservices can connect with the message broker.
-This could be a NATS or Redis instance.
+This could be a NATS or a Redis instance.
 | redis://localhost:6379/0
 
 | `SERVICE_BROKER_TIMEOUT`
