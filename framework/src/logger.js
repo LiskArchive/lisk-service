@@ -20,8 +20,9 @@ const stackTrace = require('stack-trace');
 
 let LOG_LEVEL = 'info';
 
+// Default config for log4js
 let log4jsConfig = {
-	appenders: {},
+	appenders: {stdout: 'true'},
 };
 
 let packageName = '';

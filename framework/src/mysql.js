@@ -170,8 +170,33 @@ const commitDBTransaction = async transaction => transaction.commit();
 
 const rollbackDBTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
-	const { tableName, primaryKey, schema } = tableConfig;
+const getTableInstance = async (...params) => {
+
+	let tableName;
+	let tableConfig;
+	let connEndpoint = CONN_ENDPOINT_DEFAULT;
+
+	if(params.length == 3) {					// If user passed (tableName, tableConfig, connEndpoint)
+		tableName = params[0];
+		tableConfig = params[1];
+		connEndpoint = params[2];
+	} else if (params.length == 2) {
+		if(typeof params[0] === 'object') {  	// If user passed (tableConfig, connEndpoint)
+			tableName = params[0].tableName;
+			tableConfig = params[0];
+			connEndpoint = params[1];
+		} else {								// If user passed (tableName, tableConfig)
+			tableName = params[0];
+			tableConfig = params[1];
+		}
+	} else if(params.length == 1) {				// If user passed (tableConfig)
+		tableName = params[0].tableName;
+		tableConfig = params[0];
+	} else {
+		throw Error("Incorrect number of params passed to getTableInstance function");
+	}
+
+	const { primaryKey, schema } = tableConfig;
 
 	const knex = await getDBConnection(connEndpoint);
 
