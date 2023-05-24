@@ -16,7 +16,7 @@
 const {
 	invokeEndpointProxy,
 	getSchemas,
-	getRegisteredEndpoints,
+	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
@@ -38,8 +38,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getRegisteredEndpoints',
-		controller: getRegisteredEndpoints,
+		name: 'getRegisteredActions',
+		controller: getRegisteredActions,
 		params: {},
 	},
 	{
