@@ -16,7 +16,7 @@
 const {
 	invokeEndpointProxy,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
@@ -26,10 +26,7 @@ const {
 module.exports = [
 	{
 		name: 'invokeEndpoint',
-		controller: async ({ endpoint, params }) => ({
-			data: await invokeEndpointProxy(endpoint, params),
-			meta: { endpoint, params },
-		}),
+		controller: async ({ endpoint, params }) => invokeEndpointProxy(endpoint, params),
 		params: {
 			endpoint: { optional: false, type: 'string' },
 			params: { optional: true, type: 'object' },
@@ -41,8 +38,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getRegisteredActions',
-		controller: getRegisteredActions,
+		name: 'getRegisteredEndpoints',
+		controller: getRegisteredEndpoints,
 		params: {},
 	},
 	{

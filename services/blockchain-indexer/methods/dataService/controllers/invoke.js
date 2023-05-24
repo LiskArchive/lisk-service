@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,18 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const dataService = require('../../../shared/dataService');
+
+const invokeEndpoint = async params => {
+	const indexStatus = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.invokeEndpoint(params);
+	if (response.data) indexStatus.data = response.data;
+	if (response.meta) indexStatus.meta = response.meta;
+
+	return indexStatus;
+};
+
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.invokeEndpoint',
-	params: {
-		endpoint: '=,string',
-		params: '=,object',
-	},
-	definition: {
-		data: '=',
-		meta: {
-			endpoint: '=,string',
-			params: '=',
-		},
-	},
+	invokeEndpoint,
 };
