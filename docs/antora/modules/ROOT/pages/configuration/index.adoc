@@ -1,0 +1,872 @@
+= Lisk Service Configuration Reference
+Muhammad Talha <muhammad.talha@lightcurve.io>
+:toc:
+:url_microservices: index.adoc#microservices
+:url_intro_services: index.adoc
+:url_pm2: https://pm2.keymetrics.io/
+:url_config_file: https://github.com/LiskHQ/lisk-service/blob/development/ecosystem.config.js
+:url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
+
+
+On the xref:{url_intro_services}[Introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
+On this page, we will thoroughly discuss the configuration options available for each service.
+
+== Default configurations
+By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2].
+
+NOTE: The actual {url_config_file}[`*ecosystem.config.js*`] file for Lisk Service can be found in the {url_lisk_service_repo}[lisk-service] GitHub repository.
+
+The values of various environment variables are automatically picked by the microservices based on the installation environment.
+Aside from that, many environment variables can be configured to meet the specific requirements, the details of which have been outlined with each microservice.
+
+== Microservice configurations
+In this section, we discuss the common and specific configurations of all the microservices of Lisk Service.
+
+=== Common configurations
+The common configurations described in this section apply to all the microservices within Lisk Service.
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker.
+*Must be identical for all the microservices.*
+Make sure that all microservices can connect with the message broker.
+This could be a NATS or a Redis instance.
+| redis://localhost:6379/0
+
+| `SERVICE_BROKER_TIMEOUT`
+| number
+| Inter-microservice request timeout in seconds.
+| 10
+ 
+| `SERVICE_LOG_LEVEL`
+| string
+| Set the application logging level; Available options are `trace`, `debug`, `info`, `warn`, `error`, and `fatal`.
+| info
+ 
+| `SERVICE_LOG_STDOUT`
+| string
+| Enable posting logs to the standard output stream.
+Accepted values are `true` and `false`.
+| true
+
+| `SERVICE_LOG_CONSOLE`
+| string
+| Enable posting logs to the JavaScript `console.log()` output (blocking).
+This property should be enabled only for debugging purposes.
+| false
+
+| `SERVICE_LOG_FILE`
+| string
+| File path to capture the logs.
+| './logs/app.log'
+
+| `SERVICE_LOG_GELF`
+| string
+| Enable log output in GELF for remote logging.
+For example, Graylog 'localhost:12201/udp'.
+| 'localhost:12201/udp'
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-gateway',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_LOG_LEVEL: 'info',
+        // [...]
+      },
+    },
+    {
+      name: 'lisk-service-transaction-statistics',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_LOG_LEVEL: 'info',
+        // [...]
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+=== Gateway
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `PORT`
+| string
+| Port that provides the possibility to connect with Lisk Service.
+| 9901
+
+| `HOST`
+| string
+| URL of the host.
+| 127.0.0.1
+ 
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+
+| `JSON_RPC_STRICT_MODE`
+| string
+| Ensures that JSON-RPC accepts a valid JSON-RPC 2.0 envelope.
+| false
+ 
+| `ENABLE_HTTP_API`
+| string
+| Enables particular HTTP API endpoints.
+Directories (under `gateway/apis/`) containing the API method definitions.
+Must be listed as comma-separated values.
+| http-status,http-version3,http-exports
+
+| `ENABLE_WS_API`
+| string
+| Enables specified WebSocket API namespaces.
+Must be listed as comma-separated values.
+| blockchain,rpc-v3
+
+| `SERVICE_GATEWAY_REDIS_VOLATILE`
+| string
+| URL of the volatile cache storage (Redis).
+Used to cache RPC requests.
+Required when `ENABLE_REQUEST_CACHING` is enabled.
+| redis://localhost:6379/5
+
+| `GATEWAY_DEPENDENCIES`
+| string
+| Describes the microservices on which the `gateway` service depends.
+| indexer,connector
+
+| `WS_RATE_LIMIT_ENABLE`
+| string
+| To enable the WebSocket rate limit, this environment variable is required to be `true`.
+| false
+
+| `WS_RATE_LIMIT_CONNECTIONS`
+| number
+| Once the rate limit is enabled, this variable contains the number of connections per second.
+| 5
+
+| `WS_RATE_LIMIT_DURATION`
+| number
+| Defines the duration (in seconds) for which the WS rate should be limited.
+| 1
+
+| `ENABLE_REQUEST_CACHING`
+| string
+| To enable RPC response caching, this environment variable is required to be `true`.
+Requires `SERVICE_GATEWAY_REDIS_VOLATILE` to be set.
+| true
+
+| `HTTP_RATE_LIMIT_ENABLE`
+| string
+| To enable the HTTP rate limit, this environment variable is required to be `true`.
+| false
+
+| `HTTP_RATE_LIMIT_CONNECTIONS`
+| number
+| Defines the maximum number of HTTP requests during a period.
+Defaults to 200 requests per window.
+| 200
+
+| `HTTP_RATE_LIMIT_WINDOW`
+| number
+| Defines the time for which a record of requests should be kept in the memory (in seconds).
+The default duration of a window is 10 seconds.
+| 10
+
+| `ENABLE_HTTP_CACHE_CONTROL`
+| string
+| To enable response caching, this environment variable is required to be `true`.
+This would include the Cache-Control header within the responses.
+| true
+
+| `HTTP_CACHE_CONTROL_DIRECTIVES`
+| string
+| The `Cache-Control` HTTP directive can be overridden with this environment variable.
+| public, max-age=10
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: "lisk-service-gateway",
+      // [...]
+      env: {
+        PORT: "9901",
+        HOST: "127.0.0.1",
+        // --- Remember to set the properties below
+        SERVICE_BROKER: "redis://localhost:6379/0",
+        SERVICE_GATEWAY_REDIS_VOLATILE: "redis://localhost:6379/5",
+        ENABLE_HTTP_API: "http-status,http-version3,http-exports",
+        ENABLE_WS_API: "blockchain,rpc-v3",
+        GATEWAY_DEPENDENCIES: "indexer,connector",
+        WS_RATE_LIMIT_ENABLE: "false",
+        WS_RATE_LIMIT_CONNECTIONS: 5,
+        WS_RATE_LIMIT_DURATION: 1, // in seconds
+        ENABLE_REQUEST_CACHING: "true",
+        JSON_RPC_STRICT_MODE: "false",
+        HTTP_RATE_LIMIT_ENABLE: "false",
+        HTTP_RATE_LIMIT_CONNECTIONS: 200,
+        HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
+        HTTP_CACHE_CONTROL_DIRECTIVES: "public, max-age=10",
+        ENABLE_HTTP_CACHE_CONTROL: "true",
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+
+=== Connector
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+| Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `LISK_APP_WS`
+| string
+| URL to connect with the Lisk application node over WebSocket.
+| ws://localhost:7887
+
+| `USE_LISK_IPC_CLIENT`
+| string
+| Boolean flag to enable IPC-based connection to the Lisk application node.
+Requires `LISK_APP_DATA_PATH` to be set.
+| true 
+
+| `LISK_APP_DATA_PATH`
+| string
+| Data path to connect with the Lisk application node over IPC.
+| ~/.lisk/lisk-core
+
+| `GEOIP_JSON`
+| string
+| URL of the GeoIP server.
+| https://geoip.lisk.com/json
+
+| `GENESIS_BLOCK_URL`
+| string
+| URL of the Lisk SDK-based application's genesis block.
+Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
+| https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: "lisk-service-blockchain-connector",
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: "redis://localhost:6379/0",
+        LISK_APP_WS: "ws://localhost:7887",
+        GEOIP_JSON: "https://geoip.lisk.com/json",
+        USE_LISK_IPC_CLIENT: "true",
+        GENESIS_BLOCK_URL: "",
+        LISK_APP_DATA_PATH: "~/.lisk/lisk-core",
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+
+
+=== Coordinator
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_MESSAGE_QUEUE_REDIS`
+| string
+| URL of the Redis instance hosting the job queue to schedule the block indexing jobs.
+Must match the value supplied for the `indexer` microservice.
+| redis://localhost:6379/3
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-blockchain-coordinator',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+
+=== Indexer
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_INDEXER_MYSQL`
+| string
+| Connection string of the MySQL instance that the microservice connects to.
+| mysql://lisk:password@localhost:3306/lisk
+
+| `SERVICE_MESSAGE_QUEUE_REDIS`
+| string
+| URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis).
+Must match the value supplied for the `coordinator` microservice.
+| redis://localhost:6379/3
+
+| `SERVICE_INDEXER_REDIS_VOLATILE`
+| string
+| URL of the volatile cache storage (Redis).
+| redis://localhost:6379/2
+
+| `ENABLE_DATA_RETRIEVAL_MODE`
+| string
+| Boolean flag to enable the Data Service mode.
+| true
+
+| `ENABLE_INDEXING_MODE`
+| string
+| Boolean flag to enable the Data Indexing mode.
+| true
+
+| `ENABLE_PERSIST_EVENTS`
+| string
+| Boolean flag to permanently maintain the events in the MySQL database.
+| false
+
+| `SERVICE_INDEXER_CACHE_REDIS`
+| string
+| URL of the cache storage (Redis).
+| redis://localhost:6379/1
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-blockchain-indexer',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_INDEXER_CACHE_REDIS: 'redis://localhost:6379/1',
+        SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
+        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
+        SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+        ENABLE_DATA_RETRIEVAL_MODE: 'true',
+        ENABLE_INDEXING_MODE: 'true',
+        ENABLE_PERSIST_EVENTS: 'false',
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+
+
+=== Blockchain application registry
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_APP_REGISTRY_MYSQL`
+| string
+| Connection string of the MySQL instance that the microservice connects to.
+| mysql://lisk:password@localhost:3306/lisk
+
+| `ENABLE_REBUILD_INDEX_AT_INIT`
+| string
+| Boolean flag to truncate the index and rebuild at application init.
+| false
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-blockchain-app-registry',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+        ENABLE_REBUILD_INDEX_AT_INIT: 'false',
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+
+=== Fee estimator
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_FEE_ESTIMATOR_CACHE`
+| string
+| URL of the cache storage (Redis).
+| redis://localhost:6379/1
+
+| `ENABLE_FEE_ESTIMATOR_QUICK`
+| string
+| Enable quick algorithm for fee estimation.
+| true
+
+| `ENABLE_FEE_ESTIMATOR_FULL`
+| string
+| Enable full algorithm for fee estimation.
+| false
+
+| `FEE_EST_COLD_START_BATCH_SIZE`
+| string
+| Defines the number of blocks that are analyzed during cold start.
+| 1
+
+| `FEE_EST_DEFAULT_START_BLOCK_HEIGHT`
+| string
+| Defines the block height at which the dynamic fee estimation algorithm starts.
+| 1
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-fee-estimator',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_FEE_ESTIMATOR_CACHE: 'redis://localhost:6379/1',
+        ENABLE_FEE_ESTIMATOR_QUICK: 'true',
+        ENABLE_FEE_ESTIMATOR_FULL: 'false',
+        FEE_EST_COLD_START_BATCH_SIZE: '1',
+        FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+
+
+=== Transaction statistics
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_STATISTICS_MYSQL`
+| string
+| Connection string of the MySQL instance that the microservice connects to.
+| mysql://lisk:password@localhost:3306/lisk
+
+| `SERVICE_STATISTICS_REDIS`
+| string
+| URL of the cache storage (Redis).
+| redis://localhost:6379/1
+
+| `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`
+| string
+| The number of days for which the transaction statistics need to be built in retrospect to the application init.
+| 366
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-transaction-statistics',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
+        SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+        TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+=== Market
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_MARKET_REDIS`
+| string
+| URL of the cache storage (Redis).
+| redis://localhost:6379/2
+
+| `SERVICE_MARKET_FIAT_CURRENCIES`
+| string
+| Fiat currencies are used for price calculation. 
+All Fiat currencies used here need to be comma separated.
+| EUR,USD,CHF,GBP,RUB 
+
+| `SERVICE_MARKET_TARGET_PAIRS`
+| string
+| Exchange rates exposed to the Gateway.
+The values listed here must be comma separated.
+| LSK_BTC,LSK_EUR,BTC_CHF
+
+| `EXCHANGERATESAPI_IO_API_KEY`
+| string
+| Optional API key for https://exchangeratesapi.io/.
+The `/market/prices` endpoint will respond with additional data, specifically the exchange rates for various cryptocurrencies in other fiat currencies.
+The free plan would suffice for Lisk Service.
+|  
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-market',
+      // [...]
+      env: {
+        // --- Remember to set the properties below
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
+        SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
+        SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
+        // EXCHANGERATESAPI_IO_API_KEY: ''
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+=== Export
+
+[tabs]
+=====
+Properties::
++
+--
+[cols="2,1,3,3",options="header",stripes="hover"]
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+| `SERVICE_BROKER`
+| string
+| URL of the microservice message broker (NATS or Redis).
+| redis://localhost:6379/0
+ 
+| `SERVICE_EXPORT_REDIS`
+| string
+| URL of the permanent cache storage (Redis).
+| redis://localhost:6379/3
+
+| `SERVICE_EXPORT_REDIS_VOLATILE`
+| string
+| URL of the volatile cache storage (Redis).
+| redis://localhost:6379/4
+
+|===
+
+--
+Sample::
++
+--
+[source,js]
+----
+module.exports = {
+  apps: [
+    // Configuration for other microservices.
+    {
+      name: 'lisk-service-export',
+      // [...]
+      env: {
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
+        SERVICE_EXPORT_REDIS_VOLATILE: 'redis://localhost:6379/4',
+      },
+    },
+    // Configuration for other microservices.
+  ],
+};
+----
+--
+=====
+
+// == Lisk Settings
+
+// Configurable environment variables related to Lisk node.
+
+// TODO: needs verification from Sameer
+
+// === MySQL Snapshot settings for Docker
+// Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
+
+// [cols="2,1,3,3",options="header",stripes="hover"]
+// |===
+// |Property's Name
+// |Datatype
+// |Description
+// |Sample
+
+// | `ENABLE_APPLY_SNAPSHOT`
+// | string
+// | Enable or disable apply snapshot feature.
+// | true
+ 
+// | `INDEX_SNAPSHOT_URL`
+// | string
+// | Custom snapshot URL: expected to end with "sql.gz".
+// | https://snapshots.lisk.io/mainnet/service.sql.gz
+
+// | `DOCKER_COMPOSE_FILEPATH`
+// | string
+// | When MySQL is hosted as a docker-compose service, set the following environment variables.
+// Set docker-compose file path by using the absolute path.
+// | /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
+
+// | `DOCKER_MYSQL_SERVICE_NAME`
+// | string
+// | Set MySQL service name as defined in the above docker-compose file.
+// | mysql
+
+// |===
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
