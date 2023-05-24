@@ -38,10 +38,7 @@ const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 
-const getEventsTable = () => getTableInstance(
-	eventsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
 
 const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {

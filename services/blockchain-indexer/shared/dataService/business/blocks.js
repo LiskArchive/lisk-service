@@ -40,10 +40,7 @@ const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlocksIndex = () => getTableInstance(blocksIndexSchema, MYSQL_ENDPOINT);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 

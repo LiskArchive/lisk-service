@@ -23,10 +23,7 @@ const { getIndexedAccountInfo } = require('../../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const getValidator = async params => {
 	const validator = {

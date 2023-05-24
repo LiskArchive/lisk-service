@@ -31,10 +31,7 @@ const { getAnnualInflation } = require('../dynamicReward');
 const { getNetworkStatus } = require('../network');
 const { getTotalStaked } = require('../../../utils/pos');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 let blockchainAppsStatsCache = {};
 

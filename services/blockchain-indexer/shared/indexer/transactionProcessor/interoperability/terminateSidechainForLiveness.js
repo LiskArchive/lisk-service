@@ -26,10 +26,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { getChainInfo } = require('./registerMainchain');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'terminateSidechainForLiveness';

@@ -31,20 +31,9 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const maxCommissionQ = q96(MAX_COMMISSION);
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getStakesTable = () => getTableInstance(
-	stakesTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountsIndex = () => getTableInstance(accountsIndexSchema, MYSQL_ENDPOINT);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
 const getNameByAddress = async (address) => {
 	if (address) {

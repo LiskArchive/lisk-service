@@ -46,10 +46,7 @@ const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksTable = () => getTableInstance(
-	blocksTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;

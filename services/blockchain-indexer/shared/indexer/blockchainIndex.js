@@ -70,30 +70,11 @@ const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const logger = Logger();
 
-const getBlocksTable = () => getTableInstance(
-	blocksTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getEventsTable = () => getTableInstance(
-	eventsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getEventTopicsTable = () => getTableInstance(
-	eventTopicsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
+const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
+const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');

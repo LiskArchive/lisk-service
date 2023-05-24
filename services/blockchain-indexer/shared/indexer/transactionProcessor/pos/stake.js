@@ -35,10 +35,7 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
-const getStakesTable = () => getTableInstance(
-	stakesTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'stake';

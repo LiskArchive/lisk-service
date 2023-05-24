@@ -26,13 +26,8 @@ const cacheTrxIDToBlockIDSchema = require('../database/schema/transactions');
 
 const config = require('../../config');
 
-const getBlocksCache = () => getTableInstance(
-	cacheBlockSchema,
-);
-
-const getTrxIDtoBlockIDCache = () => getTableInstance(
-	cacheTrxIDToBlockIDSchema,
-);
+const getBlocksCache = () => getTableInstance(cacheBlockSchema);
+const getTrxIDtoBlockIDCache = () => getTableInstance(cacheTrxIDToBlockIDSchema);
 
 const blockCacheWaitlist = [];
 

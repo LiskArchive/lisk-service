@@ -30,10 +30,7 @@ const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainAccount, getMainchainID } = require('../../../dataService');
 const { CHAIN_STATUS } = require('../../../dataService/business/interoperability/constants');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'registerMainchain';

@@ -42,10 +42,7 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getDBInstance = () => getTableInstance(
-	txStatisticsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getDBInstance = () => getTableInstance(txStatisticsIndexSchema, MYSQL_ENDPOINT);
 
 const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {

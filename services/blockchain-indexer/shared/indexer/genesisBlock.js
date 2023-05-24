@@ -34,10 +34,7 @@ const commissionsTableSchema = require('../database/schema/commissions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector(

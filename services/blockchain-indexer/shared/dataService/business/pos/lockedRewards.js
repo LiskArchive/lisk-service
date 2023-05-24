@@ -32,10 +32,7 @@ const { getRewardTokenID } = require('../dynamicReward');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const getPosLockedRewards = async params => {
 	const response = {

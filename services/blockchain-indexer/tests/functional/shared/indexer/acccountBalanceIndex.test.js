@@ -27,10 +27,7 @@ const { MODULE } = require('../../../../shared/constants');
 const { eventsIncludingTokenModule } = require('../../../constants/events');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getAccountBalancesTable = () => getTableInstance(
-	accountBalancesTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,

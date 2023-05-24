@@ -50,13 +50,8 @@ const tokenMetadataIndexSchema = require('../../../shared/database/schema/token_
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
-const getTokenMetadataIndex = () => getTableInstance(
-	tokenMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
+	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
+const getTokenMetadataIndex = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 let applicationMetadataTable;
 let tokenMetadataTable;

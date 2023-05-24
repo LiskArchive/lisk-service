@@ -31,10 +31,7 @@ const {
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getStakesTable = () => getTableInstance(
-	stakesIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getStakesTable = () => getTableInstance(stakesIndexSchema, MYSQL_ENDPOINT);
 
 const getStakers = async params => {
 	const stakesTable = await getStakesTable();

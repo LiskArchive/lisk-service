@@ -34,10 +34,7 @@ const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getDBInstance = () => getTableInstance(
-	txStatisticsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getDBInstance = () => getTableInstance(txStatisticsIndexSchema, MYSQL_ENDPOINT);
 
 jest.mock('../../shared/utils/request');
 

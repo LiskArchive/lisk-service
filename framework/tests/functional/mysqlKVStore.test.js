@@ -102,7 +102,7 @@ describe('Test set and get methods', () => {
 		const responseBeforeRollback = await keyValueTable.get(KEY_1);
 		expect(responseBeforeRollback).toBe(undefined);
 
-		// Check value before commiting transaction
+		// Check value before committing transaction
 		const responseBeforeCommit = await keyValueTable.get(KEY_1, dbTrx);
 		expect(responseBeforeCommit).toBe(VALUE_1);
 
@@ -123,7 +123,7 @@ describe('Test set and get methods', () => {
 		const responseBeforeRollback = await keyValueTable.get(KEY_1);
 		expect(responseBeforeRollback).toBe(undefined);
 
-		// Check value before commiting transaction
+		// Check value before committing transaction
 		const responseBeforeCommit = await keyValueTable.get(KEY_1);
 		expect(responseBeforeCommit).toBe(undefined);
 

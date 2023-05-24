@@ -27,10 +27,7 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const commissionsTableSchema = require('../../../database/schema/commissions');
 
-const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'changeCommission';

@@ -38,13 +38,8 @@ const constants = require('./constants');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
-const getTokenMetadataIndex = () => getTableInstance(
-	tokenMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
+	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
+const getTokenMetadataIndex = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const logger = Logger();
 

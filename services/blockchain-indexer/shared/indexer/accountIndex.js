@@ -34,10 +34,7 @@ const accountsIndexSchema = require('../database/schema/accounts');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getAccountIndex = () => getTableInstance(
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountIndex = () => getTableInstance(accountsIndexSchema, MYSQL_ENDPOINT);
 
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;

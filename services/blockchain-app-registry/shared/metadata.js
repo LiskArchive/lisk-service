@@ -41,14 +41,9 @@ const knownMainchainIDs = Object
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
 const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
+	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
 
-const getTokenMetadataIndex = () => getTableInstance(
-	tokenMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getTokenMetadataIndex = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
