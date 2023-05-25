@@ -370,7 +370,8 @@ const deleteIndexedBlocksQueue = Queue(
 
 const getLiveIndexingJobCount = async () => {
 	const { queue: bullQueue } = indexBlocksQueue;
-	const count = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+	const jobCount = await bullQueue.getJobCounts();
+	const count = jobCount.active + jobCount.waiting;
 	return count;
 };
 
