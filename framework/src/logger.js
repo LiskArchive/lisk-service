@@ -22,7 +22,7 @@ let LOG_LEVEL = 'info';
 
 // Default config for log4js
 let log4jsConfig = {
-	appenders: {stdout: 'true'},
+	appenders: {},
 };
 
 let packageName = '';

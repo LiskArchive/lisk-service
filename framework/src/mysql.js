@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const LoggerConfig = require('./logger').init;
 const Logger = require('./logger').get;
+const config = require('./config');
+
+LoggerConfig(config.log)
 
 const logger = Logger();
 
