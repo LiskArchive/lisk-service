@@ -204,7 +204,7 @@ describe('Test isMetadataFile method', () => {
 		expect(response).toEqual(true);
 	});
 
-	it('should return true when called with app.json', async () => {
+	it('should return true when called with nativetokens.json', async () => {
 		const response = isMetadataFile(config.FILENAME.NATIVETOKENS_JSON);
 		expect(response).toEqual(true);
 	});
