@@ -31,17 +31,11 @@ describe('Test indexTokensMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				CacheRedis: jest.fn(),
-				CacheLRU: jest.fn(),
 				MySQL: {
 					getTableInstance: () => ({
 						upsert: (dataArray) => expect(dataArray[0].tokenID)
 							.toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
 				},
 			};
 		});
@@ -62,16 +56,10 @@ describe('Test indexAppMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				CacheRedis: jest.fn(),
-				CacheLRU: jest.fn(),
 				MySQL: {
 					getTableInstance: () => ({
 						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
 				},
 			};
 		});
@@ -87,18 +75,21 @@ describe('Test indexAppMeta method', () => {
 });
 
 describe('Test indexMetadataFromFile method', () => {
+	beforeEach(() => jest.mock('../../../shared/utils/fs', () => {
+		const actual = jest.requireActual('../../../shared/utils/fs');
+		return {
+			...actual,
+			read: (filePath) => {
+				if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+				if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+				throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+			},
+			exists: () => true,
+		};
+	}));
+
 	it('should index app meta in db when called with valid app meta path', async () => {
-		jest.mock('../../../shared/utils/fs', () => {
-			const actual = jest.requireActual('../../../shared/utils/fs');
-			return {
-				...actual,
-				read: (filePath) => {
-					expect(filePath).toEqual(mockAppMetaPath);
-					return JSON.stringify(mockAppMetaObj);
-				},
-				exists: () => true,
-			};
-		});
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -107,10 +98,6 @@ describe('Test indexMetadataFromFile method', () => {
 					getTableInstance: () => ({
 						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
 				},
 			};
 		});
@@ -120,19 +107,6 @@ describe('Test indexMetadataFromFile method', () => {
 	});
 
 	it('should index token meta in db when called with valid token meta path', async () => {
-		jest.mock('../../../shared/utils/fs', () => {
-			const actual = jest.requireActual('../../../shared/utils/fs');
-			return {
-				...actual,
-				read: (filePath) => {
-					if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-					if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-					throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
-				},
-				exists: () => true,
-			};
-		});
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -166,8 +140,6 @@ describe('Test deleteAppMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				CacheRedis: jest.fn(),
-				CacheLRU: jest.fn(),
 				MySQL: {
 					getTableInstance: () => ({
 						delete: (data) => expect(data).toEqual({
@@ -196,16 +168,10 @@ describe('Test deleteTokensMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				CacheRedis: jest.fn(),
-				CacheLRU: jest.fn(),
 				MySQL: {
 					getTableInstance: () => ({
 						delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
 				},
 			};
 		});
@@ -221,18 +187,21 @@ describe('Test deleteTokensMeta method', () => {
 });
 
 describe('Test deleteIndexedMetadataFromFile method', () => {
+	beforeEach(() => jest.mock('../../../shared/utils/fs', () => {
+		const actual = jest.requireActual('../../../shared/utils/fs');
+		return {
+			...actual,
+			read: (filePath) => {
+				if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+				if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+				throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+			},
+			exists: () => true,
+		};
+	}));
+
 	it('should delete app meta in db when called with valid app meta path', async () => {
-		jest.mock('../../../shared/utils/fs', () => {
-			const actual = jest.requireActual('../../../shared/utils/fs');
-			return {
-				...actual,
-				read: (filePath) => {
-					expect(filePath).toEqual(mockAppMetaPath);
-					return JSON.stringify(mockAppMetaObj);
-				},
-				exists: () => true,
-			};
-		});
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -244,10 +213,6 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 							chainName: mockAppMetaObj.chainName,
 						}),
 					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
 				},
 			};
 		});
@@ -257,19 +222,6 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 	});
 
 	it('should delete token meta in db when called with valid token meta path', async () => {
-		jest.mock('../../../shared/utils/fs', () => {
-			const actual = jest.requireActual('../../../shared/utils/fs');
-			return {
-				...actual,
-				read: (filePath) => {
-					if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-					if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-					throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
-				},
-				exists: () => true,
-			};
-		});
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -298,26 +250,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 });
 
 describe('Test indexAllBlockchainAppsMeta method', () => {
-	it('should index token meta in db when called with valid metadata object', async () => {
-		jest.mock('lisk-service-framework', () => {
-			const actual = jest.requireActual('lisk-service-framework');
-			return {
-				...actual,
-				CacheRedis: jest.fn(),
-				CacheLRU: jest.fn(),
-				MySQL: {
-					getTableInstance: () => ({
-						upsert: (dataArray) => expect(dataArray[0].tokenID)
-							.toEqual(mockTokenMetaObj.tokens[0].tokenID),
-					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
-				},
-			};
-		});
-
+	it('should index all metadata in db', async () => {
 		jest.mock('../../../config', () => {
 			const actual = jest.requireActual('../../../config');
 			return {
@@ -345,29 +278,7 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 			};
 		});
 
-		jest.mock('lisk-service-framework', () => {
-			const actual = jest.requireActual('lisk-service-framework');
-			return {
-				...actual,
-				MySQL: {
-					getTableInstance: () => ({
-						delete: (data) => {
-							if (data.chainID) {
-								expect(data.chainID).toEqual(mockAppMetaObj.chainID);
-							} else {
-								expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID);
-							}
-						},
-					}),
-					getDbConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
-				},
-			};
-		});
-
 		const { indexAllBlockchainAppsMeta } = require('../../../shared/metadataIndex');
-		await indexAllBlockchainAppsMeta(mockTokenMetaObj);
+		await indexAllBlockchainAppsMeta();
 	});
 });
