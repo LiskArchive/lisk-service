@@ -34,11 +34,12 @@ const formatValue = (value, type) => {
 	return value;
 };
 
-const getKeyValueTable = async (connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = 'default') => {
-	const keyValueTable = await getTableInstance(keyValueStoreSchema, connEndpoint);
+function createKeyValueTable(connEndpoint, prefix) {
+	const getKeyValueTableInstance = getTableInstance(keyValueStoreSchema, connEndpoint);
 
 	const set = async (key, value, dbTrx) => {
-		const type = typeof (value);
+		const keyValueTable = await getKeyValueTableInstance;
+		const type = typeof value;
 
 		if (!KV_STORE_ALLOWED_VALUE_TYPES.includes(type)) {
 			logger.error(`Allowed 'value' types are: ${KV_STORE_ALLOWED_VALUE_TYPES.join()}`);
@@ -49,6 +50,7 @@ const getKeyValueTable = async (connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = '
 	};
 
 	const get = async (key, dbTrx) => {
+		const keyValueTable = await getKeyValueTableInstance;
 		const [{ value, type } = {}] = await keyValueTable.find(
 			{ key: `${prefix}_${key}`, limit: 1 },
 			['value', 'type'],
@@ -59,6 +61,7 @@ const getKeyValueTable = async (connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = '
 	};
 
 	const getByPattern = async pattern => {
+		const keyValueTable = await getKeyValueTableInstance;
 		const result = await keyValueTable.find(
 			{ search: { property: 'key', pattern } },
 			['key', 'value', 'type'],
@@ -71,17 +74,40 @@ const getKeyValueTable = async (connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = '
 		return formattedResult;
 	};
 
-	const deleteEntry = async (key, dbTrx) => keyValueTable.deleteByPrimaryKey([`${prefix}_${key}`], dbTrx);
+	const deleteKey = async (key, dbTrx) => {
+		const keyValueTable = await getKeyValueTableInstance;
+		return keyValueTable.deleteByPrimaryKey([`${prefix}_${key}`], dbTrx);
+	};
 
 	return {
 		set,
 		get,
 		getByPattern,
-		delete: deleteEntry,
+		delete: deleteKey,
 	};
-};
+}
+
+function keyValueTableInstance(connEndpoint, prefix) {
+	if (connEndpoint && prefix) {
+		keyValueTableInstance.instance = createKeyValueTable(connEndpoint, prefix);
+	} else if (!keyValueTableInstance.instance) {
+		logger.error('Key value table not configured');
+		throw new Error('Key value table not configured');
+	}
+
+	return keyValueTableInstance.instance;
+}
+
+function configureKeyValueTable(connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = 'default') {
+	return keyValueTableInstance(connEndpoint, prefix);
+}
+
+function getKeyValueTable() {
+	return keyValueTableInstance();
+}
 
 module.exports = {
+	configureKeyValueTable,
 	getKeyValueTable,
 
 	// Testing
