@@ -20,20 +20,34 @@ const { Exceptions: { ValidationException } } = require('lisk-service-framework'
 
 const { requestConnector } = require('../../utils/request');
 const { getRegisteredActions, getSystemMetadata } = require('../../constants');
+const { engineBasedEndpoints } = require('../../endpointConstants');
 
 const checkIfEndpointRegistered = async (endpoint) => {
 	const registeredActions = await getRegisteredActions();
-	return registeredActions.includes(endpoint);
+	const allRegisteredActions = engineBasedEndpoints
+		.map(e => e.name)
+		.concat(registeredActions);
+	return allRegisteredActions.includes(endpoint);
 };
 
 const validateEndpointParams = async (params) => {
 	try {
-		const metadata = await getSystemMetadata();
-		const [name, endpoint] = params.endpoint.split('_');
+		let requestParamsSchema;
 
-		const { request: requestParamsSchema } = (metadata.modules
-			.find(module => module.name === name)).endpoints
-			.find(e => e.name === endpoint);
+		const registeredActions = await getRegisteredActions();
+
+		if (registeredActions.includes(params.endpoint)) {
+			const metadata = await getSystemMetadata();
+			const [Modulename, endpointName] = params.endpoint.split('_');
+			const endpointInfo = (metadata.modules
+				.find(module => module.name === Modulename)).endpoints
+				.find(endpoint => endpoint.name === endpointName);
+			requestParamsSchema = endpointInfo.request;
+		} else {
+			const endpointInfo = engineBasedEndpoints
+				.find(endpoint => endpoint.name === params.endpoint);
+			requestParamsSchema = endpointInfo.request;
+		}
 
 		if (requestParamsSchema) {
 			await validator.validate(requestParamsSchema, params.params);
