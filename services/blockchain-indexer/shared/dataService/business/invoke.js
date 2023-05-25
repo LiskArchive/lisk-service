@@ -79,4 +79,8 @@ const invokeEndpoint = async params => {
 
 module.exports = {
 	invokeEndpoint,
+
+	// For unit testing
+	checkIfEndpointRegistered,
+	validateEndpointParams,
 };
