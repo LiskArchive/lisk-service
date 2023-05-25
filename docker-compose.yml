@@ -70,11 +70,14 @@ services:
       - ./docker/mysql/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
     restart: always
+    expose:
+      - "3306"
     networks:
       - services_network
     deploy:
       mode: replicated
       replicas: 1
+      endpoint_mode: vip
     environment:
       - MYSQL_ROOT_PASSWORD=password
     healthcheck:
@@ -88,6 +91,21 @@ services:
         ]
       timeout: 20s
       retries: 10
+
+  mysql-read-replica-haproxy:
+    image: nginx:latest
+    restart: always
+    expose:
+      - "3307"
+    depends_on:
+      mysql-read-replica:
+        condition: service_healthy
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - services_network
+    healthcheck:
+      test: [ "CMD", "service", "nginx", "status" ]
 
   blockchain-app-registry:
     image: lisk/service_blockchain_app_registry
@@ -148,8 +166,8 @@ services:
       - SERVICE_INDEXER_CACHE_REDIS=redis://redis_persistent:6379/0
       - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
-      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk 
-      - SERVICE_INDEXER_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica:3306/lisk
+      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
+      - SERVICE_INDEXER_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica-haproxy:3307/lisk
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
       - ENABLE_PERSIST_EVENTS=${ENABLE_PERSIST_EVENTS}
