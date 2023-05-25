@@ -22,16 +22,12 @@ const {
 } = require('lisk-service-framework');
 
 const { KV_STORE_KEY } = require('../constants');
-const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
+const keyValueTable = getKeyValueTable();
 
 const updateTotalLockedAmounts = async (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),
 	async ([tokenID, lockedAmountChange]) => {
-		const keyValueTable = await getKeyValueTableInstance();
-
 		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
 		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
 		const newLockedAmount = curLockedAmount + lockedAmountChange;

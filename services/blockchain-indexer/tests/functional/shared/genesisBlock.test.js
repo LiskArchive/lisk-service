@@ -37,7 +37,7 @@ const {
 } = require('../../../shared/indexer/genesisBlock');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
+const keyValueTable = getKeyValueTable();
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,
@@ -49,10 +49,8 @@ let connection;
 let totalLockedKey;
 let totalStakedKey;
 let totalSelfStakedKey;
-let keyValueTable;
 
 beforeAll(async () => {
-	keyValueTable = await getKeyValueTableInstance();
 	await broker.start();
 	await request.setAppContext({
 		requestRpc: (method, params) => new Promise((resolve, reject) => {

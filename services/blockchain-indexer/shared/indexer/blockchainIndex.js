@@ -66,7 +66,7 @@ const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
+const keyValueTable = getKeyValueTable();
 
 const logger = Logger();
 
@@ -442,15 +442,9 @@ const addBlockToQueue = async height => {
 	indexBlocksQueue.add({ block });
 };
 
-const setIndexVerifiedHeight = async ({ height }) => {
-	const keyValueTable = await getKeyValueTableInstance();
-	return keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
-};
+const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
 
-const getIndexVerifiedHeight = async () => {
-	const keyValueTable = await getKeyValueTableInstance();
-	return keyValueTable.get(INDEX_VERIFIED_HEIGHT);
-};
+const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
 module.exports = {
 	indexNewBlock,

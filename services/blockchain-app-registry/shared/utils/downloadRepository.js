@@ -40,7 +40,7 @@ const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../met
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
+const keyValueTable = getKeyValueTable();
 
 const { KV_STORE_KEY } = require('../constants');
 
@@ -89,7 +89,6 @@ const getLatestCommitHash = async () => {
 };
 
 const getCommitInfo = async () => {
-	const keyValueTable = await getKeyValueTableInstance();
 	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 	const latestCommitHash = await getLatestCommitHash();
 	return { lastSyncedCommitHash, latestCommitHash };
@@ -343,7 +342,6 @@ const syncWithRemoteRepo = async () => {
 			{ concurrency: Object.keys(groupedFiles).length },
 		);
 
-		const keyValueTable = await getKeyValueTableInstance();
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
 		await commitDBTransaction(dbTrx);
 
@@ -385,7 +383,6 @@ const syncWithRemoteRepo = async () => {
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
-	const keyValueTable = await getKeyValueTableInstance();
 	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
 
 	if (lastSyncedCommitHash && await exists(appDirPath)) {

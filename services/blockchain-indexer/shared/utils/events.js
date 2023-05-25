@@ -33,7 +33,7 @@ const { getGenesisHeight } = require('../constants');
 const eventsTableSchema = require('../database/schema/events');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
+const keyValueTable = getKeyValueTable();
 const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
@@ -82,7 +82,6 @@ const getEventsInfoToIndex = async (block, events) => {
 const deleteEventStrTillHeight = async (toHeight) => {
 	const eventsTable = await getEventsTable();
 
-	const keyValueTable = await getKeyValueTableInstance();
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
 
 	const connection = await getDBConnection(MYSQL_ENDPOINT);

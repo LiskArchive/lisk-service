@@ -33,7 +33,7 @@ const stakesTableSchema = require('../../../database/schema/stakes');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
+const keyValueTable = getKeyValueTable();
 
 const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
@@ -93,7 +93,6 @@ const decrementStakeTrx = async (stake, trx) => {
 };
 
 const updateTotalStake = async (changeAmount, dbTrx) => {
-	const keyValueTable = await getKeyValueTableInstance();
 	const tokenID = await getPosTokenID();
 	const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
@@ -103,7 +102,6 @@ const updateTotalStake = async (changeAmount, dbTrx) => {
 };
 
 const updateTotalSelfStake = async (changeAmount, dbTrx) => {
-	const keyValueTable = await getKeyValueTableInstance();
 	const tokenID = await getPosTokenID();
 	const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_SELF_STAKED.concat(tokenID);
 	const curStakedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
