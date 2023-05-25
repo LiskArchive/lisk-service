@@ -50,7 +50,7 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 		sort: 'height:desc',
 		limit: 1,
 	};
-	const [{ commission }] = await commissionsTable.find(queryParams, ['commission']);
+	const [{ commission } = { commission: 0 }] = await commissionsTable.find(queryParams, ['commission']);
 
 	const blockRewardQ = q96(blockReward);
 	const currentCommissionQ = q96(BigInt(commission));
