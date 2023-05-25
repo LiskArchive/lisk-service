@@ -15,10 +15,15 @@
  */
 const { isIncludePendingTransactions } = require('../../../../shared/dataService/transactions');
 
+// Mock KeyValueStore table
 jest.mock('lisk-service-framework', () => {
-	const actual = jest.requireActual('lisk-service-framework');
+	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 	return {
-		...actual,
+		...actualLiskServiceFramework,
+		MySQLKVStore: {
+			...actualLiskServiceFramework.MySQLKVStore,
+			getKeyValueTable: jest.fn(),
+		},
 		CacheRedis: jest.fn(),
 		CacheLRU: jest.fn(),
 	};

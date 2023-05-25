@@ -20,6 +20,18 @@ const {
 	getModifiedFileNamesExpectedResponse,
 } = require('../../../constants/downloadRepository');
 
+// Mock KeyValueStore table
+jest.mock('lisk-service-framework', () => {
+	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+	return {
+		...actualLiskServiceFramework,
+		MySQLKVStore: {
+			...actualLiskServiceFramework.MySQLKVStore,
+			getKeyValueTable: jest.fn(),
+		},
+	};
+});
+
 describe('Test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {
 		const response = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
