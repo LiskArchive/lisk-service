@@ -17,13 +17,9 @@ const config = require('./config');
 const { registerApi } = require('./shared/registerHttpApi');
 
 const defaultConfig = {
-	whitelist: [
-		'$node.*',
-	],
+	whitelist: [],
 
-	aliases: {
-		'GET health': '$node.health',
-	},
+	aliases: {},
 
 	callOptions: {
 		timeout: 30000,

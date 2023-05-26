@@ -31,47 +31,17 @@ const apiMeta = [];
 
 const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
 
-const configureApis = (apiPrefix, methods) => {
+const configureApi = (apiPrefix, methods, useFalseEtag = false) => {
 	const whitelist = Object.keys(methods).reduce((acc, key) => [
 		...acc, methods[key].source.method,
 	], []);
 
 	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
+		...acc, [`${getMethodName(methods[key])} ${useFalseEtag ? '/' : transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
 	}), {});
 
 	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key],
-	}), {});
-
-	const meta = {
-		apiPrefix,
-		routes: Object.keys(methods).map(m => ({
-			path: methods[m].swaggerApiPath,
-			params: Object.keys(methods[m].params || {}),
-			response: {
-				...methods[m].envelope,
-				...methods[m].source.definition,
-			},
-		})),
-	};
-
-	apiMeta.push(meta);
-
-	return { aliases, whitelist, methodPaths };
-};
-
-const configureApisForFalseEtag = (apiPrefix, methods) => {
-	const whitelist = Object.keys(methods).reduce((acc, key) => [
-		...acc, methods[key].source.method,
-	], []);
-
-	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} /`]: methods[key].source.method,
-	}), {});
-
-	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} `]: methods[key],
+		...acc, [`${getMethodName(methods[key])} ${useFalseEtag ? '' : transformPath(methods[key].swaggerApiPath)}`]: methods[key],
 	}), {});
 
 	const meta = {
@@ -127,41 +97,10 @@ const getAllAPIs = (apiNames, registeredModuleNames) => {
 	return methods;
 };
 
-const registerApi = (apiNames, config, registeredModuleNames) => {
-	const allAPIs = getAllAPIs(apiNames, registeredModuleNames);
-
-	const falseEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([key, value]) => value.etag === 'false'));
-	const strongEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([key, value]) => value.etag === undefined || value.etag === 'strong'));
-
-	const returnArr = [];
-
-	const { aliases, whitelist, methodPaths } = configureApis(
-		config.path,
-		strongEtagAPIs,
-	);
-
-	// Build config for etag == strong
-	returnArr.push(getAPIConfig(config.path, config, aliases, whitelist, methodPaths, 'strong'));
-
-	config.whitelist = [];
-	config.aliases = {};
-	// Build config for etag == false
-	for (const key of Object.keys(falseEtagAPIs)) {
-		const { aliases, whitelist, methodPaths } = configureApisForFalseEtag(
-			config.path,
-			{ key: falseEtagAPIs[key] },
-		);
-
-		returnArr.push(getAPIConfig(`${config.path}${falseEtagAPIs[key].swaggerApiPath}`, config, aliases, whitelist, methodPaths, 'false'));
-	}
-
-	return returnArr;
-};
-
-const getAPIConfig = (path, config, aliases, whitelist, methodPaths, etag) => ({
+const getAPIConfig = (configPath, config, aliases, whitelist, methodPaths, etag) => ({
 	...config,
 
-	path,
+	path: configPath,
 
 	whitelist: [
 		...config.whitelist,
@@ -173,7 +112,7 @@ const getAPIConfig = (path, config, aliases, whitelist, methodPaths, etag) => ({
 		...aliases,
 	},
 
-	etag: etag == 'false' ? false : 'strong',
+	etag: etag === 'false' ? false : 'strong',
 
 	async onBeforeCall(ctx, route, req, res) {
 		const sendResponse = (code, message) => {
@@ -252,6 +191,37 @@ const getAPIConfig = (path, config, aliases, whitelist, methodPaths, etag) => ({
 		return transformResponse(methodPaths[apiPath], data);
 	},
 });
+
+const registerApi = (apiNames, config, registeredModuleNames) => {
+	const allAPIs = getAllAPIs(apiNames, registeredModuleNames);
+
+	const falseEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag === 'false'));
+	const strongEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag === undefined || value.etag === 'strong'));
+
+	const returnArr = [];
+
+	const strongEtagAPIConfig = configureApi(
+		config.path,
+		strongEtagAPIs,
+	);
+
+	// Build config for etag == strong
+	returnArr.push(getAPIConfig(config.path, config, strongEtagAPIConfig.aliases, strongEtagAPIConfig.whitelist, strongEtagAPIConfig.methodPaths, 'strong'));
+
+	// Build config for etag == false
+	// eslint-disable-next-line no-restricted-syntax
+	for (const key of Object.keys(falseEtagAPIs)) {
+		const falseEtagAPIConfig = configureApi(
+			config.path,
+			{ key: falseEtagAPIs[key] },
+			true,
+		);
+
+		returnArr.push(getAPIConfig(`${config.path}${falseEtagAPIs[key].swaggerApiPath}`, config, falseEtagAPIConfig.aliases, falseEtagAPIConfig.whitelist, falseEtagAPIConfig.methodPaths, 'false'));
+	}
+
+	return returnArr;
+};
 
 module.exports = {
 	registerApi,
