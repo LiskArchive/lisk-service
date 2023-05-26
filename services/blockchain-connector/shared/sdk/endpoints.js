@@ -23,7 +23,7 @@ const {
 
 const {
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
@@ -289,7 +289,7 @@ const getGenerators = async () => {
 module.exports = {
 	invokeEndpoint,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,

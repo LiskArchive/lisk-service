@@ -19,40 +19,40 @@ const { validator } = require('@liskhq/lisk-validator');
 const { Exceptions: { ValidationException } } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
-const { getRegisteredActions, getSystemMetadata } = require('../../constants');
+const { getRegisteredEndpoints, getSystemMetadata } = require('../../constants');
 const { engineBasedEndpoints } = require('../../endpointConstants');
 
 const checkIfEndpointRegistered = async (endpoint) => {
-	const registeredActions = await getRegisteredActions();
-	const allRegisteredActions = engineBasedEndpoints
+	const registeredEndpoints = await getRegisteredEndpoints();
+	const allregisteredEndpoints = engineBasedEndpoints
 		.map(e => e.name)
-		.concat(registeredActions);
-	return allRegisteredActions.includes(endpoint);
+		.concat(registeredEndpoints);
+	return allregisteredEndpoints.includes(endpoint);
 };
 
-const validateEndpointParams = async (params) => {
+const validateEndpointParams = async (invokeEndpointParams) => {
 	try {
 		let requestParamsSchema;
 
-		const registeredActions = await getRegisteredActions();
+		const registeredEndpoints = await getRegisteredEndpoints();
 
-		// Check if module/engine based endpoint
+		// Check if module or engine based endpoint
 		// Resolve request params schema based on the type of endpoint
-		if (registeredActions.includes(params.endpoint)) {
+		if (registeredEndpoints.includes(invokeEndpointParams.endpoint)) {
 			const metadata = await getSystemMetadata();
-			const [Modulename, endpointName] = params.endpoint.split('_');
+			const [moduleName, endpointName] = invokeEndpointParams.endpoint.split('_');
 			const endpointInfo = (metadata.modules
-				.find(module => module.name === Modulename)).endpoints
+				.find(module => module.name === moduleName)).endpoints
 				.find(endpoint => endpoint.name === endpointName);
 			requestParamsSchema = endpointInfo.request;
 		} else {
 			const endpointInfo = engineBasedEndpoints
-				.find(endpoint => endpoint.name === params.endpoint);
+				.find(endpoint => endpoint.name === invokeEndpointParams.endpoint);
 			requestParamsSchema = endpointInfo.request;
 		}
 
 		// Validate params only if the endpoint supports any params
-		if (requestParamsSchema) validator.validate(requestParamsSchema, params.params);
+		if (requestParamsSchema) validator.validate(requestParamsSchema, invokeEndpointParams.params);
 		return true;
 	} catch (_) {
 		return false;

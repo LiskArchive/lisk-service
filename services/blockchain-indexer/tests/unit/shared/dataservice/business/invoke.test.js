@@ -18,12 +18,12 @@ const { resolve } = require('path');
 const mockedFilePath = resolve(`${__dirname}/../../../../../shared/constants`);
 
 jest.mock('../../../../../shared/constants', () => {
-	const { registeredActions } = require('../../../../constants/registeredActions');
+	const { registeredEndpoints } = require('../../../../constants/registeredEndpoints');
 	const { metadata } = require('../../../../constants/metadata');
 	const actual = jest.requireActual(mockedFilePath);
 	return {
 		...actual,
-		getRegisteredActions() { return registeredActions; },
+		getRegisteredEndpoints() { return registeredEndpoints; },
 		getSystemMetadata() { return metadata; },
 	};
 });

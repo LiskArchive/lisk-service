@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const registeredActions = [
+const registeredEndpoints = [
 	'auth_getAuthAccount',
 	'auth_isValidNonce',
 	'auth_isValidSignature',
@@ -69,5 +69,5 @@ const registeredActions = [
 ];
 
 module.exports = {
-	registeredActions,
+	registeredEndpoints,
 };

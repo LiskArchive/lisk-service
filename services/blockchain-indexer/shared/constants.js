@@ -19,7 +19,7 @@ let genesisConfig;
 let genesisHeight;
 let moduleCommands;
 let registeredModules;
-let registeredActions;
+let registeredEndpoints;
 let systemMetadata;
 let finalizedHeight;
 
@@ -85,11 +85,11 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
-const getRegisteredActions = async () => {
-	if (!registeredActions) {
-		registeredActions = await requestConnector('getRegisteredActions');
+const getRegisteredEndpoints = async () => {
+	if (!registeredEndpoints) {
+		registeredEndpoints = await requestConnector('getRegisteredEndpoints');
 	}
-	return registeredActions;
+	return registeredEndpoints;
 };
 
 const MODULE = Object.freeze({
@@ -163,7 +163,7 @@ module.exports = {
 	getAvailableModuleCommands,
 	resolveModuleCommands,
 	getRegisteredModules,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getSystemMetadata,
 
 	LENGTH_CHAIN_ID,

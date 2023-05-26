@@ -25,7 +25,7 @@ const timeoutMessage = 'Response not received in';
 let metadata;
 let nodeInfo;
 let schema;
-let registeredActions;
+let registeredEndpoints;
 let registeredEvents;
 let registeredModules;
 
@@ -45,15 +45,15 @@ const getSchemas = async () => {
 	}
 };
 
-const getRegisteredActions = async () => {
+const getRegisteredEndpoints = async () => {
 	try {
-		if (!registeredActions) {
-			registeredActions = await invokeEndpoint('app_getRegisteredActions');
+		if (!registeredEndpoints) {
+			registeredEndpoints = await invokeEndpoint('app_getRegisteredActions');
 		}
-		return registeredActions;
+		return registeredEndpoints;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredActions\'.');
+			throw new TimeoutException('Request timed out when calling \'getRegisteredEndpoints\'.');
 		}
 		throw err;
 	}
@@ -118,7 +118,7 @@ const getRegisteredModules = async () => {
 
 module.exports = {
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
