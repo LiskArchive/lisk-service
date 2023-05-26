@@ -195,8 +195,10 @@ const getAPIConfig = (configPath, config, aliases, whitelist, methodPaths, etag)
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const allAPIs = getAllAPIs(apiNames, registeredModuleNames);
 
-	const falseEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag !== undefined && !value.etag));
-	const strongEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag === undefined || value.etag === 'strong'));
+	const falseEtagAPIs = Object.fromEntries(Object.entries(allAPIs)
+		.filter(([, value]) => value.etag !== undefined && !value.etag));
+	const strongEtagAPIs = Object.fromEntries(Object.entries(allAPIs)
+		.filter(([, value]) => value.etag === undefined || value.etag === 'strong'));
 
 	const apisToRegister = [];
 
