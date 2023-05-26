@@ -812,6 +812,42 @@ const configureAPIWithFalseEtagResponse = {
 	],
 };
 
+const getAllAPIsExpectedResponse = {
+	ready: {
+		envelope: {},
+		rpcMethod: 'get.ready',
+		source: {
+			definition: {
+				services: '=',
+			},
+			method: 'gateway.ready',
+			params: {},
+			type: 'moleculer',
+		},
+		swaggerApiPath: '/ready',
+		version: '2.0',
+	},
+	status: {
+		envelope: {},
+		rpcMethod: 'get.status',
+		source: {
+			definition: {
+				build: '=',
+				chainID: '=',
+				description: '=',
+				name: '=',
+				networkNodeVersion: '=',
+				version: '=',
+			},
+			method: 'gateway.status',
+			params: {},
+			type: 'moleculer',
+		},
+		swaggerApiPath: '/status',
+		version: '2.0',
+	},
+};
+
 module.exports = {
 	expectedResponseForRegisterHttpApi,
 	expectedResponseForRegisterRpcApi,
@@ -839,4 +875,6 @@ module.exports = {
 	configureAPIPrefixWithFalseEtag,
 	configureAPIMethodsWithFalseEtag,
 	configureAPIWithFalseEtagResponse,
+
+	getAllAPIsExpectedResponse,
 };

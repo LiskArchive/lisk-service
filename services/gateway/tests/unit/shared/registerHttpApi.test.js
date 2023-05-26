@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getMethodName, registerApi, configureApi } = require('../../../shared/registerHttpApi');
+const { getMethodName, registerApi, configureApi, getAllAPIs } = require('../../../shared/registerHttpApi');
 const { configureAPIPrefix, configureAPIMethods, configureApiResponse,
 	configureAPIPrefixWithFalseEtag, configureAPIMethodsWithFalseEtag,
-	configureAPIWithFalseEtagResponse } = require('../../constants/registerApi');
+	configureAPIWithFalseEtagResponse, getAllAPIsExpectedResponse } = require('../../constants/registerApi');
 
 const { expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
 
@@ -34,6 +34,15 @@ describe('Test configureApi method', () => {
 
 	it('should return empty response when called with empty params', async () => {
 		expect(configureApi('/test', {})).toEqual({ aliases: {}, methodPaths: {}, whitelist: [] });
+	});
+});
+
+describe('Test getAllAPIs method', () => {
+	it('should return proper response when called with correct params', async () => {
+		const registeredModuleNames = ['auth', 'validators', 'token'];
+		const apiName = 'http-status';
+		const response = getAllAPIs(apiName, registeredModuleNames);
+		expect(response).toEqual(getAllAPIsExpectedResponse);
 	});
 });
 
