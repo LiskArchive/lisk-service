@@ -50,13 +50,17 @@ describe('Test registerApi method', () => {
 
 	it('should return correct api info when called with valid inputs', async () => {
 		const response = await registerApi(apiNames, config, registeredModuleNames);
-		expect(response).toEqual({
-			onBeforeCall: response.onBeforeCall,
-			onAfterCall: response.onAfterCall,
-			...expectedResponseForRegisterHttpApi,
-		});
-		expect(typeof response.onBeforeCall).toEqual('function');
-		expect(typeof response.onAfterCall).toEqual('function');
+
+		for (let i = 0; i < response.length; i++) {
+			expectedResponseForRegisterHttpApi[i].onBeforeCall = response[i].onBeforeCall;
+			expectedResponseForRegisterHttpApi[i].onAfterCall = response[i].onAfterCall;
+			expectedResponseForRegisterHttpApi[i].path = response[i].path;
+
+			expect(typeof response[i].onBeforeCall).toEqual('function');
+			expect(typeof response[i].onAfterCall).toEqual('function');
+		}
+
+		expect(response).toEqual(expectedResponseForRegisterHttpApi);
 	});
 
 	it('should throw error when called with null apiNames or config or registeredModuleNames', async () => {
