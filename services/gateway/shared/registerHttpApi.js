@@ -112,7 +112,7 @@ const getAPIConfig = (configPath, config, aliases, whitelist, methodPaths, etag)
 		...aliases,
 	},
 
-	etag: etag === 'false' ? false : 'strong',
+	etag: (etag === undefined || etag === 'strong') ? 'strong' : false,
 
 	async onBeforeCall(ctx, route, req, res) {
 		const sendResponse = (code, message) => {
@@ -195,10 +195,10 @@ const getAPIConfig = (configPath, config, aliases, whitelist, methodPaths, etag)
 const registerApi = (apiNames, config, registeredModuleNames) => {
 	const allAPIs = getAllAPIs(apiNames, registeredModuleNames);
 
-	const falseEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag === 'false'));
+	const falseEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag !== undefined && !value.etag));
 	const strongEtagAPIs = Object.fromEntries(Object.entries(allAPIs).filter(([, value]) => value.etag === undefined || value.etag === 'strong'));
 
-	const returnArr = [];
+	const apisToRegister = [];
 
 	const strongEtagAPIConfig = configureApi(
 		config.path,
@@ -206,7 +206,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 	);
 
 	// Build config for etag == strong
-	returnArr.push(getAPIConfig(config.path, config, strongEtagAPIConfig.aliases, strongEtagAPIConfig.whitelist, strongEtagAPIConfig.methodPaths, 'strong'));
+	apisToRegister.push(getAPIConfig(config.path, config, strongEtagAPIConfig.aliases, strongEtagAPIConfig.whitelist, strongEtagAPIConfig.methodPaths, 'strong'));
 
 	// Build config for etag == false
 	// eslint-disable-next-line no-restricted-syntax
@@ -217,10 +217,10 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 			true,
 		);
 
-		returnArr.push(getAPIConfig(`${config.path}${falseEtagAPIs[key].swaggerApiPath}`, config, falseEtagAPIConfig.aliases, falseEtagAPIConfig.whitelist, falseEtagAPIConfig.methodPaths, 'false'));
+		apisToRegister.push(getAPIConfig(`${config.path}${falseEtagAPIs[key].swaggerApiPath}`, config, falseEtagAPIConfig.aliases, falseEtagAPIConfig.whitelist, falseEtagAPIConfig.methodPaths, 'false'));
 	}
 
-	return returnArr;
+	return apisToRegister;
 };
 
 module.exports = {
