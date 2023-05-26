@@ -36,6 +36,8 @@ const validateEndpointParams = async (params) => {
 
 		const registeredActions = await getRegisteredActions();
 
+		// Check if module/engine based endpoint
+		// Resolve request params schema based on the type of endpoint
 		if (registeredActions.includes(params.endpoint)) {
 			const metadata = await getSystemMetadata();
 			const [Modulename, endpointName] = params.endpoint.split('_');
@@ -49,9 +51,8 @@ const validateEndpointParams = async (params) => {
 			requestParamsSchema = endpointInfo.request;
 		}
 
-		if (requestParamsSchema) {
-			await validator.validate(requestParamsSchema, params.params);
-		}
+		// Validate params only if the endpoint supports any params
+		if (requestParamsSchema) validator.validate(requestParamsSchema, params.params);
 		return true;
 	} catch (_) {
 		return false;
