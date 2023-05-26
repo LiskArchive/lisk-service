@@ -13,9 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getMethodName, registerApi } = require('../../../shared/registerHttpApi');
+const { getMethodName, registerApi, configureApi } = require('../../../shared/registerHttpApi');
+const { configureAPIPrefix, configureAPIMethods, configureApiResponse,
+	configureAPIPrefixWithFalseEtag, configureAPIMethodsWithFalseEtag,
+	configureAPIWithFalseEtagResponse } = require('../../constants/registerApi');
 
 const { expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
+
+describe('Test configureApi method', () => {
+	it('should return proper response when called with correct params', async () => {
+		const response = configureApi(configureAPIPrefix, configureAPIMethods);
+		expect(response).toEqual(configureApiResponse);
+	});
+
+	it('should return proper response when called with correct params and etag as false', async () => {
+		const response = configureApi(configureAPIPrefixWithFalseEtag,
+			configureAPIMethodsWithFalseEtag, false);
+		expect(response).toEqual(configureAPIWithFalseEtagResponse);
+	});
+
+	it('should return empty response when called with empty params', async () => {
+		expect(configureApi('/test', {})).toEqual({ aliases: {}, methodPaths: {}, whitelist: [] });
+	});
+});
 
 describe('Test getMethodName method', () => {
 	it('should return POST when called with httpMethod:POST', async () => {

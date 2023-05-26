@@ -470,6 +470,348 @@ const sourceForMapParam = {
 	mappingKey: 'mappingValue',
 };
 
+const configureAPIPrefix = '/test';
+const configureAPIMethods = {
+	errorServer: {
+		version: '2.0',
+		swaggerApiPath: '/server_error',
+		rpcMethod: 'get.server_error',
+		envelope: {},
+		source: {
+			type: 'moleculer',
+			method: 'template.server.error',
+			params: {},
+			definition: {
+				error: '=,string',
+				status: '=,number',
+			},
+		},
+	},
+	helloGeneric: {
+		version: '2.0',
+		swaggerApiPath: '/hello',
+		rpcMethod: 'get.hello',
+		envelope: {
+			data: [],
+			meta: {},
+			links: {},
+		},
+		source: {
+			type: 'moleculer',
+			method: 'template.generic.hello',
+			params: {},
+			definition: {
+				data: [
+					'data',
+					{
+						message: '=',
+						name: '=',
+					},
+				],
+				meta: {
+					count: 'meta.count,number',
+					offset: '=,number',
+					total: 'meta.total,number',
+				},
+				links: {},
+			},
+		},
+	},
+};
+
+const configureApiResponse = {
+	aliases: {
+		'GET hello': 'template.generic.hello',
+		'GET server_error': 'template.server.error',
+	},
+	methodPaths: {
+		'GET hello': {
+			envelope: {
+				data: [],
+				links: {},
+				meta: {},
+			},
+			rpcMethod: 'get.hello',
+			source: {
+				definition: {
+					data: [
+						'data',
+						{
+							message: '=',
+							name: '=',
+						},
+					],
+					links: {},
+					meta: {
+						count: 'meta.count,number',
+						offset: '=,number',
+						total: 'meta.total,number',
+					},
+				},
+				method: 'template.generic.hello',
+				params: {},
+				type: 'moleculer',
+			},
+			swaggerApiPath: '/hello',
+			version: '2.0',
+		},
+		'GET server_error': {
+			envelope: {},
+			rpcMethod: 'get.server_error',
+			source: {
+				definition: {
+					error: '=,string',
+					status: '=,number',
+				},
+				method: 'template.server.error',
+				params: {},
+				type: 'moleculer',
+			},
+			swaggerApiPath: '/server_error',
+			version: '2.0',
+		},
+	},
+	whitelist: [
+		'template.server.error',
+		'template.generic.hello',
+	],
+};
+
+const configureAPIPrefixWithFalseEtag = '/v3';
+const configureAPIMethodsWithFalseEtag = {
+	key: {
+		version: '2.0',
+		swaggerApiPath: '/token/balances',
+		rpcMethod: 'get.token.balances',
+		tags: [
+			'Token',
+		],
+		etag: false,
+		params: {
+			address: {
+				optional: false,
+				type: 'string',
+				pattern: {},
+			},
+			tokenID: {
+				optional: true,
+				type: 'string',
+				pattern: {},
+			},
+			limit: {
+				optional: true,
+				type: 'number',
+				min: 1,
+				max: 100,
+				default: 10,
+			},
+			offset: {
+				optional: true,
+				type: 'number',
+				min: 0,
+				default: 0,
+			},
+		},
+		schema: {
+			'/token/balances': {
+				get: {
+					tags: [
+						'Token',
+					],
+					summary: 'Requests tokens information',
+					description: 'Returns tokens information\n RPC => get.token.balances',
+					parameters: [
+						{
+							$ref: '#/parameters/address',
+						},
+						{
+							$ref: '#/parameters/tokenID',
+						},
+						{
+							$ref: '#/parameters/limit',
+						},
+						{
+							$ref: '#/parameters/offset',
+						},
+					],
+					responses: {
+						200: {
+							description: 'Returns a list of supported tokens by the blockchain application',
+							schema: {
+								$ref: '#/definitions/tokenWithEnvelope',
+							},
+						},
+						400: {
+							description: 'Bad request',
+							schema: {
+								$ref: '#/definitions/badRequest',
+							},
+						},
+					},
+				},
+			},
+		},
+		source: {
+			type: 'moleculer',
+			method: 'indexer.token.balances',
+			params: {
+				address: '=,string',
+				tokenID: '=,string',
+				offset: '=,number',
+				limit: '=,number',
+			},
+			definition: {
+				data: [
+					'data',
+					{
+						tokenID: '=,string',
+						availableBalance: '=,string',
+						lockedBalances: [
+							'lockedBalances',
+							{
+								module: '=,string',
+								amount: '=,string',
+							},
+						],
+					},
+				],
+				meta: {
+					address: '=,string',
+					count: '=,number',
+					offset: '=,number',
+					total: '=,number',
+				},
+				links: {},
+			},
+		},
+		envelope: {
+			data: [],
+			meta: {},
+		},
+	},
+};
+
+const configureAPIWithFalseEtagResponse = {
+	aliases: {
+		'GET token/balances': 'indexer.token.balances',
+	},
+	methodPaths: {
+		'GET token/balances': {
+			envelope: {
+				data: [],
+				meta: {},
+			},
+			etag: false,
+			params: {
+				address: {
+					optional: false,
+					pattern: {},
+					type: 'string',
+				},
+				limit: {
+					default: 10,
+					max: 100,
+					min: 1,
+					optional: true,
+					type: 'number',
+				},
+				offset: {
+					default: 0,
+					min: 0,
+					optional: true,
+					type: 'number',
+				},
+				tokenID: {
+					optional: true,
+					pattern: {},
+					type: 'string',
+				},
+			},
+			rpcMethod: 'get.token.balances',
+			schema: {
+				'/token/balances': {
+					get: {
+						description: 'Returns tokens information\n RPC => get.token.balances',
+						parameters: [
+							{
+								$ref: '#/parameters/address',
+							},
+							{
+								$ref: '#/parameters/tokenID',
+							},
+							{
+								$ref: '#/parameters/limit',
+							},
+							{
+								$ref: '#/parameters/offset',
+							},
+						],
+						responses: {
+							200: {
+								description: 'Returns a list of supported tokens by the blockchain application',
+								schema: {
+									$ref: '#/definitions/tokenWithEnvelope',
+								},
+							},
+							400: {
+								description: 'Bad request',
+								schema: {
+									$ref: '#/definitions/badRequest',
+								},
+							},
+						},
+						summary: 'Requests tokens information',
+						tags: [
+							'Token',
+						],
+					},
+				},
+			},
+			source: {
+				definition: {
+					data: [
+						'data',
+						{
+							availableBalance: '=,string',
+							lockedBalances: [
+								'lockedBalances',
+								{
+									amount: '=,string',
+									module: '=,string',
+								},
+							],
+							tokenID: '=,string',
+						},
+					],
+					links: {},
+					meta: {
+						address: '=,string',
+						count: '=,number',
+						offset: '=,number',
+						total: '=,number',
+					},
+				},
+				method: 'indexer.token.balances',
+				params: {
+					address: '=,string',
+					limit: '=,number',
+					offset: '=,number',
+					tokenID: '=,string',
+				},
+				type: 'moleculer',
+			},
+			swaggerApiPath: '/token/balances',
+			tags: [
+				'Token',
+			],
+			version: '2.0',
+		},
+	},
+	whitelist: [
+		'indexer.token.balances',
+	],
+};
+
 module.exports = {
 	expectedResponseForRegisterHttpApi,
 	expectedResponseForRegisterRpcApi,
@@ -489,4 +831,12 @@ module.exports = {
 	expectedResponseForTransformParams,
 
 	sourceForMapParam,
+
+	configureAPIPrefix,
+	configureAPIMethods,
+	configureApiResponse,
+
+	configureAPIPrefixWithFalseEtag,
+	configureAPIMethodsWithFalseEtag,
+	configureAPIWithFalseEtagResponse,
 };

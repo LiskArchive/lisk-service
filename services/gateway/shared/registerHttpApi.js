@@ -230,4 +230,5 @@ module.exports = {
 
 	// For testing
 	getMethodName,
+	configureApi,
 };
