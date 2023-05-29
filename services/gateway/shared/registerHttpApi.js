@@ -232,4 +232,5 @@ module.exports = {
 	getMethodName,
 	configureApi,
 	getAllAPIs,
+	getAPIConfig,
 };

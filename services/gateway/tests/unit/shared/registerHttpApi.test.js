@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getMethodName, registerApi, configureApi, getAllAPIs } = require('../../../shared/registerHttpApi');
+const { getMethodName, registerApi, configureApi, getAllAPIs, getAPIConfig } = require('../../../shared/registerHttpApi');
 const { configureAPIPrefix, configureAPIMethods, configureApiResponse,
 	configureAPIPrefixWithFalseEtag, configureAPIMethodsWithFalseEtag,
 	configureAPIWithFalseEtagResponse, getAllAPIsExpectedResponse } = require('../../constants/registerApi');
@@ -43,6 +43,57 @@ describe('Test getAllAPIs method', () => {
 		const apiName = 'http-status';
 		const response = getAllAPIs(apiName, registeredModuleNames);
 		expect(response).toEqual(getAllAPIsExpectedResponse);
+	});
+});
+
+describe('Test getAPIConfig method', () => {
+	let config;
+	let configPath;
+	let aliases;
+	let whitelist;
+	let methodPaths;
+	let etag;
+
+	beforeEach(() => {
+		// Initialize variables for test
+		config = { whitelist: ['item1'], aliases: { alias1: '/path1' } };
+		configPath = '/api/path';
+		aliases = { alias2: '/path2' };
+		whitelist = ['item2'];
+		methodPaths = { 'GET /path1': { param1: { type: 'string' } } };
+		etag = 'strong';
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should return the API config', () => {
+		const result = getAPIConfig(configPath, config, aliases, whitelist, methodPaths, etag);
+
+		expect(result).toEqual({
+			...config,
+			path: configPath,
+			whitelist: ['item1', 'item2'],
+			aliases: { alias1: '/path1', alias2: '/path2' },
+			etag: 'strong',
+			onBeforeCall: expect.any(Function),
+			onAfterCall: expect.any(Function),
+		});
+	});
+
+	it('should return API config with empty parameters', () => {
+		const result = getAPIConfig('', { whitelist: [] }, {}, [], {}, '');
+
+		expect(result).toEqual({
+			...config,
+			path: '',
+			whitelist: [],
+			aliases: {},
+			etag: false,
+			onBeforeCall: expect.any(Function),
+			onAfterCall: expect.any(Function),
+		});
 	});
 });
 
