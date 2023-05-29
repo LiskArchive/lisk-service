@@ -36,6 +36,9 @@ const getPosUnlocks = async params => {
 		{ address: params.address },
 	);
 
+	const { height, genesis: { blockTime } } = await requestConnector('getNodeInfo', {});
+	const { header: { timestamp } } = await requestConnector('getBlockByHeight', { height });
+
 	const tokenID = await getPosTokenID();
 	const filteredPendingUnlocks = pendingUnlocks.reduce(
 		(accumulator, pendingUnlock) => {
@@ -43,9 +46,14 @@ const getPosUnlocks = async params => {
 			const isLocked = !pendingUnlock.unlockable;
 			// Filter results based on `params.isLocked`
 			if (params.isLocked === undefined || params.isLocked === isLocked) {
+				// Calculate expected unlock time
+				const expectedUnlockTime = timestamp
+					+ (remPendingUnlock.expectedUnlockableHeight - height) * blockTime;
+
 				accumulator.push({
 					...remPendingUnlock,
 					isLocked,
+					expectedUnlockTime,
 					tokenID,
 				});
 			}
