@@ -30,21 +30,21 @@ const validateValidatorCache = async () => {
 	const cachedValidators = (await getAllValidators()).slice();
 
 	if (nodeValidators.length > cachedValidators.length) {
-		logger.warn(`Node has more validators than cache. node validators count:${nodeValidators.length} cached validators count:${cachedValidators.length}.`);
+		logger.warn(`Eligible validator count is more than cached validator count. Reloading the cache. \n\tEligible validator count: ${nodeValidators.length} \n\tCached validators count: ${cachedValidators.length}`);
 		await reloadValidatorCache();
 		return;
 	}
 
 	for (let index = 0; index < nodeValidators.length; index++) {
 		if (nodeValidators[index].address !== cachedValidators[index].address) {
-			logger.warn('Mismatch found in validator rank order of node and cache. Reloading validators cache.');
+			logger.warn('Incorrect validator ranking detected. Reloading the validators cache.');
 			// eslint-disable-next-line no-await-in-loop
 			await reloadValidatorCache();
 			return;
 		}
 	}
 
-	logger.debug('Validator cache order matched with node validator ranking');
+	logger.debug('Cached validator ranks verified successfully.');
 };
 
 module.exports = {

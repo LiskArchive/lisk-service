@@ -49,9 +49,9 @@ module.exports = [
 		},
 	},
 	{
-		name: 'validate.validators',
-		description: 'Validate cached validators and reload cache if necessary',
-		schedule: '0 * * * *', // Every hour
+		name: 'validate.validator.rank',
+		description: 'Validate cached validators and reload cache if necessary.',
+		schedule: '4-/15 * * * *', // Every 15 minutes starting at 4 minutes past the hour
 		controller: async () => {
 			if (await isPosModuleRegistered()) {
 				logger.debug('Validating validators cache...');
