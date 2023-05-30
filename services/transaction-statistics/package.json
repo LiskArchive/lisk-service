@@ -32,7 +32,7 @@
   "dependencies": {
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "file:../../framework/dist/lisk-service-framework-1.4.16.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/51d16804260307ca92a814d9a90b20e2e8d6b45f/framework/dist/lisk-service-framework-1.4.16.tgz",
     "moment": "^2.29.4"
   },
   "devDependencies": {
