@@ -20,9 +20,12 @@ jest.mock('lisk-service-framework', () => {
 	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 	return {
 		...actualLiskServiceFramework,
-		MySQLKVStore: {
-			...actualLiskServiceFramework.MySQLKVStore,
-			getKeyValueTable: jest.fn(),
+		MySQL: {
+			...actualLiskServiceFramework.MySQL,
+			KVStore: {
+				...actualLiskServiceFramework.KVStore,
+				getKeyValueTable: jest.fn(),
+			},
 		},
 		CacheRedis: jest.fn(),
 		CacheLRU: jest.fn(),

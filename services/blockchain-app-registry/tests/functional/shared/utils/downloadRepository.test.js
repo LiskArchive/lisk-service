@@ -17,8 +17,10 @@
 jest.setTimeout(15000);
 
 const {
-	MySQLKVStore: {
-		getKeyValueTable,
+	MySQL: {
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 

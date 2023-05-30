@@ -18,8 +18,10 @@ const {
 	Microservice,
 	LoggerConfig,
 	Logger,
-	MySQLKVStore: {
-		configureKeyValueTable,
+	MySQL: {
+		KVStore: {
+			configureKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 

@@ -19,8 +19,10 @@ const {
 	Logger,
 	LoggerConfig,
 	Signals,
-	MySQLKVStore: {
-		configureKeyValueTable,
+	MySQL: {
+		KVStore: {
+			configureKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 

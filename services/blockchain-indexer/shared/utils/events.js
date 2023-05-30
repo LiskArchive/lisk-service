@@ -21,9 +21,9 @@ const {
 		startDBTransaction,
 		commitDBTransaction,
 		rollbackDBTransaction,
-	},
-	MySQLKVStore: {
-		getKeyValueTable,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 const config = require('../../config');

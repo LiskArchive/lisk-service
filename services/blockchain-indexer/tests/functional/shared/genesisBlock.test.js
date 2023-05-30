@@ -18,9 +18,9 @@ const {
 		getDBConnection,
 		startDBTransaction,
 		commitDBTransaction,
-	},
-	MySQLKVStore: {
-		getKeyValueTable,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 const { ServiceBroker } = require('moleculer');

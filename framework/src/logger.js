@@ -17,7 +17,7 @@
 const log4js = require('log4js');
 const debug = require('debug');
 const stackTrace = require('stack-trace');
-let packageName = require('../package.json').packageName;
+let { packageName } = require('../package.json');
 
 let LOG_LEVEL = 'info';
 

@@ -17,9 +17,11 @@ const BluebirdPromise = require('bluebird');
 
 const {
 	Logger,
-	MySQL: { getTableInstance },
-	MySQLKVStore: {
-		getKeyValueTable,
+	MySQL: {
+		getTableInstance,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 

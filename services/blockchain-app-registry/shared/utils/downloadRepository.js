@@ -24,11 +24,11 @@ const {
 		startDBTransaction,
 		commitDBTransaction,
 		rollbackDBTransaction,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 	Signals,
-	MySQLKVStore: {
-		getKeyValueTable,
-	},
 } = require('lisk-service-framework');
 
 const { resolveChainNameByNetworkAppDir } = require('./chain');

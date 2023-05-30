@@ -14,8 +14,10 @@
  *
  */
 const {
-	MySQLKVStore: {
-		getKeyValueTable,
+	MySQL: {
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 const { getPosTokenID } = require('../dataService/business/pos/constants');
