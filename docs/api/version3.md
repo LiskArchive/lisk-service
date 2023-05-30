@@ -1741,8 +1741,9 @@ _Supports pagination._
           "validatorAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
           "amount": "1000000000",
           "tokenID": "0000000000000000",
-          "unstakeHeight": "10000",
-          "expectedUnlockableHeight": "270000",
+          "unstakeHeight": 10000,
+          "expectedUnlockableHeight": 270000,
+          "expectedUnlockTime": 1556100060,
           "isLocked": true
         }
       ]
