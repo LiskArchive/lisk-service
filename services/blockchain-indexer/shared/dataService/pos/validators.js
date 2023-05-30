@@ -173,29 +173,6 @@ const reloadValidatorCache = async () => {
 	await computeValidatorStatus();
 };
 
-const validateValidatorCache = async () => {
-	const nodeValidators = await business.getPosValidatorsByStake({ limit: -1 });
-	// Create a deep copy of cached validators
-	const cachedValidators = validatorList.slice();
-
-	if (nodeValidators.length > cachedValidators.length) {
-		logger.warn(`Node has more validators than cache. node validators count:${nodeValidators.length} cached validators count:${cachedValidators.length}.`);
-		await reloadValidatorCache();
-		return;
-	}
-
-	for (let index = 0; index < nodeValidators.length; index++) {
-		if (nodeValidators[index].address !== cachedValidators[index].address) {
-			logger.warn('Mismatch found in validator rank order of node and cache. Reloading validators cache.');
-			// eslint-disable-next-line no-await-in-loop
-			await reloadValidatorCache();
-			return;
-		}
-	}
-
-	logger.debug('Validator cache order matched with node validator ranking');
-};
-
 const getAllValidators = async () => {
 	if (validatorList.length === 0) await reloadValidatorCache();
 	return validatorList;
@@ -398,7 +375,6 @@ updateValidatorListOnAccountsUpdate();
 
 module.exports = {
 	reloadValidatorCache,
-	validateValidatorCache,
 	getPosValidators,
 	getAllValidators,
 };

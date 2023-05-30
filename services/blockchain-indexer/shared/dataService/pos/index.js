@@ -21,7 +21,6 @@ const { getPosLockedRewards } = require('./lockedRewards');
 const { getPosClaimableRewards } = require('./claimableRewards');
 const {
 	reloadValidatorCache,
-	validateValidatorCache,
 	getPosValidators,
 	getAllValidators,
 } = require('./validators');
@@ -47,7 +46,6 @@ module.exports = {
 
 	// Validators
 	reloadValidatorCache,
-	validateValidatorCache,
 	getPosValidators,
 	getAllValidators,
 };

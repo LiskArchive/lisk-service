@@ -32,7 +32,7 @@ beforeEach(() => {
 });
 
 describe('Test validateValidatorCache method', () => {
-	it('should not call reloadValidatorCache when validator cache is correct', async () => {
+	it('should not reload validators cache when validator cache is correct', async () => {
 		const mockReloadValidatorCache = jest.fn();
 		jest.mock(mockValidatorsPath, () => {
 			const actual = jest.requireActual(mockValidatorsPath);
@@ -48,7 +48,7 @@ describe('Test validateValidatorCache method', () => {
 		expect(mockReloadValidatorCache).toHaveBeenCalledTimes(0);
 	});
 
-	it('should call reloadValidatorCache when node returns more validators than cache', async () => {
+	it('should reload validators cache when node returns more validators than cache', async () => {
 		const mockReloadValidatorCache = jest.fn();
 		jest.mock(mockValidatorsPath, () => {
 			const actual = jest.requireActual(mockValidatorsPath);
@@ -64,7 +64,7 @@ describe('Test validateValidatorCache method', () => {
 		expect(mockReloadValidatorCache).toHaveBeenCalledTimes(1);
 	});
 
-	it('should call reloadValidatorCache when node validators rank is different than cached validators', async () => {
+	it('should reload validators cache when node validators rank is different than cached validators', async () => {
 		const mockReloadValidatorCache = jest.fn();
 		jest.mock(mockValidatorsPath, () => {
 			const actual = jest.requireActual(mockValidatorsPath);
@@ -73,6 +73,7 @@ describe('Test validateValidatorCache method', () => {
 				getAllValidators: () => {
 					const arrayCopy = mockPosValidators.slice();
 					const len = arrayCopy.length;
+					// Swap last two elements of the validators cache
 					[arrayCopy[len - 1], arrayCopy[len - 2]] = [arrayCopy[len - 2], arrayCopy[len - 1]];
 					return arrayCopy;
 				},
