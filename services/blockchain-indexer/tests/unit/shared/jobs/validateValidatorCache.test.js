@@ -22,6 +22,15 @@ const { posValidators: mockPosValidators } = require('../../../constants/validat
 
 beforeEach(() => {
 	jest.resetModules();
+
+	jest.mock('lisk-service-framework', () => {
+		const actual = jest.requireActual('lisk-service-framework');
+		return {
+			...actual,
+			CacheRedis: jest.fn(),
+			CacheLRU: jest.fn(),
+		};
+	});
 	jest.mock(mockBusinessPath, () => {
 		const actual = jest.requireActual(mockBusinessPath);
 		return {
