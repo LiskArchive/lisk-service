@@ -32,6 +32,7 @@ describe('Test indexTokensMeta method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						upsert: (dataArray) => expect(dataArray[0].tokenID)
 							.toEqual(mockTokenMetaObj.tokens[0].tokenID),
@@ -57,6 +58,7 @@ describe('Test indexAppMeta method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 					}),
@@ -95,6 +97,7 @@ describe('Test indexMetadataFromFile method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 					}),
@@ -112,6 +115,7 @@ describe('Test indexMetadataFromFile method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						upsert: (data) => expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
@@ -141,6 +145,7 @@ describe('Test deleteAppMeta method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						delete: (data) => expect(data).toEqual({
 							network: mockAppMetaObj.networkType,
@@ -169,6 +174,7 @@ describe('Test deleteTokensMeta method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
@@ -207,6 +213,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						delete: (data) => expect(data).toEqual({
 							network: mockAppMetaObj.networkType,
@@ -227,6 +234,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 			return {
 				...actual,
 				MySQL: {
+					...actual.MySQL,
 					getTableInstance: () => ({
 						delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
