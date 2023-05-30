@@ -55,19 +55,15 @@ const reloadBlockchainAppsStats = async () => {
 		const blockchainAppsTable = await getBlockchainAppsTable();
 
 		const numActiveChains = await blockchainAppsTable.count({ status: APP_STATUS.ACTIVE });
-		const numRegisteredChains = await blockchainAppsTable.count({
-			status: APP_STATUS.REGISTERED,
-		});
-		const numTerminatedChains = await blockchainAppsTable.count({
-			status: APP_STATUS.TERMINATED,
-		});
+		const numRegisteredChains = await blockchainAppsTable.count({ status: APP_STATUS.REGISTERED });
+		const numTerminatedChains = await blockchainAppsTable.count({ status: APP_STATUS.TERMINATED });
 
 		const { totalSupply: [{ totalSupply }] } = await requestConnector('getTotalSupply');
 		const { data: { height } } = await getNetworkStatus();
 		const { data: { rate: annualInflation } } = await getAnnualInflation({ height });
 		const { amount: totalStaked } = await getTotalStaked();
 
-		logger.debug('Updating blockchain apps statistics cache');
+		logger.debug('Updating blockchain apps statistics cache.');
 
 		blockchainAppsStatsCache = {
 			registered: numRegisteredChains,

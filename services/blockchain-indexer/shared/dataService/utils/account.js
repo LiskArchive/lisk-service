@@ -56,7 +56,6 @@ const getLegacyFormatAddressFromPublicKey = publicKey => {
 
 const getLisk32AddressFromHexAddress = address => getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 
-// TODO: Remove once SDK returns address in Lisk32 format
 const getLisk32Address = address => address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
 
 const getHexAddress = address => address.startsWith('lsk')
