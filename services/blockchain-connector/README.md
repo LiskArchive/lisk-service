@@ -27,6 +27,7 @@ To configure the different microservices, there are several environment variable
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
+- `SERVICE_CONNECTOR_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
 - `LISK_APP_HTTP`: URL to connect with the Lisk SDK-based application node over HTTP.
 - `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WebSocket.
 - `USE_LISK_IPC_CLIENT`: Boolean flag to enable IPC-based connection to the Lisk SDK-based application node.

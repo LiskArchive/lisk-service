@@ -26,9 +26,8 @@ const cacheTrxIDToBlockIDSchema = require('../database/schema/transactions');
 
 const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getBlocksCache = () => getTableInstance(cacheBlockSchema, MYSQL_ENDPOINT);
-const getTrxIDtoBlockIDCache = () => getTableInstance(cacheTrxIDToBlockIDSchema, MYSQL_ENDPOINT);
+const getBlocksCache = () => getTableInstance(cacheBlockSchema);
+const getTrxIDtoBlockIDCache = () => getTableInstance(cacheTrxIDToBlockIDSchema);
 
 const blockCacheWaitlist = [];
 

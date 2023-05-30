@@ -78,6 +78,7 @@ services:
       - services_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
+      - SERVICE_CONNECTOR_MYSQL=mysql://lisk:password@mysql:3306/lisk
       - GEOIP_JSON=${GEOIP_JSON}
       - LISK_APP_WS=${LISK_APP_WS}
       # - GENESIS_BLOCK_URL=
