@@ -17,7 +17,7 @@
 const log4js = require('log4js');
 const debug = require('debug');
 const stackTrace = require('stack-trace');
-let { name } = require('../package.json');
+const { name } = require('../package.json');
 
 let LOG_LEVEL = 'info';
 
@@ -25,6 +25,8 @@ let LOG_LEVEL = 'info';
 let log4jsConfig = {
 	appenders: {},
 };
+
+let packageName;
 
 const configure = config => {
 	packageName = config.name;
@@ -172,7 +174,7 @@ const getDebug = entityName => {
 
 // Set default logger config
 configure({
-	name: name,
+	name,
 	level: process.env.SERVICE_LOG_LEVEL || 'error',
 	console: process.env.SERVICE_LOG_CONSOLE || 'false',
 	stdout: process.env.SERVICE_LOG_STDOUT || 'true',

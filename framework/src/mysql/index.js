@@ -1,4 +1,4 @@
 module.exports = {
     ...require('./mysql'),
-    KVStore: { ...require('./KVStore') },
+    KVStore: { ...require('./kvStore') },
 };
