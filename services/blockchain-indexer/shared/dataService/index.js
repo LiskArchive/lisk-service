@@ -42,6 +42,7 @@ const {
 
 const {
 	getPosValidators,
+	getAllValidators,
 	reloadValidatorCache,
 	validateValidatorCache,
 	getPosConstants,
@@ -111,6 +112,7 @@ module.exports = {
 
 	// PoS
 	getPosValidators,
+	getAllValidators,
 	reloadValidatorCache,
 	validateValidatorCache,
 	getPosConstants,

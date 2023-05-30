@@ -164,6 +164,7 @@ const loadAllPosValidators = async () => {
 	}
 };
 
+// eslint-disable-next-line import/prefer-default-export
 const reloadValidatorCache = async () => {
 	if (!await business.isPosModuleRegistered()) return;
 

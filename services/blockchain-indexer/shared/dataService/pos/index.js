@@ -23,6 +23,7 @@ const {
 	reloadValidatorCache,
 	validateValidatorCache,
 	getPosValidators,
+	getAllValidators,
 } = require('./validators');
 
 module.exports = {
@@ -48,4 +49,5 @@ module.exports = {
 	reloadValidatorCache,
 	validateValidatorCache,
 	getPosValidators,
+	getAllValidators,
 };
