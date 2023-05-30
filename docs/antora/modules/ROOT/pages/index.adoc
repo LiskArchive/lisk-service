@@ -6,14 +6,15 @@ Mona Bärenfänger <mona@lightcurve.io>
 :idprefix:
 :imagesdir: ../assets/images
 :page-no-previous: true
+// :docs_general: ROOT::
+:lisk-docs: beta@ROOT::
 
-:url_api_mainnet: https://service.lisk.com/api/v2
-:url_api_testnet: https://testnet-service.lisk.com/api/v2
-:url_rpc_api_mainnet: wss://service.lisk.com/rpc-v2
-:url_rpc_api_testnet: wss://testnet-service.lisk.com/rpc-v2
-:url_subscribe_api_mainnet: wss://testnet-service.lisk.com/blockchain
+:url_api_mainnet: https://service.lisk.com/api/v3
+:url_api_testnet: https://testnet-service.lisk.com/api/v3
+:url_rpc_api_mainnet: wss://service.lisk.com/rpc-v3
+:url_rpc_api_testnet: wss://testnet-service.lisk.com/rpc-v3
+:url_subscribe_api_mainnet: wss://service.lisk.com/blockchain
 :url_subscribe_api_testnet: wss://testnet-service.lisk.com/blockchain
-:url_bitcoin: https://en.bitcoin.it/wiki/Protocol_documentation
 :url_electrumx_docs: https://electrumx.readthedocs.io/en/latest/
 :url_github_lisk_explorer: https://github.com/LiskHQ/lisk-explorer
 :url_github_lisk_service: https://github.com/LiskHQ/lisk-service
@@ -21,28 +22,69 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_lisk_wallet: https://lisk.com/wallet
 :url_moleculer: https://moleculer.services/
 :url_nats: http://nats.io/
+:url_redis: http://redis.io
 :url_npm_socketio_client: https://www.npmjs.com/package/socket.io-client
+:url_services_directory: https://github.com/LiskHQ/lisk-service/tree/development/services
+:url_app_registry: https://github.com/LiskHQ/app-registry
+:url_dynamic_fee: https://github.com/LiskHQ/lips/blob/main/proposals/lip-0013.md
+// :url_http_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+:url_http_api: reference/api.adoc
+:url_websocket_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/version3.md
+:url_subscribe_api: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-beta.0/docs/api/websocket_subscribe_api.md
+:url_postman: https://www.postman.com/
+:url_curl: https://curl.se/
+:url_httpie: https://httpie.io/
+:url_socket: https://socket.io/
+:url_nodejs: https://github.com/nodejs/release#release-schedule
+:url_mysql: https://dev.mysql.com/doc/relnotes/mysql/8.0/en/
+:url_docker: https://www.docker.com/
+:url_docker_compose: https://docs.docker.com/compose/install/
+:url_gnu_make: https://www.gnu.org/software/make/
+:url_gnu_tar: https://www.gnu.org/software/tar/
+:url_ubuntu18: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_ubuntu.md
+:url_ubuntu20: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_ubuntu.md
+:url_debian: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_debian.md
+:url_macos: https://github.com/LiskHQ/lisk-service/blob/development/docs/prerequisites_docker_macos.md
+// :url_repo: https://github.com/LiskHQ/lisk-service/releases
+:url_service-source: https://github.com/LiskHQ/lisk-service/blob/development/docs/build_from_source.md
+:url_service_config: https://github.com/LiskHQ/lisk-service/blob/development/docs/config_options.md
+// TODO: update above GH lisk-service links to main when production is released
 
-:url_api_http_testnet:  ROOT::api/lisk-service-http-testnet.adoc
-:url_api_http:  ROOT::api/lisk-service-http.adoc
-:url_api_rpc:  ROOT::api/lisk-service-rpc.adoc
-:url_api_subscribe:  ROOT::api/lisk-service-pubsub.adoc
+:url_api_http_testnet:  {lisk-docs}api/lisk-service-http-testnet.adoc
+:url_api_http:  {lisk-docs}api/lisk-service-http.adoc
+:url_api_rpc:   {lisk-docs}api/lisk-node-rpc.adoc
+:url_api_subscribe:  {lisk-docs}api/lisk-service-pubsub.adoc
 :url_config:  configuration/docker.adoc
-:url_protocol: ROOT::understand-blockchain/lisk-protocol/index.adoc
+:url_protocol:  {lisk-docs}understand-blockchain/lisk-protocol/index.adoc
 :url_setup:  setup/docker.adoc
 
-{url_github_lisk_service}[Lisk Service^] is a web application that allows interaction with various blockchain networks based on xref:{url_protocol}[Lisk] and {url_bitcoin}[Bitcoin] protocols.
+{url_github_lisk_service}[Lisk Service^] is a web application middleware that allows interaction with various blockchain networks based on the xref:{url_protocol}[Lisk] protocol.
+
 
 The main focus of Lisk Service is to provide data to the UI clients such as {url_lisk_wallet}[Lisk Desktop] and {url_lisk_wallet}[Lisk Mobile].
-Lisk Service makes it possible to access all blockchain live data in a similar way to the regular Lisk SDK API, and in addition provides users with much more details and endpoints, such as geolocation and various statistics about network usage.
+Lisk Service makes it possible to access all blockchain live data in a similar way to the regular Lisk SDK API, and in addition provides users with much more detailed in-depth information and endpoints, such as geolocation and various statistics regarding network usage.
 
 The project implementation is based on <<microservices>>.
 The technical stack is designed to deliver several microservices, and each of them provides one particular functionality.
-The data is served in JSON format and exposed by a xref:{url_api_http}[public RESTful API].
+The data is served in JSON format and exposed by a xref:{url_api_http}[public RESTful API], or a WebSocket-based RPC API.
+//TODO: Add in a link for the Websocket RPC API when the docs are updated.
 
 == Architecture
 
-image::architecture.png[Architecture]
+image::architecture.png[Architecture][,500 ,align="center"]
+
+=== Available Services
+
+Lisk Service consists of various microservices which have been further expanded.
+Briefly, microservices can be defined as an architectural style that structures an application as a collection of small, loosely coupled services, whereby each service can run its own process, and offers the user the ability to reduce the complexity into more manageable services that can be developed, and deployed independently.
+//offering the users the ability to build small independent services these enable the user to and are used and possess the ability to run independently of each other.
+The Gateway is required in order to expose the APIs provided by the specific services.
+
+Each microservice is independently managed and is stored separately under the {url_services_directory}[services^] directory.
+They contain their own `package.json` and `Dockerfile` that are beneficial for managing dependencies, and packaging a service into a containerized format, whereby it can be easily deployed, and managed in a distributed environment.
+To summarize, these benefits include various aspects such as dependency management, reproducible builds, containerization, versioning, and scalability.
+
+An overview of each microservice is given in the following table listed below.
 
 [[microservices]]
 === Microservices
@@ -55,40 +97,178 @@ image::architecture.png[Architecture]
 |Microservice |Description
 
 |*Gateway*
-|The Gateway component provides a RESTful xref:{url_api_http}[HTTP API], which all users of Lisk Service can access and use.
-Its main purpose is to proxy API requests from users to other components provided by Lisk Service.
-It also maintains backwards compatibility when its public API is changed or replaced by a new version.
-This provides users with a **central point of data access** that never breaks existing application compatibility.
+|The Gateway component exposes the API for Lisk Service users to access and use over HTTP and WS protocols.
+Its main purpose is to proxy API requests from users to other microservice components provided by Lisk Service.
+It provides the users with a **central point of data access** that ensures existing application compatibility is maintained.
+// provides a RESTful xref:{url_api_http}[HTTP API], which all users of Lisk Service can access and use.
+// Its main purpose is to proxy API requests from users to other components provided by Lisk Service.
+// It also maintains backwards compatibility when its public API is changed or replaced by a new version.
+// This provides users with a **central point of data access** that never breaks existing application compatibility.
 
-|*Lisk*
-|The REST client component acts as a bridge between the Lisk SDK and the <<gateway,Lisk Service Gateway>>.
-Its main purpose is to provide enriched data from the Lisk SDK API.
-This component is designed to provide high availability, together with efficient and reliable access to the Lisk SDK API.
+|*Connector*
+|The Blockchain Connector connects with the node running a Lisk protocol-compliant blockchain application.
+It is primarily responsible for data transformation and caching, hence reducing the number of calls made to the node.
+
+|*Indexer*
+|The Blockchain Indexer contains both an indexer and data service mode.
+The indexer mode is mainly responsible for updating the index, based on the scheduled jobs by the Blockchain Coordinator.
+In the data service mode it serves user request queries initiated via the RESTful API or WebSocket-based RPC calls.
+It has the ability to run both the indexer and data service modes simultaneously, which is enabled by default.
+
+|*App Registry*
+|The Blockchain Application Registry service is responsible for regularly synchronizing and providing off-chain metadata information for known blockchain applications within the Lisk ecosystem.
+The metadata is maintained in the Lisk {url_app_registry}[Application Registry^] repository.
+
+|*Fee Estimator*
+|The Fee Estimator service implements the {url_dynamic_fee}[dynamic fee system^] algorithm to offer users transaction fee recommendations based on the network traffic.
+
+|*Transaction Statistics*
+|The Transaction Statistics service computes various transaction statistics to offer users various real-time network insights.
 
 |*Market*
 |The Market service allows price data retrieval.
 It supports multiple sources to maintain the current up-to-date Lisk token price, and ensures this is available to the clients in real time.
 
-|*Newsfeed*
-|The Newsfeed service is a single-purpose microservice that aggregates content sharing platforms and shares collected data with UI clients such as Lisk Desktop.
+|*Export*
+|The Export service enables users to download the transaction history as a CSV file for any given account on the blockchain.
 
 |*Template*
-|The Template service is an abstract service whereby all of the services from Lisk Service are inherited from.
+|All Lisk Service services are derived from the Template service, which is an abstract microservice.
 It allows all services to share a similar interface and design pattern.
-The purpose here is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
+The objective of the Template service is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 |===
 
+==== Remarks
+
+* Lisk Service by default attempts to connect to a local node via WebSocket on port `7887` or IPC on `~/.lisk/lisk-core` by default.
+* The default installation method is based on Docker.
+* Please note that certain token conversion rates in the Market service require their API keys.
+* For the events information to be always available in the API, please set the `system.keepEventsForHeights: -1` in the Lisk application node config.
+
+The following diagram below depicts an overview of the microservice architecture.
+The inter-microservice communications are enabled with a message broker.
+This is generally an instance of {url_redis}[Redis^] or {url_nats}[NATS^].
+
+=== Microservices Architecture Overview
+
+image::mservice_architecture.png[]
+
 [[usage]]
-== APIs & Usage
+== APIs
+The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
 
-Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured] and started, it is possible to retrieve data from the blockchain network.
 
-Lisk Service provides the data through several alternative APIs:
+// This section below is commented out and may be used for the new docker setup guide.
+// == Installation
+
+// The default port for REST API requests and Socket.IO-based communication is `9901`.
+// The API is accessible through the URL `http://localhost:9901` when running locally.
+// The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
+
+// The WebSocket-based APIs can be accessed with the help of the {url_socket}[Socket.IO^] library that is available for many programming languages and frameworks.
+
+// To perform the installation ensure the following dependencies listed below are installed:
+
+// * {url_nodejs}[NodeJS Active LTS - v16.15.0^]
+// * {url_mysql}[MySQL - v8.0.29^]
+// * {url_docker}[Docker] with {url_docker_compose}[Docker compose]
+// * {url_gnu_make}[GNU Make] and {url_gnu_tar}[GNU Tar]
+
+//In order to obtain comprehensive guidance on installing the necessary dependencies for the different operating systems, adhere to the relevant instructions that pertain to your specific operating system as shown below:
+
+
+// [tabs]
+// =====
+// Linux::
+// +
+// --
+// * {url_ubuntu18}[Ubuntu 18.04 LTS Bionic Beaver^]
+// * {url_ubuntu20}[Ubuntu 20.04 LTS Focal Fossa^]
+// * {url_debian}[Debian 10 Buster^]
+// --
+// MacOS::
+// +
+// --
+// * {url_macos}[MacOS 10.15 Catalina^]
+// --
+// =====
+
+
+
+
+// Retrieve the latest release from the {url_repo}[official repository^].
+
+// Unpack the source code archive by executing the following commands listed below:
+
+// [source,bash]
+// ----
+// tar -xf lisk-service-x.y.z.tar.gz
+// cd lisk-service
+// ----
+
+// The above commands retrieve the entire source code, however, this does not cover building a custom version of Lisk Service.
+// For more information refer to this document: {url_service-source}[Building Lisk Service from source^].
+
+// ==== Docker image build
+
+// Building a Docker image is optional.
+// However, if you wish to build the local version of Lisk Service execute the following command below:
+
+// [source,bash]
+// ----
+// make build
+// ----
+// Please note, this step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub.
+// The installation script chooses the last available stable version on the Docker Hub, *unless* there is no local image.
+
+// If you are unsure about any local builds, use the `make clean` command to remove all locally built docker images.
+
+// === Configuration
+
+// The default configuration is sufficient to run Lisk Service against the local node.
+
+// Before running the application copy the default docker-compose environment file as shown in the command below:
+
+// [source,bash]
+// ----
+// cp docker/example.env .env
+// ----
+
+// Set the required environment variables as shown in the command below:
+
+// [source,bash]
+// ----
+// $EDITOR .env
+// ----
+
+// The example snippet below assumes that the Lisk Core (or any Lisk protocol-compliant blockchain application), node is running on the host machine and not inside of a Docker container.
+
+// [source,bash]
+// ----
+// ## Required
+// # The local Lisk Core node WebSocket API port
+// export LISK_APP_WS="ws://host.docker.internal:7667"
+// ----
+
+// When running a node inside of a Docker container, the variable needs to refer to the container as shown below:
+// `LISK_APP_WS="ws://<your_docker_container>:7667"`.
+
+// For more information, the configuration options are described here in the {url_service_config}[Lisk Service Configuration Reference^], which may also be helpful with regard to PM2-based installations.
+
+
+
+// [[usage]]
+// == APIs & Usage
+
+Once Lisk Service is xref:{url_setup}[set up], xref:{url_config}[configured], and started, it is possible to retrieve data from the blockchain network.
+
+Lisk Service provides the data through several alternative APIs described below:
 
 === The HTTP API
 
-The xref:{url_api_http}[HTTP API] offers a RESTful API with various additional endpoints as compared to the HTTP API of a normal Lisk node.
+The xref:{url_http_api}[HTTP API] is the public RESTful API that provides blockchain data in standardized JSON format.
 
+The HTTP API provides various endpoints that offer more extensive information in comparison to the HTTP API of that of a normal Lisk node.
 This API can be utilized to build powerful wallets and user interfaces for blockchain applications which are built with the Lisk SDK.
 
 ==== Public Lisk Service APIs
@@ -105,67 +285,64 @@ Lisk Testnet::
 
 [NOTE]
 ====
-In the Public API base URLs listed above, in order to fetch the required entities it is necessary to add them at the end of the respective URL. e.g. `/blocks`, and `/transactions`, etc.
+In the Public API base URLs listed above, in order to fetch the required entities it is necessary to add them at the end of the respective URL. e.g., `/blocks`, and `/transactions`, etc.
 
 For example:
 
-* https://service.lisk.com/api/v2/transactions
-* https://testnet-service.lisk.com/api/v2/transactions
+* https://service.lisk.com/api/v3/transactions
+* https://testnet-service.lisk.com/api/v3/transactions
 ====
 
-==== Example: Request data with curl
+// ==== Example: Request data with curl
 
-.Example request: Obtain a list of all 101 currently forging delegates
-[source,bash]
-----
-curl -X GET "http://localhost:9901/api/v2/forgers" -H  "accept: application/json"
-----
+// .Example request: Obtain a list of the block generators in the current round.
+// [source,bash]
+// ----
+// curl -X GET "http://localhost:9901/api/v3/generators" -H  "accept: application/json"
+// ----
 
-.Example response
-[source,json]
-----
-{
-  "data": [
-    {
-      "username": "spaceone_pool",
-      "totalVotesReceived": "24200000000000",
-      "address": "lsk52ox9f8t7oghqtbtytvpkqzv4wf2srjsvoaff7",
-      "minActiveHeight": 16357328,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1635159800
-    },
-    {
-      "username": "btf",
-      "totalVotesReceived": "17250000000000",
-      "address": "lsk49cfgah7bz84ncoqkhsvg5o2bsmj23x3vqo9y5",
-      "minActiveHeight": 16486490,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1635159810
-    },
-    // ...
-    {
-      "username": "gregoryh",
-      "totalVotesReceived": "21998000000000",
-      "address": "lskfkvo54opxs7cn6aefjhuupbr6zv7yegyow9sb4",
-      "minActiveHeight": 16467538,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1635160820
-    }
-  ],
-  "meta": {
-    "count": 103,
-    "offset": 0,
-    "total": 103
-  }
-}
-----
+// .Example response
+// [source,json]
+// ----
+// {
+//   "data": [
+//     {
+//       "address": "lsk2jjg9ob4qh7jokpdbf7hjgqftkaq4b2925f422",
+//       "name": "genesis_3",
+//       "publicKey": "d16699888782b26c3e4cffd2a94910ec11d59476b2358adc442e010650afe4a9",
+//       "nextAllocatedTime": 1683716840,
+//       "status": "active"
+//     },
+//     ...
+//     {
+//       "address": "lskx7rscmxc3k9yokbqpxspjj92zz6fue84e2xw92",
+//      "name": "genesis_1",
+//       "publicKey": "44e2b746594f74272d15b6f7d18dffbf83c749bbf1babc5f1d314bdbd08f8215",
+//       "nextAllocatedTime": 1683716850,
+//       "status": "active"
+//     },
+//   ],
+//   "meta": {
+//     "count": 10,
+//     "offset": 0,
+//     "total": 103
+//   }
+// }
+// ----
 
-=== The JSON-RPC API
+=== The WebSocket JSON-RPC API
 
-The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
-The API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard.
+// The JSON-RPC API provides blockchain data in standardized JSON format over a WebSocket connection.
+// The API uses the `Socket.IO` library and is compatible with JSON-RPC 2.0 standard.
 
-Check out the xref:{url_api_rpc}[] reference for an overview of all available RPC requests.
+The {url_websocket_api}[WebSocket JSON-RPC API^] provides blockchain data in standardized JSON format.
+The API uses the Socket.IO library and is compatible with JSON-RPC 2.0 standards.
+This enables efficient and seamless integration within the Lisk blockchain network, coupled with offering a more responsive, and efficient alternative to the traditional HTTP based APIs.
+
+The xref:{url_api_rpc}[RPC-API] reference provides an overview of all available RPC requests.
+Almost every HTTP endpoint exposes a corresponding JSON-RPC endpoint to query over WebSocket.
+The only exception is the `/export/download` endpoint.
+
 
 Lisk Mainnet::
 * Public API: `{url_rpc_api_mainnet}`
@@ -173,61 +350,63 @@ Lisk Mainnet::
 Lisk Testnet::
 * Public API: `{url_rpc_api_testnet}`
 
-==== Example: Emit to remote-procedure calls with socket.io
+// ==== Example: Emit to remote-procedure calls with socket.io
 
-[source,bash]
-----
-node --version
-# v16.15.0
-npm i socket.io-client #<1>
-npm i jsome #<2>
-----
+// [source,bash]
+// ----
+// node --version
+// # v16.20.0
+// npm i socket.io-client #<1>
+// npm i jsome #<2>
+// ----
 
-<1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
-<2> Optionally install `jsome` to prettify the API response.
+// <1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
+// <2> Optionally install `jsome` to prettify the API response.
 
-.rpc.js
-[source,js]
-----
+// .rpc.js
+// [source,js]
+// ----
 // 1. Require the dependencies
-const io = require('socket.io-client'); // The socket.io client
-const jsome = require('jsome'); // Prettifies the JSON output
+// const io = require('socket.io-client'); // The socket.io client
+// const jsome = require('jsome'); // Prettifies the JSON output
 
-jsome.params.colored = true;
+// jsome.params.colored = true;
 
 // Use local Service node
-const WS_RPC_ENDPOINT = 'ws://localhost:9901/rpc-v2';
+// const WS_RPC_ENDPOINT = 'ws://localhost:9901/rpc-v3';
 //Use public Service node
-//const WS_RPC_ENDPOINT = "wss://service.lisk.com/rpc-v2";
+//const WS_RPC_ENDPOINT = "wss://service.lisk.com/rpc-v3";
 
 // 2. Connect to Lisk Service via WebSockets
-const socket = io(WS_RPC_ENDPOINT, {
-  forceNew: true,
-  transports: ['websocket']
-});
+// const socket = io(WS_RPC_ENDPOINT, {
+//   forceNew: true,
+//  transports: ['websocket']
+// });
 
 // 3. Emit the remote procedure call
-socket.emit('request', {
-  jsonrpc: '2.0',
-  method: 'get.forgers',
-  params: {limit: "5", offset: "0"} },
-  answer => {
-    // console.log(answer);
-    jsome(answer);
-    process.exit(0);
-});
-----
+// socket.emit('request', {
+//   jsonrpc: '2.0',
+//   method: 'get.forgers',
+//   params: {limit: "5", offset: "0"} },
+//   answer => {
+//     // console.log(answer);
+//     jsome(answer);
+//     process.exit(0);
+// });
+// ----
 
-Run the above script with Node.js to receive the API response in the terminal:
+// Run the above script with Node.js to receive the API response in the terminal:
 
-[source,bash]
-----
-node rpc.js
-----
+// [source,bash]
+// ----
+// node rpc.js
+// ----
 
 === The Subscribe API
 
-The Subscribe API, or sometimes called the Publish/Subscribe or Event-Driven API uses a two-way streaming connection, which means that not only the client can request the server for a data update, but also the server can notify the client about new data instantly as it arrives.
+The {url_subscribe_api}[Subscribe API^] is an event-driven API that uses a two-way streaming connection, which can notify the client about new data instantly as it arrives.
+It is responsible for updating users regarding changes in the blockchain network and markets.
+The Subscribe API is particularly useful for providing the user with real-time data, e.g., real-time monitoring systems, notification services, and applications that need to react immediately to specific events that occur on the blockchain.
 
 NOTE: Check out the xref:{url_api_subscribe}[] reference for an overview of all available RPC requests.
 
@@ -237,72 +416,73 @@ Lisk Mainnet::
 Lisk Testnet::
 * Public API: `{url_subscribe_api_testnet}`
 
-==== Example: Subscribe to events with socket.io
+//==== Example: Subscribe to events with socket.io
 
-Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
+// Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
 
-[source,bash]
-----
-npm i socket.io-client
-----
+// [source,bash]
+// ----
+// npm i socket.io-client
 
-.subscribe.js
-[source,js]
-----
-const io = require('socket.io-client');
-const jsome = require('jsome');
+// ----
 
-jsome.params.colored = true;
+// .subscribe.js
+// [source,js]
+// ----
+// const io = require('socket.io-client');
+// const jsome = require('jsome');
+
+// jsome.params.colored = true;
 
 // Uses local Service node
-const WS_SUBSCRIBE_ENDPOINT = 'ws://localhost:9901/blockchain';
+// const WS_SUBSCRIBE_ENDPOINT = 'ws://localhost:9901/blockchain';
 // Uses public Service node
 //const WS_SUBSCRIBE_ENDPOINT = "wss://service.lisk.com/blockchain";
 
-const socket = io(WS_SUBSCRIBE_ENDPOINT, {
-	forceNew: true,
-	transports: ['websocket'],
-});
+// const socket = io(WS_SUBSCRIBE_ENDPOINT, {
+// 	forceNew: true,
+// 	transports: ['websocket'],
+// });
 
-const subscribe = event => {
-	socket.on(event, answer => {
-		console.log(`====== ${event} ======`);
-		// console.log(answer);
-		jsome(answer);
-	});
-};
+// const subscribe = event => {
+// 	socket.on(event, answer => {
+// 		console.log(`====== ${event} ======`);
+// 		// console.log(answer);
+// 		jsome(answer);
+// 	});
+// };
 
-subscribe('update.block');
-subscribe('update.round');
-subscribe('update.forgers');
-subscribe('update.transactions.confirmed');
-subscribe('update.fee_estimates');
+// subscribe('update.block');
+// subscribe('update.round');
+// subscribe('update.forgers');
+// subscribe('update.transactions.confirmed');
+// subscribe('update.fee_estimates');
 
 // To log all events
-[
-	'connect', 'reconnect',
-	'connect_error', 'connect_timeout', 'error', 'disconnect',
-	'reconnect', 'reconnect_attempt',
-	'reconnecting', 'reconnect_error', 'reconnect_failed',
-].forEach(item => {
-	socket.on(item, res => {
-		console.log(`Event: ${item}, res: ${res || '-'}`);
-	});
-});
+// [
+// 	'connect', 'reconnect',
+// 	'connect_error', 'connect_timeout', 'error', 'disconnect',
+// 	'reconnect', 'reconnect_attempt',
+// 	'reconnecting', 'reconnect_error', 'reconnect_failed',
+// ].forEach(item => {
+// 	socket.on(item, res => {
+// 		console.log(`Event: ${item}, res: ${res || '-'}`);
+// 	});
+// });
 
 // To log incoming data
-['status'].forEach(eventName => {
-	socket.on(eventName, newData => {
-		console.log(
-			`Received data from ${WS_SUBSCRIBE_ENDPOINT}/${eventName}: ${newData}`,
-		);
-	});
-});
-----
+// ['status'].forEach(eventName => {
+// 	socket.on(eventName, newData => {
+// 		console.log(
+// 			`Received data from ${WS_SUBSCRIBE_ENDPOINT}/${eventName}: ${newData}`,
+// 		);
+// 	});
+// });
+// ----
 
-Run the above script with Node.js to receive all published events from the Subscribe API:
+// Run the above script with Node.js to receive all published events from the Subscribe API:
 
-[source,bash]
-----
-node subscribe.js
-----
+// [source,bash]
+// ----
+// node subscribe.js
+// ----

@@ -83,7 +83,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/chainIDCSV',
 				},
 				{
-					$ref: '#/parameters/name',
+					$ref: '#/parameters/chainName',
 				},
 				{
 					$ref: '#/parameters/blockchainAppStatus',

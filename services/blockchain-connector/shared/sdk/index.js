@@ -110,6 +110,7 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 
+const { cacheCleanup } = require('./cache');
 const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
 
@@ -230,4 +231,7 @@ module.exports = {
 
 	// CCM
 	encodeCCM,
+
+	// Cache
+	cacheCleanup,
 };
