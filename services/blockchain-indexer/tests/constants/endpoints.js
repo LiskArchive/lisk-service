@@ -68,6 +68,33 @@ const registeredEndpoints = [
 	'validators_getValidator',
 ];
 
+const engineEndpoints = [
+	{
+		name: 'chain_getBlockByHeight',
+		request: {
+			$id: '/lisk/chain/getBlockByHeightRequest',
+			type: 'object',
+			required: ['height'],
+			properties: {
+				height: {
+					type: 'integer',
+					minimum: 0,
+				},
+			},
+		},
+	},
+	{
+		name: 'system_getNodeInfo',
+		request: null,
+	},
+];
+
+const allRegisteredEndpoints = engineEndpoints
+	.map(e => e.name)
+	.concat(registeredEndpoints);
+
 module.exports = {
 	registeredEndpoints,
+	engineEndpoints,
+	allRegisteredEndpoints,
 };

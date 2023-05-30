@@ -16,6 +16,7 @@
 const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
 const { invokeEndpoint } = require('./client');
 
+const { engineEndpoints } = require('./constants/endpoints');
 const { ccmSchema } = require('./constants/schemas');
 
 // Constants
@@ -116,6 +117,8 @@ const getRegisteredModules = async () => {
 	}
 };
 
+const getEngineEndpoints = () => engineEndpoints;
+
 module.exports = {
 	getSchemas,
 	getRegisteredEndpoints,
@@ -123,4 +126,5 @@ module.exports = {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 };

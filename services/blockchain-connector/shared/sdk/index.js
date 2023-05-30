@@ -32,6 +32,7 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('./endpoints');
 
 const {
@@ -149,6 +150,7 @@ module.exports = {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 
 	// Blocks
 	getLastBlock,

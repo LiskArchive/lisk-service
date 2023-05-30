@@ -97,7 +97,7 @@ const plainKeysObjectSchema = {
 	},
 };
 
-const engineBasedEndpoints = [
+const engineEndpoints = [
 	{
 		name: 'legacy_getBlockByID',
 		request: {
@@ -538,5 +538,5 @@ const engineBasedEndpoints = [
 ];
 
 module.exports = {
-	engineBasedEndpoints,
+	engineEndpoints,
 };

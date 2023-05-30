@@ -19,14 +19,15 @@ const { validator } = require('@liskhq/lisk-validator');
 const { Exceptions: { ValidationException } } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
-const { getRegisteredEndpoints, getSystemMetadata } = require('../../constants');
-const { engineBasedEndpoints } = require('../../endpointConstants');
+const {
+	getRegisteredEndpoints,
+	getSystemMetadata,
+	getEngineEndpoints,
+	getAllRegisteredEndpoints,
+} = require('../../constants');
 
 const checkIfEndpointRegistered = async (endpoint) => {
-	const registeredEndpoints = await getRegisteredEndpoints();
-	const allregisteredEndpoints = engineBasedEndpoints
-		.map(e => e.name)
-		.concat(registeredEndpoints);
+	const allregisteredEndpoints = await getAllRegisteredEndpoints();
 	return allregisteredEndpoints.includes(endpoint);
 };
 
@@ -46,13 +47,19 @@ const validateEndpointParams = async (invokeEndpointParams) => {
 				.find(endpoint => endpoint.name === endpointName);
 			requestParamsSchema = endpointInfo.request;
 		} else {
-			const endpointInfo = engineBasedEndpoints
+			const engineEndpoints = await getEngineEndpoints();
+
+			const endpointInfo = engineEndpoints
 				.find(endpoint => endpoint.name === invokeEndpointParams.endpoint);
 			requestParamsSchema = endpointInfo.request;
 		}
 
-		// Validate params only if the endpoint supports any params
-		if (requestParamsSchema) validator.validate(requestParamsSchema, invokeEndpointParams.params);
+		if (requestParamsSchema) {
+			validator.validate(requestParamsSchema, invokeEndpointParams.params);
+		} else if ('params' in invokeEndpointParams && Object.getOwnPropertyNames(invokeEndpointParams.params).length > 0) {
+			return false;
+		}
+
 		return true;
 	} catch (_) {
 		return false;
@@ -67,7 +74,7 @@ const invokeEndpoint = async params => {
 
 	const isValidParams = await validateEndpointParams(params);
 	if (!isValidParams) {
-		throw new ValidationException(`Invalid params ${util.inspect(params.params)} for the endpoint ${params.endpoint}.`);
+		throw new ValidationException(`Invalid params supplied for endpoint ${params.endpoint}: \n${util.inspect(params.params)}.`);
 	}
 
 	const invokeEndpointRes = {

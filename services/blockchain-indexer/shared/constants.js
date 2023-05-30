@@ -22,6 +22,8 @@ let registeredModules;
 let registeredEndpoints;
 let systemMetadata;
 let finalizedHeight;
+let engineEndpoints;
+let allRegisteredEndpoints;
 
 const updateFinalizedHeight = async () => {
 	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
@@ -90,6 +92,26 @@ const getRegisteredEndpoints = async () => {
 		registeredEndpoints = await requestConnector('getRegisteredEndpoints');
 	}
 	return registeredEndpoints;
+};
+
+const getEngineEndpoints = async () => {
+	if (!engineEndpoints) {
+		engineEndpoints = await requestConnector('getEngineEndpoints');
+	}
+	return engineEndpoints;
+};
+
+const getAllRegisteredEndpoints = async () => {
+	if (!allRegisteredEndpoints) {
+		registeredEndpoints = await getRegisteredEndpoints();
+		engineEndpoints = await getEngineEndpoints();
+
+		allRegisteredEndpoints = engineEndpoints
+			.map(e => e.name)
+			.concat(registeredEndpoints);
+	}
+
+	return allRegisteredEndpoints;
 };
 
 const MODULE = Object.freeze({
@@ -165,6 +187,8 @@ module.exports = {
 	getRegisteredModules,
 	getRegisteredEndpoints,
 	getSystemMetadata,
+	getEngineEndpoints,
+	getAllRegisteredEndpoints,
 
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,

@@ -18,12 +18,14 @@ const { resolve } = require('path');
 const mockedFilePath = resolve(`${__dirname}/../../../../../shared/constants`);
 
 jest.mock('../../../../../shared/constants', () => {
-	const { registeredEndpoints } = require('../../../../constants/registeredEndpoints');
+	const { registeredEndpoints, engineEndpoints, allRegisteredEndpoints } = require('../../../../constants/endpoints');
 	const { metadata } = require('../../../../constants/metadata');
 	const actual = jest.requireActual(mockedFilePath);
 	return {
 		...actual,
+		getAllRegisteredEndpoints() { return allRegisteredEndpoints; },
 		getRegisteredEndpoints() { return registeredEndpoints; },
+		getEngineEndpoints() { return engineEndpoints; },
 		getSystemMetadata() { return metadata; },
 	};
 });
@@ -64,6 +66,26 @@ describe('Test validateEndpointParams method', () => {
 		};
 		const isValidParams = await validateEndpointParams(endpointParams);
 		expect(isValidParams).toBe(true);
+	});
+
+	it('should return true when called with valid endpoint which require no params (Engine)', async () => {
+		const endpointParams = {
+			endpoint: 'system_getNodeInfo',
+			params: {},
+		};
+		const isValidParams = await validateEndpointParams(endpointParams);
+		expect(isValidParams).toBe(true);
+	});
+
+	it('should return false when called with valid endpoint with invalid params (Engine)', async () => {
+		const endpointParams = {
+			endpoint: 'system_getNodeInfo',
+			params: {
+				height: 10,
+			},
+		};
+		const isValidParams = await validateEndpointParams(endpointParams);
+		expect(isValidParams).toBe(false);
 	});
 
 	it('should return true when called with valid endpoint params (Module)', async () => {

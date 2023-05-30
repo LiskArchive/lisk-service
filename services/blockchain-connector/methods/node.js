@@ -21,6 +21,7 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -60,6 +61,11 @@ module.exports = [
 	{
 		name: 'getSystemMetadata',
 		controller: getSystemMetadata,
+		params: {},
+	},
+	{
+		name: 'getEngineEndpoints',
+		controller: getEngineEndpoints,
 		params: {},
 	},
 ];

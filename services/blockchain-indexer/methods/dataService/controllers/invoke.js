@@ -13,18 +13,32 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	HTTP,
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
+
+const { StatusCodes: { BAD_REQUEST } } = HTTP;
+
 const dataService = require('../../../shared/dataService');
 
 const invokeEndpoint = async params => {
-	const indexStatus = {
-		data: {},
-		meta: {},
-	};
-	const response = await dataService.invokeEndpoint(params);
-	if (response.data) indexStatus.data = response.data;
-	if (response.meta) indexStatus.meta = response.meta;
+	try {
+		const indexStatus = {
+			data: {},
+			meta: {},
+		};
+		const response = await dataService.invokeEndpoint(params);
+		if (response.data) indexStatus.data = response.data;
+		if (response.meta) indexStatus.meta = response.meta;
 
-	return indexStatus;
+		return indexStatus;
+	} catch (err) {
+		let status;
+		if (err instanceof ValidationException) status = BAD_REQUEST;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 module.exports = {

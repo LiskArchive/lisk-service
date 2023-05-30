@@ -28,6 +28,7 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('./endpoints_1');
 const {
 	cacheBlocksIfEnabled,
@@ -294,6 +295,7 @@ module.exports = {
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getGeneratorStatus,
