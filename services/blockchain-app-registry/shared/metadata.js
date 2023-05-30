@@ -274,7 +274,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		});
 	}
 
-	// Resolve network from chainID if present
 	if (params.chainID) {
 		const { chainID, ...remParams } = params;
 		params = remParams;
