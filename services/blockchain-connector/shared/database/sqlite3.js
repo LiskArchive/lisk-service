@@ -80,6 +80,7 @@ const createDBConnection = async (dbDataDir, tableName) => {
 };
 
 const cast = (val, type) => {
+	if (typeof val === 'undefined') return null;
 	if (type === 'number') return Number(val);
 	if (type === 'integer') return Number(val);
 	if (type === 'string') return String(val);
@@ -133,7 +134,9 @@ const getDBConnection = async (tableName, dbDataDir) => {
 	return knex;
 };
 
-const createTableIfNotExists = async (tableName, tableConfig) => {
+const createTableIfNotExists = async (tableConfig) => {
+	const { tableName } = tableConfig;
+
 	if (!tablePool[tableName]) {
 		logger.info(`Creating schema for ${tableName}`);
 		const knex = await getDBConnection(tableName);
@@ -155,7 +158,7 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 
 	const createDefaultTransaction = async connection => startDBTransaction(connection);
 
-	await createTableIfNotExists(tableName, tableConfig);
+	await createTableIfNotExists(tableConfig);
 
 	const upsert = async (inputRows, trx) => {
 		let isDefaultTrx = false;
@@ -533,6 +536,7 @@ module.exports = {
 	startDBTransaction,
 	commitDBTransaction,
 	rollbackDBTransaction,
+	createTableIfNotExists,
 
 	// For backward compatibility
 	getDbConnection: getDBConnection,

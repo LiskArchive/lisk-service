@@ -19,10 +19,10 @@ const {
 	commitDBTransaction,
 	getDBConnection,
 	rollbackDBTransaction,
-} = require('../../src/mysql');
+} = require('../../../src/mysql');
 
-const schema = require('../constants/blocksSchema');
-const compositeKeySchema = require('../constants/compositeKeySchema');
+const schema = require('../../constants/blocksSchema');
+const compositeKeySchema = require('../../constants/compositeKeySchema');
 
 const tableName = 'functional_test';
 const compositeKeyTableName = 'composite_primary_key';
@@ -33,7 +33,7 @@ compositeKeySchema.tableName = compositeKeyTableName;
 const getIndex = () => getTableInstance(schema);
 const getCompositeKeyTableIndex = () => getTableInstance(compositeKeySchema);
 
-const { emptyBlock, nonEmptyBlock } = require('../constants/blocks');
+const { emptyBlock, nonEmptyBlock } = require('../../constants/blocks');
 
 describe('Test MySQL', () => {
 	let testTable;
