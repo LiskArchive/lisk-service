@@ -24,15 +24,15 @@ const dataService = require('../../../shared/dataService');
 
 const invokeEndpoint = async params => {
 	try {
-		const indexStatus = {
+		const invokeEndpointRes = {
 			data: {},
 			meta: {},
 		};
 		const response = await dataService.invokeEndpoint(params);
-		if (response.data) indexStatus.data = response.data;
-		if (response.meta) indexStatus.meta = response.meta;
+		if (response.data) invokeEndpointRes.data = response.data;
+		if (response.meta) invokeEndpointRes.meta = response.meta;
 
-		return indexStatus;
+		return invokeEndpointRes;
 	} catch (err) {
 		let status;
 		if (err instanceof ValidationException) status = BAD_REQUEST;

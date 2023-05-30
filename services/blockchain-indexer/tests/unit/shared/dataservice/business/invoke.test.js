@@ -57,66 +57,64 @@ describe('Test checkIfEndpointRegistered method', () => {
 });
 
 describe('Test validateEndpointParams method', () => {
-	it('should return true when called with valid endpoint params (Engine)', async () => {
+	it('should resolve when called with valid endpoint with valid params', async () => {
 		const endpointParams = {
 			endpoint: 'chain_getBlockByHeight',
 			params: {
 				height: 10,
 			},
 		};
-		const isValidParams = await validateEndpointParams(endpointParams);
-		expect(isValidParams).toBe(true);
+		expect(validateEndpointParams(endpointParams)).resolves.toBe(undefined);
 	});
 
-	it('should return true when called with valid endpoint which require no params (Engine)', async () => {
+	it('should resolve when called with valid endpoint which require no params', async () => {
 		const endpointParams = {
 			endpoint: 'system_getNodeInfo',
 			params: {},
 		};
-		const isValidParams = await validateEndpointParams(endpointParams);
-		expect(isValidParams).toBe(true);
+		expect(validateEndpointParams(endpointParams)).resolves.toBe(undefined);
 	});
 
-	it('should return false when called with valid endpoint with invalid params (Engine)', async () => {
-		const endpointParams = {
-			endpoint: 'system_getNodeInfo',
-			params: {
-				height: 10,
-			},
-		};
-		const isValidParams = await validateEndpointParams(endpointParams);
-		expect(isValidParams).toBe(false);
+	it('should resolve when called with valid endpoint with no params', async () => {
+		const endpointParams = { endpoint: 'system_getNodeInfo' };
+		expect(validateEndpointParams(endpointParams)).resolves.toBe(undefined);
 	});
 
-	it('should return true when called with valid endpoint params (Module)', async () => {
+	it('should resolve when called with valid endpoint params', async () => {
 		const endpointParams = {
 			endpoint: 'auth_getAuthAccount',
 			params: {
 				address: 'lskt62aft4puvypbjauw5udysh4gktefxsakp6edg',
 			},
 		};
-		const isValidParams = await validateEndpointParams(endpointParams);
-		expect(isValidParams).toBe(true);
+		expect(validateEndpointParams(endpointParams)).resolves.toBe(undefined);
 	});
 
-	it('should return false when called with invalid endpoint params', async () => {
+	it('should reject when called with valid endpoint with invalid params', async () => {
+		const endpointParams = {
+			endpoint: 'system_getNodeInfo',
+			params: {
+				height: 10,
+			},
+		};
+		expect(validateEndpointParams(endpointParams)).rejects.toThrow();
+	});
+
+	it('should reject when called with invalid endpoint params', async () => {
 		const endpointParams = {
 			endpoint: 'chain_getBlockByHeight',
 			params: {
 				id: 'd6218c25b1979378f6154fb96de3435787e224ff44271d1dc73452bf26b71314',
 			},
 		};
-		const isValidParams = await validateEndpointParams(endpointParams);
-		expect(isValidParams).toBe(false);
+		expect(validateEndpointParams(endpointParams)).rejects.toThrow();
 	});
 
-	it('should return false when endpoint params are undefined', async () => {
-		const isRegisteredEndpoint = await validateEndpointParams(undefined);
-		expect(isRegisteredEndpoint).toBe(false);
+	it('should reject when endpoint params are undefined', async () => {
+		expect(validateEndpointParams(undefined)).rejects.toThrow();
 	});
 
-	it('should return false when endpoint params arw null', async () => {
-		const isRegisteredEndpoint = await validateEndpointParams(null);
-		expect(isRegisteredEndpoint).toBe(false);
+	it('should reject when endpoint params arw null', async () => {
+		expect(validateEndpointParams(null)).rejects.toThrow();
 	});
 });

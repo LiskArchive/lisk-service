@@ -32,50 +32,45 @@ const checkIfEndpointRegistered = async (endpoint) => {
 };
 
 const validateEndpointParams = async (invokeEndpointParams) => {
-	try {
-		let requestParamsSchema;
+	let requestParamsSchema;
 
-		const registeredEndpoints = await getRegisteredEndpoints();
+	const registeredEndpoints = await getRegisteredEndpoints();
 
-		// Check if module or engine based endpoint
-		// Resolve request params schema based on the type of endpoint
-		if (registeredEndpoints.includes(invokeEndpointParams.endpoint)) {
-			const metadata = await getSystemMetadata();
-			const [moduleName, endpointName] = invokeEndpointParams.endpoint.split('_');
-			const endpointInfo = (metadata.modules
-				.find(module => module.name === moduleName)).endpoints
-				.find(endpoint => endpoint.name === endpointName);
-			requestParamsSchema = endpointInfo.request;
-		} else {
-			const engineEndpoints = await getEngineEndpoints();
+	// Check if module or engine based endpoint
+	// Resolve request params schema based on the type of endpoint
+	if (registeredEndpoints.includes(invokeEndpointParams.endpoint)) {
+		const metadata = await getSystemMetadata();
+		const [moduleName, endpointName] = invokeEndpointParams.endpoint.split('_');
+		const endpointInfo = (metadata.modules
+			.find(module => module.name === moduleName)).endpoints
+			.find(endpoint => endpoint.name === endpointName);
+		requestParamsSchema = endpointInfo.request;
+	} else {
+		const engineEndpoints = await getEngineEndpoints();
 
-			const endpointInfo = engineEndpoints
-				.find(endpoint => endpoint.name === invokeEndpointParams.endpoint);
-			requestParamsSchema = endpointInfo.request;
-		}
+		const endpointInfo = engineEndpoints
+			.find(endpoint => endpoint.name === invokeEndpointParams.endpoint);
+		requestParamsSchema = endpointInfo.request;
+	}
 
-		if (requestParamsSchema) {
-			validator.validate(requestParamsSchema, invokeEndpointParams.params);
-		} else if ('params' in invokeEndpointParams && Object.getOwnPropertyNames(invokeEndpointParams.params).length > 0) {
-			return false;
-		}
-
-		return true;
-	} catch (_) {
-		return false;
+	if (requestParamsSchema) {
+		validator.validate(requestParamsSchema, invokeEndpointParams.params);
+	} else if ('params' in invokeEndpointParams
+		&& Object.getOwnPropertyNames(invokeEndpointParams.params).length) {
+		// Throw error when params passed but requested endpoint doesn't support any params
+		throw new Error('Endpoint does not support request parameters.');
 	}
 };
 
 const invokeEndpoint = async params => {
 	const isRegisteredEndpoint = await checkIfEndpointRegistered(params.endpoint);
 	if (!isRegisteredEndpoint) {
-		throw new ValidationException(`The endpoint ${params.endpoint} is not registered.`);
+		throw new ValidationException(`Endpoint '${params.endpoint}' is not registered.`);
 	}
 
-	const isValidParams = await validateEndpointParams(params);
-	if (!isValidParams) {
-		throw new ValidationException(`Invalid params supplied for endpoint ${params.endpoint}: \n${util.inspect(params.params)}.`);
-	}
+	await validateEndpointParams(params).catch(error => {
+		throw new ValidationException(`Invalid params supplied for endpoint '${params.endpoint}': \n${util.inspect(params.params)}.\nError: ${error}`);
+	});
 
 	const invokeEndpointRes = {
 		data: await requestConnector('invokeEndpoint', params),
