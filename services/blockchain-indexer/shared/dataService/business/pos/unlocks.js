@@ -21,6 +21,8 @@ const {
 } = require('../../../utils/account');
 const { getAddressByName } = require('../../../utils/validator');
 const { requestConnector } = require('../../../utils/request');
+const { getNetworkStatus } = require('../network');
+const { getBlockByHeight } = require('../blocks');
 
 const getPosUnlocks = async params => {
 	const unlocks = {
@@ -36,8 +38,8 @@ const getPosUnlocks = async params => {
 		{ address: params.address },
 	);
 
-	const { height, genesis: { blockTime } } = await requestConnector('getNodeInfo', {});
-	const { header: { timestamp } } = await requestConnector('getBlockByHeight', { height });
+	const { data: { height, genesis: { blockTime } } } = await getNetworkStatus();
+	const { timestamp } = await getBlockByHeight(height);
 
 	const tokenID = await getPosTokenID();
 	const filteredPendingUnlocks = pendingUnlocks.reduce(
