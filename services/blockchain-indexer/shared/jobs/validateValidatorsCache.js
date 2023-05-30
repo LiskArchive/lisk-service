@@ -25,18 +25,18 @@ const business = require('../dataService/business');
 const logger = Logger();
 
 const validateValidatorCache = async () => {
-	const nodeValidators = await business.getPosValidatorsByStake({ limit: -1 });
+	const validatorsByStake = await business.getPosValidatorsByStake({ limit: -1 });
 	// Create a deep copy of cached validators
 	const cachedValidators = (await getAllValidators()).slice();
 
-	if (nodeValidators.length > cachedValidators.length) {
-		logger.warn(`Eligible validator count is more than cached validator count. Reloading the cache. \n\tEligible validator count: ${nodeValidators.length} \n\tCached validators count: ${cachedValidators.length}`);
+	if (validatorsByStake.length > cachedValidators.length) {
+		logger.warn(`Eligible validator count is more than cached validator count. Reloading the cache. \n\tEligible validator count: ${validatorsByStake.length} \n\tCached validators count: ${cachedValidators.length}`);
 		await reloadValidatorCache();
 		return;
 	}
 
-	for (let index = 0; index < nodeValidators.length; index++) {
-		if (nodeValidators[index].address !== cachedValidators[index].address) {
+	for (let index = 0; index < validatorsByStake.length; index++) {
+		if (validatorsByStake[index].address !== cachedValidators[index].address) {
 			logger.warn('Incorrect validator ranking detected. Reloading the validators cache.');
 			// eslint-disable-next-line no-await-in-loop
 			await reloadValidatorCache();
