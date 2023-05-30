@@ -156,7 +156,7 @@ Lisk Service, by default, expects a MySQL user `lisk` with the password `passwor
 
 **The MySQL user `lisk` needs to be manually created** after installing MySQL.
 
-You can choose to create a custom database with a different user and password. These values can be updated by setting the following environment variables (specific to each microservice): `SERVICE_INDEXER_MYSQL`, `SERVICE_APP_REGISTRY_MYSQL`, `SERVICE_CONNECTOR_MYSQL` and `SERVICE_STATISTICS_MYSQL` with the appropriate MySQL connection string. See the xref:{url_references_config}[]
+You can choose to create a custom database with a different user and password. These values can be updated by setting the following environment variables (specific to each microservice): `SERVICE_INDEXER_MYSQL`, `SERVICE_APP_REGISTRY_MYSQL` and `SERVICE_STATISTICS_MYSQL` with the appropriate MySQL connection string. See the xref:{url_references_config}[]
 ====
 
 [tabs]
