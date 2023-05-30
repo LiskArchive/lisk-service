@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const _ = require('lodash');
 
 const {
 	reloadValidatorCache,
@@ -27,7 +28,7 @@ const logger = Logger();
 const validateValidatorCache = async () => {
 	const validatorsByStake = await business.getPosValidatorsByStake({ limit: -1 });
 	// Create a deep copy of cached validators
-	const cachedValidators = (await getAllValidators()).slice();
+	const cachedValidators = _.cloneDeep(await getAllValidators());
 
 	if (validatorsByStake.length > cachedValidators.length) {
 		logger.warn(`Eligible validator count is more than cached validator count. Reloading the cache. \n\tEligible validator count: ${validatorsByStake.length} \n\tCached validators count: ${cachedValidators.length}`);
