@@ -26,7 +26,7 @@ let log4jsConfig = {
 	appenders: {},
 };
 
-let packageName;
+let packageName = '';
 
 const configure = config => {
 	packageName = config.name;
