@@ -33,7 +33,6 @@ const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
 const { getDirectories, read, getFiles, exists } = require('./utils/fs');
 
 const config = require('../config');
-const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -61,12 +60,10 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 		tokenMeta.tokens,
 		async (token) => {
 			const result = {
-				chainID: tokenMeta.chainID.toLowerCase(),
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
-				localID: token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
 				tokenName: token.tokenName,
-				tokenID: token.tokenID,
+				tokenID: token.tokenID.toLowerCase(),
 			};
 			return result;
 		},
@@ -122,7 +119,6 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
 			chainName: appMeta.chainName,
-			chainID: appMeta.chainID,
 			network,
 		};
 
@@ -146,16 +142,14 @@ const deleteAppMeta = async (appMeta, dbTrx) => {
 const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 	const tokenMetadataTable = await getTokenMetadataIndex();
 	await BluebirdPromise.map(
-		tokenMeta.localIDs,
-		async (localID) => {
+		tokenMeta.tokenIDs,
+		async (tokenID) => {
 			const queryParams = {
-				network: tokenMeta.network,
-				chainName: tokenMeta.chainName,
-				localID,
+				tokenID: tokenID.toLowerCase(),
 			};
 			await tokenMetadataTable.delete(queryParams, dbTrx);
 		},
-		{ concurrency: tokenMeta.localIDs.length },
+		{ concurrency: tokenMeta.tokenIDs.length },
 	);
 };
 
@@ -180,13 +174,9 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 		logger.trace('Reading tokens information.');
 		const tokenMetaString = await read(filePath);
 		const { tokens } = JSON.parse(tokenMetaString);
-		const localIDs = tokens.map(
-			token => token.tokenID.substring(constants.LENGTH_CHAIN_ID).toLowerCase(),
-		);
+		const tokenIDs = tokens.map(token => token.tokenID);
 		const tokenMeta = {
-			localIDs,
-			chainName: appMeta.chainName,
-			network,
+			tokenIDs,
 		};
 
 		logger.debug(`Deleting tokens information for the app: ${app} (${network}).`);

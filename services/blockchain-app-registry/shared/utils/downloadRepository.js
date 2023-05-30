@@ -199,7 +199,8 @@ const buildEventPayload = async (allFilesModified) => {
 };
 
 const isMetadataFile = (filePath) => (
-	filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON)
+	!!(filePath
+	&& (filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON)))
 );
 
 /* Sorts the passed array and groups files by the network and app. Returns following structure:
@@ -223,7 +224,7 @@ const groupFilesByNetworkAndApp = (fileInfos) => {
 		const [network, appName, fileName] = fileInfo.filename.split('/').slice(-3);
 
 		// Only process metadata files
-		if (!isMetadataFile(fileName)) return;
+		if (!config.supportedNetworks.includes(network) || !isMetadataFile(fileName)) return;
 
 		if (!(network in groupedFiles)) groupedFiles[network] = {};
 		if (!(appName in groupedFiles[network])) groupedFiles[network][appName] = [];
