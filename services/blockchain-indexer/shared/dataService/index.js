@@ -43,6 +43,7 @@ const {
 const {
 	getPosValidators,
 	reloadValidatorCache,
+	validateValidatorCache,
 	getPosConstants,
 	getPosLockedRewards,
 	getStakes,
@@ -111,6 +112,7 @@ module.exports = {
 	// PoS
 	getPosValidators,
 	reloadValidatorCache,
+	validateValidatorCache,
 	getPosConstants,
 	getPosUnlocks,
 	getStakes,

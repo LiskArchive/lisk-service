@@ -18,6 +18,7 @@ const logger = require('lisk-service-framework').Logger();
 const {
 	reloadValidatorCache,
 	isPosModuleRegistered,
+	validateValidatorCache,
 } = require('../../shared/dataService');
 
 module.exports = [
@@ -43,6 +44,21 @@ module.exports = [
 					await reloadValidatorCache();
 				} catch (err) {
 					logger.warn(`Reloading validators cache failed due to: ${err.message}`);
+				}
+			}
+		},
+	},
+	{
+		name: 'validate.validators',
+		description: 'Validate cached validators and reload cache if necessary',
+		schedule: '0 * * * *', // Every hour
+		controller: async () => {
+			if (await isPosModuleRegistered()) {
+				logger.debug('Validating validators cache...');
+				try {
+					await validateValidatorCache();
+				} catch (err) {
+					logger.warn(`Validating validators cache failed due to: ${err.message}`);
 				}
 			}
 		},
