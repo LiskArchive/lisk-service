@@ -18,9 +18,10 @@ const {
 	startDBTransaction,
 	commitDBTransaction,
 	rollbackDBTransaction,
+	KVStore: {
+		configureKeyValueTable, getKeyValueTable,
+	},
 } = require('../../src/mysql');
-
-const { configureKeyValueTable, getKeyValueTable } = require('../../src/mysqlKVStore');
 
 const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
 

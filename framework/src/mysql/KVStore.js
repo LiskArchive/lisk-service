@@ -15,12 +15,17 @@
  */
 const { getTableInstance } = require('./mysql');
 const keyValueStoreSchema = require('./schema/kvStore');
-const Logger = require('./logger').get;
+const Logger = require('../logger').get;
 
 const logger = Logger();
 
 const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
 const KV_STORE_ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
+
+const kvStoreConfig = {
+	connEndpoint: CONN_ENDPOINT_DEFAULT,
+	prefix: 'default',
+};
 
 const formatValue = (value, type) => {
 	// Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#description
@@ -34,8 +39,9 @@ const formatValue = (value, type) => {
 	return value;
 };
 
-function createKeyValueTable(connEndpoint, prefix) {
-	const getKeyValueTableInstance = getTableInstance(keyValueStoreSchema, connEndpoint);
+const getKeyValueTable = () => {
+	const getKeyValueTableInstance = getTableInstance(
+		keyValueStoreSchema, kvStoreConfig.connEndpoint);
 
 	const set = async (key, value, dbTrx) => {
 		const keyValueTable = await getKeyValueTableInstance;
@@ -46,13 +52,13 @@ function createKeyValueTable(connEndpoint, prefix) {
 		}
 
 		const finalValue = value === undefined ? value : String(value);
-		await keyValueTable.upsert({ key: `${prefix}_${key}`, value: finalValue, type }, dbTrx);
+		await keyValueTable.upsert({ key: `${kvStoreConfig.prefix}_${key}`, value: finalValue, type }, dbTrx);
 	};
 
 	const get = async (key, dbTrx) => {
 		const keyValueTable = await getKeyValueTableInstance;
 		const [{ value, type } = {}] = await keyValueTable.find(
-			{ key: `${prefix}_${key}`, limit: 1 },
+			{ key: `${kvStoreConfig.prefix}_${key}`, limit: 1 },
 			['value', 'type'],
 			dbTrx,
 		);
@@ -68,7 +74,7 @@ function createKeyValueTable(connEndpoint, prefix) {
 		);
 
 		const formattedResult = result.map(row => ({
-			key: row.key.slice(prefix.length + 1),
+			key: row.key.slice(kvStoreConfig.prefix.length + 1),
 			value: formatValue(row.value, row.type),
 		}));
 		return formattedResult;
@@ -76,7 +82,7 @@ function createKeyValueTable(connEndpoint, prefix) {
 
 	const deleteKey = async (key, dbTrx) => {
 		const keyValueTable = await getKeyValueTableInstance;
-		return keyValueTable.deleteByPrimaryKey([`${prefix}_${key}`], dbTrx);
+		return keyValueTable.deleteByPrimaryKey([`${kvStoreConfig.prefix}_${key}`], dbTrx);
 	};
 
 	return {
@@ -85,26 +91,12 @@ function createKeyValueTable(connEndpoint, prefix) {
 		getByPattern,
 		delete: deleteKey,
 	};
-}
+};
 
-function keyValueTableInstance(connEndpoint, prefix) {
-	if (connEndpoint && prefix) {
-		keyValueTableInstance.instance = createKeyValueTable(connEndpoint, prefix);
-	} else if (!keyValueTableInstance.instance) {
-		logger.error('Key value table not configured');
-		throw new Error('Key value table not configured');
-	}
-
-	return keyValueTableInstance.instance;
-}
-
-function configureKeyValueTable(connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = 'default') {
-	return keyValueTableInstance(connEndpoint, prefix);
-}
-
-function getKeyValueTable() {
-	return keyValueTableInstance();
-}
+const configureKeyValueTable = (connEndpoint = CONN_ENDPOINT_DEFAULT, prefix = 'default') => {
+	kvStoreConfig.connEndpoint = connEndpoint;
+	kvStoreConfig.prefix = prefix;
+};
 
 module.exports = {
 	configureKeyValueTable,

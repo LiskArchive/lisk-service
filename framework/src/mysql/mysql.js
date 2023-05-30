@@ -13,11 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const LoggerConfig = require('./logger').init;
-const Logger = require('./logger').get;
-const config = require('./config');
-
-LoggerConfig(config.log);
+const Logger = require('../logger').get;
 
 const logger = Logger();
 
@@ -154,9 +150,9 @@ const getDBConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	return knex;
 };
 
-const createTableIfNotExists = async (tableName,
-	tableConfig,
-	connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const createTableIfNotExists = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+	const { tableName } = tableConfig;
+
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
@@ -177,7 +173,7 @@ const rollbackDBTransaction = async transaction => transaction.rollback();
 const getTableInstance = async (...tableParams) => {
 	const tableConfig = tableParams.find(item => typeof item === 'object');
 	const connEndpoint = tableParams.find(item => typeof item === 'string' && item.startsWith('mysql:')) || CONN_ENDPOINT_DEFAULT;
-	const tableName = tableParams.find(item => typeof item !== 'object' && typeof item === 'string' && !item.startsWith('mysql:')) || tableConfig.tableName;
+	const tableName = tableParams.find(item => typeof item === 'string' && !item.startsWith('mysql:')) || tableConfig.tableName;
 
 	const { primaryKey, schema } = tableConfig;
 
@@ -185,7 +181,7 @@ const getTableInstance = async (...tableParams) => {
 
 	const createDefaultTransaction = async connection => startDBTransaction(connection);
 
-	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
+	await createTableIfNotExists(tableConfig, connEndpoint);
 
 	const upsert = async (inputRows, trx) => {
 		let isDefaultTrx = false;
@@ -564,6 +560,7 @@ module.exports = {
 	startDBTransaction,
 	commitDBTransaction,
 	rollbackDBTransaction,
+	createTableIfNotExists,
 
 	// For backward compatibility
 	getDbConnection: getDBConnection,

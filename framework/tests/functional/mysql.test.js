@@ -39,7 +39,7 @@ describe('Test MySQL', () => {
 	let testTable;
 	let compositeKeyTable;
 	beforeAll(async () => {
-		// Create table
+		// Get table
 		testTable = await getIndex();
 		compositeKeyTable = await getCompositeKeyTableIndex();
 	});
