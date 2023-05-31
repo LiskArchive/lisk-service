@@ -24,8 +24,8 @@ module.exports = [
 	{
 		name: 'index.missing.blocks',
 		description: 'Verify and update blocks indexing',
-		interval: config.job.missingBlocks.interval,
-		schedule: config.job.missingBlocks.schedule,
+		interval: config.job.indexMissingBlocks.interval,
+		schedule: config.job.indexMissingBlocks.schedule,
 		controller: async () => {
 			logger.debug('Schedule missing blocks indexing...');
 			try {

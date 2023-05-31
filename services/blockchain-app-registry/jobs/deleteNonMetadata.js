@@ -51,8 +51,8 @@ module.exports = [
 	{
 		name: 'delete.non.metadata.files',
 		description: 'Delete any non-metadata files and empty folders inside data directory.',
-		interval: config.job.deleteNonMetadataFile.interval,
-		schedule: config.job.deleteNonMetadataFile.schedule,
+		interval: config.job.deleteNonMetadataFiles.interval,
+		schedule: config.job.deleteNonMetadataFiles.schedule,
 		controller: async () => {
 			logger.debug('Cleaning data directory...');
 			try {

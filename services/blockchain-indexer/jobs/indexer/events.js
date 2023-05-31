@@ -23,8 +23,8 @@ module.exports = [
 	{
 		name: 'delete.serializedEvents',
 		description: 'Delete the serialized events until finalized height.',
-		interval: config.job.deleteSerializedEevents.interval,
-		schedule: config.job.deleteSerializedEevents.schedule,
+		interval: config.job.deleteSerializedEvents.interval,
+		schedule: config.job.deleteSerializedEvents.schedule,
 		controller: async () => {
 			try {
 				if (!config.db.isPersistEvents) {

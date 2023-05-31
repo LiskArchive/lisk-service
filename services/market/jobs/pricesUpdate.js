@@ -20,7 +20,7 @@ const { updatePrices } = require('../shared/market/priceUpdater');
 
 module.exports = [
 	{
-		name: 'prices.update',
+		name: 'update.prices',
 		description: 'Keeps the market prices up-to-date',
 		interval: config.job.updatePrices.interval,
 		schedule: config.job.updatePrices.schedule,

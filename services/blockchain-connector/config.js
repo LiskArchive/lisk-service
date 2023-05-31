@@ -104,7 +104,7 @@ config.job = {
 	},
 	refreshPeers: {
 		interval: process.env.REFRESH_PEERS_INTERVAL || 60,
-		schedule: process.env.REFRESH_PEERS_SCHEDULE || '* * * * *',
+		schedule: process.env.REFRESH_PEERS_SCHEDULE || '',
 	},
 };
 

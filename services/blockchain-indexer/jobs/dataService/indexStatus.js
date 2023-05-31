@@ -25,10 +25,10 @@ const reloadLiveIndexingJobCount = async () => {
 
 module.exports = [
 	{
-		name: 'reload.live.indexing.job.count',
+		name: 'refresh.live.indexing.job.count',
 		description: 'Update the current number of jobs for block indexing in progress/wait.',
-		interval: config.job.refreshIndexStatus.interval,
-		schedule: config.job.refreshIndexStatus.schedule,
+		interval: config.job.refreshLiveIndexingJobCount.interval,
+		schedule: config.job.refreshLiveIndexingJobCount.schedule,
 		init: reloadLiveIndexingJobCount,
 		controller: reloadLiveIndexingJobCount,
 	},

@@ -36,8 +36,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.binance',
 		description: 'Fetches up-to-date market prices from Binance',
-		interval: config.job.refreshBinancePrices.interval,
-		schedule: config.job.refreshBinancePrices.schedule,
+		interval: config.job.refreshPricesBinance.interval,
+		schedule: config.job.refreshPricesBinance.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from Binance');
 			await reloadMarketPrices();

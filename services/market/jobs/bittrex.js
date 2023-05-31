@@ -36,8 +36,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.bittrex',
 		description: 'Fetches up-to-date market prices from Bittrex',
-		interval: config.job.refreshBittrexPrices.interval,
-		schedule: config.job.refreshBittrexPrices.schedule,
+		interval: config.job.refreshPricesBittrex.interval,
+		schedule: config.job.refreshPricesBittrex.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from Bittrex');
 			await reloadMarketPrices();

@@ -36,8 +36,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.kraken',
 		description: 'Fetches up-to-date market prices from Kraken',
-		interval: config.job.refreshKrakenPrices.interval,
-		schedule: config.job.refreshKrakenPrices.schedule,
+		interval: config.job.refreshPricesKraken.interval,
+		schedule: config.job.refreshPricesKraken.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from Kraken');
 			await reloadMarketPrices();

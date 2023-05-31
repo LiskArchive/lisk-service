@@ -96,11 +96,11 @@ config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
-	deleteNonMetadataFile: {
-		interval: process.env.DELETE_NON_METADATA_FILE_INTERVAL || 0,
-		schedule: process.env.DELETE_NON_METADATA_FILE_SCHEDULE || '0 0 * * *',
+	deleteNonMetadataFiles: {
+		interval: process.env.DELETE_NON_METADATA_FILES_INTERVAL || 0,
+		schedule: process.env.DELETE_NON_METADATA_FILES_SCHEDULE || '0 0 * * *',
 	},
-	updateMetadata: {
+	updateApplicationMetadata: {
 		interval: process.env.UPDATE_METADATA_INTERVAL || 0,
 		schedule: process.env.UPDATE_METADATA_SCHEDULE || '*/10 * * * *',
 	},

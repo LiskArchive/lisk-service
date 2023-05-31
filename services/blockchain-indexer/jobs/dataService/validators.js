@@ -24,7 +24,7 @@ const { validateValidatorCache } = require('../../shared/jobs/validateValidators
 
 module.exports = [
 	{
-		name: 'reload.validators',
+		name: 'refresh.validators',
 		description: 'Keep the validators list up-to-date',
 		interval: config.job.refreshValidators.interval,
 		schedule: config.job.refreshValidators.schedule,
@@ -61,7 +61,7 @@ module.exports = [
 				try {
 					await validateValidatorCache();
 				} catch (err) {
-					logger.warn(`Validating validators cache failed due to: ${err.message}`);
+					logger.warn(`Validating validators cache failed due to: ${err.message}.`);
 				}
 			}
 		},

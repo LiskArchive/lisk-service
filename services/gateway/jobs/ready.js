@@ -18,7 +18,7 @@ const { updateSvcStatus } = require('../shared/ready');
 
 module.exports = [
 	{
-		name: 'readiness.status',
+		name: 'update.readiness.status',
 		description: 'Keep the readiness status up-to-date',
 		interval: config.job.updateReadinessStatus.interval,
 		schedule: config.job.updateReadinessStatus.schedule,

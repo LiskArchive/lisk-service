@@ -22,8 +22,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.exchangeratesapi',
 		description: 'Fetches up-to-date market prices from exchangeratesapi',
-		interval: config.job.refreshExchangeratesapiPrices.interval,
-		schedule: config.job.refreshExchangeratesapiPrices.schedule,
+		interval: config.job.refreshPricesExchangeratesapi.interval,
+		schedule: config.job.refreshPricesExchangeratesapi.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from exchangeratesapi');
 			await reload();

@@ -23,7 +23,7 @@ const {
 
 module.exports = [
 	{
-		name: 'reload.blockchain.apps.statistics',
+		name: 'refresh.blockchain.apps.statistics',
 		description: 'Keep the blockchain apps statistics up-to-date',
 		interval: config.job.refreshBlockchainAppsStats.interval,
 		schedule: config.job.refreshBlockchainAppsStats.schedule,
