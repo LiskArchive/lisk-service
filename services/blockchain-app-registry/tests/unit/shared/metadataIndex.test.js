@@ -119,7 +119,7 @@ describe('Test indexMetadataFromFile method', () => {
 					getTableInstance: () => ({
 						upsert: (data) => expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
-					getDbConnection: jest.fn(),
+					getDBConnection: jest.fn(),
 					startDbTransaction: jest.fn(),
 					commitDbTransaction: jest.fn(),
 					rollbackDbTransaction: jest.fn(),
@@ -238,7 +238,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 					getTableInstance: () => ({
 						delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 					}),
-					getDbConnection: jest.fn(),
+					getDBConnection: jest.fn(),
 					startDbTransaction: jest.fn(),
 					commitDbTransaction: jest.fn(),
 					rollbackDbTransaction: jest.fn(),
@@ -283,6 +283,20 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 					throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
 				},
 				exists: () => true,
+			};
+		});
+
+		jest.mock('lisk-service-framework', () => {
+			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+			return {
+				...actualLiskServiceFramework,
+				MySQL: {
+					getTableInstance: jest.fn(),
+					getDBConnection: jest.fn(),
+					startDBTransaction: jest.fn(),
+					commitDBTransaction: jest.fn(),
+					rollbackDBTransaction: jest.fn(),
+				},
 			};
 		});
 
