@@ -13,12 +13,166 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getMethodName, registerApi, configureApi, getAllAPIs, getAPIConfig } = require('../../../shared/registerHttpApi');
+const {
+	HTTP: { StatusCodes },
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
+
+const { transformRequest } = require('../../../shared/apiUtils');
+const { validate } = require('../../../shared/paramValidator');
+
+const { getMethodName, registerApi, configureApi, getAllAPIs } = require('../../../shared/registerHttpApi');
 const { configureAPIPrefix, configureAPIMethods, configureApiResponse,
 	configureAPIPrefixWithFalseEtag, configureAPIMethodsWithFalseEtag,
-	configureAPIWithFalseEtagResponse, getAllAPIsExpectedResponse } = require('../../constants/registerApi');
+	configureAPIWithFalseEtagResponse, getAllAPIsExpectedResponse, expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
 
-const { expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
+describe('Test getAPIConfig method', () => {
+	let config;
+	let methodPaths;
+	let req;
+	let res;
+	let ctx;
+	let route;
+	let data;
+
+	beforeEach(() => {
+		// Initialize the required variables and objects for each test
+		config = {
+			whitelist: [],
+			aliases: {},
+		};
+		methodPaths = {};
+		req = {
+			method: 'GET',
+			$alias: {
+				path: '/api/users',
+			},
+			$params: {},
+		};
+		res = {
+			setHeader: jest.fn(),
+			writeHead: jest.fn(),
+			end: jest.fn(),
+		};
+		ctx = {
+			meta: {},
+		};
+		route = 'route';
+		data = {
+			data: {},
+			status: 'SUCCESS',
+			meta: {
+				filename: 'data.csv',
+			},
+		};
+
+		// Clear any mock implementation or calls for each test
+		jest.clearAllMocks();
+	});
+
+	it('should add configPath to the returned object', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const configPath = '/api/users';
+		const result = getAPIConfig(configPath, config, {}, [], methodPaths, 'strong');
+
+		expect(result.path).toBe(configPath);
+	});
+
+	it('should merge the whitelist arrays', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		config.whitelist = ['/api/posts'];
+		const whitelist = ['/api/comments', '/api/likes'];
+		const result = getAPIConfig('/api/users', config, {}, whitelist, methodPaths, 'strong');
+
+		expect(result.whitelist).toEqual(['/api/posts', '/api/comments', '/api/likes']);
+	});
+
+	it('should merge the aliases objects', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		config.aliases = { getUsers: '/api/users' };
+		const aliases = { getPosts: '/api/posts' };
+		const result = getAPIConfig('/api/users', config, aliases, [], methodPaths, 'strong');
+
+		expect(result.aliases).toEqual({ getUsers: '/api/users', getPosts: '/api/posts' });
+	});
+
+	it('should set etag to "strong" if etag is undefined or "strong"', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const result1 = getAPIConfig('/api/users', config, {}, [], methodPaths, undefined);
+		const result2 = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+
+		expect(result1.etag).toBe('strong');
+		expect(result2.etag).toBe('strong');
+	});
+
+	it('should set etag to false if etag is not undefined or "strong"', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'weak');
+
+		expect(result.etag).toBe(false);
+	});
+
+	describe('Test onAfterCall function from getAPIConfig', () => {
+
+		it('should set Content-Disposition and Content-Type headers and send CSV data if filename ends with .csv', async () => {
+			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+
+			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			await result.onAfterCall(ctx, route, req, res, data);
+
+			expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="data.csv"');
+			expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/csv');
+			expect(res.end).toHaveBeenCalledWith(data.data);
+		});
+
+		it('should set $statusCode based on the data status', async () => {
+			// Mock the required modules and functions
+			jest.mock('lisk-service-framework');
+			jest.mock('../../../../gateway/shared/apiUtils');
+			jest.mock('../../../../gateway/shared/paramValidator');
+
+			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+
+			const testData = { data: {}, status: 'NOT_FOUND' };
+			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			await result.onAfterCall(ctx, route, req, res, testData);
+
+			expect(ctx.meta.$statusCode).toBe(StatusCodes.NOT_FOUND);
+		});
+
+		it('should return an error object if the data status is not ACCEPTED', async () => {
+			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+
+			const testData = { data: { error: 'Invalid parameters' }, status: 'INVALID_PARAMS' };
+			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const response = await result.onAfterCall(ctx, route, req, res, testData);
+
+			expect(response.error).toBe(true);
+			expect(response.message).toBe('Invalid parameters');
+		});
+
+		it('should return the transformed response if the data status is ACCEPTED', async () => {
+			jest.resetAllMocks();
+
+			const { transformResponse } = require('../../../shared/apiUtils');
+
+			// Mock the required modules and functions
+			jest.mock('lisk-service-framework');
+			jest.mock('../../../../gateway/shared/apiUtils');
+			jest.mock('../../../../gateway/shared/paramValidator');
+
+			const testData = { data: { id: 1, name: 'John Doe' } };
+			transformResponse.mockReturnValueOnce(testData);
+
+			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+
+			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const response = await result.onAfterCall(ctx, route, req, res, testData);
+
+			expect(response).toBe(testData);
+		});
+	});
+});
 
 describe('Test configureApi method', () => {
 	it('should return proper response when called with correct params', async () => {
@@ -43,57 +197,6 @@ describe('Test getAllAPIs method', () => {
 		const apiName = 'http-status';
 		const response = getAllAPIs(apiName, registeredModuleNames);
 		expect(response).toEqual(getAllAPIsExpectedResponse);
-	});
-});
-
-describe('Test getAPIConfig method', () => {
-	let config;
-	let configPath;
-	let aliases;
-	let whitelist;
-	let methodPaths;
-	let etag;
-
-	beforeEach(() => {
-		// Initialize variables for test
-		config = { whitelist: ['item1'], aliases: { alias1: '/path1' } };
-		configPath = '/api/path';
-		aliases = { alias2: '/path2' };
-		whitelist = ['item2'];
-		methodPaths = { 'GET /path1': { param1: { type: 'string' } } };
-		etag = 'strong';
-	});
-
-	afterEach(() => {
-		jest.clearAllMocks();
-	});
-
-	it('should return the API config', () => {
-		const result = getAPIConfig(configPath, config, aliases, whitelist, methodPaths, etag);
-
-		expect(result).toEqual({
-			...config,
-			path: configPath,
-			whitelist: ['item1', 'item2'],
-			aliases: { alias1: '/path1', alias2: '/path2' },
-			etag: 'strong',
-			onBeforeCall: expect.any(Function),
-			onAfterCall: expect.any(Function),
-		});
-	});
-
-	it('should return API config with empty parameters', () => {
-		const result = getAPIConfig('', { whitelist: [] }, {}, [], {}, '');
-
-		expect(result).toEqual({
-			...config,
-			path: '',
-			whitelist: [],
-			aliases: {},
-			etag: false,
-			onBeforeCall: expect.any(Function),
-			onAfterCall: expect.any(Function),
-		});
 	});
 });
 
