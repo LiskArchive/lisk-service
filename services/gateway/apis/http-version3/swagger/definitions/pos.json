@@ -289,6 +289,7 @@
 						"tokenID",
 						"unstakeHeight",
 						"expectedUnlockableHeight",
+						"expectedUnlockTime",
 						"isLocked"
 					],
 					"properties": {
@@ -316,6 +317,11 @@
 							"type": "integer",
 							"example": 270000,
 							"description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
+						},
+						"expectedUnlockTime": {
+							"type": "integer",
+							"example": 1556100060,
+							"description": "The timestamp at which the corresponding unstaked (locked) amount is available to be unlocked."
 						},
 						"isLocked": {
 							"type": "boolean",

@@ -31,7 +31,7 @@ const {
 } = require('lisk-service-framework');
 
 const { getDistributionByType } = require('./transactionStatistics');
-const { resolveGlobalTokenID, DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
+const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 const requestAll = require('./utils/requestAll');
 
@@ -101,7 +101,7 @@ const computeTransactionStats = transactions => transactions.reduce(
 				[getRange(tx)]: {
 					count: txStatsWithFallback.count + 1,
 					volume: BigNumber(txStatsWithFallback.volume).add(getTxValue(tx)),
-					tokenID: resolveGlobalTokenID(tx.params.tokenID),
+					tokenID: tx.params.tokenID,
 				},
 			},
 		};
