@@ -24,7 +24,7 @@ const logger = Logger();
 
 const config = require('../../config');
 
-const indexSchemas = {
+const tableSchemas = {
 	application_metadata: require('./schema/application_metadata'),
 	token_metadata: require('./schema/token_metadata'),
 };
@@ -34,7 +34,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const initializeSearchIndex = async () => {
 	logger.debug('Initializing all the tables.');
 	await BluebirdPromise.map(
-		Object.values(indexSchemas),
+		Object.values(tableSchemas),
 		async schema => {
 			logger.trace(`Initializing table: ${schema.tableName}.`);
 			return getTableInstance(schema, MYSQL_ENDPOINT);
@@ -47,7 +47,7 @@ const initializeSearchIndex = async () => {
 const truncateAllTables = async () => {
 	logger.info('Truncating all the tables.');
 	await BluebirdPromise.map(
-		Object.values(indexSchemas),
+		Object.values(tableSchemas),
 		async schema => {
 			logger.trace(`Truncating table: ${schema.tableName}.`);
 			const db = await getTableInstance(schema, MYSQL_ENDPOINT);
