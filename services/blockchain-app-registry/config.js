@@ -94,4 +94,16 @@ config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'04': 'devnet',
 });
 
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
+	deleteNonMetadataFiles: {
+		interval: process.env.DELETE_NON_METADATA_FILES_INTERVAL || 0,
+		schedule: process.env.DELETE_NON_METADATA_FILES_SCHEDULE || '0 0 * * *',
+	},
+	updateApplicationMetadata: {
+		interval: process.env.UPDATE_METADATA_INTERVAL || 0,
+		schedule: process.env.UPDATE_METADATA_SCHEDULE || '*/10 * * * *',
+	},
+};
+
 module.exports = config;

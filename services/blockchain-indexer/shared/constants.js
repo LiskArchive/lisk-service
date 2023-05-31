@@ -19,8 +19,11 @@ let genesisConfig;
 let genesisHeight;
 let moduleCommands;
 let registeredModules;
+let registeredEndpoints;
 let systemMetadata;
 let finalizedHeight;
+let engineEndpoints;
+let allRegisteredEndpoints;
 
 const updateFinalizedHeight = async () => {
 	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
@@ -82,6 +85,33 @@ const getSystemMetadata = async () => {
 		systemMetadata = await requestConnector('getSystemMetadata');
 	}
 	return systemMetadata;
+};
+
+const getRegisteredEndpoints = async () => {
+	if (!registeredEndpoints) {
+		registeredEndpoints = await requestConnector('getRegisteredEndpoints');
+	}
+	return registeredEndpoints;
+};
+
+const getEngineEndpoints = async () => {
+	if (!engineEndpoints) {
+		engineEndpoints = await requestConnector('getEngineEndpoints');
+	}
+	return engineEndpoints;
+};
+
+const getAllRegisteredEndpoints = async () => {
+	if (!allRegisteredEndpoints) {
+		const _registeredEndpoints = await getRegisteredEndpoints();
+		const _engineEndpoints = await getEngineEndpoints();
+
+		allRegisteredEndpoints = _engineEndpoints
+			.map(e => e.name)
+			.concat(_registeredEndpoints);
+	}
+
+	return allRegisteredEndpoints;
 };
 
 const MODULE = Object.freeze({
@@ -155,7 +185,10 @@ module.exports = {
 	getAvailableModuleCommands,
 	resolveModuleCommands,
 	getRegisteredModules,
+	getRegisteredEndpoints,
 	getSystemMetadata,
+	getEngineEndpoints,
+	getAllRegisteredEndpoints,
 
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,
