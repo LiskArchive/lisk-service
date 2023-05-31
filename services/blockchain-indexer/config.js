@@ -143,4 +143,28 @@ config.networks = Object.freeze({
 
 config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true');
 
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
+	deleteSerializedEvents: {
+		interval: process.env.DELETE_SERIALIZED_EVENTS_INTERVAL || 0,
+		schedule: process.env.DELETE_SERIALIZED_EVENTS_SCHEDULE || '*/5 * * * *',
+	},
+	refreshValidators: {
+		interval: process.env.REFRESH_VALIDATORS_INTERVAL || 0,
+		schedule: process.env.REFRESH_VALIDATORS_SCHEDULE || '*/5 * * * *',
+	},
+	validateValidatorsRank: {
+		interval: process.env.VALIDATE_VALIDATORS_RANK_INTERVAL || 0,
+		schedule: process.env.VALIDATE_VALIDATORS_RANK_SCHEDULE || '4-59/15 * * * *',
+	},
+	refreshLiveIndexingJobCount: {
+		interval: process.env.REFRESH_INDEX_STATUS_INTERVAL || 10,
+		schedule: process.env.REFRESH_INDEX_STATUS_SCHEDULE || '',
+	},
+	refreshBlockchainAppsStats: {
+		interval: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL || 0,
+		schedule: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE || '*/15 * * * *',
+	},
+};
+
 module.exports = config;

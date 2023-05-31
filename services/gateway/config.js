@@ -103,4 +103,12 @@ const { GATEWAY_DEPENDENCIES } = process.env;
 
 config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIES || '').split(',');
 
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
+	updateReadinessStatus: {
+		interval: process.env.UPDATE_READINESS_STATUS_INTERVAL || 0,
+		schedule: process.env.UPDATE_READINESS_STATUS_SCHEDULE || '* * * * *',
+	},
+};
+
 module.exports = config;
