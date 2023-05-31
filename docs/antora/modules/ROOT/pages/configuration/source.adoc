@@ -140,10 +140,10 @@ To create a custom configuration, it is recommended to copy the default configur
 
 [source,bash]
 ----
-cp ecosystem.core3.config.js ecosystem.custom.config.js #<1>
+cp ecosystem.config.js ecosystem.custom.config.js
 ----
-
-<1> Copies the file `ecosystem.core3.config.js` and renames it to `ecosystem.custom.config.js`.
+// #<1>
+// <1> Copies the file `ecosystem.core3.config.js` and renames it to `ecosystem.custom.config.js`.
 
 Now it is possible to open the new file `ecosystem.custom.config.js` and adjust it as desired.
 
