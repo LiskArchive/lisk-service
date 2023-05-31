@@ -23,11 +23,12 @@ const {
 
 const {
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('./endpoints_1');
 const {
 	cacheBlocksIfEnabled,
@@ -289,11 +290,12 @@ const getGenerators = async () => {
 module.exports = {
 	invokeEndpoint,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getGeneratorStatus,

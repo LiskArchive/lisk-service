@@ -98,6 +98,7 @@ const { getIndexStatus } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
+const { invokeEndpoint } = require('./invoke');
 
 module.exports = {
 	// Blocks
@@ -191,4 +192,6 @@ module.exports = {
 
 	isMainchain,
 	resolveMainchainServiceURL,
+
+	invokeEndpoint,
 };

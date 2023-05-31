@@ -232,7 +232,7 @@ const requireAllJsonExpectedResponse = {
 		swagger: '2.0',
 		info: {
 			title: 'Lisk Service API',
-			version: '3.0',
+			version: '0.7.0',
 			contact: {
 				email: 'admin@lisk.com',
 			},

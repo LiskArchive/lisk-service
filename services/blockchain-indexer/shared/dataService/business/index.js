@@ -98,6 +98,7 @@ const {
 } = require('./network');
 const { estimateTransactionFees } = require('./transactionsEstimateFees');
 const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
+const { invokeEndpoint } = require('./invoke');
 
 module.exports = {
 	// Generators
@@ -185,4 +186,6 @@ module.exports = {
 
 	isMainchain,
 	resolveMainchainServiceURL,
+
+	invokeEndpoint,
 };
