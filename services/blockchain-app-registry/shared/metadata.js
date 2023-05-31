@@ -43,7 +43,7 @@ const knownMainchainIDs = Object
 const getApplicationMetadataIndex = () => getTableInstance(
 	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
 
-const getTokenMetadataIndex = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
@@ -228,7 +228,7 @@ const getBlockchainAppsMetadata = async (params) => {
 
 const getBlockchainAppsTokenMetadata = async (params) => {
 	const applicationMetadataTable = await getApplicationMetadataIndex();
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 
 	const blockchainAppsTokenMetadata = {
 		data: [],
@@ -383,7 +383,7 @@ const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	const searchParams = {
 		search: {
 			property: 'tokenID',
@@ -401,7 +401,7 @@ const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) 
 };
 
 const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	const searchParams = {
 		whereIn: [{
 			property: 'tokenID',

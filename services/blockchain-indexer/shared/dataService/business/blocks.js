@@ -40,7 +40,7 @@ const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance(blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksTable = () => getTableInstance(blocksIndexSchema, MYSQL_ENDPOINT);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
@@ -48,7 +48,7 @@ let latestBlock;
 
 const normalizeBlock = async (originalBlock) => {
 	try {
-		const blocksTable = await getBlocksIndex();
+		const blocksTable = await getBlocksTable();
 
 		const block = {
 			...originalBlock.header,
@@ -186,7 +186,7 @@ const isQueryFromIndex = params => {
 };
 
 const getBlocks = async params => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const blocks = {
 		data: [],
 		meta: {},
@@ -246,7 +246,7 @@ const filterBlockAssets = (modules, block) => {
 };
 
 const getBlocksAssets = async (params) => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const blockAssets = {
 		data: [],
 		meta: {},

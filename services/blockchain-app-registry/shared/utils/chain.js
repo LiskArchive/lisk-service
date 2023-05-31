@@ -23,11 +23,11 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const applicationMetadataIndexSchema = require('../database/schema/application_metadata');
 
-const getApplicationMetadataIndex = () => getTableInstance(
+const getApplicationMetadataTable = () => getTableInstance(
 	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const resolveChainNameByNetworkAppDir = async (network, appDirName) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 	const [{ chainName = '' } = {}] = await applicationMetadataTable.find({ network, appDirName }, ['chainName']);
 	return chainName;
 };
