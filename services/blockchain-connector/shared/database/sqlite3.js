@@ -196,31 +196,51 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
-		if (columns && !params.count) query.select(columns);
-		else if (columns && params.count && !params.distinct) query.count(`${columns[0]} as count`);
-		else if (params.count && params.distinct) query.countDistinct(`${params.distinct} as count`);
+		if (params.count) {
+			if (columns && !params.distinct) {
+				query.count(`${columns[0]} as count`);
+			} else if (params.distinct) {
+				query.countDistinct(`${params.distinct} as count`);
+			}
+		} else {
+			if (columns) {
+				query.select(columns);
+			}
+
+			if (params.distinct) {
+				const distinctParams = params.distinct.split(',');
+				query.distinct(distinctParams);
+			}
+
+			if (params.sort) {
+				const [sortColumn, sortDirection] = params.sort.split(':');
+				query.whereNotNull(sortColumn);
+				query.select(sortColumn).orderBy(sortColumn, sortDirection);
+			}
+
+			if (params.order) {
+				const [orderColumn, orderDirection] = params.order.split(':');
+				query.whereNotNull(orderColumn);
+				query.select(orderColumn).orderBy(orderColumn, orderDirection);
+			}
+
+			if (params.aggregate) {
+				query.sum(`${params.aggregate} as total`);
+			}
+
+			if (params.limit) {
+				query.limit(Number(params.limit));
+			} else {
+				logger.warn(`No 'limit' set for the query:\n${query.toString()}.`);
+			}
+
+			if (params.offset) query.offset(Number(params.offset));
+		}
 
 		if (params.where) {
 			query.where(params.where);
 		} else {
 			query.where(queryParams);
-		}
-
-		if (params.distinct && !params.count) {
-			const distinctParams = params.distinct.split(',');
-			query.distinct(distinctParams);
-		}
-
-		if (params.sort && !params.count) {
-			const [sortColumn, sortDirection] = params.sort.split(':');
-			query.whereNotNull(sortColumn);
-			query.select(sortColumn).orderBy(sortColumn, sortDirection);
-		}
-
-		if (params.order && !params.count) {
-			const [orderColumn, orderDirection] = params.order.split(':');
-			query.whereNotNull(orderColumn);
-			query.select(orderColumn).orderBy(orderColumn, orderDirection);
 		}
 
 		if (params.propBetweens) {
@@ -322,20 +342,6 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 			});
 		}
 
-		if (!params.count) {
-			if (params.aggregate) {
-				query.sum(`${params.aggregate} as total`);
-			}
-
-			if (params.limit) {
-				query.limit(Number(params.limit));
-			} else {
-				logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
-			}
-
-			if (params.offset) query.offset(Number(params.offset));
-		}
-
 		return query;
 	};
 
@@ -409,13 +415,13 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		}
 
 		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
 			columns = Array.isArray(tableConfig.primaryKey)
 				? tableConfig.primaryKey : [tableConfig.primaryKey];
 		}
 		const query = queryBuilder(params, columns, trx);
 		const debugSql = query.toSQL().toNative();
-		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
 		if (isDefaultTrx) return query
 			.then(async response => {
@@ -432,21 +438,18 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 
 	const count = async (params = {}, column) => {
 		const trx = await createDefaultTransaction(knex);
-		params.count = true;
 
 		if (!column) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
 			column = Array.isArray(tableConfig.primaryKey)
 				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
 		} else {
 			column = Array.isArray(column) ? [column[0]] : [column];
 		}
 
-		const query = queryBuilder(params, column, trx);
+		const query = queryBuilder({ ...params, count: true }, column, trx);
 		const debugSql = query.toSQL().toNative();
-		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-
-		params.count = false;
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
 		return query
 			.then(async result => {

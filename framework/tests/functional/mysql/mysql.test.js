@@ -148,6 +148,45 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.size).toBe(50);
 		});
 
+		it('should get single row when limit is set to 1', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await testTable.find({ limit: 1 });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+		});
+
+		it('should sort the rows in ascending order based on their height', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await testTable.find({ sort: 'height:asc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[1].height).toBeGreaterThanOrEqual(result[0].height);
+		});
+
+		it('should sort the rows in descending order based on their height', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await testTable.find({ sort: 'height:desc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
+		});
+
+		it('should order the rows in ascending order based on their height', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await testTable.find({ order: 'height:asc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[1].height).toBeGreaterThanOrEqual(result[0].height);
+		});
+
+		it('should order the rows in descending order based on their height', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await testTable.find({ order: 'height:desc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
+		});
+
 		it('should get row count', async () => {
 			const count = await testTable.count();
 			expect(count).toBe(2);
@@ -505,6 +544,65 @@ describe('Test MySQL', () => {
 			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
+		});
+
+		it('should get single row when limit is set to 1', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await testTable.find({ limit: 1 });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+		});
+
+		it('should sort the rows in ascending order based on their height', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await testTable.find({ sort: 'height:asc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[1].height).toBeGreaterThanOrEqual(result[0].height);
+		});
+
+		it('should sort the rows in descending order based on their height', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await testTable.find({ sort: 'height:desc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
+		});
+
+		it('should order the rows in ascending order based on their height', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await testTable.find({ order: 'height:asc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[1].height).toBeGreaterThanOrEqual(result[0].height);
+		});
+
+		it('should order the rows in descending order based on their height', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await testTable.find({ order: 'height:desc' });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
 		});
 
 		it('should get row count', async () => {
