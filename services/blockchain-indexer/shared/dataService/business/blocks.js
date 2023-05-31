@@ -27,7 +27,7 @@ const logger = Logger();
 
 const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
-const blocksIndexSchema = require('../../database/schema/blocks');
+const blocksTableSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo } = require('../../utils/account');
 const { requestConnector } = require('../../utils/request');
@@ -40,7 +40,7 @@ const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksTable = () => getTableInstance(blocksIndexSchema, MYSQL_ENDPOINT);
+const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 

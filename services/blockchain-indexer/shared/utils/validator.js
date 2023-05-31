@@ -21,7 +21,7 @@ const {
 
 const config = require('../../config');
 const { MAX_COMMISSION } = require('../constants');
-const accountsIndexSchema = require('../database/schema/accounts');
+const accountsTableSchema = require('../database/schema/accounts');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
@@ -31,7 +31,7 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const maxCommissionQ = q96(MAX_COMMISSION);
 
-const getAccountsTable = () => getTableInstance(accountsIndexSchema, MYSQL_ENDPOINT);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 

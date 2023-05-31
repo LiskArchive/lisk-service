@@ -26,8 +26,8 @@ const { read } = require('./utils/fs');
 const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
-const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
-const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
+const appMetadataTableSchema = require('./database/schema/application_metadata');
+const tokenMetadataTableSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -40,10 +40,8 @@ const knownMainchainIDs = Object
 	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
-const getApplicationMetadataTable = () => getTableInstance(
-	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
-
-const getTokenMetadataTable = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
+const getApplicationMetadataTable = () => getTableInstance(appMetadataTableSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataTableSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationMetadataTable = await getApplicationMetadataTable();

@@ -32,12 +32,12 @@ const { normalizeRangeParam } = require('../../utils/param');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactions');
 const { getFinalizedHeight } = require('../../constants');
 
-const transactionsIndexSchema = require('../../database/schema/transactions');
+const transactionsTableSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getTransactionsTable = () => getTableInstance(transactionsIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 const getTransactionIDsByBlockID = async blockID => {
 	const transactionsTable = await getTransactionsTable();

@@ -43,14 +43,13 @@ const {
 
 const config = require('../../../config');
 
-const applicationMetadataIndexSchema = require('../../../shared/database/schema/application_metadata');
-const tokenMetadataIndexSchema = require('../../../shared/database/schema/token_metadata');
+const appMetadataTableSchema = require('../../../shared/database/schema/application_metadata');
+const tokenMetadataTableSchema = require('../../../shared/database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getApplicationMetadataTable = () => getTableInstance(
-	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
-const getTokenMetadataTable = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
+const getApplicationMetadataTable = () => getTableInstance(appMetadataTableSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataTableSchema, MYSQL_ENDPOINT);
 
 let applicationMetadataTable;
 let tokenMetadataTable;

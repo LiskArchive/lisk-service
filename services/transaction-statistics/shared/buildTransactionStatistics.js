@@ -35,14 +35,14 @@ const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 const requestAll = require('./utils/requestAll');
 
-const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
+const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getDBInstance = () => getTableInstance(txStatisticsIndexSchema, MYSQL_ENDPOINT);
+const getDBInstance = () => getTableInstance(txStatisticsTableSchema, MYSQL_ENDPOINT);
 
 const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
