@@ -14,6 +14,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_management_pm2: management/source.adoc
 :url_references_config: reference/configuration.adoc
 
+
 == Default configuration
 
 The {url_pm2_ecosystem_file}[PM2 ecosystem file^] provides the possibility to configure behavior, options, environment variables, and the log files of Lisk Service with PM2.
