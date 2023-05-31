@@ -103,12 +103,12 @@ const getEngineEndpoints = async () => {
 
 const getAllRegisteredEndpoints = async () => {
 	if (!allRegisteredEndpoints) {
-		registeredEndpoints = await getRegisteredEndpoints();
-		engineEndpoints = await getEngineEndpoints();
+		const _registeredEndpoints = await getRegisteredEndpoints();
+		const _engineEndpoints = await getEngineEndpoints();
 
-		allRegisteredEndpoints = engineEndpoints
+		allRegisteredEndpoints = _engineEndpoints
 			.map(e => e.name)
-			.concat(registeredEndpoints);
+			.concat(_registeredEndpoints);
 	}
 
 	return allRegisteredEndpoints;
