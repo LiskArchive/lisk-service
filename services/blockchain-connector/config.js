@@ -102,6 +102,10 @@ config.job = {
 		interval: process.env.CACHE_CLEANUP_INTERVAL || 0,
 		schedule: process.env.CACHE_CLEANUP_SCHEDULE || '0 */12 * * *',
 	},
+	refreshPeers: {
+		interval: process.env.REFRESH_PEERS_INTERVAL || 60,
+		schedule: process.env.REFRESH_PEERS_SCHEDULE || '* * * * *',
+	},
 };
 
 module.exports = config;

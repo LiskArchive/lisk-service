@@ -14,13 +14,16 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
+
+const config = require('../config');
 const { updatePrices } = require('../shared/market/priceUpdater');
 
 module.exports = [
 	{
 		name: 'prices.update',
 		description: 'Keeps the market prices up-to-date',
-		interval: 5, // seconds
+		interval: config.job.updatePrices.interval,
+		schedule: config.job.updatePrices.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices');
 			await updatePrices();

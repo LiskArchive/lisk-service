@@ -15,6 +15,8 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
+const config = require('../../config');
+
 const {
 	reloadBlockchainAppsStats,
 } = require('../../shared/dataService');
@@ -23,7 +25,8 @@ module.exports = [
 	{
 		name: 'reload.blockchain.apps.statistics',
 		description: 'Keep the blockchain apps statistics up-to-date',
-		schedule: '*/15 * * * *', // Every 15 min
+		interval: config.job.refreshBlockchainAppsStats.interval,
+		schedule: config.job.refreshBlockchainAppsStats.schedule,
 		init: async () => {
 			logger.debug('Initializing blockchain apps statistics cache...');
 			try {

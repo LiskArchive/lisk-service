@@ -97,4 +97,28 @@ config.market.sources = {
 	},
 };
 
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
+	refreshBinancePrices: {
+		interval: process.env.REFRESH_BINANCE_PRICES_INTERVAL || 0,
+		schedule: process.env.REFRESH_BINANCE_PRICES_SCHEDULE || '* * * * *',
+	},
+	refreshBittrexPrices: {
+		interval: process.env.REFRESH_BITTREX_PRICES_INTERVAL || 0,
+		schedule: process.env.REFRESH_BITTREX_PRICES_SCHEDULE || '* * * * *',
+	},
+	refreshExchangeratesapiPrices: {
+		interval: process.env.REFRESH_EXCHANGERATESAPI_PRICES_INTERVAL || 0,
+		schedule: process.env.REFRESH_EXCHANGERATESAPI_PRICES_SCHEDULE || '* * * * *',
+	},
+	refreshKrakenPrices: {
+		interval: process.env.REFRESH_KRAKEN_PRICES_INTERVAL || 0,
+		schedule: process.env.REFRESH_KRAKEN_PRICES_SCHEDULE || '* * * * *',
+	},
+	updatePrices: {
+		interval: process.env.UPDATE_PRICES_INTERVAL || 5,
+		schedule: process.env.UPDATE_PRICES_SCHEDULE || '* * * * *',
+	},
+};
+
 module.exports = config;

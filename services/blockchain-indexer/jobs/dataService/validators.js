@@ -15,6 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
+const config = require('../../config');
 const {
 	reloadValidatorCache,
 	isPosModuleRegistered,
@@ -25,7 +26,8 @@ module.exports = [
 	{
 		name: 'reload.validators',
 		description: 'Keep the validators list up-to-date',
-		schedule: '*/5 * * * *', // Every 5 min
+		interval: config.job.refreshValidators.interval,
+		schedule: config.job.refreshValidators.schedule,
 		init: async () => {
 			if (await isPosModuleRegistered()) {
 				logger.debug('Initializing validators cache...');
@@ -51,7 +53,8 @@ module.exports = [
 	{
 		name: 'validate.validator.rank',
 		description: 'Validate cached validators and reload cache if necessary.',
-		schedule: '4-/15 * * * *', // Every 15 minutes starting at 4 minutes past the hour
+		interval: config.job.validateValidatorsRank.interval,
+		schedule: config.job.validateValidatorsRank.schedule,
 		controller: async () => {
 			if (await isPosModuleRegistered()) {
 				logger.debug('Validating validators cache...');

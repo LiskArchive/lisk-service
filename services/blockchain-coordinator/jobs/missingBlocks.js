@@ -15,6 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
+const config = require('../config');
 const {
 	scheduleMissingBlocksIndexing,
 } = require('../shared/scheduler');
@@ -23,7 +24,8 @@ module.exports = [
 	{
 		name: 'index.missing.blocks',
 		description: 'Verify and update blocks indexing',
-		schedule: '*/15 * * * *', // Every 15 min
+		interval: config.job.missingBlocks.interval,
+		schedule: config.job.missingBlocks.schedule,
 		controller: async () => {
 			logger.debug('Schedule missing blocks indexing...');
 			try {

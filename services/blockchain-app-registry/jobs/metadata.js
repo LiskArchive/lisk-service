@@ -15,13 +15,15 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
+const config = require('../config');
 const { syncWithRemoteRepo } = require('../shared/utils/downloadRepository');
 
 module.exports = [
 	{
 		name: 'update.application.metadata',
 		description: 'Keep the blockchain applications metadata up-to-date',
-		schedule: '*/10 * * * *', // Every 10 minutes
+		interval: config.job.updateMetadata.interval,
+		schedule: config.job.updateMetadata.schedule,
 		controller: async () => {
 			logger.debug('Refreshing blockchain application metadata...');
 			try {
