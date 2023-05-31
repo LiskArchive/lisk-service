@@ -40,13 +40,13 @@ const knownMainchainIDs = Object
 	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
-const getApplicationMetadataIndex = () => getTableInstance(
+const getApplicationMetadataTable = () => getTableInstance(
 	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const getTokenMetadataTable = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsMetaList = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const blockchainAppsMetaList = {
 		data: [],
@@ -115,7 +115,7 @@ const readMetadataFromClonedRepo = async (network, appDirName, filename) => {
 };
 
 const getBlockchainAppsMetadata = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const blockchainAppsMetadata = {
 		data: [],
@@ -227,7 +227,7 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 	const tokenMetadataTable = await getTokenMetadataTable();
 
 	const blockchainAppsTokenMetadata = {
@@ -429,7 +429,7 @@ const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, of
 
 const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 	const { chainID, limit, offset, sort } = params;
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const tokenMetadata = {
 		data: [],

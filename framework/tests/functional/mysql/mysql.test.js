@@ -30,8 +30,8 @@ const compositeKeyTableName = 'composite_primary_key';
 schema.tableName = tableName;
 compositeKeySchema.tableName = compositeKeyTableName;
 
-const getIndex = () => getTableInstance(schema);
-const getCompositeKeyTableIndex = () => getTableInstance(compositeKeySchema);
+const getTable = () => getTableInstance(schema);
+const getCompositeKeyTable = () => getTableInstance(compositeKeySchema);
 
 const { emptyBlock, nonEmptyBlock } = require('../../constants/blocks');
 
@@ -40,8 +40,8 @@ describe('Test MySQL', () => {
 	let compositeKeyTable;
 	beforeAll(async () => {
 		// Get table
-		testTable = await getIndex();
-		compositeKeyTable = await getCompositeKeyTableIndex();
+		testTable = await getTable();
+		compositeKeyTable = await getCompositeKeyTable();
 	});
 
 	afterAll(async () => {

@@ -31,7 +31,7 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const maxCommissionQ = q96(MAX_COMMISSION);
 
-const getAccountsIndex = () => getTableInstance(accountsIndexSchema, MYSQL_ENDPOINT);
+const getAccountsTable = () => getTableInstance(accountsIndexSchema, MYSQL_ENDPOINT);
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
@@ -40,7 +40,7 @@ const getNameByAddress = async (address) => {
 		const name = await validatorCache.get(address);
 		if (name) {
 			// Update the account index with the name asynchronously
-			const accountsTable = await getAccountsIndex();
+			const accountsTable = await getAccountsTable();
 			accountsTable.upsert({ address, name });
 
 			return name;

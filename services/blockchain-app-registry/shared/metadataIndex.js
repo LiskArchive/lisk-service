@@ -37,9 +37,9 @@ const constants = require('./constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getApplicationMetadataIndex = () => getTableInstance(
+const getApplicationMetadataTable = () => getTableInstance(
 	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
-const getTokenMetadataIndex = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 const logger = Logger();
 
@@ -48,7 +48,7 @@ const { FILENAME } = config;
 const KNOWN_CONFIG_FILES = Object.freeze(Object.values(FILENAME));
 
 const indexTokensMeta = async (tokenMeta, dbTrx) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 
 	const tokenMetaToIndex = await BluebirdPromise.map(
 		tokenMeta.tokens,
@@ -70,7 +70,7 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 };
 
 const indexAppMeta = async (appMeta, dbTrx) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const appMetaToIndex = {
 		chainID: appMeta.chainID,
@@ -127,7 +127,7 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 };
 
 const deleteAppMeta = async (appMeta, dbTrx) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 	const appMetaParams = {
 		network: appMeta.networkType,
 		chainName: appMeta.chainName,
@@ -137,7 +137,7 @@ const deleteAppMeta = async (appMeta, dbTrx) => {
 };
 
 const deleteTokensMeta = async (tokenMeta, dbTrx) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	await BluebirdPromise.map(
 		tokenMeta.localIDs,
 		async (localID) => {

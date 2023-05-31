@@ -49,9 +49,9 @@ const tokenMetadataIndexSchema = require('../../../shared/database/schema/token_
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getApplicationMetadataIndex = () => getTableInstance(
+const getApplicationMetadataTable = () => getTableInstance(
 	applicationMetadataIndexSchema, MYSQL_ENDPOINT);
-const getTokenMetadataIndex = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataIndexSchema, MYSQL_ENDPOINT);
 
 let applicationMetadataTable;
 let tokenMetadataTable;
@@ -79,8 +79,8 @@ beforeAll(async () => {
 	await write(appMetaPath, JSON.stringify(appMetaObj));
 	await write(tokenMetaPath, JSON.stringify(tokenMetaObj));
 
-	applicationMetadataTable = await getApplicationMetadataIndex();
-	tokenMetadataTable = await getTokenMetadataIndex();
+	applicationMetadataTable = await getApplicationMetadataTable();
+	tokenMetadataTable = await getTokenMetadataTable();
 	connection = await getDBConnection(MYSQL_ENDPOINT);
 });
 
