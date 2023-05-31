@@ -21,6 +21,8 @@ const {
 } = require('../../../utils/account');
 const { getAddressByName } = require('../../../utils/validator');
 const { requestConnector } = require('../../../utils/request');
+const { getNetworkStatus } = require('../network');
+const { getBlockByID } = require('../blocks');
 
 const getPosUnlocks = async params => {
 	const unlocks = {
@@ -36,6 +38,9 @@ const getPosUnlocks = async params => {
 		{ address: params.address },
 	);
 
+	const { data: { lastBlockID, genesis: { blockTime } } } = await getNetworkStatus();
+	const { height, timestamp } = await getBlockByID(lastBlockID);
+
 	const tokenID = await getPosTokenID();
 	const filteredPendingUnlocks = pendingUnlocks.reduce(
 		(accumulator, pendingUnlock) => {
@@ -43,9 +48,14 @@ const getPosUnlocks = async params => {
 			const isLocked = !pendingUnlock.unlockable;
 			// Filter results based on `params.isLocked`
 			if (params.isLocked === undefined || params.isLocked === isLocked) {
+				// Calculate expected unlock time
+				const expectedUnlockTime = timestamp
+					+ (remPendingUnlock.expectedUnlockableHeight - height) * blockTime;
+
 				accumulator.push({
 					...remPendingUnlock,
 					isLocked,
+					expectedUnlockTime,
 					tokenID,
 				});
 			}

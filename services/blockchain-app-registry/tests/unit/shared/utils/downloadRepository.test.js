@@ -13,8 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRepoInfoFromURL, getUniqueNetworkAppDirPairs, filterMetaConfigFilesByNetwork, getModifiedFileNames } = require('../../../../shared/utils/downloadRepository');
 const config = require('../../../../config');
+const {
+	getRepoInfoFromURL,
+	getUniqueNetworkAppDirPairs,
+	filterMetaConfigFilesByNetwork,
+	getModifiedFileNames,
+	isMetadataFile,
+} = require('../../../../shared/utils/downloadRepository');
 const {
 	getModifiedFileNamesInput,
 	getModifiedFileNamesExpectedResponse,
@@ -189,5 +195,32 @@ describe('Test getModifiedFileNames method', () => {
 	it('should throw error when called with null or undefined groupedFiles', async () => {
 		expect(() => getModifiedFileNames(null)).toThrow();
 		expect(() => getModifiedFileNames(undefined)).toThrow();
+	});
+});
+
+describe('Test isMetadataFile method', () => {
+	it('should return true when called with app.json', async () => {
+		const response = isMetadataFile(config.FILENAME.APP_JSON);
+		expect(response).toEqual(true);
+	});
+
+	it('should return true when called with nativetokens.json', async () => {
+		const response = isMetadataFile(config.FILENAME.NATIVETOKENS_JSON);
+		expect(response).toEqual(true);
+	});
+
+	it('should return false when called with random.json', async () => {
+		const response = isMetadataFile('random.json');
+		expect(response).toEqual(false);
+	});
+
+	it('should return false when called with null', async () => {
+		const response = isMetadataFile(null);
+		expect(response).toEqual(false);
+	});
+
+	it('should return false when called with undefined', async () => {
+		const response = isMetadataFile(undefined);
+		expect(response).toEqual(false);
 	});
 });
