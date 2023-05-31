@@ -15,11 +15,7 @@
  */
 const {
 	HTTP: { StatusCodes },
-	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
-
-const { transformRequest } = require('../../../shared/apiUtils');
-const { validate } = require('../../../shared/paramValidator');
 
 const { getMethodName, registerApi, configureApi, getAllAPIs } = require('../../../shared/registerHttpApi');
 const { configureAPIPrefix, configureAPIMethods, configureApiResponse,
@@ -113,7 +109,6 @@ describe('Test getAPIConfig method', () => {
 	});
 
 	describe('Test onAfterCall function from getAPIConfig', () => {
-
 		it('should set Content-Disposition and Content-Type headers and send CSV data if filename ends with .csv', async () => {
 			const { getAPIConfig } = require('../../../shared/registerHttpApi');
 
