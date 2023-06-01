@@ -111,4 +111,8 @@ config.job = {
 	},
 };
 
+config.cors = {
+	allowedOrigin: '*',
+};
+
 module.exports = config;
