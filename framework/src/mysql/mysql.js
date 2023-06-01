@@ -215,11 +215,11 @@ const getTableInstance = async (...tableParams) => {
 		return Promise.all(queries);
 	};
 
-	const queryBuilder = (params, columns, trx) => {
+	const queryBuilder = (params, columns, isCountQuery, trx) => {
 		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.count) {
+		if (isCountQuery) {
 			if (columns && !params.distinct) {
 				query.count(`${columns[0]} as count`);
 			} else if (params.distinct) {
@@ -375,7 +375,7 @@ const getTableInstance = async (...tableParams) => {
 			isDefaultTrx = true;
 		}
 
-		const query = queryBuilder(params, tableConfig.primaryKey, trx).del();
+		const query = queryBuilder(params, tableConfig.primaryKey, false, trx).del();
 		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
@@ -417,7 +417,9 @@ const getTableInstance = async (...tableParams) => {
 		}
 
 		const { where, updates } = params;
-		const query = queryBuilder({ ...where }, tableConfig.primaryKey, trx).update({ ...updates });
+		const query = queryBuilder({ ...where }, tableConfig.primaryKey, false, trx)
+			.update({ ...updates });
+
 		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
@@ -442,7 +444,7 @@ const getTableInstance = async (...tableParams) => {
 			columns = Array.isArray(tableConfig.primaryKey)
 				? tableConfig.primaryKey : [tableConfig.primaryKey];
 		}
-		const query = queryBuilder(params, columns, trx);
+		const query = queryBuilder(params, columns, false, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
@@ -470,7 +472,7 @@ const getTableInstance = async (...tableParams) => {
 			column = Array.isArray(column) ? [column[0]] : [column];
 		}
 
-		const query = queryBuilder({ ...params, count: true }, column, trx);
+		const query = queryBuilder(params, column, true, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
@@ -508,7 +510,7 @@ const getTableInstance = async (...tableParams) => {
 			isDefaultTrx = true;
 		}
 
-		const query = queryBuilder(params, false, trx).increment(params.increment);
+		const query = queryBuilder(params, false, false, trx).increment(params.increment);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -529,7 +531,7 @@ const getTableInstance = async (...tableParams) => {
 			isDefaultTrx = true;
 		}
 
-		const query = queryBuilder(params, false, trx).decrement(params.decrement);
+		const query = queryBuilder(params, false, false, trx).decrement(params.decrement);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
