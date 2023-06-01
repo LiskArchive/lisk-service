@@ -93,7 +93,11 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	const resultSet = await ccuTable.find(searchParams, 'height');
 	const prevTransactionHeight = Math.max(...resultSet.map(trx => trx.height));
-	const [prevTransaction] = await transactionsTable.find({ height: prevTransactionHeight }, 'timestamp');
+	const [prevTransaction] = await transactionsTable.find(
+		{
+			height: prevTransactionHeight,
+			moduleCommand: tx.moduleCommand,
+		}, 'timestamp');
 
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 	const appInfo = {

@@ -165,6 +165,10 @@ config.job = {
 		interval: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL || 0,
 		schedule: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE || '*/15 * * * *',
 	},
+	deleteCCU: {
+		interval: process.env.DELETE_CCU_INTERVAL || 0,
+		schedule: process.env.DELETE_CCU_SCHEDULE || '0 2 * * *',
+	},
 };
 
 module.exports = config;

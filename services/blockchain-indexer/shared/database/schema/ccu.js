@@ -14,16 +14,16 @@
  *
  */
 module.exports = {
-    tableName: 'ccu',
-    primaryKey: 'id',
-    schema: {
-        id: { type: 'string', null: false },
-        height: { type: 'integer', null: false },
-        sendingChainID: { type: 'string', null: true, default: null },
-    },
-    indexes: {
-        height: { type: 'range' },
-        sendingChainID: { type: 'key' },
-    },
-    purge: {},
+	tableName: 'ccu',
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string', null: false },
+		height: { type: 'integer', null: false },
+		sendingChainID: { type: 'string', null: true, default: null },
+	},
+	indexes: {
+		height: { type: 'range' },
+		sendingChainID: { type: 'key' },
+	},
+	purge: {},
 };
