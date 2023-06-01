@@ -18,6 +18,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
+const config = require('../config');
 const { reload } = require('../shared/market/sources/bittrex');
 
 const logger = Logger();
@@ -35,7 +36,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.bittrex',
 		description: 'Fetches up-to-date market prices from Bittrex',
-		schedule: '* * * * *',
+		interval: config.job.refreshPricesBittrex.interval,
+		schedule: config.job.refreshPricesBittrex.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from Bittrex');
 			await reloadMarketPrices();
