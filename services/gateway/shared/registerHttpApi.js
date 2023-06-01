@@ -203,22 +203,13 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 		const etagAPIs = Object.fromEntries(Object.entries(allAPIs)
 			.filter(([, value]) => {
 				if (value.etag === undefined) value.etag = 'strong';
-
-				if (eTagVal === 'custom' && typeof value.etag === 'function') return true;
-				return value.etag === eTagVal;
+				return (eTagVal === 'custom' && typeof value.etag === 'function') || value.etag === eTagVal;
 			}));
 
-		if (eTagVal === 'strong') {
-			const strongEtagAPIConfig = configureApi(config.path, etagAPIs);
-
-			apisToRegister.push(getAPIConfig(config.path, config, strongEtagAPIConfig.aliases, strongEtagAPIConfig.whitelist, strongEtagAPIConfig.methodPaths, 'strong'));
-		} else {
-			// eslint-disable-next-line no-restricted-syntax
-			for (const key of Object.keys(etagAPIs)) {
-				const falseEtagAPIConfig = configureApi(config.path, { key: etagAPIs[key] }, true);
-
-				apisToRegister.push(getAPIConfig(`${config.path}${etagAPIs[key].swaggerApiPath}`, config, falseEtagAPIConfig.aliases, falseEtagAPIConfig.whitelist, falseEtagAPIConfig.methodPaths, etagAPIs[key].etag));
-			}
+		// eslint-disable-next-line no-restricted-syntax
+		for (const key of Object.keys(etagAPIs)) {
+			const falseEtagAPIConfig = configureApi(config.path, { key: etagAPIs[key] }, true);
+			apisToRegister.push(getAPIConfig(`${config.path}${etagAPIs[key].swaggerApiPath}`, config, falseEtagAPIConfig.aliases, falseEtagAPIConfig.whitelist, falseEtagAPIConfig.methodPaths, etagAPIs[key].etag));
 		}
 	}
 
