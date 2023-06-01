@@ -25,11 +25,26 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const ccuTableSchema = require('../../../database/schema/ccu');
+const transactionsTableSchema = require('../../../database/schema/transactions');
+
 const { getChainInfo } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(
 	blockchainAppsTableSchema.tableName,
 	blockchainAppsTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getCCUTable = () => getTableInstance(
+	ccuTableSchema.tableName,
+	ccuTableSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getTransactionsTable = () => getTableInstance(
+	transactionsTableSchema.tableName,
+	transactionsTableSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -40,6 +55,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const ccuTable = await getCCUTable();
+
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
@@ -52,6 +69,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
+	await ccuTable.upsert({ ...tx, ...tx.params }, dbTrx);
+
 	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
@@ -59,15 +78,29 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
+	const transactionsTable = await getTransactionsTable();
+	const ccuTable = await getCCUTable();
 
 	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
+
+	const searchParams = {
+		sendingChainID: tx.params.sendingChainID,
+		propBetweens: [{
+			property: 'height',
+			lowerThan: blockHeader.height,
+		}],
+	};
+
+	const resultSet = await ccuTable.find(searchParams, 'height');
+	const prevTransactionHeight = Math.max(...resultSet.map(trx => trx.height));
+	const [prevTransaction] = await transactionsTable.find({ height: prevTransactionHeight }, 'timestamp');
 
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
 		status: chainInfo.status,
-		lastUpdated: blockHeader.timestamp,
-		lastCertificateHeight: blockHeader.height,
+		lastUpdated: prevTransaction.timestamp,
+		lastCertificateHeight: prevTransactionHeight,
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
