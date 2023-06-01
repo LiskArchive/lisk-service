@@ -172,4 +172,4 @@ Finally, if you want to use `npm start` and `npm stop` to start and stop Lisk Se
 }
 ----
 
-// Additional commands for managing Lisk Service with PM2 are described on the xref:{url_management_pm2}[PM2 commands] page.
+// (Contents in the linked PM2 commands page in this sentence will need updating) Additional commands for managing Lisk Service with PM2 are described on the xref:{url_management_pm2}[PM2 commands] page.
