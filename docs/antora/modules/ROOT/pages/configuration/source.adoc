@@ -12,7 +12,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_pm2_ecosystem_file: https://pm2.keymetrics.io/docs/usage/application-declaration/
 
 :url_management_pm2: management/source.adoc
-:url_references_config: reference/configuration.adoc
+:url_references_config: configuration/index.adoc
 
 
 // == Default configuration
