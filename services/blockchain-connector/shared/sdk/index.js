@@ -27,11 +27,12 @@ const {
 	getGeneratorStatus,
 	updateGeneratorStatus,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('./endpoints');
 
 const {
@@ -144,11 +145,12 @@ module.exports = {
 	getGeneratorStatus,
 	updateGeneratorStatus,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 
 	// Blocks
 	getLastBlock,

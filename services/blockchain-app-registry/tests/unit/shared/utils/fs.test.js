@@ -36,6 +36,26 @@ const testData = {
 	network: 'mainnet',
 };
 
+beforeEach(() => {
+	jest.resetModules();
+
+	jest.mock('lisk-service-framework', () => {
+		const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+		return {
+			...actualLiskServiceFramework,
+			MySQL: {
+				...actualLiskServiceFramework.MySQL,
+				KVStore: {
+					...actualLiskServiceFramework.KVStore,
+					getKeyValueTable: jest.fn(),
+				},
+			},
+			CacheRedis: jest.fn(),
+			CacheLRU: jest.fn(),
+		};
+	});
+});
+
 describe('Test filesystem util methods', () => {
 	const dirPath = `${path.dirname(__dirname)}/testDir`;
 	const filePath = `${dirPath}/chain.json`;

@@ -13,10 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestIndexer } = require('./request');
-
-let chainID;
-
 const DB_CONSTANT = {
 	ANY: 'any',
 	UNAVAILABLE: 'na',
@@ -27,28 +23,7 @@ const DATE_FORMAT = {
 	MONTH: 'YYYY-MM',
 };
 
-const getChainID = async () => {
-	if (typeof chainID === 'undefined') {
-		const networkStatus = await requestIndexer('network.status');
-		chainID = networkStatus.data.chainID;
-	}
-
-	return chainID;
-};
-
-const resolveGlobalTokenID = (tokenID) => {
-	if (!tokenID) return DB_CONSTANT.UNAVAILABLE;
-	if (!chainID) return tokenID;
-
-	const localID = tokenID.slice(8);
-	const globalTokenID = `${chainID}${localID}`;
-	return globalTokenID;
-};
-
 module.exports = {
-	getChainID,
-	resolveGlobalTokenID,
-
 	DB_CONSTANT,
 	DATE_FORMAT,
 };

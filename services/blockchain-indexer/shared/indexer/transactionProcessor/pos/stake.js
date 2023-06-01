@@ -17,7 +17,12 @@ const BluebirdPromise = require('bluebird');
 
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	MySQL: {
+		getTableInstance,
+		KVStore: {
+			getKeyValueTable,
+		},
+	},
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
@@ -25,18 +30,14 @@ const { KV_STORE_KEY } = require('../../../constants');
 const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
 const config = require('../../../../config');
-const keyValueTable = require('../../../database/mysqlKVStore');
 const stakesTableSchema = require('../../../database/schema/stakes');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const keyValueTable = getKeyValueTable();
 
-const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
-	stakesTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'stake';

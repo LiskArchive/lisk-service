@@ -15,8 +15,15 @@
  */
 const BluebirdPromise = require('bluebird');
 
+const {
+	MySQL: {
+		KVStore: { getKeyValueTable },
+	},
+} = require('lisk-service-framework');
+
 const { KV_STORE_KEY } = require('../../constants');
-const keyValueTable = require('../../database/mysqlKVStore');
+
+const keyValueTable = getKeyValueTable();
 
 const updateTotalLockedAmounts = async (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
 	Object.entries(tokenIDLockedAmountChangeMap),

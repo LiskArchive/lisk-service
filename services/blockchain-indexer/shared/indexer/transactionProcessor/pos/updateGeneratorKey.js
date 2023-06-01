@@ -28,17 +28,8 @@ const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 const accountsTableSchema = require('../../../database/schema/accounts');
 const validatorsTableSchema = require('../../../database/schema/validators');
 
-const getAccountsTable = () => getTableInstance(
-	accountsTableSchema.tableName,
-	accountsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema.tableName,
-	validatorsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'updateGeneratorKey';

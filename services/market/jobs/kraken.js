@@ -18,6 +18,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
+const config = require('../config');
 const { reload } = require('../shared/market/sources/kraken');
 
 const logger = Logger();
@@ -35,7 +36,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.kraken',
 		description: 'Fetches up-to-date market prices from Kraken',
-		schedule: '* * * * *',
+		interval: config.job.refreshPricesKraken.interval,
+		schedule: config.job.refreshPricesKraken.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from Kraken');
 			await reloadMarketPrices();

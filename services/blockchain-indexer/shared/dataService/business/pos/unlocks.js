@@ -14,15 +14,12 @@
  *
  */
 const { getPosTokenID } = require('./constants');
-const {
-	getIndexedAccountInfo,
-} = require('../../utils/account');
+const { getBlockByID } = require('../blocks');
+const { getNetworkStatus } = require('../network');
 const { getAddressByName } = require('../../utils/validator');
+const { getIndexedAccountInfo } = require('../../utils/account');
 const { requestConnector } = require('../../../utils/request');
-const {
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../../../utils/account');
 
 const getPosUnlocks = async params => {
 	const unlocks = {
@@ -38,6 +35,9 @@ const getPosUnlocks = async params => {
 		{ address: params.address },
 	);
 
+	const { data: { lastBlockID, genesis: { blockTime } } } = await getNetworkStatus();
+	const { height, timestamp } = await getBlockByID(lastBlockID);
+
 	const tokenID = await getPosTokenID();
 	const filteredPendingUnlocks = pendingUnlocks.reduce(
 		(accumulator, pendingUnlock) => {
@@ -45,9 +45,14 @@ const getPosUnlocks = async params => {
 			const isLocked = !pendingUnlock.unlockable;
 			// Filter results based on `params.isLocked`
 			if (params.isLocked === undefined || params.isLocked === isLocked) {
+				// Calculate expected unlock time
+				const expectedUnlockTime = timestamp
+					+ (remPendingUnlock.expectedUnlockableHeight - height) * blockTime;
+
 				accumulator.push({
 					...remPendingUnlock,
 					isLocked,
+					expectedUnlockTime,
 					tokenID,
 				});
 			}

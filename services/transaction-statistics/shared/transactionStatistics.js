@@ -24,19 +24,14 @@ const {
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 
-const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
+const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
-const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 let numTrxTypes;
 
-const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
-	txStatisticsIndexSchema.tableName,
-	txStatisticsIndexSchema,
-	dbEndpoint,
-);
+const getTransactionStatisticsTable = getTableInstance(txStatisticsTableSchema, MYSQL_ENDPOINT);
 
 const getSelector = async (params) => {
 	if (!numTrxTypes) {
@@ -62,7 +57,7 @@ const getSelector = async (params) => {
 };
 
 const getStatsTimeline = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
 	const tokenStatsTimeline = {};
 
 	await BluebirdPromise.map(
@@ -112,7 +107,7 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
 	const tokenDistributionByAmount = {};
 
 	await BluebirdPromise.map(
@@ -150,7 +145,7 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
 
 	const result = (await transactionStatisticsTable.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
 
@@ -171,7 +166,7 @@ const getDistributionByType = async params => {
 };
 
 const getTransactionsStatistics = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
 
 	const transactionsStatistics = {
 		data: {},

@@ -29,20 +29,16 @@ const { normalizeRangeParam } = require('../../utils/param');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactions');
 const { getFinalizedHeight } = require('../../constants');
 
-const transactionsIndexSchema = require('../../database/schema/transactions');
+const transactionsTableSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.tableName,
-	transactionsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 const getTransactionIDsByBlockID = async blockID => {
-	const transactionsTable = await getTransactionsIndex();
+	const transactionsTable = await getTransactionsTable();
 	const transactions = await transactionsTable.find({
 		whereIn: {
 			property: 'blockId',
@@ -104,7 +100,7 @@ const validateParams = async params => {
 };
 
 const getTransactions = async params => {
-	const transactionsTable = await getTransactionsIndex();
+	const transactionsTable = await getTransactionsTable();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -227,7 +223,7 @@ const getTransactionsByBlockID = async blockID => {
 			};
 
 			// TODO: Check - this information might not be available yet
-			const transactionsTable = await getTransactionsIndex();
+			const transactionsTable = await getTransactionsTable();
 			const [indexedTxInfo = {}] = await transactionsTable.find(
 				{ id: transaction.id, limit: 1 },
 				['executionStatus'],

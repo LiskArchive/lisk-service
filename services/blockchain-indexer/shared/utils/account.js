@@ -26,18 +26,14 @@ const {
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
-const getAccountsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
-	accountsTableSchema.tableName,
-	accountsTableSchema,
-	dbEndpoint,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
 const updateAccountPublicKey = async (publicKey) => {
-	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT_PRIMARY);
+	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT);
 	await accountsTable.upsert({
 		address: getLisk32AddressFromPublicKey(publicKey),
 		publicKey,
@@ -53,7 +49,7 @@ const updateAccountInfo = async (params) => {
 		}
 	});
 
-	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT_PRIMARY);
+	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT);
 	await accountsTable.upsert(accountInfo);
 };
 

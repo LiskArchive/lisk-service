@@ -42,6 +42,7 @@ const {
 
 const {
 	getPosValidators,
+	getAllValidators,
 	reloadValidatorCache,
 	getPosConstants,
 	getPosLockedRewards,
@@ -98,6 +99,7 @@ const { getIndexStatus } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
+const { invokeEndpoint } = require('./invoke');
 
 module.exports = {
 	// Blocks
@@ -110,6 +112,7 @@ module.exports = {
 
 	// PoS
 	getPosValidators,
+	getAllValidators,
 	reloadValidatorCache,
 	getPosConstants,
 	getPosUnlocks,
@@ -191,4 +194,6 @@ module.exports = {
 
 	isMainchain,
 	resolveMainchainServiceURL,
+
+	invokeEndpoint,
 };

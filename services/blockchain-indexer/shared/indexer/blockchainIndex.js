@@ -18,14 +18,17 @@ const BluebirdPromise = require('bluebird');
 const {
 	Logger,
 	Queue,
+	Signals,
 	MySQL: {
 		getTableInstance,
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
-	Signals,
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
@@ -56,8 +59,6 @@ const {
 
 const config = require('../../config');
 
-const keyValueTable = require('../database/mysqlKVStore');
-
 const blocksTableSchema = require('../database/schema/blocks');
 const eventsTableSchema = require('../database/schema/events');
 const eventTopicsTableSchema = require('../database/schema/eventTopics');
@@ -65,38 +66,15 @@ const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const keyValueTable = getKeyValueTable();
 
 const logger = Logger();
 
-const getBlocksTable = () => getTableInstance(
-	blocksTableSchema.tableName,
-	blocksTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getEventsTable = () => getTableInstance(
-	eventsTableSchema.tableName,
-	eventsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getEventTopicsTable = () => getTableInstance(
-	eventTopicsTableSchema.tableName,
-	eventTopicsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema.tableName,
-	transactionsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema.tableName,
-	validatorsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
+const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
+const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
@@ -111,8 +89,8 @@ const indexBlock = async job => {
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
 	let blockReward = BigInt('0');
@@ -230,10 +208,10 @@ const indexBlock = async job => {
 		};
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
 	} catch (error) {
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`);
 
 		if (['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e))) {
@@ -259,8 +237,8 @@ const deleteIndexedBlocks = async job => {
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
 	const blocksTable = await getBlocksTable();
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	try {
 		await BluebirdPromise.map(
@@ -330,11 +308,11 @@ const deleteIndexedBlocks = async job => {
 			});
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	} catch (error) {
 		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
 			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;

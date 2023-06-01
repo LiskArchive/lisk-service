@@ -23,17 +23,12 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getPosConstants } = require('../business');
 const business = require('../business');
 const config = require('../../../config');
-const validatorsIndexSchema = require('../../database/schema/validators');
-const { isSubstringInArray } = require('../../utils/array');
 
-const {
-	getHexAddress,
-	getIndexedAccountInfo,
-} = require('../utils/account');
 const { getLastBlock } = require('../blocks');
+const { isSubstringInArray } = require('../../utils/array');
+const { getHexAddress, getIndexedAccountInfo } = require('../utils/account');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -43,13 +38,11 @@ const {
 	updateAccountPublicKey,
 } = require('../../utils/account');
 
+const validatorsTableSchema = require('../../database/schema/validators');
+
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getValidatorsTable = () => getTableInstance(
-	validatorsIndexSchema.tableName,
-	validatorsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
@@ -84,7 +77,7 @@ const computeValidatorRank = async () => {
 const computeValidatorStatus = async () => {
 	const {
 		data: { numberActiveValidators, numberStandbyValidators },
-	} = await getPosConstants();
+	} = await business.getPosConstants();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 

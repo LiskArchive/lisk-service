@@ -15,7 +15,7 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'connector.invokeEndpoint',
+	method: 'indexer.invokeEndpoint',
 	params: {
 		endpoint: '=,string',
 		params: '=,object',

@@ -29,16 +29,12 @@ const {
 	getDistributionByType,
 } = require('../../shared/transactionStatistics');
 
-const txStatisticsIndexSchema = require('../../shared/database/schemas/transactionStatistics');
+const txStatsTableSchema = require('../../shared/database/schemas/transactionStatistics');
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
-const getTransactionStatisticsTable = () => getTableInstance(
-	txStatisticsIndexSchema.tableName,
-	txStatisticsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getTransactionStatisticsTable = () => getTableInstance(txStatsTableSchema, MYSQL_ENDPOINT);
 
 jest.mock('../../shared/utils/request');
 

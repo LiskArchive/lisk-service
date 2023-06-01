@@ -36,11 +36,8 @@ const {
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
-const getAccountBalancesTable = () => getTableInstance(
-	accountBalancesTableSchema.tableName,
-	accountBalancesTableSchema,
-	MYSQL_ENDPOINT,
-);
+
+const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 let moduleConstants = {};
 

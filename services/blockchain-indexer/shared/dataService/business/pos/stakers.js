@@ -20,7 +20,8 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
-const stakesIndexSchema = require('../../../database/schema/stakes');
+const stakesTableSchema = require('../../../database/schema/stakes');
+
 const {
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
@@ -33,11 +34,7 @@ const {
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getStakesTable = () => getTableInstance(
-	stakesIndexSchema.tableName,
-	stakesIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
 const getStakers = async params => {
 	const stakesTable = await getStakesTable();

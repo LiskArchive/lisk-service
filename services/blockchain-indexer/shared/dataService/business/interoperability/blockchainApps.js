@@ -25,11 +25,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 const getBlockchainApps = async (params) => {
 	// TODO: Update implementation when interoperability_getOwnChainAccount is available

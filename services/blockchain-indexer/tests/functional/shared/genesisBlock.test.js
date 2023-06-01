@@ -15,15 +15,17 @@
  */
 const {
 	MySQL: {
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 const { ServiceBroker } = require('moleculer');
 
 const { KV_STORE_KEY } = require('../../../shared/constants');
-const keyValueTable = require('../../../shared/database/mysqlKVStore');
 
 const request = require('../../../shared/utils/request');
 const config = require('../../../config');
@@ -35,6 +37,8 @@ const {
 } = require('../../../shared/indexer/genesisBlock');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+
+const keyValueTable = getKeyValueTable();
 
 const broker = new ServiceBroker({
 	transporter: config.transporter,
@@ -61,7 +65,7 @@ beforeAll(async () => {
 		}),
 	});
 
-	connection = await getDbConnection(MYSQL_ENDPOINT);
+	connection = await getDBConnection(MYSQL_ENDPOINT);
 
 	const tokenID = await getPosTokenID();
 	totalLockedKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
@@ -86,7 +90,7 @@ xdescribe('Test indexTokenModuleAssets method', () => {
 	});
 
 	it('should correctly index Token Module Asset only after commit when called with dbTrx', async () => {
-		const dbTrx = await startDbTransaction(connection);
+		const dbTrx = await startDBTransaction(connection);
 		const totalLockedBefore = await keyValueTable.get(totalLockedKey);
 		expect(totalLockedBefore).toBe(undefined);
 
@@ -94,7 +98,7 @@ xdescribe('Test indexTokenModuleAssets method', () => {
 		const totalLockedBeforeCommit = await keyValueTable.get(totalLockedKey);
 		expect(totalLockedBeforeCommit).toBe(undefined);
 
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
 		expect(totalLockedAfter > BigInt(0)).toEqual(true);
 	});
@@ -120,7 +124,7 @@ xdescribe('Test indexPosModuleAssets method', () => {
 	});
 
 	it('should correctly index Token Module Asset only after commit when called with dbTrx', async () => {
-		const dbTrx = await startDbTransaction(connection);
+		const dbTrx = await startDBTransaction(connection);
 		const totalStakedBefore = await keyValueTable.get(totalStakedKey);
 		expect(totalStakedBefore).toBe(undefined);
 		const totalSelfStakedBefore = await keyValueTable.get(totalSelfStakedKey);
@@ -132,7 +136,7 @@ xdescribe('Test indexPosModuleAssets method', () => {
 		const totalSelfStakedBeforeCommit = await keyValueTable.get(totalSelfStakedKey);
 		expect(totalSelfStakedBeforeCommit).toBe(undefined);
 
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
 		expect(totalStakedAfter > BigInt(0)).toEqual(true);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
@@ -165,7 +169,7 @@ xdescribe('Test indexGenesisBlockAssets method', () => {
 	});
 
 	it('should correctly index genesis block assets only after commit when called with dbTrx', async () => {
-		const dbTrx = await startDbTransaction(connection);
+		const dbTrx = await startDBTransaction(connection);
 		const totalLockedBefore = await keyValueTable.get(totalLockedKey);
 		expect(totalLockedBefore).toBe(undefined);
 		const totalStakedBefore = await keyValueTable.get(totalStakedKey);
@@ -181,7 +185,7 @@ xdescribe('Test indexGenesisBlockAssets method', () => {
 		const totalSelfStakedBeforeCommit = await keyValueTable.get(totalSelfStakedKey);
 		expect(totalSelfStakedBeforeCommit).toBe(undefined);
 
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
 		expect(totalLockedAfter > BigInt(0)).toEqual(true);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);

@@ -166,7 +166,7 @@ tempApp.run().then(async () => {
 			'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
 		},
-		dependencies: [],
+		dependencies: config.brokerDependencies,
 	};
 
 	if (config.rateLimit.enable) {

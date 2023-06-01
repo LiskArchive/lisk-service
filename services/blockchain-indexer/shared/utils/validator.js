@@ -19,17 +19,13 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../config');
-const accountsIndexSchema = require('../database/schema/accounts');
+const accountsTableSchema = require('../database/schema/accounts');
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
-const getAccountsTable = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT_PRIMARY,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
 const getNameByAddress = async (address) => {
 	if (address) {

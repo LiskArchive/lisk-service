@@ -21,21 +21,21 @@ const {
 	Logger,
 	Queue,
 	MySQL: {
-		getDbConnection,
+		getDBConnection,
 		getTableInstance,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
 	},
 	Signals,
 } = require('lisk-service-framework');
 
 const { getDistributionByType } = require('./transactionStatistics');
-const { resolveGlobalTokenID, DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
+const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 const requestAll = require('./utils/requestAll');
 
-const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
+const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
 const logger = Logger();
@@ -44,10 +44,7 @@ const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
-	txStatisticsIndexSchema.tableName,
-	txStatisticsIndexSchema,
-	dbEndpoint,
-);
+	txStatisticsTableSchema, dbEndpoint);
 
 const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
@@ -106,7 +103,7 @@ const computeTransactionStats = transactions => transactions.reduce(
 				[getRange(tx)]: {
 					count: txStatsWithFallback.count + 1,
 					volume: BigNumber(txStatsWithFallback.volume).add(getTxValue(tx)),
-					tokenID: resolveGlobalTokenID(tx.params.tokenID),
+					tokenID: tx.params.tokenID,
 				},
 			},
 		};
@@ -132,8 +129,8 @@ const transformStatsObjectToList = statsObject => (
 
 const insertToDB = async (statsList, date) => {
 	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_PRIMARY);
-	const connection = await getDbConnection(MYSQL_ENDPOINT_PRIMARY);
-	const trx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT_PRIMARY);
+	const trx = await startDBTransaction(connection);
 	try {
 		try {
 			const [{ id }] = transactionStatisticsTable.find({ date, limit: 1 }, ['id']);
@@ -151,11 +148,11 @@ const insertToDB = async (statsList, date) => {
 			return finalStats;
 		});
 		await transactionStatisticsTable.upsert(statsList, trx);
-		await commitDbTransaction(trx);
+		await commitDBTransaction(trx);
 		const count = statsList.reduce((acc, row) => acc + row.count, 0);
 		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await rollbackDBTransaction(trx);
 		throw error;
 	}
 };
