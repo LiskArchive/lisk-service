@@ -27,6 +27,13 @@ beforeEach(() => {
 		const actual = jest.requireActual('lisk-service-framework');
 		return {
 			...actual,
+			MySQL: {
+				...actual.MySQL,
+				KVStore: {
+					...actual.MySQL.KVStore,
+					getKeyValueTable: jest.fn(),
+				},
+			},
 			CacheRedis: jest.fn(),
 			CacheLRU: jest.fn(),
 		};
