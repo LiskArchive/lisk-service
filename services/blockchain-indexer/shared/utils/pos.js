@@ -13,11 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	MySQL: {
+		KVStore: {
+			getKeyValueTable,
+		},
+	},
+} = require('lisk-service-framework');
 const { getPosTokenID } = require('../dataService/business/pos/constants');
 
-const keyValueTable = require('../database/mysqlKVStore');
-
 const { KV_STORE_KEY } = require('../constants');
+
+const keyValueTable = getKeyValueTable();
 
 const getStakeInfo = async (keyPrefix) => {
 	const [row] = await keyValueTable.getByPattern(keyPrefix);

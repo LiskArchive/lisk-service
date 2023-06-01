@@ -20,10 +20,13 @@ const { Octokit } = require('octokit');
 const {
 	Logger,
 	MySQL: {
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -32,10 +35,12 @@ const { resolveChainNameByNetworkAppDir } = require('./chain');
 const { downloadAndExtractTarball, downloadFile } = require('./download');
 const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fs');
 
-const keyValueTable = require('../database/mysqlKVStore');
 const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const keyValueTable = getKeyValueTable();
 
 const { KV_STORE_KEY } = require('../constants');
 
@@ -54,8 +59,6 @@ const GITHUB_FILE_STATUS = Object.freeze({
 	CHANGED: 'changed',
 	UNCHANGED: 'unchanged',
 });
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getRepoInfoFromURL = (url) => {
 	const urlInput = url || '';
@@ -248,8 +251,8 @@ const getModifiedFileNames = (groupedFiles) => {
 };
 
 const syncWithRemoteRepo = async () => {
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 
 	try {
 		const dataDirectory = config.dataDir;
@@ -341,7 +344,7 @@ const syncWithRemoteRepo = async () => {
 		);
 
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 
 		// Delete files which are removed from remote
 		await BluebirdPromise.map(
@@ -370,7 +373,7 @@ const syncWithRemoteRepo = async () => {
 			Signals.get('metadataUpdated').dispatch(eventPayload);
 		}
 	} catch (error) {
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
 		logger.error(`Unable to sync changes due to: ${errorMsg}.`);

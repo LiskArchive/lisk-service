@@ -26,8 +26,8 @@ const {
 const { getPosConstants } = require('../business');
 const business = require('../business');
 const config = require('../../../config');
-const accountsIndexSchema = require('../../database/schema/accounts');
-const validatorsIndexSchema = require('../../database/schema/validators');
+const accountsTableSchema = require('../../database/schema/accounts');
+const validatorsTableSchema = require('../../database/schema/validators');
 const { isSubstringInArray } = require('../../utils/array');
 
 const {
@@ -43,17 +43,8 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getAccountsTable = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getValidatorsTable = () => getTableInstance(
-	validatorsIndexSchema.tableName,
-	validatorsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 

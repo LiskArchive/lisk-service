@@ -18,10 +18,16 @@ const {
 	Microservice,
 	LoggerConfig,
 	Logger,
+	MySQL: {
+		KVStore: {
+			configureKeyValueTable,
+		},
+	},
 } = require('lisk-service-framework');
 
 const config = require('./config');
 
+configureKeyValueTable(config.endpoints.mysql);
 LoggerConfig(config.log);
 
 const packageJson = require('./package.json');

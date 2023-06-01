@@ -29,11 +29,7 @@ const blockchainAppsTableSchema = require('../../../database/schema/blockchainAp
 const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainInfo } = require('./registerMainchain');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'registerSidechain';

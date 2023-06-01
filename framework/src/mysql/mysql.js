@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Logger = require('./logger').get;
+const Logger = require('../logger').get;
 
 const logger = Logger();
 
-const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
-
 const connectionPool = {};
 const tablePool = {};
+
+const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
 
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
@@ -44,7 +44,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	return knex;
 };
 
-const createDbConnection = async connEndpoint => {
+const createDBConnection = async connEndpoint => {
 	const knex = require('knex')({
 		client: 'mysql2',
 		version: '8',
@@ -92,7 +92,8 @@ const cast = (val, type) => {
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct', 'order', 'orSearch',
+		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
+		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -130,7 +131,7 @@ const getConnectionPoolKey = (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	return connPoolKey;
 };
 
-const getDbConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const getDBConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const defaultCharset = 'utf8mb4';
 
@@ -142,41 +143,45 @@ const getDbConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 				? `${connEndpoint}&charset=${defaultCharset}`
 				: `${connEndpoint}?charset=${defaultCharset}`;
 		}
-		connectionPool[connPoolKey] = await createDbConnection(connString);
+		connectionPool[connPoolKey] = await createDBConnection(connString);
 	}
 
 	const knex = connectionPool[connPoolKey];
 	return knex;
 };
 
-const createTableIfNotExists = async (tableName,
-	tableConfig,
-	connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const createTableIfNotExists = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+	const { tableName } = tableConfig;
+
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
 	if (!tablePool[connPoolKeyTable]) {
-		logger.info(`Creating schema for ${tableName}`);
-		const knex = await getDbConnection(connEndpoint);
+		logger.info(`Creating schema for ${tableName}.`);
+		const knex = await getDBConnection(connEndpoint);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
 	}
 };
 
-const startDbTransaction = async connection => connection.transaction();
+const startDBTransaction = async connection => connection.transaction();
 
-const commitDbTransaction = async transaction => transaction.commit();
+const commitDBTransaction = async transaction => transaction.commit();
 
-const rollbackDbTransaction = async transaction => transaction.rollback();
+const rollbackDBTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
+const getTableInstance = async (...tableParams) => {
+	const tableConfig = tableParams.find(item => typeof item === 'object');
+	const connEndpoint = tableParams.find(item => typeof item === 'string' && item.startsWith('mysql:')) || CONN_ENDPOINT_DEFAULT;
+	const tableName = tableParams.find(item => typeof item === 'string' && !item.startsWith('mysql:')) || tableConfig.tableName;
+
 	const { primaryKey, schema } = tableConfig;
 
-	const knex = await getDbConnection(connEndpoint);
+	const knex = await getDBConnection(connEndpoint);
 
-	const createDefaultTransaction = async connection => startDbTransaction(connection);
+	const createDefaultTransaction = async connection => startDBTransaction(connection);
 
-	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
+	await createTableIfNotExists(tableConfig, connEndpoint);
 
 	const upsert = async (inputRows, trx) => {
 		let isDefaultTrx = false;
@@ -210,28 +215,55 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		return Promise.all(queries);
 	};
 
-	const queryBuilder = (params, columns, trx) => {
+	const queryBuilder = (params, columns, isCountQuery, trx) => {
 		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
-		if (columns) query.select(columns);
-		query.where(queryParams);
+		if (isCountQuery) {
+			if (columns && !params.distinct) {
+				query.count(`${columns[0]} as count`);
+			} else if (params.distinct) {
+				query.countDistinct(`${params.distinct} as count`);
+			}
+		} else {
+			if (columns) {
+				query.select(columns);
+			}
 
-		if (params.distinct) {
-			const distinctParams = params.distinct.split(',');
-			query.distinct(distinctParams);
+			if (params.distinct) {
+				const distinctParams = params.distinct.split(',');
+				query.distinct(distinctParams);
+			}
+
+			if (params.sort) {
+				const [sortColumn, sortDirection] = params.sort.split(':');
+				query.whereNotNull(sortColumn);
+				query.select(sortColumn).orderBy(sortColumn, sortDirection);
+			}
+
+			if (params.order) {
+				const [orderColumn, orderDirection] = params.order.split(':');
+				query.whereNotNull(orderColumn);
+				query.select(orderColumn).orderBy(orderColumn, orderDirection);
+			}
+
+			if (params.aggregate) {
+				query.sum(`${params.aggregate} as total`);
+			}
+
+			if (params.limit) {
+				query.limit(Number(params.limit));
+			} else {
+				logger.warn(`No 'limit' set for the query:\n${query.toString()}.`);
+			}
+
+			if (params.offset) query.offset(Number(params.offset));
 		}
 
-		if (params.sort) {
-			const [sortColumn, sortDirection] = params.sort.split(':');
-			query.whereNotNull(sortColumn);
-			query.select(sortColumn).orderBy(sortColumn, sortDirection);
-		}
-
-		if (params.order) {
-			const [orderColumn, orderDirection] = params.order.split(':');
-			query.whereNotNull(orderColumn);
-			query.select(orderColumn).orderBy(orderColumn, orderDirection);
+		if (params.where) {
+			query.where(params.where);
+		} else {
+			query.where(queryParams);
 		}
 
 		if (params.propBetweens) {
@@ -316,40 +348,24 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			});
 		}
 
-		if (params.aggregate) {
-			query.sum(`${params.aggregate} as total`);
+		if (params.whereNull) {
+			params.whereNull = Array.isArray(params.whereNull) ? params.whereNull : [params.whereNull];
+
+			params.whereNull.forEach(whereNullProperty => {
+				query.whereNull(whereNullProperty);
+			});
 		}
 
-		if (params.limit) {
-			query.limit(Number(params.limit));
-		} else {
-			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
-		}
+		if (params.whereNotNull) {
+			params.whereNotNull = Array.isArray(params.whereNotNull)
+				? params.whereNotNull : [params.whereNotNull];
 
-		if (params.offset) query.offset(Number(params.offset));
+			params.whereNotNull.forEach(whereNotNullProperty => {
+				query.whereNotNull(whereNotNullProperty);
+			});
+		}
 
 		return query;
-	};
-
-	const find = async (params = {}, columns) => {
-		const trx = await createDefaultTransaction(knex);
-		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
-			columns = [tableConfig.primaryKey];
-		}
-		const query = queryBuilder(params, columns, trx);
-		const debugSql = query.toSQL().toNative();
-		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-
-		return query
-			.then(async response => {
-				await trx.commit();
-				return response;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
 	};
 
 	const deleteByParams = async (params, trx) => {
@@ -359,7 +375,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			isDefaultTrx = true;
 		}
 
-		const query = queryBuilder(params, tableConfig.primaryKey, trx).del();
+		const query = queryBuilder(params, tableConfig.primaryKey, false, trx).del();
 		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
@@ -401,7 +417,9 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		const { where, updates } = params;
-		const query = queryBuilder({ ...where }, tableConfig.primaryKey, trx).update({ ...updates });
+		const query = queryBuilder({ ...where }, tableConfig.primaryKey, false, trx)
+			.update({ ...updates });
+
 		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
@@ -414,113 +432,49 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		return query;
 	};
 
-	const count = async (params = {}) => {
+	const find = async (params = {}, columns, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		if (!columns) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
+			columns = Array.isArray(tableConfig.primaryKey)
+				? tableConfig.primaryKey : [tableConfig.primaryKey];
+		}
+		const query = queryBuilder(params, columns, false, trx);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
+
+		if (isDefaultTrx) return query
+			.then(async response => {
+				await trx.commit();
+				return response;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+
+		return query;
+	};
+
+	const count = async (params = {}, column) => {
 		const trx = await createDefaultTransaction(knex);
-		const query = knex(tableName).transacting(trx);
-		const queryParams = resolveQueryParams(params);
 
-		query.where(queryParams);
-
-		if (params.distinct) {
-			query.countDistinct(`${params.distinct} as count`);
+		if (!column) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
+			column = Array.isArray(tableConfig.primaryKey)
+				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
 		} else {
-			const countColumnName = Array.isArray(tableConfig.primaryKey)
-				? tableConfig.primaryKey[0]
-				: tableConfig.primaryKey;
-			query.count(`${countColumnName} as count`);
+			column = Array.isArray(column) ? [column[0]] : [column];
 		}
 
-		if (params.sort) {
-			const [sortProp] = params.sort.split(':');
-			query.whereNotNull(sortProp);
-		}
-
-		if (params.order) {
-			const [orderColumn] = params.order.split(':');
-			query.whereNotNull(orderColumn);
-		}
-
-		if (params.propBetweens) {
-			const { propBetweens } = params;
-			propBetweens.forEach(
-				propBetween => {
-					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
-					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
-					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
-				});
-		}
-
-		if (params.whereIn) {
-			const { whereIn } = params;
-			const whereIns = Array.isArray(whereIn) ? whereIn : [whereIn];
-
-			whereIns.forEach(param => {
-				const { property, values } = param;
-				query.whereIn(property, values);
-			});
-		}
-
-		if (params.whereJsonSupersetOf) {
-			const { property, values } = params.whereJsonSupersetOf;
-			query.where(function () {
-				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
-				this.whereJsonSupersetOf(property, [val0]);
-				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, [value]);
-				}));
-			});
-		}
-
-		if (params.andWhere) {
-			const { andWhere } = params;
-			query.where(function () {
-				this.where(andWhere);
-			});
-		}
-
-		if (params.orWhere) {
-			const { orWhere, orWhereWith } = params;
-			query.where(function () {
-				this.where(orWhere).orWhere(orWhereWith);
-			});
-		}
-
-		if (params.orWhereIn) {
-			const { property, values } = params.orWhereIn;
-			query.orWhereIn(property, values);
-		}
-
-		if (params.search) {
-			params.search = Array.isArray(params.search) ? params.search : [params.search];
-
-			params.search.forEach(search => {
-				const { property, pattern, startsWith, endsWith } = search;
-				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
-			});
-		}
-
-		if (params.orSearch) {
-			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
-
-			query.andWhere(function () {
-				params.orSearch.forEach((orSearch, index) => {
-					const { property, pattern, startsWith, endsWith } = orSearch;
-
-					if (index === 0) {
-						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
-					} else {
-						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
-					}
-				});
-			});
-		}
+		const query = queryBuilder(params, column, true, trx);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
 		return query
 			.then(async result => {
@@ -556,10 +510,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			isDefaultTrx = true;
 		}
 
-		const query = knex(tableName)
-			.transacting(trx)
-			.where(params.where)
-			.increment(params.increment);
+		const query = queryBuilder(params, false, false, trx).increment(params.increment);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -580,10 +531,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			isDefaultTrx = true;
 		}
 
-		const query = knex(tableName)
-			.transacting(trx)
-			.where(params.where)
-			.decrement(params.decrement);
+		const query = queryBuilder(params, false, false, trx).decrement(params.decrement);
 
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -612,9 +560,16 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 module.exports = {
 	default: getTableInstance,
-	getDbConnection,
+	getDBConnection,
 	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
+	startDBTransaction,
+	commitDBTransaction,
+	rollbackDBTransaction,
+	createTableIfNotExists,
+
+	// For backward compatibility
+	getDbConnection: getDBConnection,
+	startDbTransaction: startDBTransaction,
+	commitDbTransaction: commitDBTransaction,
+	rollbackDbTransaction: rollbackDBTransaction,
 };

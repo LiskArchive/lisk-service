@@ -21,7 +21,7 @@ const {
 
 const config = require('../../config');
 const { MAX_COMMISSION } = require('../constants');
-const accountsIndexSchema = require('../database/schema/accounts');
+const accountsTableSchema = require('../database/schema/accounts');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
@@ -31,30 +31,16 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const maxCommissionQ = q96(MAX_COMMISSION);
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema.tableName,
-	commissionsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
-	stakesTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
 const getNameByAddress = async (address) => {
 	if (address) {
 		const name = await validatorCache.get(address);
 		if (name) {
 			// Update the account index with the name asynchronously
-			const accountsTable = await getAccountsIndex();
+			const accountsTable = await getAccountsTable();
 			accountsTable.upsert({ address, name });
 
 			return name;

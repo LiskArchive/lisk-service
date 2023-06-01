@@ -26,8 +26,8 @@ const { read } = require('./utils/fs');
 const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
-const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
-const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
+const appMetadataTableSchema = require('./database/schema/application_metadata');
+const tokenMetadataTableSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -40,20 +40,11 @@ const knownMainchainIDs = Object
 	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
-const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema.tableName,
-	applicationMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTokenMetadataIndex = () => getTableInstance(
-	tokenMetadataIndexSchema.tableName,
-	tokenMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getApplicationMetadataTable = () => getTableInstance(appMetadataTableSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataTableSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsMetaList = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const blockchainAppsMetaList = {
 		data: [],
@@ -122,7 +113,7 @@ const readMetadataFromClonedRepo = async (network, appDirName, filename) => {
 };
 
 const getBlockchainAppsMetadata = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const blockchainAppsMetadata = {
 		data: [],
@@ -234,8 +225,8 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
+	const tokenMetadataTable = await getTokenMetadataTable();
 
 	const blockchainAppsTokenMetadata = {
 		data: [],
@@ -401,7 +392,7 @@ const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	const searchParams = {
 		search: {
 			property: 'tokenID',
@@ -412,14 +403,14 @@ const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) 
 		sort,
 	};
 	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'tokenID', 'chainName']);
-	const total = await tokenMetadataTable.count(searchParams, ['network', 'tokenID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams);
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	// Fetch the data
 	return { tokensMeta, total };
 };
 
 const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	const searchParams = {
 		whereIn: [{
 			property: 'tokenID',
@@ -438,7 +429,7 @@ const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, of
 	};
 
 	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'tokenID', 'chainName']);
-	const total = await tokenMetadataTable.count(searchParams, ['network', 'tokenID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams);
 
 	// Fetch the data
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
@@ -447,7 +438,7 @@ const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, of
 
 const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 	const { chainID, limit, offset, sort } = params;
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const tokenMetadata = {
 		data: [],

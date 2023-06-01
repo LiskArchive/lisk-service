@@ -30,22 +30,18 @@ const config = require('../../config');
 
 const redis = new Redis(config.endpoints.cache);
 
-const accountsIndexSchema = require('../database/schema/accounts');
+const accountsTableSchema = require('../database/schema/accounts');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getAccountIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;
 
 	const account = await getAccountsByPublicKey2([publicKey]);
 	if (account.length) {
-		const accountsTable = await getAccountIndex();
+		const accountsTable = await getAccountsTable();
 		await accountsTable.upsert(account);
 	}
 };
@@ -55,7 +51,7 @@ const updateAccountInfoAddr = async (job) => {
 
 	const account = await getAccountsByAddress([address]);
 	if (account.length) {
-		const accountsTable = await getAccountIndex();
+		const accountsTable = await getAccountsTable();
 		await accountsTable.upsert(account);
 	}
 };
@@ -63,7 +59,7 @@ const updateAccountInfoAddr = async (job) => {
 const updateAccountWithData = async (job) => {
 	const accounts = job.data;
 
-	const accountsTable = await getAccountIndex();
+	const accountsTable = await getAccountsTable();
 	await accountsTable.upsert(accounts);
 };
 
@@ -109,7 +105,7 @@ const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(
 const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
 const keepAccountsCacheUpdated = async () => {
-	const accountsTable = await getAccountIndex();
+	const accountsTable = await getAccountsTable();
 	const updateAccountsCacheListener = async (address) => {
 		const accounts = await getAccountsByAddress(address);
 		await accountsTable.upsert(accounts);

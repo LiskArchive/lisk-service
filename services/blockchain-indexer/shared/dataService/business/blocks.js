@@ -27,7 +27,7 @@ const logger = Logger();
 
 const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
-const blocksIndexSchema = require('../../database/schema/blocks');
+const blocksTableSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo } = require('../../utils/account');
 const { requestConnector } = require('../../utils/request');
@@ -40,11 +40,7 @@ const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema.tableName,
-	blocksIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
@@ -52,7 +48,7 @@ let latestBlock;
 
 const normalizeBlock = async (originalBlock) => {
 	try {
-		const blocksTable = await getBlocksIndex();
+		const blocksTable = await getBlocksTable();
 
 		const block = {
 			...originalBlock.header,
@@ -190,7 +186,7 @@ const isQueryFromIndex = params => {
 };
 
 const getBlocks = async params => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const blocks = {
 		data: [],
 		meta: {},
@@ -250,7 +246,7 @@ const filterBlockAssets = (modules, block) => {
 };
 
 const getBlocksAssets = async (params) => {
-	const blocksTable = await getBlocksIndex();
+	const blocksTable = await getBlocksTable();
 	const blockAssets = {
 		data: [],
 		meta: {},

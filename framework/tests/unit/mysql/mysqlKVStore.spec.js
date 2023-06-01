@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { formatValue } = require('../../../../shared/database/mysqlKVStore');
+const { formatValue } = require('../../../src/mysql/kvStore');
 
 describe('Test formatValue method', () => {
 	it('should return boolean when type is boolean', () => {

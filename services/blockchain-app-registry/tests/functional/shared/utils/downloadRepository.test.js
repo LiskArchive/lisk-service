@@ -16,6 +16,14 @@
 /* eslint-disable mocha/max-top-level-suites */
 jest.setTimeout(15000);
 
+const {
+	MySQL: {
+		KVStore: {
+			getKeyValueTable,
+		},
+	},
+} = require('lisk-service-framework');
+
 const path = require('path');
 const {
 	getRepoDownloadURL,
@@ -29,10 +37,12 @@ const {
 	getRepoInfoFromURL,
 } = require('../../../../shared/utils/downloadRepository');
 
-const keyValueTable = require('../../../../shared/database/mysqlKVStore');
 const { KV_STORE_KEY } = require('../../../../shared/constants');
 const config = require('../../../../config');
 const { exists, rmdir } = require('../../../../shared/utils/fs');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const commitHashRegex = /^[a-f0-9]{40}$/;
 const enevtiAppFilePath = path.resolve(`${config.dataDir}/app-registry/devnet/Enevti/app.json`);
@@ -47,11 +57,17 @@ xdescribe('Test getLatestCommitHash method', () => {
 
 xdescribe('Test getCommitInfo method', () => {
 	const lastSyncedCommitHash = 'ec938b74bcb8208c95d8e4edc8c8a0961d1aaaaa';
-	beforeAll(async () => keyValueTable.set(
-		KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
-		lastSyncedCommitHash,
-	));
-	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
+	beforeAll(async () => {
+		const keyValueTable = await getKeyValueTableInstance();
+
+		keyValueTable.set(
+			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
+			lastSyncedCommitHash);
+	});
+	afterAll(async () => {
+		const keyValueTable = await getKeyValueTableInstance();
+		keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
+	});
 
 	it('should return correct commit info', async () => {
 		const response = await getCommitInfo();
@@ -194,6 +210,8 @@ xdescribe('Test downloadRepositoryToFS method', () => {
 	xit('should update repository correctly when repository is already downloaded before', async () => {
 		const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 
+		const keyValueTable = await getKeyValueTableInstance();
+
 		await rmdir(enevtiAppFilePath);
 		expect(await exists(enevtiAppFilePath)).toEqual(false);
 		await keyValueTable.set(
@@ -210,13 +228,18 @@ xdescribe('Test syncWithRemoteRepo method', () => {
 	const lastSyncedCommitHash = 'dc94ddae2aa3a9534a760e9e1c0425b6dcda38e8';
 	beforeAll(async () => {
 		// Set last sync commit hash in db and remove existing file
+		const keyValueTable = await getKeyValueTableInstance();
+
 		await keyValueTable.set(
 			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
 			lastSyncedCommitHash,
 		);
 		await rmdir(enevtiAppFilePath);
 	});
-	afterAll(async () => keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC));
+	afterAll(async () => {
+		const keyValueTable = await getKeyValueTableInstance();
+		keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
+	});
 
 	it('should sync repository upto latest commit', async () => {
 		expect(await exists(enevtiAppFilePath)).toEqual(false);
