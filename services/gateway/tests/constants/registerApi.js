@@ -22,7 +22,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.blocks.assets',
 		},
-		path: 'undefined/blocks/assets',
+		path: '/v3/blocks/assets',
 		etag: 'strong',
 	},
 	{
@@ -32,7 +32,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.blockchain.apps',
 		},
-		path: 'undefined/blockchain/apps',
+		path: '/v3/blockchain/apps',
 		etag: 'strong',
 	},
 	{
@@ -42,7 +42,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'app-registry.blockchain.apps.meta.list',
 		},
-		path: 'undefined/blockchain/apps/meta/list',
+		path: '/v3/blockchain/apps/meta/list',
 		etag: 'strong',
 	},
 	{
@@ -52,7 +52,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'app-registry.blockchain.apps.meta',
 		},
-		path: 'undefined/blockchain/apps/meta',
+		path: '/v3/blockchain/apps/meta',
 		etag: 'strong',
 	},
 	{
@@ -62,7 +62,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.blockchain.apps.statistics',
 		},
-		path: 'undefined/blockchain/apps/statistics',
+		path: '/v3/blockchain/apps/statistics',
 		etag: 'strong',
 	},
 	{
@@ -72,7 +72,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'app-registry.blockchain.apps.meta.tokens',
 		},
-		path: 'undefined/blockchain/apps/meta/tokens',
+		path: '/v3/blockchain/apps/meta/tokens',
 		etag: 'strong',
 	},
 	{
@@ -82,7 +82,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'app-registry.blockchain.apps.meta.tokens.supported',
 		},
-		path: 'undefined/blockchain/apps/meta/tokens/supported',
+		path: '/v3/blockchain/apps/meta/tokens/supported',
 		etag: 'strong',
 	},
 	{
@@ -92,7 +92,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.blocks',
 		},
-		path: 'undefined/blocks',
+		path: '/v3/blocks',
 		etag: 'strong',
 	},
 	{
@@ -102,7 +102,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.events',
 		},
-		path: 'undefined/events',
+		path: '/v3/events',
 		etag: 'strong',
 	},
 	{
@@ -112,7 +112,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'fees.estimates',
 		},
-		path: 'undefined/fees',
+		path: '/v3/fees',
 		etag: 'strong',
 	},
 	{
@@ -122,7 +122,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.generators',
 		},
-		path: 'undefined/generators',
+		path: '/v3/generators',
 		etag: 'strong',
 	},
 	{
@@ -132,7 +132,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.index.status',
 		},
-		path: 'undefined/index/status',
+		path: '/v3/index/status',
 		etag: 'strong',
 	},
 	{
@@ -142,7 +142,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'POST /': 'indexer.invokeEndpoint',
 		},
-		path: 'undefined/invoke',
+		path: '/v3/invoke',
 		etag: 'strong',
 	},
 	{
@@ -152,7 +152,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'market.prices',
 		},
-		path: 'undefined/market/prices',
+		path: '/v3/market/prices',
 		etag: 'strong',
 	},
 	{
@@ -162,7 +162,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.network.peers',
 		},
-		path: 'undefined/network/peers',
+		path: '/v3/network/peers',
 		etag: 'strong',
 	},
 	{
@@ -172,7 +172,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.network.statistics',
 		},
-		path: 'undefined/network/statistics',
+		path: '/v3/network/statistics',
 		etag: 'strong',
 	},
 	{
@@ -182,7 +182,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.network.status',
 		},
-		path: 'undefined/network/status',
+		path: '/v3/network/status',
 		etag: 'strong',
 	},
 	{
@@ -192,7 +192,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'POST /': 'indexer.transactions.post',
 		},
-		path: 'undefined/transactions',
+		path: '/v3/transactions',
 		etag: 'strong',
 	},
 	{
@@ -202,7 +202,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.schemas',
 		},
-		path: 'undefined/schemas',
+		path: '/v3/schemas',
 		etag: 'strong',
 	},
 	{
@@ -212,7 +212,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'gateway.spec',
 		},
-		path: 'undefined/spec',
+		path: '/v3/spec',
 		etag: 'strong',
 	},
 	{
@@ -222,7 +222,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.transactions',
 		},
-		path: 'undefined/transactions',
+		path: '/v3/transactions',
 		etag: 'strong',
 	},
 	{
@@ -232,7 +232,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'POST /': 'indexer.transactions.dryrun',
 		},
-		path: 'undefined/transactions/dryrun',
+		path: '/v3/transactions/dryrun',
 		etag: 'strong',
 	},
 	{
@@ -242,7 +242,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'POST /': 'indexer.transactions.estimate-fees',
 		},
-		path: 'undefined/transactions/estimate-fees',
+		path: '/v3/transactions/estimate-fees',
 		etag: 'strong',
 	},
 	{
@@ -252,7 +252,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'statistics.transactions.statistics',
 		},
-		path: 'undefined/transactions/statistics',
+		path: '/v3/transactions/statistics',
 		etag: 'strong',
 	},
 	{
@@ -262,7 +262,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.legacy',
 		},
-		path: 'undefined/legacy',
+		path: '/v3/legacy',
 		etag: 'strong',
 	},
 	{
@@ -272,7 +272,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.rewards.claimable',
 		},
-		path: 'undefined/pos/rewards/claimable',
+		path: '/v3/pos/rewards/claimable',
 		etag: 'strong',
 	},
 	{
@@ -282,7 +282,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.constants',
 		},
-		path: 'undefined/pos/constants',
+		path: '/v3/pos/constants',
 		etag: 'strong',
 	},
 	{
@@ -292,7 +292,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.rewards.locked',
 		},
-		path: 'undefined/pos/rewards/locked',
+		path: '/v3/pos/rewards/locked',
 		etag: 'strong',
 	},
 	{
@@ -302,7 +302,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.stakers',
 		},
-		path: 'undefined/pos/stakers',
+		path: '/v3/pos/stakers',
 		etag: 'strong',
 	},
 	{
@@ -312,7 +312,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.stakes',
 		},
-		path: 'undefined/pos/stakes',
+		path: '/v3/pos/stakes',
 		etag: 'strong',
 	},
 	{
@@ -322,7 +322,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.unlocks',
 		},
-		path: 'undefined/pos/unlocks',
+		path: '/v3/pos/unlocks',
 		etag: 'strong',
 	},
 	{
@@ -332,7 +332,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.pos.validators',
 		},
-		path: 'undefined/pos/validators',
+		path: '/v3/pos/validators',
 		etag: 'strong',
 	},
 	{
@@ -342,7 +342,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.token.account.exists',
 		},
-		path: 'undefined/token/account/exists',
+		path: '/v3/token/account/exists',
 		etag: 'strong',
 	},
 	{
@@ -352,7 +352,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.token.available-ids',
 		},
-		path: 'undefined/token/available-ids',
+		path: '/v3/token/available-ids',
 		etag: 'strong',
 	},
 	{
@@ -362,7 +362,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.token.constants',
 		},
-		path: 'undefined/token/constants',
+		path: '/v3/token/constants',
 		etag: 'strong',
 	},
 	{
@@ -372,7 +372,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.token.summary',
 		},
-		path: 'undefined/token/summary',
+		path: '/v3/token/summary',
 		etag: 'strong',
 	},
 	{
@@ -382,7 +382,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.token.balances.top',
 		},
-		path: 'undefined/token/balances/top',
+		path: '/v3/token/balances/top',
 		etag: 'strong',
 	},
 	{
@@ -392,7 +392,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.validator',
 		},
-		path: 'undefined/validator',
+		path: '/v3/validator',
 		etag: 'strong',
 	},
 	{
@@ -402,7 +402,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'POST /': 'indexer.validateBLSKey',
 		},
-		path: 'undefined/validator/validate-bls-key',
+		path: '/v3/validator/validate-bls-key',
 		etag: 'strong',
 	},
 	{
@@ -412,7 +412,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'export.transactions.csv',
 		},
-		path: 'undefined/export/download',
+		path: '/v3/export/download',
 		etag: 'strong',
 	},
 	{
@@ -422,7 +422,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'export.transactions.schedule',
 		},
-		path: 'undefined/export/transactions',
+		path: '/v3/export/transactions',
 		etag: 'strong',
 	},
 	{
@@ -432,7 +432,7 @@ const expectedResponseForRegisterHttpApi = [
 		aliases: {
 			'GET /': 'indexer.token.balances',
 		},
-		path: 'undefined/token/balances',
+		path: '/v3/token/balances',
 		etag: false,
 	},
 ];
@@ -843,18 +843,26 @@ const configureAPIMethods = {
 
 const configureApiResponse = {
 	aliases: {
-		'GET hello': 'template.generic.hello',
-		'GET server_error': 'template.server.error',
+		'GET /': 'template.generic.hello',
 	},
+	whitelist: [
+		'template.server.error',
+		'template.generic.hello',
+	],
 	methodPaths: {
-		'GET hello': {
+		'GET ': {
+			version: '2.0',
+			swaggerApiPath: '/hello',
+			rpcMethod: 'get.hello',
 			envelope: {
 				data: [],
-				links: {},
 				meta: {},
+				links: {},
 			},
-			rpcMethod: 'get.hello',
 			source: {
+				type: 'moleculer',
+				method: 'template.generic.hello',
+				params: {},
 				definition: {
 					data: [
 						'data',
@@ -863,40 +871,16 @@ const configureApiResponse = {
 							name: '=',
 						},
 					],
-					links: {},
 					meta: {
 						count: 'meta.count,number',
 						offset: '=,number',
 						total: 'meta.total,number',
 					},
+					links: {},
 				},
-				method: 'template.generic.hello',
-				params: {},
-				type: 'moleculer',
 			},
-			swaggerApiPath: '/hello',
-			version: '2.0',
-		},
-		'GET server_error': {
-			envelope: {},
-			rpcMethod: 'get.server_error',
-			source: {
-				definition: {
-					error: '=,string',
-					status: '=,number',
-				},
-				method: 'template.server.error',
-				params: {},
-				type: 'moleculer',
-			},
-			swaggerApiPath: '/server_error',
-			version: '2.0',
 		},
 	},
-	whitelist: [
-		'template.server.error',
-		'template.generic.hello',
-	],
 };
 
 const configureAPIPrefixWithFalseEtag = '/v3';
@@ -1015,44 +999,52 @@ const configureAPIMethodsWithFalseEtag = {
 
 const configureAPIWithFalseEtagResponse = {
 	aliases: {
-		'GET token/balances': 'indexer.token.balances',
+		'GET /': 'indexer.token.balances',
 	},
+	whitelist: [
+		'indexer.token.balances',
+	],
 	methodPaths: {
-		'GET token/balances': {
-			envelope: {
-				data: [],
-				meta: {},
-			},
+		'GET ': {
+			version: '2.0',
+			swaggerApiPath: '/token/balances',
+			rpcMethod: 'get.token.balances',
+			tags: [
+				'Token',
+			],
 			etag: false,
 			params: {
 				address: {
 					optional: false,
-					pattern: {},
 					type: 'string',
-				},
-				limit: {
-					default: 10,
-					max: 100,
-					min: 1,
-					optional: true,
-					type: 'number',
-				},
-				offset: {
-					default: 0,
-					min: 0,
-					optional: true,
-					type: 'number',
+					pattern: {},
 				},
 				tokenID: {
 					optional: true,
-					pattern: {},
 					type: 'string',
+					pattern: {},
+				},
+				limit: {
+					optional: true,
+					type: 'number',
+					min: 1,
+					max: 100,
+					default: 10,
+				},
+				offset: {
+					optional: true,
+					type: 'number',
+					min: 0,
+					default: 0,
 				},
 			},
-			rpcMethod: 'get.token.balances',
 			schema: {
 				'/token/balances': {
 					get: {
+						tags: [
+							'Token',
+						],
+						summary: 'Requests tokens information',
 						description: 'Returns tokens information\n RPC => get.token.balances',
 						parameters: [
 							{
@@ -1082,56 +1074,48 @@ const configureAPIWithFalseEtagResponse = {
 								},
 							},
 						},
-						summary: 'Requests tokens information',
-						tags: [
-							'Token',
-						],
 					},
 				},
 			},
 			source: {
+				type: 'moleculer',
+				method: 'indexer.token.balances',
+				params: {
+					address: '=,string',
+					tokenID: '=,string',
+					offset: '=,number',
+					limit: '=,number',
+				},
 				definition: {
 					data: [
 						'data',
 						{
+							tokenID: '=,string',
 							availableBalance: '=,string',
 							lockedBalances: [
 								'lockedBalances',
 								{
-									amount: '=,string',
 									module: '=,string',
+									amount: '=,string',
 								},
 							],
-							tokenID: '=,string',
 						},
 					],
-					links: {},
 					meta: {
 						address: '=,string',
 						count: '=,number',
 						offset: '=,number',
 						total: '=,number',
 					},
+					links: {},
 				},
-				method: 'indexer.token.balances',
-				params: {
-					address: '=,string',
-					limit: '=,number',
-					offset: '=,number',
-					tokenID: '=,string',
-				},
-				type: 'moleculer',
 			},
-			swaggerApiPath: '/token/balances',
-			tags: [
-				'Token',
-			],
-			version: '2.0',
+			envelope: {
+				data: [],
+				meta: {},
+			},
 		},
 	},
-	whitelist: [
-		'indexer.token.balances',
-	],
 };
 
 const getAllAPIsExpectedResponse = {

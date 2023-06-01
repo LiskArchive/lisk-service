@@ -23,7 +23,7 @@ const {
 
 const path = require('path');
 const gatewayConfig = require('../config');
-const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
+const { transformRequest, transformResponse } = require('./apiUtils');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const logger = Logger();
@@ -31,17 +31,17 @@ const apiMeta = [];
 
 const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
 
-const configureApi = (apiPrefix, methods, useFalseEtag = false) => {
+const configureApi = (apiPrefix, methods) => {
 	const whitelist = Object.keys(methods).reduce((acc, key) => [
 		...acc, methods[key].source.method,
 	], []);
 
 	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${useFalseEtag ? '/' : transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
+		...acc, [`${getMethodName(methods[key])} ${'/'}`]: methods[key].source.method,
 	}), {});
 
 	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${useFalseEtag ? '' : transformPath(methods[key].swaggerApiPath)}`]: methods[key],
+		...acc, [`${getMethodName(methods[key])} ${''}`]: methods[key],
 	}), {});
 
 	const meta = {
@@ -208,7 +208,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const key of Object.keys(etagAPIs)) {
-			const falseEtagAPIConfig = configureApi(config.path, { key: etagAPIs[key] }, true);
+			const falseEtagAPIConfig = configureApi(config.path, { key: etagAPIs[key] });
 			apisToRegister.push(getAPIConfig(`${config.path}${etagAPIs[key].swaggerApiPath}`, config, falseEtagAPIConfig.aliases, falseEtagAPIConfig.whitelist, falseEtagAPIConfig.methodPaths, etagAPIs[key].etag));
 		}
 	}
