@@ -339,7 +339,7 @@ describe('Test registerApi method', () => {
 
 	it('should return correct api info when called with valid inputs', async () => {
 		const { registerApi } = require('../../../shared/registerHttpApi');
-		const response = await registerApi(apiNames, config, registeredModuleNames);
+		const response = registerApi(apiNames, config, registeredModuleNames);
 
 		for (let i = 0; i < response.length; i++) {
 			expectedResponseForRegisterHttpApi[i].onBeforeCall = response[i].onBeforeCall;
@@ -394,7 +394,7 @@ describe('Test configureApi method', () => {
 	it('should return proper response when called with correct params and etag as false', async () => {
 		const { configureApi } = require('../../../shared/registerHttpApi');
 		const response = configureApi(configureAPIPrefixWithFalseEtag,
-			configureAPIMethodsWithFalseEtag, false);
+			configureAPIMethodsWithFalseEtag);
 
 		expect(response).toEqual(configureAPIWithFalseEtagResponse);
 	});
