@@ -101,11 +101,25 @@ describe('Test getAPIConfig method', () => {
 		expect(result2.etag).toBe('strong');
 	});
 
-	it('should set etag to weak if etag is not undefined or "strong"', () => {
+	it('should set etag to weak if etag is weak', () => {
 		const { getAPIConfig } = require('../../../shared/registerHttpApi');
 		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'weak');
 
 		expect(result.etag).toBe('weak');
+	});
+
+	it('should set etag to false if etag is false', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, false);
+
+		expect(result.etag).toBe(false);
+	});
+
+	it('should set etag to true if etag is true', () => {
+		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, true);
+
+		expect(result.etag).toBe(true);
 	});
 
 	it('should execute etag function if etag is a function', () => {
