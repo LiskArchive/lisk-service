@@ -112,7 +112,7 @@ config.job = {
 };
 
 config.cors = {
-	allowedOrigin: '*',
+	allowedOrigin: process.env.CORS_ALLOWED_ORIGIN || '*',
 };
 
 module.exports = config;
