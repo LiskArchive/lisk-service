@@ -55,7 +55,11 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	await ccuTable.upsert({ ...tx, ...tx.params, transactionID: tx.id }, dbTrx);
+	await ccuTable.upsert({
+		height: tx.height,
+		sendingChainID: tx.params.sendingChainID,
+		transactionID: tx.id,
+	}, dbTrx);
 
 	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
