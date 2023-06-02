@@ -18,7 +18,10 @@ const BluebirdPromise = require('bluebird');
 const {
 	HTTP,
 	MySQL: { getTableInstance },
+	Logger,
 } = require('lisk-service-framework');
+
+const logger = Logger();
 
 const { LENGTH_CHAIN_ID } = require('./constants');
 const { isMainchain } = require('./chain');
@@ -381,14 +384,21 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
 	for (let i = 0; i < serviceURLs.length; i++) {
 		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
-		// eslint-disable-next-line no-await-in-loop
-		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
+		try {
+			// eslint-disable-next-line no-await-in-loop
+			const { data: response } = await HTTP.request(tokenSummaryEndpoint);
 
-		if (response.data && response.data.supportedTokens) {
-			return Promise.resolve(response.data.supportedTokens);
+			if (response.data && response.data.supportedTokens) {
+				return Promise.resolve(response.data.supportedTokens);
+			}
+		} catch (err) {
+			logger.warn(err);
+
+			// eslint-disable-next-line no-continue
+			continue;
 		}
 	}
-	return Promise.resolve({});
+	return Promise.reject(new Error('Supported tokens not found from service URLs'));
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
@@ -455,22 +465,27 @@ const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 		config.FILENAME.APP_JSON,
 	);
 
-	// Query supported tokens information for the requested chainID
-	const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
-	const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
+	try {
+		// Query supported tokens information for the requested chainID
+		const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
+		const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
 
-	const { tokensMeta, total } = isSupportAllTokens
-		? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
-		: await getTokensMetaByTokenIDs(patternTokenIDs, exactTokenIDs, limit, offset, sort);
+		const { tokensMeta, total } = isSupportAllTokens
+			? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
+			: await getTokensMetaByTokenIDs(patternTokenIDs, exactTokenIDs, limit, offset, sort);
 
-	tokenMetadata.data = tokensMeta;
-	tokenMetadata.meta = {
-		count: tokensMeta.length,
-		offset,
-		total,
-	};
+		tokenMetadata.data = tokensMeta;
+		tokenMetadata.meta = {
+			count: tokensMeta.length,
+			offset,
+			total,
+		};
 
-	return tokenMetadata;
+		return tokenMetadata;
+	} catch (err) {
+		logger.error(err);
+		return tokenMetadata;
+	}
 };
 
 module.exports = {
