@@ -20,7 +20,25 @@ const config = require('../../../../../config');
 const mockedFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
 const dataServicePath = resolve(`${__dirname}/../../../../../shared/dataService`);
 
-beforeEach(() => jest.resetModules());
+beforeEach(() => {
+	jest.resetModules();
+
+	jest.mock('lisk-service-framework', () => {
+		const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+		return {
+			...actualLiskServiceFramework,
+			MySQL: {
+				...actualLiskServiceFramework.MySQL,
+				KVStore: {
+					...actualLiskServiceFramework.KVStore,
+					getKeyValueTable: jest.fn(),
+				},
+			},
+			CacheRedis: jest.fn(),
+			CacheLRU: jest.fn(),
+		};
+	});
+});
 
 describe('Test isMainchain method', () => {
 	jest.mock('lisk-service-framework', () => {

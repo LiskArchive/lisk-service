@@ -35,11 +35,7 @@ const {
 } = require('../../constants');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getAccountBalancesTable = () => getTableInstance(
-	accountBalancesTableSchema.tableName,
-	accountBalancesTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 let moduleConstants = {};
 

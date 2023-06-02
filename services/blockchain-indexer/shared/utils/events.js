@@ -17,29 +17,28 @@ const {
 	Logger,
 	MySQL: {
 		getTableInstance,
-		getDbConnection,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+		getDBConnection,
+		startDBTransaction,
+		commitDBTransaction,
+		rollbackDBTransaction,
+		KVStore: {
+			getKeyValueTable,
+		},
 	},
 } = require('lisk-service-framework');
 const config = require('../../config');
 
 const { getGenesisHeight } = require('../constants');
 
-const keyValueTable = require('../database/mysqlKVStore');
 const eventsTableSchema = require('../database/schema/events');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const keyValueTable = getKeyValueTable();
 const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 
-const getEventsTable = () => getTableInstance(
-	eventsTableSchema.tableName,
-	eventsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
 
 const getEventsInfoToIndex = async (block, events) => {
 	const eventsInfoToIndex = {
@@ -82,10 +81,11 @@ const getEventsInfoToIndex = async (block, events) => {
 
 const deleteEventStrTillHeight = async (toHeight) => {
 	const eventsTable = await getEventsTable();
+
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
 
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDbTransaction(connection);
+	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(connection);
 	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
 
 	try {
@@ -100,10 +100,10 @@ const deleteEventStrTillHeight = async (toHeight) => {
 		await eventsTable.update({ where: queryParams, updates: { eventStr: null } }, dbTrx);
 		await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight, dbTrx);
 
-		await commitDbTransaction(dbTrx);
+		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete serialized events until height ${toHeight}.`);
 	} catch (_) {
-		await rollbackDbTransaction(dbTrx);
+		await rollbackDBTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`);
 	}
 };

@@ -30,11 +30,7 @@ const transactionsTableSchema = require('../../../database/schema/transactions')
 
 const { getChainInfo } = require('./registerMainchain');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 const getCCUTable = () => getTableInstance(
 	ccuTableSchema.tableName,

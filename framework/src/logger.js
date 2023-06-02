@@ -17,9 +17,11 @@
 const log4js = require('log4js');
 const debug = require('debug');
 const stackTrace = require('stack-trace');
+const { name } = require('../package.json');
 
 let LOG_LEVEL = 'info';
 
+// Default config for log4js
 let log4jsConfig = {
 	appenders: {},
 };
@@ -169,6 +171,17 @@ const getDebug = entityName => {
 		'mark']
 		.reduce((acc, item) => (acc[item] = debugInstance) && acc, {});
 };
+
+// Set default logger config
+configure({
+	name,
+	level: process.env.SERVICE_LOG_LEVEL || 'error',
+	console: process.env.SERVICE_LOG_CONSOLE || 'false',
+	stdout: process.env.SERVICE_LOG_STDOUT || 'true',
+	gelf: process.env.SERVICE_LOG_GELF || 'false',
+	file: process.env.SERVICE_LOG_FILE || 'false',
+	docker_host: process.env.DOCKER_HOST || 'local',
+});
 
 module.exports = {
 	init: configure,

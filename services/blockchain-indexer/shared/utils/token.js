@@ -13,9 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const keyValueTable = require('../database/mysqlKVStore');
+const {
+	MySQL: {
+		KVStore: {
+			getKeyValueTable,
+		},
+	},
+} = require('lisk-service-framework');
 
 const { KV_STORE_KEY } = require('../constants');
+
+const keyValueTable = getKeyValueTable();
 
 const getTotalLocked = async () => {
 	const lockAmountsInfo = await keyValueTable.getByPattern(

@@ -17,17 +17,18 @@ const { rm } = require('../../../../shared/utils/fs');
 
 const {
 	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
-	getDbConnection,
+	startDBTransaction,
+	commitDBTransaction,
+	getDBConnection,
 } = require('../../../../shared/database/sqlite3');
 
 const schema = require('../../../constants/blocksSchema');
 
 const tableName = 'functional_test';
 const testDir = 'testDir';
+schema.tableName = tableName;
 
-const getTable = () => getTableInstance(tableName, schema, testDir);
+const getTable = () => getTableInstance(schema, testDir);
 
 const { blockWithoutTransaction, blockWithTransaction } = require('../../../constants/blocks');
 
@@ -155,10 +156,10 @@ describe('Test sqlite3 implementation', () => {
 		it('should insert row', async () => {
 			const preUpsertResult = await testTable.find();
 			expect(preUpsertResult.length).toBe(0);
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 			await testTable.upsert([blockWithoutTransaction.header], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const postUpsertResult = await testTable.find();
 			expect(postUpsertResult.length).toBe(1);
 		});
@@ -173,11 +174,11 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should update row', async () => {
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 			const { id } = blockWithTransaction.header;
 			await testTable.upsert([{ ...blockWithTransaction.header, height: 20 }], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			const [retrievedBlock] = await testTable.find({ id }, ['id', 'height']);
 			expect(retrievedBlock.id).toBe(id);
@@ -196,26 +197,26 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should increment column value', async () => {
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 			const { id } = blockWithoutTransaction.header;
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: { id },
 			}, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const [retrievedBlock] = await testTable.find({ id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
 			expect(retrievedBlock.timestamp).toBe(5 + blockWithoutTransaction.header.timestamp);
 		});
 
 		it('should delete row by primary key', async () => {
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
 			const numAffectedRows = await testTable.deleteByPrimaryKey([existingBlockId], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			expect(numAffectedRows).toEqual(1);
 
 			const count = await testTable.count({
@@ -225,8 +226,8 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete rows', async () => {
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
@@ -234,7 +235,7 @@ describe('Test sqlite3 implementation', () => {
 
 			const existingIds = existingBlock.map(e => e.id);
 			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingIds } }, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			expect(numAffectedRows).toEqual(existingBlockCount);
 
@@ -243,8 +244,8 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete row', async () => {
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([blockWithoutTransaction.header]);
 			const existingBlock = await testTable.find({}, ['id']);
@@ -252,7 +253,7 @@ describe('Test sqlite3 implementation', () => {
 
 			const existingId = existingBlock.map(e => e.id);
 			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingId } }, trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 
 			expect(numAffectedRows).toEqual(existingBlockCount);
 
@@ -261,12 +262,12 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should insert rows in a batch', async () => {
-			const connection = await getDbConnection(tableName);
-			const trx = await startDbTransaction(connection);
+			const connection = await getDBConnection(tableName);
+			const trx = await startDBTransaction(connection);
 			const preUpsertResult = await testTable.find();
 			expect(preUpsertResult.length).toBe(0);
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header], trx);
-			await commitDbTransaction(trx);
+			await commitDBTransaction(trx);
 			const postUpsertResult = await testTable.find();
 			expect(postUpsertResult.length).toBe(2);
 		});
