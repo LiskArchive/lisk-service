@@ -33,7 +33,7 @@ const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPO
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
 const updateAccountPublicKey = async (publicKey) => {
-	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT);
+	const accountsTable = await getAccountsTable();
 	await accountsTable.upsert({
 		address: getLisk32AddressFromPublicKey(publicKey),
 		publicKey,
@@ -49,7 +49,7 @@ const updateAccountInfo = async (params) => {
 		}
 	});
 
-	const accountsTable = await getAccountsTable(MYSQL_ENDPOINT);
+	const accountsTable = await getAccountsTable();
 	await accountsTable.upsert(accountInfo);
 };
 
