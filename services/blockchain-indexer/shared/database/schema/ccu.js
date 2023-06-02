@@ -15,9 +15,9 @@
  */
 module.exports = {
 	tableName: 'ccu',
-	primaryKey: 'id',
+	primaryKey: 'transactionID',
 	schema: {
-		id: { type: 'string', null: false },
+		transactionID: { type: 'string', null: false },
 		height: { type: 'integer', null: false },
 		sendingChainID: { type: 'string', null: true, default: null },
 	},

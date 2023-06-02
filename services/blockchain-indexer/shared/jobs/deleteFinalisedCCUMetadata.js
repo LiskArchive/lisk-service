@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -21,13 +21,9 @@ const config = require('../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const ccuTableSchema = require('../database/schema/ccu');
 
-const getCCUTable = () => getTableInstance(
-	ccuTableSchema.tableName,
-	ccuTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getCCUTable = () => getTableInstance(ccuTableSchema, MYSQL_ENDPOINT);
 
-const deleteCCU = async (height) => {
+const deleteFinalisedCCUMetadata = async (height) => {
 	const ccuTable = await getCCUTable();
 
 	const searchParams = {
@@ -41,5 +37,5 @@ const deleteCCU = async (height) => {
 };
 
 module.exports = {
-	deleteCCU,
+	deleteFinalisedCCUMetadata,
 };

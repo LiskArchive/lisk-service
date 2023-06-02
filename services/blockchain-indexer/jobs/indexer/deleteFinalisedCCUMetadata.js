@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -17,22 +17,22 @@ const logger = require('lisk-service-framework').Logger();
 
 const config = require('../../config');
 const { getFinalizedHeight } = require('../../shared/constants');
-const { deleteCCU } = require('../../shared/jobs/deleteCCU');
+const { deleteFinalisedCCUMetadata } = require('../../shared/jobs/deleteFinalisedCCUMetadata');
 
 module.exports = [
 	{
-		name: 'job.delete.ccu',
-		description: 'Delete CCUs until the finalized block height.',
-		interval: config.job.deleteCCU.interval,
-		schedule: config.job.deleteCCU.schedule,
+		name: 'job.delete.finalised.ccu.metadata',
+		description: 'Delete CCUs metadata until the finalised block height.',
+		interval: config.job.deleteFinalisedCCUMetadata.interval,
+		schedule: config.job.deleteFinalisedCCUMetadata.schedule,
 		controller: async () => {
-			logger.debug('Deleting CCUs until the finalized block height...');
+			logger.debug('Deleting CCUs metadata until the finalised block height...');
 			try {
 				const finalizedHeight = await getFinalizedHeight();
-				await deleteCCU(finalizedHeight);
-				logger.info('Successfully deleted CCUs until the finalized block height.');
+				await deleteFinalisedCCUMetadata(finalizedHeight);
+				logger.info('Successfully deleted CCUs metadata until the finalised block height.');
 			} catch (err) {
-				logger.warn(`'Deleting CCUs failed due to: ${err.message}.`);
+				logger.warn(`'Deleting CCUs metadata failed due to: ${err.message}.`);
 			}
 		},
 	},

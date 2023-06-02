@@ -31,18 +31,8 @@ const transactionsTableSchema = require('../../../database/schema/transactions')
 const { getChainInfo } = require('./registerMainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
-
-const getCCUTable = () => getTableInstance(
-	ccuTableSchema.tableName,
-	ccuTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema.tableName,
-	transactionsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getCCUTable = () => getTableInstance(ccuTableSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'submitSidechainCrossChainUpdate';
@@ -65,7 +55,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	await ccuTable.upsert({ ...tx, ...tx.params }, dbTrx);
+	await ccuTable.upsert({ ...tx, ...tx.params, transactionID: tx.id }, dbTrx);
 
 	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
@@ -85,14 +75,16 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 			property: 'height',
 			lowerThan: blockHeader.height,
 		}],
+		sort: 'height:desc',
+		limit: 1,
 	};
 
-	const resultSet = await ccuTable.find(searchParams, 'height');
-	const prevTransactionHeight = Math.max(...resultSet.map(trx => trx.height));
+	const [{ height: prevTransactionHeight }] = await ccuTable.find(searchParams, 'height');
 	const [prevTransaction] = await transactionsTable.find(
 		{
 			height: prevTransactionHeight,
 			moduleCommand: tx.moduleCommand,
+			limit: 1,
 		}, 'timestamp');
 
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
