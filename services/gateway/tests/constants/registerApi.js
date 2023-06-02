@@ -357,6 +357,16 @@ const expectedResponseForRegisterHttpApi = [
 	},
 	{
 		whitelist: [
+			'indexer.token.balances',
+		],
+		aliases: {
+			'GET /': 'indexer.token.balances',
+		},
+		path: '/v3/token/balances',
+		etag: false,
+	},
+	{
+		whitelist: [
 			'indexer.token.constants',
 		],
 		aliases: {
@@ -424,16 +434,6 @@ const expectedResponseForRegisterHttpApi = [
 		},
 		path: '/v3/export/transactions',
 		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'indexer.token.balances',
-		],
-		aliases: {
-			'GET /': 'indexer.token.balances',
-		},
-		path: '/v3/token/balances',
-		etag: false,
 	},
 ];
 

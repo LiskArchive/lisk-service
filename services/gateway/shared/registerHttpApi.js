@@ -181,23 +181,19 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 	const allAPIs = getAllAPIs(apiNames, registeredModuleNames);
 	const apisToRegister = [];
 
-	const ALLOWED_ETAG_VALUES = ['strong', 'weak', true, false, 'custom'];
+	const ALLOWED_ETAG_VALUES = new Set(['strong', 'weak', true, false]);
 	const DEFAULT_ETAG_VALUE = 'strong';
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const eTagVal of ALLOWED_ETAG_VALUES) {
-		const eTagAPIs = Object.fromEntries(Object.entries(allAPIs)
-			.filter(([, value]) => {
-				if (value.eTag === undefined) value.eTag = DEFAULT_ETAG_VALUE;
-				return (eTagVal === 'custom' && typeof value.eTag === 'function') || value.eTag === eTagVal;
-			}));
+	Object.entries(allAPIs).forEach(([key, apiConf]) => {
+		const eTag = apiConf.eTag === undefined ? DEFAULT_ETAG_VALUE : apiConf.eTag;
 
-		// eslint-disable-next-line no-restricted-syntax
-		for (const key of Object.keys(eTagAPIs)) {
-			const apiConfig = buildAPIAliases(config.path, { key: eTagAPIs[key] });
-			apisToRegister.push(buildAPIConfig(`${config.path}${eTagAPIs[key].swaggerApiPath}`, config, apiConfig.aliases, apiConfig.whitelist, apiConfig.methodPaths, eTagAPIs[key].eTag));
+		if (typeof eTag === 'function' || ALLOWED_ETAG_VALUES.has(eTag)) {
+			const apiConfig = buildAPIAliases(config.path, { key: allAPIs[key] });
+			apisToRegister.push(buildAPIConfig(`${config.path}${allAPIs[key].swaggerApiPath}`, config, apiConfig.aliases, apiConfig.whitelist, apiConfig.methodPaths, eTag));
+		} else {
+			logger.error(`etag not recognized for API: ${config.path}${allAPIs[key].swaggerApiPath}`);
 		}
-	}
+	});
 
 	return apisToRegister;
 };
