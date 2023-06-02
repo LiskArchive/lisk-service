@@ -117,7 +117,7 @@ const calcAccountInitializationFees = async (transaction) => {
 		const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
 
 		const { data: accountExistsResponse } = await HTTP
-			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&publicKey=${transaction.senderPublicKey}`);
+			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&publicKey=${transaction.params.recipientAddress}`);
 		const { data: { isExists } } = accountExistsResponse;
 
 		// Account already exists, no extra fee necessary
@@ -134,7 +134,7 @@ const calcAccountInitializationFees = async (transaction) => {
 
 	const { data: { isExists } } = await tokenHasUserAccount({
 		tokenID,
-		publicKey: transaction.senderPublicKey,
+		publicKey: transaction.params.recipientAddress,
 	});
 
 	// Account already exists, no extra fee necessary
