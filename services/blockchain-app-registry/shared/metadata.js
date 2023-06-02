@@ -384,21 +384,14 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
 	for (let i = 0; i < serviceURLs.length; i++) {
 		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
-		try {
-			// eslint-disable-next-line no-await-in-loop
-			const { data: response } = await HTTP.request(tokenSummaryEndpoint);
+		// eslint-disable-next-line no-await-in-loop
+		const response = await HTTP.request(tokenSummaryEndpoint);
 
-			if (response.data && response.data.supportedTokens) {
-				return Promise.resolve(response.data.supportedTokens);
-			}
-		} catch (err) {
-			logger.warn(err);
-
-			// eslint-disable-next-line no-continue
-			continue;
+		if (response && response.data && response.data.data && response.data.data.supportedTokens) {
+			return Promise.resolve(response.data.data.supportedTokens);
 		}
 	}
-	return Promise.reject(new Error('Supported tokens not found from service URLs'));
+	return Promise.reject(new Error('Failed to retrieve supported tokens from service URLs'));
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
@@ -483,7 +476,7 @@ const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 
 		return tokenMetadata;
 	} catch (err) {
-		logger.error(err);
+		logger.error(err.stack);
 		return tokenMetadata;
 	}
 };
