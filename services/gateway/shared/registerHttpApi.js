@@ -27,11 +27,10 @@ const { transformRequest, transformResponse } = require('./apiUtils');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const logger = Logger();
-const apiMeta = [];
 
 const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
 
-const configureApi = (apiPrefix, methods) => {
+const buildAPIAliases = (apiPrefix, methods) => {
 	const whitelist = Object.keys(methods).reduce((acc, key) => [
 		...acc, methods[key].source.method,
 	], []);
@@ -43,20 +42,6 @@ const configureApi = (apiPrefix, methods) => {
 	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
 		...acc, [`${getMethodName(methods[key])} ${''}`]: methods[key],
 	}), {});
-
-	const meta = {
-		apiPrefix,
-		routes: Object.keys(methods).map(m => ({
-			path: methods[m].swaggerApiPath,
-			params: Object.keys(methods[m].params || {}),
-			response: {
-				...methods[m].envelope,
-				...methods[m].source.definition,
-			},
-		})),
-	};
-
-	apiMeta.push(meta);
 
 	return { aliases, whitelist, methodPaths };
 };
@@ -97,7 +82,7 @@ const getAllAPIs = (apiNames, registeredModuleNames) => {
 	return methods;
 };
 
-const getAPIConfig = (configPath, config, aliases, whitelist, methodPaths, etag = 'strong') => ({
+const buildAPIConfig = (configPath, config, aliases, whitelist, methodPaths, eTag = 'strong') => ({
 	...config,
 
 	path: configPath,
@@ -112,7 +97,7 @@ const getAPIConfig = (configPath, config, aliases, whitelist, methodPaths, etag 
 		...aliases,
 	},
 
-	etag: (typeof etag === 'function') ? etag() : etag,
+	etag: (typeof eTag === 'function') ? eTag() : eTag,
 
 	async onBeforeCall(ctx, route, req, res) {
 		const sendResponse = (code, message) => {
@@ -201,16 +186,16 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const eTagVal of ALLOWED_ETAG_VALUES) {
-		const etagAPIs = Object.fromEntries(Object.entries(allAPIs)
+		const eTagAPIs = Object.fromEntries(Object.entries(allAPIs)
 			.filter(([, value]) => {
-				if (value.etag === undefined) value.etag = DEFAULT_ETAG_VALUE;
-				return (eTagVal === 'custom' && typeof value.etag === 'function') || value.etag === eTagVal;
+				if (value.eTag === undefined) value.eTag = DEFAULT_ETAG_VALUE;
+				return (eTagVal === 'custom' && typeof value.eTag === 'function') || value.eTag === eTagVal;
 			}));
 
 		// eslint-disable-next-line no-restricted-syntax
-		for (const key of Object.keys(etagAPIs)) {
-			const etagAPIConfig = configureApi(config.path, { key: etagAPIs[key] });
-			apisToRegister.push(getAPIConfig(`${config.path}${etagAPIs[key].swaggerApiPath}`, config, etagAPIConfig.aliases, etagAPIConfig.whitelist, etagAPIConfig.methodPaths, etagAPIs[key].etag));
+		for (const key of Object.keys(eTagAPIs)) {
+			const apiConfig = buildAPIAliases(config.path, { key: eTagAPIs[key] });
+			apisToRegister.push(buildAPIConfig(`${config.path}${eTagAPIs[key].swaggerApiPath}`, config, apiConfig.aliases, apiConfig.whitelist, apiConfig.methodPaths, eTagAPIs[key].eTag));
 		}
 	}
 
@@ -222,7 +207,7 @@ module.exports = {
 
 	// For testing
 	getMethodName,
-	configureApi,
+	buildAPIAliases,
 	getAllAPIs,
-	getAPIConfig,
+	buildAPIConfig,
 };

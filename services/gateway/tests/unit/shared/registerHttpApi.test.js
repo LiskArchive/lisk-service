@@ -18,11 +18,11 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { configureAPIPrefix, configureAPIMethods, configureApiResponse,
-	configureAPIPrefixWithFalseEtag, configureAPIMethodsWithFalseEtag,
-	configureAPIWithFalseEtagResponse, getAllAPIsExpectedResponse, expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
+const { buildAPIAliasesPrefix, buildAPIAliasesMethods, buildAPIAliasesResponse,
+	buildAPIAliasesPrefixWithFalseEtag, buildAPIAliasesMethodsWithFalseEtag,
+	buildAPIAliasesWithFalseEtagResponse, getAllAPIsExpectedResponse, expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
 
-describe('Test getAPIConfig method', () => {
+describe('Test buildAPIConfig method', () => {
 	let config;
 	let methodPaths;
 	let req;
@@ -63,7 +63,7 @@ describe('Test getAPIConfig method', () => {
 		};
 	});
 
-	describe('Test onBeforeCall function of getAPIConfig', () => {
+	describe('Test onBeforeCall function of buildAPIConfig', () => {
 		it('should call sendResponse and throw ValidationException if missing parameters exist', async () => {
 			const { validate } = require('../../../shared/paramValidator');
 			jest.mock('../../../shared/paramValidator');
@@ -75,8 +75,8 @@ describe('Test getAPIConfig method', () => {
 				valid: {},
 			});
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
 			result.onBeforeCall(ctx, route, req, res).catch((e) => {
 				expect(e).toBeInstanceOf(ValidationException);
@@ -94,8 +94,8 @@ describe('Test getAPIConfig method', () => {
 				valid: {},
 			});
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
 			result.onBeforeCall(ctx, route, req, res).catch((e) => {
 				expect(e).toBeInstanceOf(ValidationException);
@@ -113,9 +113,9 @@ describe('Test getAPIConfig method', () => {
 				valid: {},
 			});
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
 			result.onBeforeCall(ctx, route, req, res).catch((e) => {
 				expect(e).toBeInstanceOf(ValidationException);
@@ -133,9 +133,9 @@ describe('Test getAPIConfig method', () => {
 				valid: {},
 			});
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
 			result.onBeforeCall(ctx, route, req, res).catch((e) => {
 				expect(e).toBeInstanceOf(ValidationException);
@@ -162,20 +162,20 @@ describe('Test getAPIConfig method', () => {
 				{ param1: true, param2: true },
 			);
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			await result.onBeforeCall(ctx, route, req, res);
 
 			expect(req.$params).toEqual({ param1: true, param2: true });
 		});
 	});
 
-	describe('Test onAfterCall function of getAPIConfig', () => {
+	describe('Test onAfterCall function of buildAPIConfig', () => {
 		it('should set Content-Disposition and Content-Type headers and send CSV data if filename ends with .csv', async () => {
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			await result.onAfterCall(ctx, route, req, res, data);
 
 			expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="data.csv"');
@@ -189,20 +189,20 @@ describe('Test getAPIConfig method', () => {
 			jest.mock('../../../../gateway/shared/apiUtils');
 			jest.mock('../../../../gateway/shared/paramValidator');
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
 			const testData = { data: {}, status: 'NOT_FOUND' };
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			await result.onAfterCall(ctx, route, req, res, testData);
 
 			expect(ctx.meta.$statusCode).toBe(StatusCodes.NOT_FOUND);
 		});
 
 		it('should return an error object if the data status is not ACCEPTED', async () => {
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
 			const testData = { data: { error: 'Invalid parameters' }, status: 'INVALID_PARAMS' };
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			const response = await result.onAfterCall(ctx, route, req, res, testData);
 
 			expect(response.error).toBe(true);
@@ -216,9 +216,9 @@ describe('Test getAPIConfig method', () => {
 			const testData = { data: { id: 1, name: 'John Doe' }, status: 'ACCEPTED' };
 			transformResponse.mockReturnValueOnce(testData);
 
-			const { getAPIConfig } = require('../../../shared/registerHttpApi');
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
-			const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			const response = await result.onAfterCall(ctx, route, req, res, testData);
 
 			expect(response).toBe(testData);
@@ -226,66 +226,66 @@ describe('Test getAPIConfig method', () => {
 	});
 
 	it('should add configPath to the returned object', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 		const configPath = '/api/users';
-		const result = getAPIConfig(configPath, config, {}, [], methodPaths, 'strong');
+		const result = buildAPIConfig(configPath, config, {}, [], methodPaths, 'strong');
 
 		expect(result.path).toBe(configPath);
 	});
 
 	it('should merge the whitelist arrays', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 		config.whitelist = ['/api/posts'];
 		const whitelist = ['/api/comments', '/api/likes'];
-		const result = getAPIConfig('/api/users', config, {}, whitelist, methodPaths, 'strong');
+		const result = buildAPIConfig('/api/users', config, {}, whitelist, methodPaths, 'strong');
 
 		expect(result.whitelist).toEqual(['/api/posts', '/api/comments', '/api/likes']);
 	});
 
 	it('should merge the aliases objects', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 		config.aliases = { getUsers: '/api/users' };
 		const aliases = { getPosts: '/api/posts' };
-		const result = getAPIConfig('/api/users', config, aliases, [], methodPaths, 'strong');
+		const result = buildAPIConfig('/api/users', config, aliases, [], methodPaths, 'strong');
 
 		expect(result.aliases).toEqual({ getUsers: '/api/users', getPosts: '/api/posts' });
 	});
 
-	it('should set etag to "strong" if etag is undefined or "strong"', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
-		const result1 = getAPIConfig('/api/users', config, {}, [], methodPaths, undefined);
-		const result2 = getAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+	it('should set eTag to "strong" if eTag is undefined or "strong"', () => {
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+		const result1 = buildAPIConfig('/api/users', config, {}, [], methodPaths, undefined);
+		const result2 = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
 		expect(result1.etag).toBe('strong');
 		expect(result2.etag).toBe('strong');
 	});
 
-	it('should set etag to weak if etag is weak', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
-		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, 'weak');
+	it('should set eTag to weak if eTag is weak', () => {
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'weak');
 
 		expect(result.etag).toBe('weak');
 	});
 
-	it('should set etag to false if etag is false', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
-		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, false);
+	it('should set eTag to false if eTag is false', () => {
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, false);
 
 		expect(result.etag).toBe(false);
 	});
 
-	it('should set etag to true if etag is true', () => {
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
-		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, true);
+	it('should set eTag to true if eTag is true', () => {
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, true);
 
 		expect(result.etag).toBe(true);
 	});
 
-	it('should execute etag function if etag is a function', () => {
-		const etagFunction = () => 'test';
+	it('should execute eTag function if eTag is a function', () => {
+		const eTagFunction = () => 'test';
 
-		const { getAPIConfig } = require('../../../shared/registerHttpApi');
-		const result = getAPIConfig('/api/users', config, {}, [], methodPaths, etagFunction);
+		const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+		const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, eTagFunction);
 
 		expect(result.etag).toBe('test');
 	});
@@ -378,29 +378,29 @@ describe('Test registerApi method', () => {
 	});
 });
 
-describe('Test configureApi method', () => {
+describe('Test buildAPIAliases method', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		jest.resetModules();
 	});
 
 	it('should return proper response when called with correct params', async () => {
-		const { configureApi } = require('../../../shared/registerHttpApi');
-		const response = configureApi(configureAPIPrefix, configureAPIMethods);
+		const { buildAPIAliases } = require('../../../shared/registerHttpApi');
+		const response = buildAPIAliases(buildAPIAliasesPrefix, buildAPIAliasesMethods);
 
-		expect(response).toEqual(configureApiResponse);
+		expect(response).toEqual(buildAPIAliasesResponse);
 	});
 
-	it('should return proper response when called with correct params and etag as false', async () => {
-		const { configureApi } = require('../../../shared/registerHttpApi');
-		const response = configureApi(configureAPIPrefixWithFalseEtag,
-			configureAPIMethodsWithFalseEtag);
+	it('should return proper response when called with correct params and eTag as false', async () => {
+		const { buildAPIAliases } = require('../../../shared/registerHttpApi');
+		const response = buildAPIAliases(buildAPIAliasesPrefixWithFalseEtag,
+			buildAPIAliasesMethodsWithFalseEtag);
 
-		expect(response).toEqual(configureAPIWithFalseEtagResponse);
+		expect(response).toEqual(buildAPIAliasesWithFalseEtagResponse);
 	});
 
 	it('should return empty response when called with empty params', async () => {
-		const { configureApi } = require('../../../shared/registerHttpApi');
-		expect(configureApi('/test', {})).toEqual({ aliases: {}, methodPaths: {}, whitelist: [] });
+		const { buildAPIAliases } = require('../../../shared/registerHttpApi');
+		expect(buildAPIAliases('/test', {})).toEqual({ aliases: {}, methodPaths: {}, whitelist: [] });
 	});
 });

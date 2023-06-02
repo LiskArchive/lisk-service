@@ -792,8 +792,8 @@ const sourceForMapParam = {
 	mappingKey: 'mappingValue',
 };
 
-const configureAPIPrefix = '/test';
-const configureAPIMethods = {
+const buildAPIAliasesPrefix = '/test';
+const buildAPIAliasesMethods = {
 	errorServer: {
 		version: '2.0',
 		swaggerApiPath: '/server_error',
@@ -841,7 +841,7 @@ const configureAPIMethods = {
 	},
 };
 
-const configureApiResponse = {
+const buildAPIAliasesResponse = {
 	aliases: {
 		'GET /': 'template.generic.hello',
 	},
@@ -883,8 +883,8 @@ const configureApiResponse = {
 	},
 };
 
-const configureAPIPrefixWithFalseEtag = '/v3';
-const configureAPIMethodsWithFalseEtag = {
+const buildAPIAliasesPrefixWithFalseEtag = '/v3';
+const buildAPIAliasesMethodsWithFalseEtag = {
 	key: {
 		version: '2.0',
 		swaggerApiPath: '/token/balances',
@@ -997,7 +997,7 @@ const configureAPIMethodsWithFalseEtag = {
 	},
 };
 
-const configureAPIWithFalseEtagResponse = {
+const buildAPIAliasesWithFalseEtagResponse = {
 	aliases: {
 		'GET /': 'indexer.token.balances',
 	},
@@ -1174,13 +1174,13 @@ module.exports = {
 
 	sourceForMapParam,
 
-	configureAPIPrefix,
-	configureAPIMethods,
-	configureApiResponse,
+	buildAPIAliasesPrefix,
+	buildAPIAliasesMethods,
+	buildAPIAliasesResponse,
 
-	configureAPIPrefixWithFalseEtag,
-	configureAPIMethodsWithFalseEtag,
-	configureAPIWithFalseEtagResponse,
+	buildAPIAliasesPrefixWithFalseEtag,
+	buildAPIAliasesMethodsWithFalseEtag,
+	buildAPIAliasesWithFalseEtagResponse,
 
 	getAllAPIsExpectedResponse,
 };
