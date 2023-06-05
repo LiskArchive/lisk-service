@@ -18,20 +18,16 @@ const {
 	Microservice,
 	LoggerConfig,
 	Logger,
-	MySQL: {
-		KVStore: {
-			configureKeyValueTable,
-		},
-	},
 } = require('lisk-service-framework');
 
 const config = require('./config');
 
-configureKeyValueTable(config.endpoints.mysql);
 LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
+
 const { init } = require('./shared/init');
+const { initDatabase } = require('./shared/database/init');
 const { setAppContext } = require('./shared/utils/request');
 
 const logger = Logger();
@@ -56,11 +52,18 @@ app.addJobs(path.join(__dirname, 'jobs'));
 app.addEvents(path.join(__dirname, 'events'));
 
 // Run the application
-app.run().then(async () => {
-	await init();
-	logger.info(`Service started ${packageJson.name}.`);
-}).catch(err => {
+const reportErrorAndExitProcess = (err) => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 	logger.fatal(err.stack);
 	process.exit(1);
-});
+};
+
+initDatabase()
+	.then(() => app.run()
+		.then(async () => {
+			await init();
+			logger.info(`Service started ${packageJson.name}.`);
+		})
+		.catch(reportErrorAndExitProcess),
+	)
+	.catch(reportErrorAndExitProcess);

@@ -32,7 +32,7 @@ const {
 const txStatsTableSchema = require('../../shared/database/schemas/transactionStatistics');
 const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getTransactionStatisticsTable = () => getTableInstance(txStatsTableSchema, MYSQL_ENDPOINT);
 

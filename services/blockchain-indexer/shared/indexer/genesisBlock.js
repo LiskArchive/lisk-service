@@ -32,7 +32,7 @@ const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const commissionsTableSchema = require('../database/schema/commissions');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 

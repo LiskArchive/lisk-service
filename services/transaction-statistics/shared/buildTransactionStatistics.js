@@ -40,7 +40,7 @@ const config = require('../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysql;
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
 const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(

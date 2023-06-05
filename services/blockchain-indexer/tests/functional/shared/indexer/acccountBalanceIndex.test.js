@@ -26,7 +26,7 @@ const request = require('../../../../shared/utils/request');
 const { MODULE } = require('../../../../shared/constants');
 const { eventsIncludingTokenModule } = require('../../../constants/events');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 

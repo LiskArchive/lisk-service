@@ -13,14 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const path = require('path');
-const BluebirdPromise = require('bluebird');
-
 const {
 	Logger,
 	MySQL: { getTableInstance },
 	Signals,
-	Utils,
 } = require('lisk-service-framework');
 
 const {
@@ -109,22 +105,10 @@ const reportIndexStatus = async () => {
 		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 	].join(', '));
 
-	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
-};
-
-const initializeSearchIndex = async () => {
-	// Dynamically fetch all available table schemas
-	const tableSchemas = Object.values(Utils.requireAllJs(path.join(__dirname, '../database/schema')));
-	await BluebirdPromise.map(
-		tableSchemas,
-		schema => getTableInstance(schema, MYSQL_ENDPOINT),
-		{ concurrency: 1 },
-	);
-	Signals.get('searchIndexInitialized').dispatch();
+	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%).`);
 };
 
 const init = async () => {
-	await initializeSearchIndex();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
 
 	// Register event listeners

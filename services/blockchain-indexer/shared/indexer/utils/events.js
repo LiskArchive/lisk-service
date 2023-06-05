@@ -36,7 +36,7 @@ const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const keyValueTable = getKeyValueTable();
 

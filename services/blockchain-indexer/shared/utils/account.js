@@ -26,7 +26,7 @@ const {
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 

@@ -21,7 +21,7 @@ const {
 const config = require('../../config');
 const accountsTableSchema = require('../database/schema/accounts');
 
-const MYSQL_ENDPOINT = config.endpoints.mysqlPrimary;
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
