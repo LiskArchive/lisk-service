@@ -57,7 +57,7 @@ const getSelector = async (params) => {
 };
 
 const getStatsTimeline = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
+	const transactionStatisticsTable = await getTransactionStatisticsTable();
 	const tokenStatsTimeline = {};
 
 	await BluebirdPromise.map(
@@ -72,25 +72,25 @@ const getStatsTimeline = async params => {
 				['date', 'count', 'volume'],
 			);
 
-			const unorderedfinalResult = {};
+			const unorderedFinalResult = {};
 			result.forEach(entry => {
 				const currFormattedDate = moment.unix(entry.date).format(params.dateFormat);
 
-				if (!unorderedfinalResult[currFormattedDate]) {
-					unorderedfinalResult[currFormattedDate] = {
+				if (!unorderedFinalResult[currFormattedDate]) {
+					unorderedFinalResult[currFormattedDate] = {
 						date: currFormattedDate,
 						transactionCount: 0,
 						volume: 0,
 					};
 				}
 
-				const statForDate = unorderedfinalResult[currFormattedDate];
+				const statForDate = unorderedFinalResult[currFormattedDate];
 				statForDate.transactionCount += entry.count;
 				statForDate.volume += entry.volume;
 			});
 
 			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
-				const timelineRaw = Object.values(unorderedfinalResult)
+				const timelineRaw = Object.values(unorderedFinalResult)
 					.sort((a, b) => a.date.localeCompare(b.date)).reverse();
 
 				tokenStatsTimeline[tokenID] = timelineRaw.map((el) => ({
@@ -107,7 +107,7 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
+	const transactionStatisticsTable = await getTransactionStatisticsTable();
 	const tokenDistributionByAmount = {};
 
 	await BluebirdPromise.map(
@@ -121,18 +121,18 @@ const getDistributionByAmount = async params => {
 				},
 				['amount_range', 'count'])).filter(o => o.count > 0);
 
-			const unorderedfinalResult = {};
+			const unorderedFinalResult = {};
 			result.forEach(entry => {
-				if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
-				unorderedfinalResult[entry.amount_range] += entry.count;
+				if (!unorderedFinalResult[entry.amount_range]) unorderedFinalResult[entry.amount_range] = 0;
+				unorderedFinalResult[entry.amount_range] += entry.count;
 			});
 
 			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
 				const orderedFinalResult = {};
-				Object.keys(unorderedfinalResult)
+				Object.keys(unorderedFinalResult)
 					.sort((a, b) => String(a).localeCompare(String(b)))
 					.forEach(amountRange => {
-						orderedFinalResult[amountRange] = unorderedfinalResult[amountRange];
+						orderedFinalResult[amountRange] = unorderedFinalResult[amountRange];
 					});
 
 				tokenDistributionByAmount[tokenID] = orderedFinalResult;
@@ -145,28 +145,28 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
+	const transactionStatisticsTable = await getTransactionStatisticsTable();
 
 	const result = (await transactionStatisticsTable.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
 
-	const unorderedfinalResult = {};
+	const unorderedFinalResult = {};
 	result.forEach(entry => {
-		if (!unorderedfinalResult[entry.moduleCommand]) unorderedfinalResult[entry.moduleCommand] = 0;
-		unorderedfinalResult[entry.moduleCommand] += entry.count;
+		if (!unorderedFinalResult[entry.moduleCommand]) unorderedFinalResult[entry.moduleCommand] = 0;
+		unorderedFinalResult[entry.moduleCommand] += entry.count;
 	});
 
 	const orderedFinalResult = {};
-	Object.keys(unorderedfinalResult)
+	Object.keys(unorderedFinalResult)
 		.sort((a, b) => String(a).localeCompare(String(b)))
 		.forEach(moduleCommand => {
-			orderedFinalResult[moduleCommand] = unorderedfinalResult[moduleCommand];
+			orderedFinalResult[moduleCommand] = unorderedFinalResult[moduleCommand];
 		});
 
 	return orderedFinalResult;
 };
 
 const getTransactionsStatistics = async params => {
-	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT);
+	const transactionStatisticsTable = await getTransactionStatisticsTable();
 
 	const transactionsStatistics = {
 		data: {},

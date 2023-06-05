@@ -120,7 +120,6 @@ services:
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
-      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
     restart: always
 
   blockchain-connector:
@@ -212,7 +211,7 @@ services:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
       - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
-      - SERVICE_STATISTICS_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica:3306/lisk
+      - SERVICE_STATISTICS_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica-haproxy:3307/lisk
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
     restart: always
 
