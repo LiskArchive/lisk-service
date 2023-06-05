@@ -109,7 +109,7 @@ tempApp.run().then(async () => {
 			use: [],
 
 			cors: {
-				origin: '*',
+				origin: config.cors.allowedOrigin,
 				methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 				allowedHeaders: [
 					'Content-Type',

@@ -30,6 +30,7 @@ A list of the most commonly used environment variables is presented below:
 - `JSON_RPC_STRICT_MODE`: Makes JSON-RPC require a valid JSON-RPC 2.0 envelope.
 - `ENABLE_HTTP_API`: Enables particular HTTP APIs listed by a comma.
 - `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma.
+- `CORS_ALLOWED_ORIGIN`: Allows request from the comma separated string of origins. By default, it is set to `*` which allows request from all origins.
 
 The variables listed above can be overridden globally by using global variables.
 
@@ -43,6 +44,7 @@ export ENABLE_HTTP_API="http-status,http-version3"
 # Run local instance with HTTP API only
 ENABLE_HTTP_API="http-status,http-version3" \
 ENABLE_WS_API="" \
+CORS_ALLOWED_ORIGIN="https://www.host1.com,https://www.host2.com" \
 node app.js
 ```
 
@@ -50,6 +52,7 @@ node app.js
 # Run a local instance with the RPC API in a strict mode and using HTTP
 ENABLE_HTTP_API="http-status,http-version3" \
 ENABLE_WS_API="blockchain,rpc-v3" \
+CORS_ALLOWED_ORIGIN="https://www.host1.com,https://www.host2.com" \
 JSON_RPC_STRICT_MODE="true" \
 node app.js
 ```

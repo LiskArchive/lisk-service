@@ -14,96 +14,108 @@
  *
  */
 // TODO: Expected response for registerApi method should be dynamically constructed
-const expectedResponseForRegisterHttpApi = {
-	whitelist: [
-		'indexer.blocks.assets',
-		'indexer.blockchain.apps',
-		'app-registry.blockchain.apps.meta.list',
-		'app-registry.blockchain.apps.meta',
-		'indexer.blockchain.apps.statistics',
-		'app-registry.blockchain.apps.meta.tokens',
-		'app-registry.blockchain.apps.meta.tokens.supported',
-		'indexer.blocks',
-		'indexer.events',
-		'fees.estimates',
-		'indexer.generators',
-		'indexer.index.status',
-		'indexer.invokeEndpoint',
-		'market.prices',
-		'indexer.network.peers',
-		'indexer.network.statistics',
-		'indexer.network.status',
-		'indexer.transactions.post',
-		'indexer.schemas',
-		'gateway.spec',
-		'indexer.transactions',
-		'indexer.transactions.dryrun',
-		'indexer.transactions.estimate-fees',
-		'statistics.transactions.statistics',
-		'indexer.legacy',
-		'indexer.pos.rewards.claimable',
-		'indexer.pos.constants',
-		'indexer.pos.rewards.locked',
-		'indexer.pos.stakers',
-		'indexer.pos.stakes',
-		'indexer.pos.unlocks',
-		'indexer.pos.validators',
-		'indexer.token.account.exists',
-		'indexer.token.available-ids',
-		'indexer.token.balances',
-		'indexer.token.constants',
-		'indexer.token.summary',
-		'indexer.token.balances.top',
-		'indexer.validator',
-		'indexer.validateBLSKey',
-		'export.transactions.csv',
-		'export.transactions.schedule',
-	],
-	aliases: {
-		'GET blocks/assets': 'indexer.blocks.assets',
-		'GET blockchain/apps': 'indexer.blockchain.apps',
-		'GET blockchain/apps/meta/list': 'app-registry.blockchain.apps.meta.list',
-		'GET blockchain/apps/meta': 'app-registry.blockchain.apps.meta',
-		'GET blockchain/apps/statistics': 'indexer.blockchain.apps.statistics',
-		'GET blockchain/apps/meta/tokens': 'app-registry.blockchain.apps.meta.tokens',
-		'GET blockchain/apps/meta/tokens/supported': 'app-registry.blockchain.apps.meta.tokens.supported',
-		'GET blocks': 'indexer.blocks',
-		'GET events': 'indexer.events',
-		'GET fees': 'fees.estimates',
-		'GET generators': 'indexer.generators',
-		'GET index/status': 'indexer.index.status',
-		'POST invoke': 'indexer.invokeEndpoint',
-		'GET market/prices': 'market.prices',
-		'GET network/peers': 'indexer.network.peers',
-		'GET network/statistics': 'indexer.network.statistics',
-		'GET network/status': 'indexer.network.status',
-		'POST transactions': 'indexer.transactions.post',
-		'GET schemas': 'indexer.schemas',
-		'GET spec': 'gateway.spec',
-		'GET transactions': 'indexer.transactions',
-		'POST transactions/dryrun': 'indexer.transactions.dryrun',
-		'POST transactions/estimate-fees': 'indexer.transactions.estimate-fees',
-		'GET transactions/statistics': 'statistics.transactions.statistics',
-		'GET legacy': 'indexer.legacy',
-		'GET pos/rewards/claimable': 'indexer.pos.rewards.claimable',
-		'GET pos/constants': 'indexer.pos.constants',
-		'GET pos/rewards/locked': 'indexer.pos.rewards.locked',
-		'GET pos/stakers': 'indexer.pos.stakers',
-		'GET pos/stakes': 'indexer.pos.stakes',
-		'GET pos/unlocks': 'indexer.pos.unlocks',
-		'GET pos/validators': 'indexer.pos.validators',
-		'GET token/account/exists': 'indexer.token.account.exists',
-		'GET token/balances': 'indexer.token.balances',
-		'GET token/balances/top': 'indexer.token.balances.top',
-		'GET token/constants': 'indexer.token.constants',
-		'GET token/available-ids': 'indexer.token.available-ids',
-		'GET token/summary': 'indexer.token.summary',
-		'GET validator': 'indexer.validator',
-		'POST validator/validate-bls-key': 'indexer.validateBLSKey',
-		'GET export/download': 'export.transactions.csv',
-		'GET export/transactions': 'export.transactions.schedule',
+const expectedResponseForRegisterHttpApi = [
+	{
+		whitelist: [
+			'indexer.blocks.assets',
+			'indexer.blockchain.apps',
+			'app-registry.blockchain.apps.meta.list',
+			'app-registry.blockchain.apps.meta',
+			'indexer.blockchain.apps.statistics',
+			'app-registry.blockchain.apps.meta.tokens',
+			'app-registry.blockchain.apps.meta.tokens.supported',
+			'indexer.blocks',
+			'indexer.events',
+			'fees.estimates',
+			'indexer.generators',
+			'indexer.index.status',
+			'indexer.invokeEndpoint',
+			'market.prices',
+			'indexer.network.peers',
+			'indexer.network.statistics',
+			'indexer.network.status',
+			'indexer.transactions.post',
+			'indexer.schemas',
+			'gateway.spec',
+			'indexer.transactions',
+			'indexer.transactions.dryrun',
+			'indexer.transactions.estimate-fees',
+			'statistics.transactions.statistics',
+			'indexer.legacy',
+			'indexer.pos.rewards.claimable',
+			'indexer.pos.constants',
+			'indexer.pos.rewards.locked',
+			'indexer.pos.stakers',
+			'indexer.pos.stakes',
+			'indexer.pos.unlocks',
+			'indexer.pos.validators',
+			'indexer.token.account.exists',
+			'indexer.token.available-ids',
+			'indexer.token.constants',
+			'indexer.token.summary',
+			'indexer.token.balances.top',
+			'indexer.validator',
+			'indexer.validateBLSKey',
+			'export.transactions.csv',
+			'export.transactions.schedule',
+		],
+		aliases: {
+			'GET blocks/assets': 'indexer.blocks.assets',
+			'GET blockchain/apps': 'indexer.blockchain.apps',
+			'GET blockchain/apps/meta/list': 'app-registry.blockchain.apps.meta.list',
+			'GET blockchain/apps/meta': 'app-registry.blockchain.apps.meta',
+			'GET blockchain/apps/statistics': 'indexer.blockchain.apps.statistics',
+			'GET blockchain/apps/meta/tokens': 'app-registry.blockchain.apps.meta.tokens',
+			'GET blockchain/apps/meta/tokens/supported': 'app-registry.blockchain.apps.meta.tokens.supported',
+			'GET blocks': 'indexer.blocks',
+			'GET events': 'indexer.events',
+			'GET fees': 'fees.estimates',
+			'GET generators': 'indexer.generators',
+			'GET index/status': 'indexer.index.status',
+			'POST invoke': 'indexer.invokeEndpoint',
+			'GET market/prices': 'market.prices',
+			'GET network/peers': 'indexer.network.peers',
+			'GET network/statistics': 'indexer.network.statistics',
+			'GET network/status': 'indexer.network.status',
+			'POST transactions': 'indexer.transactions.post',
+			'GET schemas': 'indexer.schemas',
+			'GET spec': 'gateway.spec',
+			'GET transactions': 'indexer.transactions',
+			'POST transactions/dryrun': 'indexer.transactions.dryrun',
+			'POST transactions/estimate-fees': 'indexer.transactions.estimate-fees',
+			'GET transactions/statistics': 'statistics.transactions.statistics',
+			'GET legacy': 'indexer.legacy',
+			'GET pos/rewards/claimable': 'indexer.pos.rewards.claimable',
+			'GET pos/constants': 'indexer.pos.constants',
+			'GET pos/rewards/locked': 'indexer.pos.rewards.locked',
+			'GET pos/stakers': 'indexer.pos.stakers',
+			'GET pos/stakes': 'indexer.pos.stakes',
+			'GET pos/unlocks': 'indexer.pos.unlocks',
+			'GET pos/validators': 'indexer.pos.validators',
+			'GET token/account/exists': 'indexer.token.account.exists',
+			'GET token/available-ids': 'indexer.token.available-ids',
+			'GET token/constants': 'indexer.token.constants',
+			'GET token/summary': 'indexer.token.summary',
+			'GET token/balances/top': 'indexer.token.balances.top',
+			'GET validator': 'indexer.validator',
+			'POST validator/validate-bls-key': 'indexer.validateBLSKey',
+			'GET export/download': 'export.transactions.csv',
+			'GET export/transactions': 'export.transactions.schedule',
+		},
+		path: '/v3',
+		etag: 'strong',
 	},
-};
+	{
+		whitelist: [
+			'indexer.token.balances',
+		],
+		aliases: {
+			'GET /': 'indexer.token.balances',
+		},
+		path: '/v3/token/balances',
+		etag: false,
+	},
+];
 
 // TODO: Expected response for registerApi method should be dynamically constructed
 const expectedResponseForRegisterRpcApi = {
@@ -460,6 +472,368 @@ const sourceForMapParam = {
 	mappingKey: 'mappingValue',
 };
 
+const buildAPIAliasesPrefix = '/test';
+const buildAPIAliasesMethods = {
+	errorServer: {
+		version: '2.0',
+		swaggerApiPath: '/server_error',
+		rpcMethod: 'get.server_error',
+		envelope: {},
+		source: {
+			type: 'moleculer',
+			method: 'template.server.error',
+			params: {},
+			definition: {
+				error: '=,string',
+				status: '=,number',
+			},
+		},
+	},
+	helloGeneric: {
+		version: '2.0',
+		swaggerApiPath: '/hello',
+		rpcMethod: 'get.hello',
+		envelope: {
+			data: [],
+			meta: {},
+			links: {},
+		},
+		source: {
+			type: 'moleculer',
+			method: 'template.generic.hello',
+			params: {},
+			definition: {
+				data: [
+					'data',
+					{
+						message: '=',
+						name: '=',
+					},
+				],
+				meta: {
+					count: 'meta.count,number',
+					offset: '=,number',
+					total: 'meta.total,number',
+				},
+				links: {},
+			},
+		},
+	},
+};
+
+const buildAPIAliasesResponse = {
+	aliases: {
+		'GET /': 'template.generic.hello',
+	},
+	whitelist: [
+		'template.server.error',
+		'template.generic.hello',
+	],
+	methodPaths: {
+		'GET ': {
+			version: '2.0',
+			swaggerApiPath: '/hello',
+			rpcMethod: 'get.hello',
+			envelope: {
+				data: [],
+				meta: {},
+				links: {},
+			},
+			source: {
+				type: 'moleculer',
+				method: 'template.generic.hello',
+				params: {},
+				definition: {
+					data: [
+						'data',
+						{
+							message: '=',
+							name: '=',
+						},
+					],
+					meta: {
+						count: 'meta.count,number',
+						offset: '=,number',
+						total: 'meta.total,number',
+					},
+					links: {},
+				},
+			},
+		},
+	},
+};
+
+const buildAPIAliasesPrefixWithFalseEtag = '/v3';
+const buildAPIAliasesMethodsWithFalseEtag = {
+	key: {
+		version: '2.0',
+		swaggerApiPath: '/token/balances',
+		rpcMethod: 'get.token.balances',
+		tags: [
+			'Token',
+		],
+		etag: false,
+		params: {
+			address: {
+				optional: false,
+				type: 'string',
+				pattern: {},
+			},
+			tokenID: {
+				optional: true,
+				type: 'string',
+				pattern: {},
+			},
+			limit: {
+				optional: true,
+				type: 'number',
+				min: 1,
+				max: 100,
+				default: 10,
+			},
+			offset: {
+				optional: true,
+				type: 'number',
+				min: 0,
+				default: 0,
+			},
+		},
+		schema: {
+			'/token/balances': {
+				get: {
+					tags: [
+						'Token',
+					],
+					summary: 'Requests tokens information',
+					description: 'Returns tokens information\n RPC => get.token.balances',
+					parameters: [
+						{
+							$ref: '#/parameters/address',
+						},
+						{
+							$ref: '#/parameters/tokenID',
+						},
+						{
+							$ref: '#/parameters/limit',
+						},
+						{
+							$ref: '#/parameters/offset',
+						},
+					],
+					responses: {
+						200: {
+							description: 'Returns a list of supported tokens by the blockchain application',
+							schema: {
+								$ref: '#/definitions/tokenWithEnvelope',
+							},
+						},
+						400: {
+							description: 'Bad request',
+							schema: {
+								$ref: '#/definitions/badRequest',
+							},
+						},
+					},
+				},
+			},
+		},
+		source: {
+			type: 'moleculer',
+			method: 'indexer.token.balances',
+			params: {
+				address: '=,string',
+				tokenID: '=,string',
+				offset: '=,number',
+				limit: '=,number',
+			},
+			definition: {
+				data: [
+					'data',
+					{
+						tokenID: '=,string',
+						availableBalance: '=,string',
+						lockedBalances: [
+							'lockedBalances',
+							{
+								module: '=,string',
+								amount: '=,string',
+							},
+						],
+					},
+				],
+				meta: {
+					address: '=,string',
+					count: '=,number',
+					offset: '=,number',
+					total: '=,number',
+				},
+				links: {},
+			},
+		},
+		envelope: {
+			data: [],
+			meta: {},
+		},
+	},
+};
+
+const buildAPIAliasesWithFalseEtagResponse = {
+	aliases: {
+		'GET /': 'indexer.token.balances',
+	},
+	whitelist: [
+		'indexer.token.balances',
+	],
+	methodPaths: {
+		'GET ': {
+			version: '2.0',
+			swaggerApiPath: '/token/balances',
+			rpcMethod: 'get.token.balances',
+			tags: [
+				'Token',
+			],
+			etag: false,
+			params: {
+				address: {
+					optional: false,
+					type: 'string',
+					pattern: {},
+				},
+				tokenID: {
+					optional: true,
+					type: 'string',
+					pattern: {},
+				},
+				limit: {
+					optional: true,
+					type: 'number',
+					min: 1,
+					max: 100,
+					default: 10,
+				},
+				offset: {
+					optional: true,
+					type: 'number',
+					min: 0,
+					default: 0,
+				},
+			},
+			schema: {
+				'/token/balances': {
+					get: {
+						tags: [
+							'Token',
+						],
+						summary: 'Requests tokens information',
+						description: 'Returns tokens information\n RPC => get.token.balances',
+						parameters: [
+							{
+								$ref: '#/parameters/address',
+							},
+							{
+								$ref: '#/parameters/tokenID',
+							},
+							{
+								$ref: '#/parameters/limit',
+							},
+							{
+								$ref: '#/parameters/offset',
+							},
+						],
+						responses: {
+							200: {
+								description: 'Returns a list of supported tokens by the blockchain application',
+								schema: {
+									$ref: '#/definitions/tokenWithEnvelope',
+								},
+							},
+							400: {
+								description: 'Bad request',
+								schema: {
+									$ref: '#/definitions/badRequest',
+								},
+							},
+						},
+					},
+				},
+			},
+			source: {
+				type: 'moleculer',
+				method: 'indexer.token.balances',
+				params: {
+					address: '=,string',
+					tokenID: '=,string',
+					offset: '=,number',
+					limit: '=,number',
+				},
+				definition: {
+					data: [
+						'data',
+						{
+							tokenID: '=,string',
+							availableBalance: '=,string',
+							lockedBalances: [
+								'lockedBalances',
+								{
+									module: '=,string',
+									amount: '=,string',
+								},
+							],
+						},
+					],
+					meta: {
+						address: '=,string',
+						count: '=,number',
+						offset: '=,number',
+						total: '=,number',
+					},
+					links: {},
+				},
+			},
+			envelope: {
+				data: [],
+				meta: {},
+			},
+		},
+	},
+};
+
+const getAllAPIsExpectedResponse = {
+	ready: {
+		envelope: {},
+		rpcMethod: 'get.ready',
+		source: {
+			definition: {
+				services: '=',
+			},
+			method: 'gateway.ready',
+			params: {},
+			type: 'moleculer',
+		},
+		swaggerApiPath: '/ready',
+		version: '2.0',
+	},
+	status: {
+		envelope: {},
+		rpcMethod: 'get.status',
+		source: {
+			definition: {
+				build: '=',
+				chainID: '=',
+				description: '=',
+				name: '=',
+				networkNodeVersion: '=',
+				version: '=',
+			},
+			method: 'gateway.status',
+			params: {},
+			type: 'moleculer',
+		},
+		swaggerApiPath: '/status',
+		version: '2.0',
+	},
+};
+
 module.exports = {
 	expectedResponseForRegisterHttpApi,
 	expectedResponseForRegisterRpcApi,
@@ -479,4 +853,14 @@ module.exports = {
 	expectedResponseForTransformParams,
 
 	sourceForMapParam,
+
+	buildAPIAliasesPrefix,
+	buildAPIAliasesMethods,
+	buildAPIAliasesResponse,
+
+	buildAPIAliasesPrefixWithFalseEtag,
+	buildAPIAliasesMethodsWithFalseEtag,
+	buildAPIAliasesWithFalseEtagResponse,
+
+	getAllAPIsExpectedResponse,
 };
