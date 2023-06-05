@@ -39,6 +39,10 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 				return kProp;
 			});
 			table.primary(primaryKey);
+		})
+		.catch(err => {
+			if (err.message.includes(`Table '${tableName}' already exists`)) return;
+			throw err;
 		});
 
 	return knex;
