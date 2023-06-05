@@ -50,14 +50,34 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	},
 });
 
+const OPTIONAL_TRANSACTION_PARAMS_PROPERTIES = Object.freeze({
+	MESSAGE_FEE: {
+		propName: 'messageFee',
+		defaultValue: () => Number.MAX_VALUE,
+	},
+	MESSAGE_FEE_TOKEN_ID: {
+		propName: 'messageFeeTokenID',
+		defaultValue: () => '0000000000000000', // TODO: Resolve dynamically
+	},
+});
+
 const mockOptionalProperties = (_transaction, signaturesCount) => {
 	const transaction = _.cloneDeep(_transaction);
 
+	// TODO: Improve
 	Object
 		.values(OPTIONAL_TRANSACTION_PROPERTIES)
 		.forEach(optionalPropInfo => {
 			if (!(optionalPropInfo.propName in transaction)) {
 				transaction[optionalPropInfo.propName] = optionalPropInfo.defaultValue(signaturesCount);
+			}
+		});
+
+	Object
+		.values(OPTIONAL_TRANSACTION_PARAMS_PROPERTIES)
+		.forEach(optionalPropInfo => {
+			if (!(optionalPropInfo.propName in transaction.params)) {
+				transaction.params[optionalPropInfo.propName] = optionalPropInfo.defaultValue();
 			}
 		});
 
