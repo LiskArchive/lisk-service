@@ -200,7 +200,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 				eTagAPIs,
 				DEFAULT_ETAG_VALUE,
 			);
-			
+
 			apisToRegister.push(buildAPIConfig(config.path, config, strongEtagAPIConfig.aliases,
 				strongEtagAPIConfig.whitelist, strongEtagAPIConfig.methodPaths, DEFAULT_ETAG_VALUE));
 		} else {
