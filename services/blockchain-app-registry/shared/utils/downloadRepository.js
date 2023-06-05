@@ -24,9 +24,7 @@ const {
 		startDBTransaction,
 		commitDBTransaction,
 		rollbackDBTransaction,
-		KVStore: {
-			getKeyValueTable,
-		},
+		KVStore: { configureKeyValueTable, getKeyValueTable },
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -40,6 +38,9 @@ const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../met
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+configureKeyValueTable(MYSQL_ENDPOINT);
+
 const keyValueTable = getKeyValueTable();
 
 const { KV_STORE_KEY } = require('../constants');
