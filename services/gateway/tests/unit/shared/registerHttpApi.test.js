@@ -145,10 +145,10 @@ describe('Test buildAPIConfig method', () => {
 		it('should transform the valid parameters and update req.$params', async () => {
 			jest.resetModules();
 			const { validate } = require('../../../shared/paramValidator');
-			const { transformRequest } = require('../../../shared/apiUtils');
+			// const { transformRequest } = require('../../../shared/apiUtils');
 
 			jest.mock('../../../shared/paramValidator');
-			jest.mock('../../../shared/apiUtils');
+			// jest.mock('../../../shared/apiUtils');
 
 			validate.mockReturnValueOnce({
 				missing: [],
@@ -158,9 +158,17 @@ describe('Test buildAPIConfig method', () => {
 				valid: { param1: true, param2: true },
 			});
 
-			transformRequest.mockReturnValueOnce(
-				{ param1: true, param2: true },
-			);
+			jest.mock('../../../shared/apiUtils', () => {
+				const actual = jest.requireActual('../../../shared/apiUtils');
+				return {
+					...actual,
+					transformRequest: () => ({ param1: true, param2: true }),
+				};
+			});
+
+			// transformRequest.mockReturnValueOnce(
+			// 	{ param1: true, param2: true },
+			// );
 
 			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
@@ -210,11 +218,15 @@ describe('Test buildAPIConfig method', () => {
 		});
 
 		it('should return the transformed response if the data status is ACCEPTED', async () => {
-			const { transformResponse } = require('../../../shared/apiUtils');
-			jest.mock('../../../../gateway/shared/apiUtils');
-
 			const testData = { data: { id: 1, name: 'John Doe' }, status: 'ACCEPTED' };
-			transformResponse.mockReturnValueOnce(testData);
+
+			jest.mock('../../../shared/apiUtils', () => {
+				const actual = jest.requireActual('../../../shared/apiUtils');
+				return {
+					...actual,
+					transformRequest: () => testData,
+				};
+			});
 
 			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 
