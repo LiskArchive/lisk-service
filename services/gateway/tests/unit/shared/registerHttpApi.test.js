@@ -296,7 +296,7 @@ describe('Test getAllAPIs method', () => {
 		const { getAllAPIs } = require('../../../shared/registerHttpApi');
 		const registeredModuleNames = ['auth', 'validators', 'token'];
 		const apiName = 'http-status';
-		const response = getAllAPIs(apiName, registeredModuleNames, false);
+		const response = getAllAPIs(apiName, registeredModuleNames);
 		expect(response).toEqual(getAllAPIsExpectedResponse);
 	});
 });
