@@ -18,341 +18,52 @@ const expectedResponseForRegisterHttpApi = [
 	{
 		whitelist: [
 			'indexer.blocks.assets',
-		],
-		aliases: {
-			'GET /': 'indexer.blocks.assets',
-		},
-		path: '/v3/blocks/assets',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.blockchain.apps',
-		],
-		aliases: {
-			'GET /': 'indexer.blockchain.apps',
-		},
-		path: '/v3/blockchain/apps',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'app-registry.blockchain.apps.meta.list',
-		],
-		aliases: {
-			'GET /': 'app-registry.blockchain.apps.meta.list',
-		},
-		path: '/v3/blockchain/apps/meta/list',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'app-registry.blockchain.apps.meta',
-		],
-		aliases: {
-			'GET /': 'app-registry.blockchain.apps.meta',
-		},
-		path: '/v3/blockchain/apps/meta',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.blockchain.apps.statistics',
-		],
-		aliases: {
-			'GET /': 'indexer.blockchain.apps.statistics',
-		},
-		path: '/v3/blockchain/apps/statistics',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'app-registry.blockchain.apps.meta.tokens',
-		],
-		aliases: {
-			'GET /': 'app-registry.blockchain.apps.meta.tokens',
-		},
-		path: '/v3/blockchain/apps/meta/tokens',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'app-registry.blockchain.apps.meta.tokens.supported',
-		],
-		aliases: {
-			'GET /': 'app-registry.blockchain.apps.meta.tokens.supported',
-		},
-		path: '/v3/blockchain/apps/meta/tokens/supported',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.blocks',
-		],
-		aliases: {
-			'GET /': 'indexer.blocks',
-		},
-		path: '/v3/blocks',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.events',
-		],
-		aliases: {
-			'GET /': 'indexer.events',
-		},
-		path: '/v3/events',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'fees.estimates',
-		],
-		aliases: {
-			'GET /': 'fees.estimates',
-		},
-		path: '/v3/fees',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.generators',
-		],
-		aliases: {
-			'GET /': 'indexer.generators',
-		},
-		path: '/v3/generators',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.index.status',
-		],
-		aliases: {
-			'GET /': 'indexer.index.status',
-		},
-		path: '/v3/index/status',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.invokeEndpoint',
-		],
-		aliases: {
-			'POST /': 'indexer.invokeEndpoint',
-		},
-		path: '/v3/invoke',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'market.prices',
-		],
-		aliases: {
-			'GET /': 'market.prices',
-		},
-		path: '/v3/market/prices',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.network.peers',
-		],
-		aliases: {
-			'GET /': 'indexer.network.peers',
-		},
-		path: '/v3/network/peers',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.network.statistics',
-		],
-		aliases: {
-			'GET /': 'indexer.network.statistics',
-		},
-		path: '/v3/network/statistics',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.network.status',
-		],
-		aliases: {
-			'GET /': 'indexer.network.status',
-		},
-		path: '/v3/network/status',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.transactions.post',
-		],
-		aliases: {
-			'POST /': 'indexer.transactions.post',
-		},
-		path: '/v3/transactions',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.schemas',
-		],
-		aliases: {
-			'GET /': 'indexer.schemas',
-		},
-		path: '/v3/schemas',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'gateway.spec',
-		],
-		aliases: {
-			'GET /': 'gateway.spec',
-		},
-		path: '/v3/spec',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.transactions',
-		],
-		aliases: {
-			'GET /': 'indexer.transactions',
-		},
-		path: '/v3/transactions',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.transactions.dryrun',
-		],
-		aliases: {
-			'POST /': 'indexer.transactions.dryrun',
-		},
-		path: '/v3/transactions/dryrun',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.transactions.estimate-fees',
-		],
-		aliases: {
-			'POST /': 'indexer.transactions.estimate-fees',
-		},
-		path: '/v3/transactions/estimate-fees',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'statistics.transactions.statistics',
-		],
-		aliases: {
-			'GET /': 'statistics.transactions.statistics',
-		},
-		path: '/v3/transactions/statistics',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.legacy',
-		],
-		aliases: {
-			'GET /': 'indexer.legacy',
-		},
-		path: '/v3/legacy',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.rewards.claimable',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.rewards.claimable',
-		},
-		path: '/v3/pos/rewards/claimable',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.constants',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.constants',
-		},
-		path: '/v3/pos/constants',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.rewards.locked',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.rewards.locked',
-		},
-		path: '/v3/pos/rewards/locked',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.stakers',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.stakers',
-		},
-		path: '/v3/pos/stakers',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.stakes',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.stakes',
-		},
-		path: '/v3/pos/stakes',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.unlocks',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.unlocks',
-		},
-		path: '/v3/pos/unlocks',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.pos.validators',
-		],
-		aliases: {
-			'GET /': 'indexer.pos.validators',
-		},
-		path: '/v3/pos/validators',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.token.account.exists',
-		],
-		aliases: {
-			'GET /': 'indexer.token.account.exists',
-		},
-		path: '/v3/token/account/exists',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
 			'indexer.token.available-ids',
+			'indexer.token.constants',
+			'indexer.token.summary',
+			'indexer.token.balances.top',
+			'indexer.validator',
+			'indexer.validateBLSKey',
+			'export.transactions.csv',
+			'export.transactions.schedule',
 		],
 		aliases: {
-			'GET /': 'indexer.token.available-ids',
+			'GET undefined': 'export.transactions.schedule',
+			'POST undefined': 'indexer.validateBLSKey',
 		},
-		path: '/v3/token/available-ids',
+		path: '/v3',
 		etag: 'strong',
 	},
 	{
@@ -364,76 +75,6 @@ const expectedResponseForRegisterHttpApi = [
 		},
 		path: '/v3/token/balances',
 		etag: false,
-	},
-	{
-		whitelist: [
-			'indexer.token.constants',
-		],
-		aliases: {
-			'GET /': 'indexer.token.constants',
-		},
-		path: '/v3/token/constants',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'indexer.token.summary',
-		],
-		aliases: {
-			'GET /': 'indexer.token.summary',
-		},
-		path: '/v3/token/summary',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'indexer.token.balances.top',
-		],
-		aliases: {
-			'GET /': 'indexer.token.balances.top',
-		},
-		path: '/v3/token/balances/top',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'indexer.validator',
-		],
-		aliases: {
-			'GET /': 'indexer.validator',
-		},
-		path: '/v3/validator',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'indexer.validateBLSKey',
-		],
-		aliases: {
-			'POST /': 'indexer.validateBLSKey',
-		},
-		path: '/v3/validator/validate-bls-key',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'export.transactions.csv',
-		],
-		aliases: {
-			'GET /': 'export.transactions.csv',
-		},
-		path: '/v3/export/download',
-		etag: 'strong',
-	},
-	{
-		whitelist: [
-			'export.transactions.schedule',
-		],
-		aliases: {
-			'GET /': 'export.transactions.schedule',
-		},
-		path: '/v3/export/transactions',
-		etag: 'strong',
 	},
 ];
 

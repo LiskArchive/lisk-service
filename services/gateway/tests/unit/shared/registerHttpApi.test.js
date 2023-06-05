@@ -296,7 +296,7 @@ describe('Test getAllAPIs method', () => {
 		const { getAllAPIs } = require('../../../shared/registerHttpApi');
 		const registeredModuleNames = ['auth', 'validators', 'token'];
 		const apiName = 'http-status';
-		const response = getAllAPIs(apiName, registeredModuleNames);
+		const response = getAllAPIs(apiName, registeredModuleNames, false);
 		expect(response).toEqual(getAllAPIsExpectedResponse);
 	});
 });
@@ -386,7 +386,7 @@ describe('Test buildAPIAliases method', () => {
 
 	it('should return proper response when called with correct params', async () => {
 		const { buildAPIAliases } = require('../../../shared/registerHttpApi');
-		const response = buildAPIAliases(buildAPIAliasesPrefix, buildAPIAliasesMethods);
+		const response = buildAPIAliases(buildAPIAliasesPrefix, buildAPIAliasesMethods, false);
 
 		expect(response).toEqual(buildAPIAliasesResponse);
 	});
@@ -394,7 +394,7 @@ describe('Test buildAPIAliases method', () => {
 	it('should return proper response when called with correct params and eTag as false', async () => {
 		const { buildAPIAliases } = require('../../../shared/registerHttpApi');
 		const response = buildAPIAliases(buildAPIAliasesPrefixWithFalseEtag,
-			buildAPIAliasesMethodsWithFalseEtag);
+			buildAPIAliasesMethodsWithFalseEtag, false);
 
 		expect(response).toEqual(buildAPIAliasesWithFalseEtagResponse);
 	});
