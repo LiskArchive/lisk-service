@@ -26,17 +26,8 @@ const stakesTableSchema = require('../../database/schema/stakes');
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 const maxCommissionQ = q96(MAX_COMMISSION);
 
-const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema.tableName,
-	commissionsTableSchema,
-	MYSQL_ENDPOINT_REPLICA,
-);
-
-const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
-	stakesTableSchema,
-	MYSQL_ENDPOINT_REPLICA,
-);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT_REPLICA);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT_REPLICA);
 
 const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) => {
 	const commissionsTable = await getCommissionsTable();

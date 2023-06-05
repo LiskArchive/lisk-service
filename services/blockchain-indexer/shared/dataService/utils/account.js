@@ -34,11 +34,7 @@ const regex = require('../../regex');
 
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
-const getAccountsTable = () => getTableInstance(
-	accountsTableSchema.tableName,
-	accountsTableSchema,
-	MYSQL_ENDPOINT_REPLICA,
-);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT_REPLICA);
 
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {

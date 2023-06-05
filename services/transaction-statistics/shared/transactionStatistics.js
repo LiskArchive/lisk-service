@@ -24,14 +24,14 @@ const {
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 
-const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
+const txStatsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 let numTrxTypes;
 
-const getTransactionStatisticsTable = getTableInstance(txStatisticsTableSchema, MYSQL_ENDPOINT);
+const getTransactionStatisticsTable = () => getTableInstance(txStatsTableSchema, MYSQL_ENDPOINT);
 
 const getSelector = async (params) => {
 	if (!numTrxTypes) {
