@@ -391,7 +391,7 @@ const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
 			return Promise.resolve(response.data.data.supportedTokens);
 		}
 	}
-	return Promise.reject(new Error('Failed to retrieve supported tokens from service URLs'));
+	return Promise.reject(new Error('Failed to retrieve supported tokens from service URLs.'));
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
