@@ -3,6 +3,9 @@ services:
 
   nats:
     image: nats:2.6-alpine
+    volumes:
+      - ./docker/nats-server.conf:/etc/nats/nats-server.conf:ro
+    command: nats-server --config /etc/nats/nats-server.conf
     networks:
       - services_network
     restart: always
