@@ -20,6 +20,7 @@ const {
 
 const { HTTP } = require('lisk-service-framework');
 
+const { getAuthAccountInfo } = require('./auth');
 const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
@@ -27,6 +28,7 @@ const { tokenHasUserAccount, getTokenConstants } = require('./token');
 const { MODULE, COMMAND, EVENT } = require('../../constants');
 const regex = require('../../regex');
 
+const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 
@@ -36,26 +38,26 @@ const SIZE_BYTE_ID = 32;
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: {
 		propName: 'fee',
-		defaultValue: '0',
+		defaultValue: () => '0',
 	},
 	SIGNATURES: {
 		propName: 'signatures',
-		defaultValue: [getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')],
+		defaultValue: (count) => new Array(count).fill().map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
 	},
 	ID: {
 		propName: 'id',
-		defaultValue: getRandomBytes(SIZE_BYTE_ID).toString('hex'),
+		defaultValue: () => getRandomBytes(SIZE_BYTE_ID).toString('hex'),
 	},
 });
 
-const mockOptionalProperties = (_transaction) => {
+const mockOptionalProperties = (_transaction, signaturesCount) => {
 	const transaction = _.cloneDeep(_transaction);
 
 	Object
 		.values(OPTIONAL_TRANSACTION_PROPERTIES)
 		.forEach(optionalPropInfo => {
 			if (!(optionalPropInfo.propName in transaction)) {
-				transaction[optionalPropInfo.propName] = optionalPropInfo.defaultValue;
+				transaction[optionalPropInfo.propName] = optionalPropInfo.defaultValue(signaturesCount);
 			}
 		});
 
@@ -117,7 +119,7 @@ const calcAccountInitializationFees = async (transaction) => {
 		const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
 
 		const { data: accountExistsResponse } = await HTTP
-			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&publicKey=${transaction.params.recipientAddress}`);
+			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
 		const { data: { isExists } } = accountExistsResponse;
 
 		// Account already exists, no extra fee necessary
@@ -153,7 +155,12 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	const trxWithMockProps = mockOptionalProperties(params.transaction);
+	const { data: authAccountInfo } = await getAuthAccountInfo({
+		address: getLisk32AddressFromPublicKey(params.transaction.senderPublicKey),
+	});
+
+	const signaturesCount = authAccountInfo.numberOfSignatures + 1;
+	const trxWithMockProps = mockOptionalProperties(params.transaction, signaturesCount);
 	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
 	const { minFee, size } = transaction;
