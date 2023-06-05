@@ -34,6 +34,7 @@ jest.mock('lisk-service-framework', () => {
 const {
 	calcDynamicFeeEstimates,
 	mockOptionalProperties,
+	OPTIONAL_TRANSACTION_PROPERTIES,
 } = require('../../../../../shared/dataService/business/transactionsEstimateFees');
 
 describe('Test calcDynamicFeeEstimates method', () => {
@@ -92,13 +93,13 @@ describe('Test calcDynamicFeeEstimates method', () => {
 
 describe('Test mockOptionalProperties method', () => {
 	it('should return transaction when called with all valid params', async () => {
-		const transaction = mockOptionalProperties(inputTransaction);
+		const transaction = mockOptionalProperties(inputTransaction, OPTIONAL_TRANSACTION_PROPERTIES);
 		expect(transaction).toMatchObject(inputTransaction);
 	});
 
 	it('should return transaction when called transaction without id', async () => {
 		const { id, ...remParams } = inputTransaction;
-		const transaction = mockOptionalProperties(remParams);
+		const transaction = mockOptionalProperties(remParams, OPTIONAL_TRANSACTION_PROPERTIES);
 
 		const expectedResponse = {
 			...inputTransaction,
@@ -110,7 +111,7 @@ describe('Test mockOptionalProperties method', () => {
 
 	it('should return transaction when called transaction without fee', async () => {
 		const { fee, ...remParams } = inputTransaction;
-		const transaction = mockOptionalProperties(remParams);
+		const transaction = mockOptionalProperties(remParams, OPTIONAL_TRANSACTION_PROPERTIES);
 
 		const expectedResponse = {
 			...inputTransaction,
@@ -122,7 +123,7 @@ describe('Test mockOptionalProperties method', () => {
 
 	it('should return transaction when called transaction without signatures', async () => {
 		const { signatures, ...remParams } = inputTransaction;
-		const transaction = mockOptionalProperties(remParams);
+		const transaction = mockOptionalProperties(remParams, OPTIONAL_TRANSACTION_PROPERTIES);
 
 		const expectedResponse = {
 			...inputTransaction,

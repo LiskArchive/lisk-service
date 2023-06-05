@@ -42,7 +42,9 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	},
 	SIGNATURES: {
 		propName: 'signatures',
-		defaultValue: (count) => new Array(count).fill().map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
+		defaultValue: (count) => new Array(count)
+			.fill()
+			.map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
 	},
 	ID: {
 		propName: 'id',
@@ -57,31 +59,20 @@ const OPTIONAL_TRANSACTION_PARAMS_PROPERTIES = Object.freeze({
 	},
 	MESSAGE_FEE_TOKEN_ID: {
 		propName: 'messageFeeTokenID',
-		defaultValue: () => '0000000000000000', // TODO: Resolve dynamically
+		defaultValue: (messageFeeTokenID) => messageFeeTokenID,
 	},
 });
 
-const mockOptionalProperties = (_transaction, signaturesCount) => {
-	const transaction = _.cloneDeep(_transaction);
-
-	// TODO: Improve
+const mockOptionalProperties = (inputObject, objectOptionalProps, additionalParam) => {
 	Object
-		.values(OPTIONAL_TRANSACTION_PROPERTIES)
+		.values(objectOptionalProps)
 		.forEach(optionalPropInfo => {
-			if (!(optionalPropInfo.propName in transaction)) {
-				transaction[optionalPropInfo.propName] = optionalPropInfo.defaultValue(signaturesCount);
+			if (!(optionalPropInfo.propName in inputObject)) {
+				inputObject[optionalPropInfo.propName] = optionalPropInfo.defaultValue(additionalParam);
 			}
 		});
 
-	Object
-		.values(OPTIONAL_TRANSACTION_PARAMS_PROPERTIES)
-		.forEach(optionalPropInfo => {
-			if (!(optionalPropInfo.propName in transaction.params)) {
-				transaction.params[optionalPropInfo.propName] = optionalPropInfo.defaultValue();
-			}
-		});
-
-	return transaction;
+	return inputObject;
 };
 
 const resolveChannelInfo = async (chainID) => {
@@ -102,6 +93,32 @@ const resolveChannelInfo = async (chainID) => {
 	);
 
 	return channelInfo;
+};
+
+const mockTransaction = async (_transaction, signaturesCount) => {
+	const transaction = _.cloneDeep(_transaction);
+	const mockedTransaction = mockOptionalProperties(
+		transaction,
+		OPTIONAL_TRANSACTION_PROPERTIES,
+		signaturesCount,
+	);
+
+	let messageFeeTokenID;
+	if (transaction.module === MODULE.TOKEN && transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+		const channelInfo = await resolveChannelInfo(transaction.params.receivingChainID);
+		messageFeeTokenID = channelInfo.messageFeeTokenID;
+	}
+
+	const mockedTransactionParams = transaction.module === MODULE.TOKEN
+		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
+		? mockOptionalProperties(
+			transaction.params,
+			OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
+			messageFeeTokenID,
+		)
+		: transaction.params;
+
+	return { ...mockedTransaction, params: mockedTransactionParams };
 };
 
 const calcMessageFee = async (transaction) => {
@@ -180,7 +197,7 @@ const estimateTransactionFees = async params => {
 	});
 
 	const signaturesCount = authAccountInfo.numberOfSignatures + 1;
-	const trxWithMockProps = mockOptionalProperties(params.transaction, signaturesCount);
+	const trxWithMockProps = await mockTransaction(params.transaction, signaturesCount);
 	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
 	const { minFee, size } = transaction;
@@ -208,4 +225,6 @@ module.exports = {
 	// Export for the unit tests
 	calcDynamicFeeEstimates,
 	mockOptionalProperties,
+	OPTIONAL_TRANSACTION_PROPERTIES,
+	OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
 };
