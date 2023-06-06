@@ -58,7 +58,7 @@ describe('reloadAccountKnowledge', () => {
 				},
 				Logger: () => ({
 					debug: jest.fn(),
-					info: async (data) => expect(data).toEqual('Updated known accounts database with 2 entries.'),
+					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
 					warn: jest.fn(),
 					error: jest.fn(),
 				}),
@@ -143,7 +143,7 @@ describe('reloadAccountKnowledge', () => {
 				Logger: () => ({
 					debug: jest.fn(),
 					info: jest.fn(),
-					warn: async (data) => expect(data).toEqual('ChainID does not exist in the database: invalidChainID.'),
+					warn: async (data) => expect(data).toEqual('Static information anavailable for the current chainID: invalidChainID.'),
 					error: jest.fn(),
 				}),
 			};
@@ -182,7 +182,7 @@ describe('reloadAccountKnowledge', () => {
 				},
 				Logger: () => ({
 					debug: jest.fn(),
-					info: async (data) => expect(data).toEqual('Updated known accounts database with 2 entries.'),
+					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
 					warn: jest.fn(),
 					error: jest.fn(),
 				}),
@@ -269,7 +269,7 @@ describe('getAccountKnowledge', () => {
 				},
 				Logger: () => ({
 					debug: jest.fn(),
-					info: async (data) => expect(data).toEqual('Updated known accounts database with 2 entries.'),
+					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
 					warn: jest.fn(),
 					error: jest.fn(),
 				}),
