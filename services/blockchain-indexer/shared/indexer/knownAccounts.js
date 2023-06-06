@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,14 +14,13 @@
  *
  */
 const { HTTP, Logger } = require('lisk-service-framework');
-const config = require('../../config');
 
+const config = require('../../config');
 const { getNetworkStatus } = require('../dataService/business/network');
 
 const logger = Logger();
 
-const knownExpireMiliseconds = 1000;
-// const knownExpireMiliseconds = 5 * 60 * 1000;
+const knownExpireMiliseconds = 5 * 60 * 1000;
 const staticUrl = config.endpoints.liskStatic;
 
 let knowledge = {};
@@ -79,6 +78,5 @@ const init = () => {
 init();
 
 module.exports = {
-	// init,
 	getAccountKnowledge,
 };
