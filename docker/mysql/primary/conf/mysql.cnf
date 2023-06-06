@@ -1,0 +1,14 @@
+[mysqld]
+
+# Unique identifying number of the server.
+server_id = 1
+
+# Set binary log file base name.
+log_bin=mysql-bin.log
+
+# Log row changes for replication. Other possible way is to log statements.
+binlog_format = ROW
+
+# Enable Global Transaction ID to track and log transactions for replication.
+gtid_mode=ON
+enforce_gtid_consistency=ON

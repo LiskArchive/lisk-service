@@ -15,13 +15,11 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { initDatabase } = require('./database/index');
 const { indexAllBlockchainAppsMeta } = require('./metadataIndex');
 const { downloadRepositoryToFS } = require('./utils/downloadRepository');
 
 const init = async () => {
 	try {
-		await initDatabase();
 		await downloadRepositoryToFS();
 		await indexAllBlockchainAppsMeta();
 	} catch (error) {

@@ -47,8 +47,8 @@ const {
 
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
-const { getEventsInfoToIndex } = require('../utils/events');
-const { calcCommissionAmount, calcSelfStakeReward } = require('../utils/validator');
+const { getEventsInfoToIndex } = require('./utils/events');
+const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
 
 const {
 	getFinalizedHeight,
@@ -77,7 +77,7 @@ const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYS
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const { indexGenesisBlockAssets } = require('./genesisBlock');
-const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
+const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
@@ -347,7 +347,8 @@ const deleteIndexedBlocksQueue = Queue(
 
 const getLiveIndexingJobCount = async () => {
 	const { queue: bullQueue } = indexBlocksQueue;
-	const count = await bullQueue.getActiveCount() || await bullQueue.getWaitingCount();
+	const jobCount = await bullQueue.getJobCounts();
+	const count = jobCount.active + jobCount.waiting;
 	return count;
 };
 

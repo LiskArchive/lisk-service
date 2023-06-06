@@ -14,15 +14,12 @@
  *
  */
 const { getPosTokenID } = require('./constants');
-const {
-	getIndexedAccountInfo,
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
-const { getAddressByName } = require('../../../utils/validator');
-const { requestConnector } = require('../../../utils/request');
-const { getNetworkStatus } = require('../network');
 const { getBlockByID } = require('../blocks');
+const { getNetworkStatus } = require('../network');
+const { getAddressByName } = require('../../utils/validator');
+const { getIndexedAccountInfo } = require('../../utils/account');
+const { requestConnector } = require('../../../utils/request');
+const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../../../utils/account');
 
 const getPosUnlocks = async params => {
 	const unlocks = {
