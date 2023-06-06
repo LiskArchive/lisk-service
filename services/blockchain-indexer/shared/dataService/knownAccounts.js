@@ -16,6 +16,7 @@
 const { HTTP, Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
+const { LENGTH_NETWORK_ID } = require('../constants');
 const { getNetworkStatus } = require('./business/network');
 
 const logger = Logger();
@@ -30,10 +31,12 @@ const getAccountKnowledge = (address) => {
 };
 
 const getNameByChainID = (chainID) => {
+	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
 	const networks = Object.values(config.networks);
 
 	for (let i = 0; i < networks.length; i++) {
-		const network = networks[i].find((ntwk) => ntwk.chainID === chainID);
+		const network = networks[i].find(
+			(ntwk) => ntwk.chainID.substring(0, LENGTH_NETWORK_ID) === networkID);
 
 		if (network) {
 			return network.name;
