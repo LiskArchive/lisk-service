@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, Logger } = require('lisk-service-framework');
+const util = require('util');
 
 const config = require('../../config');
 const { LENGTH_NETWORK_ID } = require('../constants');
@@ -21,6 +22,7 @@ const { getNetworkStatus } = require('./business/network');
 
 const logger = Logger();
 
+const networkConfig = Object.values(config.networks);
 const staticUrl = config.endpoints.liskStatic;
 
 let knowledge = {};
@@ -30,20 +32,13 @@ const getAccountKnowledge = (address) => {
 	return {};
 };
 
-const getNameByChainID = (chainID) => {
+const resolveNetworkByChainID = (chainID) => {
 	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
-	const networks = Object.values(config.networks);
 
-	for (let i = 0; i < networks.length; i++) {
-		const network = networks[i].find(
-			(ntwk) => ntwk.chainID.substring(0, LENGTH_NETWORK_ID) === networkID);
+	const matchingNetwork = networkConfig.flatMap((network) => network)
+		.filter((ntwk) => ntwk.chainID.startsWith(networkID)).find(Boolean);
 
-		if (network) {
-			return network.name;
-		}
-	}
-
-	return null; // Return null if chainID is not found in any network
+	return matchingNetwork ? matchingNetwork.name : null;
 };
 
 const reloadAccountKnowledge = async () => {
@@ -51,26 +46,28 @@ const reloadAccountKnowledge = async () => {
 
 	try {
 		const { data: { chainID } } = await getNetworkStatus();
-		const networkName = getNameByChainID(chainID);
+		const networkName = resolveNetworkByChainID(chainID);
 
 		if (networkName) {
 			const res = await HTTP.request(`${staticUrl}/known_${networkName}.json`);
 
-			if (res && res.data && res.status === 200) {
+			if (res.status === 200 && res.data) {
 				const knownAccounts = res.data;
 
 				if (typeof knownAccounts === 'object') {
 					knowledge = knownAccounts;
-					logger.info(`Updated known accounts database with ${Object.keys(knowledge).length} entries.`);
+					logger.info(`Updated known accounts cache with ${Object.keys(knowledge).length} entries.`);
 				}
 			} else {
 				logger.warn('Lisk static URL did not respond with valid data.');
+				logger.debug(`Recieved: ${util.inspect(res)}.`);
 			}
 		} else {
-			logger.warn(`ChainID does not exist in the database: ${chainID}.`);
+			logger.warn(`Static information anavailable for the current chainID: ${chainID}.`);
 		}
 	} catch (err) {
 		logger.error(`Could not reload known accounts: ${err.message}.`);
+		logger.debug(err.stack);
 	}
 };
 
@@ -79,5 +76,5 @@ module.exports = {
 	reloadAccountKnowledge,
 
 	// Testing
-	getNameByChainID,
+	resolveNetworkByChainID,
 };

@@ -211,33 +211,33 @@ describe('reloadAccountKnowledge', () => {
 	});
 });
 
-describe('getNameByChainID', () => {
+describe('resolveNetworkByChainID', () => {
 	it('should return the network name for a valid chain ID', () => {
 		const {
-			getNameByChainID,
+			resolveNetworkByChainID,
 		} = require('../../../../shared/dataService/knownAccounts');
 
-		const result = getNameByChainID(chainID);
+		const result = resolveNetworkByChainID(chainID);
 		expect(result).toEqual('mainnet');
 	});
 
 	it('should return the network name for a valid network ID', () => {
 		const {
-			getNameByChainID,
+			resolveNetworkByChainID,
 		} = require('../../../../shared/dataService/knownAccounts');
 
 		const validSidechainID = '00000001';
-		const result = getNameByChainID(validSidechainID);
+		const result = resolveNetworkByChainID(validSidechainID);
 		expect(result).toEqual('mainnet');
 	});
 
 	it('should return null if the chain ID does not exist in any network', () => {
 		const {
-			getNameByChainID,
+			resolveNetworkByChainID,
 		} = require('../../../../shared/dataService/knownAccounts');
 
 		const invalidChainID = '99999999';
-		const result = getNameByChainID(invalidChainID);
+		const result = resolveNetworkByChainID(invalidChainID);
 		expect(result).toBeNull();
 	});
 });
