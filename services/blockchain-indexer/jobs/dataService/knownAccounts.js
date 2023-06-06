@@ -33,7 +33,7 @@ module.exports = [
 				await reloadAccountKnowledge();
 				logger.info('Successfully initialized accounts knowledge.');
 			} catch (err) {
-				logger.warn(`Initializing accounts knowledge failed due to: ${err.message}`);
+				logger.warn(`Initializing accounts knowledge failed due to: ${err.message}.`);
 			}
 		},
 		controller: async () => {
@@ -42,7 +42,7 @@ module.exports = [
 				await reloadAccountKnowledge();
 				logger.info('Successfully reloaded accounts knowledge.');
 			} catch (err) {
-				logger.warn(`Reloading accounts knowledge failed due to: ${err.message}`);
+				logger.warn(`Reloading accounts knowledge failed due to: ${err.message}.`);
 			}
 		},
 	},
