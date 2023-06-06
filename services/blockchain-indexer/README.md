@@ -38,6 +38,7 @@ A list of the most commonly used environment variables is presented below:
 - `ENABLE_DATA_RETRIEVAL_MODE`: Boolean flag to enable the Data Service mode.
 - `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode.
 - `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently maintain the events in the MySQL database.
+- `LISK_STATIC`: URL of Lisk static assets.
 
 ## Management
 

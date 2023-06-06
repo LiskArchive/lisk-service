@@ -16,11 +16,10 @@
 const { HTTP, Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
-const { getNetworkStatus } = require('../dataService/business/network');
+const { getNetworkStatus } = require('./business/network');
 
 const logger = Logger();
 
-const knownExpireMiliseconds = 5 * 60 * 1000;
 const staticUrl = config.endpoints.liskStatic;
 
 let knowledge = {};
@@ -30,7 +29,7 @@ const getAccountKnowledge = (address) => {
 	return {};
 };
 
-function getNameByChainID(chainID) {
+const getNameByChainID = (chainID) => {
 	const networks = Object.values(config.networks);
 
 	for (let i = 0; i < networks.length; i++) {
@@ -42,9 +41,9 @@ function getNameByChainID(chainID) {
 	}
 
 	return null; // Return null if chainID is not found in any network
-}
+};
 
-const reloadKnowledge = async () => {
+const fetchAccountKnowledge = async () => {
 	logger.debug('Reloading known accounts...');
 
 	try {
@@ -59,24 +58,23 @@ const reloadKnowledge = async () => {
 
 				if (typeof knownAccounts === 'object') {
 					knowledge = knownAccounts;
-					logger.info(`Updated known accounts database with ${Object.keys(knowledge).length} entries`);
+					logger.info(`Updated known accounts database with ${Object.keys(knowledge).length} entries.`);
 				}
+			} else {
+				logger.warn('Lisk static URL did not respond with valid data.');
 			}
 		} else {
-			logger.warn(`ChainId does not exist in the database: ${chainID}.`);
+			logger.warn(`ChainID does not exist in the database: ${chainID}.`);
 		}
 	} catch (err) {
-		logger.error(`Could not reload known accounts: ${err.message}`);
+		logger.error(`Could not reload known accounts: ${err.message}.`);
 	}
 };
 
-const init = () => {
-	reloadKnowledge();
-	setInterval(reloadKnowledge, knownExpireMiliseconds);
-};
-
-init();
-
 module.exports = {
 	getAccountKnowledge,
+	fetchAccountKnowledge,
+
+	// Testing
+	getNameByChainID,
 };
