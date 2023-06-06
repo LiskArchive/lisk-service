@@ -39,6 +39,7 @@ config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || '
 config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
 config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL; // For custom deployments
+config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 
 /**
  * LOGGING
