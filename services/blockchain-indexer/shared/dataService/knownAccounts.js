@@ -46,7 +46,7 @@ const getNameByChainID = (chainID) => {
 	return null; // Return null if chainID is not found in any network
 };
 
-const fetchAccountKnowledge = async () => {
+const reloadAccountKnowledge = async () => {
 	logger.debug('Reloading known accounts...');
 
 	try {
@@ -76,7 +76,7 @@ const fetchAccountKnowledge = async () => {
 
 module.exports = {
 	getAccountKnowledge,
-	fetchAccountKnowledge,
+	reloadAccountKnowledge,
 
 	// Testing
 	getNameByChainID,

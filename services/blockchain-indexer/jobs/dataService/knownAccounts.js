@@ -18,7 +18,7 @@ const logger = require('lisk-service-framework').Logger();
 const config = require('../../config');
 
 const {
-	fetchAccountKnowledge,
+	reloadAccountKnowledge,
 } = require('../../shared/dataService/knownAccounts');
 
 module.exports = [
@@ -30,7 +30,7 @@ module.exports = [
 		init: async () => {
 			logger.debug('Initializing accounts knowledge...');
 			try {
-				await fetchAccountKnowledge();
+				await reloadAccountKnowledge();
 				logger.info('Successfully initialized accounts knowledge.');
 			} catch (err) {
 				logger.warn(`Initializing accounts knowledge failed due to: ${err.message}`);
@@ -39,7 +39,7 @@ module.exports = [
 		controller: async () => {
 			logger.debug('Reloading accounts knowledge...');
 			try {
-				await fetchAccountKnowledge();
+				await reloadAccountKnowledge();
 				logger.info('Successfully reloaded accounts knowledge.');
 			} catch (err) {
 				logger.warn(`Reloading accounts knowledge failed due to: ${err.message}`);
