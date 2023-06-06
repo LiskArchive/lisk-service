@@ -26,7 +26,7 @@ const {
 } = require('./transactionProcessor/pos/stake');
 const { requestConnector } = require('../utils/request');
 const { updateAccountBalances } = require('./accountBalanceIndex');
-const { updateTotalLockedAmounts } = require('../utils/blockchainIndex');
+const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');

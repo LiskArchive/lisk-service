@@ -22,12 +22,12 @@ const {
 const logger = Logger();
 
 const { normalizeTransaction } = require('./transactions');
-const {
-	getIndexedAccountInfo,
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
+const {
+	updateAccountPublicKey,
+	getLisk32AddressFromPublicKey,
+} = require('../../utils/account');
 
 let pendingTransactionsList = [];
 

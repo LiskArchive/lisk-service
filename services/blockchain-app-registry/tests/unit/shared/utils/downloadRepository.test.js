@@ -35,6 +35,7 @@ jest.mock('lisk-service-framework', () => {
 			...actualLiskServiceFramework.MySQL,
 			KVStore: {
 				...actualLiskServiceFramework.KVStore,
+				configureKeyValueTable: jest.fn(),
 				getKeyValueTable: jest.fn(),
 			},
 		},

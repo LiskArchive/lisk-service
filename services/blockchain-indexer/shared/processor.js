@@ -26,10 +26,7 @@ const {
 	addAccountToDirectUpdateQueue,
 } = require('./indexer/accountIndex');
 
-const {
-	indexNewBlock,
-	addBlockToQueue,
-} = require('./indexer/blockchainIndex');
+const { addBlockToQueue } = require('./indexer/blockchainIndex');
 
 const config = require('../config');
 
@@ -67,15 +64,10 @@ const initQueueStatus = async () => {
 const initProcess = async () => {
 	blockIndexQueue.process(async (job) => {
 		logger.debug('Subscribed to block index message queue');
-		const { height, isNewBlock } = job.data;
+		const { height } = job.data;
 
-		if (isNewBlock) {
-			logger.debug(`Scheduling indexing for new block at height: ${height}`);
-			await indexNewBlock(height);
-		} else {
-			logger.debug(`Scheduling indexing for block at height: ${height}`);
-			await addBlockToQueue(height);
-		}
+		logger.debug(`Scheduling indexing for block at height: ${height}`);
+		await addBlockToQueue(height);
 	});
 
 	accountIndexQueue.process(async (job) => {
