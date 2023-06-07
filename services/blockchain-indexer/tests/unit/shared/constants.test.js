@@ -17,19 +17,18 @@ const { resolveModuleCommands } = require('../../../shared/constants');
 const { metadata } = require('../../constants/metadata');
 
 describe('Test resolveModuleCommands method', () => {
-    it('should return list of moduleCommands when called with valid system metadata', async () => {
-        const result = await resolveModuleCommands(metadata.modules);
-        const expectedResponse = ['auth:registerMultisignature'];
-        expect(result).toBeInstanceOf(Array);
-        expect(result).toEqual(expectedResponse);
+	it('should return list of moduleCommands when called with valid system metadata', async () => {
+		const result = await resolveModuleCommands(metadata.modules);
+		const expectedResponse = ['auth:registerMultisignature'];
+		expect(result).toBeInstanceOf(Array);
+		expect(result).toEqual(expectedResponse);
+	});
 
-    });
+	it('should throw error when called with null', async () => {
+		expect(async () => resolveModuleCommands(null)).rejects.toThrow(TypeError);
+	});
 
-    it('should throw error when called with null', async () => {
-        expect(async () => resolveModuleCommands(null)).rejects.toThrow(TypeError);
-    });
-
-    it('should throw error when called with undefined', async () => {
-        expect(async () => resolveModuleCommands(undefined)).rejects.toThrow(TypeError);
-    });
+	it('should throw error when called with undefined', async () => {
+		expect(async () => resolveModuleCommands(undefined)).rejects.toThrow(TypeError);
+	});
 });
