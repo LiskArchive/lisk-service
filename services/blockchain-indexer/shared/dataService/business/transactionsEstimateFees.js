@@ -18,7 +18,10 @@ const {
 	utils: { getRandomBytes },
 } = require('@liskhq/lisk-cryptography');
 
-const { HTTP } = require('lisk-service-framework');
+const {
+	HTTP,
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
 
 const { getAuthAccountInfo } = require('./auth');
 const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
@@ -31,9 +34,11 @@ const regex = require('../../regex');
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
+const config = require('../../../config');
 
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
+const { defaultBytesLength } = config.estimateFees;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: {
@@ -42,7 +47,7 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	},
 	SIGNATURES: {
 		propName: 'signatures',
-		defaultValue: (count) => new Array(count)
+		defaultValue: (numberOfSignatures) => new Array(numberOfSignatures)
 			.fill()
 			.map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
 	},
@@ -55,7 +60,7 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 const OPTIONAL_TRANSACTION_PARAMS_PROPERTIES = Object.freeze({
 	MESSAGE_FEE: {
 		propName: 'messageFee',
-		defaultValue: () => Number.MAX_VALUE,
+		defaultValue: () => '0',
 	},
 	MESSAGE_FEE_TOKEN_ID: {
 		propName: 'messageFeeTokenID',
@@ -95,12 +100,17 @@ const resolveChannelInfo = async (chainID) => {
 	return channelInfo;
 };
 
-const mockTransaction = async (_transaction, signaturesCount) => {
+const mockTransaction = async (_transaction, authAccountInfo) => {
 	const transaction = _.cloneDeep(_transaction);
+
+	const numberOfSignatures = authAccountInfo.numberOfSignatures !== 0
+		? authAccountInfo.numberOfSignatures
+		: 1;
+
 	const mockedTransaction = mockOptionalProperties(
 		transaction,
 		OPTIONAL_TRANSACTION_PROPERTIES,
-		signaturesCount,
+		numberOfSignatures,
 	);
 
 	let messageFeeTokenID;
@@ -136,7 +146,7 @@ const calcMessageFee = async (transaction) => {
 
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
-		amount: BigInt(ccmBuffer.length) * BigInt(channelInfo.minReturnFeePerByte),
+		amount: BigInt(ccmBuffer.length + defaultBytesLength) * BigInt(channelInfo.minReturnFeePerByte),
 	};
 };
 
@@ -153,22 +163,26 @@ const calcAccountInitializationFees = async (transaction) => {
 		const mainchainServiceURL = await resolveMainchainServiceURL();
 		const { data: appMetadataResponse } = await HTTP
 			.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
-		const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
 
-		const { data: accountExistsResponse } = await HTTP
-			.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
-		const { data: { isExists } } = accountExistsResponse;
+		if (appMetadataResponse.data.length) {
+			const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
 
-		// Account already exists, no extra fee necessary
-		if (isExists) return { tokenID, amount: BigInt('0') };
+			const { data: accountExistsResponse } = await HTTP
+				.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
+			const { data: { isExists } } = accountExistsResponse;
 
-		const { data: tokenConstantsResponse } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
-		const { data: { extraCommandFees } } = tokenConstantsResponse;
+			// Account already exists, no extra fee necessary
+			if (isExists) return { tokenID, amount: BigInt('0') };
 
-		return {
-			tokenID,
-			amount: extraCommandFees.userAccountInitializationFee,
-		};
+			const { data: tokenConstantsResponse } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
+			const { data: { extraCommandFees } } = tokenConstantsResponse;
+
+			return {
+				tokenID,
+				amount: extraCommandFees.userAccountInitializationFee,
+			};
+		}
+		throw new ValidationException(`Application offchain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
 	}
 
 	const { data: { isExists } } = await tokenHasUserAccount({
@@ -196,20 +210,24 @@ const estimateTransactionFees = async params => {
 		address: getLisk32AddressFromPublicKey(params.transaction.senderPublicKey),
 	});
 
-	const signaturesCount = authAccountInfo.numberOfSignatures + 1;
-	const trxWithMockProps = await mockTransaction(params.transaction, signaturesCount);
+	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
 	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
 	const { minFee, size } = transaction;
 
+	const feeEstimatePerByte = await requestFeeEstimator('estimates');
+
 	const transactionFeeEstimates = {
-		minFee,
+		minFee: minFee + (defaultBytesLength * feeEstimatePerByte.minFeePerByte),
 		accountInitializationFee: await calcAccountInitializationFees(transaction),
 		messageFee: await calcMessageFee(transaction),
 	};
 
-	const feeEstimatePerByte = await requestFeeEstimator('estimates');
-	const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
+	const dynamicFeeEstimates = calcDynamicFeeEstimates(
+		feeEstimatePerByte,
+		transactionFeeEstimates.minFee,
+		size,
+	);
 
 	estimateTransactionFeesRes.data = {
 		transactionFeeEstimates,

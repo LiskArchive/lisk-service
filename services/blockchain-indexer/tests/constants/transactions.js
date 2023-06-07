@@ -15,21 +15,23 @@
  */
 const inputTransaction = {
 	module: 'token',
-	command: 'transfer',
-	nonce: '0',
-	fee: '100000000',
+	command: 'transferCrossChain',
+	fee: '1000000000000',
+	nonce: '3',
 	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+	signatures: [
+		'342a7bb0cda369ca25cb77ec06e1ff75b41f71e8f04d0dc49eda8e9324285cd2b3383cd68cda1e7a3f1175e487f371b02492d68c91b570c7370b9d0af5e23d0c',
+	],
 	params: {
 		tokenID: '0400000000000000',
-		amount: '10000000000',
-		recipientAddress: 'lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup',
-		data: 'Test tx',
-		accountInitializationFee: '5000000',
+		amount: '100000000000',
+		receivingChainID: '04000001',
+		recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		data: 'Cross chain transfer',
+		messageFee: '10000000',
+		messageFeeTokenID: '0400000000000000',
 	},
-	signatures: [
-		'a7e332b49db6d36c1024a24afbfd6eec2451e41c1cf751a8c609863ffa3e529ef4b8a34cecff29e9fa4bf30de4ce26f58c5d8a06587582a9129a6765064d3404',
-	],
-	id: '66870fa27b22c361094ff2d72a794b3d7e531c02a488271c38d02180c05e3c69',
+	id: '66a33a4e24a2f0a7c7af9cc334980257797efbb25cfd27408ef6ee07ab5a4a99',
 };
 
 const expectedTransaction = Object.freeze({

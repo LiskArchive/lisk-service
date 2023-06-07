@@ -171,4 +171,8 @@ config.job = {
 	},
 };
 
+config.estimateFees = {
+	defaultBytesLength: process.env.DEFAULT_BYTES_LENGTH || 8, // TODO: rename
+};
+
 module.exports = config;
