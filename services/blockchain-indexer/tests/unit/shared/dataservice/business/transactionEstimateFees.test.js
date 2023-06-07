@@ -107,7 +107,7 @@ describe('Test transaction fees estimates', () => {
 
 	describe('Test mockTransaction method', () => {
 		it('should return transaction when called with all valid params', async () => {
-			const authAccountInfo = { numberOfSignatures: 0 };
+			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const transaction = await mockTransaction(inputTransaction, authAccountInfo);
 			expect(transaction).toMatchObject(inputTransaction);
 		});
@@ -129,7 +129,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction without id', async () => {
-			const authAccountInfo = { numberOfSignatures: 0 };
+			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { id, ...remParams } = inputTransaction;
 			const transaction = await mockTransaction(remParams, authAccountInfo);
 
@@ -142,7 +142,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction without fee', async () => {
-			const authAccountInfo = { numberOfSignatures: 0 };
+			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { fee, ...remParams } = inputTransaction;
 			const transaction = await mockTransaction(remParams, authAccountInfo);
 
@@ -178,7 +178,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction params without messageFee', async () => {
-			const authAccountInfo = { numberOfSignatures: 0 };
+			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { messageFee, ...remTransactionParams } = inputTransaction.params;
 
 			const transaction = await mockTransaction(
@@ -195,7 +195,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction params without messageFeeTokenID', async () => {
-			const authAccountInfo = { numberOfSignatures: 0 };
+			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { messageFeeTokenID, ...remTransactionParams } = inputTransaction.params;
 
 			const transaction = await mockTransaction(

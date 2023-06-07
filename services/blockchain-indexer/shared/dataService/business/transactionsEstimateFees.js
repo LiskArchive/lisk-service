@@ -82,9 +82,8 @@ const mockOptionalProperties = (inputObject, inputObjectOptionalProps, additiona
 const mockTransaction = async (_transaction, authAccountInfo) => {
 	const transaction = _.cloneDeep(_transaction);
 
-	const numberOfSignatures = authAccountInfo.numberOfSignatures !== 0
-		? [...authAccountInfo.mandatoryKeys, ...authAccountInfo.optionalKeys].length
-		: 1;
+	const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
+		+ authAccountInfo.optionalKeys.length) || 1;
 
 	const mockedTransaction = mockOptionalProperties(
 		transaction,
