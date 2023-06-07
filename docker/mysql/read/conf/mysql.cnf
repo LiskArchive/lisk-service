@@ -1,0 +1,14 @@
+[mysqld]
+
+# Unique identifying number of the server.
+server_id = 2
+
+# Set binary log file base name. This should be identical to the binary log file base name in source.
+log_bin=mysql-bin.log
+
+# Set the relay log file base name used by replica. This is needed to avoid error incase hostname is changed in future.
+relay_log=mysql-relay-bin.log
+
+# Enable Global Transaction ID to track and log transactions for replication.
+gtid_mode=ON
+enforce_gtid_consistency=ON

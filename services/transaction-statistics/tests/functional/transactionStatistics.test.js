@@ -29,12 +29,12 @@ const {
 	getDistributionByType,
 } = require('../../shared/transactionStatistics');
 
-const txStatisticsTableSchema = require('../../shared/database/schemas/transactionStatistics');
+const txStatsTableSchema = require('../../shared/database/schemas/transactionStatistics');
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getDBInstance = () => getTableInstance(txStatisticsTableSchema, MYSQL_ENDPOINT);
+const getTransactionStatisticsTable = () => getTableInstance(txStatsTableSchema, MYSQL_ENDPOINT);
 
 jest.mock('../../shared/utils/request');
 
@@ -49,7 +49,7 @@ describe('Tests transactionStatistics', () => {
 		dateFrom: moment().startOf(),
 	};
 	let testData;
-	let db;
+	let transactionStatisticsTable;
 
 	beforeAll(async () => {
 		jest.spyOn(request, 'requestIndexer').mockReturnValue(networkStatus);
@@ -63,12 +63,12 @@ describe('Tests transactionStatistics', () => {
 			volume: BigInt('100'),
 		};
 
-		db = await getDBInstance();
-		await db.upsert(testData);
+		transactionStatisticsTable = await getTransactionStatisticsTable();
+		await transactionStatisticsTable.upsert(testData);
 	});
 
 	afterAll(async () => {
-		await db.deleteByPrimaryKey(testData.id);
+		await transactionStatisticsTable.deleteByPrimaryKey(testData.id);
 		await jest.clearAllMocks();
 	});
 
