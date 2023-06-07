@@ -364,4 +364,7 @@ module.exports = {
 	reloadValidatorCache,
 	getPosValidators,
 	getAllValidators,
+
+	// For testing
+	validatorComparator,
 };
