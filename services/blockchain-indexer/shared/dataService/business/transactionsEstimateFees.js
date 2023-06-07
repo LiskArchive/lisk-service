@@ -37,7 +37,7 @@ const config = require('../../../config');
 
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
-const { defaultBytesLength } = config.estimateFees;
+const { bufferBytesLength } = config.estimateFees;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: {
@@ -126,7 +126,7 @@ const calcMessageFee = async (transaction) => {
 
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
-		amount: BigInt(ccmBuffer.length + defaultBytesLength) * BigInt(channelInfo.minReturnFeePerByte),
+		amount: BigInt(ccmBuffer.length + bufferBytesLength) * BigInt(channelInfo.minReturnFeePerByte),
 	};
 };
 
@@ -198,7 +198,7 @@ const estimateTransactionFees = async params => {
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
 
 	const transactionFeeEstimates = {
-		minFee: Number(minFee) + (defaultBytesLength * feeEstimatePerByte.minFeePerByte),
+		minFee: Number(minFee) + (bufferBytesLength * feeEstimatePerByte.minFeePerByte),
 		accountInitializationFee: await calcAccountInitializationFees(transaction),
 		messageFee: await calcMessageFee(transaction),
 	};
