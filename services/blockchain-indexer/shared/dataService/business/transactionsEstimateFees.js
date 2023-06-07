@@ -24,12 +24,11 @@ const {
 } = require('lisk-service-framework');
 
 const { getAuthAccountInfo } = require('./auth');
-const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
+const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 
 const { MODULE, COMMAND, EVENT } = require('../../constants');
-const regex = require('../../regex');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -80,31 +79,11 @@ const mockOptionalProperties = (inputObject, objectOptionalProps, additionalPara
 	return inputObject;
 };
 
-const resolveChannelInfo = async (chainID) => {
-	if (await isMainchain() && !regex.MAINCHAIN_ID.test(chainID)) {
-		const channelInfo = await requestConnector('getChannel', { chainID });
-		return channelInfo;
-	}
-
-	// Redirect call to the mainchain service
-	const serviceURL = await resolveMainchainServiceURL();
-	const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
-	const { data: { data: channelInfo } } = await HTTP.post(
-		invokeEndpoint,
-		{
-			endpoint: 'interoperability_getChannel',
-			params: { chainID },
-		},
-	);
-
-	return channelInfo;
-};
-
 const mockTransaction = async (_transaction, authAccountInfo) => {
 	const transaction = _.cloneDeep(_transaction);
 
 	const numberOfSignatures = authAccountInfo.numberOfSignatures !== 0
-		? authAccountInfo.numberOfSignatures
+		? (authAccountInfo.mandatoryKeys.concat(authAccountInfo.optionalKeys)).length
 		: 1;
 
 	const mockedTransaction = mockOptionalProperties(
@@ -242,7 +221,5 @@ module.exports = {
 
 	// Export for the unit tests
 	calcDynamicFeeEstimates,
-	mockOptionalProperties,
-	OPTIONAL_TRANSACTION_PROPERTIES,
-	OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
+	mockTransaction,
 };

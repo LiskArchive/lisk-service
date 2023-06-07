@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { inputTransaction } = require('../../../../constants/transactions');
+const { resolve } = require('path');
+
+const { inputTransaction, inputMultisigTransaction } = require('../../../../constants/transactions');
+
+const mockedFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/mainchain`);
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');
@@ -31,113 +35,188 @@ jest.mock('lisk-service-framework', () => {
 	};
 });
 
-const {
-	calcDynamicFeeEstimates,
-	mockOptionalProperties,
-	OPTIONAL_TRANSACTION_PROPERTIES,
-} = require('../../../../../shared/dataService/business/transactionsEstimateFees');
-
-describe('Test calcDynamicFeeEstimates method', () => {
-	const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
-	const minFee = 150000;
-	const size = 150;
-
-	it('should return dynamic fee estimates', async () => {
-		const expectedResponse = {
-			low: BigInt('150000'),
-			medium: BigInt('151500'),
-			high: BigInt('157500'),
+describe('Test transaction fees estimates', () => {
+	jest.mock(mockedFilePath, () => {
+		const actual = jest.requireActual(mockedFilePath);
+		return {
+			...actual,
+			resolveChannelInfo() {
+				return { messageFeeTokenID: '0000000000000000' };
+			},
 		};
-
-		const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
-		expect(Object.getOwnPropertyNames(dynamicFeeEstimates).length).toBe(3);
-		expect(dynamicFeeEstimates).toMatchObject(expectedResponse);
 	});
 
-	it('should throw error when feeEstimatePerByte is undefined', async () => {
-		expect(() => {
-			calcDynamicFeeEstimates(undefined, minFee, size);
-		}).toThrow(TypeError);
+	const {
+		mockTransaction,
+		calcDynamicFeeEstimates,
+	} = require('../../../../../shared/dataService/business/transactionsEstimateFees');
+
+	describe('Test transaction fees estimate', () => {
+		const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
+		const minFee = 150000;
+		const size = 150;
+
+		it('should return dynamic fee estimates', async () => {
+			const expectedResponse = {
+				low: BigInt('150000'),
+				medium: BigInt('151500'),
+				high: BigInt('157500'),
+			};
+
+			const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
+			expect(Object.getOwnPropertyNames(dynamicFeeEstimates).length).toBe(3);
+			expect(dynamicFeeEstimates).toMatchObject(expectedResponse);
+		});
+
+		it('should throw error when feeEstimatePerByte is undefined', async () => {
+			expect(() => {
+				calcDynamicFeeEstimates(undefined, minFee, size);
+			}).toThrow(TypeError);
+		});
+
+		it('should throw error when minFee is undefined', async () => {
+			expect(() => {
+				calcDynamicFeeEstimates(feeEstimatePerByte, undefined, size);
+			}).toThrow(TypeError);
+		});
+
+		it('should throw error when transaction size is undefined', async () => {
+			expect(() => {
+				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, undefined);
+			}).toThrow(TypeError);
+		});
+
+		it('should throw error when feeEstimatePerByte is null', async () => {
+			expect(() => {
+				calcDynamicFeeEstimates(null, minFee, size);
+			}).toThrow(TypeError);
+		});
+
+		it('should throw error when minFee is null', async () => {
+			expect(() => {
+				calcDynamicFeeEstimates(feeEstimatePerByte, null, size);
+			}).toThrow(TypeError);
+		});
+
+		it('should throw error when transaction size is null', async () => {
+			expect(() => {
+				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, null);
+			}).toThrow(TypeError);
+		});
 	});
 
-	it('should throw error when minFee is undefined', async () => {
-		expect(() => {
-			calcDynamicFeeEstimates(feeEstimatePerByte, undefined, size);
-		}).toThrow(TypeError);
-	});
+	describe('Test mockTransaction method', () => {
+		it('should return transaction when called with all valid params', async () => {
+			const authAccountInfo = { numberOfSignatures: 0 };
+			const transaction = await mockTransaction(inputTransaction, authAccountInfo);
+			expect(transaction).toMatchObject(inputTransaction);
+		});
 
-	it('should throw error when transaction size is undefined', async () => {
-		expect(() => {
-			calcDynamicFeeEstimates(feeEstimatePerByte, minFee, undefined);
-		}).toThrow(TypeError);
-	});
+		it('should return multisignature transaction when called with all valid params', async () => {
+			const authAccountInfo = {
+				nonce: '0',
+				numberOfSignatures: 2,
+				mandatoryKeys: [
+					'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
+				],
+				optionalKeys: [
+					'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
+				],
+			};
+			const transaction = await mockTransaction(inputMultisigTransaction, authAccountInfo);
+			expect(transaction).toMatchObject(inputMultisigTransaction);
+			expect(transaction.signatures.length).toBe(authAccountInfo.numberOfSignatures);
+		});
 
-	it('should throw error when feeEstimatePerByte is null', async () => {
-		expect(() => {
-			calcDynamicFeeEstimates(null, minFee, size);
-		}).toThrow(TypeError);
-	});
+		it('should return transaction when called transaction without id', async () => {
+			const authAccountInfo = { numberOfSignatures: 0 };
+			const { id, ...remParams } = inputTransaction;
+			const transaction = await mockTransaction(remParams, authAccountInfo);
 
-	it('should throw error when minFee is null', async () => {
-		expect(() => {
-			calcDynamicFeeEstimates(feeEstimatePerByte, null, size);
-		}).toThrow(TypeError);
-	});
+			const expectedResponse = {
+				...inputTransaction,
+				id: transaction.id,
+			};
 
-	it('should throw error when transaction size is null', async () => {
-		expect(() => {
-			calcDynamicFeeEstimates(feeEstimatePerByte, minFee, null);
-		}).toThrow(TypeError);
-	});
-});
+			expect(transaction).toMatchObject(expectedResponse);
+		});
 
-describe('Test mockOptionalProperties method', () => {
-	it('should return transaction when called with all valid params', async () => {
-		const transaction = mockOptionalProperties(inputTransaction, OPTIONAL_TRANSACTION_PROPERTIES);
-		expect(transaction).toMatchObject(inputTransaction);
-	});
+		it('should return transaction when called transaction without fee', async () => {
+			const authAccountInfo = { numberOfSignatures: 0 };
+			const { fee, ...remParams } = inputTransaction;
+			const transaction = await mockTransaction(remParams, authAccountInfo);
 
-	it('should return transaction when called transaction without id', async () => {
-		const { id, ...remParams } = inputTransaction;
-		const transaction = mockOptionalProperties(remParams, OPTIONAL_TRANSACTION_PROPERTIES);
+			const expectedResponse = {
+				...inputTransaction,
+				fee: '0',
+			};
 
-		const expectedResponse = {
-			...inputTransaction,
-			id: transaction.id,
-		};
+			expect(transaction).toMatchObject(expectedResponse);
+		});
 
-		expect(transaction).toMatchObject(expectedResponse);
-	});
+		it('should return multisignature transaction when called transaction without signatures', async () => {
+			const authAccountInfo = {
+				nonce: '0',
+				numberOfSignatures: 2,
+				mandatoryKeys: [
+					'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
+				],
+				optionalKeys: [
+					'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
+				],
+			};
+			const { signatures, ...remParams } = inputMultisigTransaction;
+			const transaction = await mockTransaction(remParams, authAccountInfo);
 
-	it('should return transaction when called transaction without fee', async () => {
-		const { fee, ...remParams } = inputTransaction;
-		const transaction = mockOptionalProperties(remParams, OPTIONAL_TRANSACTION_PROPERTIES);
+			const expectedResponse = {
+				...inputMultisigTransaction,
+				signatures: transaction.signatures,
+			};
 
-		const expectedResponse = {
-			...inputTransaction,
-			fee: '0',
-		};
+			expect(transaction).toMatchObject(expectedResponse);
+			expect(transaction.signatures.length).toBe(authAccountInfo.numberOfSignatures);
+		});
 
-		expect(transaction).toMatchObject(expectedResponse);
-	});
+		it('should return transaction when called transaction params without messageFee', async () => {
+			const authAccountInfo = { numberOfSignatures: 0 };
+			const { messageFee, ...remTransactionParams } = inputTransaction.params;
 
-	it('should return transaction when called transaction without signatures', async () => {
-		const { signatures, ...remParams } = inputTransaction;
-		const transaction = mockOptionalProperties(remParams, OPTIONAL_TRANSACTION_PROPERTIES);
+			const transaction = await mockTransaction(
+				{ ...inputTransaction, params: remTransactionParams },
+				authAccountInfo,
+			);
 
-		const expectedResponse = {
-			...inputTransaction,
-			signatures: transaction.signatures,
-		};
+			const expectedResponse = {
+				...inputTransaction,
+				params: { ...inputTransaction.params, messageFee: '0' },
+			};
 
-		expect(transaction).toMatchObject(expectedResponse);
-	});
+			expect(transaction).toMatchObject(expectedResponse);
+		});
 
-	it('should throw error when transaction is undefined', async () => {
-		expect(() => { mockOptionalProperties(undefined); }).toThrow(TypeError);
-	});
+		it('should return transaction when called transaction params without messageFeeTokenID', async () => {
+			const authAccountInfo = { numberOfSignatures: 0 };
+			const { messageFeeTokenID, ...remTransactionParams } = inputTransaction.params;
 
-	it('should throw error when transaction is null', async () => {
-		expect(() => { mockOptionalProperties(null); }).toThrow(TypeError);
+			const transaction = await mockTransaction(
+				{ ...inputTransaction, params: remTransactionParams },
+				authAccountInfo,
+			);
+
+			const expectedResponse = {
+				...inputTransaction,
+				params: { ...inputTransaction.params, messageFeeTokenID: '0000000000000000' },
+			};
+
+			expect(transaction).toMatchObject(expectedResponse);
+		});
+
+		it('should throw error when transaction is undefined', async () => {
+			expect(async () => { await mockTransaction(undefined); }).rejects.toThrow(TypeError);
+		});
+
+		it('should throw error when transaction is null', async () => {
+			expect(async () => { await mockTransaction(null); }).rejects.toThrow(TypeError);
+		});
 	});
 });
