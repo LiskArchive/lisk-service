@@ -212,11 +212,11 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when transaction is undefined', async () => {
-			expect(async () => { await mockTransaction(undefined); }).rejects.toThrow(TypeError);
+			expect(async () => mockTransaction(undefined)).rejects.toThrow(TypeError);
 		});
 
 		it('should throw error when transaction is null', async () => {
-			expect(async () => { await mockTransaction(null); }).rejects.toThrow(TypeError);
+			expect(async () => mockTransaction(null)).rejects.toThrow(TypeError);
 		});
 	});
 });
