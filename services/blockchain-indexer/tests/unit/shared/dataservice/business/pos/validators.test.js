@@ -80,6 +80,34 @@ describe('getAllPosValidators', () => {
 		expect(result.length).toEqual(3);
 		expect(result[0].validatorWeight).toEqual(BigInt('0'));
 	});
+
+	it('should return an empty array when no validators found', async () => {
+		// Mock connector to respond with validators
+		requestConnector.mockResolvedValue({ validators: [] });
+
+		// Make a query to getAllPosValidators function
+		const { getAllPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const result = await getAllPosValidators();
+
+		// Assert the result
+		expect(requestConnector).toHaveBeenCalledWith('getAllPosValidators');
+		expect(requestConnector).toHaveBeenCalledTimes(1);
+		expect(result).toEqual([]);
+	});
+
+	it('should handle error when requestConnector throws an error', async () => {
+		// Mock connector to respond with a error
+		const errorMessage = 'Request failed';
+		requestConnector.mockRejectedValue(new Error(errorMessage));
+
+		// Make a query to getAllPosValidators function and expect it to fail
+		const { getAllPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		await expect(getAllPosValidators()).rejects.toThrow(errorMessage);
+
+		// Assert the result
+		expect(requestConnector).toHaveBeenCalledWith('getAllPosValidators');
+		expect(requestConnector).toHaveBeenCalledTimes(1);
+	});
 });
 
 describe('getPosValidatorsByStake', () => {
@@ -102,5 +130,39 @@ describe('getPosValidatorsByStake', () => {
 		expect(requestConnector).toHaveBeenCalledWith('getPosValidatorsByStake', { limit });
 		expect(requestConnector).toHaveBeenCalledTimes(1);
 		expect(result).toEqual(validatorsByStake);
+	});
+
+	it('should return an empty array when no validators found', async () => {
+		const limit = 10;
+
+		// Mock connector to respond with validators
+		requestConnector.mockResolvedValue({ validators: [] });
+
+		// Make a query to getPosValidatorsByStake function
+		const { getPosValidatorsByStake } = require('../../../../../../shared/dataService/business/pos/validators');
+		const params = { limit };
+		const result = await getPosValidatorsByStake(params);
+
+		// Expect output to include empty array
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidatorsByStake', { limit });
+		expect(requestConnector).toHaveBeenCalledTimes(1);
+		expect(result).toEqual([]);
+	});
+
+	it('should handle error when requestConnector throws an error', async () => {
+		const limit = 10;
+		const errorMessage = 'Request failed';
+
+		// Mock connector to respond with error
+		requestConnector.mockRejectedValue(new Error(errorMessage));
+
+		// Make a query to getPosValidatorsByStake function
+		const { getPosValidatorsByStake } = require('../../../../../../shared/dataService/business/pos/validators');
+		const params = { limit };
+		await expect(getPosValidatorsByStake(params)).rejects.toThrow(errorMessage);
+
+		// Assert the result
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidatorsByStake', { limit });
+		expect(requestConnector).toHaveBeenCalledTimes(1);
 	});
 });
