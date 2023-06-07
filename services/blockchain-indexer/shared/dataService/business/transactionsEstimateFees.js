@@ -46,7 +46,7 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	},
 	SIGNATURES: {
 		propName: 'signatures',
-		defaultValue: (numberOfSignatures) => new Array(numberOfSignatures)
+		defaultValue: (params) => new Array(params.numberOfSignatures)
 			.fill()
 			.map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
 	},
@@ -63,16 +63,16 @@ const OPTIONAL_TRANSACTION_PARAMS_PROPERTIES = Object.freeze({
 	},
 	MESSAGE_FEE_TOKEN_ID: {
 		propName: 'messageFeeTokenID',
-		defaultValue: (messageFeeTokenID) => messageFeeTokenID,
+		defaultValue: (params) => params.messageFeeTokenID,
 	},
 });
 
-const mockOptionalProperties = (inputObject, objectOptionalProps, additionalParam) => {
+const mockOptionalProperties = (inputObject, inputObjectOptionalProps, additionalParams) => {
 	Object
-		.values(objectOptionalProps)
+		.values(inputObjectOptionalProps)
 		.forEach(optionalPropInfo => {
 			if (!(optionalPropInfo.propName in inputObject)) {
-				inputObject[optionalPropInfo.propName] = optionalPropInfo.defaultValue(additionalParam);
+				inputObject[optionalPropInfo.propName] = optionalPropInfo.defaultValue(additionalParams);
 			}
 		});
 
@@ -83,27 +83,28 @@ const mockTransaction = async (_transaction, authAccountInfo) => {
 	const transaction = _.cloneDeep(_transaction);
 
 	const numberOfSignatures = authAccountInfo.numberOfSignatures !== 0
-		? (authAccountInfo.mandatoryKeys.concat(authAccountInfo.optionalKeys)).length
+		? [...authAccountInfo.mandatoryKeys, ...authAccountInfo.optionalKeys].length
 		: 1;
 
 	const mockedTransaction = mockOptionalProperties(
 		transaction,
 		OPTIONAL_TRANSACTION_PROPERTIES,
-		numberOfSignatures,
+		{ numberOfSignatures },
 	);
 
-	let messageFeeTokenID;
-	if (transaction.module === MODULE.TOKEN && transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
-		const channelInfo = await resolveChannelInfo(transaction.params.receivingChainID);
-		messageFeeTokenID = channelInfo.messageFeeTokenID;
-	}
+	const channelInfo = transaction.module === MODULE.TOKEN
+		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
+		? await resolveChannelInfo(transaction.params.receivingChainID)
+		: {};
+
+	const { messageFeeTokenID } = channelInfo;
 
 	const mockedTransactionParams = transaction.module === MODULE.TOKEN
 		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
 		? mockOptionalProperties(
 			transaction.params,
 			OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
-			messageFeeTokenID,
+			{ messageFeeTokenID },
 		)
 		: transaction.params;
 
@@ -197,7 +198,7 @@ const estimateTransactionFees = async params => {
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
 
 	const transactionFeeEstimates = {
-		minFee: minFee + (defaultBytesLength * feeEstimatePerByte.minFeePerByte),
+		minFee: Number(minFee) + (defaultBytesLength * feeEstimatePerByte.minFeePerByte),
 		accountInitializationFee: await calcAccountInitializationFees(transaction),
 		messageFee: await calcMessageFee(transaction),
 	};

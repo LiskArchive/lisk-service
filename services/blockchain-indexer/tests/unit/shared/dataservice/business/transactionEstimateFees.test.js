@@ -41,7 +41,7 @@ describe('Test transaction fees estimates', () => {
 		return {
 			...actual,
 			resolveChannelInfo() {
-				return { messageFeeTokenID: '0000000000000000' };
+				return { messageFeeTokenID: '0400000000000000' };
 			},
 		};
 	});
@@ -205,7 +205,7 @@ describe('Test transaction fees estimates', () => {
 
 			const expectedResponse = {
 				...inputTransaction,
-				params: { ...inputTransaction.params, messageFeeTokenID: '0000000000000000' },
+				params: { ...inputTransaction.params, messageFeeTokenID: '0400000000000000' },
 			};
 
 			expect(transaction).toMatchObject(expectedResponse);

@@ -48,7 +48,7 @@ const resolveMainchainServiceURL = async () => {
 
 const resolveChannelInfo = async (inputChainID) => {
 	if (await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID)) {
-		const channelInfo = await requestConnector('getChannel', { inputChainID });
+		const channelInfo = await requestConnector('getChannel', { chainID: inputChainID });
 		return channelInfo;
 	}
 
