@@ -47,10 +47,20 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			// const activeDelegateCount = result.data.
-			// 	filter(validator => validator.status === 'active').length;
-			// expect(activeDelegateCount).toBe(numberActiveValidators);
-			// expect(result.data.length - activeDelegateCount).toBe(numberStandbyValidators);
+
+			// Sort validators by rank to check validate weight order
+			const validators = response.result.data.slice().sort((a, b) => a.rank - b.rank);
+			let isAllValidatorsRankValid = true;
+
+			for (let index = 0; index < validators.length - 1; index++) {
+				const curValidator = validators[index];
+				const nextValidator = validators[index + 1];
+				if ((curValidator.validatorWeight < nextValidator.validatorWeight)) {
+					isAllValidatorsRankValid = false;
+					break;
+				}
+			}
+			expect(isAllValidatorsRankValid).toBe(true);
 		});
 
 		it('Returns list of validators when requested with search param (partial validator name)', async () => {

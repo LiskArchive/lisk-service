@@ -61,11 +61,11 @@ let validatorList = [];
 const validatorComparator = (a, b) => {
 	const diff = BigInt(b.validatorWeight) - BigInt(a.validatorWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.hexAddress.localeCompare(b.hexAddress, 'en');
+	return Buffer.from(a.hexAddress, 'hex').compare(Buffer.from(b.hexAddress, 'hex'));
 };
 
 const computeValidatorRank = async () => {
-	validatorList
+	validatorList = validatorList
 		.map(validator => ({ ...validator, hexAddress: getHexAddress(validator.address) }))
 		.sort(validatorComparator);
 	validatorList.map((validator, index) => {
