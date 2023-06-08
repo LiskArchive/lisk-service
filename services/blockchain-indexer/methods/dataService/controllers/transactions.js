@@ -87,13 +87,17 @@ const getSchemas = async () => dataService.getSchemas();
 const dryRunTransactions = async (params) => dataService.dryRunTransactions(params);
 
 const estimateTransactionFees = async (params) => {
-	try {
-		const estimateTransactionFeesRes = await dataService.estimateTransactionFees(params);
+	const estimateTransactionFeesRes = {
+		data: {},
+		meta: {},
+	};
 
-		return {
-			data: estimateTransactionFeesRes.data,
-			meta: estimateTransactionFeesRes.meta,
-		};
+	try {
+		const response = await dataService.estimateTransactionFees(params);
+		if (response.data) estimateTransactionFeesRes.data = response.data;
+		if (response.meta) estimateTransactionFeesRes.meta = response.meta;
+
+		return estimateTransactionFeesRes;
 	} catch (error) {
 		let status;
 		if (error instanceof ValidationException) status = BAD_REQUEST;

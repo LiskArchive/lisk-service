@@ -106,30 +106,42 @@ describe('Test transaction fees estimates', () => {
 	});
 
 	describe('Test mockTransaction method', () => {
+		const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
+
+		const authInfoForMultisigAccount = {
+			...authAccountInfo,
+			numberOfSignatures: 2,
+			mandatoryKeys: [
+				'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
+			],
+			optionalKeys: [
+				'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
+			],
+		};
+
 		it('should return transaction when called with all valid params', async () => {
-			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const transaction = await mockTransaction(inputTransaction, authAccountInfo);
 			expect(transaction).toMatchObject(inputTransaction);
 		});
 
 		it('should return multisignature transaction when called with all valid params', async () => {
-			const authAccountInfo = {
-				nonce: '0',
-				numberOfSignatures: 2,
-				mandatoryKeys: [
-					'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
-				],
-				optionalKeys: [
-					'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
-				],
+			const transaction = await mockTransaction(
+				inputMultisigTransaction,
+				authInfoForMultisigAccount,
+			);
+
+			const expectedResponse = {
+				...inputMultisigTransaction,
+				signatures: transaction.signatures,
+				id: transaction.id,
+				fee: transaction.fee,
 			};
-			const transaction = await mockTransaction(inputMultisigTransaction, authAccountInfo);
-			expect(transaction).toMatchObject(inputMultisigTransaction);
-			expect(transaction.signatures.length).toBe(authAccountInfo.numberOfSignatures);
+
+			expect(transaction).toMatchObject(expectedResponse);
+			expect(transaction.signatures.length).toBe(authInfoForMultisigAccount.numberOfSignatures);
 		});
 
 		it('should return transaction when called transaction without id', async () => {
-			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { id, ...remParams } = inputTransaction;
 			const transaction = await mockTransaction(remParams, authAccountInfo);
 
@@ -142,7 +154,6 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction without fee', async () => {
-			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { fee, ...remParams } = inputTransaction;
 			const transaction = await mockTransaction(remParams, authAccountInfo);
 
@@ -155,18 +166,8 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return multisignature transaction when called transaction without signatures', async () => {
-			const authAccountInfo = {
-				nonce: '0',
-				numberOfSignatures: 2,
-				mandatoryKeys: [
-					'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
-				],
-				optionalKeys: [
-					'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
-				],
-			};
 			const { signatures, ...remParams } = inputMultisigTransaction;
-			const transaction = await mockTransaction(remParams, authAccountInfo);
+			const transaction = await mockTransaction(remParams, authInfoForMultisigAccount);
 
 			const expectedResponse = {
 				...inputMultisigTransaction,
@@ -174,11 +175,10 @@ describe('Test transaction fees estimates', () => {
 			};
 
 			expect(transaction).toMatchObject(expectedResponse);
-			expect(transaction.signatures.length).toBe(authAccountInfo.numberOfSignatures);
+			expect(transaction.signatures.length).toBe(authInfoForMultisigAccount.numberOfSignatures);
 		});
 
 		it('should return transaction when called transaction params without messageFee', async () => {
-			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { messageFee, ...remTransactionParams } = inputTransaction.params;
 
 			const transaction = await mockTransaction(
@@ -195,7 +195,6 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction params without messageFeeTokenID', async () => {
-			const authAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 			const { messageFeeTokenID, ...remTransactionParams } = inputTransaction.params;
 
 			const transaction = await mockTransaction(
