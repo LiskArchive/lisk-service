@@ -28,7 +28,7 @@ const config = require('../../../config');
 
 const { getLastBlock } = require('../blocks');
 const { isSubstringInArray } = require('../../utils/array');
-const { getHexAddress, getIndexedAccountInfo } = require('../utils/account');
+const { getHexAddress } = require('../utils/account');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -221,11 +221,8 @@ const getPosValidators = async params => {
 				totalSelfStakeRewards = BigInt('0'),
 			} = validatorInfo;
 
-			const { publicKey = null } = await getIndexedAccountInfo({ address: validator.address }, ['publicKey']);
-
 			return {
 				...validator,
-				publicKey,
 				generatedBlocks,
 				totalCommission,
 				totalSelfStakeRewards,
