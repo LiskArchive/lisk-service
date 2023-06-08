@@ -27,16 +27,13 @@ const staticUrl = config.endpoints.liskStatic;
 
 let knowledge = {};
 
-const getAccountKnowledge = (address) => {
-	if (knowledge[address]) return knowledge[address];
-	return {};
-};
+const getAccountKnowledge = (address) => knowledge[address] ? knowledge[address] : {};
 
 const resolveNetworkByChainID = (chainID) => {
 	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
 
 	const matchingNetwork = networkConfig.flatMap((network) => network)
-		.filter((ntwk) => ntwk.chainID.startsWith(networkID)).find(Boolean);
+		.find((network) => network.chainID.startsWith(networkID));
 
 	return matchingNetwork ? matchingNetwork.name : null;
 };
@@ -49,7 +46,7 @@ const reloadAccountKnowledge = async () => {
 		const networkName = resolveNetworkByChainID(chainID);
 
 		if (networkName) {
-			const res = await HTTP.request(`${staticUrl}/known_${networkName}.json`);
+			const res = await HTTP.get(`${staticUrl}/known_${networkName}.json`);
 
 			if (res.status === 200 && res.data) {
 				const knownAccounts = res.data;

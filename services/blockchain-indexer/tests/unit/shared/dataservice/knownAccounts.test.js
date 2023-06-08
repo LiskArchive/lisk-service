@@ -39,20 +39,12 @@ describe('reloadAccountKnowledge', () => {
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
+			const { mockedValidKnowledge } = require('../constants/accountKnowledge');
 			return {
 				...actual,
 				HTTP: {
-					request: jest.fn(() => Promise.resolve({
-						data: {
-							address1: {
-								owner: 'LiskHQ',
-								description: 'Initial seed',
-							},
-							address2: {
-								owner: 'Genesis',
-								description: 'Initial seed',
-							},
-						},
+					get: jest.fn(() => Promise.resolve({
+						data: mockedValidKnowledge,
 						status: 200,
 					})),
 				},
@@ -82,7 +74,7 @@ describe('reloadAccountKnowledge', () => {
 			return {
 				...actual,
 				HTTP: {
-					request: jest.fn(() => Promise.resolve({ data: null, status: 200 })),
+					get: jest.fn(() => Promise.resolve({ data: null, status: 200 })),
 				},
 				Logger: () => ({
 					debug: jest.fn(),
@@ -110,7 +102,7 @@ describe('reloadAccountKnowledge', () => {
 			return {
 				...actual,
 				HTTP: {
-					request: jest.fn(() => Promise.reject(new Error('Test error message'))),
+					get: jest.fn(() => Promise.reject(new Error('Test error message'))),
 				},
 				Logger: () => ({
 					debug: jest.fn(),
@@ -138,7 +130,7 @@ describe('reloadAccountKnowledge', () => {
 			return {
 				...actual,
 				HTTP: {
-					request: jest.fn(() => Promise.reject(new Error('Test error message'))),
+					get: jest.fn(() => Promise.reject(new Error('Test error message'))),
 				},
 				Logger: () => ({
 					debug: jest.fn(),
@@ -163,20 +155,12 @@ describe('reloadAccountKnowledge', () => {
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
+			const { mockedValidKnowledge } = require('../constants/accountKnowledge');
 			return {
 				...actual,
 				HTTP: {
-					request: jest.fn(() => Promise.resolve({
-						data: {
-							address1: {
-								owner: 'LiskHQ',
-								description: 'Initial seed',
-							},
-							address2: {
-								owner: 'Genesis',
-								description: 'Initial seed',
-							},
-						},
+					get: jest.fn(() => Promise.resolve({
+						data: mockedValidKnowledge,
 						status: 200,
 					})),
 				},
@@ -250,20 +234,12 @@ describe('getAccountKnowledge', () => {
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
+			const { mockedValidKnowledge } = require('../constants/accountKnowledge');
 			return {
 				...actual,
 				HTTP: {
-					request: jest.fn(() => Promise.resolve({
-						data: {
-							address1: {
-								owner: 'LiskHQ',
-								description: 'Initial seed',
-							},
-							address2: {
-								owner: 'Genesis',
-								description: 'Initial seed',
-							},
-						},
+					get: jest.fn(() => Promise.resolve({
+						data: mockedValidKnowledge,
 						status: 200,
 					})),
 				},
