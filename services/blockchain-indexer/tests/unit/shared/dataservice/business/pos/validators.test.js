@@ -110,6 +110,76 @@ describe('getAllPosValidators', () => {
 	});
 });
 
+describe('getPosValidators', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should return validators with correct validatorWeight when not banned or punished', async () => {
+		const validators = rawValidators;
+
+		// Mock connector to respond with validators
+		requestConnector.mockReturnValueOnce(validators[0])
+			.mockReturnValueOnce(validators[1])
+			.mockReturnValueOnce(validators[2]);
+
+		// Make a query to getAllPosValidators function
+		const { getPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const params = { addresses: [validators[0].address, validators[1].address,
+			validators[2].address] };
+		const result = await getPosValidators(params);
+
+		// Assert the result
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[0].address });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[1].address });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[2].address });
+		expect(requestConnector).toHaveBeenCalledTimes(3);
+		expect(result).toEqual(validators);
+	});
+
+	it('should return validators with validatorWeight set to 0 when banned or punished', async () => {
+		const validators = rawValidators;
+		validators[0].isBanned = true;
+
+		// Mock connector to respond with validators
+		requestConnector.mockReturnValueOnce(validators[0])
+			.mockReturnValueOnce(validators[1])
+			.mockReturnValueOnce(validators[2]);
+
+		// Make a query to getAllPosValidators function
+		const { getPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const params = { addresses: [validators[0].address, validators[1].address,
+			validators[2].address] };
+		const result = await getPosValidators(params);
+
+		// Assert the result
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[0].address });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[1].address });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[2].address });
+		expect(requestConnector).toHaveBeenCalledTimes(3);
+
+		expect(result.length).toEqual(3);
+		expect(result[0].validatorWeight).toEqual(BigInt('0'));
+		expect(result).toEqual(validators);
+	});
+
+	it('should handle error when requestConnector throws an error', async () => {
+		const params = { address: 'validator-address' };
+		const errorMessage = 'Request failed';
+
+		// Mock connector to respond with validators
+		requestConnector.mockRejectedValue(new Error(errorMessage));
+
+		// Make a query to getPosValidators function and expect it to throw
+		const { getPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		await expect(getPosValidators(params)).rejects.toThrow(errorMessage);
+
+		// Assert the result
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: 'validator-address' });
+		expect(requestConnector).toHaveBeenCalledTimes(1);
+	});
+});
+
 describe('getPosValidatorsByStake', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
