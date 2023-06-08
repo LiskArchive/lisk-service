@@ -27,6 +27,7 @@ const accountBalancesTableSchema = require('../../database/schema/accountBalance
 const { requestConnector } = require('../../utils/request');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { getAddressByName } = require('../utils/validator');
+const { getAccountKnowledge } = require('../knownAccounts');
 
 const {
 	LENGTH_CHAIN_ID,
@@ -92,14 +93,14 @@ const getTokenTopBalances = async (params) => {
 		tokenInfos,
 		async tokenInfo => {
 			const accountInfo = await getIndexedAccountInfo({ address: tokenInfo.address }, ['publicKey', 'name']);
+			const knowledge = getAccountKnowledge(tokenInfo.address);
+
 			return {
 				address: tokenInfo.address,
 				publicKey: accountInfo.publicKey,
 				name: accountInfo.name,
 				balance: tokenInfo.balance,
-				knowledge: {
-					// TODO: Integrate knowledge information
-				},
+				knowledge,
 			};
 		},
 		{ concurrency: tokenInfos.length },
