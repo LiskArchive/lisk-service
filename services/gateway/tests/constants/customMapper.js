@@ -66,12 +66,8 @@ const definitionObj = {
 			},
 		],
 	},
-	meta: {
-
-	},
-	links: {
-
-	},
+	meta: {},
+	links: {},
 };
 
 const mapObjectExpectedResponse = {
@@ -99,6 +95,8 @@ const mapObjectExpectedResponse = {
 			},
 		],
 	},
+	meta: {},
+	links: {},
 };
 
 module.exports = {

@@ -44,12 +44,15 @@ const resolvePath = (obj, path) => {
 	}
 };
 
+// Maps the response object in respect to the source definition
 const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definition)
 	.reduce((acc, key) => {
+		// Directly assign the casted value unless it is array or object
 		if (definition[key] !== null && typeof definition[key] === 'string') {
 			const [path, type] = definition[key].split(',');
 			const val = (path === '=') ? subObj[key] : resolvePath(rootObj, path);
 			acc[key] = (val || val === 0) && type ? cast[type](val) : val;
+		// Map each element of array
 		} else if (Array.isArray(definition[key])) {
 			if (definition[key].length === 2) {
 				const innerDef = definition[key][1];

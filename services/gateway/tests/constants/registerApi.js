@@ -398,6 +398,7 @@ const expectedResponseForTransformResponse = {
 		offset: 0,
 		total: 5,
 	},
+	links: {},
 };
 
 const paramsForTransformRequest = {
