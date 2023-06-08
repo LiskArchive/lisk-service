@@ -25,6 +25,7 @@ const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 const updateAccountBalances = async (address) => {

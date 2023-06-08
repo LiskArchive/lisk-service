@@ -29,7 +29,7 @@ const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
 const blocksTableSchema = require('../../database/schema/blocks');
 
-const { getIndexedAccountInfo } = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -38,7 +38,7 @@ const { getNameByAddress } = require('../../utils/validator');
 
 const config = require('../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 

@@ -26,17 +26,19 @@ const {
 		},
 	},
 } = require('lisk-service-framework');
-const config = require('../../config');
 
-const { getGenesisHeight } = require('../constants');
+const { getGenesisHeight } = require('../../constants');
 
-const eventsTableSchema = require('../database/schema/events');
+const config = require('../../../config');
+const eventsTableSchema = require('../../database/schema/events');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const keyValueTable = getKeyValueTable();
 const logger = Logger();
 
 const LAST_DELETED_EVENTS_HEIGHT = 'lastDeletedEventsHeight';
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const keyValueTable = getKeyValueTable();
 
 const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
 

@@ -21,7 +21,7 @@ const {
 	HTTP: { StatusCodes: { NOT_FOUND, BAD_REQUEST } },
 } = require('lisk-service-framework');
 
-const { confirmAddress } = require('../../../shared/accountUtils');
+const { confirmAddress } = require('../../../shared/dataService/utils/account');
 
 const dataService = require('../../../shared/dataService');
 

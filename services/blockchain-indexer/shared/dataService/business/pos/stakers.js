@@ -23,13 +23,16 @@ const config = require('../../../../config');
 const stakesTableSchema = require('../../../database/schema/stakes');
 
 const {
-	updateAccountPublicKey,
-	getIndexedAccountInfo,
-	getAccountsTable,
 	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
 } = require('../../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const {
+	getIndexedAccountInfo,
+	getAccountsTable,
+} = require('../../utils/account');
+
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 

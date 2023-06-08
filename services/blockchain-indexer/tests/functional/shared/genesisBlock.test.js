@@ -37,6 +37,7 @@ const {
 } = require('../../../shared/indexer/genesisBlock');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const keyValueTable = getKeyValueTable();
 
 const broker = new ServiceBroker({

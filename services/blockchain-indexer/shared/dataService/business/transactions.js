@@ -23,10 +23,7 @@ const {
 const { getBlockByID } = require('./blocks');
 const { getEventsByHeight } = require('./events');
 
-const {
-	getLisk32AddressFromPublicKey,
-	getIndexedAccountInfo,
-} = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactions');
@@ -34,8 +31,9 @@ const { getFinalizedHeight } = require('../../constants');
 
 const transactionsTableSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
+const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 

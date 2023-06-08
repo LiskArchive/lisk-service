@@ -25,16 +25,18 @@ const config = require('../../../config');
 const accountBalancesTableSchema = require('../../database/schema/accountBalances');
 
 const { requestConnector } = require('../../utils/request');
-const { getLisk32AddressFromPublicKey, getIndexedAccountInfo } = require('../../utils/account');
-const { getAddressByName } = require('../../utils/validator');
+const { getIndexedAccountInfo } = require('../utils/account');
+const { getAddressByName } = require('../utils/validator');
 
 const {
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,
 	PATTERN_ANY_CHAIN_TOKEN_ID,
 } = require('../../constants');
+const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
+
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 let moduleConstants = {};
