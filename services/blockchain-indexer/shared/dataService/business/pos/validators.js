@@ -57,6 +57,7 @@ const getPosValidators = async (params) => {
 					? cap
 					: validator.totalStake;
 			}
+			return validator;
 		},
 		{ concurrency: validatorAddressList.length },
 	);
