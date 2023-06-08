@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const {
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
 
 const MessageQueue = require('bull');
 const config = require('../config');
+
+const logger = Logger();
 
 const eventsQueue = new MessageQueue(
 	config.queue.events.name,
@@ -26,17 +31,23 @@ const eventsQueue = new MessageQueue(
 
 const scheduleUpdatesOnNewBlock = async (payload) => {
 	const { blockHeader } = payload;
+	logger.debug(`Scheduling indexing new block at height: ${blockHeader.height}.`);
 	await eventsQueue.add({ blockHeader, isNewBlock: true });
+	logger.info(`Finished scheduling indexing new block at height: ${blockHeader.height}.`);
 };
 
 const scheduleDeleteBlock = async (payload) => {
 	const { blockHeader } = payload;
+	logger.debug(`Scheduling updates for the delete block at height: ${blockHeader.height}.`);
 	await eventsQueue.add({ blockHeader, isDeleteBlock: true });
+	logger.info(`Finished scheduling updates for the delete block at height: ${blockHeader.height}.`);
 };
 
 const scheduleUpdatesOnNewRound = async (payload) => {
 	const { validators } = payload;
+	logger.debug('Scheduling updates on new round.');
 	await eventsQueue.add({ validators, isNewRound: true });
+	logger.debug('Finished scheduling updates on new round}.');
 };
 
 const initEventsScheduler = async () => {

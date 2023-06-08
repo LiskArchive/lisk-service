@@ -26,14 +26,13 @@ const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	getMissingBlocks,
 	getCurrentHeight,
-	getGenesisHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
 } = require('./sources/indexer');
 
 const {
-	getRegisteredModules,
 	getAllPosValidators,
+	getGenesisHeight,
 } = require('./sources/connector');
 
 const config = require('../config');
@@ -50,8 +49,9 @@ const accountIndexQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-let registeredLiskModules;
-const getRegisteredModuleAssets = () => registeredLiskModules;
+const { threshold } = config.job.indexMissingBlocks;
+
+const getJobCount = async (queue) => (await queue.getActiveCount() + await queue.getWaitingCount());
 
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
@@ -80,18 +80,17 @@ const scheduleValidatorsIndexing = async (validators) => {
 		{ concurrency: validators.length },
 	);
 
-	logger.info('Finished scheduling of validators indexing.');
+	logger.info(`Finished scheduling of validators indexing with ${validators.length} validators.`);
 };
 
 const indexGenesisBlock = async () => {
 	const genesisHeight = await getGenesisHeight();
+	logger.debug('Scheduling genesis block indexing.');
 	await scheduleBlocksIndexing(genesisHeight);
+	logger.info('Finished scheduling genesis block indexing.');
 };
 
 const initIndexingScheduler = async () => {
-	// Retrieve enabled modules from connector
-	registeredLiskModules = await getRegisteredModules();
-
 	// Get all validators and schedule indexing
 	const { validators } = await getAllPosValidators();
 	if (Array.isArray(validators) && validators.length) {
@@ -112,6 +111,15 @@ const initIndexingScheduler = async () => {
 const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
+
+	const jobCount = await getJobCount(blockIndexQueue);
+
+	// Skip missing blocks scheduling if Active+Waiting job count >= threshold or
+	// Active+Waiting job count <= (currentHeight - genesisHeight + 1 - configurableThreshold)
+	if (jobCount >= threshold || jobCount <= (currentHeight - genesisHeight + 1 - threshold)) {
+		logger.info('Skip scheduling missing blocks job.');
+		return;
+	}
 
 	// Missing blocks are being checked during regular interval
 	// By default they are checked from the blockchain's beginning
@@ -140,18 +148,21 @@ const scheduleMissingBlocksIndexing = async () => {
 			await scheduleBlocksIndexing(missingBlocksByHeight);
 		}
 	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}.`);
+		logger.warn(`Missing blocks indexing failed due to: ${err.message}.`);
 	}
 };
 
 const init = async () => {
-	await indexGenesisBlock();
-	await initIndexingScheduler();
-	await initEventsScheduler();
+	try {
+		await indexGenesisBlock();
+		await initIndexingScheduler();
+		await initEventsScheduler();
+	} catch (error) {
+		logger.error(`Unable to initialize coordinator due to: ${error.message}`);
+	}
 };
 
 module.exports = {
 	init,
-	getRegisteredModuleAssets,
 	scheduleMissingBlocksIndexing,
 };

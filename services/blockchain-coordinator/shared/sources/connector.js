@@ -15,14 +15,18 @@
  */
 const { requestConnector } = require('../utils/request');
 
-const getRegisteredModules = async () => {
-	const systemMetadata = await requestConnector('getSystemMetadata');
-	return systemMetadata.modules;
-};
+let genesisHeight;
 
 const getAllPosValidators = async () => requestConnector('getAllPosValidators');
 
+const getGenesisHeight = async () => {
+	if (typeof genesisHeight !== 'number') {
+		genesisHeight = await requestConnector('getGenesisHeight');
+	}
+	return genesisHeight;
+};
+
 module.exports = {
-	getRegisteredModules,
 	getAllPosValidators,
+	getGenesisHeight,
 };
