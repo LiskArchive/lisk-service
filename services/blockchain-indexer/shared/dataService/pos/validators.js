@@ -28,7 +28,7 @@ const config = require('../../../config');
 
 const { getLastBlock } = require('../blocks');
 const { isSubstringInArray } = require('../../utils/array');
-const { getHexAddress, getIndexedAccountInfo } = require('../utils/account');
+const { getHexAddress } = require('../utils/account');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -61,11 +61,11 @@ let validatorList = [];
 const validatorComparator = (a, b) => {
 	const diff = BigInt(b.validatorWeight) - BigInt(a.validatorWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.hexAddress.localeCompare(b.hexAddress, 'en');
+	return Buffer.from(a.hexAddress, 'hex').compare(Buffer.from(b.hexAddress, 'hex'));
 };
 
 const computeValidatorRank = async () => {
-	validatorList
+	validatorList = validatorList
 		.map(validator => ({ ...validator, hexAddress: getHexAddress(validator.address) }))
 		.sort(validatorComparator);
 	validatorList.map((validator, index) => {
@@ -221,11 +221,8 @@ const getPosValidators = async params => {
 				totalSelfStakeRewards = BigInt('0'),
 			} = validatorInfo;
 
-			const { publicKey = null } = await getIndexedAccountInfo({ address: validator.address }, ['publicKey']);
-
 			return {
 				...validator,
-				publicKey,
 				generatedBlocks,
 				totalCommission,
 				totalSelfStakeRewards,
@@ -364,4 +361,7 @@ module.exports = {
 	reloadValidatorCache,
 	getPosValidators,
 	getAllValidators,
+
+	// For testing
+	validatorComparator,
 };

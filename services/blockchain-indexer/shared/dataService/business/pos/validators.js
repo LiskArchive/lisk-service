@@ -21,6 +21,8 @@ const config = require('../../../../config');
 
 const { requestConnector } = require('../../../utils/request');
 
+const { getIndexedAccountInfo } = require('../../utils/account');
+
 const LAST_BLOCK_KEY = 'lastBlock';
 const lastBlockCache = CacheRedis(LAST_BLOCK_KEY, config.endpoints.cache);
 
@@ -55,7 +57,6 @@ const getPosValidators = async (params) => {
 					? cap
 					: validator.totalStake;
 			}
-			return validator;
 		},
 		{ concurrency: validatorAddressList.length },
 	);
@@ -77,7 +78,12 @@ const getAllPosValidators = async () => {
 					: validator.totalStake;
 			}
 
-			return validator;
+			const { publicKey = null } = await getIndexedAccountInfo({ address: validator.address }, ['publicKey']);
+
+			return {
+				...validator,
+				publicKey,
+			};
 		},
 		{ concurrency: rawValidators.length },
 	);
