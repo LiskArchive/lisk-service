@@ -41,7 +41,7 @@ jest.mock('lisk-service-framework', () => {
 	};
 });
 
-describe('Test isIncludePendingTransactions method', () => {
+describe('Test validatorComparator method', () => {
 	it('should return less than 0 when first validator has more weight than second validator', async () => {
 		const { validatorComparator } = require(posValidatorsPath);
 		const result = validatorComparator(
