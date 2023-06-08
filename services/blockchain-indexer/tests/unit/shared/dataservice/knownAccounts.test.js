@@ -43,10 +43,7 @@ describe('reloadAccountKnowledge', () => {
 			return {
 				...actual,
 				HTTP: {
-					get: jest.fn(() => Promise.resolve({
-						data: mockedValidKnowledge,
-						status: 200,
-					})),
+					get: jest.fn(() => Promise.resolve(mockedValidKnowledge)),
 				},
 				Logger: () => ({
 					debug: jest.fn(),
@@ -159,10 +156,7 @@ describe('reloadAccountKnowledge', () => {
 			return {
 				...actual,
 				HTTP: {
-					get: jest.fn(() => Promise.resolve({
-						data: mockedValidKnowledge,
-						status: 200,
-					})),
+					get: jest.fn(() => Promise.resolve(mockedValidKnowledge)),
 				},
 				Logger: () => ({
 					debug: jest.fn(),
@@ -238,10 +232,7 @@ describe('getAccountKnowledge', () => {
 			return {
 				...actual,
 				HTTP: {
-					get: jest.fn(() => Promise.resolve({
-						data: mockedValidKnowledge,
-						status: 200,
-					})),
+					get: jest.fn(() => Promise.resolve(mockedValidKnowledge)),
 				},
 				Logger: () => ({
 					debug: jest.fn(),

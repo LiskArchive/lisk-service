@@ -1,12 +1,15 @@
 const mockedValidKnowledge = {
-	address1: {
-		owner: 'LiskHQ',
-		description: 'Initial seed',
+	data: {
+		address1: {
+			owner: 'LiskHQ',
+			description: 'Initial seed',
+		},
+		address2: {
+			owner: 'Genesis',
+			description: 'Initial seed',
+		},
 	},
-	address2: {
-		owner: 'Genesis',
-		description: 'Initial seed',
-	},
+	status: 200,
 };
 
 module.exports = {
