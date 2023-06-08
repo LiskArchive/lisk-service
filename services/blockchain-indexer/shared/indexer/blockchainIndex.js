@@ -89,6 +89,20 @@ const indexBlock = async job => {
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const blocksTable = await getBlocksTable();
+
+	// Check if previous block is indexed, index previous block if not indexed
+	const prevBlockHeight = block.height === await getGenesisHeight()
+		? block.height
+		: block.height - 1;
+	const prevBlockFromDB = await blocksTable.find({ height: prevBlockHeight });
+
+	/* eslint-disable no-use-before-define */
+	if (!prevBlockFromDB.length) {
+		await addBlockToQueue(prevBlockHeight);
+		await addBlockToQueue(block.height);
+	}
+	/* eslint-enable no-use-before-define */
+
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDBTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`);
