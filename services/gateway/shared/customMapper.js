@@ -72,7 +72,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 		} else if (typeof definition[key] === 'object' && rootObj[key] !== null) {
 			const tempObj = mapObject(rootObj, definition[key], subObj[key]);
 			const values = Object.values(tempObj);
-			if (objWithValues(values) && validate(tempObj)) acc[key] = tempObj;
+			if (objWithValues(values)) acc[key] = tempObj;
 			else acc[key] = {};
 		}
 		return acc;
