@@ -23,27 +23,25 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getPosConstants } = require('../business');
 const business = require('../business');
 const config = require('../../../config');
-const accountsTableSchema = require('../../database/schema/accounts');
-const validatorsTableSchema = require('../../database/schema/validators');
-const { isSubstringInArray } = require('../../utils/array');
 
-const {
-	getLisk32AddressFromPublicKey,
-	getHexAddress,
-	updateAccountPublicKey,
-	getIndexedAccountInfo,
-} = require('../../utils/account');
 const { getLastBlock } = require('../blocks');
+const { isSubstringInArray } = require('../../utils/array');
+const { getHexAddress } = require('../utils/account');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+const {
+	updateAccountInfo,
+	getLisk32AddressFromPublicKey,
+	updateAccountPublicKey,
+} = require('../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const validatorsTableSchema = require('../../database/schema/validators');
 
-const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
+
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
@@ -79,7 +77,7 @@ const computeValidatorRank = async () => {
 const computeValidatorStatus = async () => {
 	const {
 		data: { numberActiveValidators, numberStandbyValidators },
-	} = await getPosConstants();
+	} = await business.getPosConstants();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
@@ -135,14 +133,13 @@ const loadAllPosValidators = async () => {
 		validatorList = await business.getAllPosValidators();
 
 		// Cache and index all the necessary information
-		const accountsTable = await getAccountsTable();
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
 				const { address, name } = validator;
 				await validatorCache.set(address, name);
 				await validatorCache.set(name, address);
-				await accountsTable.upsert({ address, name, isValidator: true });
+				await updateAccountInfo({ address, name, isValidator: true });
 			},
 			{ concurrency: validatorList.length },
 		);
@@ -224,11 +221,8 @@ const getPosValidators = async params => {
 				totalSelfStakeRewards = BigInt('0'),
 			} = validatorInfo;
 
-			const { publicKey = null } = await getIndexedAccountInfo({ address: validator.address }, ['publicKey']);
-
 			return {
 				...validator,
-				publicKey,
 				generatedBlocks,
 				totalCommission,
 				totalSelfStakeRewards,

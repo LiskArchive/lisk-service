@@ -23,7 +23,7 @@ const logger = Logger();
 const { APP_STATUS } = require('./constants');
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { requestConnector } = require('../../../utils/request');
@@ -59,7 +59,7 @@ const reloadBlockchainAppsStats = async () => {
 		const { data: { rate: annualInflation } } = await getAnnualInflation({ height });
 		const { amount: totalStaked } = await getTotalStaked();
 
-		logger.debug('Updating blockchain apps statistics cache');
+		logger.debug('Updating blockchain apps statistics cache.');
 
 		blockchainAppsStatsCache = {
 			registered: numRegisteredChains,

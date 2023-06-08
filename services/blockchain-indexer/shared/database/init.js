@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,27 +14,33 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const path = require('path');
 
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	MySQL: {
+		getTableInstance,
+		KVStore: { configureKeyValueTable, getKeyValueTable },
+	},
+	Utils,
+	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
 
 const config = require('../../config');
 
-const tableSchemas = {
-	application_metadata: require('./schema/application_metadata'),
-	token_metadata: require('./schema/token_metadata'),
-};
-
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const tableSchemas = Object.values(Utils.requireAllJs(path.join(__dirname, './schema')));
+
 const initializeSearchIndex = async () => {
+	// Ensure the MySQL KVStore is initialized
+	await getKeyValueTable();
+
 	logger.debug('Initializing all the tables.');
 	await BluebirdPromise.map(
-		Object.values(tableSchemas),
+		tableSchemas,
 		async schema => {
 			logger.trace(`Initializing table: ${schema.tableName}.`);
 			return getTableInstance(schema, MYSQL_ENDPOINT);
@@ -42,25 +48,11 @@ const initializeSearchIndex = async () => {
 		{ concurrency: 1 },
 	);
 	logger.debug('Initialized all the tables successfully.');
-};
-
-const truncateAllTables = async () => {
-	logger.info('Truncating all the tables.');
-	await BluebirdPromise.map(
-		Object.values(tableSchemas),
-		async schema => {
-			logger.trace(`Truncating table: ${schema.tableName}.`);
-			const db = await getTableInstance(schema, MYSQL_ENDPOINT);
-			await db.rawQuery(`TRUNCATE TABLE ${schema.tableName};`);
-			logger.info(`Truncated table: ${schema.tableName}.`);
-		},
-		{ concurrency: 1 },
-	);
-	logger.debug('Truncated all the tables successfully.');
+	Signals.get('searchIndexInitialized').dispatch();
 };
 
 const initDatabase = async () => {
-	if (config.isRebuildIndexAtInit) await truncateAllTables();
+	configureKeyValueTable(MYSQL_ENDPOINT);
 	await initializeSearchIndex();
 };
 

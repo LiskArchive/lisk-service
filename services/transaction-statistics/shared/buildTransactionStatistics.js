@@ -40,9 +40,11 @@ const config = require('../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysql;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
-const getDBInstance = () => getTableInstance(txStatisticsTableSchema, MYSQL_ENDPOINT);
+const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
+	txStatisticsTableSchema, dbEndpoint);
 
 const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
@@ -126,13 +128,13 @@ const transformStatsObjectToList = statsObject => (
 );
 
 const insertToDB = async (statsList, date) => {
-	const db = await getDBInstance();
-	const connection = await getDBConnection(MYSQL_ENDPOINT);
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_PRIMARY);
+	const connection = await getDBConnection(MYSQL_ENDPOINT_PRIMARY);
 	const trx = await startDBTransaction(connection);
 	try {
 		try {
-			const [{ id }] = db.find({ date, limit: 1 }, ['id']);
-			await db.deleteByPrimaryKey([id]);
+			const [{ id }] = transactionStatisticsTable.find({ date, limit: 1 }, ['id']);
+			await transactionStatisticsTable.deleteByPrimaryKey([id]);
 			logger.debug(`Removed the following date from the database: ${date}`);
 		} catch (err) {
 			logger.debug(`The database does not contain the entry with the following date: ${date}`);
@@ -145,7 +147,7 @@ const insertToDB = async (statsList, date) => {
 			const { range, ...finalStats } = statistic;
 			return finalStats;
 		});
-		await db.upsert(statsList, trx);
+		await transactionStatisticsTable.upsert(statsList, trx);
 		await commitDBTransaction(trx);
 		const count = statsList.reduce((acc, row) => acc + row.count, 0);
 		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
@@ -190,14 +192,14 @@ const transactionStatisticsQueue = Queue(
 );
 
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
-	const db = await getDBInstance();
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 	const scheduledDays = [];
 	for (let i = 0; i < n; i++) {
 		/* eslint-disable no-await-in-loop */
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
+		const shouldUpdate = i === 0 || !((await transactionStatisticsTable.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
