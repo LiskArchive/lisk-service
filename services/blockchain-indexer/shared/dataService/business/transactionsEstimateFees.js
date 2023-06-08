@@ -37,7 +37,8 @@ const config = require('../../../config');
 
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
-const { bufferBytesLength } = config.estimateFees;
+const DEFAULT_NUM_OF_SIGNATURES = 1;
+const { bufferBytesLength: BUFFER_BYTES_LENGTH } = config.estimateFees;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	FEE: {
@@ -83,7 +84,7 @@ const mockTransaction = async (_transaction, authAccountInfo) => {
 	const transaction = _.cloneDeep(_transaction);
 
 	const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
-		+ authAccountInfo.optionalKeys.length) || 1;
+		+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
 
 	const mockedTransaction = mockOptionalProperties(
 		transaction,
@@ -98,8 +99,7 @@ const mockTransaction = async (_transaction, authAccountInfo) => {
 
 	const { messageFeeTokenID } = channelInfo;
 
-	const mockedTransactionParams = transaction.module === MODULE.TOKEN
-		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
+	const mockedTransactionParams = messageFeeTokenID
 		? mockOptionalProperties(
 			transaction.params,
 			OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
@@ -114,6 +114,7 @@ const calcMessageFee = async (transaction) => {
 	if (transaction.module !== MODULE.TOKEN
 		|| transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return {};
 
+	// TODO: Add error handling
 	const { data: { events } } = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
@@ -125,7 +126,8 @@ const calcMessageFee = async (transaction) => {
 
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
-		amount: BigInt(ccmBuffer.length + bufferBytesLength) * BigInt(channelInfo.minReturnFeePerByte),
+		amount: BigInt(ccmBuffer.length + BUFFER_BYTES_LENGTH)
+			* BigInt(channelInfo.minReturnFeePerByte),
 	};
 };
 
@@ -190,16 +192,16 @@ const estimateTransactionFees = async params => {
 	});
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
-	const transaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
+	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
 
-	const { minFee, size } = transaction;
+	const { minFee, size } = formattedTransaction;
 
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
 
 	const transactionFeeEstimates = {
-		minFee: Number(minFee) + (bufferBytesLength * feeEstimatePerByte.minFeePerByte),
-		accountInitializationFee: await calcAccountInitializationFees(transaction),
-		messageFee: await calcMessageFee(transaction),
+		minFee: Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+		accountInitializationFee: await calcAccountInitializationFees(formattedTransaction),
+		messageFee: await calcMessageFee(formattedTransaction),
 	};
 
 	const dynamicFeeEstimates = calcDynamicFeeEstimates(
