@@ -14,6 +14,14 @@
  *
  */
 
+/* eslint-disable import/no-dynamic-require */
+const { resolve } = require('path');
+
+// All file paths
+const mockedNetworkFilePath = resolve(`${__dirname}/../../../../shared/dataService/business/network`);
+const mockedAccountKnowledgeConstantsFilePath = resolve(`${__dirname}/../constants/accountKnowledge`);
+const knownAccountsFilePath = resolve(`${__dirname}/../../../../shared/dataService/knownAccounts`);
+
 // Mock config
 jest.mock('../../../../config', () => ({
 	endpoints: {
@@ -39,7 +47,7 @@ describe('reloadAccountKnowledge', () => {
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
-			const { mockedValidKnowledge } = require('../constants/accountKnowledge');
+			const { mockedValidKnowledge } = require(mockedAccountKnowledgeConstantsFilePath);
 			return {
 				...actual,
 				HTTP: {
@@ -55,12 +63,12 @@ describe('reloadAccountKnowledge', () => {
 		});
 
 		// Mock getNetworkStatus function to resolve valid chainID
-		const { getNetworkStatus } = require('../../../../shared/dataService/business/network');
-		jest.mock('../../../../shared/dataService/business/network');
+		jest.mock(mockedNetworkFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 		getNetworkStatus.mockResolvedValueOnce({ data: { chainID } });
 
 		// Reload account knowledge
-		const { reloadAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { reloadAccountKnowledge } = require(knownAccountsFilePath);
 		await reloadAccountKnowledge();
 	});
 
@@ -83,12 +91,12 @@ describe('reloadAccountKnowledge', () => {
 		});
 
 		// Mock getNetworkStatus function to resolve valid chainID
-		const { getNetworkStatus } = require('../../../../shared/dataService/business/network');
-		jest.mock('../../../../shared/dataService/business/network');
+		jest.mock(mockedNetworkFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 		getNetworkStatus.mockResolvedValueOnce({ data: { chainID } });
 
 		// Reload account knowledge
-		const { reloadAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { reloadAccountKnowledge } = require(knownAccountsFilePath);
 		await reloadAccountKnowledge();
 	});
 
@@ -111,12 +119,12 @@ describe('reloadAccountKnowledge', () => {
 		});
 
 		// Mock getNetworkStatus function to resolve valid chainID
-		const { getNetworkStatus } = require('../../../../shared/dataService/business/network');
-		jest.mock('../../../../shared/dataService/business/network');
+		jest.mock(mockedNetworkFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 		getNetworkStatus.mockResolvedValueOnce({ data: { chainID } });
 
 		// Reload account knowledge
-		const { reloadAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { reloadAccountKnowledge } = require(knownAccountsFilePath);
 		await reloadAccountKnowledge();
 	});
 
@@ -139,12 +147,12 @@ describe('reloadAccountKnowledge', () => {
 		});
 
 		// Mock getNetworkStatus function to resolve invalid chainID
-		const { getNetworkStatus } = require('../../../../shared/dataService/business/network');
-		jest.mock('../../../../shared/dataService/business/network');
+		jest.mock(mockedNetworkFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 		getNetworkStatus.mockResolvedValueOnce({ data: { chainID: 'invalidChainID' } });
 
 		// Reload account knowledge
-		const { reloadAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { reloadAccountKnowledge } = require(knownAccountsFilePath);
 		await reloadAccountKnowledge();
 	});
 
@@ -152,7 +160,7 @@ describe('reloadAccountKnowledge', () => {
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
-			const { mockedValidKnowledge } = require('../constants/accountKnowledge');
+			const { mockedValidKnowledge } = require(mockedAccountKnowledgeConstantsFilePath);
 			return {
 				...actual,
 				HTTP: {
@@ -168,12 +176,12 @@ describe('reloadAccountKnowledge', () => {
 		});
 
 		// Mock getNetworkStatus function to resolve valid chainID
-		const { getNetworkStatus } = require('../../../../shared/dataService/business/network');
-		jest.mock('../../../../shared/dataService/business/network');
+		jest.mock(mockedNetworkFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 		getNetworkStatus.mockResolvedValueOnce({ data: { chainID } });
 
 		// Reload account knowledge
-		const { reloadAccountKnowledge, getAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { reloadAccountKnowledge, getAccountKnowledge } = require(knownAccountsFilePath);
 		await reloadAccountKnowledge();
 
 		// fetch and assert account knowledge
@@ -193,7 +201,7 @@ describe('resolveNetworkByChainID', () => {
 	it('should return the network name for a valid chain ID', () => {
 		const {
 			resolveNetworkByChainID,
-		} = require('../../../../shared/dataService/knownAccounts');
+		} = require(knownAccountsFilePath);
 
 		const result = resolveNetworkByChainID(chainID);
 		expect(result).toEqual('mainnet');
@@ -202,7 +210,7 @@ describe('resolveNetworkByChainID', () => {
 	it('should return the network name for a valid network ID', () => {
 		const {
 			resolveNetworkByChainID,
-		} = require('../../../../shared/dataService/knownAccounts');
+		} = require(knownAccountsFilePath);
 
 		const validSidechainID = '00000001';
 		const result = resolveNetworkByChainID(validSidechainID);
@@ -212,7 +220,7 @@ describe('resolveNetworkByChainID', () => {
 	it('should return null if the chain ID does not exist in any network', () => {
 		const {
 			resolveNetworkByChainID,
-		} = require('../../../../shared/dataService/knownAccounts');
+		} = require(knownAccountsFilePath);
 
 		const invalidChainID = '99999999';
 		const result = resolveNetworkByChainID(invalidChainID);
@@ -228,7 +236,7 @@ describe('getAccountKnowledge', () => {
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
-			const { mockedValidKnowledge } = require('../constants/accountKnowledge');
+			const { mockedValidKnowledge } = require(mockedAccountKnowledgeConstantsFilePath);
 			return {
 				...actual,
 				HTTP: {
@@ -244,17 +252,17 @@ describe('getAccountKnowledge', () => {
 		});
 
 		// Mock getNetworkStatus function to resolve valid chainID
-		const { getNetworkStatus } = require('../../../../shared/dataService/business/network');
-		jest.mock('../../../../shared/dataService/business/network');
+		jest.mock(mockedNetworkFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 		getNetworkStatus.mockResolvedValueOnce({ data: { chainID } });
 
 		// Reload account knowledge
-		const { reloadAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { reloadAccountKnowledge } = require(knownAccountsFilePath);
 		await reloadAccountKnowledge();
 	});
 
 	it('should return the account knowledge if it exists', () => {
-		const { getAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { getAccountKnowledge } = require(knownAccountsFilePath);
 		expect(getAccountKnowledge('address1')).toEqual({
 			owner: 'LiskHQ',
 			description: 'Initial seed',
@@ -267,7 +275,7 @@ describe('getAccountKnowledge', () => {
 	});
 
 	it('should return an empty object if the account knowledge does not exist', () => {
-		const { getAccountKnowledge } = require('../../../../shared/dataService/knownAccounts');
+		const { getAccountKnowledge } = require(knownAccountsFilePath);
 
 		expect(getAccountKnowledge('nonexistentAddress')).toEqual({});
 	});
