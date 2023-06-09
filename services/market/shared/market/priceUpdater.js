@@ -78,7 +78,7 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 				const [, , intermediateTarget] = rps.code.split('_');
 
 				rawPricesWithMatchingTarget
-					// Eg: if _BTC_ in bittex_BTC_EUR
+					// Eg: if _BTC_ in bittrex_BTC_EUR
 					.filter(rpt => rpt.code.includes(`_${intermediateTarget}_`))
 					.forEach(rpt => {
 						if (rps.code !== rpt.code && rps.sources[0] !== rpt.sources[0]) {
