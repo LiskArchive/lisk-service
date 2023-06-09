@@ -13,10 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	HTTP,
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
+
 const { getNetworkStatus } = require('./network');
 const regex = require('../../regex');
 const config = require('../../../config');
 const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../constants');
+const { requestConnector } = require('../../utils/request');
 
 let chainID;
 
@@ -43,7 +49,32 @@ const resolveMainchainServiceURL = async () => {
 	return serviceURL;
 };
 
+const resolveChannelInfo = async (inputChainID) => {
+	try {
+		if (await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID)) {
+			const channelInfo = await requestConnector('getChannel', { chainID: inputChainID });
+			return channelInfo;
+		}
+
+		// Redirect call to the mainchain service
+		const serviceURL = await resolveMainchainServiceURL();
+		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
+		const { data: { data: channelInfo } } = await HTTP.post(
+			invokeEndpoint,
+			{
+				endpoint: 'interoperability_getChannel',
+				params: { chainID: inputChainID },
+			},
+		);
+
+		return channelInfo;
+	} catch (error) {
+		throw new ValidationException(`Error while retrieving channel info for the chain: ${inputChainID}.\nError: ${error}`);
+	}
+};
+
 module.exports = {
 	isMainchain,
 	resolveMainchainServiceURL,
+	resolveChannelInfo,
 };

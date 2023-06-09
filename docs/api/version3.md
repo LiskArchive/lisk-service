@@ -535,14 +535,6 @@ Request payload:
 }
 ```
 
-or
-
-```jsonc
-{
-  "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
-}
-```
-
 #### Response example
 
 200 OK
@@ -897,7 +889,7 @@ Retrieves user-specific details from the Auth module.
 {
   "data": {
     "nonce": "1",
-    "numberOfReqSignatures": 1,
+    "numberOfSignatures": 1,
     "mandatoryKeys": [
       "689b9a40aa11cbc8327d5eeebed9a1052940730f9c34cffb33ae591131141349"
     ],
