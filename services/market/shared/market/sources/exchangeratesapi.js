@@ -26,22 +26,29 @@ const exchangeratesapiCache = CacheRedis('exchangeratesapi_prices', config.endpo
 
 const accessKey = config.access_key.exchangeratesapi;
 
-const currencies = ['EUR', 'USD', 'CHF', 'BTC'];
-const expireMiliseconds = config.ttl.exchangeratesapi;
+const baseCurrencies = config.market.supportedFiatCurrencies.split(',').concat('BTC');
+const expireMilliseconds = config.ttl.exchangeratesapi;
 const { apiEndpoint, allowRefreshAfter } = config.market.sources.exchangeratesapi;
 
-const symbolMap = {
-	EUR_USD: 'EURUSD',
-	EUR_CHF: 'EURCHF',
-	EUR_BTC: 'EURBTC',
-};
+const symbolMap = (() => {
+	// Dynamically generates a map of type '{ "LSK_USD": "LSKUSD" }' based on baseCurrencies
+	// Consistent with other data source implementations
+	const map = {};
+	baseCurrencies.forEach((baseCurrency, index) => {
+		const targetCurrencies = baseCurrencies.slice(index + 1);
+		targetCurrencies.forEach((targetCurrency) => {
+			map[`${baseCurrency}_${targetCurrency}`] = `${baseCurrency}${targetCurrency}`;
+		});
+	});
+	return map;
+})();
 
 const fetchAllCurrencyConversionRates = async () => {
 	try {
 		const allMarketConversionRates = {};
 		await BluebirdPromise.all(
-			currencies.map(async (baseCurrency) => {
-				const remainingCurrencies = currencies.filter(c => c !== baseCurrency);
+			baseCurrencies.map(async (baseCurrency) => {
+				const remainingCurrencies = baseCurrencies.filter(c => c !== baseCurrency);
 				const response = await requestLib(`${apiEndpoint}/latest?access_key=${accessKey}&base=${baseCurrency}&symbols=${remainingCurrencies.join(',')}`);
 				if (response) allMarketConversionRates[baseCurrency] = response.data.rates;
 			}),
@@ -56,17 +63,17 @@ const fetchAllCurrencyConversionRates = async () => {
 
 const standardizeCurrencyConversionRates = (rawConversionRates) => {
 	const [transformedConversionRates] = Object.entries(rawConversionRates).map(
-		([baseCur, convRates]) => Object.getOwnPropertyNames(convRates)
-			.map(targetCur => ({ symbol: `${baseCur}_${targetCur}`, price: convRates[targetCur] })),
+		([baseCur, conversionRates]) => Object.getOwnPropertyNames(conversionRates)
+			.map(targetCur => ({ symbol: `${baseCur}_${targetCur}`, price: conversionRates[targetCur] })),
 	);
 	const standardizedConversionRates = (Array.isArray(transformedConversionRates))
-		? transformedConversionRates.map(convRate => {
-			const [from, to] = convRate.symbol.split('_');
+		? transformedConversionRates.map(conversionRate => {
+			const [from, to] = conversionRate.symbol.split('_');
 			const price = {
-				code: convRate.symbol,
+				code: conversionRate.symbol,
 				from,
 				to,
-				rate: convRate.price,
+				rate: conversionRate.price,
 				updateTimestamp: Math.floor(Date.now() / 1000),
 				sources: ['exchangeratesapi'],
 			};
@@ -78,7 +85,7 @@ const standardizeCurrencyConversionRates = (rawConversionRates) => {
 
 const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
-	const ConversionRates = await BluebirdPromise.map(
+	const conversionRates = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
 		async (itemCode) => {
 			const serializedPrice = await exchangeratesapiCache.get(`exchangeratesapi_${itemCode}`);
@@ -87,8 +94,8 @@ const getFromCache = async () => {
 		},
 		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
 	);
-	if (ConversionRates.includes(null)) return null;
-	return ConversionRates;
+	const nonNullConversionRates = conversionRates.filter(e => !!e);
+	return nonNullConversionRates;
 };
 
 const reload = async () => {
@@ -98,13 +105,13 @@ const reload = async () => {
 	const conversionRatesFromCache = await getFromCache();
 
 	// Check if prices exists in cache
-	if (!conversionRatesFromCache || validateEntries(await getFromCache(), allowRefreshAfter)) {
+	if (conversionRatesFromCache.length === 0 || validateEntries(conversionRatesFromCache, allowRefreshAfter)) {
 		const currencyConversionRates = await fetchAllCurrencyConversionRates();
 		const transformedRates = standardizeCurrencyConversionRates(currencyConversionRates);
 
 		// Serialize individual price item and write to the cache
 		await BluebirdPromise.all(transformedRates
-			.map(item => exchangeratesapiCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+			.map(item => exchangeratesapiCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), expireMilliseconds)));
 	}
 };
 
