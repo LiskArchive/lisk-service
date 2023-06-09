@@ -19,6 +19,8 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
+const { TRANSACTION_STATUS } = require('../../../constants');
+
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -34,6 +36,8 @@ const COMMAND_NAME = 'transferCrossChain';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const accountsTable = await getAccountsTable();
 	const transactionsTable = await getTransactionsTable();
 

@@ -14,11 +14,13 @@
  *
  */
 const business = require('./business');
+const { TRANSACTION_STATUS } = require('../constants');
 
 const isIncludePendingTransactions = (executionStatus) => {
 	if (!executionStatus) return false;
 
-	const INCLUDE_PENDING_WHEN_STATUSES = ['pending'];
+	// TODO: move pending to constants TRANSACTION_STATUS
+	const INCLUDE_PENDING_WHEN_STATUSES = [TRANSACTION_STATUS.PENDING];
 	const execStatuses = executionStatus.split(',');
 	const isIncludePending = execStatuses.reduce(
 		(isInclude, status) => {

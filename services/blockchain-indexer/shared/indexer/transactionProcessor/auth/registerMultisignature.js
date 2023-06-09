@@ -19,6 +19,8 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
+const { TRANSACTION_STATUS } = require('../../../constants');
+
 const {
 	getLisk32AddressFromPublicKey,
 	updateAccountPublicKey,
@@ -45,9 +47,6 @@ const resolveMultisignatureMemberships = (tx) => {
 			groupAddress: tx.senderAddress,
 		};
 		multisignatureInfoToIndex.push(members);
-
-		// Asynchronously index all the publicKeys
-		updateAccountPublicKey(key);
 	});
 
 	return multisignatureInfoToIndex;
@@ -55,6 +54,13 @@ const resolveMultisignatureMemberships = (tx) => {
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	tx.params.mandatoryKeys.concat(tx.params.optionalKeys).forEach(key => {
+		// Asynchronously index all the publicKeys
+		updateAccountPublicKey(key);
+	});
+
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const multisignatureTable = await getMultisignatureTable();
 
 	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
@@ -65,6 +71,13 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	tx.params.mandatoryKeys.concat(tx.params.optionalKeys).forEach(key => {
+		// Asynchronously index all the publicKeys
+		updateAccountPublicKey(key);
+	});
+
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const multisignatureTable = await getMultisignatureTable();
 
 	const multisignatureInfo = resolveMultisignatureMemberships(tx);
