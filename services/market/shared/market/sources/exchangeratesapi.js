@@ -105,7 +105,10 @@ const reload = async () => {
 	const conversionRatesFromCache = await getFromCache();
 
 	// Check if prices exists in cache
-	if (conversionRatesFromCache.length === 0 || validateEntries(conversionRatesFromCache, allowRefreshAfter)) {
+	if (
+		conversionRatesFromCache.length === 0
+		|| validateEntries(conversionRatesFromCache, allowRefreshAfter)
+	) {
 		const currencyConversionRates = await fetchAllCurrencyConversionRates();
 		const transformedRates = standardizeCurrencyConversionRates(currencyConversionRates);
 
