@@ -96,12 +96,14 @@ const indexBlock = async job => {
 		: block.height - 1;
 	const prevBlockFromDB = await blocksTable.find({ height: prevBlockHeight });
 
-	/* eslint-disable no-use-before-define */
 	if (!prevBlockFromDB.length) {
+		/* eslint-disable no-use-before-define */
 		await addBlockToQueue(prevBlockHeight);
 		await addBlockToQueue(block.height);
+		/* eslint-enable no-use-before-define */
+
+		return;
 	}
-	/* eslint-enable no-use-before-define */
 
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDBTransaction(connection);
@@ -258,6 +260,20 @@ const deleteIndexedBlocks = async job => {
 		await BluebirdPromise.map(
 			blocks,
 			async block => {
+				// Check if deleted block is indexed
+				const [deletedBlockFromDB] = await blocksTable.find({ height: block.height });
+
+				// Reschedule job if not deleted block is not indexed
+				if (!deletedBlockFromDB) {
+					/* eslint-disable no-use-before-define */
+					await deleteBlock(block);
+					/* eslint-enable no-use-before-define */
+					return;
+				}
+				// If deleted block is indexed, check for the blockID
+				// Continue only when blockID matches else skip
+				if (deletedBlockFromDB.id !== block.id) return;
+
 				let forkedTransactions;
 				const transactionsTable = await getTransactionsTable();
 				const events = await getEventsByHeight(block.height);
