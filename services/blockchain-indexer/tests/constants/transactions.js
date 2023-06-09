@@ -15,29 +15,41 @@
  */
 const inputTransaction = {
 	module: 'token',
-	command: 'transfer',
-	nonce: '0',
-	fee: '100000000',
+	command: 'transferCrossChain',
+	nonce: '3',
 	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
 	params: {
 		tokenID: '0400000000000000',
-		amount: '10000000000',
-		recipientAddress: 'lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup',
-		data: 'Test tx',
-		accountInitializationFee: '5000000',
+		amount: '100000000000',
+		receivingChainID: '04000001',
+		recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		data: 'Cross chain transfer',
 	},
-	signatures: [
-		'a7e332b49db6d36c1024a24afbfd6eec2451e41c1cf751a8c609863ffa3e529ef4b8a34cecff29e9fa4bf30de4ce26f58c5d8a06587582a9129a6765064d3404',
-	],
-	id: '66870fa27b22c361094ff2d72a794b3d7e531c02a488271c38d02180c05e3c69',
+};
+
+const inputMultisigTransaction = {
+	module: 'auth',
+	command: 'registerMultisignature',
+	nonce: '1',
+	senderPublicKey: '0b211fce4b615083701cb8a8c99407e464b2f9aa4f367095322de1b77e5fcfbe',
+	params: {
+		mandatoryKeys: [
+			'4a67646a446313db964c39370359845c52fce9225a3929770ef41448c258fd39',
+			'f1b9f4ee71b5d5857d3b346d441ca967f27870ebee88569db364fd13e28adba3',
+		],
+		optionalKeys: [],
+		numberOfSignatures: 2,
+		signatures: [],
+	},
 };
 
 const expectedTransaction = Object.freeze({
 	...inputTransaction,
-	moduleCommand: 'token:transfer',
+	moduleCommand: 'token:transferCrossChain',
 });
 
 module.exports = {
 	inputTransaction,
 	expectedTransaction,
+	inputMultisigTransaction,
 };

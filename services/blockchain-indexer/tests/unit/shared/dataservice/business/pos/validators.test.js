@@ -1,8 +1,29 @@
-const { rawValidators } = require('../../../constants/validators');
+/*
+ * LiskHQ/lisk-service
+ * Copyright © 2023 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
 
-// Mocked dependencies
+/* eslint-disable import/no-dynamic-require */
+const { resolve } = require('path');
+
+const { rawValidators } = require('../../../constants/validators');
 const { requestConnector } = require('../../../../../../shared/utils/request');
 
+const mockAccountPath = resolve(`${__dirname}/../../../../../../shared/dataService/utils/account`);
+const validatorsPath = resolve(`${__dirname}/../../../../../../shared/dataService/business/pos/validators`);
+
+// Mock dependencies
 jest.mock('../../../../../../shared/utils/request', () => ({
 	requestConnector: jest.fn(),
 }));
@@ -33,8 +54,8 @@ describe('getAllPosValidators', () => {
 
 	it('should return all validators with correct validatorWeight when not banned or punished', async () => {
 		// Mock getIndexedAccountInfo function to return
-		const { getIndexedAccountInfo } = require('../../../../../../shared/dataService/utils/account');
-		jest.mock('../../../../../../shared/dataService/utils/account');
+		jest.mock(mockAccountPath);
+		const { getIndexedAccountInfo } = require(mockAccountPath);
 		getIndexedAccountInfo.mockResolvedValueOnce({ publicKey: 'key1' })
 			.mockResolvedValueOnce({ publicKey: 'key2' })
 			.mockResolvedValueOnce({ publicKey: 'key3' });
@@ -43,7 +64,7 @@ describe('getAllPosValidators', () => {
 		requestConnector.mockResolvedValueOnce({ validators: rawValidators });
 
 		// Make a query to getAllPosValidators function
-		const { getAllPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getAllPosValidators } = require(validatorsPath);
 		const result = await getAllPosValidators();
 
 		// Expect getIndexedAccountInfo to have been called 3 times with different addresses
@@ -64,15 +85,15 @@ describe('getAllPosValidators', () => {
 		rawValidators[0].isBanned = true;
 
 		// Mock getIndexedAccountInfo function to return
-		const { getIndexedAccountInfo } = require('../../../../../../shared/dataService/utils/account');
-		jest.mock('../../../../../../shared/dataService/utils/account');
+		jest.mock(mockAccountPath);
+		const { getIndexedAccountInfo } = require(mockAccountPath);
 		getIndexedAccountInfo.mockResolvedValue({ publicKey: null });
 
 		// Mock connector to respond with validators
 		requestConnector.mockResolvedValueOnce({ validators: rawValidators });
 
 		// Make a query to getAllPosValidators function
-		const { getAllPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getAllPosValidators } = require(validatorsPath);
 		const result = await getAllPosValidators();
 
 		// Expect output to include public keys fetched from getIndexedAccountInfo function
@@ -86,7 +107,7 @@ describe('getAllPosValidators', () => {
 		requestConnector.mockResolvedValue({ validators: [] });
 
 		// Make a query to getAllPosValidators function
-		const { getAllPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getAllPosValidators } = require(validatorsPath);
 		const result = await getAllPosValidators();
 
 		// Assert the result
@@ -101,7 +122,7 @@ describe('getAllPosValidators', () => {
 		requestConnector.mockRejectedValue(new Error(errorMessage));
 
 		// Make a query to getAllPosValidators function and expect it to fail
-		const { getAllPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getAllPosValidators } = require(validatorsPath);
 		await expect(getAllPosValidators()).rejects.toThrow(errorMessage);
 
 		// Assert the result
@@ -124,7 +145,7 @@ describe('getPosValidators', () => {
 			.mockReturnValueOnce(validators[2]);
 
 		// Make a query to getAllPosValidators function
-		const { getPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getPosValidators } = require(validatorsPath);
 		const params = { addresses: [validators[0].address, validators[1].address,
 			validators[2].address] };
 		const result = await getPosValidators(params);
@@ -147,7 +168,7 @@ describe('getPosValidators', () => {
 			.mockReturnValueOnce(validators[2]);
 
 		// Make a query to getAllPosValidators function
-		const { getPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getPosValidators } = require(validatorsPath);
 		const params = { addresses: [validators[0].address, validators[1].address,
 			validators[2].address] };
 		const result = await getPosValidators(params);
@@ -171,7 +192,7 @@ describe('getPosValidators', () => {
 		requestConnector.mockRejectedValue(new Error(errorMessage));
 
 		// Make a query to getPosValidators function and expect it to throw
-		const { getPosValidators } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getPosValidators } = require(validatorsPath);
 		await expect(getPosValidators(params)).rejects.toThrow(errorMessage);
 
 		// Assert the result
@@ -193,7 +214,7 @@ describe('getPosValidatorsByStake', () => {
 		requestConnector.mockResolvedValue({ validators: validatorsByStake });
 
 		// Make a query to getPosValidatorsByStake function
-		const { getPosValidatorsByStake } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getPosValidatorsByStake } = require(validatorsPath);
 		const result = await getPosValidatorsByStake({ limit });
 
 		// Expect output to include all validators
@@ -209,7 +230,7 @@ describe('getPosValidatorsByStake', () => {
 		requestConnector.mockResolvedValue({ validators: [] });
 
 		// Make a query to getPosValidatorsByStake function
-		const { getPosValidatorsByStake } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getPosValidatorsByStake } = require(validatorsPath);
 		const params = { limit };
 		const result = await getPosValidatorsByStake(params);
 
@@ -227,7 +248,7 @@ describe('getPosValidatorsByStake', () => {
 		requestConnector.mockRejectedValue(new Error(errorMessage));
 
 		// Make a query to getPosValidatorsByStake function
-		const { getPosValidatorsByStake } = require('../../../../../../shared/dataService/business/pos/validators');
+		const { getPosValidatorsByStake } = require(validatorsPath);
 		const params = { limit };
 		await expect(getPosValidatorsByStake(params)).rejects.toThrow(errorMessage);
 
