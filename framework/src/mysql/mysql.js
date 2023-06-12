@@ -570,6 +570,7 @@ module.exports = {
 	commitDBTransaction,
 	rollbackDBTransaction,
 	createTableIfNotExists,
+	CONN_ENDPOINT_DEFAULT,
 
 	// For backward compatibility
 	getDbConnection: getDBConnection,

@@ -13,13 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTableInstance } = require('./mysql');
+const { getTableInstance, CONN_ENDPOINT_DEFAULT } = require('./mysql');
 const keyValueStoreSchema = require('./schema/kvStore');
 const Logger = require('../logger').get;
 
 const logger = Logger();
 
-const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
 const KV_STORE_ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
 const kvStoreConfig = {
