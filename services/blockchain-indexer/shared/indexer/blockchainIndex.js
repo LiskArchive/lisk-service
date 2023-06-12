@@ -255,8 +255,13 @@ const deleteIndexedBlocks = async job => {
 						transactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
-							await revertTransaction(blockHeader, tx, events, dbTrx);
 							const normalizedTransaction = await normalizeTransaction(tx);
+
+							const transaction = await getTransactions({ id: tx.id });
+							if (transaction && transaction.data && transaction.data.length > 0) {
+								await revertTransaction(blockHeader, transaction.data[0], events, dbTrx);
+							}
+
 							return normalizedTransaction;
 						},
 						{ concurrency: block.transactions.length },
