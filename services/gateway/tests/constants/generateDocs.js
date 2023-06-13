@@ -1215,6 +1215,9 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/tokenID',
 				},
 				{
+					$ref: '#/parameters/searchByNameAddressPubKey',
+				},
+				{
 					$ref: '#/parameters/limit',
 				},
 				{
