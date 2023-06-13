@@ -15,18 +15,8 @@
  */
 const { requestConnector } = require('../utils/request');
 
-let genesisHeight;
-
 const getAllPosValidators = async () => requestConnector('getAllPosValidators');
-
-const getGenesisHeight = async () => {
-	if (typeof genesisHeight !== 'number') {
-		genesisHeight = await requestConnector('getGenesisHeight');
-	}
-	return genesisHeight;
-};
 
 module.exports = {
 	getAllPosValidators,
-	getGenesisHeight,
 };

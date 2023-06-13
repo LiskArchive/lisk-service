@@ -21,6 +21,7 @@ const {
 
 const logger = Logger();
 
+const { initNodeConstants } = require('./constants');
 const { initEventsProcess } = require('./eventsProcessor');
 const {
 	addAccountToDirectUpdateQueue,
@@ -81,6 +82,7 @@ const initProcess = async () => {
 };
 
 const init = async () => {
+	await initNodeConstants();
 	await initProcess();
 	await initEventsProcess();
 };

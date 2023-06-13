@@ -43,6 +43,10 @@ const defaultBrokerConfig = {
 			logger.debug('Received a \'chainNewBlock\' event from connecter.');
 			Signals.get('chainNewBlock').dispatch();
 		},
+		systemNodeInfo: async (payload) => {
+			logger.debug('Received a \'systemNodeInfo\' event from connecter.');
+			Signals.get('nodeInfo').dispatch(payload);
+		},
 	},
 	dependencies: [
 		'connector',

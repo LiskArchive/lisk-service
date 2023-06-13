@@ -25,15 +25,17 @@ const logger = Logger();
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	getMissingBlocks,
-	getCurrentHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
 } = require('./sources/indexer');
 
+const { getAllPosValidators } = require('./sources/connector');
+
 const {
-	getAllPosValidators,
+	getCurrentHeight,
 	getGenesisHeight,
-} = require('./sources/connector');
+	initNodeConstants,
+} = require('./constants');
 
 const config = require('../config');
 
@@ -157,6 +159,7 @@ const init = async () => {
 		await indexGenesisBlock();
 		await initIndexingScheduler();
 		await initEventsScheduler();
+		await initNodeConstants();
 	} catch (error) {
 		logger.error(`Unable to initialize coordinator due to: ${error.message}`);
 	}

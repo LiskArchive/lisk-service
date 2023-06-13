@@ -13,10 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
 const { requestConnector } = require('./utils/request');
 
 let genesisConfig;
 let genesisHeight;
+let currentHeight;
 let moduleCommands;
 let registeredModules;
 let registeredEndpoints;
@@ -45,8 +47,11 @@ const getGenesisHeight = async () => {
 };
 
 const getCurrentHeight = async () => {
-	const { height } = await requestConnector('getNetworkStatus');
-	return height;
+	if (typeof currentHeight !== 'number') {
+		const networkStatus = await requestConnector('getNetworkStatus');
+		currentHeight = networkStatus.height;
+	}
+	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
@@ -176,6 +181,17 @@ const TRANSACTION_VERIFY_RESULT = {
 	OK: 1,
 };
 
+const initNodeConstants = async () => {
+	const nodeInfoListener = async (payload) => {
+		// Caching all node constants
+		genesisHeight = payload.genesisHeight;
+		genesisConfig = payload.genesis;
+		currentHeight = payload.height;
+		finalizedHeight = payload.finalizedHeight;
+	};
+	Signals.get('nodeInfo').add(nodeInfoListener);
+};
+
 module.exports = {
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -189,6 +205,7 @@ module.exports = {
 	getSystemMetadata,
 	getEngineEndpoints,
 	getAllRegisteredEndpoints,
+	initNodeConstants,
 
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,

@@ -20,15 +20,12 @@ const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', 
 	to,
 });
 
-const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
-
 const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
 
 const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
 
 module.exports = {
 	getMissingBlocks,
-	getCurrentHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
 };

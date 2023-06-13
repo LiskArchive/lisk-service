@@ -49,6 +49,10 @@ const app = Microservice({
 			logger.debug('Received a \'chainValidatorsChange\' event from connecter.');
 			Signals.get('newRound').dispatch(payload);
 		},
+		systemNodeInfo: async (payload) => {
+			logger.debug('Received a \'systemNodeInfo\' event from connecter.');
+			Signals.get('nodeInfo').dispatch(payload);
+		},
 	},
 	dependencies: [
 		'connector',
