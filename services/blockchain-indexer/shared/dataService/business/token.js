@@ -19,13 +19,11 @@ const {
 	},
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 
 const config = require('../../../config');
 const accountBalancesTableSchema = require('../../database/schema/accountBalances');
 
 const { requestConnector } = require('../../utils/request');
-const { getIndexedAccountInfo } = require('../utils/account');
 const { getAddressByName } = require('../utils/validator');
 const { getAccountKnowledge } = require('../knownAccounts');
 
@@ -86,30 +84,52 @@ const getTokenTopBalances = async (params) => {
 		data: {},
 		meta: {},
 	};
+
+	const { search, ...remParams } = params;
+
 	const accountBalancesTable = await getAccountBalancesTable();
-	const tokenInfos = await accountBalancesTable.find({ ...params }, ['address', 'balance']);
 
-	response.data[params.tokenID] = await BluebirdPromise.map(
-		tokenInfos,
-		async tokenInfo => {
-			const accountInfo = await getIndexedAccountInfo({ address: tokenInfo.address }, ['publicKey', 'name']);
-			const knowledge = getAccountKnowledge(tokenInfo.address);
+	remParams.leftOuterJoin = {
+		targetTable: 'accounts',
+		joinColumnLeft: 'account_balances.address',
+		joinColumnRight: 'accounts.address',
+	};
 
-			return {
-				address: tokenInfo.address,
-				publicKey: accountInfo.publicKey,
-				name: accountInfo.name,
-				balance: tokenInfo.balance,
-				knowledge,
-			};
-		},
-		{ concurrency: tokenInfos.length },
-	);
+	if (search) {
+		remParams.orSearch = [{
+			property: 'accounts.name',
+			pattern: search,
+		}, {
+			property: 'accounts.address',
+			pattern: search,
+		}, {
+			property: 'accounts.publicKey',
+			pattern: search,
+		}];
+	}
+
+	const tokenInfos = await accountBalancesTable.find(remParams, ['account_balances.balance', 'account_balances.address', 'accounts.publicKey', 'accounts.name']);
+
+	const filteredTokenInfos = [];
+	// eslint-disable-next-line no-restricted-syntax
+	for (const tokenInfo of tokenInfos) {
+		const knowledge = getAccountKnowledge(tokenInfo.address);
+
+		filteredTokenInfos.push({
+			address: tokenInfo.address,
+			publicKey: tokenInfo.publicKey,
+			name: tokenInfo.name,
+			balance: BigInt(tokenInfo.balance).toString(),
+			knowledge,
+		});
+	}
+
+	response.data[params.tokenID] = filteredTokenInfos;
 
 	response.meta = {
 		count: response.data[params.tokenID].length,
 		offset: params.offset,
-		total: await accountBalancesTable.count({ ...params }),
+		total: await accountBalancesTable.count(remParams, ['account_balances.balance', 'account_balances.address', 'accounts.publicKey', 'accounts.name']),
 	};
 
 	return response;

@@ -22,25 +22,33 @@ const {
 } = require('../../../src/mysql');
 
 const schema = require('../../constants/blocksSchema');
+const transactionsSchema = require('../../constants/transactionsSchema');
 const compositeKeySchema = require('../../constants/compositeKeySchema');
 
 const tableName = 'functional_test';
+const transactionsTableName = 'transactions_functional_test';
 const compositeKeyTableName = 'composite_primary_key';
 
 schema.tableName = tableName;
+transactionsSchema.tableName = transactionsTableName;
 compositeKeySchema.tableName = compositeKeyTableName;
 
 const getTable = () => getTableInstance(schema);
 const getCompositeKeyTable = () => getTableInstance(compositeKeySchema);
+const getTransactionsTable = () => getTableInstance(transactionsSchema);
 
 const { emptyBlock, nonEmptyBlock } = require('../../constants/blocks');
+const { tokenTransferTransaction } = require('../../constants/transactions');
 
 describe('Test MySQL', () => {
 	let testTable;
 	let compositeKeyTable;
+	let otherTable;
+
 	beforeAll(async () => {
 		// Get table
 		testTable = await getTable();
+		otherTable = await getTransactionsTable();
 		compositeKeyTable = await getCompositeKeyTable();
 	});
 
@@ -446,6 +454,34 @@ describe('Test MySQL', () => {
 			expect(result.length).toBe(1);
 			const [retrievedBlock] = result;
 			expect(retrievedBlock.id).toBe(nonEmptyBlock.id);
+		});
+
+		it('should perform left outer join and retrieve matching rows from two tables', async () => {
+			// Insert test data into two tables
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			await otherTable.upsert([tokenTransferTransaction]);
+
+			// Define the join parameters
+			const params = {
+				leftOuterJoin: {
+					targetTable: 'transactions_functional_test',
+					joinColumnLeft: 'functional_test.height',
+					joinColumnRight: 'transactions_functional_test.height',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await testTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+
+			const [firstRow, secondRow] = result;
+			expect(firstRow.id).toBe(null);
+			expect(secondRow.height).toBe(nonEmptyBlock.height);
+			expect(secondRow.id).toBe(tokenTransferTransaction.id);
 		});
 	});
 
@@ -900,6 +936,37 @@ describe('Test MySQL', () => {
 			expect(result.length).toBe(1);
 			const [retrievedBlock] = result;
 			expect(retrievedBlock.id).toBe(nonEmptyBlock.id);
+		});
+
+		it('should perform left outer join and retrieve matching rows from two tables', async () => {
+			// Insert a test record.
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([nonEmptyBlock], trx);
+			await otherTable.upsert([tokenTransferTransaction], trx);
+			await commitDBTransaction(trx);
+
+			// Define the join parameters
+			const params = {
+				leftOuterJoin: {
+					targetTable: 'transactions_functional_test',
+					joinColumnLeft: 'functional_test.height',
+					joinColumnRight: 'transactions_functional_test.height',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await testTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+
+			const [firstRow, secondRow] = result;
+			expect(firstRow.id).toBe(null);
+			expect(secondRow.height).toBe(nonEmptyBlock.height);
+			expect(secondRow.id).toBe(tokenTransferTransaction.id);
 		});
 	});
 
