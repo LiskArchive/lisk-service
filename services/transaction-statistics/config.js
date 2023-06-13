@@ -32,7 +32,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 /**
  * External endpoints
  */
-config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://localhost:6379/2';
+config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://localhost:6379/6';
 // Primary database. Used for both read-write operations.
 config.endpoints.mysql = process.env.SERVICE_STATISTICS_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 // DB replicas against the primary. Used for read-only operations.
