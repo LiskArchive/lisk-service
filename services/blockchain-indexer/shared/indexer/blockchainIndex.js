@@ -39,6 +39,7 @@ const {
 	getTransactions,
 	getEventsByHeight,
 	deleteEventsFromCache,
+	getTransactionsByBlockID,
 } = require('../dataService');
 
 const {
@@ -245,26 +246,24 @@ const deleteIndexedBlocks = async job => {
 			blocks,
 			async block => {
 				let forkedTransactions;
+
+				const { data: transactions } = await getTransactionsByBlockID(block.id);
 				const transactionsTable = await getTransactionsTable();
 				const events = await getEventsByHeight(block.height);
 
-				if (block.transactions && block.transactions.length) {
-					const { transactions, assets, ...blockHeader } = block;
+				if (transactions && transactions.length) {
+					const { assets, ...blockHeader } = block;
 
 					forkedTransactions = await BluebirdPromise.map(
 						transactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
+							await revertTransaction(blockHeader, tx, events, dbTrx);
+
 							const normalizedTransaction = await normalizeTransaction(tx);
-
-							const transaction = await getTransactions({ id: tx.id });
-							if (transaction.data && transaction.data.length > 0) {
-								await revertTransaction(blockHeader, transaction.data[0], events, dbTrx);
-							}
-
 							return normalizedTransaction;
 						},
-						{ concurrency: block.transactions.length },
+						{ concurrency: transactions.length },
 					);
 				}
 
