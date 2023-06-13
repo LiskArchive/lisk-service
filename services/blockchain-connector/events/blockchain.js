@@ -23,6 +23,7 @@ const {
 	chainValidatorsChangeController,
 	chainNewBlockController,
 	chainDeleteBlockController,
+	systemNodeInfoEventController,
 } = require('./controller/blockchain');
 
 const sdkEvents = [
@@ -70,6 +71,11 @@ const sdkEvents = [
 		name: 'chainDeleteBlock',
 		get description() { return `Event ${this.name}`; },
 		controller: chainDeleteBlockController,
+	},
+	{
+		name: 'systemNodeInfo',
+		get description() { return `Event ${this.name}`; },
+		controller: systemNodeInfoEventController,
 	},
 ];
 

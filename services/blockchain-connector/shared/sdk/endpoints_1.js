@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const { Exceptions: { TimeoutException }, Signals } = require('lisk-service-framework');
 const { invokeEndpoint } = require('./client');
 
 const { engineEndpoints } = require('./constants/endpoints');
@@ -78,6 +78,7 @@ const getNodeInfo = async (isForceUpdate = false) => {
 	try {
 		if (isForceUpdate || !nodeInfo) {
 			nodeInfo = await invokeEndpoint('system_getNodeInfo');
+			Signals.get('systemNodeInfo').dispatch(nodeInfo);
 		}
 		return nodeInfo;
 	} catch (err) {
