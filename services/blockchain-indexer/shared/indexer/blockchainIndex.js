@@ -91,18 +91,18 @@ const indexBlock = async job => {
 	const blocksTable = await getBlocksTable();
 
 	// Check if previous block is indexed, index previous block if not indexed
-	const prevBlockHeight = block.height === await getGenesisHeight()
-		? block.height
-		: block.height - 1;
-	const prevBlockFromDB = await blocksTable.find({ height: prevBlockHeight });
+	if (block.height !== await getGenesisHeight()) {
+		const prevBlockHeight = block.height - 1;
+		const prevBlockFromDB = await blocksTable.find({ height: prevBlockHeight });
 
-	if (!prevBlockFromDB.length) {
-		/* eslint-disable no-use-before-define */
-		await addBlockToQueue(prevBlockHeight);
-		await addBlockToQueue(block.height);
-		/* eslint-enable no-use-before-define */
+		if (!prevBlockFromDB.length) {
+			/* eslint-disable no-use-before-define */
+			await addBlockToQueue(prevBlockHeight);
+			await addBlockToQueue(block.height);
+			/* eslint-enable no-use-before-define */
 
-		return;
+			return;
+		}
 	}
 
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
