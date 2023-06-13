@@ -129,7 +129,7 @@ const getTokenTopBalances = async (params) => {
 	response.meta = {
 		count: response.data[params.tokenID].length,
 		offset: params.offset,
-		total: await accountBalancesTable.count(remParams, ['account_balances.balance', 'account_balances.address', 'accounts.publicKey', 'accounts.name']),
+		total: await accountBalancesTable.count(remParams, ['account_balances.address']),
 	};
 
 	return response;
