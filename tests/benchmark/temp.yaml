@@ -1,0 +1,22 @@
+config:
+  target: "ws://localhost:9901/rpc-v3"
+  socketio:
+    transports: ["websocket"]
+  phases:
+    - duration: 1
+      arrivalRate: 1
+scenarios:
+  - name: networkStatus test
+    engine: socketio # Enable the Socket.IO engine
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.network.status"}
+          response:
+            channel: "request"
+            json: "$.meta.count"
+            value: 30
+          # acknowledge:
+          #   match:
+          #     json: "$.0.name"
+          #     value: "Artillery"
