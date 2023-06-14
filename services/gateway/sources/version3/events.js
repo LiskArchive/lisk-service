@@ -21,6 +21,7 @@ module.exports = {
 	params: {
 		transactionID: '=,string',
 		senderAddress: '=,string',
+		topic: '=,string',
 		blockID: '=,string',
 		height: '=,string',
 		timestamp: '=,string',
