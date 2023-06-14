@@ -245,17 +245,15 @@ const deleteIndexedBlocks = async job => {
 		await BluebirdPromise.map(
 			blocks,
 			async block => {
-				let forkedTransactions;
-
-				const { data: transactions } = await getTransactionsByBlockID(block.id);
+				let { data: forkedTransactions } = await getTransactionsByBlockID(block.id);
 				const transactionsTable = await getTransactionsTable();
 				const events = await getEventsByHeight(block.height);
 
-				if (transactions && transactions.length) {
+				if (forkedTransactions && forkedTransactions.length) {
 					const { assets, ...blockHeader } = block;
 
 					forkedTransactions = await BluebirdPromise.map(
-						transactions,
+						forkedTransactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
 							await revertTransaction(blockHeader, tx, events, dbTrx);
@@ -263,7 +261,7 @@ const deleteIndexedBlocks = async job => {
 							const normalizedTransaction = await normalizeTransaction(tx);
 							return normalizedTransaction;
 						},
-						{ concurrency: transactions.length },
+						{ concurrency: forkedTransactions.length },
 					);
 				}
 

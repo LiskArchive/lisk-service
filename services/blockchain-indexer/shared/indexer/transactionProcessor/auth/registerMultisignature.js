@@ -54,10 +54,9 @@ const resolveMultisignatureMemberships = (tx) => {
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	tx.params.mandatoryKeys.concat(tx.params.optionalKeys).forEach(key => {
-		// Asynchronously index all the publicKeys
-		updateAccountPublicKey(key);
-	});
+	// Asynchronously index all the publicKeys
+	tx.params.mandatoryKeys.forEach((key) => updateAccountPublicKey(key));
+	tx.params.optionalKeys.forEach((key) => updateAccountPublicKey(key));
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
@@ -71,10 +70,9 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	tx.params.mandatoryKeys.concat(tx.params.optionalKeys).forEach(key => {
-		// Asynchronously index all the publicKeys
-		updateAccountPublicKey(key);
-	});
+	// Asynchronously index all the publicKeys
+	tx.params.mandatoryKeys.forEach((key) => updateAccountPublicKey(key));
+	tx.params.optionalKeys.forEach((key) => updateAccountPublicKey(key));
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
