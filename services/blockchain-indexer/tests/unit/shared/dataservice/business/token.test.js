@@ -23,6 +23,7 @@ const tokensPath = resolve(`${__dirname}/../../../../../shared/dataService/busin
 describe('getTokenTopBalances', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
+		jest.resetModules();
 	});
 
 	it('should retrieve token top balances', async () => {
@@ -140,5 +141,123 @@ describe('getTokenTopBalances', () => {
 				offset: 0,
 			},
 		});
+	});
+
+	it('should throw an error when an error occurs during the find operation', async () => {
+		// Declare constants needed for the tests
+		const params = {
+			tokenID: 'token123',
+			search: 'search123',
+			limit: 10,
+			offset: 0,
+		};
+
+		// Mock lisk-service-framework
+		jest.mock('lisk-service-framework', () => ({
+			CacheRedis: jest.fn(() => ({
+				set: jest.fn(),
+				get: jest.fn(),
+			})),
+			cacheLRU: jest.fn(),
+			Exceptions: {
+				NotFoundException: jest.fn(),
+			},
+			Logger: jest.fn(() => ({
+				debug: jest.fn(),
+				info: jest.fn(),
+				warn: jest.fn(),
+			})),
+			MySQL: {
+				getTableInstance: jest.fn(() => ({
+					find: jest.fn().mockRejectedValue('Error'),
+					count: jest.fn(),
+				})),
+			},
+		}));
+
+		// Mock accounts knowledge
+		jest.mock(knownAccountsPath);
+		const { getAccountKnowledge } = require(knownAccountsPath);
+		getAccountKnowledge.mockReturnValueOnce('knowledge123').mockReturnValueOnce('knowledge234');
+
+		// Make a query to getTokenTopBalances function
+		const { getTokenTopBalances } = require(tokensPath);
+		await expect(getTokenTopBalances(params)).rejects.toBeTruthy();
+	});
+
+	it('should throw an error when an error occurs during the count operation', async () => {
+		// Declare constants needed for the tests
+		const params = {
+			tokenID: 'token123',
+			search: 'search123',
+			limit: 10,
+			offset: 0,
+		};
+
+		// Mock lisk-service-framework
+		jest.mock('lisk-service-framework', () => ({
+			CacheRedis: jest.fn(() => ({
+				set: jest.fn(),
+				get: jest.fn(),
+			})),
+			cacheLRU: jest.fn(),
+			Exceptions: {
+				NotFoundException: jest.fn(),
+			},
+			Logger: jest.fn(() => ({
+				debug: jest.fn(),
+				info: jest.fn(),
+				warn: jest.fn(),
+			})),
+			MySQL: {
+				getTableInstance: jest.fn(() => ({
+					find: jest.fn(),
+					count: jest.fn().mockRejectedValue('Error'),
+				})),
+			},
+		}));
+
+		// Mock accounts knowledge
+		jest.mock(knownAccountsPath);
+		const { getAccountKnowledge } = require(knownAccountsPath);
+		getAccountKnowledge.mockReturnValueOnce('knowledge123').mockReturnValueOnce('knowledge234');
+
+		// Make a query to getTokenTopBalances function
+		const { getTokenTopBalances } = require(tokensPath);
+		await expect(getTokenTopBalances(params)).rejects.toBeTruthy();
+	});
+
+	it('should throw an error when the params argument is null', async () => {
+		// Mock lisk-service-framework
+		jest.mock('lisk-service-framework', () => ({
+			CacheRedis: jest.fn(() => ({
+				set: jest.fn(),
+				get: jest.fn(),
+			})),
+			cacheLRU: jest.fn(),
+			Exceptions: {
+				NotFoundException: jest.fn(),
+			},
+			Logger: jest.fn(() => ({
+				debug: jest.fn(),
+				info: jest.fn(),
+				warn: jest.fn(),
+			})),
+			MySQL: {
+				getTableInstance: jest.fn(() => ({
+					find: jest.fn(),
+					count: jest.fn(),
+				})),
+			},
+		}));
+
+		// Mock accounts knowledge
+		jest.mock(knownAccountsPath);
+		const { getAccountKnowledge } = require(knownAccountsPath);
+		getAccountKnowledge.mockReturnValueOnce('knowledge123').mockReturnValueOnce('knowledge234');
+
+		// Make a query to getTokenTopBalances function
+		const { getTokenTopBalances } = require(tokensPath);
+		await expect(getTokenTopBalances(null)).rejects.toBeTruthy();
 	});
 });
