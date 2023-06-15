@@ -43,6 +43,7 @@ config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:pass
 config.endpoints.mysqlReplica = process.env.SERVICE_INDEXER_MYSQL_READ_REPLICA
 	|| config.endpoints.mysql;
 config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL; // For custom deployments
+config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 
 /**
  * LOGGING
@@ -169,10 +170,18 @@ config.job = {
 		interval: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL || 0,
 		schedule: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE || '*/15 * * * *',
 	},
+	refreshAccountsKnowledge: {
+		interval: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL || 0,
+		schedule: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE || '*/15 * * * *',
+	},
 	deleteFinalisedCCUMetadata: {
 		interval: process.env.DELETE_FINALISED_CCU_METADATA_INTERVAL || 0,
 		schedule: process.env.DELETE_FINALISED_CCU_METADATA_SCHEDULE || '0 2 * * *',
 	},
+};
+
+config.estimateFees = {
+	bufferBytesLength: process.env.ESTIMATES_BUFFER_BYTES_LENGTH || 6,
 };
 
 module.exports = config;

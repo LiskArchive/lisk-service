@@ -60,7 +60,7 @@
         "name": "transaction",
         "in": "body",
         "required": true,
-        "description": "The request body can only contain one property:\n- transaction (required): Transaction object\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.",
+        "description": "The request body can only contain one property:\n- transaction (required): Transaction object\n\n Note:\n - The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.\n - All types of transactions require valid params as defined in the schema except the 'transferCrossChain' (messageFee and messageFeeTokenID can be mocked if not passed).",
         "schema": {
             "$ref": "#/definitions/transactionEstimateFeesRequestBody"
         }
