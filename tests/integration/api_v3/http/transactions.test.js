@@ -552,7 +552,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('should throw error when queried with transactionID and non-zero offset', async () => {
+		it('should throw error when called with transactionID and non-zero offset', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
