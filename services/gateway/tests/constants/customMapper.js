@@ -95,8 +95,6 @@ const mapObjectExpectedResponse = {
 			},
 		],
 	},
-	meta: {},
-	links: {},
 };
 
 module.exports = {
