@@ -14,6 +14,7 @@
  *
  */
 import moment from 'moment';
+import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -26,6 +27,7 @@ const {
 
 const {
 	transactionSchema,
+	pendingTransactionSchema,
 } = require('../../../schemas/api_v3/transaction.schema');
 
 const baseAddress = config.SERVICE_ENDPOINT;
@@ -40,7 +42,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve transaction lists', () => {
-		it('returns list of transactions', async () => {
+		it('should return list of transactions', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -57,7 +59,23 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions with known moduleCommand', async () => {
+		it(`should return list of transactions when called with executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`, async () => {
+			const response = await api.get(`${endpoint}?executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction) => {
+				if (transaction.executionStatus === 'pending') {
+					expect(transaction).toMap(pendingTransactionSchema);
+				} else {
+					expect(transaction).toMap(transactionSchema);
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('should return transactions when called with known moduleCommand', async () => {
 			const response = await api.get(`${endpoint}?moduleCommand=${refTransaction.moduleCommand}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -75,7 +93,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty moduleCommand ->  ok', async () => {
+		it('should return transactions when called with empty moduleCommand', async () => {
 			const response = await api.get(`${endpoint}?moduleCommand=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -87,7 +105,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve a transaction by transactionID', () => {
-		it('returns requested transaction with known transactionID', async () => {
+		it('should return transaction when called with known transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
@@ -97,7 +115,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty transactionID -> ok', async () => {
+		it('should return transactions when called with empty transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -114,19 +132,19 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('long invalid transactionID -> 400 BAD REQUEST', async () => {
+		it('should throw 400 BAD REQUEST error when called with long invalid transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('short invalid transactionID -> 400 BAD REQUEST', async () => {
+		it('should return 400 BAD REQUEST when called with short invalid transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=41287`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve transaction list by blockID', () => {
-		it('known block -> ok', async () => {
+		it('should return transactions when called with known blockID', async () => {
 			const response = await api.get(`${endpoint}?blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -139,7 +157,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty blockID -> ok', async () => {
+		it('should return transactions when called with empty blockID', async () => {
 			const response = await api.get(`${endpoint}?blockID=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -156,14 +174,14 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid blockID -> 400 OK', async () => {
+		it('should throw error when called with invalid blockID', async () => {
 			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve transaction list by height', () => {
-		it('known height -> ok', async () => {
+		it('should return transactions when called with known height', async () => {
 			const response = await api.get(`${endpoint}?height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -176,7 +194,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty height -> ok', async () => {
+		it('should return transactions when called with empty height', async () => {
 			const response = await api.get(`${endpoint}?height=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -193,14 +211,14 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> 400', async () => {
+		it('should throw error when called with invalid height', async () => {
 			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve transaction list by senderAddress', () => {
-		it('known address -> ok', async () => {
+		it('should return transactions when called with known address', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -218,7 +236,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty senderAddress -> ok', async () => {
+		it('should return transactions when called with empty senderAddress', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -235,14 +253,14 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid senderAddress -> 400', async () => {
+		it('should throw error when called with invalid senderAddress', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve transaction list by recipientAddress', () => {
-		it('known address -> ok', async () => {
+		it('should return transactions when called with known address', async () => {
 			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.params.recipientAddress}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -260,7 +278,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty recipientAddress -> ok', async () => {
+		it('should return transactions when called with empty recipientAddress', async () => {
 			const response = await api.get(`${endpoint}?recipientAddress=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -277,14 +295,14 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid recipientAddress -> 400', async () => {
+		it('should throw error when called with invalid recipientAddress', async () => {
 			const response = await api.get(`${endpoint}?recipientAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve transaction list by address', () => {
-		it('known address -> ok', async () => {
+		it('should return transactions when called with known address', async () => {
 			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -306,14 +324,14 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> 400', async () => {
+		it('should throw error when called with invalid address', async () => {
 			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve transaction list within timestamps', () => {
-		it('transactions within set timestamps are returned', async () => {
+		it('should return transactions when called with timestamp range', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
@@ -334,7 +352,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('transactions with half bounded range: fromTimestamp', async () => {
+		it('should return transactions when called with fromTimestamp', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
@@ -353,7 +371,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('transactions with half bounded range: toTimestamp', async () => {
+		it('should return transactions when called with toTimestamp', async () => {
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
@@ -374,7 +392,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve transaction list within height range', () => {
-		it('transactions within set heights are returned', async () => {
+		it('should return transactions when called with height range', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}`);
@@ -395,7 +413,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('transactions with half bounded range: fromHeight', async () => {
+		it('should return transactions when called with fromHeight', async () => {
 			const minHeight = refTransaction.block.height;
 			const response = await api.get(`${endpoint}?height=${minHeight}:`);
 			expect(response).toMap(goodRequestSchema);
@@ -414,7 +432,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('transactions with half bounded range: toHeight', async () => {
+		it('should return transactions when called with toHeight', async () => {
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await api.get(`${endpoint}?height=:${maxHeight}`);
 			expect(response).toMap(goodRequestSchema);
@@ -433,7 +451,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('transactions with minHeight greater than maxHeight -> BAD_REQUEST', async () => {
+		it('should throw error when minHeight greater than maxHeight', async () => {
 			const expectedStatusCode = 400;
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
@@ -443,7 +461,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Transactions sorted by timestamp', () => {
-		it('returns 10 transactions sorted by timestamp descending', async () => {
+		it('should return 10 transactions sorted by timestamp descending when called with sort=timestamp:desc', async () => {
 			const response = await api.get(`${endpoint}?sort=timestamp:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -460,7 +478,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 transactions sorted by timestamp ascending', async () => {
+		it('should return 10 transactions sorted by timestamp ascending when called with sort=timestamp:asc', async () => {
 			const response = await api.get(`${endpoint}?sort=timestamp:asc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -479,7 +497,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Transactions sorted by height', () => {
-		it('returns 10 transactions sorted by height descending', async () => {
+		it('should return 10 transactions sorted by height descending when called with sort=height:desc', async () => {
 			const response = await api.get(`${endpoint}?sort=height:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -496,7 +514,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 transactions sorted by height ascending', async () => {
+		it('should return 10 transactions sorted by height ascending when called with sort=height:asc', async () => {
 			const response = await api.get(`${endpoint}?sort=height:asc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -515,7 +533,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Fetch transactions based on multiple request params', () => {
-		it('returns transaction with senderAddress and nonce', async () => {
+		it('should return transaction when called with senderAddress and nonce', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}&nonce=${Number(refTransaction.nonce)}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -528,20 +546,20 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 400 BAD REQUEST with unsupported params', async () => {
+		it('should throw error when called with unsupported params', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&nonce=${Number(refTransaction.nonce) - 1}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('returns 200 OK when queried with transactionID and non-zero offset', async () => {
+		it('should throw error when queried with transactionID and non-zero offset', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&offset=1`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transaction when queried with transactionID and blockID', async () => {
+		it('should return transaction when called with transactionID and blockID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -554,7 +572,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transaction when queried with transactionID and height', async () => {
+		it('should return transaction when called with transactionID and height', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -567,7 +585,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions when queried with limit and offset', async () => {
+		it('should return transactions when called with limit and offset', async () => {
 			try {
 				const response = await api.get(`${endpoint}?limit=5&offset=1`);
 				expect(response).toMap(goodRequestSchema);
@@ -593,7 +611,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Transactions ordered by index', () => {
-		it('returns 10 transactions ordered by index descending', async () => {
+		it('should return 10 transactions ordered by index descending', async () => {
 			const order = 'index:desc';
 			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);
@@ -616,7 +634,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 transactions ordered by index ascending', async () => {
+		it('should return 10 transactions ordered by index ascending', async () => {
 			const order = 'index:asc';
 			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);

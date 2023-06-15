@@ -14,6 +14,7 @@
  *
  */
 import moment from 'moment';
+import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
@@ -29,6 +30,7 @@ const {
 
 const {
 	transactionSchema,
+	pendingTransactionSchema,
 } = require('../../../schemas/api_v3/transaction.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -42,7 +44,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('Retrieve transactions', () => {
-		it('returns list of transactions', async () => {
+		it('should return list of transactions', async () => {
 			const response = await getTransactions({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -60,10 +62,28 @@ describe('Method get.transactions', () => {
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
+
+		it(`should return list of transactions when called with executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`, async () => {
+			const response = await getTransactions({});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction) => {
+				if (transaction.executionStatus === 'pending') {
+					expect(transaction).toMap(pendingTransactionSchema);
+				} else {
+					expect(transaction).toMap(transactionSchema);
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
 	});
 
 	describe('is able to retrieve transaction using transactionID', () => {
-		it('known transactionID -> ok', async () => {
+		it('should return transactions when called with known transactionID', async () => {
 			const response = await getTransactions({ transactionID: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -81,7 +101,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transactionID -> empty response', async () => {
+		it('should return empty response when called with empty transactionID', async () => {
 			const response = await getTransactions({ transactionID: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -90,7 +110,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('is able to retrieve list of transactions using blockID', () => {
-		it('known blockID -> ok', async () => {
+		it('should return transactions when called with known blockID', async () => {
 			const response = await getTransactions({ blockID: refTransaction.block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -101,7 +121,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty blockID ->  empty response', async () => {
+		it('should return empty response when called with empty blockID', async () => {
 			const response = await getTransactions({ blockID: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -110,7 +130,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('is able to retrieve list of transactions using moduleCommand', () => {
-		it('known transaction moduleCommand -> ok', async () => {
+		it('should return transactions when called with known transaction moduleCommand', async () => {
 			const response = await getTransactions({
 				moduleCommand: refTransaction.moduleCommand,
 			});
@@ -132,12 +152,12 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid transaction moduleCommand -> invalid params', async () => {
+		it('should return invalid params when called with invalid transaction moduleCommand', async () => {
 			const response = await getTransactions({ moduleCommand: '999' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('empty transaction moduleCommand -> empty response', async () => {
+		it('should return empty response when called with empty transaction moduleCommand', async () => {
 			const response = await getTransactions({ moduleCommand: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -146,7 +166,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('is able to retrieve list of transactions using senderAddress', () => {
-		it('known senderAddress -> ok', async () => {
+		it('should return transactions when called with known senderAddress', async () => {
 			const response = await getTransactions({ senderAddress: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -166,21 +186,21 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty senderAddress -> empty response', async () => {
+		it('should return empty response when called with empty senderAddress', async () => {
 			const response = await getTransactions({ senderAddress: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('invalid senderAddress -> invalid params', async () => {
+		it('should return invalid params when called with invalid senderAddress', async () => {
 			const response = await getTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retrieve list of transactions using recipientAddress', () => {
-		it('known recipientAddress -> ok', async () => {
+		it('should return transactions when called with known recipientAddress', async () => {
 			const response = await getTransactions({
 				recipientAddress: refTransaction.params.recipientAddress,
 			});
@@ -202,21 +222,21 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty recipientAddress -> empty response', async () => {
+		it('should return empty response when called with empty recipientAddress', async () => {
 			const response = await getTransactions({ recipientAddress: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('invalid recipientAddress -> invalid params', async () => {
+		it('should return invalid params when called with invalid recipientAddress', async () => {
 			const response = await getTransactions({ recipientAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retrieve list of transactions by address', () => {
-		it('known address -> ok', async () => {
+		it('should return transactions when called with known address', async () => {
 			const response = await getTransactions({ address: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -241,14 +261,14 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> invalid params', async () => {
+		it('should return invalid params when called with invalid address', async () => {
 			const response = await getTransactions({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retrieve list of transactions using height', () => {
-		it('known height -> ok', async () => {
+		it('should return transactions when called with known height', async () => {
 			const response = await getTransactions({ height: String(refTransaction.block.height) });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -262,14 +282,14 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty height -> empty response', async () => {
+		it('should return empty response when called with empty height', async () => {
 			const response = await getTransactions({ height: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('Blocks with min...max height -> ok', async () => {
+		it('should return transactions when called with min...max height', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getTransactions({ height: `${minHeight}:${maxHeight}` });
@@ -291,7 +311,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Blocks with min... height -> ok', async () => {
+		it('should return transactions when called with min... height', async () => {
 			const minHeight = refTransaction.block.height;
 			const response = await getTransactions({ height: `${minHeight}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -311,7 +331,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Blocks with ...max height -> ok', async () => {
+		it('should return transactions when called with ...max height', async () => {
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getTransactions({ height: `:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -331,7 +351,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Blocks with max...min height -> empty response', async () => {
+		it('should return empty response when called with max...min height', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getTransactions({ height: `${maxHeight}:${minHeight}` });
@@ -342,7 +362,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('is able to retrieve list of transactions using timestamps', () => {
-		it('from to -> ok', async () => {
+		it('should return transactions when called with from to timestamps', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await getTransactions({ timestamp: `${from}:${toTimestamp}` });
@@ -366,7 +386,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Half bounded range from -> ok', async () => {
+		it('should return transactions when called with fromTimestamp', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await getTransactions({ timestamp: `${from}:` });
 
@@ -388,7 +408,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Half bounded range to -> ok', async () => {
+		it('should return transactions when called with toTimestamp', async () => {
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await getTransactions({ timestamp: `:${toTimestamp}` });
 
@@ -412,7 +432,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('Transactions sorted by timestamp', () => {
-		it('returns 10 transactions sorted by timestamp descending', async () => {
+		it('should return 10 transactions sorted by timestamp descending when called with sort=timestamp:desc', async () => {
 			const response = await getTransactions({ sort: 'timestamp:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -431,7 +451,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 transactions sorted by timestamp ascending', async () => {
+		it('should return 10 transactions sorted by timestamp ascending when called with sort=timestamp:asc', async () => {
 			const response = await getTransactions({ sort: 'timestamp:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -452,7 +472,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('Fetch transactions based on multiple request params', () => {
-		it('returns transactions with senderAddress and nonce', async () => {
+		it('should return transactions when called with senderAddress and nonce', async () => {
 			const response = await getTransactions({
 				senderAddress: refTransaction.sender.address,
 				nonce: String(Number(refTransaction.nonce)),
@@ -469,7 +489,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns invalid params response with senderAddress and nonce (incorrect data type)', async () => {
+		it('should return invalid params response when called with senderAddress and nonce (incorrect data type)', async () => {
 			const response = await getTransactions({
 				senderAddress: refTransaction.senderAddress,
 				nonce: Number(refTransaction.nonce) - 1,
@@ -477,7 +497,7 @@ describe('Method get.transactions', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('returns invalid params response with unsupported params', async () => {
+		it('should return invalid params response when called with unsupported params', async () => {
 			const response = await getTransactions({
 				address: refTransaction.senderAddress,
 				nonce: String(Number(refTransaction.nonce)),
@@ -485,14 +505,14 @@ describe('Method get.transactions', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('returns empty response when queried with transactionID and non-zero offset', async () => {
+		it('should return empty response when called with transactionID and non-zero offset', async () => {
 			const response = await getTransactions({ transactionID: refTransaction.id, offset: 1 });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('returns transaction when queried with transactionID and blockID', async () => {
+		it('should return transactions when called with transactionID and blockID', async () => {
 			const response = await getTransactions({
 				transactionID: refTransaction.id,
 				blockID: refTransaction.block.id,
@@ -509,7 +529,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns transaction when queried with transactionID and height', async () => {
+		it('should return transactions when called with transactionID and height', async () => {
 			const response = await getTransactions({
 				transactionID: refTransaction.id,
 				height: String(refTransaction.block.height),
@@ -528,7 +548,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('Transactions ordered by index', () => {
-		it('returns 10 transactions ordered by index descending', async () => {
+		it('should return 10 transactions ordered by index descending when called with order=index:desc', async () => {
 			const order = 'index:desc';
 			const response = await getTransactions({ order });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -553,7 +573,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 transactions ordered by index ascending', async () => {
+		it('should return 10 transactions ordered by index ascending when called with order=index:asc', async () => {
 			const order = 'index:asc';
 			const response = await getTransactions({ order });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
