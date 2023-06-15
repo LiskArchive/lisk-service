@@ -47,7 +47,7 @@ const {
 } = require('../utils/array');
 
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
-const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
+const { getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
 
@@ -252,16 +252,13 @@ const deleteIndexedBlocks = async job => {
 				if (forkedTransactions && forkedTransactions.length) {
 					const { assets, ...blockHeader } = block;
 
-					forkedTransactions = await BluebirdPromise.map(
+					await BluebirdPromise.map(
 						forkedTransactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
 							await revertTransaction(blockHeader, tx, events, dbTrx);
-
-							const normalizedTransaction = await normalizeTransaction(tx);
-							return normalizedTransaction;
 						},
-						{ concurrency: forkedTransactions.length },
+						{ concurrency: 1 },
 					);
 				}
 

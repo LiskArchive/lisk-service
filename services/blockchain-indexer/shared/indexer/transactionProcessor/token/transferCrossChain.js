@@ -19,8 +19,6 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
-const { indexAccountByAddress } = require('../../accountIndex');
-
 const { TRANSACTION_STATUS } = require('../../../constants');
 
 const logger = Logger();
@@ -38,23 +36,20 @@ const COMMAND_NAME = 'transferCrossChain';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	indexAccountByAddress(tx.params.recipientAddress);
-
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
-
-	const accountsTable = await getAccountsTable();
-	const transactionsTable = await getTransactionsTable();
-
 	tx = {
 		...tx,
 		...tx.params,
 	};
 
+	const accountsTable = await getAccountsTable();
 	// Update the account balance
 	const account = { address: tx.recipientAddress };
 	logger.trace(`Updating account index for the account with address ${account.address}.`);
 	await accountsTable.upsert(account, dbTrx);
 	logger.debug(`Updated account index for the account with address ${account.address}.`);
+
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	const transactionsTable = await getTransactionsTable();
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await transactionsTable.upsert(tx, dbTrx);
@@ -62,7 +57,19 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, events, dbTrx) => { };
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	tx = {
+		...tx,
+		...tx.params,
+	};
+
+	const accountsTable = await getAccountsTable();
+	// Update the account balance
+	const account = { address: tx.recipientAddress };
+	logger.trace(`Updating account index for the account with address ${account.address}.`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}.`);
+};
 
 module.exports = {
 	COMMAND_NAME,
