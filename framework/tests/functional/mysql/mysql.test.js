@@ -483,6 +483,89 @@ describe('Test MySQL', () => {
 			expect(secondRow.height).toBe(nonEmptyBlock.height);
 			expect(secondRow.id).toBe(tokenTransferTransaction.id);
 		});
+
+		it('should perform right outer join and retrieve matching rows from two tables', async () => {
+			// Insert test data into two tables
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			await otherTable.upsert([tokenTransferTransaction]);
+
+			// Define the join parameters
+			const params = {
+				rightOuterJoin: {
+					targetTable: 'functional_test',
+					joinColumnLeft: 'transactions_functional_test.height',
+					joinColumnRight: 'functional_test.height',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await otherTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+
+			const [firstRow, secondRow] = result;
+			expect(firstRow.id).toBe(null);
+			expect(secondRow.height).toBe(nonEmptyBlock.height);
+			expect(secondRow.id).toBe(tokenTransferTransaction.id);
+		});
+
+		it('should perform inner join and retrieve matching rows from two tables', async () => {
+			// Insert test data into two tables
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			await otherTable.upsert([tokenTransferTransaction]);
+
+			// Define the join parameters
+			const params = {
+				innerJoin: {
+					targetTable: 'functional_test',
+					joinColumnLeft: 'transactions_functional_test.height',
+					joinColumnRight: 'functional_test.height',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await otherTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [firstRow] = result;
+			expect(firstRow.height).toBe(nonEmptyBlock.height);
+			expect(firstRow.id).toBe(tokenTransferTransaction.id);
+		});
+
+		it('should perform cross join and retrieve matching rows from two tables', async () => {
+			// Insert test data into two tables
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			await otherTable.upsert([tokenTransferTransaction]);
+
+			// Define the join parameters
+			const params = {
+				crossJoin: {
+					targetTable: 'functional_test',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await otherTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+
+			const [firstRow, secondRow] = result;
+			expect(firstRow.height).toBe(emptyBlock.height);
+			expect(firstRow.id).toBe(tokenTransferTransaction.id);
+
+			expect(secondRow.height).toBe(nonEmptyBlock.height);
+			expect(secondRow.id).toBe(tokenTransferTransaction.id);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
@@ -942,7 +1025,7 @@ describe('Test MySQL', () => {
 			// Insert a test record.
 			const connection = await getDBConnection();
 			const trx = await startDBTransaction(connection);
-			await testTable.upsert([nonEmptyBlock], trx);
+			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
 			await otherTable.upsert([tokenTransferTransaction], trx);
 			await commitDBTransaction(trx);
 
@@ -968,6 +1051,98 @@ describe('Test MySQL', () => {
 			expect(secondRow.height).toBe(nonEmptyBlock.height);
 			expect(secondRow.id).toBe(tokenTransferTransaction.id);
 		});
+
+		it('should perform right outer join and retrieve matching rows from two tables', async () => {
+			// Insert a test record.
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
+			await otherTable.upsert([tokenTransferTransaction], trx);
+			await commitDBTransaction(trx);
+
+			// Define the join parameters
+			const params = {
+				rightOuterJoin: {
+					targetTable: 'functional_test',
+					joinColumnLeft: 'transactions_functional_test.height',
+					joinColumnRight: 'functional_test.height',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await otherTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+
+			const [firstRow, secondRow] = result;
+			expect(firstRow.id).toBe(null);
+			expect(secondRow.height).toBe(nonEmptyBlock.height);
+			expect(secondRow.id).toBe(tokenTransferTransaction.id);
+		});
+
+		it('should perform inner join and retrieve matching rows from two tables', async () => {
+			// Insert a test record.
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
+			await otherTable.upsert([tokenTransferTransaction], trx);
+			await commitDBTransaction(trx);
+
+			// Define the join parameters
+			const params = {
+				innerJoin: {
+					targetTable: 'functional_test',
+					joinColumnLeft: 'transactions_functional_test.height',
+					joinColumnRight: 'functional_test.height',
+				},
+				order: 'functional_test.height:asc',
+			};
+
+			// Perform the inner join
+			const result = await otherTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+			// Assert the result
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [firstRow] = result;
+			expect(firstRow.height).toBe(nonEmptyBlock.height);
+			expect(firstRow.id).toBe(tokenTransferTransaction.id);
+		});
+	});
+
+	it('should perform cross join and retrieve matching rows from two tables', async () => {
+		// Insert a test record.
+		const connection = await getDBConnection();
+		const trx = await startDBTransaction(connection);
+		await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
+		await otherTable.upsert([tokenTransferTransaction], trx);
+		await commitDBTransaction(trx);
+
+		// Define the join parameters
+		const params = {
+			crossJoin: {
+				targetTable: 'functional_test',
+			},
+			order: 'functional_test.height:asc',
+		};
+
+		// Perform the inner join
+		const result = await otherTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
+
+		// Assert the result
+		expect(result).toBeInstanceOf(Array);
+		expect(result.length).toBe(2);
+
+		const [firstRow, secondRow] = result;
+		expect(firstRow.height).toBe(emptyBlock.height);
+		expect(firstRow.id).toBe(tokenTransferTransaction.id);
+
+		expect(secondRow.height).toBe(nonEmptyBlock.height);
+		expect(secondRow.id).toBe(tokenTransferTransaction.id);
 	});
 
 	describe('Transactional atomicity guarantees (non-auto commit mode)', () => {
