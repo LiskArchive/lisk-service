@@ -19,7 +19,7 @@ const isObject = obj => !!(obj && obj.constructor.name === 'Object');
 const isEmptyObj = obj => Object.entries(obj).length === 0 && obj.constructor === Object;
 const isEmptyArr = obj => Array.isArray(obj) && obj.length === 0;
 const validate = obj => !(isEmptyObj(obj) || isEmptyArr(obj));
-const objWithValues = values => !(!values.some(value => value !== undefined));
+const isObjectWithValues = obj => !(!Object.values(obj).some(value => value !== undefined));
 
 const cast = {
 	number: input => Number(input),
@@ -71,8 +71,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 			}
 		} else if (typeof definition[key] === 'object' && rootObj[key] !== null) {
 			const tempObj = mapObject(rootObj, definition[key], subObj[key]);
-			const values = Object.values(tempObj);
-			if (objWithValues(values)) acc[key] = tempObj;
+			if (isObjectWithValues(tempObj)) acc[key] = tempObj;
 		}
 		return acc;
 	}, {});
