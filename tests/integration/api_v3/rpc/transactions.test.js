@@ -64,7 +64,7 @@ describe('Method get.transactions', () => {
 		});
 
 		it(`should return list of transactions when called with executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`, async () => {
-			const response = await getTransactions({executionStatus: TRANSACTION_EXECUTION_STATUSES.join(',')});
+			const response = await getTransactions({ executionStatus: TRANSACTION_EXECUTION_STATUSES.join(',') });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
