@@ -148,7 +148,6 @@
 			"minFee",
 			"size",
 			"nonce",
-			"block",
 			"sender",
 			"params",
 			"executionStatus"
