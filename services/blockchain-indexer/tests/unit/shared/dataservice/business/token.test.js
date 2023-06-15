@@ -19,6 +19,7 @@ const { resolve } = require('path');
 
 const knownAccountsPath = resolve(`${__dirname}/../../../../../shared/dataService/knownAccounts`);
 const tokensPath = resolve(`${__dirname}/../../../../../shared/dataService/business/token`);
+const { mockTokenTopBalancesParams, mockTokenTopBalancesTokenInfos, mockTokenTopBalancesDbSearchResult } = require('../../constants/token');
 
 describe('getTokenTopBalances', () => {
 	afterEach(() => {
@@ -28,50 +29,6 @@ describe('getTokenTopBalances', () => {
 
 	it('should retrieve token top balances', async () => {
 		// Declare constants needed for the tests
-		const params = {
-			tokenID: 'token123',
-			search: 'search123',
-			limit: 10,
-			offset: 0,
-		};
-		const tokenInfos = [
-			{
-				address: 'address123',
-				publicKey: 'publicKey123',
-				name: 'name123',
-				balance: '100',
-			},
-			{
-				address: 'address456',
-				publicKey: 'publicKey456',
-				name: 'name456',
-				balance: '200',
-			},
-		];
-		const dbSearchResult = {
-			tokenID: 'token123',
-			limit: 10,
-			offset: 0,
-			leftOuterJoin: {
-				targetTable: 'accounts',
-				joinColumnLeft: 'account_balances.address',
-				joinColumnRight: 'accounts.address',
-			},
-			orSearch: [
-				{
-					property: 'accounts.name',
-					pattern: 'search123',
-				},
-				{
-					property: 'accounts.address',
-					pattern: 'search123',
-				},
-				{
-					property: 'accounts.publicKey',
-					pattern: 'search123',
-				},
-			],
-		};
 		const count = 2;
 
 		// Mock lisk-service-framework
@@ -92,11 +49,11 @@ describe('getTokenTopBalances', () => {
 			MySQL: {
 				getTableInstance: jest.fn(() => ({
 					find: jest.fn((data) => {
-						expect(data).toEqual(dbSearchResult);
-						return tokenInfos;
+						expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
+						return mockTokenTopBalancesTokenInfos;
 					}),
 					count: jest.fn((data) => {
-						expect(data).toEqual(dbSearchResult);
+						expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
 						return count;
 					}),
 				})),
@@ -110,11 +67,11 @@ describe('getTokenTopBalances', () => {
 
 		// Make a query to getTokenTopBalances function
 		const { getTokenTopBalances } = require(tokensPath);
-		const result = await getTokenTopBalances(params);
+		const result = await getTokenTopBalances(mockTokenTopBalancesParams);
 
 		// Assert the result
-		expect(getAccountKnowledge).toHaveBeenCalledWith(tokenInfos[0].address);
-		expect(getAccountKnowledge).toHaveBeenCalledWith(tokenInfos[1].address);
+		expect(getAccountKnowledge).toHaveBeenCalledWith(mockTokenTopBalancesTokenInfos[0].address);
+		expect(getAccountKnowledge).toHaveBeenCalledWith(mockTokenTopBalancesTokenInfos[1].address);
 
 		expect(result).toEqual({
 			data: {
@@ -144,14 +101,6 @@ describe('getTokenTopBalances', () => {
 	});
 
 	it('should throw an error when an error occurs during the find operation', async () => {
-		// Declare constants needed for the tests
-		const params = {
-			tokenID: 'token123',
-			search: 'search123',
-			limit: 10,
-			offset: 0,
-		};
-
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => ({
 			CacheRedis: jest.fn(() => ({
@@ -182,18 +131,10 @@ describe('getTokenTopBalances', () => {
 
 		// Make a query to getTokenTopBalances function
 		const { getTokenTopBalances } = require(tokensPath);
-		await expect(getTokenTopBalances(params)).rejects.toBeTruthy();
+		await expect(getTokenTopBalances(mockTokenTopBalancesParams)).rejects.toBeTruthy();
 	});
 
 	it('should throw an error when an error occurs during the count operation', async () => {
-		// Declare constants needed for the tests
-		const params = {
-			tokenID: 'token123',
-			search: 'search123',
-			limit: 10,
-			offset: 0,
-		};
-
 		// Mock lisk-service-framework
 		jest.mock('lisk-service-framework', () => ({
 			CacheRedis: jest.fn(() => ({
@@ -224,7 +165,7 @@ describe('getTokenTopBalances', () => {
 
 		// Make a query to getTokenTopBalances function
 		const { getTokenTopBalances } = require(tokensPath);
-		await expect(getTokenTopBalances(params)).rejects.toBeTruthy();
+		await expect(getTokenTopBalances(mockTokenTopBalancesParams)).rejects.toBeTruthy();
 	});
 
 	it('should throw an error when the params argument is null', async () => {

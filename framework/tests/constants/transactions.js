@@ -28,6 +28,21 @@ const tokenTransferTransaction = {
     isPending: false,
 };
 
+const registerValidatorTransaction = {
+    id: 'ffec1b886a46c2055a4ae29b23e2361179a32201556cfaaa66a9a9ae3a608c09',
+    moduleAssetId: '2:0',
+    moduleCommand: 'pos:registerValidator',
+    fee: '143000',
+    height: 36243,
+    blockID: '894345162569656300',
+    timestamp: 1601459680,
+    nonce: '135',
+    senderId: 'lskexc4ta5j13jp9ro3f8zqbxta9fn2jwzjucw7ym',
+    senderPublicKey: '0fa9a3f1a21b5830f27f87a414b549e79a940bf24fdf2b2f05e7a22aeeecc86d',
+    isPending: false,
+};
+
 module.exports = {
     tokenTransferTransaction,
+    registerValidatorTransaction,
 };
