@@ -222,7 +222,6 @@ const getTransactionsByBlockID = async blockID => {
 				timestamp: block.timestamp,
 			};
 
-			// TODO: Check - this information might not be available yet
 			const transactionsTable = await getTransactionsTable();
 			const [indexedTxInfo = {}] = await transactionsTable.find(
 				{ id: transaction.id, limit: 1 },
