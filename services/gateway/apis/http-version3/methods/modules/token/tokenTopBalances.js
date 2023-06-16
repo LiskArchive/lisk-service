@@ -25,6 +25,7 @@ module.exports = {
 	tags: ['Token'],
 	params: {
 		tokenID: { optional: false, type: 'string', pattern: regex.TOKEN_ID },
+		search: { optional: true, type: 'string', min: 1, pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubKey' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {

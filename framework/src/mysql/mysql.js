@@ -97,7 +97,8 @@ const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
 		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
-		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull',
+		'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
+		'innerJoin',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -319,6 +320,21 @@ const getTableInstance = async (...tableParams) => {
 		if (params.orWhereIn) {
 			const { property, values } = params.orWhereIn;
 			query.orWhereIn(property, values);
+		}
+
+		if (params.leftOuterJoin) {
+			const { targetTable, leftColumn, rightColumn } = params.leftOuterJoin;
+			query.leftOuterJoin(targetTable, leftColumn, rightColumn);
+		}
+
+		if (params.rightOuterJoin) {
+			const { targetTable, leftColumn, rightColumn } = params.rightOuterJoin;
+			query.rightOuterJoin(targetTable, leftColumn, rightColumn);
+		}
+
+		if (params.innerJoin) {
+			const { targetTable, leftColumn, rightColumn } = params.innerJoin;
+			query.innerJoin(targetTable, leftColumn, rightColumn);
 		}
 
 		if (params.search) {
