@@ -37,6 +37,5 @@ module.exports = {
 			offset: '=,number',
 			total: '=,number',
 		},
-		links: {},
 	},
 };

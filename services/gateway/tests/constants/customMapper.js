@@ -66,12 +66,8 @@ const definitionObj = {
 			},
 		],
 	},
-	meta: {
-
-	},
-	links: {
-
-	},
+	meta: {},
+	links: {},
 };
 
 const mapObjectExpectedResponse = {

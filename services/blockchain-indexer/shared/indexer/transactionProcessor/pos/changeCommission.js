@@ -22,6 +22,8 @@ const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
 const config = require('../../../../config');
 
+const { TRANSACTION_STATUS } = require('../../../constants');
+
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -45,6 +47,8 @@ const getCommissionIndexingInfo = (blockHeader, tx) => {
 };
 
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const commissionsTable = await getCommissionsTable();
 
 	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
@@ -55,6 +59,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const commissionsTable = await getCommissionsTable();
 
 	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);

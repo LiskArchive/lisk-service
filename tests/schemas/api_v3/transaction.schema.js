@@ -14,6 +14,7 @@
  *
  */
 import Joi from 'joi';
+import { TRANSACTION_EXECUTION_STATUSES } from './constants/transactions';
 
 const regex = require('./regex');
 
@@ -43,13 +44,7 @@ const transactionMetaSchema = {
 	recipient: Joi.object(transactionMetaRecipientSchema).required(),
 };
 
-const TRANSACTION_EXECUTION_STATUSES = [
-	'pending',
-	'success',
-	'fail',
-];
-
-const transactionSchema = {
+const pendingTransactionSchema = {
 	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	nonce: Joi.string().required(),
@@ -57,11 +52,16 @@ const transactionSchema = {
 	size: Joi.number().integer().positive().required(),
 	sender: Joi.object(sender).required(),
 	params: Joi.object().required(),
-	block: Joi.object(block).required(),
-	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
+	executionStatus: Joi.string().valid('pending').required(),
 	meta: Joi.object(transactionMetaSchema).optional(),
-	index: Joi.number().integer().min(0).required(),
 	minFee: Joi.string().required(),
+};
+
+const transactionSchema = {
+	...pendingTransactionSchema,
+	block: Joi.object(block).required(),
+	index: Joi.number().integer().min(0).required(),
+	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES.filter(status => status !== 'pending')).required(),
 };
 
 const postTransactionSchema = {
@@ -71,5 +71,6 @@ const postTransactionSchema = {
 
 module.exports = {
 	transactionSchema: Joi.object(transactionSchema),
+	pendingTransactionSchema: Joi.object(pendingTransactionSchema),
 	postTransactionSchema: Joi.object(postTransactionSchema),
 };
