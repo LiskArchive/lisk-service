@@ -22,6 +22,7 @@ const {
 
 const config = require('../../../config');
 const accountBalancesTableSchema = require('../../database/schema/accountBalances');
+const accountTableSchema = require('../../database/schema/accounts');
 
 const { requestConnector } = require('../../utils/request');
 const { getAddressByName } = require('../utils/validator');
@@ -85,30 +86,33 @@ const getTokenTopBalances = async (params) => {
 		meta: {},
 	};
 
-	const { search, ...remParams } = params;
-
 	const accountBalancesTable = await getAccountBalancesTable();
 
-	remParams.leftOuterJoin = {
-		targetTable: 'accounts',
-		joinColumnLeft: 'account_balances.address',
-		joinColumnRight: 'accounts.address',
+	const { search, tokenID, ...remParams } = params;
+	params = remParams;
+
+	params[`${accountBalancesTableSchema.tableName}.tokenID`] = tokenID;
+
+	params.leftOuterJoin = {
+		targetTable: accountTableSchema.tableName,
+		leftColumn: `${accountBalancesTableSchema.tableName}.address`,
+		rightColumn: `${accountTableSchema.tableName}.address`,
 	};
 
 	if (search) {
-		remParams.orSearch = [{
-			property: 'accounts.name',
+		params.orSearch = [{
+			property: `${accountTableSchema.tableName}.name`,
 			pattern: search,
 		}, {
-			property: 'accounts.address',
+			property: `${accountTableSchema.tableName}.address`,
 			pattern: search,
 		}, {
-			property: 'accounts.publicKey',
+			property: `${accountTableSchema.tableName}.publicKey`,
 			pattern: search,
 		}];
 	}
 
-	const tokenInfos = await accountBalancesTable.find(remParams, ['account_balances.balance', 'account_balances.address', 'accounts.publicKey', 'accounts.name']);
+	const tokenInfos = await accountBalancesTable.find(params, [`${accountBalancesTableSchema.tableName}.balance`, `${accountBalancesTableSchema.tableName}.address`, `${accountTableSchema.tableName}.publicKey`, `${accountTableSchema.tableName}.name`]);
 
 	const filteredTokenInfos = [];
 	// eslint-disable-next-line no-restricted-syntax
@@ -129,7 +133,7 @@ const getTokenTopBalances = async (params) => {
 	response.meta = {
 		count: response.data[params.tokenID].length,
 		offset: params.offset,
-		total: await accountBalancesTable.count(remParams, ['account_balances.address']),
+		total: await accountBalancesTable.count(params, [`${accountBalancesTableSchema.tableName}.address`]),
 	};
 
 	return response;
