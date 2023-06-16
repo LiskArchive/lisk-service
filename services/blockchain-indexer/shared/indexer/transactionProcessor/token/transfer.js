@@ -35,7 +35,7 @@ const COMMAND_NAME = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress}.`);
+	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
 	indexAccountByAddress(tx.params.recipientAddress);
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
@@ -53,7 +53,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress}.`);
+	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
 	indexAccountByAddress(tx.params.recipientAddress);
 };
 

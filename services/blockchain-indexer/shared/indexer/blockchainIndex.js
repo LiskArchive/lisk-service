@@ -249,7 +249,7 @@ const deleteIndexedBlocks = async job => {
 				const transactionsTable = await getTransactionsTable();
 				const events = await getEventsByHeight(block.height);
 
-				if (forkedTransactions && forkedTransactions.length) {
+				if (Array.isArray(forkedTransactions)) {
 					const { assets, ...blockHeader } = block;
 
 					await BluebirdPromise.map(
@@ -301,7 +301,7 @@ const deleteIndexedBlocks = async job => {
 					await scheduleAccountBalanceUpdateFromEvents(events);
 				}
 
-				// Invalidate cached events of this block
+				// Invalidate cached events for this block
 				// This must be done after processing all event related calculations
 				await deleteEventsFromCache(block.height);
 			});
