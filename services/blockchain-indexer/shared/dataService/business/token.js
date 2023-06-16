@@ -128,10 +128,10 @@ const getTokenTopBalances = async (params) => {
 		});
 	}
 
-	response.data[params.tokenID] = filteredTokenInfos;
+	response.data[tokenID] = filteredTokenInfos;
 
 	response.meta = {
-		count: response.data[params.tokenID].length,
+		count: response.data[tokenID].length,
 		offset: params.offset,
 		total: await accountBalancesTable.count(params, [`${accountBalancesTableSchema.tableName}.address`]),
 	};
