@@ -98,7 +98,7 @@ const resolveQueryParams = params => {
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
 		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
 		'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
-		'crossJoin', 'innerJoin',
+		'innerJoin',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -323,28 +323,18 @@ const getTableInstance = async (...tableParams) => {
 		}
 
 		if (params.leftOuterJoin) {
-			const { targetTable, joinColumnLeft, joinColumnRight } = params.leftOuterJoin;
-			query.leftOuterJoin(targetTable, joinColumnLeft, joinColumnRight);
+			const { targetTable, leftColumn, rightColumn } = params.leftOuterJoin;
+			query.leftOuterJoin(targetTable, leftColumn, rightColumn);
 		}
 
 		if (params.rightOuterJoin) {
-			const { targetTable, joinColumnLeft, joinColumnRight } = params.rightOuterJoin;
-			query.rightOuterJoin(targetTable, joinColumnLeft, joinColumnRight);
+			const { targetTable, leftColumn, rightColumn } = params.rightOuterJoin;
+			query.rightOuterJoin(targetTable, leftColumn, rightColumn);
 		}
 
 		if (params.innerJoin) {
-			const { targetTable, joinColumnLeft, joinColumnRight } = params.innerJoin;
-			query.innerJoin(targetTable, joinColumnLeft, joinColumnRight);
-		}
-
-		if (params.crossJoin) {
-			const { targetTable, joinColumnLeft, joinColumnRight } = params.crossJoin;
-
-			if (joinColumnLeft && joinColumnRight) {
-				query.crossJoin(targetTable, joinColumnLeft, joinColumnRight);
-			} else {
-				query.crossJoin(targetTable);
-			}
+			const { targetTable, leftColumn, rightColumn } = params.innerJoin;
+			query.innerJoin(targetTable, leftColumn, rightColumn);
 		}
 
 		if (params.search) {

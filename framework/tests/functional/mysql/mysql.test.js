@@ -38,7 +38,7 @@ const getCompositeKeyTable = () => getTableInstance(compositeKeySchema);
 const getTransactionsTable = () => getTableInstance(transactionsSchema);
 
 const { emptyBlock, nonEmptyBlock } = require('../../constants/blocks');
-const { tokenTransferTransaction, registerValidatorTransaction } = require('../../constants/transactions');
+const { tokenTransferTransaction } = require('../../constants/transactions');
 
 describe('Test MySQL', () => {
 	let blocksTable;
@@ -465,8 +465,8 @@ describe('Test MySQL', () => {
 			const params = {
 				leftOuterJoin: {
 					targetTable: transactionsTableName,
-					joinColumnLeft: `${tableName}.height`,
-					joinColumnRight: `${transactionsTableName}.height`,
+					leftColumn: `${tableName}.height`,
+					rightColumn: `${transactionsTableName}.height`,
 				},
 				order: `${tableName}.height:asc`,
 			};
@@ -493,8 +493,8 @@ describe('Test MySQL', () => {
 			const params = {
 				rightOuterJoin: {
 					targetTable: tableName,
-					joinColumnLeft: `${transactionsTableName}.height`,
-					joinColumnRight: `${tableName}.height`,
+					leftColumn: `${transactionsTableName}.height`,
+					rightColumn: `${tableName}.height`,
 				},
 				order: `${tableName}.height:asc`,
 			};
@@ -521,8 +521,8 @@ describe('Test MySQL', () => {
 			const params = {
 				innerJoin: {
 					targetTable: tableName,
-					joinColumnLeft: `${transactionsTableName}.height`,
-					joinColumnRight: `${tableName}.height`,
+					leftColumn: `${transactionsTableName}.height`,
+					rightColumn: `${tableName}.height`,
 				},
 				order: `${tableName}.height:asc`,
 			};
@@ -537,27 +537,6 @@ describe('Test MySQL', () => {
 			const [firstRow] = result;
 			expect(firstRow.height).toBe(nonEmptyBlock.height);
 			expect(firstRow.id).toBe(tokenTransferTransaction.id);
-		});
-
-		it('should perform cross join and retrieve matching rows from two tables', async () => {
-			// Insert test data into two tables
-			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
-			await transactionsTable.upsert([tokenTransferTransaction, registerValidatorTransaction]);
-
-			// Define the join parameters
-			const params = {
-				crossJoin: {
-					targetTable: tableName,
-				},
-				order: `${tableName}.height:asc`,
-			};
-
-			// Perform the cross join
-			const result = await transactionsTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
-
-			// Assert the result
-			expect(result).toBeInstanceOf(Array);
-			expect(result.length).toBe(4);
 		});
 	});
 
@@ -1026,8 +1005,8 @@ describe('Test MySQL', () => {
 			const params = {
 				leftOuterJoin: {
 					targetTable: transactionsTableName,
-					joinColumnLeft: `${tableName}.height`,
-					joinColumnRight: `${transactionsTableName}.height`,
+					leftColumn: `${tableName}.height`,
+					rightColumn: `${transactionsTableName}.height`,
 				},
 				order: `${tableName}.height:asc`,
 			};
@@ -1057,8 +1036,8 @@ describe('Test MySQL', () => {
 			const params = {
 				rightOuterJoin: {
 					targetTable: tableName,
-					joinColumnLeft: `${transactionsTableName}.height`,
-					joinColumnRight: `${tableName}.height`,
+					leftColumn: `${transactionsTableName}.height`,
+					rightColumn: `${tableName}.height`,
 				},
 				order: `${tableName}.height:asc`,
 			};
@@ -1088,8 +1067,8 @@ describe('Test MySQL', () => {
 			const params = {
 				innerJoin: {
 					targetTable: tableName,
-					joinColumnLeft: `${transactionsTableName}.height`,
-					joinColumnRight: `${tableName}.height`,
+					leftColumn: `${transactionsTableName}.height`,
+					rightColumn: `${tableName}.height`,
 				},
 				order: `${tableName}.height:asc`,
 			};
@@ -1105,30 +1084,6 @@ describe('Test MySQL', () => {
 			expect(firstRow.height).toBe(nonEmptyBlock.height);
 			expect(firstRow.id).toBe(tokenTransferTransaction.id);
 		});
-	});
-
-	it('should perform cross join and retrieve matching rows from two tables', async () => {
-		// Insert a test record.
-		const connection = await getDBConnection();
-		const trx = await startDBTransaction(connection);
-		await blocksTable.upsert([emptyBlock, nonEmptyBlock], trx);
-		await transactionsTable.upsert([tokenTransferTransaction, registerValidatorTransaction], trx);
-		await commitDBTransaction(trx);
-
-		// Define the join parameters
-		const params = {
-			crossJoin: {
-				targetTable: tableName,
-			},
-			order: `${tableName}.height:asc`,
-		};
-
-		// Perform the cross join
-		const result = await transactionsTable.find(params, [`${tableName}.height`, `${transactionsTableName}.id`]);
-
-		// Assert the result
-		expect(result).toBeInstanceOf(Array);
-		expect(result.length).toBe(4);
 	});
 
 	describe('Transactional atomicity guarantees (non-auto commit mode)', () => {
