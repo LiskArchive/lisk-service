@@ -29,6 +29,8 @@ const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 const { KV_STORE_KEY } = require('../../../constants');
 const { getPosTokenID } = require('../../../dataService/business/pos/constants');
 
+const { TRANSACTION_STATUS } = require('../../../constants');
+
 const config = require('../../../../config');
 const stakesTableSchema = require('../../../database/schema/stakes');
 
@@ -114,6 +116,8 @@ const updateTotalSelfStake = async (changeAmount, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);
@@ -139,6 +143,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	const stakes = await getStakeIndexingInfo(tx);
 	let totalStakeChange = BigInt(0);
 	let totalSelfStakeChange = BigInt(0);

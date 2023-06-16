@@ -18,6 +18,8 @@ const {
 } = require('lisk-service-framework');
 const { reloadValidatorCache } = require('../../../dataService');
 
+const { TRANSACTION_STATUS } = require('../../../constants');
+
 const logger = Logger();
 
 // Command specific constants
@@ -25,12 +27,16 @@ const COMMAND_NAME = 'reportMisbehavior';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	logger.debug('Reloading validators cache on reportMisbehavior transaction.');
 	await reloadValidatorCache();
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+
 	logger.debug('Reloading validators cache on reversal of reportMisbehavior transaction.');
 	await reloadValidatorCache();
 };

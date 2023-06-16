@@ -160,6 +160,7 @@ const KV_STORE_KEY = Object.freeze({
 const TRANSACTION_STATUS = Object.freeze({
 	SUCCESS: 'success',
 	FAIL: 'fail',
+	PENDING: 'pending',
 });
 
 const EVENT = Object.freeze({
