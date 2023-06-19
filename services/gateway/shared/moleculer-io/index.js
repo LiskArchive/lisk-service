@@ -403,7 +403,7 @@ function translateHttpToRpcCode(code) {
 
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
-	return async function (requests, respond, socket, eventName) {
+	return async function (requests, respond) {
 		if (config.websocket.enableRateLimit) await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
@@ -453,7 +453,7 @@ function makeHandler(svc, handlerItem) {
 		}
 
 		try {
-			const data = await BluebirdPromise.map(
+			const responses = await BluebirdPromise.map(
 				requests,
 				async (request) => {
 					const id = request.id || (requests.indexOf(request)) + 1;
@@ -467,12 +467,8 @@ function makeHandler(svc, handlerItem) {
 				{ concurrency: MULTI_REQUEST_CONCURRENCY },
 			);
 
-			let response = null;
-			if (singleResponse) [response] = data;
-			else response = data;
-
-			if (respond) respond(response);
-			else socket.emit('request', response);
+			if (singleResponse) respond(responses[0]);
+			else respond(responses);
 		} catch (err) {
 			svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`), respond);
 		}
