@@ -110,13 +110,10 @@ module.exports = {
 					}
 				}
 				for (const eventName in handlers) {
-					// socket.on(eventName, handlers[eventName]);
 					// eslint-disable-next-line prefer-arrow-callback
 					socket.on(eventName, async function (request, respond) {
 						const boundedHandler = handlers[eventName].bind(this);
-						const response = await boundedHandler(request, respond, socket, eventName);
-						// handlers[eventName](request, respond, socket, eventName);
-						return response;
+						await boundedHandler(request, respond, socket, eventName);
 					});
 				}
 			});
@@ -430,7 +427,9 @@ function makeHandler(svc, handlerItem) {
 				}
 				const res = await svc.actions.call({ socket: this, action, params: jsonRpcInput, handlerItem });
 				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
-				return addJsonRpcEnvelope(id, res);
+
+				const output = addJsonRpcEnvelope(id, res);
+				respond(output);
 			} catch (err) {
 				if (svc.settings.log4XXResponses || Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
 					svc.logger.error('   Request error!', err.name, ':', err.message, '\n', err.stack, '\nData:', err.data);
