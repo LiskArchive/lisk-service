@@ -37,7 +37,7 @@ How to set up Lisk Service and connect it to a local Lisk Core node.
 Lisk Service is a web application middleware that allows interaction with various blockchain networks based on the Lisk protocol.
 It is recommended to set up a blockchain node first, before setting up Lisk Service.
 
-* To setup a Lisk-Core node, see any of our setup guide, such as xref:{url_core_setup_npm}[].
+* To set up a Lisk-Core node, see any of our setup guides, such as xref:{url_core_setup_npm}[].
 * Alternatively, you can setup up a node for a sidechain, as described in the xref:{url_build_blockchain}[] section.
 ====
 
@@ -91,7 +91,7 @@ The following dependencies are required to install and run Lisk Service with Doc
 Ubuntu / Debian::
 +
 --
-Install the `build-essential` package alongside with several development tools.
+Install the `build-essential` package alongside several development tools.
 
 For example, use `apt` if running Ubuntu as shown in the following command below:
 
@@ -134,9 +134,9 @@ xcode-select --install
 Ubuntu / Debian::
 +
 --
-. Please refer to {url_docker_install_linux}[docker installation for ubuntu^].
-. To install Docker Compose, please refer to {url_docker_install_linux_compose}[install docker compose^].
-. To configure Docker so it can be run without `sudo` rights, follow: {url_docker_linux_post_install}[linux post install^].
+. Please refer to the {url_docker_install_linux}[Docker installation for Ubuntu^].
+. To install Docker Compose, please refer to {url_docker_install_linux_compose}[Install Docker Compose^].
+. To configure Docker so it can be run without `sudo` rights, follow: {url_docker_linux_post_install}[Linux post install^].
 --
 MacOS::
 +
@@ -152,7 +152,7 @@ Ensure the port which allows external services communication with the Lisk Servi
 
 - The *default* API port for *HTTP* & *WebSocket* is: `7887`
 
-.Example: Opening the port 7887 with ufw on Ubuntu
+.Example: Opening port 7887 with ufw on Ubuntu
 [source,bash]
 ----
 sudo ufw allow 7887
@@ -162,7 +162,7 @@ sudo ufw allow 7887
 
 Clone the {url_github_service}[lisk-service^] GitHub repository and then navigate into the project folder.
 
-.In the directory where you want to store Lisk Service
+.Execute in the directory where you want to store Lisk Service
 [source,bash]
 ----
 git clone https://github.com/LiskHQ/lisk-service.git
@@ -172,7 +172,7 @@ git checkout v0.7.0
 
 == Build Lisk Service
 
-To build Lisk Service from local files, first navigate to the `lisk-service` repository on your system:
+To build Lisk Service from local files, first, navigate to the `lisk-service` repository on your system:
 
 .Working directory: /lisk-service/
 [source,bash]
@@ -182,9 +182,9 @@ make build
 
 Lisk Service is now ready to use on your machine.
 
-TIP: If you skipped the step to configure Docker to run without `sudo` rights, you need to prepend `sudo`: `sudo make build`
+TIP: If you skipped the step to configure Docker to run without `*sudo*` rights, you need to prepend `*sudo*` with aforementioned command: `*sudo make build*`
 
-== Connecting Lisk Service to Lisk Core
+== Connecting Lisk Service to a blockchain node
 
 Before running the application copy the default docker-compose environment file:
 
@@ -194,7 +194,7 @@ Before running the application copy the default docker-compose environment file:
 cp docker/example.env .env
 ----
 
-In the next step, open `.env` and set the required environment variables.
+In the next step, open `.env` to set the required environment variables.
 
 .Working directory: /lisk-service/
 [source,bash]
@@ -244,4 +244,4 @@ make down
 
 More commands about how to manage Lisk Service are described on the xref:{url_management}[Docker commands] page.
 
-TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
+// TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
