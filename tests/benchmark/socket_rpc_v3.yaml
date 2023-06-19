@@ -139,7 +139,7 @@ scenarios:
     flow:
       - emit:
           channel: "request"
-          data: {"method": "get.token.balances.top", "tokenID": "0400000000000000"}
+          data: {"method": "get.token.balances.top", "params": {"tokenID": "0400000000000000"}}
 
   # Fees
   - name: "Fee estimates"
