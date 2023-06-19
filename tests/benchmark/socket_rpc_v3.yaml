@@ -1,8 +1,8 @@
 config:
   target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v3"
   phases:
-    - duration: 10
-      arrivalRate: 5
+    - duration: 15
+      arrivalRate: 50
 scenarios:
   # Blocks
   - name: "Blocks"
@@ -128,13 +128,13 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.token.summary"}
-  - name: "Tokens summary"
+  - name: "Tokens available IDs"
     engine: "socketio"
     flow:
       - emit:
           channel: "request"
           data: {"method": "get.token.available-ids"}
-  - name: "Tokens summary"
+  - name: "Tokens top balances"
     engine: "socketio"
     flow:
       - emit:
