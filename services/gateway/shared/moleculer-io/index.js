@@ -403,7 +403,7 @@ function translateHttpToRpcCode(code) {
 
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
-	return async function (requests, respond, ssocket, eeventName) {
+	return async function (requests, respond, socket, eventName) {
 		if (config.websocket.enableRateLimit) await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
@@ -472,7 +472,7 @@ function makeHandler(svc, handlerItem) {
 			else response = data;
 
 			if (respond) respond(response);
-			else this.emit('request', response);
+			else socket.emit('request', response);
 		} catch (err) {
 			svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`), respond);
 		}

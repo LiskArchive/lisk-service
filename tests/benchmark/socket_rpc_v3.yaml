@@ -1,5 +1,5 @@
 config:
-  target: "http://localhost:9901/rpc-v3"
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v3"
   phases:
     - duration: 15
       arrivalRate: 50
