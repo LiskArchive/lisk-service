@@ -247,12 +247,12 @@ scenarios:
           channel: "request"
           data: {"method": "get.pos.stakers", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
 
-  # - name: "Stakes"
-  #   engine: "socketio"
-  #   flow:
-  #     - emit:
-  #         channel: "request"
-  #         data: {"method": "get.pos.stakes", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+  - name: "Stakes"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.stakes", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
 
   - name: "Unlocks"
     engine: "socketio"
