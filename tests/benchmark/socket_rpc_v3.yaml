@@ -1,8 +1,8 @@
 config:
   target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v3"
   phases:
-    - duration: 15
-      arrivalRate: 50
+    - duration: 10
+      arrivalRate: 5
 scenarios:
   # Blocks
   - name: "Blocks"
@@ -77,6 +77,12 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.transactions.statistics", "params": {interval:'month'}}
+  - name: "Transactions export"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.export.transactions", "address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}
 
   # Validator
   - name: "Validator information by address"
@@ -122,6 +128,18 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.token.summary"}
+  - name: "Tokens summary"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.token.available-ids"}
+  - name: "Tokens summary"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.token.balances.top", "tokenID": "0400000000000000"}
 
   # Fees
   - name: "Fee estimates"
@@ -166,6 +184,13 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.blockchain.apps.meta.tokens"}
+
+  - name: "Blockchain applications off-chain metadata for tokens for tokens supported on the specified chainID"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps.meta.tokens.supported", "chainID": "04000000"}
     
   # Events
   - name: "Events"
@@ -305,6 +330,12 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.network.statistics"}
+  - name: "Network Peers"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.network.peers"}
 
   # Peers
   - name: "Peers"
@@ -349,10 +380,10 @@ scenarios:
           channel: "request"
           data: {"method": "get.index.status"}
 
-  # # Market
-  # - name: "Market prices"
-  #   engine: "socketio"
-  #   flow:
-  #     - emit:
-  #         channel: "request"
-  #         data: {"method": "get.market.prices"}
+  # Market
+  - name: "Market prices"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.market.prices"}

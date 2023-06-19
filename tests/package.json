@@ -32,8 +32,7 @@
     "benchmark:RPC": "artillery run benchmark/socket_rpc_v3.yaml",
     "benchmark:HTTP": "artillery run benchmark/http_v3.yaml",
     "benchmark": "npm run benchmark:RPC && npm run benchmark:HTTP",
-    "start": "node app.js",
-    "temp": "artillery run benchmark/temp.yaml"
+    "start": "node app.js"
   },
   "dependencies": {
     "@liskhq/lisk-cryptography": "^4.0.0-beta.1",
