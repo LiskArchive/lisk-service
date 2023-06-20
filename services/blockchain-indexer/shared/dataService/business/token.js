@@ -19,13 +19,12 @@ const {
 	},
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 
 const config = require('../../../config');
 const accountBalancesTableSchema = require('../../database/schema/accountBalances');
+const accountTableSchema = require('../../database/schema/accounts');
 
 const { requestConnector } = require('../../utils/request');
-const { getIndexedAccountInfo } = require('../utils/account');
 const { getAddressByName } = require('../utils/validator');
 const { getAccountKnowledge } = require('../knownAccounts');
 
@@ -86,30 +85,55 @@ const getTokenTopBalances = async (params) => {
 		data: {},
 		meta: {},
 	};
+
 	const accountBalancesTable = await getAccountBalancesTable();
-	const tokenInfos = await accountBalancesTable.find({ ...params }, ['address', 'balance']);
 
-	response.data[params.tokenID] = await BluebirdPromise.map(
-		tokenInfos,
-		async tokenInfo => {
-			const accountInfo = await getIndexedAccountInfo({ address: tokenInfo.address }, ['publicKey', 'name']);
-			const knowledge = getAccountKnowledge(tokenInfo.address);
+	const { search, tokenID, ...remParams } = params;
+	params = remParams;
 
-			return {
-				address: tokenInfo.address,
-				publicKey: accountInfo.publicKey,
-				name: accountInfo.name,
-				balance: tokenInfo.balance,
-				knowledge,
-			};
-		},
-		{ concurrency: tokenInfos.length },
-	);
+	params[`${accountBalancesTableSchema.tableName}.tokenID`] = tokenID;
+
+	params.leftOuterJoin = {
+		targetTable: accountTableSchema.tableName,
+		leftColumn: `${accountBalancesTableSchema.tableName}.address`,
+		rightColumn: `${accountTableSchema.tableName}.address`,
+	};
+
+	if (search) {
+		params.orSearch = [{
+			property: `${accountTableSchema.tableName}.name`,
+			pattern: search,
+		}, {
+			property: `${accountTableSchema.tableName}.address`,
+			pattern: search,
+		}, {
+			property: `${accountTableSchema.tableName}.publicKey`,
+			pattern: search,
+		}];
+	}
+
+	const tokenInfos = await accountBalancesTable.find(params, [`${accountBalancesTableSchema.tableName}.balance`, `${accountBalancesTableSchema.tableName}.address`, `${accountTableSchema.tableName}.publicKey`, `${accountTableSchema.tableName}.name`]);
+
+	const filteredTokenInfos = [];
+	// eslint-disable-next-line no-restricted-syntax
+	for (const tokenInfo of tokenInfos) {
+		const knowledge = getAccountKnowledge(tokenInfo.address);
+
+		filteredTokenInfos.push({
+			address: tokenInfo.address,
+			publicKey: tokenInfo.publicKey,
+			name: tokenInfo.name,
+			balance: BigInt(tokenInfo.balance).toString(),
+			knowledge,
+		});
+	}
+
+	response.data[tokenID] = filteredTokenInfos;
 
 	response.meta = {
-		count: response.data[params.tokenID].length,
+		count: response.data[tokenID].length,
 		offset: params.offset,
-		total: await accountBalancesTable.count({ ...params }),
+		total: await accountBalancesTable.count(params, [`${accountBalancesTableSchema.tableName}.address`]),
 	};
 
 	return response;

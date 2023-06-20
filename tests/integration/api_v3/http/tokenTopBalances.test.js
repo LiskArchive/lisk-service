@@ -28,10 +28,14 @@ const endpoint = `${baseUrlV3}/token/balances/top`;
 
 describe('Tokens top balances API', () => {
 	let tokenID;
+	let tokenInfo;
 
 	beforeAll(async () => {
 		const res = await api.get(`${baseUrlV3}/token/available-ids`);
 		[tokenID] = res.data.tokenIDs;
+
+		const { data: tokenInformation } = await api.get(`${endpoint}?tokenID=${tokenID}`);
+		[tokenInfo] = tokenInformation[tokenID];
 	});
 
 	it('should retrieve top token balances when called with token ID', async () => {
@@ -64,6 +68,57 @@ describe('Tokens top balances API', () => {
 		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
 		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(0);
 		expect(response.data[tokenID].length).toBeLessThanOrEqual(5);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial name)', async () => {
+		const searchParam = tokenInfo.name ? tokenInfo.name.substring(0, 3) : '';
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${searchParam}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial address)', async () => {
+		const searchParam = tokenInfo.address ? tokenInfo.address.substring(0, 3) : '';
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${searchParam}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial public key)', async () => {
+		const searchParam = tokenInfo.publicKey ? tokenInfo.publicKey.substring(0, 3) : '';
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${searchParam}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact name)', async () => {
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${tokenInfo.name}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact address)', async () => {
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${tokenInfo.address}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact public key)', async () => {
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${tokenInfo.publicKey}`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
 	it('should return bad request when called without token ID', async () => {

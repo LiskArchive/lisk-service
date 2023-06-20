@@ -25,6 +25,5 @@ module.exports = {
 			isValid: '=,boolean',
 		},
 		meta: {},
-		links: {},
 	},
 };

@@ -103,7 +103,7 @@ const computeTransactionStats = transactions => transactions.reduce(
 				[getRange(tx)]: {
 					count: txStatsWithFallback.count + 1,
 					volume: BigNumber(txStatsWithFallback.volume).add(getTxValue(tx)),
-					tokenID: tx.params.tokenID,
+					tokenID: tx.params.tokenID || DB_CONSTANT.UNAVAILABLE,
 				},
 			},
 		};

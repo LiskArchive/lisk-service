@@ -19,7 +19,7 @@ const isObject = obj => !!(obj && obj.constructor.name === 'Object');
 const isEmptyObj = obj => Object.entries(obj).length === 0 && obj.constructor === Object;
 const isEmptyArr = obj => Array.isArray(obj) && obj.length === 0;
 const validate = obj => !(isEmptyObj(obj) || isEmptyArr(obj));
-const objWithValues = values => !(!values.some(value => value !== undefined));
+const isObjectWithValues = obj => !(!Object.values(obj).some(value => value !== undefined));
 
 const cast = {
 	number: input => Number(input),
@@ -44,12 +44,15 @@ const resolvePath = (obj, path) => {
 	}
 };
 
+// Maps the response object in respect to the source definition
 const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definition)
 	.reduce((acc, key) => {
+		// Directly assign the casted value unless it is array or object
 		if (definition[key] !== null && typeof definition[key] === 'string') {
 			const [path, type] = definition[key].split(',');
 			const val = (path === '=') ? subObj[key] : resolvePath(rootObj, path);
 			acc[key] = (val || val === 0) && type ? cast[type](val) : val;
+		// Map each element of array
 		} else if (Array.isArray(definition[key])) {
 			if (definition[key].length === 2) {
 				const innerDef = definition[key][1];
@@ -68,8 +71,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 			}
 		} else if (typeof definition[key] === 'object' && rootObj[key] !== null) {
 			const tempObj = mapObject(rootObj, definition[key], subObj[key]);
-			const values = Object.values(tempObj);
-			if (objWithValues(values) && validate(tempObj)) acc[key] = tempObj;
+			if (isObjectWithValues(tempObj)) acc[key] = tempObj;
 		}
 		return acc;
 	}, {});

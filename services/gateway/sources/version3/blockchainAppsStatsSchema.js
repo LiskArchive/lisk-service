@@ -27,6 +27,5 @@ module.exports = {
 			currentAnnualInflationRate: '=,string',
 		},
 		meta: {},
-		links: {},
 	},
 };

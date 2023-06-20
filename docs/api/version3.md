@@ -1299,9 +1299,10 @@ Retrieves top token balances for a token ID.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
-| sort | Enum | `["balance:desc", "balance:asc"]` | balance:desc |  |
+| search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
+| sort | Enum | `["balance:desc", "balance:asc"]` | balance:desc |  |
 
 #### Response example
 

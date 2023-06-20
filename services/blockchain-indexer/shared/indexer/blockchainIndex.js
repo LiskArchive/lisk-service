@@ -39,6 +39,7 @@ const {
 	getTransactions,
 	getEventsByHeight,
 	deleteEventsFromCache,
+	getTransactionsByBlockID,
 } = require('../dataService');
 
 const {
@@ -46,7 +47,7 @@ const {
 } = require('../utils/array');
 
 const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
-const { normalizeTransaction, getTransactionExecutionStatus } = require('../utils/transactions');
+const { getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
 
@@ -274,22 +275,20 @@ const deleteIndexedBlocks = async job => {
 				// Continue only when blockID matches else skip
 				if (deletedBlockFromDB.id !== block.id) return;
 
-				let forkedTransactions;
+				let { data: forkedTransactions } = await getTransactionsByBlockID(block.id);
 				const transactionsTable = await getTransactionsTable();
 				const events = await getEventsByHeight(block.height);
 
-				if (block.transactions && block.transactions.length) {
-					const { transactions, assets, ...blockHeader } = block;
+				if (Array.isArray(forkedTransactions)) {
+					const { assets, ...blockHeader } = block;
 
-					forkedTransactions = await BluebirdPromise.map(
-						transactions,
+					await BluebirdPromise.map(
+						forkedTransactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
 							await revertTransaction(blockHeader, tx, events, dbTrx);
-							const normalizedTransaction = await normalizeTransaction(tx);
-							return normalizedTransaction;
 						},
-						{ concurrency: block.transactions.length },
+						{ concurrency: 1 },
 					);
 				}
 
@@ -332,7 +331,7 @@ const deleteIndexedBlocks = async job => {
 					await scheduleAccountBalanceUpdateFromEvents(events);
 				}
 
-				// Invalidate cached events of this block
+				// Invalidate cached events for this block
 				// This must be done after processing all event related calculations
 				await deleteEventsFromCache(block.height);
 			});

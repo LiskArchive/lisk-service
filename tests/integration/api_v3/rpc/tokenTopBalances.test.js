@@ -34,10 +34,14 @@ const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-id
 
 describe('get.token.balances.top', () => {
 	let tokenID;
+	let tokenInfo;
 
 	beforeAll(async () => {
 		const { result } = await getTokensIDs({});
 		[tokenID] = result.data.tokenIDs;
+
+		const { result: { data: tokenInformation } } = await getTokensTopBalances({ tokenID });
+		[tokenInfo] = tokenInformation[tokenID];
 	});
 
 	it('should retrieve top token balances when called with token ID', async () => {
@@ -74,6 +78,63 @@ describe('get.token.balances.top', () => {
 		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
 		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(0);
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(5);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial name)', async () => {
+		const searchParam = tokenInfo.name ? tokenInfo.name.substring(0, 3) : '';
+		const response = await getTokensTopBalances({ tokenID, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial address)', async () => {
+		const searchParam = tokenInfo.address ? tokenInfo.address.substring(0, 3) : '';
+		const response = await getTokensTopBalances({ tokenID, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial public key)', async () => {
+		const searchParam = tokenInfo.publicKey ? tokenInfo.publicKey.substring(0, 3) : '';
+		const response = await getTokensTopBalances({ tokenID, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact name)', async () => {
+		const response = await getTokensTopBalances({ tokenID, search: tokenInfo.name });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact address)', async () => {
+		const response = await getTokensTopBalances({ tokenID, search: tokenInfo.address });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact public key)', async () => {
+		const response = await getTokensTopBalances({ tokenID, search: tokenInfo.publicKey });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
 	it('should return Invalid request param when called without token ID', async () => {

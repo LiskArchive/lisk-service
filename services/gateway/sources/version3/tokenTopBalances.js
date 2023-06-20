@@ -20,9 +20,10 @@ module.exports = {
 	params: {
 		address: '=,string',
 		tokenID: '=,string',
-		sort: '=,string',
+		search: '=,string',
 		offset: '=,number',
 		limit: '=,number',
+		sort: '=,string',
 	},
 	definition: {
 		data: '=',
@@ -31,6 +32,5 @@ module.exports = {
 			offset: '=,number',
 			total: '=,number',
 		},
-		links: {},
 	},
 };
