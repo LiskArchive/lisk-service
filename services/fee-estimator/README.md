@@ -28,6 +28,13 @@ A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `SERVICE_FEE_ESTIMATOR_CACHE`: URL of the cache storage (Redis).
+- `ENABLE_FEE_ESTIMATOR_QUICK`: Boolean flag to enable quick algorithm.
+- `ENABLE_FEE_ESTIMATOR_FULL`: Boolean flag to enable full algorithm.
+- `FEE_EST_COLD_START_BATCH_SIZE`: Number of blocks analyzed during cold start.
+- `FEE_EST_DEFAULT_START_BLOCK_HEIGHT`: Height at which blockchain start using dynamic fees.
+- `FEE_EST_EMA_BATCH_SIZE`: Estimated moving average algorithm batch size.
+- `FEE_EST_EMA_DECAY_RATE`: Estimated moving average algorithm decay rate.
+- `FEE_EST_WAVG_DECAY_PERCENTAGE`: Estimated moving average algorithm weighted average decay percentage.
 
 ## Management
 

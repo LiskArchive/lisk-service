@@ -31,6 +31,19 @@ A list of the most commonly used environment variables is presented below:
 - `ENABLE_HTTP_API`: Enables particular HTTP APIs listed by a comma.
 - `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma.
 - `CORS_ALLOWED_ORIGIN`: Allows request from the comma separated string of origins. By default, it is set to `*` which allows request from all origins.
+- `SERVICE_GATEWAY_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
+- `HTTP_RATE_LIMIT_ENABLE`: Boolean flag to enable HTTP rate limiter.
+- `HTTP_RATE_LIMIT_WINDOW`: To keep record of requests in memory (in seconds). By default, it is set to 10 seconds.
+- `HTTP_RATE_LIMIT_CONNECTIONS`: Max number of requests during window.
+- `ENABLE_HTTP_CACHE_CONTROL`: Boolean flag to enable HTTP response caching. This would include the Cache-Control header within the responses.
+- `HTTP_CACHE_CONTROL_DIRECTIVES`: HTTP cache-control directives.
+- `WS_RATE_LIMIT_ENABLE`: Boolean flag to enable WS rate limiter.
+- `WS_RATE_LIMIT_CONNECTIONS`:  Max number of connections allowed.
+- `WS_RATE_LIMIT_DURATION`: TODO.
+- `ENABLE_REQUEST_CACHING`: Boolean flag to enable RPC response caching.
+- `GATEWAY_DEPENDENCIES`: Services on which gateway is dependent (can be expressed as CSV).
+- `UPDATE_READINESS_STATUS_INTERVAL`: Job interval to update readiness status. By default it is set to 0.
+- `UPDATE_READINESS_STATUS_SCHEDULE`: Job schedule to update readiness status. By default it is set to run every minute.
 
 The variables listed above can be overridden globally by using global variables.
 

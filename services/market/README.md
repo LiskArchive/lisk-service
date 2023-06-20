@@ -29,6 +29,18 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `SERVICE_MARKET_REDIS`: URL of the cache storage (Redis).
 - `EXCHANGERATESAPI_IO_API_KEY`: Access key to fetch data from the exchangeratesapi.io API.
+- `SERVICE_MARKET_FIAT_CURRENCIES`: Supported fiat currencies.
+- `SERVICE_MARKET_TARGET_PAIRS`: Supported target pairs.
+- `REFRESH_PRICES_BINANCE_INTERVAL`: Job interval to refresh prices from binance. By default it is set to 0.
+- `REFRESH_PRICES_BINANCE_SCHEDULE`: Job schedule to refresh prices from binance. By default it is set to run every minute.
+- `REFRESH_PRICES_BITTREX_INTERVAL`: Job interval to refresh prices from bittrex. By default it is set to 0.
+- `REFRESH_PRICES_BITTREX_SCHEDULE`: Job schedule to refresh prices from bittrex. By default it is set to run every minute.
+- `REFRESH_PRICES_EXCHANGERATESAPI_INTERVAL`: Job interval to refresh prices from exchangeratesapi. By default it is set to 0.
+- `REFRESH_PRICES_EXCHANGERATESAPI_SCHEDULE`: Job schedule to refresh prices from exchangeratesapi. By default it is set to run every minute.
+- `REFRESH_PRICES_KRAKEN_INTERVAL`: Job interval to refresh prices from kraken. By default it is set to 0.
+- `REFRESH_PRICES_KRAKEN_SCHEDULE`: Job schedule to refresh prices from kraken. By default it is set to run every minute.
+- `UPDATE_PRICES_INTERVAL`: Job interval to update market prices. By default it is set to run every 5 seconds.
+- `UPDATE_PRICES_SCHEDULE`: Job schedule to update market prices. By default it is set to ''.
 
 ## Management
 

@@ -31,7 +31,10 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_STATISTICS_MYSQL_READ_REPLICA`: Connection string of the (read only) replicated MySQL instance that the microservice connects to.
 - `SERVICE_STATISTICS_REDIS`: URL of the cache storage (Redis).
 - `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`: The number of days for which the transaction statistics need to be built in retrospect to the application init.
-
+- `REFRESH_TRANSACTION_STATS_INTERVAL`: Job interval to refresh transaction statistics. By default it is set to 0.
+- `REFRESH_TRANSACTION_STATS_SCHEDULE`: Job schedule to refresh transaction statistics. By default it is set to run every 30 minutes.
+- `VERIFY_TRANSACTION_STATS_INTERVAL`: Job interval to verify if transactiom statistics has been build properly. By default it is set to 0.
+- `VERIFY_TRANSACTION_STATS_SCHEDULE`: Job schedule to verify if transactiom statistics has been build properly. By default it is set to run every 3 hours at the 15th minute.
 ## Management
 
 ### Start

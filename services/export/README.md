@@ -27,6 +27,8 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `SERVICE_EXPORT_REDIS`: URL of the permanent cache storage (Redis).
 - `SERVICE_EXPORT_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
+- `CACHE_PURGE_INTERVAL`: Job interval to cleanup cache. By default it is set to 0.
+- `CACHE_PURGE_SCHEDULE`: Job schedule to cleanup cache. By default it is set to run once a day at 4:45.
 
 ## Management
 

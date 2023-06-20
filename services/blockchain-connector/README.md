@@ -33,6 +33,12 @@ A list of the most commonly used environment variables is presented below:
 - `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC.
 - `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 - `GEOIP_JSON`: URL of GeoIP server
+- `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching.
+- `EXPIRY_IN_HOURS`: Expiry time for block cache.
+- `CACHE_CLEANUP_INTERVAL`: Job interval to cleanup block cache. By default it is set to 0.
+- `CACHE_CLEANUP_SCHEDULE`: Job schedule to cleanup block cache. By default it is set to run every 12 hour.
+- `REFRESH_PEERS_INTERVAL`: Job interval to refresh peers. By default it is set to run every 60 seconds.
+- `REFRESH_PEERS_SCHEDULE`: Job schedule to refresh peers. By default it is set to ''.
 
 The variables listed above can be overridden globally by using global variables.
 
