@@ -28,18 +28,42 @@ const genericFeeSchema = {
 	amount: Joi.string().pattern(regex.DIGITS).required(),
 };
 
-const transactionFeeEstimates = {
-	minFee: Joi.string().pattern(regex.DIGITS).required(),
-	accountInitializationFee: Joi.object(genericFeeSchema).required(),
-	messageFee: Joi.object(genericFeeSchema).optional(),
+const feeSchema = {
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	minimum: Joi.string().pattern(regex.DIGITS).required(),
+	priority: Joi.object(dynamicFeeEstimates).optional(),
+};
+
+const paramsSchema = {
+	messageFee: Joi.object(genericFeeSchema).required(),
+};
+
+const transactionSchema = {
+	fee: Joi.object(feeSchema).required(),
+	params: Joi.object(paramsSchema).optional(),
 };
 
 const dataSchema = {
-	transactionFeeEstimates: Joi.object(transactionFeeEstimates).required(),
-	dynamicFeeEstimates: Joi.object(dynamicFeeEstimates).required(),
+	transaction: Joi.object(transactionSchema).required(),
 };
 
-const metaSchema = {};
+const additionalFeesSchema = {
+	registrationFee: Joi.string().pattern(regex.DIGITS).required(),
+	accountInitializationFee: Joi.string().pattern(regex.DIGITS).required(),
+};
+
+const minimumFeeBreakdownSchema = {
+	byteFee: Joi.string().pattern(regex.DIGITS).required(),
+	additionalFees: Joi.object(additionalFeesSchema).optional(),
+};
+
+const feeBreakdownSchema = {
+	minimum: Joi.object(minimumFeeBreakdownSchema).required(),
+};
+
+const metaSchema = {
+	feeBreakdown: Joi.object(feeBreakdownSchema).required(),
+};
 
 const transactionEstimateFees = {
 	data: Joi.object(dataSchema).required(),

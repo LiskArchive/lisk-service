@@ -35,6 +35,8 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 const { requestConnector, requestFeeEstimator } = require('../../utils/request');
 const config = require('../../../config');
 
+const { getPosConstants } = require('./pos/constants');
+
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
 const DEFAULT_NUM_OF_SIGNATURES = 1;
@@ -168,7 +170,7 @@ const calcAccountInitializationFees = async (transaction) => {
 
 	const { data: { isExists } } = await tokenHasUserAccount({
 		tokenID,
-		publicKey: transaction.params.recipientAddress,
+		address: transaction.params.recipientAddress,
 	});
 
 	// Account already exists, no extra fee necessary
@@ -201,18 +203,41 @@ const estimateTransactionFees = async params => {
 	const transactionFeeEstimates = {
 		minFee: Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
 		accountInitializationFee: await calcAccountInitializationFees(formattedTransaction),
-		messageFee: await calcMessageFee(formattedTransaction),
 	};
 
-	const dynamicFeeEstimates = calcDynamicFeeEstimates(
-		feeEstimatePerByte,
-		transactionFeeEstimates.minFee,
-		size,
-	);
-
 	estimateTransactionFeesRes.data = {
-		transactionFeeEstimates,
-		dynamicFeeEstimates,
+		transaction: {
+			fee: {
+				tokenID: feeEstimatePerByte.feeTokenID,
+				minimum: transactionFeeEstimates.minFee,
+			},
+			params: {
+				messageFee: await calcMessageFee(formattedTransaction),
+			},
+		},
+	};
+
+	// Priority available only when fee values are not 0
+	if (feeEstimatePerByte.low !== 0 || feeEstimatePerByte.med !== 0
+		|| feeEstimatePerByte.high !== 0) {
+		const dynamicFeeEstimates = calcDynamicFeeEstimates(
+			feeEstimatePerByte, transactionFeeEstimates.minFee, size);
+
+		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
+	}
+
+	const posConstants = await getPosConstants();
+
+	estimateTransactionFeesRes.meta = {
+		feeBreakdown: {
+			minimum: {
+				byteFee: feeEstimatePerByte.minFeePerByte,
+				additionalFees: {
+					registrationFee: posConstants.data.validatorRegistrationFee,
+					accountInitializationFee: transactionFeeEstimates.accountInitializationFee.amount,
+				},
+			},
+		},
 	};
 
 	return parseToJSONCompatObj(estimateTransactionFeesRes);

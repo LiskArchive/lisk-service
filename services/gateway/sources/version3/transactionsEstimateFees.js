@@ -21,23 +21,34 @@ module.exports = {
 	},
 	definition: {
 		data: {
-			transactionFeeEstimates: {
-				minFee: '=,string',
-				accountInitializationFee: {
+			transaction: {
+				fee: {
 					tokenID: '=,string',
-					amount: '=,string',
+					minimum: '=,string',
+					priority: {
+						low: '=,string',
+						medium: '=,string',
+						high: '=,string',
+					},
 				},
-				messageFee: {
-					tokenID: '=,string',
-					amount: '=,string',
+				params: {
+					messageFee: {
+						tokenID: '=,string',
+						amount: '=,string',
+					},
 				},
-			},
-			dynamicFeeEstimates: {
-				low: '=,string',
-				medium: '=,string',
-				high: '=,string',
 			},
 		},
-		meta: {},
+		meta: {
+			feeBreakdown: {
+				minimum: {
+					byteFee: '=,string',
+					additionalFees: {
+						registrationFee: '=,string',
+						accountInitializationFee: '=,string',
+					},
+				},
+			},
+		},
 	},
 };
