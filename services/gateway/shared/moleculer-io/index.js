@@ -110,7 +110,8 @@ module.exports = {
 					}
 				}
 				for (const eventName in handlers) {
-					socket.on(eventName, async (request, respond) => {
+					// eslint-disable-next-line prefer-arrow-callback
+					socket.on(eventName, async function (request, respond) {
 						const boundedHandler = handlers[eventName].bind(this);
 						await boundedHandler(request, respond, socket, eventName);
 					});
