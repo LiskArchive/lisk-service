@@ -168,7 +168,7 @@ const calcAccountInitializationFees = async (transaction) => {
 
 	const { data: { isExists } } = await tokenHasUserAccount({
 		tokenID,
-		publicKey: transaction.params.recipientAddress,
+		address: transaction.params.recipientAddress,
 	});
 
 	// Account already exists, no extra fee necessary
