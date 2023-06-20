@@ -185,7 +185,7 @@ scenarios:
           channel: "request"
           data: {"method": "get.blockchain.apps.meta.tokens"}
 
-  - name: "Blockchain applications off-chain metadata for tokens for tokens supported on the specified chainID"
+  - name: "Blockchain applications off-chain metadata for tokens supported on the specified chainID"
     engine: "socketio"
     flow:
       - emit:
