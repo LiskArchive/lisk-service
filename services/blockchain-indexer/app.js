@@ -30,6 +30,7 @@ const packageJson = require('./package.json');
 const { MODULE } = require('./shared/constants');
 const { initDatabase } = require('./shared/database/init');
 const { setAppContext } = require('./shared/utils/request');
+const { init } = require('./shared/init');
 
 const logger = Logger();
 
@@ -110,6 +111,8 @@ initDatabase()
 		setAppContext(app);
 		app.run().then(async () => {
 			logger.info(`Service started ${packageJson.name}.`);
+
+			await init();
 
 			// Init database
 			const status = require('./shared/indexer/indexStatus');
