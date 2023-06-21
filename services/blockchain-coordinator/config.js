@@ -77,7 +77,7 @@ config.job = {
 	indexMissingBlocks: {
 		interval: process.env.INDEX_MISSING_BLOCKS_INTERVAL || 0,
 		schedule: process.env.INDEX_MISSING_BLOCKS_SCHEDULE || '*/15 * * * *',
-		threshold: process.env.THRESHOLD || 100, // TODO: rename
+		skipThreshold: process.env.INDEX_MISSING_BLOCKS_SKIP_THRESHOLD || 100,
 	},
 };
 

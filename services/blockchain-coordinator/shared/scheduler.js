@@ -51,14 +51,18 @@ const accountIndexQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const { threshold } = config.job.indexMissingBlocks;
-
-const getJobCount = async (queue) => (await queue.getActiveCount() + await queue.getWaitingCount());
+const getInProgressJobCount = async (queue) => {
+	const jobCount = await queue.getJobCounts();
+	const count = jobCount.active + jobCount.waiting;
+	return count;
+};
 
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
+
+	blockHeights.sort((h1, h2) => h1 - h2); // sort by ascending height
 
 	await BluebirdPromise.map(
 		blockHeights,
@@ -94,32 +98,41 @@ const indexGenesisBlock = async () => {
 
 const initIndexingScheduler = async () => {
 	// Get all validators and schedule indexing
+	logger.debug('Initializing validator indexing scheduler.');
 	const { validators } = await getAllPosValidators();
 	if (Array.isArray(validators) && validators.length) {
 		await scheduleValidatorsIndexing(validators);
 	}
+	logger.debug('Validator indexing initialization completed successfully.');
 
 	// Check for missing blocks
+	logger.debug('Initializing block indexing scheduler.');
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
-	const missingBlocksByHeight = await getMissingBlocks(genesisHeight + 1, currentHeight);
+	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight + 1;
+
+	logger.trace(`Checking for missing blocks between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
+	const missingBlockHeights = await getMissingBlocks(lastVerifiedHeight, currentHeight);
 
 	// Schedule indexing for the missing blocks
-	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
-		await scheduleBlocksIndexing(missingBlocksByHeight);
+	if (Array.isArray(missingBlockHeights) && missingBlockHeights.length) {
+		logger.trace(`Missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}.\n${missingBlockHeights.join(' ,')}`);
+		await scheduleBlocksIndexing(missingBlockHeights);
+	} else {
+		logger.trace(`No missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
 	}
+	logger.debug('Block indexing initialization completed successfully.');
 };
 
 const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	const jobCount = await getJobCount(blockIndexQueue);
+	const jobCount = await getInProgressJobCount(blockIndexQueue);
 
-	// Skip missing blocks scheduling if Active+Waiting job count >= threshold or
-	// Active+Waiting job count <= (currentHeight - genesisHeight + 1 - configurableThreshold)
-	if (jobCount >= threshold || jobCount <= (currentHeight - genesisHeight + 1 - threshold)) {
-		logger.info('Skip scheduling missing blocks job.');
+	// Skip job scheduling when the jobCount is greater than the threshold
+	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
+		logger.info('Skipping missing blocks job run.');
 		return;
 	}
 
