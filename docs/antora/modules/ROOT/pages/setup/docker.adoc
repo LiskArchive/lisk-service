@@ -38,7 +38,7 @@ Lisk Service is a web application middleware that allows interaction with variou
 It is recommended to set up a blockchain node first, before setting up Lisk Service.
 
 * To set up a Lisk-Core node, see any of our setup guides, such as xref:{url_core_setup_npm}[].
-* Alternatively, you can setup up a node for a sidechain, as described in the xref:{url_build_blockchain}[] section.
+* Alternatively, you can setup up a sidechain node to connect to Lisk Service.
 ====
 
 // === Setting up Lisk Core
@@ -150,12 +150,12 @@ MacOS::
 
 Ensure the port which allows external services communication with the Lisk Service APIs is open.
 
-- The *default* API port for *HTTP* & *WebSocket* is: `7887`
+- The *default* API port for *HTTP* & *WebSocket* is: `9901`
 
-.Example: Opening port 7887 with ufw on Ubuntu
+.Example: Opening port 9901 with ufw on Ubuntu
 [source,bash]
 ----
-sudo ufw allow 7887
+sudo ufw allow 9901
 ----
 
 === Installation of Lisk Service
