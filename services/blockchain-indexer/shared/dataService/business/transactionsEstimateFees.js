@@ -249,4 +249,6 @@ module.exports = {
 	// Export for the unit tests
 	calcDynamicFeeEstimates,
 	mockTransaction,
+	calcAccountInitializationFees,
+	calcMessageFee,
 };

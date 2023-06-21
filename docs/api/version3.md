@@ -526,9 +526,8 @@ Request payload:
 		"recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
 		"data": "",
 		"tokenID": "0000000000000000",
-		"receivingChainID": "00000001",
-		"messageFee": "10000000",
-		"messageFeeTokenID": "0000000000000000"
+        "messageFee": "10000000",
+        "messageFeeTokenID": "0000000000000000"
 	},
 	"id": "d96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c"
   }
@@ -544,7 +543,7 @@ Request payload:
     "data": {
         "transaction": {
             "fee": {
-                "tokenID": "xxxxx",
+                "tokenID": "0400000000000000",
                 "minimum": "172000", // byteFee + all additionalFees
                 "priority": { // optional - available only when priority values differ
                     "low": "135000",
@@ -563,9 +562,9 @@ Request payload:
     "meta": {
         "feeBreakdown": {
             "minimum": {
-                "byteFee": 1000,
+                "byteFee": "1000",
                 "additionalFees": {
-                    "registrationFee": "xxxxx",
+                    "registrationFee": "1000000000",
                     "accountInitializationFee": "5000000"
                 }
             }
