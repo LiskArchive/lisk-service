@@ -93,14 +93,31 @@ const indexBlock = async job => {
 
 	// Check if previous block is indexed, index previous block if not indexed
 	if (block.height !== await getGenesisHeight()) {
-		const prevBlockHeight = block.height - 1;
-		const prevBlockFromDB = await blocksTable.find({ height: prevBlockHeight });
+		const [{ height: lastIndexedHeight } = {}] = await blocksTable.find(
+			{
+				propBetweens: [{
+					property: 'height',
+					to: block.height,
+				}],
+				sort: 'height:desc',
+				limit: 1,
+			},
+			['height'],
+		);
 
-		if (!prevBlockFromDB.length) {
-			/* eslint-disable no-use-before-define */
-			await addBlockToQueue(prevBlockHeight);
-			await addBlockToQueue(block.height);
-			/* eslint-enable no-use-before-define */
+		const heightsToIndex = range(
+			(lastIndexedHeight || await getGenesisHeight()) + 1,
+			block.height + 1, // '+ 1' as 'to' is non-inclusive
+			1,
+		);
+
+		if (heightsToIndex.length > 1) {
+			await BluebirdPromise.map(
+				heightsToIndex,
+				// eslint-disable-next-line no-use-before-define
+				async (height) => addBlockToQueue(height, true),
+				{ concurrency: 1 },
+			);
 
 			return;
 		}
@@ -478,9 +495,13 @@ const getMissingBlocks = async (params) => {
 	return listOfMissingBlocks;
 };
 
-const addBlockToQueue = async height => {
+const addBlockToQueue = async (height, isIncreasedPriority = false) => {
 	const block = await getBlockByHeight(height);
-	indexBlocksQueue.add({ block });
+	if (isIncreasedPriority) {
+		await indexBlocksQueue.add({ block }, { priority: 1 });
+	} else {
+		await indexBlocksQueue.add({ block });
+	}
 };
 
 const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);

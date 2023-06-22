@@ -64,14 +64,13 @@ const scheduleBlocksIndexing = async (heights) => {
 
 	blockHeights.sort((h1, h2) => h1 - h2); // sort by ascending height
 
-	await BluebirdPromise.map(
-		blockHeights,
-		async height => {
-			await blockIndexQueue.add({ height });
-			logger.debug(`Scheduled indexing for block at height: ${height}.`);
-		},
-		{ concurrency: blockHeights.length },
-	);
+	// eslint-disable-next-line no-restricted-syntax
+	for (const height of blockHeights) {
+		logger.trace(`Scheduling indexing for block at height: ${height}.`);
+		// eslint-disable-next-line no-await-in-loop
+		await blockIndexQueue.add({ height });
+		logger.debug(`Scheduled indexing for block at height: ${height}.`);
+	}
 };
 
 const scheduleValidatorsIndexing = async (validators) => {
@@ -103,34 +102,40 @@ const initIndexingScheduler = async () => {
 	if (Array.isArray(validators) && validators.length) {
 		await scheduleValidatorsIndexing(validators);
 	}
-	logger.debug('Validator indexing initialization completed successfully.');
+	logger.info('Validator indexing initialization completed successfully.');
 
-	// Check for missing blocks
-	logger.debug('Initializing block indexing scheduler.');
-	const genesisHeight = await getGenesisHeight();
-	const currentHeight = await getCurrentHeight();
-	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight + 1;
-
-	logger.trace(`Checking for missing blocks between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
-	const missingBlockHeights = await getMissingBlocks(lastVerifiedHeight, currentHeight);
-
-	// Schedule indexing for the missing blocks
-	if (Array.isArray(missingBlockHeights) && missingBlockHeights.length) {
-		logger.trace(`Missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}.\n${missingBlockHeights.join(' ,')}`);
-		await scheduleBlocksIndexing(missingBlockHeights);
+	// Skip scheduling jobs for missing blocks when the jobCount is greater than the threshold
+	const jobCount = await getInProgressJobCount(blockIndexQueue);
+	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
+		logger.info(`Skipping the check for missing blocks. ${jobCount} blocks already queued for indexing.`);
 	} else {
-		logger.trace(`No missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
+		// Check for missing blocks
+		logger.debug('Initializing block indexing scheduler.');
+		const genesisHeight = await getGenesisHeight();
+		const currentHeight = await getCurrentHeight();
+		const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight + 1;
+
+		logger.debug(`Checking for missing blocks between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
+		const missingBlockHeights = await getMissingBlocks(lastVerifiedHeight, currentHeight);
+
+		// Schedule indexing for the missing blocks
+		if (Array.isArray(missingBlockHeights) && missingBlockHeights.length) {
+			logger.info(`${missingBlockHeights.length} missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}. Attempting to schedule indexing.`);
+			await scheduleBlocksIndexing(missingBlockHeights);
+			logger.info(`Finished scheduling indexing of ${missingBlockHeights.length}  missing blocks between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
+		} else {
+			logger.info(`No missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}. Nothing to schedule.`);
+		}
 	}
-	logger.debug('Block indexing initialization completed successfully.');
+	logger.info('Block indexing initialization completed successfully.');
 };
 
 const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	const jobCount = await getInProgressJobCount(blockIndexQueue);
-
 	// Skip job scheduling when the jobCount is greater than the threshold
+	const jobCount = await getInProgressJobCount(blockIndexQueue);
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info('Skipping missing blocks job run.');
 		return;
@@ -169,10 +174,10 @@ const scheduleMissingBlocksIndexing = async () => {
 
 const init = async () => {
 	try {
+		await initNodeConstants();
 		await indexGenesisBlock();
 		await initIndexingScheduler();
 		await initEventsScheduler();
-		await initNodeConstants();
 	} catch (error) {
 		logger.error(`Unable to initialize coordinator due to: ${error.message}`);
 	}
