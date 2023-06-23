@@ -32,10 +32,10 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_APP_REGISTRY_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
 - `ENABLE_REBUILD_INDEX_AT_INIT`: Boolean flag to truncate the index and rebuild at application init.
 - `DEFAULT_APPS`: Default blockchain applications. By default it is set to `Lisk`
-- `DELETE_NON_METADATA_FILES_INTERVAL`: Job interval to delete non metadata files. By default it is set to 0
-- `DELETE_NON_METADATA_FILES_SCHEDULE`: Job schedule to delete non metadata files. By default it is set to run every day at midnight.
-- `UPDATE_METADATA_INTERVAL`: Job interval to update metadata. By default it is set to 0
-- `UPDATE_METADATA_SCHEDULE`: Job schedule to update metadata. By default it is set to run every 10 minutes.
+- `JOB_INTERVAL_DELETE_NON_METADATA_FILES`: Job interval to delete non metadata files. By default it is set to 0
+- `JOB_SCHEDULE_DELETE_NON_METADATA_FILES`: Job schedule to delete non metadata files. By default it is set to run every day at midnight.
+- `JOB_INTERVAL_UPDATE_METADATA`: Job interval to update metadata. By default it is set to 0
+- `JOB_SCHEDULE_UPDATE_METADATA`: Job schedule to update metadata. By default it is set to run every 10 minutes.
 
 ## Management
 

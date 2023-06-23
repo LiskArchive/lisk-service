@@ -44,8 +44,8 @@ A list of the most commonly used environment variables is presented below:
 - `WS_RATE_LIMIT_DURATION`: TODO.
 - `ENABLE_REQUEST_CACHING`: Boolean flag to enable RPC response caching.
 - `GATEWAY_DEPENDENCIES`: Services on which gateway is dependent (can be expressed as CSV).
-- `UPDATE_READINESS_STATUS_INTERVAL`: Job interval to update readiness status. By default it is set to 0.
-- `UPDATE_READINESS_STATUS_SCHEDULE`: Job schedule to update readiness status. By default it is set to run every minute.
+- `JOB_INTERVAL_UPDATE_READINESS_STATUS`: Job interval to update readiness status. By default it is set to 0.
+- `JOB_SCHEDULE_UPDATE_READINESS_STATUS`: Job schedule to update readiness status. By default it is set to run every minute.
 
 The variables listed above can be overridden globally by using global variables.
 

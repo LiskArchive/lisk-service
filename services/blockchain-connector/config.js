@@ -99,12 +99,12 @@ config.cache = {
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	cacheCleanup: {
-		interval: process.env.CACHE_CLEANUP_INTERVAL || 0,
-		schedule: process.env.CACHE_CLEANUP_SCHEDULE || '0 */12 * * *',
+		interval: process.env.JOB_INTERVAL_CACHE_CLEANUP || 0,
+		schedule: process.env.JOB_SCHEDULE_CACHE_CLEANUP || '0 */12 * * *',
 	},
 	refreshPeers: {
-		interval: process.env.REFRESH_PEERS_INTERVAL || 60,
-		schedule: process.env.REFRESH_PEERS_SCHEDULE || '',
+		interval: process.env.JOB_INTERVAL_REFRESH_PEERS || 60,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_PEERS || '',
 	},
 };
 

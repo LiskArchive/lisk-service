@@ -37,10 +37,10 @@ A list of the most commonly used environment variables is presented below:
 - `GEOIP_JSON`: URL of GeoIP server
 - `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching.
 - `EXPIRY_IN_HOURS`: Expiry time for block cache.
-- `CACHE_CLEANUP_INTERVAL`: Job interval to cleanup block cache. By default it is set to 0.
-- `CACHE_CLEANUP_SCHEDULE`: Job schedule to cleanup block cache. By default it is set to run every 12 hour.
-- `REFRESH_PEERS_INTERVAL`: Job interval to refresh peers. By default it is set to run every 60 seconds.
-- `REFRESH_PEERS_SCHEDULE`: Job schedule to refresh peers. By default it is set to ''.
+- `JOB_INTERVAL_CACHE_CLEANUP`: Job interval to cleanup block cache. By default it is set to 0.
+- `JOB_SCHEDULE_CACHE_CLEANUP`: Job schedule to cleanup block cache. By default it is set to run every 12 hour.
+- `JOB_INTERVAL_REFRESH_PEERS`: Job interval to refresh peers. By default it is set to run every 60 seconds.
+- `JOB_SCHEDULE_REFRESH_PEERS`: Job schedule to refresh peers. By default it is set to ''.
 
 The variables listed above can be overridden globally by using global variables.
 

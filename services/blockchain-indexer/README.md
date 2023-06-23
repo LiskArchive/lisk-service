@@ -43,20 +43,20 @@ A list of the most commonly used environment variables is presented below:
 - `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently maintain the events in the MySQL database.
 - `LISK_STATIC`: URL of Lisk static assets.
 - `SERVICE_INDEXER_CACHE_REDIS`: URL of the cache storage (Redis).
-- `DELETE_SERIALIZED_EVENTS_INTERVAL`: Job interval to delete serialized events. By default it is set to 0.
-- `DELETE_SERIALIZED_EVENTS_SCHEDULE`: Job schedule to delete serialized events. By default it is set to run every 5 minutes.
-- `REFRESH_VALIDATORS_INTERVAL`: Job interval to refresh validators cache. By default it is set to 0.
-- `REFRESH_VALIDATORS_SCHEDULE`: Job schedule to refresh validators cache. By default it is set to run every 5 minutes.
-- `VALIDATE_VALIDATORS_RANK_INTERVAL`: Job interval to validate validators rank. By default it is set to 0.
-- `VALIDATE_VALIDATORS_RANK_SCHEDULE`: Job schedule to validate validators rank. By default it is set to run every 15th minute from 4 through 59.
-- `REFRESH_INDEX_STATUS_INTERVAL`: Job interval to refresh indexing status. By default it is set to run every 10 seconds.
-- `REFRESH_INDEX_STATUS_SCHEDULE`: Job schedule to refresh indexing status. By default it is set to ''.
-- `REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL`: Job interval to refresh blockchain application statistics. By default it is set to 0.
-- `REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE`: Job schedule to refresh blockchain application statistics. By default it is set to run every 15 minutes.
-- `REFRESH_ACCOUNT_KNOWLEDGE_INTERVAL`: Job interval to refresh account knowledge. By default it is set to 0.
-- `REFRESH_ACCOUNT_KNOWLEDGE_SCHEDULE`: Job schedule to refresh account knowledge. By default it is set to run every 15 minutes.
-- `DELETE_FINALISED_CCU_METADATA_INTERVAL`: Job interval to delete finalized CCU metadata. By default it is set to 0.
-- `DELETE_FINALISED_CCU_METADATA_SCHEDULE`: Job schedule to delete finalized CCU metadata. By default it is set to run once a day at 2.
+- `JOB_INTERVAL_DELETE_SERIALIZED_EVENTS`: Job interval to delete serialized events. By default it is set to 0.
+- `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`: Job schedule to delete serialized events. By default it is set to run every 5 minutes.
+- `JOB_INTERVAL_REFRESH_VALIDATORS`: Job interval to refresh validators cache. By default it is set to 0.
+- `JOB_SCHEDULE_REFRESH_VALIDATORS`: Job schedule to refresh validators cache. By default it is set to run every 5 minutes.
+- `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`: Job interval to validate validators rank. By default it is set to 0.
+- `JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK`: Job schedule to validate validators rank. By default it is set to run every 15th minute from 4 through 59.
+- `JOB_INTERVAL_REFRESH_INDEX_STATUS`: Job interval to refresh indexing status. By default it is set to run every 10 seconds.
+- `JOB_SCHEDULE_REFRESH_INDEX_STATUS`: Job schedule to refresh indexing status. By default it is set to ''.
+- `JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS`: Job interval to refresh blockchain application statistics. By default it is set to 0.
+- `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`: Job schedule to refresh blockchain application statistics. By default it is set to run every 15 minutes.
+- `JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE`: Job interval to refresh account knowledge. By default it is set to 0.
+- `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`: Job schedule to refresh account knowledge. By default it is set to run every 15 minutes.
+- `JOB_INTERVAL_DELETE_FINALISED_CCU_METADATA`: Job interval to delete finalized CCU metadata. By default it is set to 0.
+- `JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA`: Job schedule to delete finalized CCU metadata. By default it is set to run once a day at 2.
 - `ESTIMATES_BUFFER_BYTES_LENGTH`: TODO
 
 
