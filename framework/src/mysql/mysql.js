@@ -485,7 +485,6 @@ const getTableInstance = async (...tableParams) => {
 		const trx = await createDefaultTransaction(knex);
 
 		if (!column) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
 			column = Array.isArray(tableConfig.primaryKey)
 				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
 		} else {

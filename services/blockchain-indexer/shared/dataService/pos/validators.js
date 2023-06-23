@@ -212,7 +212,7 @@ const getPosValidators = async params => {
 		filteredValidators,
 		async validator => {
 			const [validatorInfo = {}] = await validatorsTable.find(
-				{ address: validator.address },
+				{ address: validator.address, limit: 1 },
 				['generatedBlocks', 'totalCommission', 'totalSelfStakeRewards'],
 			);
 			const {

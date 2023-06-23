@@ -54,10 +54,10 @@ const getEventsByHeight = async (height) => {
 	// Get from DB only when isPersistEvents is enabled
 	if (config.isPersistEvents) {
 		const eventsTable = await getEventsTable();
-		const dbEventStrs = await eventsTable.find({ height }, ['eventStr']);
+		const dbEventStrings = await eventsTable.find({ height }, ['eventStr']);
 
-		if (dbEventStrs.length) {
-			const dbEvents = dbEventStrs
+		if (dbEventStrings.length) {
+			const dbEvents = dbEventStrings
 				.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
 			await eventCache.set(height, JSON.stringify(dbEvents));
 			return dbEvents;
@@ -122,7 +122,7 @@ const getEvents = async (params) => {
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
 		params = remParams;
-		const [block] = await blocksTable.find({ id: blockID }, ['height']);
+		const [block] = await blocksTable.find({ id: blockID, limit: 1 }, ['height']);
 		if ('height' in params && params.height !== block.height) {
 			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 		}
@@ -156,7 +156,7 @@ const getEvents = async (params) => {
 				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
-			const [{ id, timestamp } = {}] = await blocksTable.find({ height }, ['id', 'timestamp']);
+			const [{ id, timestamp } = {}] = await blocksTable.find({ height, limit: 1 }, ['id', 'timestamp']);
 
 			return parseToJSONCompatObj({
 				...event,

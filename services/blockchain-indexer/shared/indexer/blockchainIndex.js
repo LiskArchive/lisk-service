@@ -89,11 +89,13 @@ const indexBlock = async job => {
 	const { block } = job.data;
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
+	logger.info(block.height);
+
 	const blocksTable = await getBlocksTable();
 
 	// Check if previous block is indexed, index previous block if not indexed
 	if (block.height !== await getGenesisHeight()) {
-		const [{ height: lastIndexedHeight } = {}] = await blocksTable.find(
+		const [lastIndexedBlock = {}] = await blocksTable.find(
 			{
 				propBetweens: [{
 					property: 'height',
@@ -102,11 +104,17 @@ const indexBlock = async job => {
 				sort: 'height:desc',
 				limit: 1,
 			},
-			['height'],
+			['height', 'isFinal'],
 		);
 
+		// Skip the indexing process if the last indexed block's height is
+		// higher than or equal to current block's height and is already finalized
+		if (block.height <= lastIndexedBlock.height && lastIndexedBlock.isFinal) {
+			return;
+		}
+
 		const heightsToIndex = range(
-			(lastIndexedHeight || await getGenesisHeight()) + 1,
+			(lastIndexedBlock.height || await getGenesisHeight()) + 1,
 			block.height + 1, // '+ 1' as 'to' is non-inclusive
 			1,
 		);
@@ -279,7 +287,7 @@ const deleteIndexedBlocks = async job => {
 			blocks,
 			async block => {
 				// Check if deleted block is indexed
-				const [deletedBlockFromDB] = await blocksTable.find({ height: block.height });
+				const [deletedBlockFromDB] = await blocksTable.find({ height: block.height, limit: 1 });
 
 				// Reschedule job if not deleted block is not indexed
 				if (!deletedBlockFromDB) {

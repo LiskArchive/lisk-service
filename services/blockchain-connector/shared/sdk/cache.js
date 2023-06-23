@@ -72,7 +72,7 @@ const cacheBlocksFromWaitlist = async () => {
 
 const getBlockByIDFromCache = async (id) => {
 	const blocksCache = await getBlocksCache();
-	const resultSet = await blocksCache.find({ id }, ['block']);
+	const resultSet = await blocksCache.find({ id, limit: 1 }, ['block']);
 	if (!resultSet.length) return null;
 
 	const [{ block }] = resultSet;
@@ -82,7 +82,7 @@ const getBlockByIDFromCache = async (id) => {
 
 const getTransactionByIDFromCache = async (transactionID) => {
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
-	const resultSet = await trxIDToBlockIDCache.find({ transactionID }, ['blockID']);
+	const resultSet = await trxIDToBlockIDCache.find({ transactionID, limit: 1 }, ['blockID']);
 	if (!resultSet.length) return null;
 
 	const [{ blockID }] = resultSet;

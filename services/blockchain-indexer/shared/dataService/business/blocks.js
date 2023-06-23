@@ -77,7 +77,7 @@ const normalizeBlock = async (originalBlock) => {
 
 		const { numberOfEvents, reward } = await (async () => {
 			const [dbResponse] = await blocksTable.find(
-				{ height: block.height },
+				{ height: block.height, limit: 1 },
 				['numberOfEvents', 'reward'],
 			);
 

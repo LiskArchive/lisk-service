@@ -57,19 +57,54 @@ const getInProgressJobCount = async (queue) => {
 	return count;
 };
 
+let intervalID;
+
+const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return getInProgressJobCount(blockIndexQueue)
+		.then((count) => count < config.job.indexMissingBlocks.skipThreshold
+			? resolve(true)
+			: (() => {
+				const REFRESH_INTERVAL = 30000;
+				logger.info(`In progress job count not yet below the threshold. Waiting for ${REFRESH_INTERVAL} ms to re-check the job count before scheduling the next batch.`);
+				intervalID = setInterval(
+					waitForJobCountToFallBelowThreshold.bind(null, resolve),
+					REFRESH_INTERVAL,
+				);
+			})());
+});
+
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
 
-	blockHeights.sort((h1, h2) => h1 - h2); // sort by ascending height
+	blockHeights.sort((h1, h2) => h1 - h2); // sort heights in ascending order
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const height of blockHeights) {
-		logger.trace(`Scheduling indexing for block at height: ${height}.`);
-		// eslint-disable-next-line no-await-in-loop
-		await blockIndexQueue.add({ height });
-		logger.debug(`Scheduled indexing for block at height: ${height}.`);
+	// Schedule indexing in batches when the list is too long to avoid OOM
+	const MAX_BATCH_SIZE = 20000;
+	const numBatches = Math.ceil(blockHeights.length / MAX_BATCH_SIZE);
+	if (numBatches > 1) logger.info(`Scheduling the blocks indexing in ${numBatches} smaller batches.`);
+
+	for (let i = 0; i < numBatches; i++) {
+		/* eslint-disable no-await-in-loop */
+
+		const blockHeightsBatch = blockHeights.slice(i * MAX_BATCH_SIZE, (i + 1) * MAX_BATCH_SIZE);
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const height of blockHeightsBatch) {
+			logger.trace(`Scheduling indexing for block at height: ${height}.`);
+			await blockIndexQueue.add({ height });
+			logger.debug(`Scheduled indexing for block at height: ${height}.`);
+		}
+
+		await waitForJobCountToFallBelowThreshold();
+		/* eslint-enable no-await-in-loop */
 	}
 };
 
