@@ -215,7 +215,7 @@ vim .env
 LISK_APP_WS=ws://host.docker.internal:7887 
 ----
 
-The aforementioned example assumes that the blockchain node e.g. Lisk Core node is running on the host machine, and not inside of a Docker container.
+The `example.env` assumes that the blockchain node e.g. Lisk Core node is running on the host machine, and not inside of a Docker container.
 
 When running a blockchain node inside of a Docker container, the following variable needs to refer to the container:
 
