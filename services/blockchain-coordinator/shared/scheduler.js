@@ -30,6 +30,7 @@ const {
 } = require('./sources/indexer');
 
 const { getAllPosValidators } = require('./sources/connector');
+const { isGenesisBlockIndexed } = require('./sources/indexer');
 
 const {
 	getCurrentHeight,
@@ -58,6 +59,37 @@ const getInProgressJobCount = async (queue) => {
 };
 
 let intervalID;
+const REFRESH_INTERVAL = 30000;
+
+const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return isGenesisBlockIndexed()
+		.then(async (isIndexed) => {
+			const jobCount = await getInProgressJobCount(blockIndexQueue);
+
+			if (isIndexed) {
+				logger.info('Genesis block is indexed.');
+				return resolve(true);
+			}
+
+			if (jobCount === 1) {
+				logger.info(`Genesis block indexing is still in progress. Waiting for ${REFRESH_INTERVAL}ms to re-check the genesis block indexing status.`);
+				intervalID = setInterval(
+					waitForGenesisBlockIndexing.bind(null, resolve),
+					REFRESH_INTERVAL,
+				);
+				return false;
+			}
+
+			logger.warn('Genesis block indexing failed.');
+			return resolve(false);
+		});
+});
 
 const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
 	if (!resolve) resolve = res;
@@ -72,8 +104,7 @@ const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
 			return count < skipThreshold
 				? resolve(true)
 				: (() => {
-					const REFRESH_INTERVAL = 30000;
-					logger.info(`In progress job count (${count}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL} ms to re-check the job count before scheduling the next batch.`);
+					logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
 					intervalID = setInterval(
 						waitForJobCountToFallBelowThreshold.bind(null, resolve),
 						REFRESH_INTERVAL,
@@ -90,14 +121,14 @@ const scheduleBlocksIndexing = async (heights) => {
 	blockHeights.sort((h1, h2) => h1 - h2); // sort heights in ascending order
 
 	// Schedule indexing in batches when the list is too long to avoid OOM
-	const MAX_BATCH_SIZE = 20000;
+	const MAX_BATCH_SIZE = 15000;
 	const numBatches = Math.ceil(blockHeights.length / MAX_BATCH_SIZE);
 	if (numBatches > 1) logger.info(`Scheduling the blocks indexing in ${numBatches} smaller batches.`);
 
 	for (let i = 0; i < numBatches; i++) {
 		/* eslint-disable no-await-in-loop */
 
-		logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
+		if (numBatches > 1) logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
 		const blockHeightsBatch = blockHeights.slice(i * MAX_BATCH_SIZE, (i + 1) * MAX_BATCH_SIZE);
 
 		// eslint-disable-next-line no-restricted-syntax
@@ -107,7 +138,7 @@ const scheduleBlocksIndexing = async (heights) => {
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
 
-		logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
+		if (numBatches > 1) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
 		await waitForJobCountToFallBelowThreshold();
 		/* eslint-enable no-await-in-loop */
 	}
@@ -133,6 +164,8 @@ const indexGenesisBlock = async () => {
 	logger.debug('Scheduling genesis block indexing.');
 	await scheduleBlocksIndexing(genesisHeight);
 	logger.info('Finished scheduling genesis block indexing.');
+
+	await waitForGenesisBlockIndexing();
 };
 
 const initIndexingScheduler = async () => {
@@ -222,7 +255,7 @@ const init = async () => {
 		await initIndexingScheduler();
 		await initEventsScheduler();
 	} catch (err) {
-		logger.error(`Unable to initialize coordinator due to: ${err.message}`);
+		logger.error(`Unable to initialize coordinator due to: ${err.message}.`);
 		logger.trace(err.stack);
 	}
 };

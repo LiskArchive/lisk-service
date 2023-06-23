@@ -484,12 +484,12 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 			const missingBlocksQueryStatement = `
 				SELECT
-				(SELECT COALESCE(MAX(b0.height), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
-				(b1.height - 1) AS 'to'
+					(SELECT COALESCE(MAX(b0.height), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+					(b1.height - 1) AS 'to'
 				FROM blocks b1
 				WHERE b1.height BETWEEN ${batchStartHeight} + 1 AND ${batchEndHeight}
-				AND b1.height != ${batchEndHeight}
-				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+					AND b1.height != ${batchEndHeight}
+					AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 			`;
 
 			logger.trace(`Checking for missing blocks between heights: ${batchStartHeight} - ${batchEndHeight}.`);
@@ -528,6 +528,16 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
+const isGenesisBlockIndexed = async () => {
+	const blocksTable = await getBlocksTable();
+	const [{ height } = {}] = await blocksTable.find(
+		{ height: await getGenesisHeight(), limit: 1 },
+		['height'],
+	);
+
+	return height !== undefined;
+};
+
 module.exports = {
 	indexNewBlock,
 	addBlockToQueue,
@@ -536,4 +546,5 @@ module.exports = {
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,
+	isGenesisBlockIndexed,
 };
