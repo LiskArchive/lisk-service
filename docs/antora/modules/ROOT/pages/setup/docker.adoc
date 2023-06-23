@@ -110,9 +110,15 @@ Install https://brew.sh/[Brew] by following https://brew.sh/[the most recent ins
 
 If you already have Brew installed, ensure it is working and is the latest version.
 
+.Update current brew installation
 [source,bash]
 ----
 brew update
+----
+
+.Verify the brew installation
+[source,bash]
+----
 brew doctor
 ----
 
@@ -142,7 +148,6 @@ MacOS::
 +
 --
 . Please refer to {url_docker_install_mac}[Docker installation for Mac^]. Please note that Docker for Mac already includes Docker Compose.
-. Install `make` using {url_xcode}[XCode^].
 --
 ====
 
@@ -242,6 +247,6 @@ You can stop Lisk Service again with the following command:
 make down
 ----
 
-More commands about how to manage Lisk Service are described on the xref:{url_management}[Docker commands] page.
+// More commands about how to manage Lisk Service are described on the xref:{url_management}[Docker commands] page.
 
 // TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
