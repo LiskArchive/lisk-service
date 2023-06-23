@@ -22,6 +22,8 @@ npm ci # install required Node.js dependencies
 
 To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
+> Note: Interval takes priority over schedule and must be greater than 0 to be valid for all moleculer job configurations.
+
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
@@ -29,6 +31,12 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_EXPORT_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
 - `CACHE_PURGE_INTERVAL`: Job interval to cleanup cache. By default it is set to 0.
 - `CACHE_PURGE_SCHEDULE`: Job schedule to cleanup cache. By default it is set to run once a day at 4:45.
+- `EXPORT_S3_ENDPOINT`: URL of the permanent cache storage (Redis).
+- `EXPORT_S3_ACCESS_KEY`: Access key for amazon S3 bucket.
+- `EXPORT_S3_SECRET_KEY`: Secret key for amazon S3 bucket.
+- `EXPORT_S3_SESSION_TOKEN`: Session token for amazon S3 bucket.
+- `EXPORT_S3_REGION`: Region where amazon S3 bucket is hosted.
+- `EXPORT_S3_BUCKET_NAME`: Amazon S3 bucket name.
 
 ## Management
 

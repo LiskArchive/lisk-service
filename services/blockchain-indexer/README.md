@@ -29,6 +29,8 @@ npm ci # install required Node.js dependencies
 
 To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
+> Note: Interval takes priority over schedule and must be greater than 0 to be valid for all moleculer job configurations.
+
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis).
