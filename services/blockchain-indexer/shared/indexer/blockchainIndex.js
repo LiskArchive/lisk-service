@@ -85,16 +85,17 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
+let lastRescheduledBlockHeightWithPriority = -1;
+
 const indexBlock = async job => {
 	const { block } = job.data;
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
-	logger.info(block.height);
-
 	const blocksTable = await getBlocksTable();
 
-	// Check if previous block is indexed, index previous block if not indexed
-	if (block.height !== await getGenesisHeight()) {
+	// Check if the previous blocks are indexed, if not schedule them with priority
+	const genesisHeight = await getGenesisHeight();
+	if (block.height !== genesisHeight) {
 		const [lastIndexedBlock = {}] = await blocksTable.find(
 			{
 				propBetweens: [{
@@ -107,27 +108,38 @@ const indexBlock = async job => {
 			['height', 'isFinal'],
 		);
 
+		const {
+			height: lastIndexedHeight,
+			isFinal: isLastIndexedHeightFinal,
+		} = lastIndexedBlock;
+
 		// Skip the indexing process if the last indexed block's height is
 		// higher than or equal to current block's height and is already finalized
-		if (block.height <= lastIndexedBlock.height && lastIndexedBlock.isFinal) {
+		if (block.height <= lastIndexedHeight && isLastIndexedHeightFinal) {
+			logger.trace(`Skipping block indexing at height ${block.height}. Last final block indexed is ${lastIndexedHeight}.`);
 			return;
 		}
 
-		const heightsToIndex = range(
-			(lastIndexedBlock.height || await getGenesisHeight()) + 1,
-			block.height + 1, // '+ 1' as 'to' is non-inclusive
-			1,
-		);
-
-		if (heightsToIndex.length > 1) {
-			await BluebirdPromise.map(
-				heightsToIndex,
-				// eslint-disable-next-line no-use-before-define
-				async (height) => addBlockToQueue(height, true),
-				{ concurrency: 1 },
+		if (block.height >= lastRescheduledBlockHeightWithPriority) {
+			const heightsToIndex = range(
+				Math.max((lastIndexedHeight || genesisHeight), lastRescheduledBlockHeightWithPriority) + 1,
+				block.height + 1, // '+ 1' as 'to' is non-inclusive
+				1,
 			);
 
-			return;
+			if (heightsToIndex.length > 1) {
+				logger.trace(`Adding ${heightsToIndex.length} blocks. Current block height: ${block.height}. Scheduled blocks between heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)}.`);
+				await BluebirdPromise.map(
+					heightsToIndex,
+					// eslint-disable-next-line no-use-before-define
+					async (height) => addBlockToQueue(height, true),
+					{ concurrency: 1 },
+				);
+
+				lastRescheduledBlockHeightWithPriority = Math.max(...heightsToIndex);
+
+				return;
+			}
 		}
 	}
 

@@ -29,9 +29,7 @@ module.exports = [
 		controller: async () => {
 			logger.debug('Schedule missing blocks indexing...');
 			try {
-				// TODO: Do not schedule if the queue has jobs more than a specified threshold
 				await scheduleMissingBlocksIndexing();
-				logger.info('Successfully scheduled missing blocks indexing.');
 			} catch (err) {
 				logger.warn(`Failed to schedule missing blocks indexing due to: ${err.message}.`);
 				logger.trace(err.stack);
