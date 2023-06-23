@@ -55,11 +55,6 @@ describe('Test transaction fees estimates', () => {
 	});
 
 	describe('Test transaction fees estimate', () => {
-		beforeEach(() => {
-			// jest.resetAllMocks();
-			// jest.resetModules();
-		});
-
 		const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
 		const minFee = 150000;
 		const size = 150;

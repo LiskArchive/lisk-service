@@ -23,12 +23,21 @@ const config = require('../config');
 LoggerConfig(config.log);
 
 const { getPosConstants } = require('./dataService/business/pos/constants');
+const status = require('./indexer/indexStatus');
+const processor = require('./processor');
 
 const logger = Logger();
 
 const init = async () => {
 	try {
 		await getPosConstants();
+
+		// Init database
+		await status.init();
+
+		if (config.operations.isIndexingModeEnabled) {
+			await processor.init();
+		}
 	} catch (error) {
 		const errorMsg = Array.isArray(error)
 			? error.map(e => e.message).join('\n')

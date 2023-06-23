@@ -113,15 +113,6 @@ initDatabase()
 			logger.info(`Service started ${packageJson.name}.`);
 
 			await init();
-
-			// Init database
-			const status = require('./shared/indexer/indexStatus');
-			await status.init();
-
-			if (config.operations.isIndexingModeEnabled) {
-				const processor = require('./shared/processor');
-				await processor.init();
-			}
 		}).catch(reportErrorAndExitProcess);
 	})
 	.catch(reportErrorAndExitProcess);

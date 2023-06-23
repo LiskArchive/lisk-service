@@ -13,12 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger, LoggerConfig } = require('lisk-service-framework');
 const { requestConnector } = require('../../../utils/request');
+const config = require('../../../../config');
+
+LoggerConfig(config.log);
+const logger = Logger();
 
 let moduleConstants;
 
 const getPosConstants = async () => {
-	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPosConstants');
+	try {
+		if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPosConstants');
+	} catch (err) {
+		logger.error(`Unable to load pos constants from connector. Error: ${err.message}`);
+		throw new Error(`Unable to load pos constants from connector. Error: ${err.message}`);
+	}
 
 	return {
 		data: moduleConstants,
