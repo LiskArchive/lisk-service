@@ -110,7 +110,11 @@ module.exports = {
 					}
 				}
 				for (const eventName in handlers) {
-					socket.on(eventName, handlers[eventName]);
+					// eslint-disable-next-line prefer-arrow-callback
+					socket.on(eventName, async function (request, respond) {
+						const boundedHandler = handlers[eventName].bind(this);
+						await boundedHandler(request, respond, socket, eventName);
+					});
 				}
 			});
 		}
@@ -399,7 +403,7 @@ function translateHttpToRpcCode(code) {
 
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
-	return async function (requests, respond) {
+	return async function (requests, respond, socket, eventName) {
 		if (config.websocket.enableRateLimit) await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
@@ -423,7 +427,9 @@ function makeHandler(svc, handlerItem) {
 				}
 				const res = await svc.actions.call({ socket: this, action, params: jsonRpcInput, handlerItem });
 				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
-				return addJsonRpcEnvelope(id, res);
+
+				const output = addJsonRpcEnvelope(id, res);
+				respond(output);
 			} catch (err) {
 				if (svc.settings.log4XXResponses || Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
 					svc.logger.error('   Request error!', err.name, ':', err.message, '\n', err.stack, '\nData:', err.data);
@@ -447,7 +453,7 @@ function makeHandler(svc, handlerItem) {
 		}
 
 		try {
-			const responses = await BluebirdPromise.map(
+			const data = await BluebirdPromise.map(
 				requests,
 				async (request) => {
 					const id = request.id || (requests.indexOf(request)) + 1;
@@ -461,8 +467,12 @@ function makeHandler(svc, handlerItem) {
 				{ concurrency: MULTI_REQUEST_CONCURRENCY },
 			);
 
-			if (singleResponse) respond(responses[0]);
-			else respond(responses);
+			let response = null;
+			if (singleResponse) [response] = data;
+			else response = data;
+
+			if (respond) respond(response);
+			else socket.emit('request', response);
 		} catch (err) {
 			svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`), respond);
 		}
