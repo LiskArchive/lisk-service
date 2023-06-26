@@ -22,21 +22,22 @@ npm ci # install required Node.js dependencies
 
 To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
-> Note: Interval takes priority over schedule and must be greater than 0 to be valid for all moleculer job configurations.
-
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `SERVICE_EXPORT_REDIS`: URL of the permanent cache storage (Redis).
 - `SERVICE_EXPORT_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
-- `JOB_INTERVAL_CACHE_PURGE`: Job interval to cleanup cache. By default it is set to 0.
-- `JOB_SCHEDULE_CACHE_PURGE`: Job schedule to cleanup cache. By default it is set to run once a day at 4:45.
-- `EXPORT_S3_ENDPOINT`: URL of the permanent cache storage (Redis).
-- `EXPORT_S3_ACCESS_KEY`: Access key for amazon S3 bucket.
-- `EXPORT_S3_SECRET_KEY`: Secret key for amazon S3 bucket.
-- `EXPORT_S3_SESSION_TOKEN`: Session token for amazon S3 bucket.
-- `EXPORT_S3_REGION`: Region where amazon S3 bucket is hosted.
-- `EXPORT_S3_BUCKET_NAME`: Amazon S3 bucket name.
+- `JOB_INTERVAL_CACHE_PURGE`: Job run interval to cleanup cache. By default, it is set to 0.
+- `JOB_SCHEDULE_CACHE_PURGE`: Job run cron schedule to cleanup cache. By default, it is set to run once a day at 4:45am (`45 4 * * *`).
+- `EXPORT_S3_ENDPOINT`: Amazon S3 bucket endpoint.
+- `EXPORT_S3_ACCESS_KEY`: Amazon S3 bucket access key for the specified endpoint.
+- `EXPORT_S3_SECRET_KEY`: Amazon S3 bucket secret key.
+- `EXPORT_S3_SESSION_TOKEN`: Amazon S3 bucket session token.
+- `EXPORT_S3_REGION`: Region where Amazon S3 bucket is hosted. Optional.
+- `EXPORT_S3_BUCKET_NAME`: Amazon S3 bucket name. Optional.
+
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
+> **Note**: When EXPORT_S3_* environment variables are not specified, the local filesystem is used.
 
 ## Management
 

@@ -24,8 +24,6 @@ npm ci # install required Node.js dependencies
 
 To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
-> Note: Interval takes priority over schedule and must be greater than 0 to be valid for all moleculer job configurations.
-
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
@@ -33,10 +31,13 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_STATISTICS_MYSQL_READ_REPLICA`: Connection string of the (read only) replicated MySQL instance that the microservice connects to.
 - `SERVICE_STATISTICS_REDIS`: URL of the cache storage (Redis).
 - `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`: The number of days for which the transaction statistics need to be built in retrospect to the application init.
-- `JOB_INTERVAL_REFRESH_TRANSACTION_STATS`: Job interval to refresh transaction statistics. By default it is set to 0.
-- `JOB_SCHEDULE_REFRESH_TRANSACTION_STATS`: Job schedule to refresh transaction statistics. By default it is set to run every 30 minutes.
-- `JOB_INTERVAL_VERIFY_TRANSACTION_STATS`: Job interval to verify if transactiom statistics has been build properly. By default it is set to 0.
-- `JOB_SCHEDULE_VERIFY_TRANSACTION_STATS`: Job schedule to verify if transactiom statistics has been build properly. By default it is set to run every 3 hours at the 15th minute.
+- `JOB_INTERVAL_REFRESH_TRANSACTION_STATS`: Job run interval to refresh transaction statistics. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_TRANSACTION_STATS`: Job run cron schedule to refresh transaction statistics. By default, it is set to run every 30th minute (`*/30 * * * *`).
+- `JOB_INTERVAL_VERIFY_TRANSACTION_STATS`: Job run interval to verify if transaction statistics has been build properly. By default, it is set to 0.
+- `JOB_SCHEDULE_VERIFY_TRANSACTION_STATS`: Job run cron schedule to verify if transaction statistics has been build properly. By default, it is set to run every 3rd hour at the 15th minute (`15 */3 * * *`).
+
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
+
 ## Management
 
 ### Start
