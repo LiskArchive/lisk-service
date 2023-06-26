@@ -1,4 +1,5 @@
 * Setup
+** xref:setup/docker.adoc[]
 ** xref:setup/source.adoc[]
 
 * xref:configuration/index.adoc[Configuration]
