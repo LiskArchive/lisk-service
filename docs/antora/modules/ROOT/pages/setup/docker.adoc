@@ -42,38 +42,6 @@ It is recommended to set up a blockchain node first, before setting up Lisk Serv
 * Please make sure to set `system.keepEventsForHeights: -1` in the node config before synchronizing the node with the network.
 ====
 
-// === Setting up Lisk Core
-
-// Lisk Service is installed in addition to a Lisk blockchain application such as Lisk Core, in order to provide enriched network data for third-party services.
-
-// The first step is therefore to install Lisk Core.
-
-// It is recommended to use NPM to conveniently install Lisk Core through the command line:
-
-// [source,bash]
-// ----
-// npm install --global --production lisk-core
-// ----
-
-// Check out the xref:{url_core_setup_npm}[Lisk Core NPM setup] guide for more information on how to install Lisk Core on your machine.
-
-// === Configuring Lisk Core
-
-// Use the Lisk Core CLI to start Lisk Core with the desired configurations.
-
-// * The `--network` flag determines the blockchain network Lisk Core connects to.
-// * `--api-ws` enables the WebSocket API of the node, if not already enabled within the config.json file.
-// * `--api-ws-host=0.0.0.0` allows remote servers to connect to the Lisk Core WS API.
-// If this option is not set, it defaults to `127.0.0.1`.
-// * `--api-ws-port=7887` the port for the WebSocket API.
-
-// [source,bash]
-// ----
-// lisk-core start --network mainnet --api-ws --api-ws-host=0.0.0.0 --api-ws-port=7887
-// ----
-
-// To connect to a different network, replace `mainnet` with either `testnet` or `devnet`.
-
 == Setting up Lisk Service
 
 [IMPORTANT]
@@ -207,7 +175,6 @@ In the next step, open `.env` to set the required environment variables.
 ----
 vim .env
 ----
-
 
 ..env
 [source,bash]
