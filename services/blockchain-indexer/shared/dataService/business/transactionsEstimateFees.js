@@ -149,20 +149,28 @@ const calcAccountInitializationFees = async (transaction) => {
 
 		if (appMetadataResponse.data.length) {
 			const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
-
-			const { data: accountExistsResponse } = await HTTP
-				.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
-			const { data: { isExists } } = accountExistsResponse;
-
-			// Account already exists, no extra fee necessary
-			if (isExists) return { tokenID, amount: BigInt('0') };
-
 			const { data: tokenConstantsResponse } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
 			const { data: { extraCommandFees } } = tokenConstantsResponse;
 
+			let amount = BigInt('0');
+
+			// Check if escrow account exists
+			const { data: { isExists: escrowAccountExists } } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
+			if (!escrowAccountExists) {
+				amount = BigInt(amount) + BigInt(extraCommandFees.escrowAccountInitializationFee);
+			}
+
+			// Check if user account exists
+			const { data: accountExistsResponse } = await HTTP
+				.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
+			const { data: { isExists: userAccountExists } } = accountExistsResponse;
+			if (!userAccountExists) {
+				amount = BigInt(amount) + BigInt(extraCommandFees.userAccountInitializationFee);
+			}
+
 			return {
 				tokenID,
-				amount: extraCommandFees.userAccountInitializationFee,
+				amount,
 			};
 		}
 		throw new ValidationException(`Application off-chain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
@@ -199,7 +207,7 @@ const estimateTransactionFees = async params => {
 
 	const { minFee, size } = formattedTransaction;
 	const estimateMinFee = Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
-	const accountInitializationFee = await calcAccountInitializationFees(formattedTransaction);
+	const initializationFee = await calcAccountInitializationFees(formattedTransaction);
 
 	estimateTransactionFeesRes.data = {
 		transaction: {
@@ -225,10 +233,10 @@ const estimateTransactionFees = async params => {
 	const additionalFees = {};
 	if (params.transaction.module === MODULE.TOKEN
 		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
-		additionalFees.escrowAccountInitializationFee = accountInitializationFee.amount;
+		additionalFees.escrowAccountInitializationFee = initializationFee.amount;
 	} else if (params.transaction.module === MODULE.TOKEN
 		&& params.transaction.command === COMMAND.TRANSFER) {
-		additionalFees.accountInitializationFee = accountInitializationFee.amount;
+		additionalFees.accountInitializationFee = initializationFee.amount;
 	} else if (params.transaction.module === MODULE.POS
 		&& params.transaction.command === COMMAND.REGISTER_VALIDATOR) {
 		const posConstants = await getPosConstants();

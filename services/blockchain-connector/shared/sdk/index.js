@@ -53,6 +53,7 @@ const {
 
 const {
 	tokenHasUserAccount,
+	tokenHasEscrowAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
@@ -169,6 +170,7 @@ module.exports = {
 
 	// Tokens
 	tokenHasUserAccount,
+	tokenHasEscrowAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
