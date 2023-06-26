@@ -515,12 +515,8 @@ Request payload:
   "transaction":  {
     "module": "token",
     "command": "transferCrossChain",
-    "fee": "100000000",
     "nonce": "1",
     "senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
-    "signatures": [
-      "0f0af2be5a18593f76dbd7a5d43e29cb9cce7a056dc28f818cc2d75e671bde9e5cccaf924b2a86415dc49be14c8b6bbf348a8918521b7a028bea1d9637bec905"
-    ],
     "params": {
       "tokenID": "0000000000000000",
       "amount": "100000000000",

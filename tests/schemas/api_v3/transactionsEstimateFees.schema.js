@@ -47,14 +47,12 @@ const dataSchema = {
 	transaction: Joi.object(transactionSchema).required(),
 };
 
-const additionalFeesSchema = {
-	registrationFee: Joi.string().pattern(regex.DIGITS).required(),
-	accountInitializationFee: Joi.string().pattern(regex.DIGITS).required(),
-};
-
 const minimumFeeBreakdownSchema = {
 	byteFee: Joi.string().pattern(regex.DIGITS).required(),
-	additionalFees: Joi.object(additionalFeesSchema).optional(),
+	additionalFees: Joi.object().pattern(
+		Joi.string().required(),
+		Joi.string().pattern(regex.DIGITS).required(),
+	).optional(),
 };
 
 const feeBreakdownSchema = {
