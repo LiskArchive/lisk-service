@@ -39,6 +39,7 @@ It is recommended to set up a blockchain node first, before setting up Lisk Serv
 
 * To set up a Lisk-Core node, see any of our setup guides, such as xref:{url_core_setup_npm}[].
 * Alternatively, you can setup up a sidechain node to connect to Lisk Service.
+* Please make sure to set `system.keepEventsForHeights: -1` in the node config before synchronizing the node with the network.
 ====
 
 // === Setting up Lisk Core
@@ -179,7 +180,7 @@ git checkout v0.7.0
 
 To build Lisk Service from local files, first, navigate to the `lisk-service` repository on your system:
 
-.Working directory: /lisk-service/
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 make build
@@ -217,7 +218,7 @@ LISK_APP_WS=ws://host.docker.internal:7887
 
 The `example.env` assumes that the blockchain node e.g. Lisk Core node is running on the host machine, and not inside of a Docker container.
 
-When running a blockchain node inside of a Docker container, the following variable needs to refer to the container:
+When running a blockchain node inside of a Docker container, the following variable needs to refer to the container. For this to work, the container running the blockchain node and the Lisk Service Blockchain Connector container must share the same docker network:
 
 ..env
 [source,bash]
