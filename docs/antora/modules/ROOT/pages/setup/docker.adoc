@@ -233,7 +233,7 @@ TIP: For a complete list of supported environment variables check the xref:{url_
 
 Run the following command to start Lisk Service:
 
-.Working directory: /lisk-service/
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 make up
@@ -242,7 +242,7 @@ make up
 == Stopping Lisk Service
 You can stop Lisk Service again with the following command:
 
-.Working directory: /lisk-service/
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 make down
