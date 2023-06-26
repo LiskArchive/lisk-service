@@ -22,7 +22,7 @@ const config = require('../config');
 
 LoggerConfig(config.log);
 
-const { getPosConstants } = require('./dataService/business/pos/constants');
+const { getTokenConstants, getRewardConstants, getPosConstants } = require('./dataService');
 const indexStatus = require('./indexer/indexStatus');
 const processor = require('./processor');
 
@@ -30,9 +30,12 @@ const logger = Logger();
 
 const init = async () => {
 	try {
+		// Update the constants cache
 		await getPosConstants();
+		await getTokenConstants();
+		await getRewardConstants();
 
-		// Init database
+		// Init index status updates
 		await indexStatus.init();
 
 		if (config.operations.isIndexingModeEnabled) {
