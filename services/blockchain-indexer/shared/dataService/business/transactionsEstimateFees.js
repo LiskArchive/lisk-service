@@ -165,7 +165,7 @@ const calcAccountInitializationFees = async (transaction) => {
 				amount: extraCommandFees.userAccountInitializationFee,
 			};
 		}
-		throw new ValidationException(`Application offchain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
+		throw new ValidationException(`Application off-chain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
 	}
 
 	const { data: { isExists } } = await tokenHasUserAccount({
@@ -231,7 +231,7 @@ const estimateTransactionFees = async params => {
 	estimateTransactionFeesRes.meta = {
 		feeBreakdown: {
 			minimum: {
-				byteFee: feeEstimatePerByte.minFeePerByte,
+				byteFee: BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte),
 				additionalFees: {
 					registrationFee: posConstants.data.validatorRegistrationFee,
 					accountInitializationFee: transactionFeeEstimates.accountInitializationFee.amount,

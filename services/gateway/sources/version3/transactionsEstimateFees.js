@@ -43,10 +43,7 @@ module.exports = {
 			feeBreakdown: {
 				minimum: {
 					byteFee: '=,string',
-					additionalFees: {
-						registrationFee: '=,string',
-						accountInitializationFee: '=,string',
-					},
+					additionalFees: '=',
 				},
 			},
 		},

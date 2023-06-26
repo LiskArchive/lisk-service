@@ -26,8 +26,10 @@ const getPosConstants = async () => {
 	try {
 		if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPosConstants');
 	} catch (err) {
-		logger.error(`Unable to load pos constants from connector. Error: ${err.message}`);
-		throw new Error(`Unable to load pos constants from connector. Error: ${err.message}`);
+		const errMessage = `Unable to fetch the PoS constants from connector due to: ${err.message}.`;
+		logger.warn(errMessage);
+		logger.trace(err.stack);
+		throw new Error(errMessage);
 	}
 
 	return {

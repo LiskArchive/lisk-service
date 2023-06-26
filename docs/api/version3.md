@@ -512,24 +512,25 @@ Request payload:
 
 ```jsonc
 {
-  "transaction": {
+  "transaction":  {
     "module": "token",
-	"command": "transfer",
-	"fee": "100000000",
-	"nonce": "1",
-	"senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
-	"signatures": [
-		"c7fd1abf9a552fa9c91b4121c87ae2c97cb0fc0aecc87d0ee8b1aa742238eef4a6815ddba31e21144c9652a7bd5c05577ae1100eac34fba43da6fc4879b8f206"
-	],
-	"params": {
-		"amount": "100000000000",
-		"recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
-		"data": "",
-		"tokenID": "0000000000000000",
-        "messageFee": "10000000",
-        "messageFeeTokenID": "0000000000000000"
-	},
-	"id": "d96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c"
+    "command": "transferCrossChain",
+    "fee": "100000000",
+    "nonce": "1",
+    "senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
+    "signatures": [
+      "0f0af2be5a18593f76dbd7a5d43e29cb9cce7a056dc28f818cc2d75e671bde9e5cccaf924b2a86415dc49be14c8b6bbf348a8918521b7a028bea1d9637bec905"
+    ],
+    "params": {
+      "tokenID": "0000000000000000",
+      "amount": "100000000000",
+      "receivingChainID": "00000001",
+      "recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+      "data": "",
+      "messageFee": "10000000",
+      "messageFeeTokenID": "0000000000000000"
+    },
+    "id": "0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395"
   }
 }
 ```
@@ -543,7 +544,7 @@ Request payload:
     "data": {
         "transaction": {
             "fee": {
-                "tokenID": "0400000000000000",
+                "tokenID": "0000000000000000",
                 "minimum": "172000", // byteFee + all additionalFees
                 "priority": { // optional - available only when priority values differ
                     "low": "135000",
@@ -562,7 +563,7 @@ Request payload:
     "meta": {
         "feeBreakdown": {
             "minimum": {
-                "byteFee": "1000",
+                "byteFee": "135000",
                 "additionalFees": {
                     "registrationFee": "1000000000",
                     "accountInitializationFee": "5000000"
