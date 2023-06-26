@@ -86,10 +86,7 @@ const validateParams = async params => {
 	}
 
 	if (params.id) validatedParams.id = params.id;
-	if (params.address) {
-		validatedParams.senderAddress = params.address;
-		validatedParams.recipientAddress = params.address;
-	}
+	if (params.address) validatedParams.address = params.address;
 	if (params.senderAddress) validatedParams.senderAddress = params.senderAddress;
 	if (params.recipientAddress) validatedParams.recipientAddress = params.recipientAddress;
 	if (params.moduleCommand) validatedParams.moduleCommand = params.moduleCommand;
@@ -107,7 +104,7 @@ const getPendingTransactions = async params => {
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 
-	params = await validateParams(params);
+	const validatedParams = await validateParams(params);
 
 	const sortComparator = (sortParam) => {
 		const sortProp = sortParam.split(':')[0];
@@ -122,18 +119,21 @@ const getPendingTransactions = async params => {
 	if (pendingTransactionsList.length) {
 		// Filter according to the request params
 		const filteredPendingTxs = pendingTransactionsList.filter(transaction => (
-			(!params.id
-				|| transaction.id === params.id)
-			&& (!params.senderAddress
-				|| transaction.sender.address === params.senderAddress)
-			&& (!params.recipientAddress
-				|| transaction.params.recipientAddress === params.recipientAddress)
-			&& (!params.moduleCommand
-				|| transaction.moduleCommand === params.moduleCommand)
+			(!validatedParams.id
+				|| transaction.id === validatedParams.id)
+			&& (!validatedParams.senderAddress
+				|| transaction.sender.address === validatedParams.senderAddress)
+			&& (!validatedParams.recipientAddress
+				|| transaction.params.recipientAddress === validatedParams.recipientAddress)
+			&& (!validatedParams.address
+				|| transaction.sender.address === validatedParams.address
+				|| transaction.params.recipientAddress === validatedParams.address)
+			&& (!validatedParams.moduleCommand
+				|| transaction.moduleCommand === validatedParams.moduleCommand)
 		));
 
 		pendingTransactions.data = filteredPendingTxs
-			.sort(sortComparator(params.sort))
+			.sort(sortComparator(validatedParams.sort))
 			.slice(offset, offset + limit)
 			.map(transaction => {
 				// Set the 'executionStatus'
