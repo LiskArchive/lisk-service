@@ -195,21 +195,17 @@ const estimateTransactionFees = async params => {
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
 	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
-
-	const { minFee, size } = formattedTransaction;
-
 	const feeEstimatePerByte = await requestFeeEstimator('estimates');
 
-	const transactionFeeEstimates = {
-		minFee: Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
-		accountInitializationFee: await calcAccountInitializationFees(formattedTransaction),
-	};
+	const { minFee, size } = formattedTransaction;
+	const estimateMinFee = Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
+	const accountInitializationFee = await calcAccountInitializationFees(formattedTransaction);
 
 	estimateTransactionFeesRes.data = {
 		transaction: {
 			fee: {
 				tokenID: feeEstimatePerByte.feeTokenID,
-				minimum: transactionFeeEstimates.minFee,
+				minimum: estimateMinFee,
 			},
 			params: {
 				messageFee: await calcMessageFee(formattedTransaction),
@@ -221,21 +217,29 @@ const estimateTransactionFees = async params => {
 	if (feeEstimatePerByte.low !== 0 || feeEstimatePerByte.med !== 0
 		|| feeEstimatePerByte.high !== 0) {
 		const dynamicFeeEstimates = calcDynamicFeeEstimates(
-			feeEstimatePerByte, transactionFeeEstimates.minFee, size);
+			feeEstimatePerByte, estimateMinFee, size);
 
 		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
 	}
 
-	const posConstants = await getPosConstants();
+	const additionalFees = {};
+	if (params.transaction.module === MODULE.TOKEN
+		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+		additionalFees.escrowAccountInitializationFee = accountInitializationFee.amount;
+	} else if (params.transaction.module === MODULE.TOKEN
+		&& params.transaction.command === COMMAND.TRANSFER) {
+		additionalFees.accountInitializationFee = accountInitializationFee.amount;
+	} else if (params.transaction.module === MODULE.POS
+		&& params.transaction.command === COMMAND.REGISTER_VALIDATOR) {
+		const posConstants = await getPosConstants();
+		additionalFees.registrationFee = posConstants.data.validatorRegistrationFee;
+	}
 
 	estimateTransactionFeesRes.meta = {
 		feeBreakdown: {
 			minimum: {
 				byteFee: BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte),
-				additionalFees: {
-					registrationFee: posConstants.data.validatorRegistrationFee,
-					accountInitializationFee: transactionFeeEstimates.accountInitializationFee.amount,
-				},
+				additionalFees,
 			},
 		},
 	};
