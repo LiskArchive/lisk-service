@@ -20,11 +20,14 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const {
+	Logger,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
+
+const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -33,16 +36,20 @@ const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPO
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
 const updateAccountPublicKey = async (publicKey) => {
-	const accountsTable = await getAccountsTable();
-	await accountsTable.upsert({
-		address: getLisk32AddressFromPublicKey(publicKey),
-		publicKey,
-	});
+	try {
+		const accountsTable = await getAccountsTable();
+		await accountsTable.upsert({
+			address: getLisk32AddressFromPublicKey(publicKey),
+			publicKey,
+		});
+	} catch (err) {
+		logger.error(`Error while updating account public key. Error: ${err.message}`);
+	}
+	
 };
 
 const updateAccountInfo = async (params) => {
 	const accountInfo = {};
-
 	Object.keys(accountsTableSchema.schema).forEach(columnName => {
 		if (columnName in params) {
 			accountInfo[columnName] = params[columnName];

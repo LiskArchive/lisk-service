@@ -40,23 +40,28 @@ const COMMAND_NAME = 'updateGeneratorKey';
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
-	const accountsTable = await getAccountsTable();
-	const validatorsTable = await getValidatorsTable();
-
-	const validator = {
-		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
-		publicKey: tx.senderPublicKey,
-		isValidator: true,
-		generatorKey: tx.params.generatorKey,
-	};
-
-	logger.trace(`Updating account index for the account with address ${validator.address}.`);
-	await accountsTable.upsert(validator, dbTrx);
-	logger.debug(`Updated account index for the account with address ${validator.address}.`);
-
-	logger.trace(`Indexing validator with address ${validator.address}.`);
-	await validatorsTable.upsert(validator, dbTrx);
-	logger.debug(`Indexed validator with address ${validator.address}.`);
+	try {
+		const accountsTable = await getAccountsTable();
+		const validatorsTable = await getValidatorsTable();
+	
+		const validator = {
+			address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+			publicKey: tx.senderPublicKey,
+			isValidator: true,
+			generatorKey: tx.params.generatorKey,
+		};
+	
+		logger.trace(`Updating account index for the account with address ${validator.address}.`);
+		await accountsTable.upsert(validator, dbTrx);
+		logger.debug(`Updated account index for the account with address ${validator.address}.`);
+	
+		logger.trace(`Indexing validator with address ${validator.address}.`);
+		await validatorsTable.upsert(validator, dbTrx);
+		logger.debug(`Indexed validator with address ${validator.address}.`);
+	} catch (err) {
+		logger.error(`Error while applying transaction while updating generator keys. Error: ${err.message}`);
+	}
+	
 };
 
 // eslint-disable-next-line no-unused-vars
