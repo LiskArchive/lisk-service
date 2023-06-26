@@ -261,7 +261,8 @@ const updateValidatorListEveryBlock = () => {
 			if (block && block.transactions && Array.isArray(block.transactions)) {
 				block.transactions.forEach(tx => {
 					if (tx.module === MODULE.POS) {
-						if (tx.command === COMMAND.REGISTER_VALIDATOR) {
+						if (tx.command === COMMAND.REGISTER_VALIDATOR
+							|| tx.command === COMMAND.CHANGE_COMMISSION) {
 							updatedValidatorAddresses
 								.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 						} else if (tx.command === COMMAND.STAKE) {
