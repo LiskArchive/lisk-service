@@ -563,13 +563,13 @@ Request payload:
                 }
             }
             "params": {
-				"messageFee": {
-					"ccmByteFee": "",
-					"additionalFees": {
-						"accountInitializationFee": "5000000",
-					}
-				}
-			}
+                "messageFee": {
+                    "ccmByteFee": "120000",
+                    "additionalFees": {
+                        "accountInitializationFee": "5000000",
+                    }
+                }
+            }
         }
     }
 }
