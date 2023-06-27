@@ -15,6 +15,10 @@
  */
 
 /* eslint-disable import/no-dynamic-require */
+const { resolve } = require('path');
+
+const mockFeeEstimatesFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/feeEstimates`);
+
 const { requestFeeEstimator } = require('../../../../../shared/utils/request');
 const { mockTxFeeEstimate } = require('../../constants/transactionEstimateFees');
 
@@ -51,7 +55,7 @@ describe('Fee estimates', () => {
 	});
 
 	it('should call requestFeeEstimator if payload is undefined', async () => {
-		const { getFeeEstimates, reloadFeeEstimates } = require('../../../../../shared/dataService/business/feeEstimates');
+		const { getFeeEstimates, reloadFeeEstimates } = require(mockFeeEstimatesFilePath);
 
 		await reloadFeeEstimates(undefined);
 
@@ -62,7 +66,7 @@ describe('Fee estimates', () => {
 	});
 
 	it('should assign payload to feeEstimates if payload is defined', async () => {
-		const { getFeeEstimates, reloadFeeEstimates } = require('../../../../../shared/dataService/business/feeEstimates');
+		const { getFeeEstimates, reloadFeeEstimates } = require(mockFeeEstimatesFilePath);
 
 		await reloadFeeEstimates(mockTxFeeEstimate);
 		const feeEstimates = await getFeeEstimates();

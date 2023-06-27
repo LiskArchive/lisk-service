@@ -522,7 +522,7 @@ Request payload:
       "amount": "100000000000",
       "receivingChainID": "00000001",
       "recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
-      "data": "",
+      "data": ""
     },
     "id": "0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395"
   }
