@@ -14,13 +14,10 @@
  *
  */
 const {
-	LoggerConfig,
 	Logger,
 } = require('lisk-service-framework');
 
 const config = require('../config');
-
-LoggerConfig(config.log);
 
 const { getTokenConstants, getRewardConstants, getPosConstants } = require('./dataService');
 const indexStatus = require('./indexer/indexStatus');

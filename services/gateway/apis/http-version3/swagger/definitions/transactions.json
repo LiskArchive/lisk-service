@@ -660,7 +660,6 @@
 				"properties": {
 					"transaction": {
 						"type": "object",
-						"description": "Transaction object.",
 						"required": [
 							"fee"
 						],

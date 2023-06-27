@@ -44,7 +44,7 @@ jest.mock('lisk-service-framework', () => {
 	};
 });
 
-describe('POS constants', () => {
+describe('PoS constants', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 		jest.resetModules();
