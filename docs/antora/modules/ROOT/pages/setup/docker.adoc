@@ -20,13 +20,11 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :lisk-docs: ROOT::
 :url_index_usage: index.adoc#usage
 :url_setup: setup/index.adoc
-:url_core_setup_npm: master@lisk-core::setup/npm.adoc
+:url_core_setup_npm: v4@lisk-core::setup/npm.adoc
 :url_config: configuration/docker.adoc
 :url_management: management/docker.adoc
 :url_references_config: configuration/index.adoc
 :url_build_blockchain:  {lisk-docs}build-blockchain/create-blockchain-app.adoc
-
-:url_core_setup_binary: master@lisk-core::setup/binary.adoc
 
 How to set up Lisk Service and connect it to a local Lisk Core node.
 
