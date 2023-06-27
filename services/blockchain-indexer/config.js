@@ -175,7 +175,7 @@ config.job = {
 		schedule: process.env.JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE || '*/15 * * * *',
 	},
 	deleteFinalisedCCUMetadata: {
-		interval: process.env.JOB_INTERVAL_DELETE_FINALISED_CCU_METADATA || 0,
+		interval: process.env.JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA || 0,
 		schedule: process.env.JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA || '0 2 * * *',
 	},
 };

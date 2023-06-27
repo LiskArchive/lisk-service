@@ -28,7 +28,7 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_EXPORT_REDIS`: URL of the permanent cache storage (Redis).
 - `SERVICE_EXPORT_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
 - `JOB_INTERVAL_CACHE_PURGE`: Job run interval to cleanup cache. By default, it is set to 0.
-- `JOB_SCHEDULE_CACHE_PURGE`: Job run cron schedule to cleanup cache. By default, it is set to run once a day at 4:45am (`45 4 * * *`).
+- `JOB_SCHEDULE_CACHE_PURGE`: Job run cron schedule to cleanup cache. By default, it is set to run daily at 04:45 am (`45 4 * * *`).
 - `EXPORT_S3_ENDPOINT`: Amazon S3 bucket endpoint.
 - `EXPORT_S3_ACCESS_KEY`: Amazon S3 bucket access key for the specified endpoint.
 - `EXPORT_S3_SECRET_KEY`: Amazon S3 bucket secret key.

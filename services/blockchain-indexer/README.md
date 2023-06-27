@@ -45,17 +45,17 @@ A list of the most commonly used environment variables is presented below:
 - `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`: Job run cron schedule to delete serialized events. By default, it is set to run every 5th minute (`*/5 * * * *`).
 - `JOB_INTERVAL_REFRESH_VALIDATORS`: Job run interval to refresh validators cache. By default, it is set to 0.
 - `JOB_SCHEDULE_REFRESH_VALIDATORS`: Job run cron schedule to refresh validators cache. By default, it is set to run every 5th minute (`*/5 * * * *`).
-- `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`: Job run interval to validate validators rank. By default, it is set to 0.
-- `JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK`: Job run cron schedule to validate validators rank. By default, it is set to run every 15th minute from 4 minutes past the hour (`4-59/15 * * * *`).
+- `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`: Job run interval to validate the rank for all the validators. By default, it is set to 0.
+- `JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK`: Job run cron schedule to validate the rank for all the validators. By default, it is set to run every 15 minutes, and starts at 4 minutes past the hour (`4-59/15 * * * *`).
 - `JOB_INTERVAL_REFRESH_INDEX_STATUS`: Job run interval to refresh indexing status. By default, it is set to run every 10 seconds.
 - `JOB_SCHEDULE_REFRESH_INDEX_STATUS`: Job run cron schedule to refresh indexing status. By default, it is set to ''.
 - `JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS`: Job run interval to refresh blockchain application statistics. By default, it is set to 0.
-- `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`: Job run cron schedule to refresh blockchain application statistics. By default, it is set to run every 15th minute (`4-59/15 * * * *`).
+- `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`: Job run cron schedule to refresh blockchain application statistics. By default, it is set to run every 15th minute (`*/15 * * * *`).
 - `JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE`: Job run interval to refresh account knowledge. By default, it is set to 0.
 - `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`: Job run cron schedule to refresh account knowledge. By default, it is set to run every 15th minute (`*/15 * * * *`).
-- `JOB_INTERVAL_DELETE_FINALISED_CCU_METADATA`: Job run interval to delete finalized CCU metadata. By default, it is set to 0.
-- `JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA`: Job run cron schedule to delete finalized CCU metadata. By default, it is set to run once a day at 2am (`0 2 * * *`).
-- `ESTIMATES_BUFFER_BYTES_LENGTH`: Transaction buffer bytes to consider when estimating the transaction fees. By default, we set it to 6.
+- `JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA`: Job run interval to delete finalized CCU metadata. By default, it is set to 0.
+- `JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA`: Job run cron schedule to delete finalized CCU metadata. By default, it is set to run once a day at 02:00 am (`0 2 * * *`).
+- `ESTIMATES_BUFFER_BYTES_LENGTH`: Transaction buffer bytes to consider when estimating the transaction fees. By default, it is set to 6.
 
 > **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
