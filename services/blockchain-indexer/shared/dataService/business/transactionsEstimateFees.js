@@ -156,7 +156,7 @@ const calcAccountInitializationFees = async (transaction) => {
 			let amount = BigInt('0');
 
 			// Check if escrow account exists
-			const { data: { isExists: escrowAccountExists } } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
+			const { exists: escrowAccountExists } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
 			if (!escrowAccountExists) {
 				amount = BigInt(amount) + BigInt(extraCommandFees.escrowAccountInitializationFee);
 			}
@@ -171,7 +171,7 @@ const calcAccountInitializationFees = async (transaction) => {
 
 			return {
 				tokenID,
-				amount,
+				amount: amount.toString(),
 			};
 		}
 		throw new ValidationException(`Application off-chain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
