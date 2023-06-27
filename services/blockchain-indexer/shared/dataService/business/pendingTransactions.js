@@ -153,4 +153,7 @@ const getPendingTransactions = async params => {
 module.exports = {
 	getPendingTransactions,
 	loadAllPendingTransactions,
+
+	// For unit test
+	validateParams,
 };
