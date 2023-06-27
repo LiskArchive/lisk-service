@@ -45,6 +45,12 @@ module.exports = {
 					byteFee: '=,string',
 					additionalFees: '=',
 				},
+				params: {
+					messageFee: {
+						ccmByteFee: '=,string',
+						additionalFees: '=',
+					},
+				},
 			},
 		},
 	},

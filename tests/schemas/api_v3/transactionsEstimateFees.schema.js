@@ -55,8 +55,21 @@ const minimumFeeBreakdownSchema = {
 	).optional(),
 };
 
+const metaMessageFeeSchema = {
+	ccmByteFee: Joi.string().pattern(regex.DIGITS).required(),
+	additionalFees: Joi.object().pattern(
+		Joi.string().required(),
+		Joi.string().pattern(regex.DIGITS).required(),
+	).optional(),
+};
+
+const metaParamsSchema = {
+	messageFee: Joi.object(metaMessageFeeSchema).required(),
+};
+
 const feeBreakdownSchema = {
 	minimum: Joi.object(minimumFeeBreakdownSchema).required(),
+	params: Joi.object(metaParamsSchema).optional(),
 };
 
 const metaSchema = {

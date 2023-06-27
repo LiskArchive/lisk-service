@@ -113,9 +113,9 @@ const mockTransaction = async (_transaction, authAccountInfo) => {
 	return { ...mockedTransaction, params: mockedTransactionParams };
 };
 
-const calcMessageFee = async (transaction) => {
+const getCcmBuffer = async (transaction) => {
 	if (transaction.module !== MODULE.TOKEN
-		|| transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return {};
+		|| transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return null;
 
 	// TODO: Add error handling
 	const { data: { events } } = await dryRunTransactions({ transaction, skipVerify: true });
@@ -125,7 +125,12 @@ const calcMessageFee = async (transaction) => {
 	const { ccm } = ccmSendSuccess.data;
 	const ccmEncoded = await requestConnector('encodeCCM', { ccm });
 	const ccmBuffer = Buffer.from(ccmEncoded, 'hex');
-	const channelInfo = await resolveChannelInfo(transaction.params.receivingChainID);
+
+	return ccmBuffer;
+};
+
+const calcMessageFee = async (receivingChainID, ccmBuffer) => {
+	const channelInfo = await resolveChannelInfo(receivingChainID);
 
 	return {
 		tokenID: channelInfo.messageFeeTokenID,
@@ -153,12 +158,13 @@ const calcAccountInitializationFees = async (transaction) => {
 			const { data: tokenConstantsResponse } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
 			const { data: { extraCommandFees } } = tokenConstantsResponse;
 
-			let amount = BigInt('0');
+			let escrowAccountInitializationFee = '0';
+			let accountInitializationFee = '0';
 
 			// Check if escrow account exists
 			const { exists: escrowAccountExists } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
 			if (!escrowAccountExists) {
-				amount = BigInt(amount) + BigInt(extraCommandFees.escrowAccountInitializationFee);
+				escrowAccountInitializationFee = extraCommandFees.escrowAccountInitializationFee;
 			}
 
 			// Check if user account exists
@@ -166,12 +172,13 @@ const calcAccountInitializationFees = async (transaction) => {
 				.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
 			const { data: { isExists: userAccountExists } } = accountExistsResponse;
 			if (!userAccountExists) {
-				amount = BigInt(amount) + BigInt(extraCommandFees.userAccountInitializationFee);
+				accountInitializationFee = extraCommandFees.userAccountInitializationFee;
 			}
 
 			return {
 				tokenID,
-				amount: amount.toString(),
+				accountInitializationFee,
+				escrowAccountInitializationFee,
 			};
 		}
 		throw new ValidationException(`Application off-chain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
@@ -183,21 +190,16 @@ const calcAccountInitializationFees = async (transaction) => {
 	});
 
 	// Account already exists, no extra fee necessary
-	if (isExists) return { tokenID, amount: BigInt('0') };
+	if (isExists) return { tokenID, accountInitializationFee: '0' };
 
 	const { data: { extraCommandFees } } = await getTokenConstants();
 	return {
 		tokenID,
-		amount: extraCommandFees.userAccountInitializationFee,
+		accountInitializationFee: extraCommandFees.userAccountInitializationFee,
 	};
 };
 
 const estimateTransactionFees = async params => {
-	const estimateTransactionFeesRes = {
-		data: {},
-		meta: {},
-	};
-
 	const { data: authAccountInfo } = await getAuthAccountInfo({
 		address: getLisk32AddressFromPublicKey(params.transaction.senderPublicKey),
 	});
@@ -210,19 +212,29 @@ const estimateTransactionFees = async params => {
 	const estimateMinFee = Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
 	const initializationFee = await calcAccountInitializationFees(formattedTransaction);
 
-	estimateTransactionFeesRes.data = {
-		transaction: {
-			fee: {
-				tokenID: feeEstimatePerByte.feeTokenID,
-				minimum: estimateMinFee,
+	const estimateTransactionFeesRes = {
+		data: {
+			transaction: {
+				fee: {
+					tokenID: feeEstimatePerByte.feeTokenID,
+					minimum: estimateMinFee,
+				},
+				params: {
+					messageFee: {},
+				},
 			},
-			params: {
-				messageFee: await calcMessageFee(formattedTransaction),
+		},
+		meta: {
+			feeBreakdown: {
+				minimum: {
+					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
+					additionalFees: {},
+				},
 			},
 		},
 	};
 
-	// Priority available only when fee values are not 0
+	// Add priority only when fee values are not 0
 	if (feeEstimatePerByte.low !== 0 || feeEstimatePerByte.med !== 0
 		|| feeEstimatePerByte.high !== 0) {
 		const dynamicFeeEstimates = calcDynamicFeeEstimates(
@@ -231,27 +243,38 @@ const estimateTransactionFees = async params => {
 		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
 	}
 
-	const additionalFees = {};
-	if (params.transaction.module === MODULE.TOKEN
-		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
-		additionalFees.escrowAccountInitializationFee = initializationFee.amount;
-	} else if (params.transaction.module === MODULE.TOKEN
-		&& params.transaction.command === COMMAND.TRANSFER) {
-		additionalFees.accountInitializationFee = initializationFee.amount;
-	} else if (params.transaction.module === MODULE.POS
-		&& params.transaction.command === COMMAND.REGISTER_VALIDATOR) {
-		const posConstants = await getPosConstants();
-		additionalFees.registrationFee = posConstants.data.validatorRegistrationFee;
-	}
+	/* eslint-disable max-len */
+	// Calculate additional fees based on type of transaction
+	if (params.transaction.module === MODULE.TOKEN && params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+		// Add escrow initialization fee
+		const escrowAccountInitializationFee = BigInt(initializationFee.escrowAccountInitializationFee) + BigInt(initializationFee.accountInitializationFee);
+		estimateTransactionFeesRes.meta.feeBreakdown.minimum.additionalFees.escrowAccountInitializationFee = escrowAccountInitializationFee.toString();
 
-	estimateTransactionFeesRes.meta = {
-		feeBreakdown: {
-			minimum: {
-				byteFee: BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte),
-				additionalFees,
+		// Calculate message fee
+		const ccmBuffer = await getCcmBuffer(params.transaction);
+		const messageFee = await calcMessageFee(params.transaction.params.receivingChainID, ccmBuffer);
+		estimateTransactionFeesRes.data.transaction.params.messageFee = messageFee.toString();
+
+		// Add params to meta
+		const ccmByteFee = BigInt(ccmBuffer.length + BUFFER_BYTES_LENGTH) * BigInt(size);
+		estimateTransactionFeesRes.meta.feeBreakdown = {
+			...estimateTransactionFeesRes.meta.feeBreakdown,
+			params: {
+				messageFee: {
+					ccmByteFee: ccmByteFee.toString(),
+					additionalFees: {
+						accountInitializationFee: initializationFee.accountInitializationFee,
+					},
+				},
 			},
-		},
-	};
+		};
+	} else if (params.transaction.module === MODULE.TOKEN && params.transaction.command === COMMAND.TRANSFER) {
+		estimateTransactionFeesRes.meta.feeBreakdown.minimum.additionalFees.accountInitializationFee = initializationFee.accountInitializationFee;
+	} else if (params.transaction.module === MODULE.POS && params.transaction.command === COMMAND.REGISTER_VALIDATOR) {
+		const posConstants = await getPosConstants();
+		estimateTransactionFeesRes.meta.feeBreakdown.minimum.additionalFees.registrationFee = posConstants.data.validatorRegistrationFee;
+	}
+	/* eslint-enable max-len */
 
 	return parseToJSONCompatObj(estimateTransactionFeesRes);
 };

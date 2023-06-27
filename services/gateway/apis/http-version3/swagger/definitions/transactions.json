@@ -765,6 +765,43 @@
 												"type": "string",
 												"example": "5000000",
 												"description": "The extra fee to be supplied for initializing a new user account."
+											},
+											"escrowInitializationFee": {
+												"type": "string",
+												"example": "10000000",
+												"description": "The extra fee to be supplied for initializing an escrow account."
+											}
+										}
+									}
+								}
+							},
+							"params": {
+								"type": "object",
+								"required": [
+									"messageFee"
+								],
+								"properties": {
+									"messageFee": {
+										"type": "object",
+										"required": [
+											"ccmByteFee"
+										],
+										"properties": {
+											"ccmByteFee": {
+												"type": "string",
+												"example": "135000",
+												"description": "The byte fee for the ccm transaction. This is the product of the ccm buffer size times the fee per byte as configured in the application's 'fee' module."
+											},
+											"additionalFees": {
+												"type": "object",
+												"required": [],
+												"properties": {
+													"accountInitializationFee": {
+														"type": "string",
+														"example": "5000000",
+														"description": "The extra fee to be supplied for initializing a new user account."
+													}
+												}
 											}
 										}
 									}

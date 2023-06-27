@@ -559,10 +559,17 @@ Request payload:
             "minimum": {
                 "byteFee": "135000",
                 "additionalFees": {
-                    "registrationFee": "1000000000",
-                    "accountInitializationFee": "5000000"
+                    "escrowInitializationFee": "5000000"
                 }
             }
+            "params": {
+				"messageFee": {
+					"ccmByteFee": "",
+					"additionalFees": {
+						"accountInitializationFee": "5000000",
+					}
+				}
+			}
         }
     }
 }
