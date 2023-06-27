@@ -29,6 +29,20 @@ A list of the most commonly used environment variables is presented below:
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `SERVICE_MARKET_REDIS`: URL of the cache storage (Redis).
 - `EXCHANGERATESAPI_IO_API_KEY`: Access key to fetch data from the exchangeratesapi.io API.
+- `SERVICE_MARKET_FIAT_CURRENCIES`: Supported fiat currencies.
+- `SERVICE_MARKET_TARGET_PAIRS`: Supported target pairs.
+- `JOB_INTERVAL_REFRESH_PRICES_BINANCE`: Job run interval to refresh prices from Binance. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_PRICES_BINANCE`: Job run cron schedule to refresh prices from Binance. By default, it is set to run every minute (`* * * * *`).
+- `JOB_INTERVAL_REFRESH_PRICES_BITTREX`: Job run interval to refresh prices from Bittrex. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_PRICES_BITTREX`: Job run cron schedule to refresh prices from Bittrex. By default, it is set to run every minute (`* * * * *`).
+- `JOB_INTERVAL_REFRESH_PRICES_EXCHANGERATESAPI`: Job run interval to refresh prices from exchangeratesapi. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_PRICES_EXCHANGERATESAPI`: Job run cron schedule to refresh prices from exchangeratesapi. By default, it is set to run every minute (`* * * * *`).
+- `JOB_INTERVAL_REFRESH_PRICES_KRAKEN`: Job run interval to refresh prices from Kraken. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_PRICES_KRAKEN`: Job run cron schedule to refresh prices from Kraken. By default, it is set to run every minute (`* * * * *`).
+- `JOB_INTERVAL_UPDATE_PRICES`: Job run interval to update market prices. By default, it is set to run every 5 seconds.
+- `JOB_SCHEDULE_UPDATE_PRICES`: Job run cron schedule to update market prices. By default, it is set to ''.
+
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
 ## Management
 

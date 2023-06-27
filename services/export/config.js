@@ -112,8 +112,8 @@ config.s3.bucketNameDefault = process.env.EXPORT_S3_BUCKET_NAME || 'export';
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	purgeCache: {
-		interval: process.env.CACHE_PURGE_INTERVAL || 0,
-		schedule: process.env.CACHE_PURGE_SCHEDULE || '45 4 * * *',
+		interval: process.env.JOB_INTERVAL_CACHE_PURGE || 0,
+		schedule: process.env.JOB_SCHEDULE_CACHE_PURGE || '45 4 * * *',
 	},
 };
 
