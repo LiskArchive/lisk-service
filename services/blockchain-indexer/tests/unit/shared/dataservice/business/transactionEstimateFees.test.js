@@ -24,6 +24,7 @@ const mockedAuthFilePath = resolve(`${__dirname}/../../../../../shared/dataServi
 const mockedAccountFilePath = resolve(`${__dirname}/../../../../../shared/utils/account`);
 const mockedRequestFilePath = resolve(`${__dirname}/../../../../../shared/utils/request`);
 const mockedPOSConstantsFilePath = resolve(`${__dirname}/../../../../../shared/dataService/pos/constants`);
+const mockedFeeEstimateFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/feeEstimates`);
 
 const { mockTxRequest, mockTxResult, mockTxsenderAddress, mockTxAuthAccountInfo, mockTxrequestConnector, posConstants, mockTxFeeEstimate } = require('../../constants/transactionEstimateFees');
 
@@ -293,11 +294,16 @@ describe('Test transaction fees estimates', () => {
 		const { calcMessageFee } = require(mockedTransactionFeeEstimatesFilePath);
 		const { getAuthAccountInfo } = require(mockedAuthFilePath);
 		const { getLisk32AddressFromPublicKey } = require(mockedAccountFilePath);
-		const { requestConnector, requestFeeEstimator } = require(mockedRequestFilePath);
+		const { requestConnector } = require(mockedRequestFilePath);
 		const { getPosConstants } = require(mockedPOSConstantsFilePath);
+		const { getFeeEstimates } = require(mockedFeeEstimateFilePath);
 
 		jest.mock(mockedAuthFilePath, () => ({
 			getAuthAccountInfo: jest.fn(),
+		}));
+
+		jest.mock(mockedFeeEstimateFilePath, () => ({
+			getFeeEstimates: jest.fn(),
 		}));
 
 		jest.mock(mockedAccountFilePath, () => ({
@@ -328,7 +334,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector.mockResolvedValue(mockTxrequestConnector);
-			requestFeeEstimator.mockResolvedValue(mockTxFeeEstimate);
+			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
 			calcAccountInitializationFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
@@ -345,7 +351,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector.mockResolvedValue(mockTxrequestConnector);
-			requestFeeEstimator.mockResolvedValue(mockTxFeeEstimate);
+			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
 			calcAccountInitializationFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
@@ -364,7 +370,7 @@ describe('Test transaction fees estimates', () => {
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			requestConnector.mockResolvedValue(mockTxrequestConnector);
-			requestFeeEstimator.mockResolvedValue(mockTxFeeEstimate);
+			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
 			calcAccountInitializationFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
@@ -379,7 +385,7 @@ describe('Test transaction fees estimates', () => {
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
-			requestFeeEstimator.mockResolvedValue(mockTxFeeEstimate);
+			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
 			calcAccountInitializationFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
@@ -388,8 +394,8 @@ describe('Test transaction fees estimates', () => {
 			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
 		});
 
-		it('should throw when requestFeeEstimator fails', async () => {
-			requestFeeEstimator.mockRejectedValue('Error');
+		it('should throw when getFeeEstimates fails', async () => {
+			getFeeEstimates.mockRejectedValue('Error');
 
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);

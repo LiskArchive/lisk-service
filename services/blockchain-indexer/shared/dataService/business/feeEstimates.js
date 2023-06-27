@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const { requestFeeEstimator } = require('../../utils/request');
 
 const logger = Logger();
 
@@ -28,11 +29,7 @@ const reloadFeeEstimates = async (payload) => {
 };
 
 const getFeeEstimates = async () => {
-	if (typeof feeEstimates === 'undefined') return {
-		data: { error: 'The estimates are currently unavailable.' },
-		status: 'SERVICE_UNAVAILABLE',
-	};
-
+	if (typeof feeEstimates === 'undefined') feeEstimates = await requestFeeEstimator('estimates');
 	return feeEstimates;
 };
 
