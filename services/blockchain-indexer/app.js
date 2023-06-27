@@ -31,6 +31,7 @@ const { MODULE } = require('./shared/constants');
 const { initDatabase } = require('./shared/database/init');
 const { setAppContext } = require('./shared/utils/request');
 const { init } = require('./shared/init');
+const { reloadFeeEstimates } = require('./shared/dataService/business');
 
 const logger = Logger();
 
@@ -43,6 +44,10 @@ const defaultBrokerConfig = {
 		chainNewBlock: async () => {
 			logger.debug('Received a \'chainNewBlock\' event from connecter.');
 			Signals.get('chainNewBlock').dispatch();
+		},
+		'update.fee_estimates': async (payload) => {
+			logger.debug('Received a \'update.fee_estimates\' event from fee estimator.');
+			await reloadFeeEstimates(payload);
 		},
 	},
 	dependencies: [

@@ -32,10 +32,11 @@ const { MODULE, COMMAND, EVENT } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
-const { requestConnector, requestFeeEstimator } = require('../../utils/request');
+const { requestConnector } = require('../../utils/request');
 const config = require('../../../config');
 
 const { getPosConstants } = require('./pos/constants');
+const { getFeeEstimates } = require('./feeEstimates');
 
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
@@ -203,7 +204,7 @@ const estimateTransactionFees = async params => {
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
 	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
-	const feeEstimatePerByte = await requestFeeEstimator('estimates');
+	const feeEstimatePerByte = await getFeeEstimates();
 
 	const { minFee, size } = formattedTransaction;
 	const estimateMinFee = Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
