@@ -18,7 +18,11 @@ const { requestFeeEstimator } = require('../../utils/request');
 
 const logger = Logger();
 
-let feeEstimates;
+let feeEstimates = {
+	low: 0,
+	med: 0,
+	high: 0,
+};
 
 const setFeeEstimates = async (payload) => {
 	if (typeof payload === 'undefined') {
@@ -29,7 +33,13 @@ const setFeeEstimates = async (payload) => {
 };
 
 const getFeeEstimates = async () => {
-	if (typeof feeEstimates === 'undefined') feeEstimates = await requestFeeEstimator('estimates');
+	if (typeof feeEstimates === 'undefined') {
+		const recievedFeeEstimates = await requestFeeEstimator('estimates');
+
+		if(typeof recievedFeeEstimates === 'object' && Object.keys(recievedFeeEstimates).length > 0  && recievedFeeEstimates.status !== 'SERVICE_UNAVAILABLE'){
+			feeEstimates = recievedFeeEstimates;
+		}
+	}
 	return feeEstimates;
 };
 

@@ -161,8 +161,8 @@ const calcAdditionalFees = async (transaction) => {
 			const { data: appMetadataResponse } = await HTTP
 				.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
 
-			if (appMetadataResponse && appMetadataResponse.data
-				&& appMetadataResponse.data.length === 0) {
+			if (!appMetadataResponse || !appMetadataResponse.data
+				|| appMetadataResponse.data.length === 0) {
 				throw new ValidationException(`Application off-chain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
 			}
 
