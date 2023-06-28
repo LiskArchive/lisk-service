@@ -765,17 +765,17 @@
 											"additionalFees": {
 												"type": "object",
 												"properties": {
-													"registrationFee": {
+													"validatorRegistrationFee": {
 														"type": "string",
 														"example": "1000000000",
 														"description": "The extra fee to be supplied for a PoS Validator registration transaction."
 													},
-													"accountInitializationFee": {
+													"userAccountInitializationFee": {
 														"type": "string",
 														"example": "5000000",
 														"description": "The extra fee to be supplied for initializing a new user token account."
 													},
-													"escrowInitializationFee": {
+													"escrowAccountInitializationFee": {
 														"type": "string",
 														"example": "10000000",
 														"description": "The extra fee to be supplied for initializing an escrow token account."
@@ -806,7 +806,7 @@
 											"additionalFees": {
 												"type": "object",
 												"properties": {
-													"accountInitializationFee": {
+													"userAccountInitializationFee": {
 														"type": "string",
 														"example": "5000000",
 														"description": "The extra fee to be supplied for initializing a new user token account."

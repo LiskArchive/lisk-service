@@ -13,10 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-
-const logger = Logger();
-
 let feeEstimates = {
 	low: 0,
 	med: 0,
@@ -24,9 +20,7 @@ let feeEstimates = {
 };
 
 const setFeeEstimates = async (payload) => {
-	if (typeof payload === 'undefined') {
-		logger.warn('Fee estimator event returned undefined payload.');
-	} else {
+	if (payload && Object.keys(payload).length > 0 && payload.status !== 'SERVICE_UNAVAILABLE') {
 		feeEstimates = payload;
 	}
 };

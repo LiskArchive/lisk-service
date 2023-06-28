@@ -560,9 +560,9 @@ Request payload:
                 "minimum": {
                     "byteFee": "135000",
                     "additionalFees": { // optional - entries vary by command
-                        "registrationFee": "5000000", // only for pos:registerDelegate
-                        "accountInitializationFee": "5000000", // only for token:transfer
-                        "escrowInitializationFee": "5000000" // only for token:transferCrossChain
+                        "validatorRegistrationFee": "5000000", // only for pos:registerDelegate
+                        "userAccountInitializationFee": "5000000", // only for token:transfer
+                        "escrowAccountInitializationFee": "5000000" // only for token:transferCrossChain
                     }
                 }
             },
@@ -570,7 +570,7 @@ Request payload:
                 "messageFee": {
                     "ccmByteFee": "120000",
                     "additionalFees": {
-                        "accountInitializationFee": "5000000",
+                        "userAccountInitializationFee": "5000000",
                     }
                 }
             }

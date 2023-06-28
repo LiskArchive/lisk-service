@@ -218,10 +218,12 @@ const estimateTransactionFees = async params => {
 	const { minFee, size } = formattedTransaction;
 	const additionalFees = await calcAdditionalFees(formattedTransaction);
 	const estimateMinFee = (() => {
-		let totalAdditionalFees = BigInt(0);
-		Object.entries(additionalFees.fee).forEach(([k, v]) => {
-			if (k !== 'tokenID') totalAdditionalFees += BigInt(v);
-		});
+		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
+			if (k.toLowerCase().endsWith('fee')) {
+				return acc + BigInt(v);
+			}
+			return acc;
+		}, BigInt(0));
 
 		// TODO: Remove BUFFER_BYTES_LENGTH support after https://github.com/LiskHQ/lisk-service/issues/1604 is complete
 		return BigInt(minFee) + totalAdditionalFees
