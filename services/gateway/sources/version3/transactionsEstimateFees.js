@@ -40,10 +40,12 @@ module.exports = {
 			},
 		},
 		meta: {
-			feeBreakdown: {
-				minimum: {
-					byteFee: '=,string',
-					additionalFees: '=',
+			breakdown: {
+				fee: {
+					minimum: {
+						byteFee: '=,string',
+						additionalFees: '=',
+					},
 				},
 				params: {
 					messageFee: {

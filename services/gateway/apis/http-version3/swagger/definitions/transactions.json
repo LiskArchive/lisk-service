@@ -732,44 +732,51 @@
 			"meta": {
 				"type": "object",
 				"required": [
-					"feeBreakdown"
+					"breakdown"
 				],
 				"properties": {
-					"feeBreakdown": {
+					"breakdown": {
 						"type": "object",
 						"required": [
-							"minimum"
+							"fee"
 						],
 						"properties": {
-							"minimum": {
+							"fee": {
 								"type": "object",
 								"required": [
-									"byteFee"
+									"minimum"
 								],
 								"properties": {
-									"byteFee": {
-										"type": "string",
-										"example": "135000",
-										"description": "The byte fee for the transaction. This is the product of the transaction length times the fee per byte as configured in the application's 'fee' module."
-									},
-									"additionalFees": {
+									"minimum": {
 										"type": "object",
-										"required": [],
+										"required": [
+											"byteFee"
+										],
 										"properties": {
-											"registrationFee": {
+											"byteFee": {
 												"type": "string",
-												"example": "1000000000",
-												"description": "The extra fee to be supplied for a registration transaction."
+												"example": "135000",
+												"description": "The byte fee for the transaction. This is the product of the transaction length times the fee per byte as configured in the application's 'fee' module."
 											},
-											"accountInitializationFee": {
-												"type": "string",
-												"example": "5000000",
-												"description": "The extra fee to be supplied for initializing a new user account."
-											},
-											"escrowInitializationFee": {
-												"type": "string",
-												"example": "10000000",
-												"description": "The extra fee to be supplied for initializing an escrow account."
+											"additionalFees": {
+												"type": "object",
+												"properties": {
+													"registrationFee": {
+														"type": "string",
+														"example": "1000000000",
+														"description": "The extra fee to be supplied for a registration transaction."
+													},
+													"accountInitializationFee": {
+														"type": "string",
+														"example": "5000000",
+														"description": "The extra fee to be supplied for initializing a new user account."
+													},
+													"escrowInitializationFee": {
+														"type": "string",
+														"example": "10000000",
+														"description": "The extra fee to be supplied for initializing an escrow account."
+													}
+												}
 											}
 										}
 									}
@@ -794,7 +801,6 @@
 											},
 											"additionalFees": {
 												"type": "object",
-												"required": [],
 												"properties": {
 													"accountInitializationFee": {
 														"type": "string",

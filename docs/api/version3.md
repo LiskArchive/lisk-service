@@ -555,14 +555,18 @@ Request payload:
         }
     },
     "meta": {
-        "feeBreakdown": {
-            "minimum": {
-                "byteFee": "135000",
-                "additionalFees": {
-                    "escrowInitializationFee": "5000000"
+        "breakdown": {
+            "fee" {
+                "minimum": {
+                    "byteFee": "135000",
+                    "additionalFees": { // optional - entries vary by command
+                        "registrationFee": "5000000", // only for pos:registerDelegate
+                        "accountInitializationFee": "5000000", // only for token:transfer
+                        "escrowInitializationFee": "5000000" // only for token:transferCrossChain
+                    }
                 }
-            }
-            "params": {
+            },
+            "params": { // optional - only for token:transferCrossChain
                 "messageFee": {
                     "ccmByteFee": "120000",
                     "additionalFees": {

@@ -48,10 +48,12 @@ const mockTxResult = {
 		},
 	},
 	meta: {
-		feeBreakdown: {
-			minimum: {
-				byteFee: '167000',
-				additionalFees: {},
+		breakdown: {
+			fee: {
+				minimum: {
+					byteFee: '167000',
+					additionalFees: {},
+				},
 			},
 		},
 	},
@@ -73,11 +75,13 @@ const mockTransferCrossChainTxResult = {
 		},
 	},
 	meta: {
-		feeBreakdown: {
-			minimum: {
-				byteFee: '167000',
-				additionalFees: {
-					escrowAccountInitializationFee: '1',
+		breakdown: {
+			fee: {
+				minimum: {
+					byteFee: '167000',
+					additionalFees: {
+						escrowAccountInitializationFee: '1',
+					},
 				},
 			},
 			params: {

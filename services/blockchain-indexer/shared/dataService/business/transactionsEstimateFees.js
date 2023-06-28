@@ -225,10 +225,12 @@ const estimateTransactionFees = async params => {
 			},
 		},
 		meta: {
-			feeBreakdown: {
-				minimum: {
-					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
-					additionalFees: {},
+			breakdown: {
+				fee: {
+					minimum: {
+						byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
+						additionalFees: {},
+					},
 				},
 			},
 		},
@@ -248,7 +250,7 @@ const estimateTransactionFees = async params => {
 	if (params.transaction.module === MODULE.TOKEN && params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 		// Add escrow initialization fee
 		const escrowAccountInitializationFee = BigInt(initializationFee.escrowAccountInitializationFee) + BigInt(initializationFee.accountInitializationFee);
-		estimateTransactionFeesRes.meta.feeBreakdown.minimum.additionalFees.escrowAccountInitializationFee = escrowAccountInitializationFee.toString();
+		estimateTransactionFeesRes.meta.breakdown.fee.minimum.additionalFees.escrowAccountInitializationFee = escrowAccountInitializationFee.toString();
 
 		// Calculate message fee
 		const ccmBuffer = await getCcmBuffer(params.transaction);
@@ -257,8 +259,8 @@ const estimateTransactionFees = async params => {
 
 		// Add params to meta
 		const ccmByteFee = BigInt(ccmBuffer.length + BUFFER_BYTES_LENGTH) * BigInt(size);
-		estimateTransactionFeesRes.meta.feeBreakdown = {
-			...estimateTransactionFeesRes.meta.feeBreakdown,
+		estimateTransactionFeesRes.meta.breakdown = {
+			...estimateTransactionFeesRes.meta.breakdown,
 			params: {
 				messageFee: {
 					ccmByteFee: ccmByteFee.toString(),
@@ -269,10 +271,10 @@ const estimateTransactionFees = async params => {
 			},
 		};
 	} else if (params.transaction.module === MODULE.TOKEN && params.transaction.command === COMMAND.TRANSFER) {
-		estimateTransactionFeesRes.meta.feeBreakdown.minimum.additionalFees.accountInitializationFee = initializationFee.accountInitializationFee;
+		estimateTransactionFeesRes.meta.breakdown.fee.minimum.additionalFees.accountInitializationFee = initializationFee.accountInitializationFee;
 	} else if (params.transaction.module === MODULE.POS && params.transaction.command === COMMAND.REGISTER_VALIDATOR) {
 		const posConstants = await getPosConstants();
-		estimateTransactionFeesRes.meta.feeBreakdown.minimum.additionalFees.registrationFee = posConstants.data.validatorRegistrationFee;
+		estimateTransactionFeesRes.meta.breakdown.fee.minimum.additionalFees.registrationFee = posConstants.data.validatorRegistrationFee;
 	}
 	/* eslint-enable max-len */
 
