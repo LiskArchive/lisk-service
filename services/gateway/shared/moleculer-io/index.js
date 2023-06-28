@@ -21,7 +21,7 @@ const { BadRequestError } = require('./errors');
 const { isValidNonEmptyResponse } = require('../utils');
 
 const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
-const expireMiliseconds = config.rpcCache.ttl * 1000;
+const expireMilliseconds = config.rpcCache.ttl * 1000;
 
 const rateLimiter = new RateLimiterMemory(config.websocket.rateLimit);
 
@@ -184,8 +184,8 @@ module.exports = {
 						if (handlerItem.onAfterCall) {
 							res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
 						}
-						// Store tranformed response in redis cache
-						if (isValidNonEmptyResponse(res)) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
+						// Store transformed response in redis cache
+						if (isValidNonEmptyResponse(res)) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMilliseconds);
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
