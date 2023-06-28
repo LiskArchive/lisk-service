@@ -42,7 +42,7 @@ const init = async () => {
 		const errorMsg = Array.isArray(error)
 			? error.map(e => e.message).join('\n')
 			: error.message;
-		logger.error(`Unable to load pos constants due to: ${errorMsg}`);
+		logger.error(`Indexer initialisation failed: ${errorMsg}`);
 	}
 };
 

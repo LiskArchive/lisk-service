@@ -20,7 +20,7 @@ const logger = Logger();
 
 let feeEstimates;
 
-const reloadFeeEstimates = async (payload) => {
+const setFeeEstimates = async (payload) => {
 	if (typeof payload === 'undefined') {
 		logger.warn('Fee estimator event returned undefined payload.');
 	} else {
@@ -34,6 +34,6 @@ const getFeeEstimates = async () => {
 };
 
 module.exports = {
-	reloadFeeEstimates,
+	setFeeEstimates,
 	getFeeEstimates,
 };

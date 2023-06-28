@@ -55,9 +55,9 @@ describe('Fee estimates', () => {
 	});
 
 	it('should call requestFeeEstimator if payload is undefined', async () => {
-		const { getFeeEstimates, reloadFeeEstimates } = require(mockFeeEstimatesFilePath);
+		const { getFeeEstimates, setFeeEstimates } = require(mockFeeEstimatesFilePath);
 
-		await reloadFeeEstimates(undefined);
+		await setFeeEstimates(undefined);
 
 		const feeEstimates = await getFeeEstimates();
 
@@ -66,9 +66,9 @@ describe('Fee estimates', () => {
 	});
 
 	it('should assign payload to feeEstimates if payload is defined', async () => {
-		const { getFeeEstimates, reloadFeeEstimates } = require(mockFeeEstimatesFilePath);
+		const { getFeeEstimates, setFeeEstimates } = require(mockFeeEstimatesFilePath);
 
-		await reloadFeeEstimates(mockTxFeeEstimate);
+		await setFeeEstimates(mockTxFeeEstimate);
 		const feeEstimates = await getFeeEstimates();
 
 		expect(requestFeeEstimator).toHaveBeenCalledTimes(0);

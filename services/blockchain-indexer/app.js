@@ -31,7 +31,7 @@ const { MODULE } = require('./shared/constants');
 const { initDatabase } = require('./shared/database/init');
 const { setAppContext } = require('./shared/utils/request');
 const { init } = require('./shared/init');
-const { reloadFeeEstimates } = require('./shared/dataService/business');
+const { setFeeEstimates } = require('./shared/dataService/business');
 
 const logger = Logger();
 
@@ -47,7 +47,7 @@ const defaultBrokerConfig = {
 		},
 		'update.fee_estimates': async (payload) => {
 			logger.debug('Received a \'update.fee_estimates\' event from fee estimator.');
-			await reloadFeeEstimates(payload);
+			await setFeeEstimates(payload);
 		},
 	},
 	dependencies: [

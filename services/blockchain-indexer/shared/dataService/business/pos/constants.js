@@ -18,11 +18,11 @@ const { requestConnector } = require('../../../utils/request');
 
 const logger = Logger();
 
-let moduleConstants;
+let posModuleConstants;
 
 const getPosConstants = async () => {
 	try {
-		if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPosConstants');
+		if (typeof posModuleConstants === 'undefined') posModuleConstants = await requestConnector('getPosConstants');
 	} catch (err) {
 		const errMessage = `Unable to fetch the PoS constants from connector due to: ${err.message}.`;
 		logger.warn(errMessage);
@@ -31,7 +31,7 @@ const getPosConstants = async () => {
 	}
 
 	return {
-		data: moduleConstants,
+		data: posModuleConstants,
 		meta: {},
 	};
 };

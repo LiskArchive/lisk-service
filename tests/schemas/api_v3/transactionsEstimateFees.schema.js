@@ -63,18 +63,18 @@ const metaMessageFeeSchema = {
 	).optional(),
 };
 
-const metaParamsSchema = {
-	messageFee: Joi.object(metaMessageFeeSchema).required(),
-};
-
 const breakdownFeeSchema = {
 	minimum: Joi.object(minimumFeeBreakdownSchema).required(),
 };
 
+const breakdownParamsSchema = {
+	messageFee: Joi.object(metaMessageFeeSchema).required(),
+};
+
 const breakdownSchema = {
 	fee: Joi.object(breakdownFeeSchema).required(),
-	params: Joi.object(metaParamsSchema).optional(),
-};
+	params: Joi.object(breakdownParamsSchema).optional(),
+}
 
 const metaSchema = {
 	breakdown: Joi.object(breakdownSchema).required(),
