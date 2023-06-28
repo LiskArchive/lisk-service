@@ -14,7 +14,6 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const { requestFeeEstimator } = require('../../utils/request');
 
 const logger = Logger();
 
@@ -32,9 +31,7 @@ const setFeeEstimates = async (payload) => {
 	}
 };
 
-const getFeeEstimates = async () => {
-	return feeEstimates;
-};
+const getFeeEstimates = async () => feeEstimates;
 
 module.exports = {
 	setFeeEstimates,
