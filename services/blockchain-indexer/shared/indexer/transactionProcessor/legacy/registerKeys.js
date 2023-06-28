@@ -60,8 +60,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		logger.trace(`Indexing validator with address ${account.address}.`);
 		await validatorsTable.upsert(account, dbTrx);
 		logger.debug(`Indexed validator with address ${account.address}.`);
-
-	} catch(err) {
+	} catch (err) {
 		logger.error(`Error while applying transaction for register keys. Error: ${err.message}`);
 	}
 };
@@ -70,10 +69,10 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
-	try{
+	try {
 		const accountsTable = await getAccountsTable();
 		const validatorsTable = await getValidatorsTable();
-	
+
 		// Remove the validator details from the table on transaction reversal
 		const account = {
 			address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
@@ -83,19 +82,18 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 			proofOfPossession: null,
 			generatorKey: null,
 		};
-	
+
 		logger.trace(`Updating account index for the account with address ${account.address}.`);
 		await accountsTable.upsert(account, dbTrx);
 		logger.debug(`Updated account index for the account with address ${account.address}.`);
-	
+
 		logger.trace(`Remove validator entry for address ${account.address}.`);
 		const validatorPK = account[validatorsTableSchema.primaryKey];
 		await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
 		logger.debug(`Removed validator entry for address ${account.address}.`);
-	} catch(err) {
+	} catch (err) {
 		logger.error(`Error while reverting transaction for register keys. Error: ${err.message}`);
 	}
-
 };
 
 module.exports = {

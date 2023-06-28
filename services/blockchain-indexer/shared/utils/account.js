@@ -45,7 +45,6 @@ const updateAccountPublicKey = async (publicKey) => {
 	} catch (err) {
 		logger.error(`Error while updating account public key. Error: ${err.message}`);
 	}
-	
 };
 
 const updateAccountInfo = async (params) => {

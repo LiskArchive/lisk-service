@@ -61,8 +61,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		logger.trace(`Indexing validator with address ${account.address}.`);
 		await validatorsTable.upsert(account, dbTrx);
 		logger.debug(`Indexed validator with address ${account.address}.`);
-
-	} catch(err) {
+	} catch (err) {
 		logger.error(`Error while applying transaction for register validators. Error: ${err.message}`);
 	}
 };
@@ -94,7 +93,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		const validatorPK = account[validatorsTableSchema.primaryKey];
 		await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
 		logger.debug(`Removed validator entry for address ${account.address}.`);
-	} catch(err) {
+	} catch (err) {
 		logger.error(`Error while reverting transaction for register validators. Error: ${err.message}`);
 	}
 };
