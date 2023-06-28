@@ -18,7 +18,8 @@ RUN npm ci
 
 FROM node:16-alpine
 
-RUN adduser -D lisk && \
+RUN mkdir -p /home/lisk/lisk-service/blockchain-connector/data && \
+    adduser -D lisk && \
     chown -R lisk:lisk /home/lisk/
 
 USER lisk

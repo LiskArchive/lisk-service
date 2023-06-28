@@ -59,7 +59,7 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
-//  Truncate tables at init, default to false
+// Truncate tables at init, default to false
 config.isRebuildIndexAtInit = Boolean(String(process.env.ENABLE_REBUILD_INDEX_AT_INIT).toLowerCase() === 'true');
 
 config.gitHub = {
@@ -97,12 +97,12 @@ config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	deleteNonMetadataFiles: {
-		interval: process.env.DELETE_NON_METADATA_FILES_INTERVAL || 0,
-		schedule: process.env.DELETE_NON_METADATA_FILES_SCHEDULE || '0 0 * * *',
+		interval: process.env.JOB_INTERVAL_DELETE_NON_METADATA_FILES || 0,
+		schedule: process.env.JOB_SCHEDULE_DELETE_NON_METADATA_FILES || '0 0 * * *',
 	},
 	updateApplicationMetadata: {
-		interval: process.env.UPDATE_METADATA_INTERVAL || 0,
-		schedule: process.env.UPDATE_METADATA_SCHEDULE || '*/10 * * * *',
+		interval: process.env.JOB_INTERVAL_UPDATE_METADATA || 0,
+		schedule: process.env.JOB_SCHEDULE_UPDATE_METADATA || '*/10 * * * *',
 	},
 };
 

@@ -106,8 +106,8 @@ config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIE
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	updateReadinessStatus: {
-		interval: process.env.UPDATE_READINESS_STATUS_INTERVAL || 0,
-		schedule: process.env.UPDATE_READINESS_STATUS_SCHEDULE || '* * * * *',
+		interval: process.env.JOB_INTERVAL_UPDATE_READINESS_STATUS || 0,
+		schedule: process.env.JOB_SCHEDULE_UPDATE_READINESS_STATUS || '* * * * *',
 	},
 };
 

@@ -1,5 +1,6 @@
 = Installation with Docker
-Mona Bärenfänger <mona@lightcurve.io>
+Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurve.io>
+
 :description: Describes all necessary steps and requirements to install Lisk Service with Docker.
 :toc:
 :experimental:
@@ -16,54 +17,34 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_docker_linux_post_install: https://docs.docker.com/install/linux/linux-postinstall/
 :url_xcode: https://developer.apple.com/xcode/features/
 
+:lisk-docs: ROOT::
 :url_index_usage: index.adoc#usage
 :url_setup: setup/index.adoc
-:url_core_setup_npm: master@lisk-core::setup/npm.adoc
+:url_core_setup_npm: v4@lisk-core::setup/npm.adoc
 :url_config: configuration/docker.adoc
 :url_management: management/docker.adoc
-:url_references_config: reference/configuration.adoc
-
-:url_core_setup_binary: master@lisk-core::setup/binary.adoc
+:url_references_config: configuration/index.adoc
+:url_build_blockchain:  {lisk-docs}build-blockchain/create-blockchain-app.adoc
 
 How to set up Lisk Service and connect it to a local Lisk Core node.
 
-== Setting up Lisk Core
+[NOTE]
+====
+*Pre-requisite*
 
-Lisk Service is installed in addition to a Lisk blockchain application such as Lisk Core, in order to provide enriched network data for third-party services.
+Lisk Service is a web application middleware that allows interaction with various blockchain networks based on the Lisk protocol.
+It is recommended to set up a blockchain node first, before setting up Lisk Service.
 
-The first step is therefore to install Lisk Core.
-
-It is recommended to use NPM to conveniently install Lisk Core through the command line:
-
-[source,bash]
-----
-npm install --global --production lisk-core
-----
-
-Check out the xref:{url_core_setup_npm}[Lisk Core NPM setup] guide for more information on how to install Lisk Core on your machine.
-
-== Configuring Lisk Core
-
-Use the Lisk Core CLI to start Lisk Core with the desired configurations.
-
-* The `--network` flag determines the blockchain network Lisk Core connects to.
-* `--api-ws` enables the WebSocket API of the node, if not already enabled within the config.json file.
-* `--api-ws-host=0.0.0.0` allows remote servers to connect to the Lisk Core WS API.
-If this option is not set, it defaults to `127.0.0.1`.
-* `--api-ws-port=8080` the port for the WebSocket API.
-
-[source,bash]
-----
-lisk-core start --network mainnet --api-ws --api-ws-host=0.0.0.0 --api-ws-port=8080
-----
-
-To connect to a different network, replace `mainnet` with either `testnet` or `devnet`.
+* To set up a Lisk-Core node, see any of our setup guides, such as xref:{url_core_setup_npm}[].
+* Alternatively, you can setup up a sidechain node to connect to Lisk Service.
+* Please make sure to set `system.keepEventsForHeights: -1` in the node config before synchronizing the node with the network.
+====
 
 == Setting up Lisk Service
 
 [IMPORTANT]
 ====
-It is strongly recommended to synchronize your Lisk Core node with the network **before** starting the Lisk Service.
+It is strongly recommended to synchronize your blockchain node with the network **before** starting the Lisk Service.
 ====
 
 === Prerequisites
@@ -77,7 +58,7 @@ The following dependencies are required to install and run Lisk Service with Doc
 Ubuntu / Debian::
 +
 --
-Install the `build-essential` package alongside with several development tools.
+Install the `build-essential` package alongside several development tools.
 
 For example, use `apt` if running Ubuntu as shown in the following command below:
 
@@ -96,9 +77,15 @@ Install https://brew.sh/[Brew] by following https://brew.sh/[the most recent ins
 
 If you already have Brew installed, ensure it is working and is the latest version.
 
+.Update current brew installation
 [source,bash]
 ----
 brew update
+----
+
+.Verify the brew installation
+[source,bash]
+----
 brew doctor
 ----
 
@@ -120,15 +107,14 @@ xcode-select --install
 Ubuntu / Debian::
 +
 --
-. Please refer to {url_docker_install_linux}[docker installation for ubuntu^].
-. To install Docker Compose, please refer to {url_docker_install_linux_compose}[install docker compose^].
-. To configure Docker so it can be run without `sudo` rights, follow: {url_docker_linux_post_install}[linux post install^].
+. Please refer to the {url_docker_install_linux}[Docker installation for Ubuntu^].
+. To install Docker Compose, please refer to {url_docker_install_linux_compose}[Install Docker Compose^].
+. To configure Docker so it can be run without `sudo` rights, follow: {url_docker_linux_post_install}[Linux post install^].
 --
 MacOS::
 +
 --
 . Please refer to {url_docker_install_mac}[Docker installation for Mac^]. Please note that Docker for Mac already includes Docker Compose.
-. Install `make` using {url_xcode}[XCode^].
 --
 ====
 
@@ -136,9 +122,9 @@ MacOS::
 
 Ensure the port which allows external services communication with the Lisk Service APIs is open.
 
-- 9901: Default API port (HTTP & WebSocket)
+- The *default* API port for *HTTP* & *WebSocket* is: `9901`
 
-.Example: Opening the port 9001 with ufw on Ubuntu
+.Example: Opening port 9901 with ufw on Ubuntu
 [source,bash]
 ----
 sudo ufw allow 9901
@@ -148,19 +134,19 @@ sudo ufw allow 9901
 
 Clone the {url_github_service}[lisk-service^] GitHub repository and then navigate into the project folder.
 
-.In the directory where you want to store Lisk Service
+.Execute in the directory where you want to store Lisk Service
 [source,bash]
 ----
 git clone https://github.com/LiskHQ/lisk-service.git
 cd lisk-service
-git checkout v0.6.4
+git checkout v0.7.0
 ----
 
 == Build Lisk Service
 
-Build Lisk Service from local files:
+To build Lisk Service from local files, first, navigate to the `lisk-service` repository on your system:
 
-./lisk-service/
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 make build
@@ -168,34 +154,44 @@ make build
 
 Lisk Service is now ready to use on your machine.
 
-TIP: If you skipped the step to configure Docker to run without `sudo` rights, you need to prepend `sudo`: `sudo make build`
+TIP: If you skipped the step to configure Docker to run without `*sudo*` rights, you need to prepend `*sudo*` with aforementioned command: `*sudo make build*`
 
-== Connecting Lisk Service to Lisk Core
+== Connecting Lisk Service to a blockchain node
 
 Before running the application copy the default docker-compose environment file:
 
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 cp docker/example.env .env
 ----
 
-In the next step, open `.env` and set the required environment variables.
+In the next step, open `.env` to set the required environment variables.
 
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 vim .env
 ----
 
+..env
+[source,bash]
+----
+# Lisk ecosystem configuration
+LISK_APP_WS=ws://host.docker.internal:7887 
+----
+
+The `example.env` assumes that the blockchain node e.g. Lisk Core node is running on the host machine, and not inside of a Docker container.
+
+When running a blockchain node inside of a Docker container, the following variable needs to refer to the container.
+For this to work, the container running the blockchain node and the Lisk Service Blockchain Connector container must share the same docker network:
 
 ..env
 [source,bash]
 ----
 # Lisk ecosystem configuration
-LISK_CORE_WS=ws://host.docker.internal:8080 #<1>
+LISK_APP_WS="ws://<your_docker_container>:7887"
 ----
-
-<1> The example assumes that the Lisk Core node is running on the host machine, and not inside of a Docker container.
-When running Lisk Core inside of a Docker container, the variable needs to refer to the container: `LISK_CORE_WS="ws://<your_docker_container>:8080"`.
 
 TIP: For a complete list of supported environment variables check the xref:{url_references_config}[].
 
@@ -203,6 +199,7 @@ TIP: For a complete list of supported environment variables check the xref:{url_
 
 Run the following command to start Lisk Service:
 
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 make up
@@ -211,11 +208,12 @@ make up
 == Stopping Lisk Service
 You can stop Lisk Service again with the following command:
 
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 make down
 ----
 
-More commands about how to manage Lisk Service are described on the xref:{url_management}[Docker commands] page.
+// More commands about how to manage Lisk Service are described on the xref:{url_management}[Docker commands] page.
 
-TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
+// TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.

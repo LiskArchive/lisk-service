@@ -141,6 +141,7 @@ const MODULE_SUB_STORE = Object.freeze({
 const COMMAND = Object.freeze({
 	REGISTER_VALIDATOR: 'registerValidator',
 	STAKE: 'stake',
+	CHANGE_COMMISSION: 'changeCommission',
 	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
 });

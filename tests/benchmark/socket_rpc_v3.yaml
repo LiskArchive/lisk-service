@@ -1,7 +1,5 @@
 config:
   target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v3"
-  socketio:
-    transports: ["websocket"]
   phases:
     - duration: 15
       arrivalRate: 50
@@ -13,23 +11,23 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.blocks", "params": {"limit": 10}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 10
       - emit:
           channel: "request"
           data: {"method": "get.blocks", "params": {"limit": 30}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 30
       - emit:
           channel: "request"
           data: {"method": "get.blocks", "params": {"limit": 100}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 100
   - name: "Blocks assets"
     engine: "socketio"
@@ -37,23 +35,23 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.blocks.assets", "params": {"limit": 10}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 10
       - emit:
           channel: "request"
           data: {"method": "get.blocks.assets", "params": {"limit": 30}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 30
       - emit:
           channel: "request"
           data: {"method": "get.blocks.assets", "params": {"limit": 100}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 100
 
   # Transactions
@@ -63,9 +61,9 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.transactions", "params": {"limit": 30}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 30
   - name: "Transactions statistics"
     engine: "socketio"
@@ -79,6 +77,12 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.transactions.statistics", "params": {interval:'month'}}
+  - name: "Transactions export"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.export.transactions", "address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}
 
   # Validator
   - name: "Validator information by address"
@@ -124,6 +128,18 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.token.summary"}
+  - name: "Tokens available IDs"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.token.available-ids"}
+  - name: "Tokens top balances"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.token.balances.top", "params": {"tokenID": "0400000000000000"}}
 
   # Fees
   - name: "Fee estimates"
@@ -168,6 +184,13 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.blockchain.apps.meta.tokens"}
+
+  - name: "Blockchain applications off-chain metadata for tokens supported on the specified chainID"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blockchain.apps.meta.tokens.supported", "chainID": "04000000"}
     
   # Events
   - name: "Events"
@@ -176,23 +199,23 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.events", "params": {"limit": 10}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 10
       - emit:
           channel: "request"
           data: {"method": "get.events", "params": {"limit": 30}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 30
       - emit:
           channel: "request"
           data: {"method": "get.events", "params": {"limit": 100}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 100
 
   # PoS
@@ -224,12 +247,12 @@ scenarios:
           channel: "request"
           data: {"method": "get.pos.stakers", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
 
-  # - name: "Stakes"
-  #   engine: "socketio"
-  #   flow:
-  #     - emit:
-  #         channel: "request"
-  #         data: {"method": "get.pos.stakes", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
+  - name: "Stakes"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.pos.stakes", "params": {"address": "lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht"}}
 
   - name: "Unlocks"
     engine: "socketio"
@@ -244,24 +267,24 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.pos.validators", "params": {"limit": 10}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 10
       - emit:
           channel: "request"
           data: {"method": "get.pos.validators", "params": {"limit": 30}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 30
       - emit:
           channel: "request"
-          data: {"method": "get.pos.validators", "params": {"limit": 101}}
-          response:
+          data: {"method": "get.pos.validators", "params": {"limit": 20}}
+          acknowledge:
             match:
-              json: "$.meta.count"
-              value: 101
+              json: "$.0.result.meta.count"
+              value: 20
 
   # Reward
   - name: "Reward module constants"
@@ -307,6 +330,12 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.network.statistics"}
+  - name: "Network Peers"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.network.peers"}
 
   # Peers
   - name: "Peers"
@@ -323,17 +352,17 @@ scenarios:
       - emit:
           channel: "request"
           data: {"method": "get.generators", "params": {"limit": 30}}
-          response:
+          acknowledge:
             match:
-              json: "$.meta.count"
+              json: "$.0.result.meta.count"
               value: 30
       - emit:
           channel: "request"
-          data: {"method": "get.generators", "params": {"limit": 103}}
-          response:
+          data: {"method": "get.generators", "params": {"limit": 100}}
+          acknowledge:
             match:
-              json: "$.meta.count"
-              value: 103
+              json: "$.0.result.meta.count"
+              value: 100
 
   # Schemas
   - name: "Schemas"
