@@ -33,13 +33,6 @@ const setFeeEstimates = async (payload) => {
 };
 
 const getFeeEstimates = async () => {
-	if (typeof feeEstimates === 'undefined') {
-		const recievedFeeEstimates = await requestFeeEstimator('estimates');
-
-		if(typeof recievedFeeEstimates === 'object' && Object.keys(recievedFeeEstimates).length > 0  && recievedFeeEstimates.status !== 'SERVICE_UNAVAILABLE'){
-			feeEstimates = recievedFeeEstimates;
-		}
-	}
 	return feeEstimates;
 };
 

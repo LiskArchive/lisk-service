@@ -54,17 +54,6 @@ describe('Fee estimates', () => {
 		jest.resetModules();
 	});
 
-	it('should call requestFeeEstimator if payload is undefined', async () => {
-		const { getFeeEstimates, setFeeEstimates } = require(mockFeeEstimatesFilePath);
-
-		await setFeeEstimates(undefined);
-
-		const feeEstimates = await getFeeEstimates();
-
-		expect(requestFeeEstimator).toHaveBeenCalledTimes(1);
-		expect(feeEstimates).toEqual(mockTxFeeEstimate);
-	});
-
 	it('should assign payload to feeEstimates if payload is defined', async () => {
 		const { getFeeEstimates, setFeeEstimates } = require(mockFeeEstimatesFilePath);
 

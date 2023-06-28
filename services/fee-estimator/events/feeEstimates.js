@@ -28,7 +28,7 @@ module.exports = [
 					logger.debug('Returning latest fee_estimates to the socket.io client...');
 					const restData = await getEstimateFeePerByte();
 
-					if (typeof restData === 'object' && Object.keys(restData).length > 0 && restData.status !== 'SERVICE_UNAVAILABLE') callback(restData);
+					if (Object.keys(restData).length > 0 && restData.status !== 'SERVICE_UNAVAILABLE') callback(restData);
 				} catch (err) {
 					logger.error(`Error occurred when processing 'update.fee_estimates' event:\n${err.stack}`);
 				}

@@ -39,10 +39,8 @@ const init = async () => {
 			await processor.init();
 		}
 	} catch (error) {
-		const errorMsg = Array.isArray(error)
-			? error.map(e => e.message).join('\n')
-			: error.message;
-		logger.error(`Indexer initialisation failed: ${errorMsg}`);
+		logger.error(`Unable to initialize due to: ${error.message}. Try restarting the application.`);
+		logger.trace(error.stack);
 	}
 };
 
