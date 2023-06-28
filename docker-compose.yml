@@ -345,6 +345,8 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
+      - PORT=${PORT}
+      - HOST=${HOST}
       - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
@@ -371,9 +373,9 @@ services:
       - JOB_SCHEDULE_UPDATE_READINESS_STATUS=${JOB_SCHEDULE_UPDATE_READINESS_STATUS}
     restart: always
     ports:
-      - 9901:9901
+      - ${HOST:-0.0.0.0}:${PORT:-9901}:${PORT:-9901}
     healthcheck:
-      test: curl --fail http://gateway:9901/api/v3/blocks
+      test: curl --fail http://gateway:${PORT:-9901}/api/v3/blocks
 
   market:
     image: lisk/service_market
