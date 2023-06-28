@@ -40,10 +40,7 @@ const mockTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: 172000,
-			},
-			params: {
-				messageFee: {},
+				minimum: '172001',
 			},
 		},
 	},
@@ -52,7 +49,9 @@ const mockTxResult = {
 			fee: {
 				minimum: {
 					byteFee: '167000',
-					additionalFees: {},
+					additionalFees: {
+						userAccountInitializationFee: '1',
+					},
 				},
 			},
 		},
@@ -64,11 +63,11 @@ const mockTransferCrossChainTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: 172000,
+				minimum: '172000',
 			},
 			params: {
 				messageFee: {
-					amount: '6000',
+					amount: '0',
 					tokenID: '0400000000000000',
 				},
 			},
@@ -79,17 +78,15 @@ const mockTransferCrossChainTxResult = {
 			fee: {
 				minimum: {
 					byteFee: '167000',
-					additionalFees: {
-						escrowAccountInitializationFee: '1',
-					},
+					additionalFees: {},
 				},
 			},
 			params: {
 				messageFee: {
 					additionalFees: {
-						accountInitializationFee: '1',
+						userAccountInitializationFee: '1',
 					},
-					ccmByteFee: '1002',
+					ccmByteFee: '0',
 				},
 			},
 		},

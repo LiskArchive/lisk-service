@@ -74,7 +74,7 @@ const breakdownParamsSchema = {
 const breakdownSchema = {
 	fee: Joi.object(breakdownFeeSchema).required(),
 	params: Joi.object(breakdownParamsSchema).optional(),
-}
+};
 
 const metaSchema = {
 	breakdown: Joi.object(breakdownSchema).required(),

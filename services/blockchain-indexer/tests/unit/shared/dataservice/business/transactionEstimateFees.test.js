@@ -338,7 +338,7 @@ describe('Test transaction fees estimates', () => {
 		jest.resetModules();
 
 		// Mock the dependencies
-		const { calcAccountInitializationFees } = require(mockedTransactionFeeEstimatesFilePath);
+		const { calcAdditionalFees } = require(mockedTransactionFeeEstimatesFilePath);
 		const { calcMessageFee } = require(mockedTransactionFeeEstimatesFilePath);
 		const { getAuthAccountInfo } = require(mockedAuthFilePath);
 		const { getLisk32AddressFromPublicKey } = require(mockedAccountFilePath);
@@ -372,7 +372,7 @@ describe('Test transaction fees estimates', () => {
 
 			return {
 				...actual,
-				calcAccountInitializationFees: jest.fn(),
+				calcAdditionalFees: jest.fn(),
 				calcMessageFee: jest.fn(),
 			};
 		});
@@ -390,9 +390,11 @@ describe('Test transaction fees estimates', () => {
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
-			requestConnector.mockResolvedValue(mockTxrequestConnector);
+			requestConnector
+				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0' });
 			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
-			calcAccountInitializationFees.mockResolvedValue({});
+			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
 
@@ -413,7 +415,7 @@ describe('Test transaction fees estimates', () => {
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
 				.mockReturnValueOnce('encoded CCM Object');
 			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
-			calcAccountInitializationFees.mockResolvedValue({});
+			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
 
@@ -430,7 +432,7 @@ describe('Test transaction fees estimates', () => {
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector.mockResolvedValue(mockTxrequestConnector);
 			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
-			calcAccountInitializationFees.mockResolvedValue({});
+			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
 
@@ -449,7 +451,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			requestConnector.mockResolvedValue(mockTxrequestConnector);
 			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
-			calcAccountInitializationFees.mockResolvedValue({});
+			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
 
@@ -464,7 +466,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			getFeeEstimates.mockResolvedValue(mockTxFeeEstimate);
-			calcAccountInitializationFees.mockResolvedValue({});
+			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
 
@@ -479,7 +481,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector.mockResolvedValue(mockTxrequestConnector);
-			calcAccountInitializationFees.mockResolvedValue({});
+			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
 
