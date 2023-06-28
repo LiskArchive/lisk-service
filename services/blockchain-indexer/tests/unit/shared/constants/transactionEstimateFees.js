@@ -15,6 +15,26 @@ const mockTxRequest = {
 	},
 };
 
+const mockTransferCrossChainTxRequest = {
+	transaction: {
+		module: 'token',
+		command: 'transferCrossChain',
+		fee: '100000',
+		nonce: '1',
+		senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+		params: {
+			tokenID: '0200000000000000',
+			amount: '100000000000',
+			receivingChainID: '02000000',
+			recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+			data: '',
+			messageFee: '10000000',
+			messageFeeTokenID: '0200000000000000',
+		},
+		id: '0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395',
+	},
+};
+
 const mockTxResult = {
 	data: {
 		transaction: {
@@ -32,6 +52,41 @@ const mockTxResult = {
 			minimum: {
 				byteFee: '167000',
 				additionalFees: {},
+			},
+		},
+	},
+};
+
+const mockTransferCrossChainTxResult = {
+	data: {
+		transaction: {
+			fee: {
+				tokenID: '0400000000000000',
+				minimum: 172000,
+			},
+			params: {
+				messageFee: {
+					amount: '6000',
+					tokenID: '0400000000000000',
+				},
+			},
+		},
+	},
+	meta: {
+		feeBreakdown: {
+			minimum: {
+				byteFee: '167000',
+				additionalFees: {
+					escrowAccountInitializationFee: '1',
+				},
+			},
+			params: {
+				messageFee: {
+					additionalFees: {
+						accountInitializationFee: '1',
+					},
+					ccmByteFee: '1002',
+				},
 			},
 		},
 	},
@@ -62,6 +117,29 @@ const mockTxrequestConnector = {
 		amount: '100000000000',
 		recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
 		data: '',
+	},
+	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
+	size: 167,
+	minFee: '166000',
+};
+
+const mockTransferCrossChainTxrequestConnector = {
+	module: 'token',
+	command: 'transferCrossChain',
+	fee: '100000000',
+	nonce: '1',
+	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+	signatures: [
+		'c7fd1abf9a552fa9c91b4121c87ae2c97cb0fc0aecc87d0ee8b1aa742238eef4a6815ddba31e21144c9652a7bd5c05577ae1100eac34fba43da6fc4879b8f206',
+	],
+	params: {
+		tokenID: '0000000000000000',
+		amount: '100000000000',
+		recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		receivingChainID: '02000000',
+		data: '',
+		messageFee: '10000000',
+		messageFeeTokenID: '0200000000000000',
 	},
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 	size: 167,
@@ -102,12 +180,22 @@ const mockTxFeeEstimate = {
 	minFeePerByte: 1000,
 };
 
+const mockEscrowAccountExistsRequestConnector = {
+	exists: {
+		escrowAccountExists: true,
+	},
+};
+
 module.exports = {
 	mockTxRequest,
+	mockTransferCrossChainTxRequest,
 	mockTxResult,
 	mockTxsenderAddress,
 	mockTxAuthAccountInfo,
 	mockTxrequestConnector,
 	mockTxFeeEstimate,
 	posConstants,
+	mockEscrowAccountExistsRequestConnector,
+	mockTransferCrossChainTxrequestConnector,
+	mockTransferCrossChainTxResult,
 };

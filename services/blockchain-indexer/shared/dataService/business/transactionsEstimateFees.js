@@ -253,7 +253,7 @@ const estimateTransactionFees = async params => {
 		// Calculate message fee
 		const ccmBuffer = await getCcmBuffer(params.transaction);
 		const messageFee = await calcMessageFee(params.transaction.params.receivingChainID, ccmBuffer);
-		estimateTransactionFeesRes.data.transaction.params.messageFee = messageFee.toString();
+		estimateTransactionFeesRes.data.transaction.params.messageFee = messageFee;
 
 		// Add params to meta
 		const ccmByteFee = BigInt(ccmBuffer.length + BUFFER_BYTES_LENGTH) * BigInt(size);
