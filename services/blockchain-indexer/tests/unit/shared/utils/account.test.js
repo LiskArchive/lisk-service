@@ -24,6 +24,7 @@ jest.mock('@liskhq/lisk-cryptography', () => ({
 describe('Account', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
+		jest.resetModules();
 	});
 
 	describe('updateAccountPublicKey', () => {
@@ -48,6 +49,60 @@ describe('Account', () => {
 									publicKey,
 								});
 							}),
+						})),
+					},
+				};
+			});
+
+			const {
+				updateAccountPublicKey,
+			} = require('../../../../shared/utils/account');
+
+			await updateAccountPublicKey(publicKey);
+		});
+
+		it('should log error when getTableInstance fails', async () => {
+			const publicKey = 'mocked-public-key';
+
+			// Mock the lisk-service-framework
+			jest.mock('lisk-service-framework', () => {
+				const actual = jest.requireActual('lisk-service-framework');
+				return {
+					...actual,
+					Logger: jest.fn().mockImplementation(() => ({
+						error: jest.fn((data) => {
+							expect(data).toEqual('Error while updating account public key. Error: getTableInstance failed');
+						}),
+					})),
+					MySQL: {
+						getTableInstance: jest.fn().mockRejectedValue({ message: 'getTableInstance failed' }),
+					},
+				};
+			});
+
+			const {
+				updateAccountPublicKey,
+			} = require('../../../../shared/utils/account');
+
+			await updateAccountPublicKey(publicKey);
+		});
+
+		it('should log error when adding entry to database fails fails', async () => {
+			const publicKey = 'mocked-public-key';
+
+			// Mock the lisk-service-framework
+			jest.mock('lisk-service-framework', () => {
+				const actual = jest.requireActual('lisk-service-framework');
+				return {
+					...actual,
+					Logger: jest.fn().mockImplementation(() => ({
+						error: jest.fn((data) => {
+							expect(data).toEqual('Error while updating account public key. Error: upsert failed');
+						}),
+					})),
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							upsert: jest.fn().mockRejectedValue({ message: 'upsert failed' }),
 						})),
 					},
 				};
