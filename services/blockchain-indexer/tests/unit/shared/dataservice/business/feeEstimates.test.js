@@ -58,7 +58,7 @@ describe('Fee estimates', () => {
 		const { getFeeEstimates, setFeeEstimates } = require(mockFeeEstimatesFilePath);
 
 		await setFeeEstimates(mockTxFeeEstimate);
-		const feeEstimates = await getFeeEstimates();
+		const feeEstimates = getFeeEstimates();
 
 		expect(requestFeeEstimator).toHaveBeenCalledTimes(0);
 		expect(feeEstimates).toEqual(mockTxFeeEstimate);

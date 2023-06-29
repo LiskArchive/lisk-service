@@ -713,19 +713,27 @@
 							"params": {
 								"type": "object",
 								"required": [
-									"tokenID",
-									"amount"
+									"messageFee"
 								],
 								"properties": {
-									"tokenID": {
-										"type": "string",
-										"example": "0000000000000000",
-										"description": "The universal token identifier for the token."
-									},
-									"amount": {
-										"type": "string",
-										"example": "5000000",
-										"description": "Amount of tokens to be transferred in this transaction."
+									"messageFee": {
+										"type": "object",
+										"required": [
+											"tokenID",
+											"amount"
+										],
+										"properties": {
+											"tokenID": {
+												"type": "string",
+												"example": "0000000000000000",
+												"description": "The universal token identifier for the token."
+											},
+											"amount": {
+												"type": "string",
+												"example": "5000000",
+												"description": "Amount of tokens to be transferred in this transaction."
+											}
+										}
 									}
 								}
 							}

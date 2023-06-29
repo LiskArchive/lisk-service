@@ -25,7 +25,7 @@ const setFeeEstimates = async (payload) => {
 	}
 };
 
-const getFeeEstimates = async () => feeEstimates;
+const getFeeEstimates = () => feeEstimates;
 
 module.exports = {
 	setFeeEstimates,

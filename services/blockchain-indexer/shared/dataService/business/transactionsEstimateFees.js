@@ -213,7 +213,7 @@ const estimateTransactionFees = async params => {
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
 	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
-	const feeEstimatePerByte = await getFeeEstimates();
+	const feeEstimatePerByte = getFeeEstimates();
 
 	const { minFee, size } = formattedTransaction;
 	const additionalFees = await calcAdditionalFees(formattedTransaction);
