@@ -21,7 +21,7 @@ const { triggerAccountUpdates } = require('../../shared/indexer/accountIndex');
 module.exports = [
 	{
 		name: 'trigger.accountUpdates',
-		description: 'Delete the serialized events until finalized height.',
+		description: 'Triggers account updates',
 		interval: config.job.triggerAccountUpdates.interval,
 		schedule: config.job.triggerAccountUpdates.schedule,
 		controller: async () => {
