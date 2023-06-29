@@ -726,12 +726,12 @@
 											"tokenID": {
 												"type": "string",
 												"example": "0000000000000000",
-												"description": "The universal token identifier for the token with which the message fee is to be paid."
+												"description": "The universal token identifier for the token with which the cross-chain message fee is to be paid."
 											},
 											"amount": {
 												"type": "string",
 												"example": "5000000",
-												"description": "Amount of tokens to be paid for cross chain message fees."
+												"description": "Amount of tokens to be paid for cross-chain message fees."
 											}
 										}
 									}
