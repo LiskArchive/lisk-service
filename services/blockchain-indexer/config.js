@@ -178,6 +178,10 @@ config.job = {
 		interval: process.env.DELETE_FINALISED_CCU_METADATA_INTERVAL || 0,
 		schedule: process.env.DELETE_FINALISED_CCU_METADATA_SCHEDULE || '0 2 * * *',
 	},
+	triggerAccountUpdates: {
+		interval: process.env.TRIGGER_ACCOUNT_UPDATES_INTERVAL || 0,
+		schedule: process.env.TRIGGER_ACCOUNT_UPDATES_SCHEDULE || '*/15 * * * *',
+	},
 };
 
 config.estimateFees = {

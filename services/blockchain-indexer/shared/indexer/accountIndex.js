@@ -16,14 +16,22 @@
 const Redis = require('ioredis');
 
 const {
+	Logger,
 	Queue,
 	MySQL: { getTableInstance },
 	Signals,
 } = require('lisk-service-framework');
 
+const logger = Logger();
+
+const {
+	address: {
+		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
+	},
+} = require('@liskhq/lisk-cryptography');
+
 const {
 	getAccountsByAddress,
-	getAccountsByPublicKey2,
 } = require('../dataService');
 
 const config = require('../../config');
@@ -39,10 +47,17 @@ const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPO
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;
 
-	const account = await getAccountsByPublicKey2([publicKey]);
-	if (account.length) {
+	try {
+		const account = {
+			address: getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex')),
+			publicKey,
+		};
+
 		const accountsTable = await getAccountsTable();
 		await accountsTable.upsert(account);
+	} catch (err) {
+		logger.warn('Failed to update accounts table. Will Retry.');
+		redis.sadd('pendingAccountsByPublicKey', publicKey);
 	}
 };
 

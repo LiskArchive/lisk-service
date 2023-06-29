@@ -20,15 +20,12 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const {
-	Logger,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
 const { indexAccountByPublicKey } = require('../indexer/accountIndex');
-
-const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
