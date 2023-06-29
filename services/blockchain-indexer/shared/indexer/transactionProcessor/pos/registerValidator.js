@@ -40,62 +40,54 @@ const COMMAND_NAME = 'registerValidator';
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
-	try {
-		const accountsTable = await getAccountsTable();
-		const validatorsTable = await getValidatorsTable();
+	const accountsTable = await getAccountsTable();
+	const validatorsTable = await getValidatorsTable();
 
-		const account = {
-			address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
-			publicKey: tx.senderPublicKey,
-			name: tx.params.name,
-			isValidator: true,
-			blsKey: tx.params.blsKey,
-			proofOfPossession: tx.params.proofOfPossession,
-			generatorKey: tx.params.generatorKey,
-		};
+	const account = {
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		publicKey: tx.senderPublicKey,
+		name: tx.params.name,
+		isValidator: true,
+		blsKey: tx.params.blsKey,
+		proofOfPossession: tx.params.proofOfPossession,
+		generatorKey: tx.params.generatorKey,
+	};
 
-		logger.trace(`Updating account index for the account with address ${account.address}.`);
-		await accountsTable.upsert(account, dbTrx);
-		logger.debug(`Updated account index for the account with address ${account.address}.`);
+	logger.trace(`Updating account index for the account with address ${account.address}.`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}.`);
 
-		logger.trace(`Indexing validator with address ${account.address}.`);
-		await validatorsTable.upsert(account, dbTrx);
-		logger.debug(`Indexed validator with address ${account.address}.`);
-	} catch (err) {
-		logger.error(`Error while applying transaction for register validators. Error: ${err.message}`);
-	}
+	logger.trace(`Indexing validator with address ${account.address}.`);
+	await validatorsTable.upsert(account, dbTrx);
+	logger.debug(`Indexed validator with address ${account.address}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
-	try {
-		const accountsTable = await getAccountsTable();
-		const validatorsTable = await getValidatorsTable();
+	const accountsTable = await getAccountsTable();
+	const validatorsTable = await getValidatorsTable();
 
-		// Remove the validator details from the table on transaction reversal
-		const account = {
-			address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
-			publicKey: tx.senderPublicKey,
-			name: null,
-			isValidator: false,
-			blsKey: null,
-			proofOfPossession: null,
-			generatorKey: null,
-		};
+	// Remove the validator details from the table on transaction reversal
+	const account = {
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		publicKey: tx.senderPublicKey,
+		name: null,
+		isValidator: false,
+		blsKey: null,
+		proofOfPossession: null,
+		generatorKey: null,
+	};
 
-		logger.trace(`Updating account index for the account with address ${account.address}.`);
-		await accountsTable.upsert(account, dbTrx);
-		logger.debug(`Updated account index for the account with address ${account.address}.`);
+	logger.trace(`Updating account index for the account with address ${account.address}.`);
+	await accountsTable.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}.`);
 
-		logger.trace(`Remove validator entry for address ${account.address}.`);
-		const validatorPK = account[validatorsTableSchema.primaryKey];
-		await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
-		logger.debug(`Removed validator entry for address ${account.address}.`);
-	} catch (err) {
-		logger.error(`Error while reverting transaction for register validators. Error: ${err.message}`);
-	}
+	logger.trace(`Remove validator entry for address ${account.address}.`);
+	const validatorPK = account[validatorsTableSchema.primaryKey];
+	await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
+	logger.debug(`Removed validator entry for address ${account.address}.`);
 };
 
 module.exports = {

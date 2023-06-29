@@ -70,7 +70,7 @@ const getStakers = async params => {
 		stakersResponse.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
-		await updateAccountPublicKey(publicKey);
+		updateAccountPublicKey(publicKey);
 	}
 
 	if (params.name) {

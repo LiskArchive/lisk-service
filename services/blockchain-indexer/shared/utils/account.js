@@ -26,6 +26,7 @@ const {
 
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
+const { indexAccountByPublicKey } = require('../indexer/accountIndex');
 
 const logger = Logger();
 
@@ -36,15 +37,7 @@ const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPO
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
 const updateAccountPublicKey = async (publicKey) => {
-	try {
-		const accountsTable = await getAccountsTable();
-		await accountsTable.upsert({
-			address: getLisk32AddressFromPublicKey(publicKey),
-			publicKey,
-		});
-	} catch (err) {
-		logger.error(`Error while updating account public key. Error: ${err.message}`);
-	}
+	indexAccountByPublicKey(publicKey);
 };
 
 const updateAccountInfo = async (params) => {
