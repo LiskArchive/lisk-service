@@ -16,6 +16,7 @@
 const blocksSource = require('../../../sources/version3/blocks');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -23,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.blocks',
 	tags: ['Blocks'],
 	params: {
-		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: /^([1-9]|[A-Fa-f0-9]){1,64}$/ },
+		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.BLOCK_ID },
 		height: { optional: true, type: 'string', min: 0, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
 		generatorAddress: { optional: true, type: 'string', min: 38, max: 41, pattern: /^lsk[a-hjkm-z2-9]{38}$/ },
