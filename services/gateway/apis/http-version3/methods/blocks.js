@@ -25,11 +25,11 @@ module.exports = {
 	tags: ['Blocks'],
 	params: {
 		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.BLOCK_ID },
-		height: { optional: true, type: 'string', min: 0, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
-		timestamp: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
-		generatorAddress: { optional: true, type: 'string', min: 38, max: 41, pattern: /^lsk[a-hjkm-z2-9]{38}$/ },
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+		height: { optional: true, type: 'string', min: 0, pattern: regex.HEIGHT_RANGE },
+		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
+		generatorAddress: { optional: true, type: 'string', min: 38, max: 41, pattern: regex.ADDRESS_LISK32 },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
+		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
 		sort: {
 			optional: true,
 			type: 'string',

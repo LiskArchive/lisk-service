@@ -16,14 +16,19 @@
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const ADDRESS_LISK32_CSV = /^(lsk[a-hjkm-z2-9]{38}){1}(,lsk[a-hjkm-z2-9]{38})*$/;
-const BLOCK_ID = /^[1-9][A-Fa-f0-9]{0,63}$/;
+const BLOCK_ID = /^[1-9a-fA-F][A-Fa-f0-9]{0,63}$/;
 const PARTIAL_SEARCH = /^[\w!@$&.]{1,64}$/; // Supports address, publicKey & name
 const NONCE = /^\d+$/;
 const PARTIAL_SEARCH_NAME = /^[\w!@$&.]{1,20}$/;
 const TIMESTAMP_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
 const HEIGHT_RANGE = /^(?:(?:\d+)|(?::(?:\d+))|(?:(?:\d+):(?:\d+)?))$/;
+const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const LIMIT = /^\b((?:[1-9][0-9]?)|100)\b$/;
 const NAME = /^[\w!@$&.]{3,20}$/;
 const NAME_CSV = /^[\w!@$&.,]{3,}$/;
+const NETWORK_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/;
+const OFFSET = /^\b([0-9][0-9]*)\b$/;
+const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,)+\b$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,)+\b$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){64}\b$/;
@@ -53,10 +58,15 @@ module.exports = {
 	NONCE,
 	NAME,
 	NAME_CSV,
+	NETWORK_VERSION,
+	OFFSET,
+	TRANSACTION,
 	TRANSACTION_EXECUTION_STATUS,
 	POS_VALIDATOR_STATUS,
 	HASH_SHA256,
 	HASH_SHA512,
+	IP,
+	LIMIT,
 	TIMESTAMP_RANGE,
 	HEIGHT_RANGE,
 	CCM_STATUS,
