@@ -16,7 +16,7 @@
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const ADDRESS_LISK32_CSV = /^(lsk[a-hjkm-z2-9]{38}){1}(,lsk[a-hjkm-z2-9]{38})*$/;
-const BLOCK_ID = /^[1-9a-fA-F][A-Fa-f0-9]{0,63}$/;
+const BLOCK_ID = /^[1-9a-fA-F][A-Fa-f0-9]{63}$/;
 const PARTIAL_SEARCH = /^[\w!@$&.]{1,64}$/; // Supports address, publicKey & name
 const NONCE = /^\d+$/;
 const PARTIAL_SEARCH_NAME = /^[\w!@$&.]{1,20}$/;

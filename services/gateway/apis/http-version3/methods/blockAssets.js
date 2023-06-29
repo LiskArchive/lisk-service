@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.blocks.assets',
 	tags: ['Blocks'],
 	params: {
-		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
+		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.BLOCK_ID },
 		height: { optional: true, type: 'string', min: 0, pattern: regex.HEIGHT_RANGE },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
 		module: { optional: true, type: 'string', min: 1, pattern: regex.MODULE },
