@@ -5610,7 +5610,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainID | String | `/^\b[a-fA-F0-9,]{8,}\b$/` | *(empty)* | Can be expressed as CSV. |
+| chainID | String | `/^\b([a-fA-F0-9]{8})(,[a-fA-F0-9]{8})*\b$/` | *(empty)* | Can be expressed as CSV. |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | status | String | `/^(registered|active|terminated|unregistered)(,(registered|active|terminated|unregistered)){0,3}$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
@@ -5925,7 +5925,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| chainID | String | `/^\b[a-fA-F0-9,]{8,}\b$/` | *(empty)* | Can be expressed as CSV. |
+| chainID | String | `/^\b([a-fA-F0-9]{8})(,[a-fA-F0-9]{8})*\b$/` | *(empty)* | Can be expressed as CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
 | network | String | `/^(mainnet|testnet|betanet|alphanet|devnet)(,(mainnet|testnet|betanet|alphanet|devnet)){0,4}$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
@@ -6015,7 +6015,7 @@ _Supports pagination._
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
 | tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* |  |
-| tokenID | String | `/^\b[a-fA-F0-9,]{16,}\b$/` | *(empty)* | Can be expressed as CSV. |
+| tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as CSV. |
 | network | String | `/^(mainnet|testnet|betanet|alphanet|devnet)(,(mainnet|testnet|betanet|alphanet|devnet)){0,4}$/` | *(empty)* | Can be expressed as CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
