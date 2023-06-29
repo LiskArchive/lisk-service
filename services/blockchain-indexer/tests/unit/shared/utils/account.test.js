@@ -14,6 +14,11 @@
  *
  */
 
+/* eslint-disable import/no-dynamic-require */
+const path = require('path');
+
+const acccountFilePath = path.resolve(`${__dirname}/../../../../shared/utils/account`);
+
 // Mock the '@liskhq/lisk-cryptography' library
 jest.mock('@liskhq/lisk-cryptography', () => ({
 	address: {
@@ -54,9 +59,7 @@ describe('Account', () => {
 				};
 			});
 
-			const {
-				updateAccountPublicKey,
-			} = require('../../../../shared/utils/account');
+			const { updateAccountPublicKey } = require(acccountFilePath);
 
 			await updateAccountPublicKey(publicKey);
 		});
@@ -80,9 +83,7 @@ describe('Account', () => {
 				};
 			});
 
-			const {
-				updateAccountPublicKey,
-			} = require('../../../../shared/utils/account');
+			const { updateAccountPublicKey } = require(acccountFilePath);
 
 			await updateAccountPublicKey(publicKey);
 		});
@@ -108,9 +109,7 @@ describe('Account', () => {
 				};
 			});
 
-			const {
-				updateAccountPublicKey,
-			} = require('../../../../shared/utils/account');
+			const { updateAccountPublicKey } = require(acccountFilePath);
 
 			await updateAccountPublicKey(publicKey);
 		});
