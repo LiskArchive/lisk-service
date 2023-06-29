@@ -21,6 +21,7 @@ const {
 	getTokenBalance,
 	getTokenBalances,
 	getTokenInitializationFees,
+	tokenHasEscrowAccount,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -63,6 +64,17 @@ module.exports = [
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'tokenHasEscrowAccount',
+		controller: async ({ tokenID, escrowChainID }) => tokenHasEscrowAccount({
+			tokenID,
+			escrowChainID,
+		}),
+		params: {
+			tokenID: { optional: false, type: 'string' },
+			escrowChainID: { optional: false, type: 'string' },
 		},
 	},
 	{
