@@ -100,24 +100,24 @@ config.market.sources = {
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	refreshPricesBinance: {
-		interval: process.env.REFRESH_PRICES_BINANCE_INTERVAL || 0,
-		schedule: process.env.REFRESH_PRICES_BINANCE_SCHEDULE || '* * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_PRICES_BINANCE || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_PRICES_BINANCE || '* * * * *',
 	},
 	refreshPricesBittrex: {
-		interval: process.env.REFRESH_PRICES_BITTREX_INTERVAL || 0,
-		schedule: process.env.REFRESH_PRICES_BITTREX_SCHEDULE || '* * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_PRICES_BITTREX || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_PRICES_BITTREX || '* * * * *',
 	},
 	refreshPricesExchangeratesapi: {
-		interval: process.env.REFRESH_PRICES_EXCHANGERATESAPI_INTERVAL || 0,
-		schedule: process.env.REFRESH_PRICES_EXCHANGERATESAPI_SCHEDULE || '* * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_PRICES_EXCHANGERATESAPI || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_PRICES_EXCHANGERATESAPI || '* * * * *',
 	},
 	refreshPricesKraken: {
-		interval: process.env.REFRESH_PRICES_KRAKEN_INTERVAL || 0,
-		schedule: process.env.REFRESH_PRICES_KRAKEN_SCHEDULE || '* * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_PRICES_KRAKEN || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_PRICES_KRAKEN || '* * * * *',
 	},
 	updatePrices: {
-		interval: process.env.UPDATE_PRICES_INTERVAL || 5,
-		schedule: process.env.UPDATE_PRICES_SCHEDULE || '',
+		interval: process.env.JOB_INTERVAL_UPDATE_PRICES || 5,
+		schedule: process.env.JOB_SCHEDULE_UPDATE_PRICES || '',
 	},
 };
 

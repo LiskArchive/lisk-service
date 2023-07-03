@@ -75,8 +75,8 @@ config.queue = {
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	indexMissingBlocks: {
-		interval: process.env.INDEX_MISSING_BLOCKS_INTERVAL || 0,
-		schedule: process.env.INDEX_MISSING_BLOCKS_SCHEDULE || '*/15 * * * *',
+		interval: process.env.JOB_INTERVAL_INDEX_MISSING_BLOCKS || 0,
+		schedule: process.env.JOB_SCHEDULE_INDEX_MISSING_BLOCKS || '*/15 * * * *',
 	},
 };
 

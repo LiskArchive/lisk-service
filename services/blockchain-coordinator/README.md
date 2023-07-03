@@ -28,6 +28,10 @@ A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
 - `SERVICE_MESSAGE_QUEUE_REDIS`: URL of the job queue to schedule the indexing jobs (Redis).
+- `JOB_INTERVAL_INDEX_MISSING_BLOCKS`: Job run interval to index missing blocks. By default, it is set to 0.
+- `JOB_SCHEDULE_INDEX_MISSING_BLOCKS`: Job run cron schedule to index missing blocks. By default, it is set to run every 15 minutes (`*/15 * * * *`).
+
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
 ## Management
 

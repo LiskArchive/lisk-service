@@ -100,6 +100,8 @@ const { estimateTransactionFees } = require('./transactionsEstimateFees');
 const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 const { invokeEndpoint } = require('./invoke');
 
+const { setFeeEstimates, getFeeEstimates } = require('./feeEstimates');
+
 module.exports = {
 	// Generators
 	getGenerators,
@@ -176,6 +178,10 @@ module.exports = {
 	getAnnualInflation,
 	getDefaultRewardAtHeight,
 	getRewardConstants,
+
+	// Fee estimates
+	setFeeEstimates,
+	getFeeEstimates,
 
 	// Network
 	getNetworkStatus,

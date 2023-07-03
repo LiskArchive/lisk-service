@@ -96,12 +96,12 @@ config.networks = [
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	refreshTransactionStats: {
-		interval: process.env.REFRESH_TRANSACTION_STATS_INTERVAL || 0,
-		schedule: process.env.REFRESH_TRANSACTION_STATS_SCHEDULE || '*/30 * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_TRANSACTION_STATS || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_TRANSACTION_STATS || '*/30 * * * *',
 	},
 	verifyTransactionStats: {
-		interval: process.env.VERIFY_TRANSACTION_STATS_INTERVAL || 0,
-		schedule: process.env.VERIFY_TRANSACTION_STATS_SCHEDULE || '15 */3 * * *',
+		interval: process.env.JOB_INTERVAL_VERIFY_TRANSACTION_STATS || 0,
+		schedule: process.env.JOB_SCHEDULE_VERIFY_TRANSACTION_STATS || '15 */3 * * *',
 	},
 };
 

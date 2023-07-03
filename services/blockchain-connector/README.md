@@ -33,8 +33,16 @@ A list of the most commonly used environment variables is presented below:
 - `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC.
 - `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 - `GEOIP_JSON`: URL of GeoIP server
+- `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching. Enabled by default. To disable, set it to `false`.
+- `EXPIRY_IN_HOURS`: Expiry time (in hours) for block cache. By default, it is set to 12.
+- `JOB_INTERVAL_CACHE_CLEANUP`: Job run interval to cleanup block cache. By default, it is set to 0.
+- `JOB_SCHEDULE_CACHE_CLEANUP`: Job run cron schedule to cleanup block cache. By default, it is set to run every 12 hours (`0 */12 * * *`).
+- `JOB_INTERVAL_REFRESH_PEERS`: Job run interval to refresh the peers list. By default, it is set to run every 60 seconds.
+- `JOB_SCHEDULE_REFRESH_PEERS`: Job run cron schedule to refresh the peers list. By default, it is set to ''.
 
-The variables listed above can be overridden globally by using global variables.
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
+
+The variables listed above can be universally overridden by using global variables.
 
 ```bash
 export LISK_APP_WS="ws://localhost:7887" # Set Lisk Core node port to the given URL globally

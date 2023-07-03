@@ -151,32 +151,32 @@ config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).to
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	deleteSerializedEvents: {
-		interval: process.env.DELETE_SERIALIZED_EVENTS_INTERVAL || 0,
-		schedule: process.env.DELETE_SERIALIZED_EVENTS_SCHEDULE || '*/5 * * * *',
+		interval: process.env.JOB_INTERVAL_DELETE_SERIALIZED_EVENTS || 0,
+		schedule: process.env.JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS || '*/5 * * * *',
 	},
 	refreshValidators: {
-		interval: process.env.REFRESH_VALIDATORS_INTERVAL || 0,
-		schedule: process.env.REFRESH_VALIDATORS_SCHEDULE || '*/5 * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_VALIDATORS || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_VALIDATORS || '*/5 * * * *',
 	},
 	validateValidatorsRank: {
-		interval: process.env.VALIDATE_VALIDATORS_RANK_INTERVAL || 0,
-		schedule: process.env.VALIDATE_VALIDATORS_RANK_SCHEDULE || '4-59/15 * * * *',
+		interval: process.env.JOB_INTERVAL_VALIDATE_VALIDATORS_RANK || 0,
+		schedule: process.env.JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK || '4-59/15 * * * *',
 	},
 	refreshLiveIndexingJobCount: {
-		interval: process.env.REFRESH_INDEX_STATUS_INTERVAL || 10,
-		schedule: process.env.REFRESH_INDEX_STATUS_SCHEDULE || '',
+		interval: process.env.JOB_INTERVAL_REFRESH_INDEX_STATUS || 10,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_INDEX_STATUS || '',
 	},
 	refreshBlockchainAppsStats: {
-		interval: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL || 0,
-		schedule: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE || '*/15 * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS || '*/15 * * * *',
 	},
 	refreshAccountsKnowledge: {
-		interval: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_INTERVAL || 0,
-		schedule: process.env.REFRESH_BLOCKCHAIN_APPS_STATS_SCHEDULE || '*/15 * * * *',
+		interval: process.env.JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE || 0,
+		schedule: process.env.JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE || '*/15 * * * *',
 	},
 	deleteFinalisedCCUMetadata: {
-		interval: process.env.DELETE_FINALISED_CCU_METADATA_INTERVAL || 0,
-		schedule: process.env.DELETE_FINALISED_CCU_METADATA_SCHEDULE || '0 2 * * *',
+		interval: process.env.JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA || 0,
+		schedule: process.env.JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA || '0 2 * * *',
 	},
 	triggerAccountUpdates: {
 		interval: process.env.TRIGGER_ACCOUNT_UPDATES_INTERVAL || 0,

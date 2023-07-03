@@ -18,9 +18,9 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const dynamicFeeEstimates = {
-	low: Joi.string().min(0).required(),
-	medium: Joi.string().min(0).required(),
-	high: Joi.string().min(0).required(),
+	low: Joi.string().required(),
+	medium: Joi.string().required(),
+	high: Joi.string().required(),
 };
 
 const genericFeeSchema = {
@@ -28,18 +28,57 @@ const genericFeeSchema = {
 	amount: Joi.string().pattern(regex.DIGITS).required(),
 };
 
-const transactionFeeEstimates = {
-	minFee: Joi.string().pattern(regex.DIGITS).required(),
-	accountInitializationFee: Joi.object(genericFeeSchema).required(),
-	messageFee: Joi.object(genericFeeSchema).optional(),
+const feeSchema = {
+	tokenID: Joi.string().pattern(regex.TOKEN_ID).required(),
+	minimum: Joi.string().pattern(regex.DIGITS).required(),
+	priority: Joi.object(dynamicFeeEstimates).optional(),
+};
+
+const paramsSchema = {
+	messageFee: Joi.object(genericFeeSchema).required(),
+};
+
+const transactionSchema = {
+	fee: Joi.object(feeSchema).required(),
+	params: Joi.object(paramsSchema).optional(),
 };
 
 const dataSchema = {
-	transactionFeeEstimates: Joi.object(transactionFeeEstimates).required(),
-	dynamicFeeEstimates: Joi.object(dynamicFeeEstimates).required(),
+	transaction: Joi.object(transactionSchema).required(),
 };
 
-const metaSchema = {};
+const minimumFeeBreakdownSchema = {
+	byteFee: Joi.string().pattern(regex.DIGITS).required(),
+	additionalFees: Joi.object().pattern(
+		Joi.string().required(),
+		Joi.string().pattern(regex.DIGITS).required(),
+	).optional(),
+};
+
+const metaMessageFeeSchema = {
+	ccmByteFee: Joi.string().pattern(regex.DIGITS).required(),
+	additionalFees: Joi.object().pattern(
+		Joi.string().required(),
+		Joi.string().pattern(regex.DIGITS).required(),
+	).optional(),
+};
+
+const breakdownFeeSchema = {
+	minimum: Joi.object(minimumFeeBreakdownSchema).required(),
+};
+
+const breakdownParamsSchema = {
+	messageFee: Joi.object(metaMessageFeeSchema).required(),
+};
+
+const breakdownSchema = {
+	fee: Joi.object(breakdownFeeSchema).required(),
+	params: Joi.object(breakdownParamsSchema).optional(),
+};
+
+const metaSchema = {
+	breakdown: Joi.object(breakdownSchema).required(),
+};
 
 const transactionEstimateFees = {
 	data: Joi.object(dataSchema).required(),
