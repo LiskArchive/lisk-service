@@ -137,4 +137,7 @@ module.exports = {
 	triggerAccountUpdates,
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
+
+	// Testing
+	updateAccountInfoPk,
 };
