@@ -32,8 +32,11 @@ const { MODULE, COMMAND, EVENT } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
-const { requestConnector, requestFeeEstimator } = require('../../utils/request');
+const { requestConnector } = require('../../utils/request');
 const config = require('../../../config');
+
+const { getPosConstants } = require('./pos/constants');
+const { getFeeEstimates } = require('./feeEstimates');
 
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
@@ -110,25 +113,20 @@ const mockTransaction = async (_transaction, authAccountInfo) => {
 	return { ...mockedTransaction, params: mockedTransactionParams };
 };
 
-const calcMessageFee = async (transaction) => {
+const getCcmBuffer = async (transaction) => {
 	if (transaction.module !== MODULE.TOKEN
-		|| transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return {};
+		|| transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN) return null;
 
 	// TODO: Add error handling
 	const { data: { events } } = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
-	// Encode CCM (required to calculate ccm length)
+	// Encode CCM (required to calculate CCM length)
 	const { ccm } = ccmSendSuccess.data;
 	const ccmEncoded = await requestConnector('encodeCCM', { ccm });
 	const ccmBuffer = Buffer.from(ccmEncoded, 'hex');
-	const channelInfo = await resolveChannelInfo(transaction.params.receivingChainID);
 
-	return {
-		tokenID: channelInfo.messageFeeTokenID,
-		amount: BigInt(ccmBuffer.length + BUFFER_BYTES_LENGTH)
-			* BigInt(channelInfo.minReturnFeePerByte),
-	};
+	return ccmBuffer;
 };
 
 const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
@@ -137,48 +135,71 @@ const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
 	high: BigInt(minFee) + (BigInt(estimatePerByte.high) * BigInt(size)),
 });
 
-const calcAccountInitializationFees = async (transaction) => {
-	const { tokenID } = transaction.params;
+const calcAdditionalFees = async (transaction) => {
+	const additionalFees = {
+		fee: {},
+		params: {},
+	};
 
-	if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
-		const mainchainServiceURL = await resolveMainchainServiceURL();
-		const { data: appMetadataResponse } = await HTTP
-			.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
+	if (transaction.module === MODULE.TOKEN) {
+		const { tokenID } = transaction.params;
 
-		if (appMetadataResponse.data.length) {
-			const { data: [{ serviceURLs: [{ http: httpServiceURL }] }] } = appMetadataResponse;
+		if (transaction.command === COMMAND.TRANSFER) {
+			const { data: { isExists } } = await tokenHasUserAccount({
+				tokenID,
+				address: transaction.params.recipientAddress,
+			});
 
-			const { data: accountExistsResponse } = await HTTP
-				.get(`${httpServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
-			const { data: { isExists } } = accountExistsResponse;
+			if (!isExists) {
+				const { data: { extraCommandFees } } = await getTokenConstants();
+				additionalFees.fee = {
+					userAccountInitializationFee: extraCommandFees.userAccountInitializationFee,
+				};
+			}
+		} else if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+			const mainchainServiceURL = await resolveMainchainServiceURL();
+			const { data: appMetadataResponse } = await HTTP
+				.get(`${mainchainServiceURL}/api/v3/blockchain/apps/meta?chainID=${transaction.params.receivingChainID}`);
 
-			// Account already exists, no extra fee necessary
-			if (isExists) return { tokenID, amount: BigInt('0') };
+			if (!appMetadataResponse || !appMetadataResponse.data
+				|| appMetadataResponse.data.length === 0) {
+				throw new ValidationException(`Application off-chain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
+			}
 
-			const { data: tokenConstantsResponse } = await HTTP.get(`${httpServiceURL}/api/v3/token/constants`);
+			const { data: [{ serviceURLs: [{ http: receivingServiceURL }] }] } = appMetadataResponse;
+			const { data: tokenConstantsResponse } = await HTTP.get(`${receivingServiceURL}/api/v3/token/constants`);
 			const { data: { extraCommandFees } } = tokenConstantsResponse;
 
-			return {
-				tokenID,
-				amount: extraCommandFees.userAccountInitializationFee,
+			// Check if escrow account exists
+			const { exists: escrowAccountExists } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
+			if (!escrowAccountExists) {
+				additionalFees.fee = {
+					escrowAccountInitializationFee: extraCommandFees.escrowAccountInitializationFee,
+				};
+			}
+
+			// Check if user account exists on the receiving chain
+			const { data: accountExistsResponse } = await HTTP
+				.get(`${receivingServiceURL}/api/v3/token/account/exists?tokenID=${tokenID}&address=${transaction.params.recipientAddress}`);
+			const { data: { isExists: userAccountExists } } = accountExistsResponse;
+			if (!userAccountExists) {
+				additionalFees.params = {
+					messageFee: {
+						userAccountInitializationFee: extraCommandFees.userAccountInitializationFee,
+					},
+				};
+			}
+		}
+	} else if (transaction.module === MODULE.POS) {
+		if (transaction.command === COMMAND.REGISTER_VALIDATOR) {
+			const posConstants = await getPosConstants();
+			additionalFees.fee = {
+				validatorRegistrationFee: posConstants.data.validatorRegistrationFee,
 			};
 		}
-		throw new ValidationException(`Application offchain metadata is not available for the chain: ${transaction.params.receivingChainID}.`);
 	}
 
-	const { data: { isExists } } = await tokenHasUserAccount({
-		tokenID,
-		address: transaction.params.recipientAddress,
-	});
-
-	// Account already exists, no extra fee necessary
-	if (isExists) return { tokenID, amount: BigInt('0') };
-
-	const { data: { extraCommandFees } } = await getTokenConstants();
-	return {
-		tokenID,
-		amount: extraCommandFees.userAccountInitializationFee,
-	};
+	return additionalFees;
 };
 
 const estimateTransactionFees = async params => {
@@ -187,33 +208,99 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	const { data: authAccountInfo } = await getAuthAccountInfo({
-		address: getLisk32AddressFromPublicKey(params.transaction.senderPublicKey),
-	});
+	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
+	const { data: authAccountInfo } = await getAuthAccountInfo({ address: senderAddress });
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
 	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
+	const feeEstimatePerByte = getFeeEstimates();
 
 	const { minFee, size } = formattedTransaction;
+	const additionalFees = await calcAdditionalFees(formattedTransaction);
+	const estimateMinFee = (() => {
+		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
+			if (k.toLowerCase().endsWith('fee')) {
+				return acc + BigInt(v);
+			}
+			return acc;
+		}, BigInt(0));
 
-	const feeEstimatePerByte = await requestFeeEstimator('estimates');
+		// TODO: Remove BUFFER_BYTES_LENGTH support after https://github.com/LiskHQ/lisk-service/issues/1604 is complete
+		return BigInt(minFee) + totalAdditionalFees
+			+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
+	})();
 
-	const transactionFeeEstimates = {
-		minFee: Number(minFee) + (BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
-		accountInitializationFee: await calcAccountInitializationFees(formattedTransaction),
-		messageFee: await calcMessageFee(formattedTransaction),
-	};
-
-	const dynamicFeeEstimates = calcDynamicFeeEstimates(
-		feeEstimatePerByte,
-		transactionFeeEstimates.minFee,
-		size,
-	);
-
+	// Populate the response with transaction minimum fee information
 	estimateTransactionFeesRes.data = {
-		transactionFeeEstimates,
-		dynamicFeeEstimates,
+		...estimateTransactionFeesRes.data,
+		transaction: {
+			fee: {
+				tokenID: feeEstimatePerByte.feeTokenID,
+				minimum: estimateMinFee.toString(),
+			},
+		},
 	};
+	estimateTransactionFeesRes.meta = {
+		...estimateTransactionFeesRes.meta,
+		breakdown: {
+			fee: {
+				minimum: {
+					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
+					additionalFees: { ...additionalFees.fee },
+				},
+			},
+		},
+	};
+
+	// Add priority only when fee values are not 0
+	if (
+		feeEstimatePerByte.low !== 0
+		|| feeEstimatePerByte.med !== 0
+		|| feeEstimatePerByte.high !== 0
+	) {
+		const dynamicFeeEstimates = calcDynamicFeeEstimates(
+			feeEstimatePerByte,
+			estimateMinFee,
+			size,
+		);
+
+		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
+	}
+
+	// Calculate message fee for cross-chain transfers
+	if (
+		params.transaction.module === MODULE.TOKEN
+		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
+	) {
+		// Calculate message fee
+		const ccmBuffer = await getCcmBuffer(params.transaction);
+		const ccmLength = ccmBuffer.length;
+		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
+
+		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
+		const totalMessageFee = ccmByteFee
+			+ BigInt(additionalFees.params.userAccountInitializationFee || 0);
+
+		estimateTransactionFeesRes.data.transaction.params = {
+			messageFee: {
+				tokenID: channelInfo.messageFeeTokenID,
+				amount: totalMessageFee,
+			},
+		};
+
+		// Add params to meta
+		estimateTransactionFeesRes.meta.breakdown = {
+			...estimateTransactionFeesRes.meta.breakdown,
+			params: {
+				messageFee: {
+					ccmByteFee: ccmByteFee.toString(),
+					additionalFees: {
+						...additionalFees.params.messageFee,
+					},
+				},
+			},
+		};
+	}
 
 	return parseToJSONCompatObj(estimateTransactionFeesRes);
 };
@@ -224,4 +311,5 @@ module.exports = {
 	// Export for the unit tests
 	calcDynamicFeeEstimates,
 	mockTransaction,
+	calcAdditionalFees,
 };

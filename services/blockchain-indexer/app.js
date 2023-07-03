@@ -30,6 +30,8 @@ const packageJson = require('./package.json');
 const { MODULE } = require('./shared/constants');
 const { initDatabase } = require('./shared/database/init');
 const { setAppContext } = require('./shared/utils/request');
+const { init } = require('./shared/init');
+const { setFeeEstimates } = require('./shared/dataService/business');
 
 const logger = Logger();
 
@@ -46,6 +48,10 @@ const defaultBrokerConfig = {
 		systemNodeInfo: async (payload) => {
 			logger.debug('Received a \'systemNodeInfo\' event from connecter.');
 			Signals.get('nodeInfo').dispatch(payload);
+		},
+		'update.fee_estimates': async (payload) => {
+			logger.debug('Received a \'update.fee_estimates\' event from fee-estimator.');
+			await setFeeEstimates(payload);
 		},
 	},
 	dependencies: [
@@ -115,14 +121,7 @@ initDatabase()
 		app.run().then(async () => {
 			logger.info(`Service started ${packageJson.name}.`);
 
-			// Init database
-			const status = require('./shared/indexer/indexStatus');
-			await status.init();
-
-			if (config.operations.isIndexingModeEnabled) {
-				const processor = require('./shared/processor');
-				await processor.init();
-			}
+			await init();
 		}).catch(reportErrorAndExitProcess);
 	})
 	.catch(reportErrorAndExitProcess);
