@@ -85,7 +85,8 @@ mysql> quit; # <4>
 <1> Login to MYSQL with the `lisk` user.
 <2> Drop the `lisk` database.
 <3> Create a fresh database `lisk`.
-<4> Log out from MYSQL by typing `quit;`. Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
+<4> Log out from MYSQL by typing `quit;`.
+Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
 
 
@@ -98,8 +99,16 @@ The Maria DB also uses the same SQL commands for querying and manipulating the r
 
 [source,bash]
 ----
-xx
+docker exec -it lisk_mariadb mysql -u root -p # <1>
+drop database lisk; # <2>
+create database lisk; # <3>
+exit; # <4>
 ----
+<1> Login to MariaDB with the `lisk` user.
+<2> Drop the `lisk` database.
+<3> Create a fresh database `lisk`.
+<4> Log out by typing `quit;`.
+Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 --
 ====
 
