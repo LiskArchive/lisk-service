@@ -1,6 +1,6 @@
 ##### Stage 1
 
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 RUN adduser -D builder && \
     mkdir /home/builder/build && \
@@ -15,7 +15,7 @@ RUN npm ci
 
 ##### Stage 2
 
-FROM node:16-alpine
+FROM node:18-alpine
 
 RUN adduser -D lisk && \
     chown -R lisk:lisk /home/lisk/
