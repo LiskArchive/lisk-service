@@ -56,8 +56,13 @@ $ docker exec -it lisk-service_mysql_core_1 bash # <1>
 
 <1> Connect to the interactive shell of the MYSQL Docker container in which you wish to reset the MYSQL database.
 
-=== Drop MYSQL DB / Maria DB
+=== Drop Database
 
+[tabs]
+====
+MYSQL DB::
++
+--
 [source,bash]
 ----
 root@f1413b535254:/# mysql -u lisk -password # <1>
@@ -77,12 +82,25 @@ mysql> drop database lisk; # <2>
 mysql> create database lisk; # <3>
 mysql> quit; # <4>
 ----
-
-
 <1> Login to MYSQL with the `lisk` user.
 <2> Drop the `lisk` database.
 <3> Create a fresh database `lisk`.
 <4> Log out from MYSQL by typing `quit;`. Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
+
+
+
+--
+Maria DB::
++
+--
+xxxxxx
+
+[source,bash]
+----
+xx
+----
+--
+====
 
 NOTE: The MariaDB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries and replication.
 
