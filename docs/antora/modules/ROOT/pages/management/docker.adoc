@@ -93,7 +93,8 @@ mysql> quit; # <4>
 Maria DB::
 +
 --
-xxxxxx
+The Maria DB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries and replication.
+
 
 [source,bash]
 ----
@@ -101,8 +102,6 @@ xx
 ----
 --
 ====
-
-NOTE: The MariaDB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries and replication.
 
 === Flush Redis DB
 
