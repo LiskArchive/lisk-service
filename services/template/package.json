@@ -19,7 +19,7 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": ">=16.15.0 <=16",
+    "node": ">=18.16 <=18",
     "npm": ">=8.5.0"
   },
   "scripts": {
