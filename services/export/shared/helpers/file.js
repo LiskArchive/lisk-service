@@ -129,6 +129,8 @@ const purge = (dirPath, days) => new Promise((resolve, reject) => {
 
 const exists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
+const isFile = async (filePath) => fs.lstatSync(filePath).isFile();
+
 module.exports = {
 	init,
 	write,
@@ -137,4 +139,5 @@ module.exports = {
 	list,
 	purge,
 	exists,
+	isFile,
 };

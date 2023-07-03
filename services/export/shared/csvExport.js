@@ -303,6 +303,9 @@ const downloadTransactionHistory = async ({ filename }) => {
 	const isFileExists = await staticFiles.exists(filename);
 	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
 
+	const isFile = await staticFiles.isFile(filename);
+	if (!isFile) throw new ValidationException(`${filename} is a directory.`);
+
 	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
 
