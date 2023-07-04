@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/export/download',
 	params: {
-		filename: { optional: false, type: 'string', pattern: regex.FILEPATH },
+		filename: { optional: false, type: 'string', pattern: regex.CSV_EXPORT_FILENAME },
 	},
 	tags: ['Account History Export'],
 	get schema() {
