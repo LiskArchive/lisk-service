@@ -171,10 +171,10 @@ const purge = async (dirPath, days) => new Promise((resolve, reject) => {
 	});
 });
 
-const isFile = async (filePath) => new Promise((resolve, reject) => {
+const isFile = async (filePath) => new Promise((resolve) => {
 	minioClient.statObject(AWS_S3_BUCKET_NAME, filePath, (err, stat) => {
 		if (err) {
-			reject(err);
+			resolve(false);
 		} else {
 			resolve(stat.size > 0); // If file size is greater than 0, consider it as a file
 		}
