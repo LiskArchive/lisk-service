@@ -43,6 +43,7 @@ services:
       - ./docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - mysql-primary-data:/var/lib/mysql
       - ./docker/mysql/primary/init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/mysql-healthcheck.sh:/healthcheck.sh
     restart: always
     networks:
       - services_network
@@ -50,17 +51,9 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
       - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=lisk
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-hlocalhost",
-          "-ppassword"
-        ]
-      timeout: 20s
-      retries: 10
+      test: [ 'CMD', 'bash', '/healthcheck.sh' ]
 
   mysql-read-replica:
     image: mysql:8
@@ -92,8 +85,6 @@ services:
           "-hlocalhost",
           "-ppassword"
         ]
-      timeout: 20s
-      retries: 10
 
   mysql-read-replica-haproxy:
     image: nginx:latest
@@ -187,7 +178,7 @@ services:
         condition: service_healthy
       mysql-primary:
         condition: service_healthy
-      mysql-read-replica:
+      mysql-read-replica-haproxy:
         condition: service_healthy
     networks:
       - services_network
@@ -268,7 +259,7 @@ services:
         condition: service_healthy
       mysql-primary:
         condition: service_healthy
-      mysql-read-replica:
+      mysql-read-replica-haproxy:
         condition: service_healthy
     networks:
       - services_network
@@ -311,7 +302,7 @@ services:
       - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
-      - FEE_EST_COLD_START_BATCH_SIZE=${ENABLE_FEE_ESTIMATOR_FULL}
+      - FEE_EST_COLD_START_BATCH_SIZE=${FEE_EST_COLD_START_BATCH_SIZE}
       - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
       - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
       - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
