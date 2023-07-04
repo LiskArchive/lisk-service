@@ -41,7 +41,7 @@ const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
 const MODULE = /^\b(?:[\w!@$&.]{1,32}|,)+\b$/;
 const TOPIC = /^\b(?:(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}),?)+\b$/;
 const HEX_STRING = /^([a-fA-F0-9]+)$/;
-const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}\.csv$/;
+const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
 
 module.exports = {
 	PUBLIC_KEY,
