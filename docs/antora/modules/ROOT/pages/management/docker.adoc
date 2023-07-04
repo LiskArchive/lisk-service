@@ -41,7 +41,7 @@ docker ps
 
 == Reset Lisk Service database
 
-To reset the database of Lisk Service, drop the respective MYSQL and Redis databases.
+To reset the database of Lisk Service, drop the respective MySQL and Redis databases.
 
 Before resetting the database, stop Lisk Service:
 
@@ -54,13 +54,13 @@ Now connect to the Docker container in which you wish to reset the database. If 
 $ docker exec -it lisk-service_mysql_core_1 bash # <1>
 ----
 
-<1> Connect to the interactive shell of the MYSQL Docker container in which you wish to reset the MYSQL database.
+<1> Connect to the interactive shell of the MySQL Docker container in which you wish to reset the MySQL database.
 
 === Drop Database
 
 [tabs]
 ====
-MYSQL DB::
+MySQL DB::
 +
 --
 [source,bash]
@@ -82,10 +82,10 @@ mysql> drop database lisk; # <2>
 mysql> create database lisk; # <3>
 mysql> quit; # <4>
 ----
-<1> Login to MYSQL with the `lisk` user.
+<1> Login to MySQL with the `lisk` user.
 <2> Drop the `lisk` database.
 <3> Create a fresh database `lisk`.
-<4> Log out from MYSQL by typing `quit;`.
+<4> Log out from MySQL by typing `quit;`.
 Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
 
@@ -114,7 +114,7 @@ Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
 === Flush Redis DB
 
-Reset the databases for Redis after dropping the MYSQL database:
+Reset the databases for Redis after dropping the MySQL database:
 
 [source,bash]
 ----
@@ -144,7 +144,8 @@ After the databases are reset, start Lisk Service again as usual:
 
  make up
 
-NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated. This can be quite time-consuming and may take up to 2 hours.
+NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
+This can be quite time-consuming and may take up to 2 hours.
 
 == Logging
 
