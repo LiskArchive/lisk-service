@@ -43,6 +43,7 @@ services:
       - ./docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - mysql-primary-data:/var/lib/mysql
       - ./docker/mysql/primary/init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/mysql-healthcheck.sh:/healthcheck.sh
     restart: always
     networks:
       - services_network
@@ -50,17 +51,9 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
       - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=lisk
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-hlocalhost",
-          "-ppassword"
-        ]
-      timeout: 20s
-      retries: 10
+      test: [ 'CMD', 'bash', '/healthcheck.sh' ]
 
   mysql-read-replica:
     image: mysql:8
@@ -92,8 +85,6 @@ services:
           "-hlocalhost",
           "-ppassword"
         ]
-      timeout: 20s
-      retries: 10
 
   mysql-read-replica-haproxy:
     image: nginx:latest
@@ -155,7 +146,6 @@ services:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
       - LISK_APP_WS=${LISK_APP_WS}
-      - LISK_APP_HTTP=${LISK_APP_HTTP}
       - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
       - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
       - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
@@ -188,7 +178,7 @@ services:
         condition: service_healthy
       mysql-primary:
         condition: service_healthy
-      mysql-read-replica:
+      mysql-read-replica-haproxy:
         condition: service_healthy
     networks:
       - services_network
@@ -228,7 +218,7 @@ services:
       - JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE=${JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE}
       - JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE=${JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE}
       - JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA=${JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA}
-      - JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA=${JOB_SCHEDULE_DELETE_FINALISED_CCU_METADATA}
+      - JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA=${JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA}
       - ESTIMATES_BUFFER_BYTES_LENGTH=${ESTIMATES_BUFFER_BYTES_LENGTH}
     restart: always
 
@@ -269,7 +259,7 @@ services:
         condition: service_healthy
       mysql-primary:
         condition: service_healthy
-      mysql-read-replica:
+      mysql-read-replica-haproxy:
         condition: service_healthy
     networks:
       - services_network
@@ -312,7 +302,7 @@ services:
       - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
-      - FEE_EST_COLD_START_BATCH_SIZE=${ENABLE_FEE_ESTIMATOR_FULL}
+      - FEE_EST_COLD_START_BATCH_SIZE=${FEE_EST_COLD_START_BATCH_SIZE}
       - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
       - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
       - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}

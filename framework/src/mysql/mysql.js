@@ -259,7 +259,7 @@ const getTableInstance = async (...tableParams) => {
 			if (params.limit) {
 				query.limit(Number(params.limit));
 			} else {
-				logger.warn(`No 'limit' set for the query:\n${query.toString()}.`);
+				logger.trace(`No 'limit' set for the query:\n${query.toString()}.`);
 			}
 
 			if (params.offset) query.offset(Number(params.offset));
@@ -460,7 +460,7 @@ const getTableInstance = async (...tableParams) => {
 		}
 
 		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
+			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
 			columns = Array.isArray(tableConfig.primaryKey)
 				? tableConfig.primaryKey : [tableConfig.primaryKey];
 		}
@@ -485,7 +485,7 @@ const getTableInstance = async (...tableParams) => {
 		const trx = await createDefaultTransaction(knex);
 
 		if (!column) {
-			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
+			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
 			column = Array.isArray(tableConfig.primaryKey)
 				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
 		} else {

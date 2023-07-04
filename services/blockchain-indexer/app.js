@@ -15,6 +15,9 @@
  */
 const path = require('path');
 const {
+	MySQL: {
+		KVStore: { configureKeyValueTable },
+	},
 	Microservice,
 	Logger,
 	LoggerConfig,
@@ -22,6 +25,9 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+configureKeyValueTable(MYSQL_ENDPOINT);
 
 LoggerConfig(config.log);
 
