@@ -150,7 +150,7 @@ NOTE: When Lisk Service is started again after a database reset, then the proces
 
 To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
 
-For example, to see the logs for the Gateway microservice, execute:
+For example, to see the logs for the Gateway microservice, execute the following command:
 
 [source,bash]
 ----
