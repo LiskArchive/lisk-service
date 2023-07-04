@@ -15,6 +15,9 @@
  */
 const path = require('path');
 const {
+	MySQL: {
+		KVStore: { configureKeyValueTable },
+	},
 	Microservice,
 	Logger,
 	LoggerConfig,
@@ -23,6 +26,9 @@ const {
 
 const config = require('./config');
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+configureKeyValueTable(MYSQL_ENDPOINT);
+
 LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
@@ -30,6 +36,8 @@ const packageJson = require('./package.json');
 const { MODULE } = require('./shared/constants');
 const { initDatabase } = require('./shared/database/init');
 const { setAppContext } = require('./shared/utils/request');
+const { init } = require('./shared/init');
+const { setFeeEstimates } = require('./shared/dataService/business');
 
 const logger = Logger();
 
@@ -42,6 +50,10 @@ const defaultBrokerConfig = {
 		chainNewBlock: async () => {
 			logger.debug('Received a \'chainNewBlock\' event from connecter.');
 			Signals.get('chainNewBlock').dispatch();
+		},
+		'update.fee_estimates': async (payload) => {
+			logger.debug('Received a \'update.fee_estimates\' event from fee estimator.');
+			await setFeeEstimates(payload);
 		},
 	},
 	dependencies: [
@@ -111,14 +123,7 @@ initDatabase()
 		app.run().then(async () => {
 			logger.info(`Service started ${packageJson.name}.`);
 
-			// Init database
-			const status = require('./shared/indexer/indexStatus');
-			await status.init();
-
-			if (config.operations.isIndexingModeEnabled) {
-				const processor = require('./shared/processor');
-				await processor.init();
-			}
+			await init();
 		}).catch(reportErrorAndExitProcess);
 	})
 	.catch(reportErrorAndExitProcess);

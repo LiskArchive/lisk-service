@@ -110,8 +110,20 @@ const hasUserAccount = async ({ address, tokenID }) => {
 	}
 };
 
+const hasEscrowAccount = async ({ tokenID, escrowChainID }) => {
+	try {
+		return invokeEndpoint('token_hasEscrowAccount', { tokenID, escrowChainID });
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'hasUserAccount\'.');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	tokenHasUserAccount: hasUserAccount,
+	tokenHasEscrowAccount: hasEscrowAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,

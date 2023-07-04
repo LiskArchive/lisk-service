@@ -234,7 +234,7 @@ const validateTransactionStatistics = async historyLengthDays => {
 			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
 			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
 
-			const { meta: { total } } = await requestIndexer('getTransactions', {
+			const { meta: { total } } = await requestIndexer('transactions', {
 				moduleCommand,
 				timestamp: `${fromTimestamp}:${toTimestamp}`,
 				limit: 1,
