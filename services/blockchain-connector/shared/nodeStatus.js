@@ -22,7 +22,7 @@ const waitForIt = require('./utils/waitForIt');
 
 const logger = Logger();
 
-const liskAppAddress = config.endpoints.liskHttp;
+const liskAppAddress = config.endpoints.liskWs;
 const NODE_DISCOVERY_INTERVAL = 1 * 1000; // ms
 
 const checkStatus = () => new Promise((resolve, reject) => {
