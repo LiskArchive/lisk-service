@@ -45,6 +45,8 @@ const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const TOKEN_ID_CSV = /^\b(?:[a-fA-F0-9]{16}|,)+\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
 const PROOF_OF_POSSESSION = /^\b[a-fA-F0-9]{192}\b$/;
+const MODULE = /^[0-9a-zA-Z]{1,32}$/;
+const COMMAND = MODULE;
 const MODULE_CSV = /^(?:[0-9a-zA-Z]{1,32})(?:,[0-9a-zA-Z]{1,32})*$/;
 const COMMAND_CSV = MODULE_CSV;
 const TOPIC_CSV = /^\b(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})(?:,(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}))*\b$/;
@@ -72,7 +74,7 @@ module.exports = {
 	TIMESTAMP_RANGE,
 	HEIGHT_RANGE,
 	CCM_STATUS,
-	INTERVAL: DATE_INTERVAL,
+	DATE_INTERVAL,
 	NETWORK_CSV,
 	APPLICATION_STATUS,
 	MODULE_COMMAND,
@@ -82,9 +84,11 @@ module.exports = {
 	TOKEN_ID_CSV,
 	BLS_KEY,
 	PROOF_OF_POSSESSION,
-	MODULE: MODULE_CSV,
-	TOPIC: TOPIC_CSV,
-	COMMAND: COMMAND_CSV,
+	MODULE,
+	COMMAND,
+	MODULE_CSV,
+	COMMAND_CSV,
+	TOPIC_CSV,
 	HEX_STRING,
 	FEE,
 };
