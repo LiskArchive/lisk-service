@@ -65,7 +65,7 @@ MySQL DB::
 --
 [source,bash]
 ----
-root@f1413b535254:/# mysql -u lisk -password # <1>
+root@f1413b535254:/# mysql -ulisk -ppassword # <1>
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 2044
@@ -88,8 +88,6 @@ mysql> quit; # <4>
 <4> Log out from MySQL by typing `quit;`.
 Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
-
-
 --
 MariaDB::
 +
@@ -99,8 +97,8 @@ The Maria DB also uses the same SQL commands for querying and manipulating the r
 
 [source,bash]
 ----
-sameer@Sameers-MBP mariadb % docker exec -it lisk_mariadb mysql -u root -p # <1>
-Enter password: 
+root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p # <1>
+Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 9
 Server version: 10.7.8-MariaDB-1:10.7.8+maria~ubu2004 mariadb.org binary distribution
