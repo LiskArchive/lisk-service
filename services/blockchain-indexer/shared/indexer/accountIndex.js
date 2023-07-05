@@ -116,4 +116,5 @@ module.exports = {
 
 	// Testing
 	updateAccountInfoPk,
+	updateAccountInfoAddr,
 };

@@ -151,3 +151,128 @@ describe('updateAccountInfoPk', () => {
 		await updateAccountInfoPk(job);
 	});
 });
+
+describe('updateAccountInfoAddr', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.resetModules();
+	});
+
+	it('should update the account information when upsert is successful', async () => {
+		// Mock lisk framework
+		jest.mock('lisk-service-framework', () => {
+			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+			return {
+				...actualLiskServiceFramework,
+				MySQL: {
+					getTableInstance: jest.fn(() => ({
+						upsert: jest.fn((data) => {
+							expect(data).toEqual({
+								address: mockAddress,
+							});
+						}),
+					})),
+					KVStore: {
+						...actualLiskServiceFramework.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+				Queue: jest.fn(),
+				Logger: jest.fn().mockReturnValue({
+					warn: jest.fn(),
+				}),
+			};
+		});
+
+		// Mock the Redis instance
+		jest.mock('ioredis', () => jest.fn());
+
+		// Act
+		const { updateAccountInfoAddr } = require(accountIndexFilePath);
+		const job = { data: mockAddress };
+		await updateAccountInfoAddr(job);
+	});
+
+	it('should retry and add publicKey to pendingAccountsByPublicKey when upsert fails', async () => {
+		// Mock lisk framework
+		jest.mock('lisk-service-framework', () => {
+			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+			return {
+				...actualLiskServiceFramework,
+				MySQL: {
+					getTableInstance: jest.fn(() => ({
+						upsert: jest.fn(() => {
+							throw Error('error');
+						}),
+					})),
+					KVStore: {
+						...actualLiskServiceFramework.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+				Queue: jest.fn(),
+				Logger: jest.fn().mockReturnValue({
+					warn: jest.fn((data) => {
+						expect(data).toEqual('Failed to update accounts table. Will retry later.');
+					}),
+				}),
+			};
+		});
+
+		// Mock the Redis instance
+		const Redis = require('ioredis');
+		jest.mock('ioredis');
+		Redis.mockImplementation(() => ({
+			sadd: jest.fn((queueName, address) => {
+				expect(queueName).toEqual('pendingAccountsByAddress');
+				expect(address).toEqual(mockAddress);
+			}),
+		}));
+
+		const { updateAccountInfoAddr } = require(accountIndexFilePath);
+		const job = { data: mockAddress };
+		await updateAccountInfoAddr(job);
+	});
+
+	it('should retry and add publicKey to pendingAccountsByPublicKey when getTableInstance fails', async () => {
+		// Mock lisk framework
+		jest.mock('lisk-service-framework', () => {
+			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+			return {
+				...actualLiskServiceFramework,
+				MySQL: {
+					getTableInstance: jest.fn(() => {
+						throw Error('error');
+					}),
+					KVStore: {
+						...actualLiskServiceFramework.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+				Queue: jest.fn(),
+				Logger: jest.fn().mockReturnValue({
+					warn: jest.fn((data) => {
+						expect(data).toEqual('Failed to update accounts table. Will retry later.');
+					}),
+				}),
+			};
+		});
+
+		// Mock the Redis instance
+		const Redis = require('ioredis');
+		jest.mock('ioredis');
+		Redis.mockImplementation(() => ({
+			sadd: jest.fn((queueName, address) => {
+				expect(queueName).toEqual('pendingAccountsByAddress');
+				expect(address).toEqual(mockAddress);
+			}),
+		}));
+
+		const { updateAccountInfoAddr } = require(accountIndexFilePath);
+		const job = { data: mockAddress };
+		await updateAccountInfoAddr(job);
+	});
+});
