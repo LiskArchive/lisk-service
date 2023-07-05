@@ -145,7 +145,7 @@ After the databases are reset, start Lisk Service again as usual:
  make up
 
 NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
-This can be quite time-consuming and may take up to 2 hours.
+This can be quite time-consuming when the chain is long, spanning over hours.
 
 == Logging
 
