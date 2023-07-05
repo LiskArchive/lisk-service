@@ -91,7 +91,7 @@ Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
 
 --
-Maria DB::
+MariaDB::
 +
 --
 The Maria DB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries and replication.
