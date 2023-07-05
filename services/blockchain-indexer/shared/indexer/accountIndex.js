@@ -19,26 +19,16 @@ const {
 	Logger,
 	Queue,
 	MySQL: { getTableInstance },
-	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
-
-const {
-	address: {
-		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
-	},
-} = require('@liskhq/lisk-cryptography');
-
-const {
-	getAccountsByAddress,
-} = require('../dataService');
 
 const config = require('../../config');
 
 const redis = new Redis(config.endpoints.cache);
 
 const accountsTableSchema = require('../database/schema/accounts');
+const { getLisk32AddressFromPublicKey } = require('../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -49,33 +39,32 @@ const updateAccountInfoPk = async (job) => {
 
 	try {
 		const account = {
-			address: getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex')),
+			address: getLisk32AddressFromPublicKey(publicKey),
 			publicKey,
 		};
 
 		const accountsTable = await getAccountsTable();
 		await accountsTable.upsert(account);
 	} catch (err) {
-		logger.warn('Failed to update accounts table. Will Retry.');
-		redis.sadd('pendingAccountsByPublicKey', publicKey);
+		logger.warn('Failed to update accounts table. Will retry later.');
+		await redis.sadd(config.queue.indexAccountByPublicKey.name, publicKey);
 	}
 };
 
 const updateAccountInfoAddr = async (job) => {
 	const address = job.data;
 
-	const account = await getAccountsByAddress([address]);
-	if (account.length) {
+	try {
+		const account = {
+			address,
+		};
+
 		const accountsTable = await getAccountsTable();
 		await accountsTable.upsert(account);
+	} catch (err) {
+		logger.warn('Failed to update accounts table. Will retry later.');
+		await redis.sadd(config.queue.indexAccountByAddress.name, address);
 	}
-};
-
-const updateAccountWithData = async (job) => {
-	const accounts = job.data;
-
-	const accountsTable = await getAccountsTable();
-	await accountsTable.upsert(accounts);
 };
 
 // Initialize queues
@@ -91,52 +80,39 @@ const accountAddrUpdateQueue = Queue(
 	updateAccountInfoAddr,
 	config.queue.accountQueueByAddress.concurrency,
 );
-const accountDirectUpdateQueue = Queue(
-	config.endpoints.cache,
-	config.queue.accountQueueDirect.name,
-	updateAccountWithData,
-	config.queue.accountQueueDirect.concurrency,
+const indexAccountByPublicKey = async (publicKey) => redis.sadd(
+	config.queue.indexAccountByPublicKey.name,
+	publicKey,
 );
 
-const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
-
-const indexAccountByAddress = async (address) => redis.sadd('pendingAccountsByAddress', address);
+const indexAccountByAddress = async (address) => redis.sadd(
+	config.queue.indexAccountByAddress.name,
+	address,
+);
 
 const triggerAccountUpdates = async () => {
-	const publicKeys = await redis.spop('pendingAccountsByPublicKey', 64);
+	const publicKeys = 	await redis.spop(
+		config.queue.indexAccountByPublicKey.name,
+		config.queue.indexAccountByPublicKey.concurrency,
+	);
+
 	publicKeys.forEach(publicKey => {
 		if (typeof publicKey === 'string') accountPkUpdateQueue.add(publicKey);
 	});
 
-	const addresses = await redis.spop('pendingAccountsByAddress', 64);
+	const addresses = await redis.spop(
+		config.queue.indexAccountByAddress.name,
+		config.queue.indexAccountByAddress.concurrency,
+	);
 	addresses.forEach(address => {
 		if (typeof address === 'string') accountAddrUpdateQueue.add(address);
 	});
 };
 
-const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
-
-const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
-const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
-
-const keepAccountsCacheUpdated = async () => {
-	const accountsTable = await getAccountsTable();
-	const updateAccountsCacheListener = async (address) => {
-		const accounts = await getAccountsByAddress(address);
-		await accountsTable.upsert(accounts);
-	};
-	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
-};
-
-Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
-
 module.exports = {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
-	indexAccountWithData,
 	triggerAccountUpdates,
-	addAccountToAddrUpdateQueue,
-	addAccountToDirectUpdateQueue,
 
 	// Testing
 	updateAccountInfoPk,

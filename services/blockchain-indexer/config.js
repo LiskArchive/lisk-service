@@ -99,6 +99,14 @@ config.queue = {
 		name: 'IndexBlocksQueue',
 		concurrency: 1,
 	},
+	indexAccountByPublicKey: {
+		name: 'pendingAccountsByPublicKey',
+		concurrency: 64,
+	},
+	indexAccountByAddress: {
+		name: 'pendingAccountsByAddress',
+		concurrency: 64,
+	},
 	updateBlockIndex: {
 		name: 'UpdateBlockIndexQueue',
 		concurrency: 1,
@@ -179,8 +187,8 @@ config.job = {
 		schedule: process.env.JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA || '0 2 * * *',
 	},
 	triggerAccountUpdates: {
-		interval: process.env.TRIGGER_ACCOUNT_UPDATES_INTERVAL || 0,
-		schedule: process.env.TRIGGER_ACCOUNT_UPDATES_SCHEDULE || '*/15 * * * *',
+		interval: process.env.JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES || 0,
+		schedule: process.env.JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES || '*/15 * * * *',
 	},
 };
 

@@ -21,10 +21,8 @@ const {
 const { getAddressByName } = require('../../utils/validator');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
-const {
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
+const { indexAccountByPublicKey } = require('../../../indexer/accountIndex');
 
 const normalizeStake = stake => parseToJSONCompatObj(stake);
 
@@ -47,7 +45,7 @@ const getStakes = async params => {
 		params.address = getLisk32AddressFromPublicKey(params.publicKey);
 
 		// Index publicKey asynchronously
-		updateAccountPublicKey(params.publicKey);
+		indexAccountByPublicKey(params.publicKey);
 	}
 
 	const stakerInfo = await requestConnector('getStaker', { address: params.address });

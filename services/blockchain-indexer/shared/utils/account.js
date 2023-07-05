@@ -25,17 +25,12 @@ const {
 
 const accountsTableSchema = require('../database/schema/accounts');
 const config = require('../../config');
-const { indexAccountByPublicKey } = require('../indexer/accountIndex');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
-
-const updateAccountPublicKey = async (publicKey) => {
-	indexAccountByPublicKey(publicKey);
-};
 
 const updateAccountInfo = async (params) => {
 	const accountInfo = {};
@@ -51,6 +46,5 @@ const updateAccountInfo = async (params) => {
 
 module.exports = {
 	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
 	updateAccountInfo,
 };

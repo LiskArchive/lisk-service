@@ -46,7 +46,7 @@ const {
 	range,
 } = require('../utils/array');
 
-const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
+const { getLisk32AddressFromPublicKey } = require('../utils/account');
 const { getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
@@ -80,6 +80,7 @@ const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_E
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
+const { indexAccountByPublicKey } = require('./accountIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -120,7 +121,7 @@ const indexBlock = async job => {
 					tx.executionStatus = getTransactionExecutionStatus(tx, events);
 
 					// Store address -> publicKey mapping
-					updateAccountPublicKey(tx.senderPublicKey);
+					indexAccountByPublicKey(tx.senderPublicKey);
 
 					await transactionsTable.upsert(tx, dbTrx);
 

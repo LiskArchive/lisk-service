@@ -26,11 +26,12 @@ module.exports = [
 		schedule: config.job.triggerAccountUpdates.schedule,
 		controller: async () => {
 			try {
-				logger.debug('Trigerring account updates.');
+				logger.debug('Triggering account updates.');
 				await triggerAccountUpdates();
-				logger.info('Trigerring account updates successfully.');
+				logger.info('Triggered account updates successfully.');
 			} catch (err) {
-				logger.warn(`Trigerring account updates failed due to: ${err.message}`);
+				logger.warn(`Triggering account updates failed due to: ${err.message}.`);
+				logger.trace(err.stack);
 			}
 		},
 	},
