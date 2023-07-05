@@ -194,7 +194,7 @@ describe('updateAccountInfoAddr', () => {
 		await updateAccountInfoAddr(job);
 	});
 
-	it('should retry and add publicKey to pendingAccountsByPublicKey when upsert fails', async () => {
+	it('should retry and add address to pendingAccountsByAddress when upsert fails', async () => {
 		// Mock lisk framework
 		jest.mock('lisk-service-framework', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
@@ -236,7 +236,7 @@ describe('updateAccountInfoAddr', () => {
 		await updateAccountInfoAddr(job);
 	});
 
-	it('should retry and add publicKey to pendingAccountsByPublicKey when getTableInstance fails', async () => {
+	it('should retry and add address to pendingAccountsByAddress when getTableInstance fails', async () => {
 		// Mock lisk framework
 		jest.mock('lisk-service-framework', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
