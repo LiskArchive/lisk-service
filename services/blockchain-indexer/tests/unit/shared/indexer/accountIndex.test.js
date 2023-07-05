@@ -90,7 +90,7 @@ describe('updateAccountInfoPk', () => {
 				Queue: jest.fn(),
 				Logger: jest.fn().mockReturnValue({
 					warn: jest.fn((data) => {
-						expect(data).toEqual('Failed to update accounts table. Will Retry.');
+						expect(data).toEqual('Failed to update accounts table. Will retry later.');
 					}),
 				}),
 			};
@@ -130,7 +130,7 @@ describe('updateAccountInfoPk', () => {
 				Queue: jest.fn(),
 				Logger: jest.fn().mockReturnValue({
 					warn: jest.fn((data) => {
-						expect(data).toEqual('Failed to update accounts table. Will Retry.');
+						expect(data).toEqual('Failed to update accounts table. Will retry later.');
 					}),
 				}),
 			};
