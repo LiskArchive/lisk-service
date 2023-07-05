@@ -171,21 +171,30 @@ const purge = async (dirPath, days) => new Promise((resolve, reject) => {
 	});
 });
 
-const isFile = async (filePath) => new Promise((resolve) => {
-	minioClient.statObject(AWS_S3_BUCKET_NAME, filePath, (err, stat) => {
-		if (err) {
-			resolve(false);
-		} else {
-			resolve(stat.size > 0); // If file size is greater than 0, consider it as a file
-		}
-	});
-});
-
 const exists = async (fileName) => new Promise((resolve) => {
 	read(fileName)
 		.then(() => resolve(true))
 		.catch(() => resolve(false));
 });
+
+const isFile = async (filePath) => {
+	const fileExists = await exists(filePath);
+	if (!fileExists) {
+		return false;
+	}
+
+	const stat = await new Promise((resolve) => {
+		minioClient.statObject(AWS_S3_BUCKET_NAME, filePath, (err, stats) => {
+			if (err) {
+				resolve(0);
+			} else {
+				resolve(stats);
+			}
+		});
+	});
+
+	return stat.size > 0;
+};
 
 const init = async ({ s3 }) => {
 	if (s3 && s3.bucketName) AWS_S3_BUCKET_NAME = s3.bucketName;

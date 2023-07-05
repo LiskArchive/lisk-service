@@ -129,7 +129,20 @@ const purge = (dirPath, days) => new Promise((resolve, reject) => {
 
 const exists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
-const isFile = async (filePath) => fs.lstatSync(filePath).isFile();
+const isFile = async (filePath) => {
+	const isExists = await exists(filePath);
+
+	if (isExists) {
+		try {
+			const stats = await fs.promises.lstat(filePath);
+			return stats.isFile();
+		} catch (error) {
+			return false;
+		}
+	}
+
+	return false;
+};
 
 module.exports = {
 	init,

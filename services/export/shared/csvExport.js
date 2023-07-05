@@ -61,6 +61,8 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
 
+const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
+
 let app;
 
 const setAppContext = (h) => app = h;
@@ -300,11 +302,12 @@ const downloadTransactionHistory = async ({ filename }) => {
 		meta: {},
 	};
 
-	const isFileExists = await staticFiles.exists(filename);
-	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
+	if (!CSV_EXPORT_FILENAME.test(filename)) {
+		throw new ValidationException('Invalid filename.');
+	}
 
 	const isFile = await staticFiles.isFile(filename);
-	if (!isFile) throw new ValidationException(`${filename} is not a file.`);
+	if (!isFile) throw new ValidationException(`File ${filename} does not exist.`);
 
 	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
