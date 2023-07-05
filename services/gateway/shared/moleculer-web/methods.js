@@ -5,7 +5,7 @@
  * Copyright (c) 2020 MoleculerJS (https://github.com/moleculerjs/moleculer)
  * MIT Licensed
  */
-const { MoleculerError } = require('moleculer').Errors;
+const { MoleculerError, MoleculerServerError } = require('moleculer').Errors;
 const _ = require('lodash');
 const kleur = require('kleur');
 const util = require('util');
@@ -52,7 +52,9 @@ module.exports = {
 					const molecularError = new MoleculerError(err.message, 400);
 					this.sendError(req, res, molecularError);
 				} else {
-					this.sendError(req, res, err);
+					const errMessage = (err && err.message) ? err.message : 'Internal server error';
+					const molecularError = new MoleculerServerError(errMessage, 500);
+					this.sendError(req, res, molecularError);
 				}
 			}
 		},

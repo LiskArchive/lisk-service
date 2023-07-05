@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const packageJson = require('./package.json');
 
 const config = {};
+
+config.rootDir = path.join(__dirname, './');
 
 // Moleculer broker config
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';

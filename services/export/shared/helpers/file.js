@@ -16,11 +16,11 @@
 const BluebirdPromise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
-
 const {
 	Logger,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
+const config = require('../../config');
 
 const {
 	getDaysInMilliseconds,
@@ -67,13 +67,21 @@ const write = (filePath, content) => new Promise((resolve, reject) => {
 });
 
 const read = (filePath) => new Promise((resolve, reject) => {
-	fs.readFile(filePath, 'utf8', (err, data) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		return resolve(data);
-	});
+	const absoluteFilePath = path.resolve(filePath);
+	const absoluteRootDir = path.resolve(config.rootDir);
+
+	if (!absoluteFilePath.startsWith(absoluteRootDir)) {
+		reject(new Error('Filepath is not allowed.'));
+		return;
+	}
+
+	fs.promises.readFile(filePath, 'utf8')
+		.then(data => {
+			resolve(data);
+		})
+		.catch(error => {
+			reject(error);
+		});
 });
 
 const remove = (filePath) => new Promise((resolve, reject) => {
