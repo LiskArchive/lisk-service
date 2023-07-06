@@ -94,7 +94,7 @@ const getEventsByBlockID = async (blockID) => {
 
 const cacheEventsByBlockID = async (blockID, events) => {
 	await eventCacheByBlockID.set(blockID, JSON.stringify(events));
-}
+};
 
 const deleteEventsFromCache = async (height) => eventCache.delete(height);
 
