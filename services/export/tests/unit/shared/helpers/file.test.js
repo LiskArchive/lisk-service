@@ -24,6 +24,7 @@ const {
 	purge,
 	exists,
 	isFile,
+	isFilePathInDirectory,
 } = require('../../../../shared/helpers/file');
 
 const {
@@ -105,5 +106,17 @@ describe('Test filesystem interface', () => {
 
 		files = await list(dirPath);
 		expect(files.length).toBe(0);
+	});
+
+	it('should return true for file path within the directory', () => {
+		const filePath = `${dirPath}/testfile.csv`;
+		const result = isFilePathInDirectory(filePath, dirPath);
+		expect(result).toBe(true);
+	});
+
+	it('should return false for file path outside the directory', () => {
+		const filePath = `${dirPath}/../../testfile.csv`;
+		const result = isFilePathInDirectory(filePath, dirPath);
+		expect(result).toBe(false);
 	});
 });
