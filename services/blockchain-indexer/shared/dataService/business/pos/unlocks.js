@@ -20,7 +20,7 @@ const { getAddressByName } = require('../../utils/validator');
 const { getIndexedAccountInfo } = require('../../utils/account');
 const { requestConnector } = require('../../../utils/request');
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
-const { indexAccountByPublicKey } = require('../../../indexer/accountIndex');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const getPosUnlocks = async params => {
 	const unlocks = {
@@ -68,7 +68,7 @@ const getPosUnlocks = async params => {
 	);
 
 	// Update index if public key is not indexed asynchronously
-	if (!publicKey && params.publicKey) indexAccountByPublicKey(params.publicKey);
+	if (!publicKey && params.publicKey) indexAccountPublicKey(params.publicKey);
 
 	unlocks.data = {
 		address: params.address,

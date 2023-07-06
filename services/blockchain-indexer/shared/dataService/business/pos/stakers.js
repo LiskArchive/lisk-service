@@ -28,7 +28,7 @@ const {
 	getIndexedAccountInfo,
 	getAccountsTable,
 } = require('../../utils/account');
-const { indexAccountByPublicKey } = require('../../../indexer/accountIndex');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -68,7 +68,7 @@ const getStakers = async params => {
 		stakersResponse.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
-		indexAccountByPublicKey(publicKey);
+		indexAccountPublicKey(publicKey);
 	}
 
 	if (params.name) {

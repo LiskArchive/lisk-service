@@ -38,7 +38,7 @@ const {
 } = require('../../utils/account');
 
 const validatorsTableSchema = require('../../database/schema/validators');
-const { indexAccountByPublicKey } = require('../../indexer/accountIndex');
+const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -185,7 +185,7 @@ const getPosValidators = async params => {
 		params.address = address;
 
 		// Index publicKey asynchronously
-		indexAccountByPublicKey(params.publicKey);
+		indexAccountPublicKey(params.publicKey);
 	}
 
 	if (params.address) params.address.split(',').forEach(address => addressSet.add(address));

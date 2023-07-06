@@ -20,7 +20,7 @@ const {
 const config = require('../../../../config');
 
 const { TRANSACTION_STATUS } = require('../../../constants');
-const { indexAccountByAddress } = require('../../accountIndex');
+const { indexAccountAddress } = require('../../accountIndex');
 
 const logger = Logger();
 
@@ -36,7 +36,7 @@ const COMMAND_NAME = 'transferCrossChain';
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
-	indexAccountByAddress(tx.params.recipientAddress);
+	indexAccountAddress(tx.params.recipientAddress);
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
@@ -54,7 +54,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
-	indexAccountByAddress(tx.params.recipientAddress);
+	indexAccountAddress(tx.params.recipientAddress);
 };
 
 module.exports = {

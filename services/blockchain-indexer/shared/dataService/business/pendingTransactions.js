@@ -25,7 +25,7 @@ const { normalizeTransaction } = require('./transactions');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
-const { indexAccountByPublicKey } = require('../../indexer/accountIndex');
+const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
 let pendingTransactionsList = [];
 
@@ -59,7 +59,7 @@ const getPendingTransactionsFromCore = async () => {
 				};
 			}
 
-			indexAccountByPublicKey(normalizedTransaction.senderPublicKey);
+			indexAccountPublicKey(normalizedTransaction.senderPublicKey);
 			normalizedTransaction.executionStatus = 'pending';
 			return normalizedTransaction;
 		},

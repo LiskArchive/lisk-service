@@ -99,11 +99,11 @@ config.queue = {
 		name: 'IndexBlocksQueue',
 		concurrency: 1,
 	},
-	indexAccountByPublicKey: {
+	indexAccountPublicKey: {
 		name: 'pendingAccountsByPublicKey',
 		concurrency: 64,
 	},
-	indexAccountByAddress: {
+	indexAccountAddress: {
 		name: 'pendingAccountsByAddress',
 		concurrency: 64,
 	},

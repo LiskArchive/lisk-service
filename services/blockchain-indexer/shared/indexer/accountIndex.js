@@ -47,7 +47,7 @@ const updateAccountInfoPk = async (job) => {
 		await accountsTable.upsert(account);
 	} catch (err) {
 		logger.warn('Failed to update accounts table. Will retry later.');
-		await redis.sadd(config.queue.indexAccountByPublicKey.name, publicKey);
+		await redis.sadd(config.queue.indexAccountPublicKey.name, publicKey);
 	}
 };
 
@@ -63,7 +63,7 @@ const updateAccountInfoAddr = async (job) => {
 		await accountsTable.upsert(account);
 	} catch (err) {
 		logger.warn('Failed to update accounts table. Will retry later.');
-		await redis.sadd(config.queue.indexAccountByAddress.name, address);
+		await redis.sadd(config.queue.indexAccountAddress.name, address);
 	}
 };
 
@@ -80,20 +80,20 @@ const accountAddrUpdateQueue = Queue(
 	updateAccountInfoAddr,
 	config.queue.accountQueueByAddress.concurrency,
 );
-const indexAccountByPublicKey = async (publicKey) => redis.sadd(
-	config.queue.indexAccountByPublicKey.name,
+const indexAccountPublicKey = async (publicKey) => redis.sadd(
+	config.queue.indexAccountPublicKey.name,
 	publicKey,
 );
 
-const indexAccountByAddress = async (address) => redis.sadd(
-	config.queue.indexAccountByAddress.name,
+const indexAccountAddress = async (address) => redis.sadd(
+	config.queue.indexAccountAddress.name,
 	address,
 );
 
 const triggerAccountUpdates = async () => {
-	const publicKeys = 	await redis.spop(
-		config.queue.indexAccountByPublicKey.name,
-		config.queue.indexAccountByPublicKey.concurrency,
+	const publicKeys = await redis.spop(
+		config.queue.indexAccountPublicKey.name,
+		config.queue.indexAccountPublicKey.concurrency,
 	);
 
 	publicKeys.forEach(publicKey => {
@@ -101,8 +101,8 @@ const triggerAccountUpdates = async () => {
 	});
 
 	const addresses = await redis.spop(
-		config.queue.indexAccountByAddress.name,
-		config.queue.indexAccountByAddress.concurrency,
+		config.queue.indexAccountAddress.name,
+		config.queue.indexAccountAddress.concurrency,
 	);
 	addresses.forEach(address => {
 		if (typeof address === 'string') accountAddrUpdateQueue.add(address);
@@ -110,8 +110,8 @@ const triggerAccountUpdates = async () => {
 };
 
 module.exports = {
-	indexAccountByPublicKey,
-	indexAccountByAddress,
+	indexAccountPublicKey,
+	indexAccountAddress,
 	triggerAccountUpdates,
 
 	// Testing

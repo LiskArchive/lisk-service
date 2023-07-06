@@ -80,7 +80,7 @@ const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_E
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
-const { indexAccountByPublicKey } = require('./accountIndex');
+const { indexAccountPublicKey } = require('./accountIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -121,7 +121,7 @@ const indexBlock = async job => {
 					tx.executionStatus = getTransactionExecutionStatus(tx, events);
 
 					// Store address -> publicKey mapping
-					indexAccountByPublicKey(tx.senderPublicKey);
+					indexAccountPublicKey(tx.senderPublicKey);
 
 					await transactionsTable.upsert(tx, dbTrx);
 

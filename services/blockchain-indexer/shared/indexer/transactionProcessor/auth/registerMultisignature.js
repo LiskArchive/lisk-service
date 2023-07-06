@@ -27,7 +27,7 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const multisignatureTableSchema = require('../../../database/schema/multisignature');
-const { indexAccountByPublicKey } = require('../../accountIndex');
+const { indexAccountPublicKey } = require('../../accountIndex');
 
 const getMultisignatureTable = () => getTableInstance(multisignatureTableSchema, MYSQL_ENDPOINT);
 
@@ -53,8 +53,8 @@ const resolveMultisignatureMemberships = (tx) => {
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// Asynchronously index all the publicKeys
-	tx.params.mandatoryKeys.forEach((key) => indexAccountByPublicKey(key));
-	tx.params.optionalKeys.forEach((key) => indexAccountByPublicKey(key));
+	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
+	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
@@ -69,8 +69,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// Asynchronously index all the publicKeys
-	tx.params.mandatoryKeys.forEach((key) => indexAccountByPublicKey(key));
-	tx.params.optionalKeys.forEach((key) => indexAccountByPublicKey(key));
+	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
+	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
