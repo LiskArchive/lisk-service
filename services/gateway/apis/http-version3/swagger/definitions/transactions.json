@@ -655,85 +655,87 @@
 			"data": {
 				"type": "object",
 				"required": [
-					"transactionFeeEstimates",
-					"dynamicFeeEstimates"
+					"transaction"
 				],
 				"properties": {
-					"transactionFeeEstimates": {
+					"transaction": {
 						"type": "object",
 						"required": [
-							"minFee",
-							"accountInitializationFee"
+							"fee"
 						],
 						"properties": {
-							"minFee": {
-								"type": "string",
-								"example": "135000",
-								"description": "Minimum required transaction fee."
-							},
-							"accountInitializationFee": {
+							"fee": {
 								"type": "object",
 								"required": [
 									"tokenID",
-									"amount"
+									"minimum"
 								],
 								"properties": {
 									"tokenID": {
 										"type": "string",
-										"example": "0400000000000000",
+										"example": "0000000000000000",
 										"description": "The universal token identifier for the token."
 									},
-									"amount": {
+									"minimum": {
 										"type": "string",
 										"example": "5000000",
-										"description": "The extra fee to be supplied for initializing a new user account."
+										"description": "Minimum fee required for the transaction. This is the sum of the transaction byteFee and any other applicable additionalFee. The breakdown is available in the response meta."
+									},
+									"priority": {
+										"type": "object",
+										"required": [
+											"low",
+											"medium",
+											"high"
+										],
+										"description": "Transaction fee recommendations by priority based on the dynamic fees algorithm.",
+										"properties": {
+											"low": {
+												"type": "string",
+												"description": "Estimated transaction fee with low priority.",
+												"example": "135000"
+											},
+											"medium": {
+												"type": "string",
+												"description": "Estimated transaction fee with medium priority.",
+												"example": "207000"
+											},
+											"high": {
+												"type": "string",
+												"description": "Estimated transaction fee with high priority.",
+												"example": "405000"
+											}
+										}
 									}
+									
 								}
 							},
-							"messageFee": {
+							"params": {
 								"type": "object",
 								"required": [
-									"tokenID",
-									"amount"
+									"messageFee"
 								],
 								"properties": {
-									"tokenID": {
-										"type": "string",
-										"example": "0400000000000000",
-										"description": "The universal token identifier for the token."
-									},
-									"amount": {
-										"type": "string",
-										"example": "343000",
-										"description": "The fee required for CCM execution."
+									"messageFee": {
+										"type": "object",
+										"required": [
+											"tokenID",
+											"amount"
+										],
+										"properties": {
+											"tokenID": {
+												"type": "string",
+												"example": "0000000000000000",
+												"description": "The universal token identifier for the token with which the cross-chain message fee is to be paid."
+											},
+											"amount": {
+												"type": "string",
+												"example": "5000000",
+												"description": "Amount of tokens to be paid for cross-chain message fees."
+											}
+										}
 									}
 								}
-							}
-						}
-					},
-					"dynamicFeeEstimates": {
-						"type": "object",
-						"required": [
-							"low",
-							"medium",
-							"high"
-						],
-						"description": "Estimated fees based on priority.",
-						"properties": {
-							"low": {
-								"type": "string",
-								"description": "Estimated transaction fee with low priority.",
-								"example": "135000"
-							},
-							"medium": {
-								"type": "string",
-								"description": "Estimated transaction fee with medium priority.",
-								"example": "207000"
-							},
-							"high": {
-								"type": "string",
-								"description": "Estimated transaction fee with high priority.",
-								"example": "405000"
 							}
 						}
 					}
@@ -741,7 +743,91 @@
 			},
 			"meta": {
 				"type": "object",
-				"properties": {}
+				"required": [
+					"breakdown"
+				],
+				"properties": {
+					"breakdown": {
+						"type": "object",
+						"required": [
+							"fee"
+						],
+						"properties": {
+							"fee": {
+								"type": "object",
+								"required": [
+									"minimum"
+								],
+								"properties": {
+									"minimum": {
+										"type": "object",
+										"required": [
+											"byteFee"
+										],
+										"properties": {
+											"byteFee": {
+												"type": "string",
+												"example": "135000",
+												"description": "The byte fee for the transaction. This is the product of the transaction length times the fee per byte as configured in the application's 'fee' module."
+											},
+											"additionalFees": {
+												"type": "object",
+												"properties": {
+													"validatorRegistrationFee": {
+														"type": "string",
+														"example": "1000000000",
+														"description": "The extra fee to be supplied for a PoS Validator registration transaction."
+													},
+													"userAccountInitializationFee": {
+														"type": "string",
+														"example": "5000000",
+														"description": "The extra fee to be supplied for initializing a new user token account."
+													},
+													"escrowAccountInitializationFee": {
+														"type": "string",
+														"example": "10000000",
+														"description": "The extra fee to be supplied for initializing an escrow token account."
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"params": {
+								"type": "object",
+								"required": [
+									"messageFee"
+								],
+								"properties": {
+									"messageFee": {
+										"type": "object",
+										"required": [
+											"ccmByteFee"
+										],
+										"properties": {
+											"ccmByteFee": {
+												"type": "string",
+												"example": "135000",
+												"description": "The byte fee for the ccm transaction. This is the product of the ccm buffer size times the message fee per byte as configured in the application's 'interoperability' module, available within the channel information."
+											},
+											"additionalFees": {
+												"type": "object",
+												"properties": {
+													"userAccountInitializationFee": {
+														"type": "string",
+														"example": "5000000",
+														"description": "The extra fee to be supplied for initializing a new user token account."
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

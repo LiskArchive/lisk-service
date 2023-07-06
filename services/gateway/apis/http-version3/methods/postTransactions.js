@@ -15,6 +15,7 @@
  */
 const postTransactionsSource = require('../../../sources/version3/postTransactions');
 const { getSwaggerDescription } = require('../../../shared/utils');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -23,7 +24,7 @@ module.exports = {
 	rpcMethod: 'post.transactions',
 	tags: ['Transactions'],
 	params: {
-		transaction: { optional: false, type: 'string', min: 1, pattern: /^\b[0-9a-fA-F]+\b$/ },
+		transaction: { optional: false, type: 'string', min: 1, pattern: regex.TRANSACTION },
 	},
 	get schema() {
 		const postTransactionSchema = {};

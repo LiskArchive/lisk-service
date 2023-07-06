@@ -23,7 +23,7 @@ module.exports = {
 	rpcMethod: 'get.reward.annual-inflation',
 	tags: ['(Dynamic) Reward'],
 	params: {
-		height: { optional: false, type: 'number', min: 0, altSwaggerKey: 'blockHeight' },
+		height: { optional: false, type: 'number', min: 0, integer: true, altSwaggerKey: 'blockHeight' },
 	},
 	get schema() {
 		const rewardAnnualInflationSchema = {};
