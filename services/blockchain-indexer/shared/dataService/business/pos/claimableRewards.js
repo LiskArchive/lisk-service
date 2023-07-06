@@ -15,10 +15,8 @@
  */
 const { requestConnector } = require('../../../utils/request');
 const { getAddressByName } = require('../../utils/validator');
-const {
-	updateAccountPublicKey,
-	getLisk32AddressFromPublicKey,
-} = require('../../../utils/account');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const getPosClaimableRewards = async params => {
 	const claimableRewards = {
@@ -34,7 +32,7 @@ const getPosClaimableRewards = async params => {
 		params.address = getLisk32AddressFromPublicKey(params.publicKey);
 
 		// Index publicKey
-		updateAccountPublicKey(params.publicKey);
+		indexAccountPublicKey(params.publicKey);
 	}
 
 	if (!params.address) {

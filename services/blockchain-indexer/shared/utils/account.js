@@ -32,17 +32,8 @@ const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPO
 
 const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
-const updateAccountPublicKey = async (publicKey) => {
-	const accountsTable = await getAccountsTable();
-	await accountsTable.upsert({
-		address: getLisk32AddressFromPublicKey(publicKey),
-		publicKey,
-	});
-};
-
 const updateAccountInfo = async (params) => {
 	const accountInfo = {};
-
 	Object.keys(accountsTableSchema.schema).forEach(columnName => {
 		if (columnName in params) {
 			accountInfo[columnName] = params[columnName];
@@ -55,6 +46,5 @@ const updateAccountInfo = async (params) => {
 
 module.exports = {
 	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
 	updateAccountInfo,
 };
