@@ -183,17 +183,17 @@ const isFile = async (filePath) => {
 		return false;
 	}
 
-	const stat = await new Promise((resolve) => {
+	const isNonEmptyFile = await new Promise((resolve) => {
 		minioClient.statObject(AWS_S3_BUCKET_NAME, filePath, (err, stats) => {
 			if (err) {
-				resolve(0);
+				resolve(false);
 			} else {
-				resolve(stats);
+				resolve(stats > 0);
 			}
 		});
 	});
 
-	return stat.size > 0;
+	return isNonEmptyFile;
 };
 
 const init = async ({ s3 }) => {

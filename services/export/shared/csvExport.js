@@ -52,6 +52,7 @@ const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
 const FilesystemCache = require('./csvCache');
+const { CSV_EXPORT_FILENAME } = require('./regex');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
@@ -60,8 +61,6 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
-
-const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
 
 let app;
 
@@ -303,11 +302,11 @@ const downloadTransactionHistory = async ({ filename }) => {
 	};
 
 	if (!CSV_EXPORT_FILENAME.test(filename)) {
-		throw new ValidationException('Invalid filename.');
+		throw new ValidationException(`Invalid filename (${filename}) supplied.`);
 	}
 
 	const isFile = await staticFiles.isFile(filename);
-	if (!isFile) throw new ValidationException(`File ${filename} does not exist.`);
+	if (!isFile) throw new ValidationException(`Requested file (${filename}) does not exist.`);
 
 	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
