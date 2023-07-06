@@ -23,7 +23,7 @@ const ccuTableSchema = require('../database/schema/ccu');
 
 const getCCUTable = () => getTableInstance(ccuTableSchema, MYSQL_ENDPOINT);
 
-const deleteFinalisedCCUMetadata = async (height) => {
+const deleteFinalizedCCUMetadata = async (height) => {
 	const ccuTable = await getCCUTable();
 
 	const searchParams = {
@@ -37,5 +37,5 @@ const deleteFinalisedCCUMetadata = async (height) => {
 };
 
 module.exports = {
-	deleteFinalisedCCUMetadata,
+	deleteFinalizedCCUMetadata,
 };

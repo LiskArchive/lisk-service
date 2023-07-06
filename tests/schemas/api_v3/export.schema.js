@@ -20,7 +20,7 @@ const regex = require('./regex');
 const exportSchemaAccepted = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
-	interval: Joi.string().pattern(regex.INTERVAL).required(),
+	interval: Joi.string().pattern(regex.DATE_INTERVAL).required(),
 };
 
 const exportSchema = {
