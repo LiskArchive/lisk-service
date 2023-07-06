@@ -78,9 +78,9 @@ affiliates. Other names may be trademarks of their respective
 owners.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-mysql> drop database lisk; # <2>
-mysql> create database lisk; # <3>
-mysql> quit; # <4>
+mysql> drop database lisk; #
+mysql> create database lisk; #
+mysql> quit; #
 ----
 <1> Login to MySQL with the `lisk` user.
 <2> Drop the `lisk` database.
@@ -97,7 +97,7 @@ MariaDB also uses the same SQL commands for querying and manipulating the releva
 
 [source,bash]
 ----
-root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p # <1>
+root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p #
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 9
@@ -107,13 +107,13 @@ Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-MariaDB [(none)]> drop database lisk; # <2>
+MariaDB [(none)]> drop database lisk; #
 Query OK, 0 rows affected (0.009 sec)
 
-MariaDB [(none)]> create database lisk; # <3>
+MariaDB [(none)]> create database lisk; #
 Query OK, 1 row affected (0.001 sec)
 
-MariaDB [(none)]> exit; # <4>
+MariaDB [(none)]> exit; #
 Bye
 ----
 <1> Login to MariaDB with the `lisk` user.
