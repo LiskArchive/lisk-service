@@ -20,7 +20,6 @@ const {
 	Logger,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
-const config = require('../../config');
 
 const {
 	getDaysInMilliseconds,
@@ -66,15 +65,19 @@ const write = (filePath, content) => new Promise((resolve, reject) => {
 	});
 });
 
-const read = (filePath) => new Promise((resolve, reject) => {
+const isFilePathInDirectory = (filePath, directory) => {
 	const absoluteFilePath = path.resolve(filePath);
-	const absoluteRootDir = path.resolve(config.rootDir);
+	const absoluteRootDir = path.resolve(directory);
 
 	if (!absoluteFilePath.startsWith(absoluteRootDir)) {
-		reject(new Error('Filepath is not allowed.'));
-		return;
+		logger.warn('Filepath is not allowed.');
+		return false;
 	}
 
+	return true;
+};
+
+const read = (filePath) => new Promise((resolve, reject) => {
 	fs.promises.readFile(filePath, 'utf8')
 		.then(data => {
 			resolve(data);
@@ -161,4 +164,5 @@ module.exports = {
 	purge,
 	exists,
 	isFile,
+	isFilePathInDirectory,
 };

@@ -28,14 +28,19 @@ const DRIVERS = {
 };
 
 const objectCacheFS = (params) => {
-	const { init, write, read, exists, remove, purge, isFile } = FileStorage;
+	const { init, write, read, exists, remove, purge, isFile, isFilePathInDirectory } = FileStorage;
 	const { dirPath, retentionInDays } = params;
 
 	init({ dirPath });
 
 	return {
 		write: (filename, content) => write(`${dirPath}/${filename}`, content),
-		read: (filename) => read(`${dirPath}/${filename}`),
+		read: (filename) => {
+			if (isFilePathInDirectory(`${dirPath}/${filename}`, dirPath)) {
+				return read(`${dirPath}/${filename}`);
+			}
+			return Promise.reject(new Error('Filepath is not allowed.'));
+		},
 		exists: (filename) => exists(`${dirPath}/${filename}`),
 		remove: (filename) => remove(`${dirPath}/${filename}`),
 		purge: () => purge(dirPath, retentionInDays),
