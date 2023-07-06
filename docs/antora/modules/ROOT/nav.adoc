@@ -3,3 +3,6 @@
 ** xref:setup/source.adoc[]
 
 * xref:configuration/index.adoc[Configuration]
+
+* Management
+** xref:management/docker.adoc[]
