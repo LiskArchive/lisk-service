@@ -894,7 +894,7 @@ Retrieves user-specific details from the Auth module.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
@@ -952,7 +952,7 @@ Retrieves user-specific details from the Validator module.
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
@@ -1051,7 +1051,7 @@ Validates if an entry exists in the Token sub-store for the specified address.
 | --------- | ---- | ---------- | ------- | ------- |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required. |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 
 #### Response example
@@ -1099,7 +1099,7 @@ Retrieves the balances from the Token sub-store for the specified address.
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
@@ -1440,7 +1440,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1495,7 +1495,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1606,7 +1606,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -1668,7 +1668,7 @@ Retrieves the list of stakes sent by the specified user by their address, public
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 
@@ -1728,7 +1728,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | isLocked | Boolean | `[true, false]` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -1796,7 +1796,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
@@ -2011,7 +2011,7 @@ Retrieves legacy account details for the specified user publicKey.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 
 
 #### Response example
@@ -2066,7 +2066,7 @@ _Supports pagination._
 | ip   | String | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/` | *(empty)* |  |
 | networkVersion | String | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(.\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/` | *(empty)* |  |
 | state | String | `["connected", "disconnected", "any"]` | any |  |
-| height | Number | `[1,Inf)` | *(empty)* |  |
+| height | Number | `[0,Inf)` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | String | `["height:asc", "height:desc", "networkVersion:asc", "networkVersion:desc"]` | height:desc |  |
@@ -6029,7 +6029,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
 | tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* |  |
 | tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
