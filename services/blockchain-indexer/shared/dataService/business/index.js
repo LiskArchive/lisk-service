@@ -85,6 +85,8 @@ const { postTransactions } = require('./postTransactions');
 const {
 	getEvents,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 } = require('./events');
 const { dryRunTransactions } = require('./transactionsDryRun');
@@ -130,6 +132,8 @@ module.exports = {
 	// Events
 	getEvents,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 
 	// Interoperability

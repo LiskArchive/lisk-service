@@ -38,6 +38,8 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactions,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 	getTransactionsByBlockID,
 } = require('../dataService');
@@ -102,6 +104,7 @@ const indexBlock = async job => {
 		}
 
 		const events = await getEventsByHeight(block.height);
+		cacheEventsByBlockID(block.id, events);
 
 		if (block.transactions.length) {
 			const { transactions, assets, ...blockHeader } = block;
@@ -247,7 +250,7 @@ const deleteIndexedBlocks = async job => {
 			async block => {
 				let { data: forkedTransactions } = await getTransactionsByBlockID(block.id);
 				const transactionsTable = await getTransactionsTable();
-				const events = await getEventsByHeight(block.height);
+				const events = await getEventsByBlockID(block.id);
 
 				if (Array.isArray(forkedTransactions)) {
 					const { assets, ...blockHeader } = block;
