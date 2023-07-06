@@ -17,6 +17,8 @@
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
 
+const config = require('../../../../config');
+
 const accountIndexFilePath = resolve(`${__dirname}/../../../../shared/indexer/accountIndex`);
 
 const mockPublicKey = '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c';
@@ -101,7 +103,7 @@ describe('updateAccountInfoPk', () => {
 		jest.mock('ioredis');
 		Redis.mockImplementation(() => ({
 			sadd: jest.fn((queueName, publicKey) => {
-				expect(queueName).toEqual('pendingAccountsByPublicKey');
+				expect(queueName).toEqual(config.queue.indexAccountPublicKey.name);
 				expect(publicKey).toEqual(mockPublicKey);
 			}),
 		}));
@@ -141,7 +143,7 @@ describe('updateAccountInfoPk', () => {
 		jest.mock('ioredis');
 		Redis.mockImplementation(() => ({
 			sadd: jest.fn((queueName, publicKey) => {
-				expect(queueName).toEqual('pendingAccountsByPublicKey');
+				expect(queueName).toEqual(config.queue.indexAccountPublicKey.name);
 				expect(publicKey).toEqual(mockPublicKey);
 			}),
 		}));
@@ -226,7 +228,7 @@ describe('updateAccountInfoAddr', () => {
 		jest.mock('ioredis');
 		Redis.mockImplementation(() => ({
 			sadd: jest.fn((queueName, address) => {
-				expect(queueName).toEqual('pendingAccountsByAddress');
+				expect(queueName).toEqual(config.queue.indexAccountAddress.name);
 				expect(address).toEqual(mockAddress);
 			}),
 		}));
@@ -266,7 +268,7 @@ describe('updateAccountInfoAddr', () => {
 		jest.mock('ioredis');
 		Redis.mockImplementation(() => ({
 			sadd: jest.fn((queueName, address) => {
-				expect(queueName).toEqual('pendingAccountsByAddress');
+				expect(queueName).toEqual(config.queue.indexAccountAddress.name);
 				expect(address).toEqual(mockAddress);
 			}),
 		}));
