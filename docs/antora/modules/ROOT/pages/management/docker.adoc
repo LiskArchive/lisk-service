@@ -63,6 +63,8 @@ $ docker exec -it lisk-service_mysql_core_1 bash # <1>
 MySQL DB::
 +
 --
+. Login to MySQL with the `lisk` user.
++
 [source,bash]
 ----
 root@f1413b535254:/# mysql -ulisk -ppassword
@@ -77,15 +79,28 @@ Oracle is a registered trademark of Oracle Corporation and/or its
 affiliates. Other names may be trademarks of their respective
 owners.
 
+
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-mysql> drop database lisk; #
-mysql> create database lisk; #
-mysql> quit; #
 ----
-<1> Login to MySQL with the `lisk` user.
-<2> Drop the `lisk` database.
-<3> Create a fresh database `lisk`.
-<4> Log out from MySQL by typing `quit;`.
+. Drop the `lisk` database.
++
+[source,bash]
+----
+mysql> drop database lisk;
+----
+. Create a fresh database `lisk`.
++
+[source,bash]
+----
+mysql> create database lisk;
+----
+. Log out from MySQL by typing `quit;`
++
+[source,bash]
+----
+mysql> quit;
+----
+
 Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
 --
@@ -97,7 +112,7 @@ MariaDB also uses the same SQL commands for querying and manipulating the releva
 
 [source,bash]
 ----
-root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p #
+root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p # <1>
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 9
@@ -107,13 +122,13 @@ Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-MariaDB [(none)]> drop database lisk; #
+MariaDB [(none)]> drop database lisk; # <2>
 Query OK, 0 rows affected (0.009 sec)
 
-MariaDB [(none)]> create database lisk; #
+MariaDB [(none)]> create database lisk; # <3>
 Query OK, 1 row affected (0.001 sec)
 
-MariaDB [(none)]> exit; #
+MariaDB [(none)]> exit; # <4>
 Bye
 ----
 <1> Login to MariaDB with the `lisk` user.

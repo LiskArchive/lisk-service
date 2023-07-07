@@ -29,7 +29,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_setup_docker_docker: setup/docker.adoc#docker
 :url_config: configuration/source.adoc
 :url_management_pm2: management/source.adoc
-:url_references_config: reference/configuration.adoc
+:url_references_config: configuration/index.adoc
 
 TIP: Install from source code if you want to customize the codebase of Lisk Service, e.g. if you want to adjust the API to be fully compatible with your blockchain application.
 
