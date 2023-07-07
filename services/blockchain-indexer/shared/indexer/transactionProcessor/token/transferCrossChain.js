@@ -21,6 +21,7 @@ const config = require('../../../../config');
 
 const { TRANSACTION_STATUS } = require('../../../constants');
 const { indexAccountAddress } = require('../../accountIndex');
+const { requestConnector } = require('../../../utils/request');
 
 const logger = Logger();
 
@@ -33,6 +34,8 @@ const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYS
 // Command specific constants
 const COMMAND_NAME = 'transferCrossChain';
 
+const EVENT_NAME_INITIALIZE_ESCROW_ACCOUNT = 'initializeEscrowAccount';
+
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
@@ -44,6 +47,19 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		...tx,
 		...tx.params,
 	};
+
+	const filterInitializeEscrowAccountEvent = events
+		.find(event => event.name === EVENT_NAME_INITIALIZE_ESCROW_ACCOUNT
+			&& event.data.address === tx.params.recipientAddress);
+
+	if (filterInitializeEscrowAccountEvent) {
+		const formattedTransaction = await requestConnector('formatTransaction', {
+			transaction: tx,
+			additionalFee: filterInitializeEscrowAccountEvent.data.initializationFee,
+		});
+
+		tx.minFee = formattedTransaction ? formattedTransaction.minFee : tx.minFee;
+	}
 
 	const transactionsTable = await getTransactionsTable();
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);

@@ -28,9 +28,14 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const accountsTableSchema = require('../../../database/schema/accounts');
+const transactionsTableSchema = require('../../../database/schema/transactions');
 const validatorsTableSchema = require('../../../database/schema/validators');
 
+const { getPosConstants } = require('../../../dataService');
+const { requestConnector } = require('../../../utils/request');
+
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
@@ -41,6 +46,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
 
 	const accountsTable = await getAccountsTable();
+	const transactionsTable = await getTransactionsTable();
 	const validatorsTable = await getValidatorsTable();
 
 	const account = {
@@ -60,6 +66,17 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Indexing validator with address ${account.address}.`);
 	await validatorsTable.upsert(account, dbTrx);
 	logger.debug(`Indexed validator with address ${account.address}.`);
+
+	const posConstants = await getPosConstants();
+	const formattedTransaction = await requestConnector('formatTransaction', {
+		transaction: tx,
+		additionalFee: posConstants.data.validatorRegistrationFee,
+	});
+
+	tx.minFee = formattedTransaction ? formattedTransaction.minFee : tx.minFee;
+	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
+	await transactionsTable.upsert(tx, dbTrx);
+	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
