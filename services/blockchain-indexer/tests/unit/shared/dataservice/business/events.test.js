@@ -20,7 +20,6 @@ const mockedBlockID = '89a9f8dd0e9d15e54268f952b2e9430e799968169376273f715480d05
 const mockedEvents = [{ id: 'c3a1f388859d69105241473ce9a49d831c8eb0043f717a626b2901f52ed3610c', name: 'transfer' }, { id: 'c3c120616d202a36e659248e6d384bbbf3429d4d56a6066f368aa14d16e81dfb', name: 'validatorRegistered' }];
 
 const mockEventsFilePath = path.resolve(`${__dirname}/../../../../../shared/dataService/business/events`);
-const mockConfigFilePath = path.resolve(`${__dirname}/../../../../../config`);
 
 describe('getEventsByBlockID', () => {
 	beforeEach(() => {
@@ -29,14 +28,6 @@ describe('getEventsByBlockID', () => {
 	});
 
 	it('should return events from cache if available', async () => {
-		jest.mock(mockConfigFilePath, () => {
-			const actual = jest.requireActual(mockConfigFilePath);
-			return {
-				...actual,
-				isPersistEvents: true,
-			};
-		});
-
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -59,15 +50,7 @@ describe('getEventsByBlockID', () => {
 		expect(events).toEqual(mockedEvents);
 	});
 
-	it('should return events from DB and cache them if cache miss and isPersistEvents enabled', async () => {
-		jest.mock(mockConfigFilePath, () => {
-			const actual = jest.requireActual(mockConfigFilePath);
-			return {
-				...actual,
-				isPersistEvents: true,
-			};
-		});
-
+	it('should return events from DB and if cache miss', async () => {
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -104,15 +87,7 @@ describe('getEventsByBlockID', () => {
 		expect(events).toEqual(mockedEvents);
 	});
 
-	it('should return an empty array if cache miss and isPersistEvents disabled', async () => {
-		jest.mock(mockConfigFilePath, () => {
-			const actual = jest.requireActual(mockConfigFilePath);
-			return {
-				...actual,
-				isPersistEvents: false,
-			};
-		});
-
+	it('should return an empty array if cache and db miss', async () => {
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -125,7 +100,12 @@ describe('getEventsByBlockID', () => {
 					set: jest.fn(),
 				})),
 				MySQL: {
-					getTableInstance: jest.fn(),
+					getTableInstance: () => ({
+						find: (params) => {
+							expect(params).toEqual({ blockID: mockedBlockID });
+							return [];
+						},
+					}),
 				},
 			};
 		});

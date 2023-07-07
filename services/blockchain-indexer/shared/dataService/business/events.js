@@ -76,17 +76,15 @@ const getEventsByBlockID = async (blockID) => {
 	const cachedEvents = await eventCacheByBlockID.get(blockID);
 	if (cachedEvents) return JSON.parse(cachedEvents);
 
-	// Get from DB only when isPersistEvents is enabled
-	if (config.isPersistEvents) {
-		const eventsTable = await getEventsTable();
-		const dbEventStrs = await eventsTable.find({ blockID }, ['eventStr']);
+	// Get from DB incase of cache miss
+	const eventsTable = await getEventsTable();
+	const dbEventStrs = await eventsTable.find({ blockID }, ['eventStr']);
 
-		if (dbEventStrs.length) {
-			const dbEvents = dbEventStrs
-				.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
-			await eventCacheByBlockID.set(blockID, JSON.stringify(dbEvents));
-			return dbEvents;
-		}
+	if (dbEventStrs.length) {
+		const dbEvents = dbEventStrs
+			.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+		eventCacheByBlockID.set(blockID, JSON.stringify(dbEvents));
+		return dbEvents;
 	}
 
 	return [];
