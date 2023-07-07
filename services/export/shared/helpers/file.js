@@ -16,7 +16,6 @@
 const BluebirdPromise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
-
 const {
 	Logger,
 	Exceptions: { ValidationException },
@@ -66,14 +65,26 @@ const write = (filePath, content) => new Promise((resolve, reject) => {
 	});
 });
 
+const isFilePathInDirectory = (filePath, directory) => {
+	const absoluteFilePath = path.resolve(filePath);
+	const absoluteRootDir = path.resolve(directory);
+
+	if (!absoluteFilePath.startsWith(absoluteRootDir)) {
+		logger.warn('Filepath is not allowed.');
+		return false;
+	}
+
+	return true;
+};
+
 const read = (filePath) => new Promise((resolve, reject) => {
-	fs.readFile(filePath, 'utf8', (err, data) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		return resolve(data);
-	});
+	fs.promises.readFile(filePath, 'utf8')
+		.then(data => {
+			resolve(data);
+		})
+		.catch(error => {
+			reject(error);
+		});
 });
 
 const remove = (filePath) => new Promise((resolve, reject) => {
@@ -129,6 +140,21 @@ const purge = (dirPath, days) => new Promise((resolve, reject) => {
 
 const exists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
+const isFile = async (filePath) => {
+	const isExists = await exists(filePath);
+
+	if (isExists) {
+		try {
+			const stats = await fs.promises.lstat(filePath);
+			return stats.isFile();
+		} catch (error) {
+			return false;
+		}
+	}
+
+	return false;
+};
+
 module.exports = {
 	init,
 	write,
@@ -137,4 +163,6 @@ module.exports = {
 	list,
 	purge,
 	exists,
+	isFile,
+	isFilePathInDirectory,
 };

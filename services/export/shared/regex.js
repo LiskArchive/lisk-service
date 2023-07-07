@@ -15,8 +15,10 @@
  */
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
 
 module.exports = {
 	PUBLIC_KEY,
 	ADDRESS_LISK32,
+	CSV_EXPORT_FILENAME,
 };

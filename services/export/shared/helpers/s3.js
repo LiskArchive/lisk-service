@@ -177,6 +177,25 @@ const exists = async (fileName) => new Promise((resolve) => {
 		.catch(() => resolve(false));
 });
 
+const isFile = async (filePath) => {
+	const fileExists = await exists(filePath);
+	if (!fileExists) {
+		return false;
+	}
+
+	const isNonEmptyFile = await new Promise((resolve) => {
+		minioClient.statObject(AWS_S3_BUCKET_NAME, filePath, (err, stats) => {
+			if (err) {
+				resolve(false);
+			} else {
+				resolve(stats > 0);
+			}
+		});
+	});
+
+	return isNonEmptyFile;
+};
+
 const init = async ({ s3 }) => {
 	if (s3 && s3.bucketName) AWS_S3_BUCKET_NAME = s3.bucketName;
 	return createDir();
@@ -190,6 +209,7 @@ module.exports = {
 	purge,
 	exists,
 	init,
+	isFile,
 
 	// For functional tests teardown
 	minioClient,
