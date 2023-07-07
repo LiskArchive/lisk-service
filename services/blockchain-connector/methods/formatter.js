@@ -20,7 +20,8 @@ module.exports = [
 		name: 'formatTransaction',
 		params: {
 			transaction: { optional: false, type: 'any' },
+			additionalFee: { optional: true, type: 'string' },
 		},
-		controller: ({ transaction }) => formatTransaction(transaction),
+		controller: ({ transaction, additionalFee }) => formatTransaction(transaction, additionalFee),
 	},
 ];
