@@ -109,10 +109,11 @@ MariaDB::
 --
 MariaDB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries and replication.
 
-
+. Login to MariaDB with the `lisk` user.
++
 [source,bash]
 ----
-root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p # <1>
+root@f1413b535254:~# docker exec -it lisk_mariadb mysql -uroot -p
 Enter password:
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 9
@@ -121,20 +122,29 @@ Server version: 10.7.8-MariaDB-1:10.7.8+maria~ubu2004 mariadb.org binary distrib
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-MariaDB [(none)]> drop database lisk; # <2>
+----
+. Drop the `lisk` database.
++
+[source,bash]
+----
+MariaDB [(none)]> drop database lisk;
 Query OK, 0 rows affected (0.009 sec)
-
-MariaDB [(none)]> create database lisk; # <3>
+----
+. Create a fresh database `lisk`
++
+[source,bash]
+----
+MariaDB [(none)]> create database lisk;
 Query OK, 1 row affected (0.001 sec)
-
-MariaDB [(none)]> exit; # <4>
+----
+. Log out by typing `quit;`.
++
+[source,bash]
+----
+MariaDB [(none)]> exit;
 Bye
 ----
-<1> Login to MariaDB with the `lisk` user.
-<2> Drop the `lisk` database.
-<3> Create a fresh database `lisk`.
-<4> Log out by typing `quit;`.
+
 Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 --
 ====
