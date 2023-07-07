@@ -15,9 +15,10 @@
  */
 /* eslint-disable import/no-dynamic-require */
 const path = require('path');
+const { eventsIncludingTokenModule } = require('../../../../constants/events');
 
 const mockedBlockID = '89a9f8dd0e9d15e54268f952b2e9430e799968169376273f715480d058a67dc4';
-const mockedEvents = [{ id: 'c3a1f388859d69105241473ce9a49d831c8eb0043f717a626b2901f52ed3610c', name: 'transfer' }, { id: 'c3c120616d202a36e659248e6d384bbbf3429d4d56a6066f368aa14d16e81dfb', name: 'validatorRegistered' }];
+const mockedEvents = eventsIncludingTokenModule;
 
 const mockEventsFilePath = path.resolve(`${__dirname}/../../../../../shared/dataService/business/events`);
 
@@ -50,7 +51,7 @@ describe('getEventsByBlockID', () => {
 		expect(events).toEqual(mockedEvents);
 	});
 
-	it('should return events from DB and if cache miss', async () => {
+	it('should return events from DB if not available in cache', async () => {
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
@@ -66,16 +67,14 @@ describe('getEventsByBlockID', () => {
 					getTableInstance: () => ({
 						find: (params) => {
 							expect(params).toEqual({ blockID: mockedBlockID });
-							return [
-								{ eventStr: JSON.stringify({
-									id: mockedEvents[0].id,
-									name: mockedEvents[0].name }),
-								},
-								{ eventStr: JSON.stringify({
-									id: mockedEvents[1].id,
-									name: mockedEvents[1].name }),
-								},
-							];
+							const dbResp = [];
+
+							for (let i = 0; i < mockedEvents.length; i++) {
+								const eventStr = JSON.stringify(mockedEvents[i]);
+								dbResp.push({ eventStr });
+							}
+
+							return dbResp;
 						},
 					}),
 				},
@@ -144,7 +143,7 @@ describe('cacheEventsByBlockID', () => {
 		await cacheEventsByBlockID(mockedBlockID, mockedEvents);
 	});
 
-	it('Show throw error if cache throws error', async () => {
+	it('should throw error if cache throws error', async () => {
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
