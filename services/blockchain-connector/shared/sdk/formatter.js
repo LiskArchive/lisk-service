@@ -39,7 +39,7 @@ const { getMinFeePerByte } = require('./fee');
 
 const logger = Logger();
 
-const formatTransaction = (transaction, additionalFee) => {
+const formatTransaction = (transaction, additionalFee = 0) => {
 	// Calculate transaction size
 	const txSchema = getTransactionSchema();
 
@@ -71,7 +71,7 @@ const formatTransaction = (transaction, additionalFee) => {
 			minFeePerByte: getMinFeePerByte() || null,
 			numberOfSignatures: nonEmptySignatureCount,
 			numberOfEmptySignatures: transaction.signatures.length - nonEmptySignatureCount,
-			additionalFee: additionalFee ? BigInt(additionalFee) : null,
+			additionalFee: BigInt(additionalFee),
 		},
 	);
 

@@ -73,7 +73,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		additionalFee: posConstants.data.validatorRegistrationFee,
 	});
 
-	tx.minFee = formattedTransaction ? formattedTransaction.minFee : tx.minFee;
+	tx.minFee = formattedTransaction.minFee;
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await transactionsTable.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);

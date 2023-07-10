@@ -102,7 +102,7 @@ const configure = config => {
 			const [host, port, protocol] = config.gelf.match(/(\b(?!:\b)[^:/$]+\b)/g);
 
 			if (protocol.toLowerCase() !== 'udp') {
-				console.log(`Protocol error: other prototol that UDP is not supported ${config.gelf}`);
+				console.log(`Protocol error: other protocol that UDP is not supported ${config.gelf}`);
 			}
 
 			log4jsConfig.categories.default.appenders.push('gelf');
@@ -153,11 +153,11 @@ const getLogger = configuration => {
 	return {
 		trace: debugInstance,
 		debug: debugInstance,
-		info: () => {},
-		warn: () => {},
-		error: () => {},
-		fatal: () => {},
-		mark: () => {},
+		info: () => { },
+		warn: () => { },
+		error: () => { },
+		fatal: () => { },
+		mark: () => { },
 	};
 };
 

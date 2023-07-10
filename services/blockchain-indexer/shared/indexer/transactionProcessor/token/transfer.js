@@ -50,7 +50,8 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	const filterInitializeUserAccountEvent = events
 		.find(event => event.name === EVENT_NAME_INITIALIZE_USER_ACCOUNT
-			&& event.data.address === tx.params.recipientAddress);
+			&& event.data.address === tx.params.recipientAddress
+			&& event.topics.includes(tx.id));
 
 	if (filterInitializeUserAccountEvent) {
 		const formattedTransaction = await requestConnector('formatTransaction', {
@@ -58,7 +59,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 			additionalFee: filterInitializeUserAccountEvent.data.initializationFee,
 		});
 
-		tx.minFee = formattedTransaction ? formattedTransaction.minFee : tx.minFee;
+		tx.minFee = formattedTransaction.minFee;
 	}
 
 	const transactionsTable = await getTransactionsTable();
