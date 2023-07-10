@@ -123,7 +123,7 @@ module.exports = {
 				// SERVICE_LOG_GELF: 'false',
 				// SERVICE_LOG_FILE: 'false',
 				// DOCKER_HOST: 'local',
-				// GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.g',
+				// GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 				// JOB_INTERVAL_CACHE_CLEANUP: 0,
 				// JOB_SCHEDULE_CACHE_CLEANUP: '0 */12 * * *',
 				// JOB_INTERVAL_REFRESH_PEERS: 60,
@@ -152,7 +152,7 @@ module.exports = {
 				ENABLE_DATA_RETRIEVAL_MODE: 'true',
 				ENABLE_INDEXING_MODE: 'true',
 				ENABLE_PERSIST_EVENTS: 'false',
-				// SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://reader:password@localhost:3306/lisk',
+				// SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@localhost:3306/lisk',
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
 				// SERVICE_LOG_CONSOLE: 'false',
@@ -290,8 +290,8 @@ module.exports = {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
-				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
-				SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
+				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB,PLN,JPY,AUD,GBP,INR',
+				SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,LSK_PLN,LSK_JPY,LSK_AUD,LSK_GBP,LSK_INR,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
