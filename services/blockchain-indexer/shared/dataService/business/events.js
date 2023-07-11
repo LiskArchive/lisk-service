@@ -40,6 +40,7 @@ const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT)
 const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL_ENDPOINT);
 
 const eventCache = CacheLRU('events');
+const eventCacheByBlockID = CacheLRU('eventsByBlockID');
 
 const getEventsByHeightFromNode = async (height) => {
 	const events = await requestConnector('getEventsByHeight', { height });
@@ -68,6 +69,29 @@ const getEventsByHeight = async (height) => {
 	const eventsFromNode = await getEventsByHeightFromNode(height);
 	await eventCache.set(height, JSON.stringify(eventsFromNode));
 	return eventsFromNode;
+};
+
+const getEventsByBlockID = async (blockID) => {
+	// Get from cache
+	const cachedEvents = await eventCacheByBlockID.get(blockID);
+	if (cachedEvents) return JSON.parse(cachedEvents);
+
+	// Get from DB incase of cache miss
+	const eventsTable = await getEventsTable();
+	const dbEventStrs = await eventsTable.find({ blockID }, ['eventStr']);
+
+	if (dbEventStrs.length) {
+		const dbEvents = dbEventStrs
+			.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+		eventCacheByBlockID.set(blockID, JSON.stringify(dbEvents));
+		return dbEvents;
+	}
+
+	return [];
+};
+
+const cacheEventsByBlockID = async (blockID, events) => {
+	await eventCacheByBlockID.set(blockID, JSON.stringify(events));
 };
 
 const deleteEventsFromCache = async (height) => eventCache.delete(height);
@@ -180,5 +204,7 @@ const getEvents = async (params) => {
 module.exports = {
 	getEvents,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 };

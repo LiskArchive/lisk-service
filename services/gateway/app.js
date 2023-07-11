@@ -177,10 +177,23 @@ tempApp.run().then(async () => {
 			limit: config.rateLimit.connectionLimit || 200,
 			headers: true,
 
-			key: (req) => req.headers['x-forwarded-for']
-				|| req.connection.remoteAddress
-				|| req.socket.remoteAddress
-				|| req.connection.socket.remoteAddress,
+			key: (req) => {
+				if (config.rateLimit.enableXForwardedFor) {
+					const xForwardedFor = req.headers['x-forwarded-for'];
+					const { numKnownProxies } = config.rateLimit;
+
+					if (xForwardedFor && numKnownProxies > 0) {
+						const clientIPs = xForwardedFor.split(',').map(ip => ip.trim());
+						const clientIndex = Math.max(clientIPs.length - numKnownProxies - 1, 0);
+
+						return clientIPs[clientIndex];
+					}
+				}
+
+				return req.connection.remoteAddress
+					|| req.socket.remoteAddress
+					|| req.connection.socket.remoteAddress;
+			},
 		};
 	}
 
