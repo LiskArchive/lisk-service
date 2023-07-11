@@ -46,7 +46,7 @@ module.exports = {
 				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 				HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
 				ENABLE_HTTP_CACHE_CONTROL: 'true',
-        HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR: 'false',
+                                HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR: 'false',
 				HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES: 0,
 				// CORS_ALLOWED_ORIGIN: '*',
 				// PORT: 9901,
