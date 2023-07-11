@@ -8,7 +8,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :page-next: /lisk-service/management/docker.html
 :page-next-title: Docker commands
 
-:url_references_config: reference/configuration.adoc
+:url_references_config: configuration/index.adoc
 
 How to configure Lisk Service.
 

@@ -51,6 +51,7 @@ const MODULE_CSV = /^(?:[0-9a-zA-Z]{1,32})(?:,[0-9a-zA-Z]{1,32})*$/;
 const COMMAND_CSV = MODULE_CSV;
 const TOPIC_CSV = /^\b(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})(?:,(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}))*\b$/;
 const HEX_STRING = /^\b[a-fA-F0-9]+\b$/;
+const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -91,4 +92,5 @@ module.exports = {
 	TOPIC_CSV,
 	HEX_STRING,
 	FEE,
+	CSV_EXPORT_FILENAME,
 };
