@@ -9,7 +9,7 @@ RUN adduser -D builder && \
 USER builder
 WORKDIR /home/builder/build
 
-COPY ./package-lock.json ./package.json ./
+COPY --chown=lisk:lisk ./package-lock.json ./package.json ./
 RUN npm ci
 
 
@@ -24,7 +24,7 @@ RUN mkdir -p /home/lisk/lisk-service/export/data && \
 USER lisk
 WORKDIR /home/lisk/lisk-service/export
 
-COPY ./ .
-COPY --from=builder /home/builder/build/node_modules/ ./node_modules/
+COPY --chown=lisk:lisk ./ .
+COPY --chown=lisk:lisk --from=builder /home/builder/build/node_modules/ ./node_modules/
 
 CMD ["node", "app.js"]

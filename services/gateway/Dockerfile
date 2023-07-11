@@ -9,7 +9,7 @@ RUN adduser -D builder && \
 USER builder
 WORKDIR /home/builder/build
 
-COPY ./package-lock.json ./package.json ./
+COPY --chown=lisk:lisk ./package-lock.json ./package.json ./
 RUN npm ci && \
     # generate build timestamp as described in https://github.com/LiskHQ/lisk-service/issues/385
     node -e 'console.log(JSON.stringify({ timestamp: new Date().toISOString() }));' > ./build.json
@@ -25,8 +25,8 @@ RUN apk add --no-cache curl=~8 && \
 USER lisk
 WORKDIR /home/lisk/lisk-service/gateway
 
-COPY ./ .
-COPY --from=builder /home/builder/build/ .
+COPY --chown=lisk:lisk ./ .
+COPY --chown=lisk:lisk --from=builder /home/builder/build/ .
 
 EXPOSE 9901
 HEALTHCHECK CMD curl --fail http://localhost:9901/api/status || exit 1
