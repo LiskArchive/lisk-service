@@ -260,7 +260,7 @@ module.exports = {
 				SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
 				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
-				// SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@localhost:3306/lisk',
+				// SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@127.0.0.1:3307/lisk',
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
 				// SERVICE_LOG_CONSOLE: 'false',
