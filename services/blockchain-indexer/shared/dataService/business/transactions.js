@@ -257,4 +257,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+
+	// For unit test
+	validateParams,
 };
