@@ -35,6 +35,8 @@ A list of the most commonly used environment variables is presented below:
 - `HTTP_RATE_LIMIT_ENABLE`: Boolean flag to enable HTTP rate limiter. Disabled by default. To enable, set it to `true`.
 - `HTTP_RATE_LIMIT_WINDOW`: To keep a record of requests in the memory (in seconds). By default, it is set to 10 seconds.
 - `HTTP_RATE_LIMIT_CONNECTIONS`: Maximum number of allowed requests for a specified window, configured by `HTTP_RATE_LIMIT_WINDOW`.
+- `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR`: When set to true, the rate limiting algorithm considers the X-Forwarded-For header value to determine the client's IP address for rate limiting purposes. By default, it is set to `false`.
+- `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES`: Defines the number of proxies that exist between the gateway and the external client application, enabling accurate identification of the client's IP address for rate limiting. By default, it is set to 0.
 - `ENABLE_HTTP_CACHE_CONTROL`: Boolean flag to enable HTTP response caching. This includes the `Cache-Control` header within the responses.
 - `HTTP_CACHE_CONTROL_DIRECTIVES`: HTTP `cache-control` directives.
 - `WS_RATE_LIMIT_ENABLE`: Boolean flag to enable WS rate limiter.

@@ -180,11 +180,11 @@ tempApp.run().then(async () => {
 			key: (req) => {
 				if (config.rateLimit.enableXForwardedFor) {
 					const xForwardedFor = req.headers['x-forwarded-for'];
-					const { reverseProxyCount } = config.rateLimit;
+					const { numKnownProxies } = config.rateLimit;
 
-					if (xForwardedFor && reverseProxyCount > 0) {
+					if (xForwardedFor && numKnownProxies > 0) {
 						const clientIPs = xForwardedFor.split(',').map(ip => ip.trim());
-						const clientIndex = Math.max(clientIPs.length - reverseProxyCount - 1, 0);
+						const clientIndex = Math.max(clientIPs.length - numKnownProxies - 1, 0);
 
 						return clientIPs[clientIndex];
 					}
