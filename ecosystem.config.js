@@ -77,7 +77,7 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+				SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				ENABLE_REBUILD_INDEX_AT_INIT: 'false',
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
@@ -148,11 +148,11 @@ module.exports = {
 				SERVICE_INDEXER_CACHE_REDIS: 'redis://localhost:6379/1',
 				SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
 				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
-				SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+				SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				ENABLE_DATA_RETRIEVAL_MODE: 'true',
 				ENABLE_INDEXING_MODE: 'true',
 				ENABLE_PERSIST_EVENTS: 'false',
-				// SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@localhost:3306/lisk',
+				// SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
 				// SERVICE_LOG_CONSOLE: 'false',
@@ -258,7 +258,7 @@ module.exports = {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
-				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
+				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				// SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@localhost:3306/lisk',
 				// SERVICE_BROKER_TIMEOUT: 10,
