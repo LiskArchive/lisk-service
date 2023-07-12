@@ -538,6 +538,35 @@ describe('Test MySQL', () => {
 			expect(firstRow.height).toBe(nonEmptyBlock.height);
 			expect(firstRow.id).toBe(tokenTransferTransaction.id);
 		});
+
+		it('should get row using search', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				search: {
+					property: 'moduleCommand',
+					pattern: 'token',
+				},
+			};
+			const result = await transactionsTable.find(params, [`${transactionsTableName}.id`]);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [retrievedTransaction] = result;
+			expect(retrievedTransaction.id).toBe(tokenTransferTransaction.id);
+		});
+
+		it('should return no rows when search pattern contains wildcard character', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				search: {
+					property: 'moduleCommand',
+					pattern: '%token',
+				},
+			};
+			const result = await transactionsTable.find(params, [`${transactionsTableName}.id`]);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(0);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
