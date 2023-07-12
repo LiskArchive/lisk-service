@@ -19,7 +19,7 @@ const Logger = require('../logger').get;
 
 const logger = Logger();
 
-const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
+const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@127.0.0.1:3306/lisk';
 const KV_STORE_ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
 const kvStoreConfig = {
