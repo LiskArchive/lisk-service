@@ -140,9 +140,9 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
+| blockID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
+| height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | generatorAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -231,10 +231,10 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
-| module | String | `/^\b(?:[\w!@$&.]{1,32}\|,)+\b$/` | *(empty)* |  |
+| blockID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
+| height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
+| module | String | `/^(?:[0-9a-zA-Z]{1,32})(?:,[0-9a-zA-Z]{1,32})*$/` | *(empty)* | Can be expressed as a CSV. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
@@ -307,16 +307,16 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| transactionID | String | `/^\b([A-Fa-f0-9]){1,64}\b$/` | *(empty)* |  |
+| transactionID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | moduleCommand | String | `/^[a-zA-Z][\w]{0,31}:[a-zA-Z][\w]{0,31}$/` | *(empty)* |  |
 | senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
 | recipientAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress |
-| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
-| executionStatus | String | `/^\b(?:pending\|success\|fail\|,)+\b$/` | *(empty)* | Can be expressed as a CSV |
-| nonce | Number | `/^[0-9]+$/` | *(empty)* |  |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Resolves for both senderAddress and recipientAddress. |
+| blockID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
+| height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
+| executionStatus | String | `/^\b(?:pending\|success\|fail\|,){0,5}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| nonce | Number | `/^\d+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
@@ -661,7 +661,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| interval | String | `["day", "month"]` | *(empty)* | Required |
+| interval | String | `["day", "month"]` | *(empty)* | Required. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -752,12 +752,12 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| transactionID | String | `/^\b([A-Fa-f0-9]){1,64}\b$/` | *(empty)* |  |
+| transactionID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
-| topic | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Can be expressed as a CSV |
-| blockID | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  |
-| height | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
-| timestamp | String | `/([0-9]+\|[0-9]+:[0-9]+)/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
+| topic | String | `/^\b(?:[0-9a-fA-F]{2,64}\|lsk[a-hjkm-z2-9]{38})(?:,(?:[0-9a-fA-F]{2,64}\|lsk[a-hjkm-z2-9]{38}))*\b$/` | *(empty)* | Can be expressed as a CSV. |
+| blockID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
+| height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
+| timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |  |
@@ -893,8 +893,8 @@ Retrieves user-specific details from the Auth module.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
+<!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
@@ -951,8 +951,8 @@ Retrieves user-specific details from the Validator module.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
+<!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
@@ -1049,9 +1049,9 @@ Validates if an entry exists in the Token sub-store for the specified address.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required. |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 
 #### Response example
@@ -1095,11 +1095,11 @@ Retrieves the balances from the Token sub-store for the specified address.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required |
+| address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
-<!-- | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  | -->
+<!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
 <!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
 
 #### Response example
@@ -1314,7 +1314,7 @@ Retrieves top token balances for a token ID.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required |
+| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required. |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1439,8 +1439,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1494,8 +1494,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1605,8 +1605,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -1667,8 +1667,8 @@ Retrieves the list of stakes sent by the specified user by their address, public
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 
@@ -1727,8 +1727,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | isLocked | Boolean | `[true, false]` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -1795,10 +1795,10 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | One of address, publicKey or name required |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,)+\b$/` | *(empty)* | Can be expressed as CSV |
+| status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -2011,7 +2011,7 @@ Retrieves legacy account details for the specified user publicKey.
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/;` | *(empty)* |  |
+| publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 
 
 #### Response example
@@ -2063,10 +2063,10 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| ip   | String | `/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/` | *(empty)* |  |
-| networkVersion | String | `/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/` | *(empty)* |  |
+| ip   | String | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/` | *(empty)* |  |
+| networkVersion | String | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(.\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/` | *(empty)* |  |
 | state | String | `["connected", "disconnected", "any"]` | any |  |
-| height | Number | `[1,Inf)` | *(empty)* |  |
+| height | Number | `[0,Inf)` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | String | `["height:asc", "height:desc", "networkVersion:asc", "networkVersion:desc"]` | height:desc |  |
@@ -5626,10 +5626,10 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
-| search | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
+| status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -5884,7 +5884,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -5941,9 +5941,9 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -6029,10 +6029,10 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
-| tokenName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Can be expressed as CSV. |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,)+\b$/` | *(empty)* | Can be expressed as CSV. |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
+| tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* |  |
+| tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -6107,7 +6107,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | Can be expressed as CSV. |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[tokenID:asc, tokenID:desc]` | tokenID:asc |  |
@@ -6229,7 +6229,7 @@ Returns transaction history export scheduling information
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |  One of address or publicKey required  |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |  One of address or publicKey required. |
 | publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
 | interval  | String           |                                                            | *(empty)*      |
 

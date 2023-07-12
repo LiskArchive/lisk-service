@@ -20,12 +20,14 @@ module.exports = {
 		id: { type: 'string' }, // Unique event identifier
 		name: { type: 'string' }, // Type of event
 		module: { type: 'string' },
+		blockID: { type: 'string' },
 		height: { type: 'integer' },
 		index: { type: 'integer' },
 		eventStr: { type: 'text' },
 	},
 	indexes: {
 		height: { type: 'range' },
+		blockID: { type: 'key' },
 	},
 	purge: {},
 };

@@ -26,6 +26,8 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 	isMainchain,
 	resolveMainchainServiceURL,
@@ -186,6 +188,8 @@ module.exports = {
 	normalizeTransaction,
 	getPosLockedRewards,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 
 	getAnnualInflation,

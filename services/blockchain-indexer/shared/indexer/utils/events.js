@@ -55,6 +55,7 @@ const getEventsInfoToIndex = async (block, events) => {
 			module: event.module,
 			height: block.height,
 			index: event.index,
+			blockID: block.id,
 		};
 
 		// Store whole event when persistence is enabled or block is not finalized yet

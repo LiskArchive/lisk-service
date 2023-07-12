@@ -17,20 +17,20 @@ const logger = require('lisk-service-framework').Logger();
 
 const config = require('../../config');
 const { getFinalizedHeight } = require('../../shared/constants');
-const { deleteFinalisedCCUMetadata } = require('../../shared/jobs/deleteFinalisedCCUMetadata');
+const { deleteFinalizedCCUMetadata } = require('../../shared/jobs/deleteFinalizedCCUMetadata');
 
 module.exports = [
 	{
-		name: 'job.delete.finalised.ccu.metadata',
-		description: 'Delete CCUs metadata until the finalised block height.',
-		interval: config.job.deleteFinalisedCCUMetadata.interval,
-		schedule: config.job.deleteFinalisedCCUMetadata.schedule,
+		name: 'job.delete.finalized.ccu.metadata',
+		description: 'Delete CCUs metadata until the finalized block height.',
+		interval: config.job.deleteFinalizedCCUMetadata.interval,
+		schedule: config.job.deleteFinalizedCCUMetadata.schedule,
 		controller: async () => {
-			logger.debug('Deleting CCUs metadata until the finalised block height...');
+			logger.debug('Deleting CCUs metadata until the finalized block height...');
 			try {
 				const finalizedHeight = await getFinalizedHeight();
-				await deleteFinalisedCCUMetadata(finalizedHeight);
-				logger.info('Successfully deleted CCUs metadata until the finalised block height.');
+				await deleteFinalizedCCUMetadata(finalizedHeight);
+				logger.info('Successfully deleted CCUs metadata until the finalized block height.');
 			} catch (err) {
 				logger.warn(`'Deleting CCUs metadata failed due to: ${err.message}.`);
 			}

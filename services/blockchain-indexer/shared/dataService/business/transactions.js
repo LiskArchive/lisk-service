@@ -111,7 +111,7 @@ const getTransactions = async params => {
 	const total = await transactionsTable.count(params);
 	const resultSet = await transactionsTable.find(
 		{ ...params, limit: params.limit || total },
-		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index'],
+		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index', 'minFee'],
 	);
 	params.ids = resultSet.map(row => row.id);
 
@@ -170,6 +170,7 @@ const getTransactions = async params => {
 
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 			transaction.index = indexedTxInfo.index;
+			transaction.minFee = indexedTxInfo.minFee;
 
 			return transaction;
 		},
@@ -256,4 +257,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+
+	// For unit test
+	validateParams,
 };

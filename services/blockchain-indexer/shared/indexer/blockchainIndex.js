@@ -38,6 +38,8 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactions,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 	getTransactionsByBlockID,
 } = require('../dataService');
@@ -46,7 +48,7 @@ const {
 	range,
 } = require('../utils/array');
 
-const { getLisk32AddressFromPublicKey, updateAccountPublicKey } = require('../utils/account');
+const { getLisk32AddressFromPublicKey } = require('../utils/account');
 const { getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
@@ -80,6 +82,7 @@ const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_E
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
+const { indexAccountPublicKey } = require('./accountIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -155,6 +158,7 @@ const indexBlock = async job => {
 		}
 
 		const events = await getEventsByHeight(block.height);
+		cacheEventsByBlockID(block.id, events);
 
 		if (block.transactions.length) {
 			const { transactions, assets, ...blockHeader } = block;
@@ -173,7 +177,7 @@ const indexBlock = async job => {
 					tx.executionStatus = getTransactionExecutionStatus(tx, events);
 
 					// Store address -> publicKey mapping
-					updateAccountPublicKey(tx.senderPublicKey);
+					indexAccountPublicKey(tx.senderPublicKey);
 
 					await transactionsTable.upsert(tx, dbTrx);
 
@@ -314,7 +318,7 @@ const deleteIndexedBlocks = async job => {
 
 				let { data: forkedTransactions } = await getTransactionsByBlockID(block.id);
 				const transactionsTable = await getTransactionsTable();
-				const events = await getEventsByHeight(block.height);
+				const events = await getEventsByBlockID(block.id);
 
 				if (Array.isArray(forkedTransactions)) {
 					const { assets, ...blockHeader } = block;

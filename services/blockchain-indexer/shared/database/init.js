@@ -20,7 +20,7 @@ const {
 	Logger,
 	MySQL: {
 		getTableInstance,
-		KVStore: { configureKeyValueTable, getKeyValueTable },
+		KVStore: { getKeyValueTable },
 	},
 	Utils,
 	Signals,
@@ -52,7 +52,6 @@ const initializeSearchIndex = async () => {
 };
 
 const initDatabase = async () => {
-	configureKeyValueTable(MYSQL_ENDPOINT);
 	await initializeSearchIndex();
 };
 

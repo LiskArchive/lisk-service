@@ -46,6 +46,8 @@ config.rateLimit.enable = Boolean(String(process.env.HTTP_RATE_LIMIT_ENABLE).toL
 config.rateLimit.window = Number(process.env.HTTP_RATE_LIMIT_WINDOW) || 10; // in seconds
 // Max number of requests during window
 config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTIONS || 200);
+config.rateLimit.enableXForwardedFor = Boolean(String(process.env.HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR).toLowerCase() === 'true');
+config.rateLimit.numKnownProxies = Number(process.env.HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES || 0);
 
 /**
  * LOGGING

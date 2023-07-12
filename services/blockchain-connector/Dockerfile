@@ -1,6 +1,6 @@
 ##### Stage 1
 
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 RUN apk add --no-cache alpine-sdk=~1 python3=~3 cmake=~3 && \
     adduser -D builder && \
@@ -16,7 +16,7 @@ RUN npm ci
 
 ##### Stage 2
 
-FROM node:16-alpine
+FROM node:18-alpine
 
 RUN mkdir -p /home/lisk/lisk-service/blockchain-connector/data && \
     adduser -D lisk && \

@@ -52,6 +52,7 @@ const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
 const FilesystemCache = require('./csvCache');
+const regex = require('./regex');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
@@ -300,16 +301,19 @@ const downloadTransactionHistory = async ({ filename }) => {
 		meta: {},
 	};
 
-	const isFileExists = await staticFiles.exists(filename);
-	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
+	if (!regex.CSV_EXPORT_FILENAME.test(filename)) {
+		throw new ValidationException(`Invalid filename (${filename}) supplied.`);
+	}
+
+	const isFile = await staticFiles.isFile(filename);
+	if (!isFile) throw new ValidationException(`Requested file (${filename}) does not exist.`);
 
 	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
 
 	// Remove the static file if end date is current date
 	// TODO: Implement a better solution
-	const regex = /_|\./g;
-	const splits = filename.split(regex);
+	const splits = filename.split(/_|\./g);
 	const endDate = splits[splits.length - 2];
 	if (endDate === getToday()) staticFiles.remove(filename);
 

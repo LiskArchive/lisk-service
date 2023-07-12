@@ -35,10 +35,10 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 const {
 	updateAccountInfo,
 	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
 } = require('../../utils/account');
 
 const validatorsTableSchema = require('../../database/schema/validators');
+const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -185,7 +185,7 @@ const getPosValidators = async params => {
 		params.address = address;
 
 		// Index publicKey asynchronously
-		updateAccountPublicKey(params.publicKey);
+		indexAccountPublicKey(params.publicKey);
 	}
 
 	if (params.address) params.address.split(',').forEach(address => addressSet.add(address));

@@ -23,6 +23,8 @@ const {
 	list,
 	purge,
 	exists,
+	isFile,
+	isFilePathInDirectory,
 } = require('../../../../shared/helpers/file');
 
 const {
@@ -43,13 +45,13 @@ describe('Test filesystem interface', () => {
 		await fs.rmdirSync(dirPath);
 	});
 
-	it('init() method', async () => {
+	it('should create a directory when calling init() method', async () => {
 		await init({ dirPath });
 		const isExists = await exists(dirPath);
 		expect(isExists).toBe(true);
 	});
 
-	it('write() method', async () => {
+	it('should write data to a file when calling write() method', async () => {
 		const filePath = `${dirPath}/testfile.csv`;
 
 		// Write data into the file
@@ -59,7 +61,7 @@ describe('Test filesystem interface', () => {
 		expect((fs.statSync(filePath)).size).toBeGreaterThan(0);
 	});
 
-	it('read() method', async () => {
+	it('should return the data from a file when calling read() method', async () => {
 		const filePath = `${dirPath}/testfile.csv`;
 
 		// Read data from file
@@ -67,7 +69,7 @@ describe('Test filesystem interface', () => {
 		expect(result).toEqual(testData);
 	});
 
-	it('remove() method', async () => {
+	it('should remove a file when calling remove() method', async () => {
 		const filePath = `${dirPath}/testfile.csv`;
 		let isExists = await exists(filePath);
 		expect(isExists).toBe(true);
@@ -77,7 +79,7 @@ describe('Test filesystem interface', () => {
 		expect(isExists).toBe(false);
 	});
 
-	it('list() method', async () => {
+	it('should return the list of files in a directory when calling list() method', async () => {
 		const filePath1 = `${dirPath}/testfile1.csv`;
 		const filePath2 = `${dirPath}/testfile2.csv`;
 
@@ -88,13 +90,33 @@ describe('Test filesystem interface', () => {
 		expect(files.length).toBe(2);
 	});
 
-	it('purge() method', async () => {
+	it('should return false for a directory when calling isFile() method', async () => {
+		expect(await isFile(dirPath)).toBe(false);
+
+		const filePath = `${dirPath}/testfile.csv`;
+		await write(filePath, testData);
+		expect(await isFile(filePath)).toBe(true);
+	});
+
+	it('should remove all files in a directory when calling purge() method', async () => {
 		let files = await list(dirPath);
-		expect(files.length).toBe(2);
+		expect(files.length).toBe(3);
 
 		await purge(dirPath, 0);
 
 		files = await list(dirPath);
 		expect(files.length).toBe(0);
+	});
+
+	it('should return true for file path within the directory', () => {
+		const filePath = `${dirPath}/testfile.csv`;
+		const result = isFilePathInDirectory(filePath, dirPath);
+		expect(result).toBe(true);
+	});
+
+	it('should return false for file path outside the directory', () => {
+		const filePath = `${dirPath}/../../testfile.csv`;
+		const result = isFilePathInDirectory(filePath, dirPath);
+		expect(result).toBe(false);
 	});
 });

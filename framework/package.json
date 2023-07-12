@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-framework",
-  "version": "1.4.18",
+  "version": "1.4.19",
   "description": "Lisk Service Framework",
   "keywords": [
     "lisk",
@@ -19,7 +19,7 @@
   "private": true,
   "main": "index.js",
   "engines": {
-    "node": ">=16.15.0 <=16",
+    "node": ">=18.16 <=18",
     "npm": ">=8.5.0"
   },
   "scripts": {

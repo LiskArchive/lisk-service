@@ -53,6 +53,7 @@ describe('reloadAccountKnowledge', () => {
 				HTTP: {
 					get: jest.fn(() => Promise.resolve(mockedValidKnowledge)),
 				},
+				Queue: jest.fn(),
 				Logger: () => ({
 					debug: jest.fn(),
 					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),

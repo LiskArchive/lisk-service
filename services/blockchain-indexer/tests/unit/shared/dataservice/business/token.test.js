@@ -32,33 +32,45 @@ describe('getTokenTopBalances', () => {
 		const count = 2;
 
 		// Mock lisk-service-framework
-		jest.mock('lisk-service-framework', () => ({
-			CacheRedis: jest.fn(() => ({
-				set: jest.fn(),
-				get: jest.fn(),
-			})),
-			cacheLRU: jest.fn(),
-			Exceptions: {
-				NotFoundException: jest.fn(),
-			},
-			Logger: jest.fn(() => ({
-				debug: jest.fn(),
-				info: jest.fn(),
-				warn: jest.fn(),
-			})),
-			MySQL: {
-				getTableInstance: jest.fn(() => ({
-					find: jest.fn((data) => {
-						expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
-						return mockTokenTopBalancesTokenInfos;
-					}),
-					count: jest.fn((data) => {
-						expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
-						return count;
-					}),
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				CacheRedis: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
 				})),
-			},
-		}));
+				cacheLRU: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
+				})),
+				Exceptions: {
+					NotFoundException: jest.fn(),
+				},
+				Logger: jest.fn(() => ({
+					debug: jest.fn(),
+					info: jest.fn(),
+					warn: jest.fn(),
+				})),
+				MySQL: {
+					getTableInstance: jest.fn(() => ({
+						find: jest.fn((data) => {
+							expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
+							return mockTokenTopBalancesTokenInfos;
+						}),
+						count: jest.fn((data) => {
+							expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
+							return count;
+						}),
+					})),
+					KVStore: {
+						...actual.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+			};
+		});
 
 		// Mock accounts knowledge
 		jest.mock(knownAccountsPath);
@@ -102,27 +114,39 @@ describe('getTokenTopBalances', () => {
 
 	it('should throw an error when an error occurs during the find operation', async () => {
 		// Mock lisk-service-framework
-		jest.mock('lisk-service-framework', () => ({
-			CacheRedis: jest.fn(() => ({
-				set: jest.fn(),
-				get: jest.fn(),
-			})),
-			cacheLRU: jest.fn(),
-			Exceptions: {
-				NotFoundException: jest.fn(),
-			},
-			Logger: jest.fn(() => ({
-				debug: jest.fn(),
-				info: jest.fn(),
-				warn: jest.fn(),
-			})),
-			MySQL: {
-				getTableInstance: jest.fn(() => ({
-					find: jest.fn().mockRejectedValue('Error'),
-					count: jest.fn(),
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				CacheRedis: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
 				})),
-			},
-		}));
+				cacheLRU: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
+				})),
+				Exceptions: {
+					NotFoundException: jest.fn(),
+				},
+				Logger: jest.fn(() => ({
+					debug: jest.fn(),
+					info: jest.fn(),
+					warn: jest.fn(),
+				})),
+				MySQL: {
+					getTableInstance: jest.fn(() => ({
+						find: jest.fn().mockRejectedValue('Error'),
+						count: jest.fn(),
+					})),
+					KVStore: {
+						...actual.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+			};
+		});
 
 		// Mock accounts knowledge
 		jest.mock(knownAccountsPath);
@@ -136,27 +160,39 @@ describe('getTokenTopBalances', () => {
 
 	it('should throw an error when an error occurs during the count operation', async () => {
 		// Mock lisk-service-framework
-		jest.mock('lisk-service-framework', () => ({
-			CacheRedis: jest.fn(() => ({
-				set: jest.fn(),
-				get: jest.fn(),
-			})),
-			cacheLRU: jest.fn(),
-			Exceptions: {
-				NotFoundException: jest.fn(),
-			},
-			Logger: jest.fn(() => ({
-				debug: jest.fn(),
-				info: jest.fn(),
-				warn: jest.fn(),
-			})),
-			MySQL: {
-				getTableInstance: jest.fn(() => ({
-					find: jest.fn(),
-					count: jest.fn().mockRejectedValue('Error'),
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				CacheRedis: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
 				})),
-			},
-		}));
+				cacheLRU: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
+				})),
+				Exceptions: {
+					NotFoundException: jest.fn(),
+				},
+				Logger: jest.fn(() => ({
+					debug: jest.fn(),
+					info: jest.fn(),
+					warn: jest.fn(),
+				})),
+				MySQL: {
+					getTableInstance: jest.fn(() => ({
+						find: jest.fn(),
+						count: jest.fn().mockRejectedValue('Error'),
+					})),
+					KVStore: {
+						...actual.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+			};
+		});
 
 		// Mock accounts knowledge
 		jest.mock(knownAccountsPath);
@@ -170,27 +206,39 @@ describe('getTokenTopBalances', () => {
 
 	it('should throw an error when the params argument is null', async () => {
 		// Mock lisk-service-framework
-		jest.mock('lisk-service-framework', () => ({
-			CacheRedis: jest.fn(() => ({
-				set: jest.fn(),
-				get: jest.fn(),
-			})),
-			cacheLRU: jest.fn(),
-			Exceptions: {
-				NotFoundException: jest.fn(),
-			},
-			Logger: jest.fn(() => ({
-				debug: jest.fn(),
-				info: jest.fn(),
-				warn: jest.fn(),
-			})),
-			MySQL: {
-				getTableInstance: jest.fn(() => ({
-					find: jest.fn(),
-					count: jest.fn(),
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				CacheRedis: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
 				})),
-			},
-		}));
+				cacheLRU: jest.fn(() => ({
+					set: jest.fn(),
+					get: jest.fn(),
+				})),
+				Exceptions: {
+					NotFoundException: jest.fn(),
+				},
+				Logger: jest.fn(() => ({
+					debug: jest.fn(),
+					info: jest.fn(),
+					warn: jest.fn(),
+				})),
+				MySQL: {
+					getTableInstance: jest.fn(() => ({
+						find: jest.fn(),
+						count: jest.fn(),
+					})),
+					KVStore: {
+						...actual.MySQL.KVStore,
+						configureKeyValueTable: jest.fn(),
+						getKeyValueTable: jest.fn(),
+					},
+				},
+			};
+		});
 
 		// Mock accounts knowledge
 		jest.mock(knownAccountsPath);

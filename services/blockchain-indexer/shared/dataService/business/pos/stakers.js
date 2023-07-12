@@ -22,15 +22,13 @@ const {
 const config = require('../../../../config');
 const stakesTableSchema = require('../../../database/schema/stakes');
 
-const {
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
 const {
 	getIndexedAccountInfo,
 	getAccountsTable,
 } = require('../../utils/account');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -70,7 +68,7 @@ const getStakers = async params => {
 		stakersResponse.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
-		await updateAccountPublicKey(publicKey);
+		indexAccountPublicKey(publicKey);
 	}
 
 	if (params.name) {

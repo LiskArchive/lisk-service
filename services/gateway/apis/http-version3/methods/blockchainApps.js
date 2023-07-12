@@ -27,7 +27,7 @@ module.exports = {
 		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV, altSwaggerKey: 'chainIDCSV' },
 		chainName: { optional: true, type: 'string', min: 3, max: 20, pattern: regex.NAME },
 		status: { optional: true, type: 'string', pattern: regex.APPLICATION_STATUS, altSwaggerKey: 'blockchainAppStatus' },
-		search: { optional: true, type: 'string', altSwaggerKey: 'blockchainAppSearch' },
+		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH_NAME, altSwaggerKey: 'blockchainAppSearch' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
