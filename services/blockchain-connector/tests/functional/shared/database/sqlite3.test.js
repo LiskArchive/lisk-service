@@ -177,6 +177,54 @@ describe('Test sqlite3 implementation', () => {
 			const result = await testTable.find(params, ['id']);
 			expect(result.length).toBe(0);
 		});
+
+		it('should return row when search pattern contains wildcard character and allowWildCards is true', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					pattern: '%lsk',
+					allowWildCards: true,
+				},
+			};
+
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(id);
+		});
+
+		it('should return empty array when search pattern contains wildcard character and allowWildCards is false', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					pattern: '%lsk',
+					allowWildCards: false,
+				},
+			};
+
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(0);
+		});
+
+		it('should return empty array when search pattern contains wildcard character and allowWildCards is any garbage value', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					pattern: '%lsk',
+					allowWildCards: 'garbageValue',
+				},
+			};
+
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(0);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {

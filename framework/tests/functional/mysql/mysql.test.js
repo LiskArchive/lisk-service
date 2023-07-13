@@ -567,6 +567,51 @@ describe('Test MySQL', () => {
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(0);
 		});
+
+		it('should return row when search pattern contains wildcard character and allowWildCards is true', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				search: {
+					property: 'moduleCommand',
+					pattern: '%token',
+					allowWildCards: true,
+				},
+			};
+			const result = await transactionsTable.find(params, [`${transactionsTableName}.id`]);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(1);
+
+			const [retrievedTransaction] = result;
+			expect(retrievedTransaction.id).toBe(tokenTransferTransaction.id);
+		});
+
+		it('should return empty array when search pattern contains wildcard character and allowWildCards is false', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				search: {
+					property: 'moduleCommand',
+					pattern: '%token',
+					allowWildCards: false,
+				},
+			};
+			const result = await transactionsTable.find(params, [`${transactionsTableName}.id`]);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(0);
+		});
+
+		it('should return empty array when search pattern contains wildcard character and allowWildCards is any garbage value', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				search: {
+					property: 'moduleCommand',
+					pattern: '%token',
+					allowWildCards: 'garbageValue',
+				},
+			};
+			const result = await transactionsTable.find(params, [`${transactionsTableName}.id`]);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(0);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {

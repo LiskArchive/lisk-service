@@ -318,7 +318,7 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		if (params.orSearch) {
 			params.orSearch = Array.isArray(params.orSearch) ? params.orSearch : [params.orSearch];
 
-			query.andWhere(() => {
+			query.andWhere(function () {
 				params.orSearch.forEach((orSearch, index) => {
 					const { property, pattern, startsWith, endsWith, allowWildCards } = orSearch;
 
