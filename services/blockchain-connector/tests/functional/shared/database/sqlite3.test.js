@@ -148,6 +148,35 @@ describe('Test sqlite3 implementation', () => {
 			const postUpsertResult = await testTable.find();
 			expect(postUpsertResult.length).toBe(2);
 		});
+
+		it('should get row using search', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					pattern: 'lsk',
+				},
+			};
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(id);
+		});
+
+		it('should return empty array when search pattern contains wildcard character', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					pattern: '%lsk',
+				},
+			};
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(0);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
