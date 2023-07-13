@@ -171,20 +171,56 @@ describe('Test sqlite3 implementation', () => {
 				id,
 				search: {
 					property: 'generatorAddress',
-					pattern: '%lsk',
+					pattern: 'l%k',
 				},
 			};
 			const result = await testTable.find(params, ['id']);
 			expect(result.length).toBe(0);
 		});
 
-		it('should return row when search pattern contains wildcard character and allowWildCards is true', async () => {
+		it('should return row when search property pattern contains wildcard character and allowWildCards is true', async () => {
 			const { id } = blockWithoutTransaction.header;
 			const params = {
 				id,
 				search: {
 					property: 'generatorAddress',
-					pattern: '%lsk',
+					pattern: 'l%k',
+					allowWildCards: true,
+				},
+			};
+
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(id);
+		});
+
+		it('should return row when search property startsWith contains wildcard character and allowWildCards is true', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					startsWith: 'ls%h',
+					allowWildCards: true,
+				},
+			};
+
+			const result = await testTable.find(params, ['id']);
+			expect(result.length).toBe(1);
+
+			const [retrievedBlock] = result;
+			expect(retrievedBlock.id).toBe(id);
+		});
+
+		it('should return row when search property endsWith contains wildcard character and allowWildCards is true', async () => {
+			const { id } = blockWithoutTransaction.header;
+			const params = {
+				id,
+				search: {
+					property: 'generatorAddress',
+					endsWith: 'w_ac',
 					allowWildCards: true,
 				},
 			};
@@ -202,7 +238,7 @@ describe('Test sqlite3 implementation', () => {
 				id,
 				search: {
 					property: 'generatorAddress',
-					pattern: '%lsk',
+					pattern: 'l%k',
 					allowWildCards: false,
 				},
 			};
@@ -217,7 +253,7 @@ describe('Test sqlite3 implementation', () => {
 				id,
 				search: {
 					property: 'generatorAddress',
-					pattern: '%lsk',
+					pattern: 'l_k',
 					allowWildCards: 'garbageValue',
 				},
 			};
