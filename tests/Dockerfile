@@ -9,7 +9,7 @@ RUN adduser -D builder && \
 USER builder
 WORKDIR /home/builder/build
 
-COPY --chown=lisk:lisk ./package-lock.json ./package.json .babelrc ./
+COPY ./package-lock.json ./package.json .babelrc ./
 RUN npm ci
 
 

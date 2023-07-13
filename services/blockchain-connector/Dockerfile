@@ -10,7 +10,7 @@ RUN apk add --no-cache alpine-sdk=~1 python3=~3 cmake=~3 && \
 USER builder
 WORKDIR /home/builder/build
 
-COPY --chown=lisk:lisk ./package-lock.json ./package.json ./.npmrc ./
+COPY ./package-lock.json ./package.json ./.npmrc ./
 RUN npm ci
 
 
