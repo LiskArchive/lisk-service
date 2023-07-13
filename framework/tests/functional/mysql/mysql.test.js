@@ -555,7 +555,7 @@ describe('Test MySQL', () => {
 			expect(retrievedTransaction.id).toBe(tokenTransferTransaction.id);
 		});
 
-		it('should return no rows when search pattern contains wildcard character', async () => {
+		it('should return empty array when search pattern contains wildcard character', async () => {
 			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
 			const params = {
 				search: {
