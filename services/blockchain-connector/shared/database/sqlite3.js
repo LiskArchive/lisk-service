@@ -302,10 +302,16 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 			params.search = Array.isArray(params.search) ? params.search : [params.search];
 
 			params.search.forEach(search => {
-				const { property, pattern, startsWith, endsWith } = search;
-				if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-				if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-				if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+				const { property, pattern, startsWith, endsWith, allowWildCards } = search;
+				if (allowWildCards === true) {
+					if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+					if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+					if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+				} else {
+					if (pattern) query.where(`${property}`, 'like', `%${pattern.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
+					if (startsWith) query.where(`${property}`, 'like', `${startsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
+					if (endsWith) query.where(`${property}`, 'like', `%${endsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}`);
+				}
 			});
 		}
 
@@ -314,16 +320,26 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 
 			query.andWhere(function () {
 				params.orSearch.forEach((orSearch, index) => {
-					const { property, pattern, startsWith, endsWith } = orSearch;
+					const { property, pattern, startsWith, endsWith, allowWildCards } = orSearch;
 
 					if (index === 0) {
-						if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
-					} else {
+						if (allowWildCards === true) {
+							if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
+							if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
+							if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
+						} else {
+							if (pattern) this.where(`${property}`, 'like', `%${pattern.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
+							if (startsWith) this.where(`${property}`, 'like', `${startsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
+							if (endsWith) this.where(`${property}`, 'like', `%${endsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}`);
+						}
+					} else if (allowWildCards === true) {
 						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
 						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
 						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
+					} else {
+						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}`);
 					}
 				});
 			});
