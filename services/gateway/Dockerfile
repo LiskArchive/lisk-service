@@ -25,8 +25,8 @@ RUN apk add --no-cache curl=~8 && \
 USER lisk
 WORKDIR /home/lisk/lisk-service/gateway
 
-COPY ./ .
-COPY --from=builder /home/builder/build/ .
+COPY --chown=lisk:lisk ./ .
+COPY --chown=lisk:lisk --from=builder /home/builder/build/ .
 
 EXPOSE 9901
 HEALTHCHECK CMD curl --fail http://localhost:9901/api/status || exit 1
