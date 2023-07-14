@@ -60,10 +60,7 @@ const defaultBrokerConfig = {
 			await setFeeEstimates(payload);
 		},
 	},
-	dependencies: [
-		'connector',
-		'fees',
-	],
+	dependencies: ['connector'],
 };
 
 // Add routes, events & jobs
