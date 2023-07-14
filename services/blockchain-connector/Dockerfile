@@ -25,7 +25,7 @@ RUN mkdir -p /home/lisk/lisk-service/blockchain-connector/data && \
 USER lisk
 WORKDIR /home/lisk/lisk-service/blockchain-connector
 
-COPY ./ .
-COPY --from=builder /home/builder/build/node_modules/ ./node_modules/
+COPY --chown=lisk:lisk ./ .
+COPY --chown=lisk:lisk --from=builder /home/builder/build/node_modules/ ./node_modules/
 
 CMD ["node", "app.js"]

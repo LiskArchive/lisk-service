@@ -25,7 +25,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in se
  * External endpoints
  */
 config.endpoints = {};
-config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
 
 // Logging
 config.log = {
