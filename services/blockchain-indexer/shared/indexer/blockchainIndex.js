@@ -91,19 +91,18 @@ const validateBlock = (block) => !!block && block.height >= 0;
 let lastRescheduledBlockHeightWithPriority = -1;
 
 const indexBlock = async job => {
-	const { block } = job.data;
-	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
+	const { height: currentBlockHeight } = job.data;
 
 	const blocksTable = await getBlocksTable();
 
 	// Check if the previous blocks are indexed, if not schedule them with high priority
 	const genesisHeight = await getGenesisHeight();
-	if (block.height > genesisHeight) {
+	if (currentBlockHeight > genesisHeight) {
 		const [lastIndexedBlock = {}] = await blocksTable.find(
 			{
 				propBetweens: [{
 					property: 'height',
-					to: block.height,
+					to: currentBlockHeight,
 				}],
 				sort: 'height:desc',
 				limit: 1,
@@ -118,33 +117,36 @@ const indexBlock = async job => {
 
 		// Skip the indexing process if the last indexed block's height is
 		// higher than or equal to current block's height and is already finalized
-		if (block.height <= lastIndexedHeight && isLastIndexedHeightFinal) {
-			logger.trace(`Skipping block indexing at height ${block.height}. Last final block indexed is ${lastIndexedHeight}.`);
+		if (currentBlockHeight <= lastIndexedHeight && isLastIndexedHeightFinal) {
+			logger.trace(`Skipping block indexing at height ${currentBlockHeight}. Last final block indexed is ${lastIndexedHeight}.`);
 			return;
 		}
 
-		if (block.height >= lastRescheduledBlockHeightWithPriority) {
+		if (currentBlockHeight >= lastRescheduledBlockHeightWithPriority) {
 			const heightsToIndex = range(
 				Math.max((lastIndexedHeight || genesisHeight), lastRescheduledBlockHeightWithPriority) + 1,
-				block.height + 1, // '+ 1' as 'to' is non-inclusive
+				currentBlockHeight + 1, // '+ 1' as 'to' is non-inclusive
 				1,
 			);
 
 			if (heightsToIndex.length > 1) {
-				logger.trace(`Current block height: ${block.height}. Attempting priority scheduling for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
+				logger.trace(`Current block height: ${currentBlockHeight}. Attempting priority scheduling for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
 				await BluebirdPromise.map(
 					heightsToIndex,
 					// eslint-disable-next-line no-use-before-define
-					async (height) => addBlockToQueue(height, true),
+					async (height) => addHeightToIndexBlocksQueue(height, true),
 					{ concurrency: 1 },
 				);
-				logger.debug(`Current block height: ${block.height}. Successfully priority scheduled for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
+				logger.debug(`Current block height: ${currentBlockHeight}. Successfully priority scheduled for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
 
 				lastRescheduledBlockHeightWithPriority = Math.max(...heightsToIndex);
 				return;
 			}
 		}
 	}
+
+	const block = await getBlockByHeight(currentBlockHeight);
+	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDBTransaction(connection);
@@ -518,14 +520,9 @@ const getMissingBlocks = async (params) => {
 	return listOfMissingBlocks;
 };
 
-const addBlockToQueue = async (height, isIncreasedPriority = false) => {
-	const block = await getBlockByHeight(height);
-	if (isIncreasedPriority) {
-		await indexBlocksQueue.add({ block }, { priority: 1 });
-	} else {
-		await indexBlocksQueue.add({ block });
-	}
-};
+const addHeightToIndexBlocksQueue = async (height, isHighPriority = false) => isHighPriority
+	? indexBlocksQueue.add({ height }, { priority: 1 })
+	: indexBlocksQueue.add({ height });
 
 const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
 
@@ -543,7 +540,7 @@ const isGenesisBlockIndexed = async () => {
 
 module.exports = {
 	indexNewBlock,
-	addBlockToQueue,
+	addHeightToIndexBlocksQueue,
 	getMissingBlocks,
 	deleteBlock,
 	setIndexVerifiedHeight,

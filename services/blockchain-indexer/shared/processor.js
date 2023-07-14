@@ -27,7 +27,7 @@ const {
 	addAccountToDirectUpdateQueue,
 } = require('./indexer/accountIndex');
 
-const { addBlockToQueue } = require('./indexer/blockchainIndex');
+const { addHeightToIndexBlocksQueue } = require('./indexer/blockchainIndex');
 
 const config = require('../config');
 
@@ -68,7 +68,7 @@ const initProcess = async () => {
 		const { height } = job.data;
 
 		logger.debug(`Scheduling indexing for block at height: ${height}`);
-		await addBlockToQueue(height);
+		await addHeightToIndexBlocksQueue(height);
 	});
 
 	accountIndexQueue.process(async (job) => {
