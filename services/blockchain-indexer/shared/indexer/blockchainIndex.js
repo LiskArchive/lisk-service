@@ -96,9 +96,9 @@ const indexBlock = async job => {
 
 	const blocksTable = await getBlocksTable();
 
-	// Check if the previous blocks are indexed, if not schedule them with priority
+	// Check if the previous blocks are indexed, if not schedule them with high priority
 	const genesisHeight = await getGenesisHeight();
-	if (block.height !== genesisHeight) {
+	if (block.height > genesisHeight) {
 		const [lastIndexedBlock = {}] = await blocksTable.find(
 			{
 				propBetweens: [{
@@ -131,16 +131,16 @@ const indexBlock = async job => {
 			);
 
 			if (heightsToIndex.length > 1) {
-				logger.trace(`Adding ${heightsToIndex.length} blocks. Current block height: ${block.height}. Scheduled blocks between heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)}.`);
+				logger.trace(`Current block height: ${block.height}. Attempting priority scheduling for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
 				await BluebirdPromise.map(
 					heightsToIndex,
 					// eslint-disable-next-line no-use-before-define
 					async (height) => addBlockToQueue(height, true),
 					{ concurrency: 1 },
 				);
+				logger.debug(`Current block height: ${block.height}. Successfully priority scheduled for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
 
 				lastRescheduledBlockHeightWithPriority = Math.max(...heightsToIndex);
-
 				return;
 			}
 		}
@@ -505,8 +505,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 		}
 	}
 
-	const logContent = result.map(o => `${o.from}-${o.to} (${o.to - o.from + 1} blocks)`);
-	logContent.forEach(o => logger.info(`Missing blocks in range: ${o}.`));
+	result.forEach(({ from, to }) => logger.info(`Missing blocks in range: ${from}-${to} (${to - from + 1} blocks).`));
 
 	return result;
 };
