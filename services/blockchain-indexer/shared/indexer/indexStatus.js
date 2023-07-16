@@ -109,6 +109,8 @@ const reportIndexStatus = async () => {
 };
 
 const init = async () => {
+	// Initilalize index status reporting and schedule regular updates
+	await reportIndexStatus();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
 
 	// Register event listeners
