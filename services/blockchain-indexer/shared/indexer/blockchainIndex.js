@@ -88,15 +88,14 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
-let lastRescheduledBlockHeightWithPriority = -1;
+let lastPriorityRescheduledBlockHeight = -1;
 
 const indexBlock = async job => {
 	const { height: currentBlockHeight } = job.data;
+	let blockHeightToIndex = currentBlockHeight;
 
 	const blocksTable = await getBlocksTable();
 
-	// Check if the previous blocks are indexed, if not skip indexing the current block
-	// Check if the previous blocks are indexed, if not schedule them with high priority
 	const genesisHeight = await getGenesisHeight();
 	if (currentBlockHeight > genesisHeight) {
 		const [lastIndexedBlock = {}] = await blocksTable.find(
@@ -116,42 +115,42 @@ const indexBlock = async job => {
 			isFinal: isLastIndexedHeightFinal,
 		} = lastIndexedBlock;
 
-		// Skip the indexing process if the last indexed block's height is
-		// higher than or equal to current block's height and is already finalized
-		if (currentBlockHeight <= lastIndexedHeight && isLastIndexedHeightFinal) {
-			logger.trace(`Skipping block indexing at height ${currentBlockHeight}. Last final block indexed is ${lastIndexedHeight}.`);
+		// Skip if lastIndexedHeight is greater than currentBlockHeight and finalized
+		if (lastIndexedHeight >= currentBlockHeight && isLastIndexedHeightFinal) {
 			return;
 		}
 
-		if (currentBlockHeight >= lastRescheduledBlockHeightWithPriority) {
+		// Check if the parent block is indexed
+		// If not, schedule all the previous blocks with (medium) priority
+		// And, continue with next expected block (lastIndexedHeight + 1) instead of currentBlockHeight
+		if (lastIndexedHeight < currentBlockHeight - 1) {
+			// Skip if already priority scheduled
+			if (currentBlockHeight <= lastPriorityRescheduledBlockHeight) return;
+
+			blockHeightToIndex = lastIndexedHeight + 1;
 			const heightsToIndex = range(
-				Math.max((lastIndexedHeight || genesisHeight), lastRescheduledBlockHeightWithPriority) + 1,
+				Math.max((blockHeightToIndex || genesisHeight), lastPriorityRescheduledBlockHeight) + 1,
 				currentBlockHeight + 1, // '+ 1' as 'to' is non-inclusive
 				1,
 			);
 
-			if (heightsToIndex.length > 1) {
-				logger.trace(`Current block height: ${currentBlockHeight}. Attempting priority scheduling for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
+			if (heightsToIndex.length) {
+				logger.trace(`Current block height: ${currentBlockHeight}. Attempting priority scheduling for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} block(s)).`);
 				await BluebirdPromise.map(
 					heightsToIndex,
+					async (height) => {
 					// eslint-disable-next-line no-use-before-define
-					async (height) => addHeightToIndexBlocksQueue(height, true),
+						await addHeightToIndexBlocksQueue(height);
+						lastPriorityRescheduledBlockHeight = height;
+					},
 					{ concurrency: 1 },
 				);
-				logger.debug(`Current block height: ${currentBlockHeight}. Successfully priority scheduled for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} blocks).`);
-
-				lastRescheduledBlockHeightWithPriority = Math.max(...heightsToIndex);
-				return;
+				logger.debug(`Current block height: ${currentBlockHeight}. Successfully priority scheduled for heights ${heightsToIndex.at(0)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} block(s)).`);
 			}
 		}
-
-		// if (lastIndexedHeight !== currentBlockHeight - 1) {
-		// eslint-disable-next-line max-len
-		// 	throw Error(`Last indexed height: ${lastIndexedHeight}. Parent block is not indexed yet. Cannot proceed with indexing the block at height ${currentBlockHeight}.`);
-		// }
 	}
 
-	const block = await getBlockByHeight(currentBlockHeight);
+	const block = await getBlockByHeight(blockHeightToIndex);
 	if (!validateBlock(block)) throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
@@ -217,7 +216,7 @@ const indexBlock = async job => {
 			await eventsTable.upsert(eventsInfo, dbTrx);
 			await eventTopicsTable.upsert(eventTopicsInfo, dbTrx);
 
-			// Update the generator's rewards
+			// Update block generator's rewards
 			const blockRewardEvent = events.find(
 				e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
 					&& e.name === EVENT.REWARD_MINTED,
@@ -441,7 +440,7 @@ const indexNewBlock = async block => {
 	// Or the indexed block is not final yet (chain fork)
 	if (!blockInfo || !blockInfo.isFinal) {
 		// Index if doesn't exist, or update if it isn't set to final
-		await indexBlocksQueue.add({ block });
+		await indexBlocksQueue.add({ height: block.height });
 
 		// Update block finality status
 		const finalizedBlockHeight = await getFinalizedHeight();
@@ -526,7 +525,7 @@ const getMissingBlocks = async (params) => {
 	return listOfMissingBlocks;
 };
 
-const addHeightToIndexBlocksQueue = async (height, isHighPriority = false) => isHighPriority
+const addHeightToIndexBlocksQueue = async (height, isPriority) => isPriority === true
 	? indexBlocksQueue.add({ height }, { priority: 1 })
 	: indexBlocksQueue.add({ height });
 
