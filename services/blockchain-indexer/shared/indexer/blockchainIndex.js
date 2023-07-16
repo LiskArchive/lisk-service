@@ -95,6 +95,7 @@ const indexBlock = async job => {
 
 	const blocksTable = await getBlocksTable();
 
+	// Check if the previous blocks are indexed, if not skip indexing the current block
 	// Check if the previous blocks are indexed, if not schedule them with high priority
 	const genesisHeight = await getGenesisHeight();
 	if (currentBlockHeight > genesisHeight) {
@@ -102,7 +103,7 @@ const indexBlock = async job => {
 			{
 				propBetweens: [{
 					property: 'height',
-					to: currentBlockHeight,
+					lowerThan: currentBlockHeight,
 				}],
 				sort: 'height:desc',
 				limit: 1,
@@ -143,6 +144,11 @@ const indexBlock = async job => {
 				return;
 			}
 		}
+
+		// if (lastIndexedHeight !== currentBlockHeight - 1) {
+		// eslint-disable-next-line max-len
+		// 	throw Error(`Last indexed height: ${lastIndexedHeight}. Parent block is not indexed yet. Cannot proceed with indexing the block at height ${currentBlockHeight}.`);
+		// }
 	}
 
 	const block = await getBlockByHeight(currentBlockHeight);

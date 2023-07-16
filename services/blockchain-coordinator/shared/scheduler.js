@@ -77,7 +77,7 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 				return resolve(true);
 			}
 
-			if (jobCount === 1) {
+			if (jobCount <= 1) {
 				logger.info(`Genesis block indexing is still in progress. Waiting for ${REFRESH_INTERVAL}ms to re-check the genesis block indexing status.`);
 				intervalID = setInterval(
 					waitForGenesisBlockIndexing.bind(null, resolve),
@@ -123,7 +123,7 @@ const scheduleBlocksIndexing = async (heights) => {
 	// Schedule indexing in batches when the list is too long to avoid OOM
 	const MAX_BATCH_SIZE = 15000;
 	const numBatches = Math.ceil(blockHeights.length / MAX_BATCH_SIZE);
-	if (numBatches > 1) logger.info(`Scheduling the blocks indexing in ${numBatches} smaller batches.`);
+	if (numBatches > 1) logger.info(`Scheduling the blocks indexing in ${numBatches} smaller batches of ${MAX_BATCH_SIZE}.`);
 
 	for (let i = 0; i < numBatches; i++) {
 		/* eslint-disable no-await-in-loop */
@@ -204,6 +204,11 @@ const initIndexingScheduler = async () => {
 };
 
 const scheduleMissingBlocksIndexing = async () => {
+	if (!await isGenesisBlockIndexed()) {
+		logger.info('Genesis block is not yet indexed, skipping scheduleMissingBlocksIndexing run.');
+		return;
+	}
+
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 

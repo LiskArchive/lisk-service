@@ -15,6 +15,15 @@
  */
 const { requestIndexer } = require('../utils/request');
 
+let isGenesisBlockIndexedFlag = false;
+
+const isGenesisBlockIndexed = async () => {
+	if (isGenesisBlockIndexedFlag !== true) {
+		isGenesisBlockIndexedFlag = await requestIndexer('isGenesisBlockIndexed');
+	}
+	return isGenesisBlockIndexedFlag;
+};
+
 const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', {
 	from,
 	to,
@@ -24,11 +33,9 @@ const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeigh
 
 const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
 
-const isGenesisBlockIndexed = async () => requestIndexer('isGenesisBlockIndexed');
-
 module.exports = {
+	isGenesisBlockIndexed,
 	getMissingBlocks,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
-	isGenesisBlockIndexed,
 };
