@@ -227,12 +227,22 @@ const scheduleMissingBlocksIndexing = async () => {
 	const blockIndexHigherRange = currentHeight;
 	const blockIndexLowerRange = lastVerifiedHeight;
 
-	const missingBlocksByHeight = await getMissingBlocks(
-		blockIndexLowerRange,
-		blockIndexHigherRange,
-	);
-
 	try {
+		const missingBlocksByHeight = [];
+		const MAX_QUERY_RANGE = 25000;
+		const NUM_BATCHES = Math.ceil((blockIndexHigherRange - blockIndexLowerRange) / MAX_QUERY_RANGE);
+
+		// Batch into smaller ranges to avoid microservice/DB query timeouts
+		for (let i = 0; i < NUM_BATCHES; i++) {
+			const batchStartHeight = blockIndexLowerRange + i * MAX_QUERY_RANGE;
+			const batchEndHeight = Math.min(batchStartHeight + MAX_QUERY_RANGE, blockIndexHigherRange);
+
+			// eslint-disable-next-line no-await-in-loop
+			const result = await getMissingBlocks(batchStartHeight, batchEndHeight);
+
+			missingBlocksByHeight.push(...result);
+		}
+
 		if (!Array.isArray(missingBlocksByHeight)) {
 			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
 			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}.`);

@@ -66,6 +66,11 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
  * Message queue options
  */
 config.queue = {
+	defaultJobOptions: {
+		attempts: 5,
+		timeout: 5 * 60 * 1000, // millisecs
+		removeOnComplete: true,
+	},
 	accountBalanceIndex: {
 		name: 'AccountBalanceIndex',
 		concurrency: 1,
@@ -96,25 +101,20 @@ config.queue = {
 		name: 'Events',
 	},
 	indexBlocks: {
-		name: 'IndexBlocksQueue',
+		name: 'IndexBlocks',
 		concurrency: 1,
 	},
 	indexAccountPublicKey: {
-		name: 'pendingAccountPublicKeyUpdates',
+		name: 'PendingAccountPublicKeyUpdates',
 		concurrency: 64,
 	},
 	indexAccountAddress: {
-		name: 'pendingAccountAddressUpdates',
+		name: 'PendingAccountAddressUpdates',
 		concurrency: 64,
 	},
 	updateBlockIndex: {
 		name: 'UpdateBlockIndexQueue',
 		concurrency: 1,
-	},
-	defaultJobOptions: {
-		attempts: 5,
-		timeout: 5 * 60 * 1000, // millisecs
-		removeOnComplete: true,
 	},
 };
 
