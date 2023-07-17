@@ -16,8 +16,8 @@
 module.exports = [
 	{ label: 'Date', value: 'date' },
 	{ label: 'Time', value: 'time' },
-	{ label: 'Amount LSK', value: 'amountLsk' },
-	{ label: 'Fee LSK', value: 'feeLsk' },
+	{ label: 'Amount', value: 'amount' },
+	{ label: 'Fee', value: 'fee' },
 	{ label: 'Amount TokenID', value: 'amountTokenID' },
 	{ label: 'Module:Command', value: 'moduleCommand' },
 	{ label: 'Sender Address', value: 'senderAddress' },

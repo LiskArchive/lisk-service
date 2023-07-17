@@ -14,14 +14,14 @@
  *
  */
 const {
-    MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN,
+	MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN,
 } = require('./constants');
 
 const resolveReceivingChainID = (tx, chainID) => tx
-    .moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN
-    ? tx.params.receivingChainID
-    : chainID;
+	.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN
+	? tx.params.receivingChainID
+	: chainID;
 
 module.exports = {
-    resolveReceivingChainID,
+	resolveReceivingChainID,
 };

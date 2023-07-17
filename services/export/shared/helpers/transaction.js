@@ -18,10 +18,8 @@ const {
 	MODULE_COMMAND_RECLAIM_TRANSACTION,
 } = require('./constants');
 
-const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
-
 const normalizeTransactionAmount = (address, tx) => {
-	if (!('amount' in tx.params)) return beddowsToLsk(0);
+	if (!('amount' in tx.params)) return 0;
 
 	const isReclaim = tx.moduleCommand === MODULE_COMMAND_RECLAIM_TRANSACTION;
 	const isTokenTransfer = tx.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER;
@@ -36,15 +34,15 @@ const normalizeTransactionAmount = (address, tx) => {
 		|| (isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit)
 		? 1 : -1;
 
-	return beddowsToLsk(sign * tx.params.amount);
+	return sign * tx.params.amount;
 };
 
 const normalizeTransactionFee = (address, tx) => {
 	const isTokenTransfer = tx.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER;
-	if (!isTokenTransfer) return beddowsToLsk(tx.fee);
+	if (!isTokenTransfer) return tx.fee;
 
 	const isRecipient = address === tx.params.recipientAddress;
-	return isRecipient ? beddowsToLsk(0) : beddowsToLsk(tx.fee);
+	return isRecipient ? 0 : tx.fee;
 };
 
 const checkIfSelfTokenTransfer = (tx) => {
@@ -53,7 +51,6 @@ const checkIfSelfTokenTransfer = (tx) => {
 };
 
 module.exports = {
-	beddowsToLsk,
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,

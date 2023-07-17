@@ -159,8 +159,8 @@ const normalizeTransaction = (address, tx, chainID) => {
 
 	const date = dateFromTimestamp(tx.block.timestamp);
 	const time = timeFromTimestamp(tx.block.timestamp);
-	const amountLsk = normalizeTransactionAmount(address, tx);
-	const feeLsk = normalizeTransactionFee(address, tx);
+	const amount = normalizeTransactionAmount(address, tx);
+	const fee = normalizeTransactionFee(address, tx);
 	const amountTokenID = tx.params.tokenID;
 	const senderAddress = tx.sender.address;
 	const recipientAddress = tx.params.recipientAddress || null;
@@ -174,8 +174,8 @@ const normalizeTransaction = (address, tx, chainID) => {
 	return {
 		date,
 		time,
-		amountLsk,
-		feeLsk,
+		amount,
+		fee,
 		amountTokenID,
 		moduleCommand,
 		senderAddress,
