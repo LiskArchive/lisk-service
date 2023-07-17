@@ -31,6 +31,8 @@ const {
 	getLisk32AddressFromPublicKey,
 } = require('./helpers/account');
 
+const { resolveReceivingChainID } = require('./helpers/chain');
+
 const {
 	parseJsonToCsv,
 } = require('./helpers/csv');
@@ -66,12 +68,14 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
+let currentChainID;
 
 // const getAccounts = async (params) => app.requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestIndexer('transactions', params);
+const getNetworkStatus = async () => requestIndexer('network.status');
 
-const isBlockchainIndexReady = async () => requestGateway('isBlockchainIndexReady', {});
+const isBlockchainIndexReady = async () => requestGateway('isBlockchainIndexReady');
 
 const getFirstBlock = async () => requestIndexer(
 	'blocks',
@@ -147,7 +151,7 @@ const getCsvFileUrlFromParams = async (params) => {
 	return url;
 };
 
-const normalizeTransaction = (address, tx) => {
+const normalizeTransaction = (address, tx, chainID) => {
 	const {
 		moduleCommand,
 		senderPublicKey,
@@ -157,18 +161,22 @@ const normalizeTransaction = (address, tx) => {
 	const time = timeFromTimestamp(tx.block.timestamp);
 	const amountLsk = normalizeTransactionAmount(address, tx);
 	const feeLsk = normalizeTransactionFee(address, tx);
+	const amountTokenID = tx.params.tokenID;
 	const senderAddress = tx.sender.address;
 	const recipientAddress = tx.params.recipientAddress || null;
 	const recipientPublicKey = tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey || null;
 	const blockHeight = tx.block.height;
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
+	const sendingChainID = chainID;
+	const receivingChainID = resolveReceivingChainID(tx, chainID);
 
 	return {
 		date,
 		time,
 		amountLsk,
 		feeLsk,
+		amountTokenID,
 		moduleCommand,
 		senderAddress,
 		recipientAddress,
@@ -177,6 +185,8 @@ const normalizeTransaction = (address, tx) => {
 		blockHeight,
 		note,
 		transactionID,
+		sendingChainID,
+		receivingChainID,
 	};
 };
 
@@ -185,7 +195,7 @@ const parseTransactionsToCsv = (json) => {
 	return parseJsonToCsv(opts, json);
 };
 
-const transactionsToCSV = (transactions, address) => {
+const transactionsToCSV = (transactions, address, chainID) => {
 	// Add duplicate entry with zero fees for self token transfer transactions
 	transactions.forEach((tx, i, arr) => {
 		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
@@ -193,7 +203,7 @@ const transactionsToCSV = (transactions, address) => {
 		}
 	});
 
-	return parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
+	return parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t, chainID)));
 };
 
 const exportTransactionsCSV = async (job) => {
@@ -240,7 +250,13 @@ const exportTransactionsCSV = async (job) => {
 	}
 
 	const csvFilename = await getCsvFilenameFromParams(params);
-	const csv = transactionsToCSV(allTransactions, getAddressFromParams(params));
+
+	if (!currentChainID) {
+		const networkStatus = await getNetworkStatus();
+		currentChainID = networkStatus.data.chainID;
+	}
+
+	const csv = transactionsToCSV(allTransactions, getAddressFromParams(params), currentChainID);
 	await staticFiles.write(csvFilename, csv);
 };
 

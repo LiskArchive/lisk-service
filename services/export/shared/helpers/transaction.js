@@ -13,8 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const MODULE_COMMAND_TOKEN_TRANSFER = 'token:transfer';
-const MODULE_COMMAND_RECLAIM_TRANSACTION = 'legacy:reclaimLSK';
+const {
+	MODULE_COMMAND_TOKEN_TRANSFER,
+	MODULE_COMMAND_RECLAIM_TRANSACTION,
+} = require('./constants');
 
 const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
 
@@ -33,6 +35,7 @@ const normalizeTransactionAmount = (address, tx) => {
 		|| (isTokenTransfer && isRecipient && !isSelfTransfer)
 		|| (isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit)
 		? 1 : -1;
+
 	return beddowsToLsk(sign * tx.params.amount);
 };
 

@@ -18,6 +18,7 @@ module.exports = [
 	{ label: 'Time', value: 'time' },
 	{ label: 'Amount LSK', value: 'amountLsk' },
 	{ label: 'Fee LSK', value: 'feeLsk' },
+	{ label: 'Amount TokenID', value: 'amountTokenID' },
 	{ label: 'Module:Command', value: 'moduleCommand' },
 	{ label: 'Sender Address', value: 'senderAddress' },
 	{ label: 'Recipient Address', value: 'recipientAddress' },
@@ -26,4 +27,6 @@ module.exports = [
 	{ label: 'Block Height', value: 'blockHeight' },
 	{ label: 'Note', value: 'note' },
 	{ label: 'Transaction ID', value: 'transactionID' },
+	{ label: 'Sending chainID', value: 'sendingChainID' },
+	{ label: 'Receiving chainID', value: 'receivingChainID' },
 ];
