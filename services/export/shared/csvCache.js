@@ -44,7 +44,7 @@ const objectCacheFS = (params) => {
 		exists: (filename) => exists(`${dirPath}/${filename}`),
 		remove: (filename) => remove(`${dirPath}/${filename}`),
 		purge: () => purge(dirPath, retentionInDays),
-		isFile: (filename) => isFile(filename),
+		isFile: (filename) => isFile(`${dirPath}/${filename}`),
 	};
 };
 

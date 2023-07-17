@@ -64,7 +64,7 @@ config.csv = {};
 config.csv.delimiter = ';';
 config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
-config.csv.baseUrl = '/api/v3/exports';
+config.csv.baseUrl = '/api/v3/export/download';
 
 /**
  * Message queue options

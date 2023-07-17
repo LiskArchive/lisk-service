@@ -36,6 +36,11 @@ const {
 } = require('./helpers/csv');
 
 const {
+	requestIndexer,
+	requestGateway,
+} = require('./helpers/request');
+
+const {
 	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,
@@ -62,18 +67,14 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
 
-let app;
+// const getAccounts = async (params) => app.requestRpc('core.accounts', params);
 
-const setAppContext = (h) => app = h;
+const getTransactions = async (params) => requestIndexer('transactions', params);
 
-const getAccounts = async (params) => app.requestRpc('core.accounts', params);
+const isBlockchainIndexReady = async () => requestGateway('isBlockchainIndexReady', {});
 
-const getTransactions = async (params) => app.requestRpc('core.transactions', params);
-
-const isBlockchainIndexReady = async () => app.requestRpc('gateway.isBlockchainIndexReady', {});
-
-const getFirstBlock = async () => app.requestRpc(
-	'core.blocks',
+const getFirstBlock = async () => requestIndexer(
+	'blocks',
 	{
 		limit: 1,
 		sort: 'height:asc',
@@ -84,24 +85,20 @@ const getAddressFromParams = (params) => params.address
 	|| getLisk32AddressFromPublicKey(params.publicKey);
 
 const getTransactionsInAsc = async (params) => getTransactions({
-	senderIdOrRecipientId: getAddressFromParams(params),
+	address: getAddressFromParams(params),
 	sort: 'timestamp:asc',
 	timestamp: params.timestamp,
 	limit: params.limit || 10,
 	offset: params.offset || 0,
 });
 
-const validateIfAccountExists = async (params) => {
-	const address = getAddressFromParams(params);
-	const accResponse = await getAccounts({ address }).catch(_ => _);
-	return (accResponse.data && accResponse.data.length);
-};
+// const validateIfAccountExists = async (address) => {
+// 	const accResponse = await getAccounts({ address }).catch(_ => _);
+// 	return (accResponse.data && accResponse.data.length);
+// };
 
-const validateIfAccountHasTransactions = async (params) => {
-	const response = await getTransactions({
-		senderIdOrRecipientId: getAddressFromParams(params),
-		limit: 1,
-	});
+const validateIfAccountHasTransactions = async (address) => {
+	const response = await getTransactions({ address, limit: 1 });
 	return !!response.data.length;
 };
 
@@ -146,42 +143,40 @@ const getCsvFilenameFromParams = async (params) => {
 
 const getCsvFileUrlFromParams = async (params) => {
 	const filename = await getCsvFilenameFromParams(params);
-	const url = `${config.csv.baseUrl}/${filename}`;
+	const url = `${config.csv.baseUrl}?filename=${filename}`;
 	return url;
 };
 
 const normalizeTransaction = (address, tx) => {
 	const {
-		moduleAssetId,
-		moduleAssetName,
+		moduleCommand,
 		senderPublicKey,
 	} = tx;
 
-	const date = dateFromTimestamp(tx.unixTimestamp);
-	const time = timeFromTimestamp(tx.unixTimestamp);
+	const date = dateFromTimestamp(tx.block.timestamp);
+	const time = timeFromTimestamp(tx.block.timestamp);
 	const amountLsk = normalizeTransactionAmount(address, tx);
 	const feeLsk = normalizeTransactionFee(address, tx);
-	const sender = tx.senderId;
-	const recipient = tx.asset.recipient && tx.asset.recipient.address || null;
-	const recipientPublicKey = tx.asset.recipient && tx.asset.recipient.publicKey || null;
-	const blockHeight = tx.height;
-	const note = tx.asset.data || null;
-	const transactionId = tx.id;
+	const senderAddress = tx.sender.address;
+	const recipientAddress = tx.params.recipientAddress || null;
+	const recipientPublicKey = tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey || null;
+	const blockHeight = tx.block.height;
+	const note = tx.params.data || null;
+	const transactionID = tx.id;
 
 	return {
 		date,
 		time,
 		amountLsk,
 		feeLsk,
-		moduleAssetId,
-		moduleAssetName,
-		sender,
-		recipient,
+		moduleCommand,
+		senderAddress,
+		recipientAddress,
 		senderPublicKey,
 		recipientPublicKey,
 		blockHeight,
 		note,
-		transactionId,
+		transactionID,
 	};
 };
 
@@ -270,12 +265,12 @@ const scheduleTransactionHistoryExport = async (params) => {
 	const { publicKey } = params;
 	const address = getAddressFromParams(params);
 
-	// Validate if account exists
-	const isAccountExists = await validateIfAccountExists(params);
-	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
+	// // Validate if account exists
+	// const isAccountExists = await validateIfAccountExists(address);
+	// if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
 
 	// Validate if account has transactions
-	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
+	const isAccountHasTransactions = await validateIfAccountHasTransactions(address);
 	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
 
 	exportResponse.data.address = address;
@@ -336,5 +331,4 @@ module.exports = {
 	getPartialFilenameFromParams,
 	getCsvFilenameFromParams,
 	getCsvFileUrlFromParams,
-	setAppContext,
 };
