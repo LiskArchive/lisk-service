@@ -40,9 +40,9 @@ module.exports = [
 						finalizedHeight,
 					);
 
-					logger.debug(`Deleting the serialized events until the finalized height: ${deleteTillHeight}.`);
+					logger.debug(`Deleting the serialized events until the height: ${deleteTillHeight}.`);
 					await deleteEventStrTillHeight(deleteTillHeight);
-					logger.info(`Deleted the serialized events until the finalized height: ${deleteTillHeight}.`);
+					logger.info(`Deleted the serialized events until the height: ${deleteTillHeight}.`);
 				}
 			} catch (err) {
 				logger.warn(`Deleting serialized events failed due to: ${err.message}`);

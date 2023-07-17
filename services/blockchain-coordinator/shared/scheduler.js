@@ -240,12 +240,9 @@ const scheduleMissingBlocksIndexing = async () => {
 			// eslint-disable-next-line no-await-in-loop
 			const result = await getMissingBlocks(batchStartHeight, batchEndHeight);
 
-			missingBlocksByHeight.push(...result);
-		}
-
-		if (!Array.isArray(missingBlocksByHeight)) {
-			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
-			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}.`);
+			if (Array.isArray(result)) {
+				missingBlocksByHeight.push(...result);
+			}
 		}
 
 		if (missingBlocksByHeight.length === 0) {
