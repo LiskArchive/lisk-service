@@ -14,7 +14,20 @@
  *
  */
 const MessageQueue = require('bull');
-const { Logger, Signals } = require('lisk-service-framework');
+
+const {
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
+
+const config = require('../config');
+
+const logger = Logger();
+
+const { initNodeConstants } = require('./constants');
+
+const { addAccountToDirectUpdateQueue } = require('./indexer/accountIndex');
+const { addHeightToIndexBlocksQueue, deleteBlock, indexNewBlock } = require('./indexer/blockchainIndex');
 
 const {
 	getBlocks,
@@ -26,17 +39,45 @@ const {
 	normalizeBlocks,
 } = require('./dataService');
 
-const { deleteBlock, indexNewBlock } = require('./indexer/blockchainIndex');
+const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
-const config = require('../config');
-
-const logger = Logger();
-
-const eventsQueue = new MessageQueue(
-	config.queue.events.name,
+const accountMessageQueue = new MessageQueue(
+	config.queue.account.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
+
+const blockMessageQueue = new MessageQueue(
+	config.queue.block.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
+
+const eventMessageQueue = new MessageQueue(
+	config.queue.event.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
+
+const queueStatus = async (messageQueue) => {
+	setInterval(
+		async () => {
+			const jc = await messageQueue.getJobCounts();
+			const logSuffix = (jc.waiting || jc.active || jc.failed || jc.paused)
+				? `waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`
+				: 'All scheduled jobs are done';
+
+			logger.info(`Message queue counters for ${messageQueue.name}: ${logSuffix}.`);
+		},
+		STATS_INTERVAL,
+	);
+};
+
+const initQueueStatus = async () => {
+	await queueStatus(accountMessageQueue);
+	await queueStatus(blockMessageQueue);
+	await queueStatus(eventMessageQueue);
+};
 
 const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
@@ -74,8 +115,25 @@ const newRoundProcessor = async () => {
 	Signals.get('newRound').dispatch(response);
 };
 
-const initEventsProcess = async () => {
-	eventsQueue.process(async (job) => {
+const initMessageProcessors = async () => {
+	logger.info(`Registering job processor for ${accountMessageQueue.name} message queue.`);
+	accountMessageQueue.process(async (job) => {
+		const { account } = job.data;
+		logger.debug(`Scheduling indexing for account with address: ${account.address}.`);
+		await addAccountToDirectUpdateQueue(account);
+	});
+
+	logger.info(`Registering job processor for ${blockMessageQueue.name} message queue.`);
+	blockMessageQueue.process(async (job) => {
+		logger.debug('Subscribed to block index message queue.');
+		const { height } = job.data;
+
+		logger.debug(`Scheduling indexing for block at height: ${height}.`);
+		await addHeightToIndexBlocksQueue(height);
+	});
+
+	logger.info(`Registering job processor for ${eventMessageQueue.name} message queue.`);
+	eventMessageQueue.process(async (job) => {
 		logger.debug('Subscribed to the events from coordinator.');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
@@ -89,8 +147,15 @@ const initEventsProcess = async () => {
 			await newRoundProcessor();
 		}
 	});
+
+	await initQueueStatus();
+};
+
+const init = async () => {
+	await initNodeConstants();
+	await initMessageProcessors();
 };
 
 module.exports = {
-	initEventsProcess,
+	init,
 };

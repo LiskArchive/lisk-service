@@ -40,14 +40,14 @@ const {
 
 const config = require('../config');
 
-const blockIndexQueue = new MessageQueue(
-	config.queue.blocks.name,
+const blockMessageQueue = new MessageQueue(
+	config.queue.block.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const accountIndexQueue = new MessageQueue(
-	config.queue.accounts.name,
+const accountMessageQueue = new MessageQueue(
+	config.queue.account.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
@@ -70,7 +70,7 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 
 	return isGenesisBlockIndexed()
 		.then(async (isIndexed) => {
-			const jobCount = await getInProgressJobCount(blockIndexQueue);
+			const jobCount = await getInProgressJobCount(blockMessageQueue);
 
 			if (isIndexed) {
 				logger.info('Genesis block is indexed.');
@@ -98,7 +98,7 @@ const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
 		intervalID = null;
 	}
 
-	return getInProgressJobCount(blockIndexQueue)
+	return getInProgressJobCount(blockMessageQueue)
 		.then((count) => {
 			const { skipThreshold } = config.job.indexMissingBlocks;
 			return count < skipThreshold
@@ -134,7 +134,7 @@ const scheduleBlocksIndexing = async (heights) => {
 		// eslint-disable-next-line no-restricted-syntax
 		for (const height of blockHeightsBatch) {
 			logger.trace(`Scheduling indexing for block at height: ${height}.`);
-			await blockIndexQueue.add({ height });
+			await blockMessageQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
 
@@ -147,7 +147,7 @@ const scheduleBlocksIndexing = async (heights) => {
 const scheduleValidatorsIndexing = async (validators) => {
 	await BluebirdPromise.map(
 		validators,
-		async validator => accountIndexQueue.add({
+		async validator => accountMessageQueue.add({
 			account: {
 				...validator,
 				isValidator: true,
@@ -178,7 +178,7 @@ const initIndexingScheduler = async () => {
 	logger.info('Validator indexing initialization completed successfully.');
 
 	// Skip scheduling jobs for missing blocks when the jobCount is greater than the threshold
-	const jobCount = await getInProgressJobCount(blockIndexQueue);
+	const jobCount = await getInProgressJobCount(blockMessageQueue);
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info(`Skipping the check for missing blocks. ${jobCount} blocks already queued for indexing.`);
 	} else {
@@ -195,7 +195,7 @@ const initIndexingScheduler = async () => {
 		if (Array.isArray(missingBlockHeights) && missingBlockHeights.length) {
 			logger.info(`${missingBlockHeights.length} missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}. Attempting to schedule indexing.`);
 			await scheduleBlocksIndexing(missingBlockHeights);
-			logger.info(`Finished scheduling indexing of ${missingBlockHeights.length}  missing blocks between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
+			logger.info(`Finished scheduling indexing of ${missingBlockHeights.length} missing blocks between heights: ${lastVerifiedHeight} - ${currentHeight}.`);
 		} else {
 			logger.info(`No missing blocks found between heights: ${lastVerifiedHeight} - ${currentHeight}. Nothing to schedule.`);
 		}
@@ -213,7 +213,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const currentHeight = await getCurrentHeight();
 
 	// Skip job scheduling when the jobCount is greater than the threshold
-	const jobCount = await getInProgressJobCount(blockIndexQueue);
+	const jobCount = await getInProgressJobCount(blockMessageQueue);
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info(`Skipping missing blocks job run. ${jobCount} indexing jobs already in the queue.`);
 		return;

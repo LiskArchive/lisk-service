@@ -21,7 +21,7 @@ const config = require('../config');
 
 const { getTokenConstants, getRewardConstants, getPosConstants } = require('./dataService');
 const indexStatus = require('./indexer/indexStatus');
-const processor = require('./processor');
+const messageProcessor = require('./messageProcessor');
 
 const logger = Logger();
 
@@ -36,7 +36,7 @@ const init = async () => {
 		await indexStatus.init();
 
 		if (config.operations.isIndexingModeEnabled) {
-			await processor.init();
+			await messageProcessor.init();
 		}
 	} catch (error) {
 		logger.error(`Unable to initialize due to: ${error.message}. Try restarting the application.`);

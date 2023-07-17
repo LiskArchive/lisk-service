@@ -71,12 +71,16 @@ config.queue = {
 		timeout: 5 * 60 * 1000, // millisecs
 		removeOnComplete: true,
 	},
+
+	// Inter-microservice message queues
+	account: { name: 'Account' },
+	block: { name: 'Block' },
+	event: { name: 'Event' },
+
+	// Intra-microservice job queues
 	accountBalanceIndex: {
 		name: 'AccountBalanceIndex',
 		concurrency: 1,
-	},
-	accounts: {
-		name: 'Accounts',
 	},
 	accountQueueByAddress: {
 		name: 'AccountQueueByAddress',
@@ -90,15 +94,9 @@ config.queue = {
 		name: 'AccountQueueByPublicKey',
 		concurrency: 1,
 	},
-	blocks: {
-		name: 'Blocks',
-	},
 	deleteIndexedBlocks: {
 		name: 'DeleteIndexedBlocksQueue',
 		concurrency: 1,
-	},
-	events: {
-		name: 'Events',
 	},
 	indexBlocks: {
 		name: 'IndexBlocks',
