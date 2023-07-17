@@ -6,3 +6,4 @@
 
 * Management
 ** xref:management/docker.adoc[]
+** xref:management/source.adoc[]

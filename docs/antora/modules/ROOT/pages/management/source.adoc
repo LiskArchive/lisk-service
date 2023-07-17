@@ -1,5 +1,5 @@
 = PM2 commands
-Mona Bärenfänger <mona@lightcurve.io>
+Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurve.io>
 :description: Describes how to manage Lisk Service with PM2.
 :toc:
 :idseparator: -
@@ -10,7 +10,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 
 [source,bash]
 ----
-pm2 start ecosystem.core3.config.js
+pm2 start ecosystem.config.js
 
 # or
 
@@ -28,21 +28,21 @@ pm2 list
 
 [source,bash]
 ----
-pm2 stop ecosystem.core3.config.js
+pm2 stop ecosystem.config.js
 ----
 
 == Restart
 
 [source,bash]
 ----
-pm2 restart ecosystem.core3.config.js
+pm2 restart ecosystem.config.js
 ----
 
 == Remove all processes from pm2 list
 
 [source,bash]
 ----
-pm2 delete ecosystem.core3.config.js
+pm2 delete ecosystem.config.js
 
 # or
 
