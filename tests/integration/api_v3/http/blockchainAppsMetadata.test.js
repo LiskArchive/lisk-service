@@ -92,7 +92,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('should retrieve blockchain application off-chain metadata by chainID as CSV', async () => {
-		const response = await api.get(`${endpoint}?chainID=03000000,${curChainID}`);
+		const response = await api.get(`${endpoint}?chainID=04000000,${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -102,7 +102,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('should retrieve blockchain application off-chain metadata by CSV of chainID and network', async () => {
-		const response = await api.get(`${endpoint}?chainID=02000000,03000000,${curChainID}&network=alphanet,${curNetwork}`);
+		const response = await api.get(`${endpoint}?chainID=02000000,${curChainID}&network=betanet,${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

@@ -112,7 +112,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by chainName', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ chainName: 'Lisk' });
+		const response = await getBlockchainAppsTokenMetadata({ chainName: 'lisk_mainchain' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -138,7 +138,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by csv tokenID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ tokenID: `${defaultToken},0300000000000000` });
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: `${defaultToken},0400000000000000` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -229,7 +229,7 @@ describe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by csv network', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ network: `${curNetwork},alphanet` });
+		const response = await getBlockchainAppsTokenMetadata({ network: `${curNetwork},betanet` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

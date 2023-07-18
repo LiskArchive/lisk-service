@@ -5884,7 +5884,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -5944,7 +5944,7 @@ _Supports pagination._
 | displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name or display name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -6036,7 +6036,7 @@ _Supports pagination._
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
 | tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* |  |
 | tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |

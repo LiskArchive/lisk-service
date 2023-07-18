@@ -90,7 +90,6 @@ config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'00': 'mainnet',
 	'01': 'testnet',
 	'02': 'betanet',
-	'03': 'alphanet',
 	'04': 'devnet',
 });
 
