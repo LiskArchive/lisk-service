@@ -30,7 +30,10 @@ const {
 } = require('./sources/indexer');
 
 const { getAllPosValidators } = require('./sources/connector');
-const { isGenesisBlockIndexed } = require('./sources/indexer');
+const {
+	isGenesisBlockIndexed,
+	getLiveIndexingJobCount: getLiveIndexingJobCountFromIndexer,
+} = require('./sources/indexer');
 
 const {
 	getCurrentHeight,
@@ -58,6 +61,12 @@ const getInProgressJobCount = async (queue) => {
 	return count;
 };
 
+const getLiveIndexingJobCount = async () => {
+	const messageQueueJobCount = await getInProgressJobCount(blockMessageQueue);
+	const indexerLiveIndexingJobCount = await getLiveIndexingJobCountFromIndexer();
+	return messageQueueJobCount + indexerLiveIndexingJobCount;
+};
+
 let intervalID;
 const REFRESH_INTERVAL = 30000;
 
@@ -70,7 +79,7 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 
 	return isGenesisBlockIndexed()
 		.then(async (isIndexed) => {
-			const jobCount = await getInProgressJobCount(blockMessageQueue);
+			const jobCount = await getLiveIndexingJobCount();
 
 			if (isIndexed) {
 				logger.info('Genesis block is indexed.');
@@ -98,7 +107,7 @@ const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
 		intervalID = null;
 	}
 
-	return getInProgressJobCount(blockMessageQueue)
+	return getLiveIndexingJobCount()
 		.then((count) => {
 			const { skipThreshold } = config.job.indexMissingBlocks;
 			return count < skipThreshold
@@ -178,7 +187,7 @@ const initIndexingScheduler = async () => {
 	logger.info('Validator indexing initialization completed successfully.');
 
 	// Skip scheduling jobs for missing blocks when the jobCount is greater than the threshold
-	const jobCount = await getInProgressJobCount(blockMessageQueue);
+	const jobCount = await getLiveIndexingJobCount();
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info(`Skipping the check for missing blocks. ${jobCount} blocks already queued for indexing.`);
 	} else {
@@ -213,7 +222,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const currentHeight = await getCurrentHeight();
 
 	// Skip job scheduling when the jobCount is greater than the threshold
-	const jobCount = await getInProgressJobCount(blockMessageQueue);
+	const jobCount = await getLiveIndexingJobCount();
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info(`Skipping missing blocks job run. ${jobCount} indexing jobs already in the queue.`);
 		return;

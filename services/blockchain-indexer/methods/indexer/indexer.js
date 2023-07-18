@@ -18,6 +18,7 @@ const {
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
 	isGenesisBlockIndexed,
+	getLiveIndexingJobCount,
 } = require('../../shared/indexer/blockchainIndex');
 
 const {
@@ -59,6 +60,11 @@ module.exports = [
 	{
 		name: 'isGenesisBlockIndexed',
 		controller: isGenesisBlockIndexed,
+		params: {},
+	},
+	{
+		name: 'getLiveIndexingJobCount',
+		controller: getLiveIndexingJobCount,
 		params: {},
 	},
 ];
