@@ -71,7 +71,7 @@ config.gitHub = {
 
 config.dataDir = `${__dirname}/data`;
 
-config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
+config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'devnet'];
 
 const DEFAULT_LISK_APPS = ['Lisk'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');

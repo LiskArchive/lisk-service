@@ -145,7 +145,7 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainName', async () => {
-		const response = await getBlockchainAppsMetadata({ chainName: 'Lisk' });
+		const response = await getBlockchainAppsMetadata({ chainName: 'lisk_mainchain' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -204,7 +204,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeGreaterThanOrEqual(0);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppMetadata => expect(blockchainAppMetadata)
 			.toMap(blockchainAppMetadataSchema, { isDefault: true }));

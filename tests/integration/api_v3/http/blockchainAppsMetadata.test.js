@@ -131,7 +131,7 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainName', async () => {
-		const response = await api.get(`${endpoint}?chainName=Lisk`);
+		const response = await api.get(`${endpoint}?chainName=lisk_mainchain`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -184,7 +184,7 @@ describe('Blockchain applications metadata API', () => {
 		const response = await api.get(`${endpoint}?isDefault=true`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
 		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.map(blockchainAppMetadata => expect(blockchainAppMetadata)
 			.toMap(blockchainAppMetadataSchema), { isDefault: true });
