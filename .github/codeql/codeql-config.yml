@@ -2,3 +2,4 @@ paths-ignore:
   - ./data
   - ./docs
   - ./known_accounts
+disable-default-queries: true
