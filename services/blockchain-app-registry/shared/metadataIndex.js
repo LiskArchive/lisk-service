@@ -70,6 +70,7 @@ const indexAppMeta = async (appMeta, dbTrx) => {
 
 	const appMetaToIndex = {
 		chainID: appMeta.chainID,
+		displayName: appMeta.displayName,
 		chainName: appMeta.chainName,
 		network: appMeta.networkType,
 		isDefault: config.defaultApps.some(e => e === appMeta.chainName),

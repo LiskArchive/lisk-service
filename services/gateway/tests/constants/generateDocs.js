@@ -178,6 +178,9 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/chainName',
 				},
 				{
+					$ref: '#/parameters/displayName',
+				},
+				{
 					$ref: '#/parameters/chainIDCSV',
 				},
 				{
@@ -187,7 +190,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/network',
 				},
 				{
-					$ref: '#/parameters/searchByChainName',
+					$ref: '#/parameters/searchByChainAndDisplayName',
 				},
 				{
 					$ref: '#/parameters/limit',

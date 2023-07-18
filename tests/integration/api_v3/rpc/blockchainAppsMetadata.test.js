@@ -44,7 +44,7 @@ describe('get.blockchain.apps.meta', () => {
 		curNetwork = CHAIN_ID_PREFIX_NETWORK_MAP[curChainID.substring(0, 2)];
 	});
 
-	it('returns blockchain applications off-chain metadata', async () => {
+	it('should retrieve blockchain applications off-chain metadata', async () => {
 		const response = await getBlockchainAppsMetadata();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -55,7 +55,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata with limit=5', async () => {
+	it('should retrieve blockchain applications off-chain metadata with limit=5', async () => {
 		const response = await getBlockchainAppsMetadata({ limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -66,7 +66,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata with limit=5 and offset=1', async () => {
+	it('should retrieve blockchain applications off-chain metadata with limit=5 and offset=1', async () => {
 		const response = await getBlockchainAppsMetadata({ limit: 5, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -77,7 +77,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata with limit=5, offset=1 and sort=chainName:desc', async () => {
+	it('should retrieve blockchain applications off-chain metadata with limit=5, offset=1, and sort=chainName:desc', async () => {
 		const response = await getBlockchainAppsMetadata({ limit: 5, offset: 1, sort: 'chainName:desc' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -88,7 +88,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain application off-chain metadata by chainID', async () => {
+	it('should return blockchain application off-chain metadata by chainID', async () => {
 		const response = await getBlockchainAppsMetadata({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -98,7 +98,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by chainID as CSV', async () => {
+	it('should retrieve blockchain application off-chain metadata by chainID as CSV', async () => {
 		const response = await getBlockchainAppsMetadata({ chainID: `03000000,${curChainID}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -109,7 +109,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by CSV of chainID and network', async () => {
+	it('should retrieve blockchain application off-chain metadata by CSV of chainID and network', async () => {
 		const response = await getBlockchainAppsMetadata({
 			chainID: `02000000,03000000,${curChainID}`,
 			network: `alphanet,${curNetwork}`,
@@ -123,7 +123,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by network', async () => {
+	it('should retrieve blockchain application off-chain metadata by network', async () => {
 		const response = await getBlockchainAppsMetadata({ network: curNetwork });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -133,7 +133,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata by network as CSV', async () => {
+	it('should retrieve blockchain applications off-chain metadata by network as CSV', async () => {
 		const response = await getBlockchainAppsMetadata({ network: `mainnet,testnet,${curNetwork}` });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -144,7 +144,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by chainName', async () => {
+	it('should retrieve blockchain application off-chain metadata by chainName', async () => {
 		const response = await getBlockchainAppsMetadata({ chainName: 'lisk_mainchain' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -155,7 +155,18 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by search', async () => {
+	it('should retrieve blockchain application off-chain metadata by displayName', async () => {
+		const response = await getBlockchainAppsMetadata({ displayName: 'Lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('should retrieve blockchain application off-chain metadata by search', async () => {
 		const response = await getBlockchainAppsMetadata({ search: 'Lisk' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -166,7 +177,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata by partial search', async () => {
+	it('should retrieve blockchain applications off-chain metadata by partial search', async () => {
 		const response = await getBlockchainAppsMetadata({ search: 'Lis' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -177,7 +188,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by case-insensitive search (Upper-case)', async () => {
+	it('should retrieve blockchain application off-chain metadata by case-insensitive search (Upper-case)', async () => {
 		const response = await getBlockchainAppsMetadata({ search: 'LISK' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -188,7 +199,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by case-insensitive search (Lower-case)', async () => {
+	it('should retrieve blockchain application off-chain metadata by case-insensitive search (Lower-case)', async () => {
 		const response = await getBlockchainAppsMetadata({ search: 'lisk' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -199,19 +210,19 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all default blockchain applications metadata', async () => {
+	it('should return list of all default blockchain applications metadata', async () => {
 		const response = await getBlockchainAppsMetadata({ isDefault: true });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(0);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainAppMetadata => expect(blockchainAppMetadata)
 			.toMap(blockchainAppMetadataSchema, { isDefault: true }));
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list of all non-default blockchain applications metadata', async () => {
+	it('should return list of all non-default blockchain applications metadata', async () => {
 		const response = await getBlockchainAppsMetadata({ isDefault: false });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -223,7 +234,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
+	it('should handle invalid request param and return invalid param', async () => {
 		const response = await getBlockchainAppsMetadata({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});

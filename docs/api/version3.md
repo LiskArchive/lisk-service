@@ -5941,10 +5941,11 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|alphanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
-| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
+| search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name or display name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
@@ -5970,7 +5971,7 @@ _Supports pagination._
         {
           "http": "https://service.lisk.com",
           "ws": "wss://service.lisk.com",
-          "apiCertificatePublicKey":"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtz6qaTSCNwtGrdPJTori\n/CQCG5/ozu6IRIwAwNeB4YpYcUti3a16braLtC+9ElZ5S+S1hPS+nix3hlzuXm2z\ndpsgfHBuw16NO/9Hk1IbNMJOQD3KDY7GTeBebyBSVC9T5JEAQyTBm6elhIGvGlxZ\naQLV2vvZ2nR8T3UhECGOjtBurrCem5bLtJvg+XZXiTn27xQ1nEwUtm0rH1CJgSt7\nhVjQcAerNLaP58f1O521vgHr79UrJWLxqhjdNIccDZ4kWRCBdvnDBaKz2yI6sYhU\nD8OuPxvwXkrT7DX8GvODMOgf6NYqJIb8TD3wjoR/wWJHUG2Bc9v6eQScAFmCc/FL\n+wIDAQAB\n-----END PUBLIC KEY-----"
+          "apiCertificatePublicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtz6qaTSCNwtGrdPJTori\n/CQCG5/ozu6IRIwAwNeB4YpYcUti3a16braLtC+9ElZ5S+S1hPS+nix3hlzuXm2z\ndpsgfHBuw16NO/9Hk1IbNMJOQD3KDY7GTeBebyBSVC9T5JEAQyTBm6elhIGvGlxZ\naQLV2vvZ2nR8T3UhECGOjtBurrCem5bLtJvg+XZXiTn27xQ1nEwUtm0rH1CJgSt7\nhVjQcAerNLaP58f1O521vgHr79UrJWLxqhjdNIccDZ4kWRCBdvnDBaKz2yI6sYhU\nD8OuPxvwXkrT7DX8GvODMOgf6NYqJIb8TD3wjoR/wWJHUG2Bc9v6eQScAFmCc/FL\n+wIDAQAB\n-----END PUBLIC KEY-----"
         }
       ],
       "logo": {
@@ -5989,7 +5990,7 @@ _Supports pagination._
         {
           "url": "https://mainnet.lisk.com",
           "maintainer": "Lightcurve GmbH",
-          "apiCertificatePublicKey":"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtz6qaTSCNwtGrdPJTori\n/CQCG5/ozu6IRIwAwNeB4YpYcUti3a16braLtC+9ElZ5S+S1hPS+nix3hlzuXm2z\ndpsgfHBuw16NO/9Hk1IbNMJOQD3KDY7GTeBebyBSVC9T5JEAQyTBm6elhIGvGlxZ\naQLV2vvZ2nR8T3UhECGOjtBurrCem5bLtJvg+XZXiTn27xQ1nEwUtm0rH1CJgSt7\nhVjQcAerNLaP58f1O521vgHr79UrJWLxqhjdNIccDZ4kWRCBdvnDBaKz2yI6sYhU\nD8OuPxvwXkrT7DX8GvODMOgf6NYqJIb8TD3wjoR/wWJHUG2Bc9v6eQScAFmCc/FL\n+wIDAQAB\n-----END PUBLIC KEY-----"
+          "apiCertificatePublicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtz6qaTSCNwtGrdPJTori\n/CQCG5/ozu6IRIwAwNeB4YpYcUti3a16braLtC+9ElZ5S+S1hPS+nix3hlzuXm2z\ndpsgfHBuw16NO/9Hk1IbNMJOQD3KDY7GTeBebyBSVC9T5JEAQyTBm6elhIGvGlxZ\naQLV2vvZ2nR8T3UhECGOjtBurrCem5bLtJvg+XZXiTn27xQ1nEwUtm0rH1CJgSt7\nhVjQcAerNLaP58f1O521vgHr79UrJWLxqhjdNIccDZ4kWRCBdvnDBaKz2yI6sYhU\nD8OuPxvwXkrT7DX8GvODMOgf6NYqJIb8TD3wjoR/wWJHUG2Bc9v6eQScAFmCc/FL\n+wIDAQAB\n-----END PUBLIC KEY-----"
         }
       ]
     }
