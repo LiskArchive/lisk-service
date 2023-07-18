@@ -1,0 +1,4 @@
+paths-ignore:
+  - ./data
+  - ./docs
+  - ./known_accounts
