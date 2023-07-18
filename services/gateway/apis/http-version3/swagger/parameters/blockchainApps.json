@@ -33,7 +33,7 @@
     "network": {
         "name": "network",
         "in": "query",
-        "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAvailable values: mainnet, testnet, betanet, devnet.",
+        "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAccepted values: mainnet, testnet, betanet, devnet.",
         "type": "string",
         "minLength": 1
     },
