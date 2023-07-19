@@ -402,8 +402,8 @@ const expectedResponseForTransformResponse = {
 
 const paramsForTransformRequest = {
 	tokenName: 'Lisk,Lis,Lik',
-	tokenIDParam: '0400000000000000,0400000000000000',
-	network: 'devnet,devnet',
+	tokenIDParam: '0200000000000000,0400000000000000',
+	network: 'betanet,devnet',
 	limit: 10,
 	offset: 0,
 	sort: 'chainName:asc',
@@ -429,11 +429,11 @@ const expectedResponseForTransformRequest = {
 	chainID: undefined,
 	chainName: undefined,
 	limit: 10,
-	network: 'devnet,devnet',
+	network: 'betanet,devnet',
 	offset: 0,
 	search: undefined,
 	sort: 'chainName:asc',
-	tokenID: '0400000000000000,0400000000000000',
+	tokenID: '0200000000000000,0400000000000000',
 	tokenName: 'Lisk,Lis,Lik',
 };
 

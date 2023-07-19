@@ -234,7 +234,7 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should handle invalid request param and return invalid param', async () => {
+	it('should return invalid param when called with invalid request param', async () => {
 		const response = await getBlockchainAppsMetadata({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
