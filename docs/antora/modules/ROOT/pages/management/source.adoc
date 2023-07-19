@@ -6,80 +6,382 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :idprefix:
 :imagesdir: ../assets/images
 
-== Start
+
+// External URLs
+:url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
+:url_FLUSHALL: https://redis.io/commands/FLUSHALL
+:url_mainchain_client: https://github.com/LiskHQ/lisk-core#example-using-pm2
+
+:url_global_cli: build-blockchain/create-blockchain-client.adoc#using-the-client-cli-globally
+:url_build_hello_client: build-blockchain/index.adoc#the-hello-world-client
+:url_core_client: run-blockchain/index.adoc#how-to-set-up-a-lisk-mainnet-node
+
+On this page you'll find the most relevant PM2 commands for running source based Lisk Service installation. For more details about PM2, see {url_pm2_docs}[PM2 docs].
+
+== Various PM2 commands
+
+=== Start
 
 [source,bash]
 ----
 pm2 start ecosystem.config.js
-
-# or
-
-npm start
 ----
 
-== Status
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+[PM2] Applying action restartProcessId on app [lisk-service-gateway](ids: [ 0 ])
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-app-registry](ids: [ 1 ])
+[PM2] [lisk-service-gateway](0) ✓
+[PM2] [lisk-service-blockchain-app-registry](1) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-connector](ids: [ 2 ])
+[PM2] [lisk-service-blockchain-connector](2) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-indexer](ids: [ 3 ])
+[PM2] [lisk-service-blockchain-indexer](3) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-coordinator](ids: [ 4 ])
+[PM2] [lisk-service-blockchain-coordinator](4) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-fee-estimator](ids: [ 5 ])
+[PM2] [lisk-service-fee-estimator](5) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-transaction-statistics](ids: [ 6 ])
+[PM2] [lisk-service-transaction-statistics](6) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-market](ids: [ 7 ])
+[PM2] [lisk-service-market](7) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-export](ids: [ 8 ])
+[PM2] [lisk-service-export](8) ✓
+┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+└----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
+----
+====
+
+=== Status
 
 [source,bash]
 ----
 pm2 list
 ----
 
-== Stop
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+└----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
+----
+====
+
+=== View logs
+To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2 managed process that contains the logs you wish to view.
+
+For example, to see the logs for the Gateway microservice, execute:
+
+[source,bash]
+----
+pm2 logs lisk-service-gateway
+----
+
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+0|lisk-ser | 2023-07-19 17:53:08 503: 2023-07-19T17:53:08.503 INFO [TRANSIT] Connecting to the transporter...
+0|lisk-ser | 2023-07-19 17:53:08 504: 2023-07-19T17:53:08.503 INFO [TRANSPORTER] Setting Redis transporter
+0|lisk-ser | 2023-07-19 17:53:08 510: 2023-07-19T17:53:08.510 INFO [TRANSPORTER] Redis-sub client is connected.
+0|lisk-ser | 2023-07-19 17:53:08 510: 2023-07-19T17:53:08.510 INFO [TRANSPORTER] Setting Redis transporter
+0|lisk-ser | 2023-07-19 17:53:08 512: 2023-07-19T17:53:08.512 INFO [TRANSPORTER] Redis-pub client is connected.
+0|lisk-ser | 2023-07-19 17:53:09 016: 2023-07-19T17:53:09.016 INFO [TEMP_SERVICE_GATEWAY] Waiting for service(s) 'indexer, connector'...
+0|lisk-ser | 2023-07-19 17:53:09 018: 2023-07-19T17:53:09.018 INFO [REGISTRY] '$node' service is registered.
+0|lisk-ser | 2023-07-19 17:53:09 018: 2023-07-19T17:53:09.018 INFO [$NODE] Service '$node' started.
+0|lisk-ser | 2023-07-19 17:53:10 225: 2023-07-19T17:53:10.223 INFO [REGISTRY] Node 'XYZ.local-74790' connected.
+0|lisk-ser | 2023-07-19 17:53:10 274: 2023-07-19T17:53:10.274 INFO [REGISTRY] Node 'XYZ.local-74787' connected.
+0|lisk-ser | 2023-07-19 17:53:10 325: 2023-07-19T17:53:10.325 INFO [REGISTRY] Node 'XYZ.local-74798' connected.
+0|lisk-ser | 2023-07-19 17:53:10 346: 2023-07-19T17:53:10.345 INFO [REGISTRY] Node 'XYZ.local-74772' connected.
+0|lisk-ser | 2023-07-19 17:53:10 415: 2023-07-19T17:53:10.414 INFO [REGISTRY] Node 'XYZ.local-74804' connected.
+0|lisk-ser | 2023-07-19 17:53:10 485: 2023-07-19T17:53:10.484 INFO [REGISTRY] Node 'XYZ.local-74795' connected.
+0|lisk-ser | 2023-07-19 17:53:10 676: 2023-07-19T17:53:10.675 INFO [REGISTRY] Node 'XYZ.local-74779' connected.
+----
+====
+
+=== Flush logs
+
+[source,bash]
+----
+pm2 flush ecosystem.config.js
+----
+
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+[PM2] Logs flushed
+----
+====
+
+
+=== Stop
 
 [source,bash]
 ----
 pm2 stop ecosystem.config.js
 ----
 
-== Restart
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+[PM2] [lisk-service-blockchain-app-registry](1) ✓
+[PM2] [lisk-service-gateway](0) ✓
+[PM2] [lisk-service-blockchain-indexer](3) ✓
+[PM2] [lisk-service-blockchain-connector](2) ✓
+[PM2] [lisk-service-blockchain-coordinator](4) ✓
+[PM2] [lisk-service-fee-estimator](5) ✓
+[PM2] [lisk-service-transaction-statistics](6) ✓
+[PM2] [lisk-service-market](7) ✓
+[PM2] [lisk-service-export](8) ✓
+┌------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem  │ user     │ watching │
+├------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+└------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
+
+----
+====
+
+
+=== Restart
 
 [source,bash]
 ----
 pm2 restart ecosystem.config.js
 ----
 
-== Remove all processes from pm2 list
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+[PM2] Applying action restartProcessId on app [lisk-service-gateway](ids: [ 0 ])
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-app-registry](ids: [ 1 ])
+[PM2] [lisk-service-gateway](0) ✓
+[PM2] [lisk-service-blockchain-app-registry](1) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-connector](ids: [ 2 ])
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-indexer](ids: [ 3 ])
+[PM2] [lisk-service-blockchain-indexer](3) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-coordinator](ids: [ 4 ])
+[PM2] [lisk-service-blockchain-connector](2) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-fee-estimator](ids: [ 5 ])
+[PM2] [lisk-service-blockchain-coordinator](4) ✓
+[PM2] [lisk-service-fee-estimator](5) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-transaction-statistics](ids: [ 6 ])
+[PM2] Applying action restartProcessId on app [lisk-service-market](ids: [ 7 ])
+[PM2] [lisk-service-transaction-statistics](6) ✓
+[PM2] [lisk-service-market](7) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-export](ids: [ 8 ])
+[PM2] [lisk-service-export](8) ✓
+┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+└----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
+----
+====
+
+
+
+=== Remove all processes from pm2 list
 
 [source,bash]
 ----
 pm2 delete ecosystem.config.js
-
-# or
-
-npm stop
 ----
 
-== Clean all run-time files with dependencies
+
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+[PM2] [lisk-service-gateway](0) ✓
+[PM2] [lisk-service-blockchain-app-registry](1) ✓
+[PM2] [lisk-service-blockchain-indexer](3) ✓
+[PM2] [lisk-service-blockchain-connector](2) ✓
+[PM2] [lisk-service-blockchain-coordinator](4) ✓
+[PM2] [lisk-service-fee-estimator](5) ✓
+[PM2] [lisk-service-transaction-statistics](6) ✓
+[PM2] [lisk-service-market](7) ✓
+[PM2] [lisk-service-export](8) ✓
+┌----------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└----------------------------------------------------------------------------------------------------------------------------------------------┘
+[PM2][WARN] Current process list is not synchronized with saved list. App lisk-service-gateway lisk-service-blockchain-app-registry lisk-service-blockchain-connector lisk-service-blockchain-indexer lisk-service-blockchain-coordinator lisk-service-fee-estimator lisk-service-transaction-statistics lisk-service-market lisk-service-export differs. Type 'pm2 save' to synchronize.
+----
+====
+
+== Resetting Lisk Service 
+
+=== Clean all run-time files with dependencies
 
 [source,bash]
 ----
 make clean
 ----
 
-== Reset the Lisk Service database
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+rm -rf node_modules
+cd ./framework && rm -rf node_modules
+cd ./services/blockchain-app-registry && rm -rf node_modules
+cd ./services/blockchain-connector && rm -rf node_modules
+cd ./services/blockchain-coordinator && rm -rf node_modules
+cd ./services/blockchain-indexer && rm -rf node_modules
+cd ./services/transaction-statistics && rm -rf node_modules
+cd ./services/fee-estimator && rm -rf node_modules
+cd ./services/market && rm -rf node_modules
+cd ./services/gateway && rm -rf node_modules
+cd ./services/export && rm -rf node_modules
+cd ./services/template && rm -rf node_modules
+cd ./tests && rm -rf node_modules
+docker rmi lisk/service_gateway \
+	lisk/service_blockchain_app_registry \
+	lisk/service_blockchain_connector \
+	lisk/service_blockchain_indexer \
+	lisk/service_blockchain_coordinator \
+	lisk/service_transaction_statistics \
+	lisk/service_fee_estimator \
+	lisk/service_market \
+	lisk/service_export \
+	lisk/service_template \
+	lisk/service_tests; :
+Untagged: lisk/service_gateway:latest
+Deleted: sha256:5749869435bc9c562af29435999a4e4afee6fa0a7cb8cb188ed87805b9b793ba
+Untagged: lisk/service_blockchain_app_registry:latest
+Deleted: sha256:3dbea0971611d4072e06bc677daf53611696312c7ca3c2bdf5f3854fd5310de2
+Untagged: lisk/service_blockchain_connector:latest
+Deleted: sha256:c88ea0780275c54b944f524ee85b6d935d155261bf246fd9dd7331ea0a3a0ae6
+Untagged: lisk/service_blockchain_indexer:latest
+Deleted: sha256:a3640ec100f7489c0b14043bec2f09e7f81cbe7bd3f044b9b12d04bc6976dda1
+Untagged: lisk/service_blockchain_coordinator:latest
+Deleted: sha256:a4b8aa984dba9028f60ff4a2194924065989a1aaa8429eb93119cf5036700dac
+Untagged: lisk/service_transaction_statistics:latest
+Deleted: sha256:2fbb60090859f858a87595af6c82ce3cf07015747b937bd322749efd3dfd6f9e
+Untagged: lisk/service_fee_estimator:latest
+Deleted: sha256:0759e75bde038460c42eccc3979c6c851824f7306e2c295608a58606b4de54d4
+Untagged: lisk/service_market:latest
+Deleted: sha256:0bfe5f3dbcabbe40b38718444dc5fe578e5faab35b0c53504054924190c3f928
+Untagged: lisk/service_export:latest
+Deleted: sha256:c4b7f4023da7e81271f20fd05afc3f596074d013d39c6cd0acd0f1409e854ec1
+Error response from daemon: No such image: lisk/service_template:latest
+Error response from daemon: No such image: lisk/service_tests:latest
+----
+====
 
-To reset the database of Lisk Service, drop the respective MYSQL and Redis databases.
-
-=== Drop the MYSQL database
+=== Install npm dependencies
 
 [source,bash]
 ----
-# Stop Lisk Service
-$ npm stop
-# Login to MYSQL with the lisk user
-$ mysql -u lisk -ppassword
-# Drop the database
+make build-local
+----
+
+=== Reset the Lisk Service database
+
+To reset the database of Lisk Service, drop the respective MySQL and Redis databases.
+
+==== Drop the MySQL database
+
+. Stop Lisk Service
++
+[source,bash]
+----
+npm stop
+----
+
+. Login to MySQL with the lisk user
++
+[source,bash]
+----
+mysql -u lisk -ppassword
+----
+
+. Drop the database
++
+[source,bash]
+----
 mysql> drop database lisk;
-# Create fresh database
+----
+
+. Create fresh database
++
+[source,bash]
+----
 mysql> create database lisk;
-mysql> quit; # Quit MYSQL
+----
+
+. Quit MySQL
++
+[source,bash]
+----
+mysql> quit;
 ----
 
 NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated. This can be quite time-consuming and may take up to 2 hours.
 
-=== Flush Redis DB
+==== Flush Redis DB
 
-Reset the databases for Redis after dropping the MYSQL database:
+Reset the databases for Redis after dropping the MySQL database:
 
 [source,bash]
 ----
@@ -92,29 +394,14 @@ The `flushall` command removes all existing Redis databases:
 
 > Deletes all the keys of all the existing databases, not just the current selected one. This command never fails.
 
-For more information check the Redis documentation: https://redis.io/commands/FLUSHALL[FLUSHALL]
+For more information check the Redis documentation: {url_FLUSHALL}[FLUSHALL]
 
-To flush only a particular DB in Redis, execute the following command instead:
+To flush only a particular database in Redis, execute the following command instead:
+
+[source,bash]
 ----
- redis-cli -n <db_number> flushdb
+redis-cli -n <db_number> flushdb
 ----
 ====
 
-=== Start Lisk Service
-
-[source,bash]
-----
-# Start Lisk Service
-$ npm start
-----
-
-== Logging
-
-To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2 managed process that contains the logs you wish to view.
-
-For example, to see the logs for the Gateway microservice, execute:
-
-[source,bash]
-----
-pm2 logs lisk-service-gateway
-----
+You can start Lisk Service again with the <<start>> command.
