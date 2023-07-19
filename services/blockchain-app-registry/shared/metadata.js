@@ -158,10 +158,14 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
-		params.search = {
+
+		params.orSearch = [{
 			property: 'chainName',
 			pattern: search,
-		};
+		}, {
+			property: 'displayName',
+			pattern: search,
+		}];
 	}
 
 	const limit = params.limit * config.supportedNetworks.length;

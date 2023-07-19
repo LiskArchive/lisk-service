@@ -199,6 +199,11 @@
 				"example": "00000000",
 				"description": "Chain ID of the blockchain application."
 			},
+			"displayName": {
+				"type": "string",
+				"description": "Application display name for the wallets.",
+				"example": "Lisk"
+			},
 			"title": {
 				"type": "string",
 				"example": "Lisk blockchain application"
@@ -235,6 +240,10 @@
 				"type": "array",
 				"items": {
 					"type": "object",
+					"required": [
+						"http",
+						"ws"
+					],
 					"properties": {
 						"http": {
 							"type": "string",
@@ -245,12 +254,21 @@
 							"type": "string",
 							"example": "wss://service.lisk.com",
 							"description": "WS endpoint to access Lisk Service API against the blockchain application"
+						},
+						"apiCertificatePublicKey": {
+							"type": "string",
+							"example": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxd93uLDs8HTPqcSPpxZ\nrf0Dc29r3iPp0a8filjAyeX4RAH6lWm9qFt26CcE8ESYtmo1sVtswvs7VH4Bjg/F\nDlRpd+MnAlXuxChij8/vjyAwE71ucMrmZhxM8rOSfPML8fniZ8trr3I4R2o4xWh6\nno/xTUtZ02/yUEXbphw3DEuefzHEQnEF+quGji9pvGnPO6Krmnri9H4WPY0ysPQQ\nQd82bUZCk9XdhSZcW/am8wBulYokITRMVHlbRXqu1pOFmQMO5oSpyZU3pXbsx+Ox\nIOc4EDX0WMa9aH4+snt18WAXVGwF2B4fmBk7AtmkFzrTmbpmyVqA3KO2IjzMZPw0\nhQIDAQAB\n-----END PUBLIC KEY-----",
+							"description": "Public key corresponding to the SSL/TLS certificate for the API endpoints."
 						}
 					}
 				}
 			},
 			"logo": {
 				"type": "object",
+				"required": [
+					"png",
+					"svg"
+				],
 				"properties": {
 					"png": {
 						"type": "string",
@@ -276,6 +294,10 @@
 			},
 			"explorers": {
 				"type": "array",
+				"required": [
+					"url",
+					"txnPage"
+				],
 				"items": {
 					"type": "object",
 					"properties": {
@@ -296,6 +318,10 @@
 				"type": "array",
 				"items": {
 					"type": "object",
+					"required": [
+						"url",
+						"maintainer"
+					],
 					"properties": {
 						"url": {
 							"type": "string",
@@ -306,6 +332,11 @@
 							"type": "string",
 							"example": "Lightcurve GmbH",
 							"description": "Maintainer details of the node"
+						},
+						"apiCertificatePublicKey": {
+							"type": "string",
+							"example": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxd93uLDs8HTPqcSPpxZ\nrf0Dc29r3iPp0a8filjAyeX4RAH6lWm9qFt26CcE8ESYtmo1sVtswvs7VH4Bjg/F\nDlRpd+MnAlXuxChij8/vjyAwE71ucMrmZhxM8rOSfPML8fniZ8trr3I4R2o4xWh6\nno/xTUtZ02/yUEXbphw3DEuefzHEQnEF+quGji9pvGnPO6Krmnri9H4WPY0ysPQQ\nQd82bUZCk9XdhSZcW/am8wBulYokITRMVHlbRXqu1pOFmQMO5oSpyZU3pXbsx+Ox\nIOc4EDX0WMa9aH4+snt18WAXVGwF2B4fmBk7AtmkFzrTmbpmyVqA3KO2IjzMZPw0\nhQIDAQAB\n-----END PUBLIC KEY-----",
+							"description": "Public key corresponding to the SSL/TLS certificate for the API endpoint."
 						}
 					}
 				}

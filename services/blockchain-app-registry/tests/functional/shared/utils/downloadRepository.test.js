@@ -149,17 +149,14 @@ xdescribe('Test getDiff method', () => {
 xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with a list of changed files', async () => {
 		const changedFiles = [
-			'alphanet/Lisk/nativetokens.json',
 			'betanet/Lisk/nativetokens.json',
 			'devnet/Lisk/nativetokens.json',
 			'Unknown/Lisk/nativetokens.json',
-			'alphanet/Enevti/nativetokens.json',
 		];
 		const response = await buildEventPayload(changedFiles);
 		expect(response).toEqual({
-			alphanet: ['Lisk', 'Enevti'],
-			betanet: ['Lisk'],
-			devnet: ['Lisk'],
+			betanet: ['lisk_mainchain'],
+			devnet: ['lisk_mainchain'],
 			mainnet: [],
 			testnet: [],
 		});
@@ -168,7 +165,6 @@ xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with empty changed files', async () => {
 		const response = await buildEventPayload([]);
 		expect(response).toEqual({
-			alphanet: [],
 			betanet: [],
 			devnet: [],
 			mainnet: [],
@@ -179,7 +175,6 @@ xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with undefined changed files', async () => {
 		const response = await buildEventPayload(undefined);
 		expect(response).toEqual({
-			alphanet: [],
 			betanet: [],
 			devnet: [],
 			mainnet: [],
@@ -190,7 +185,6 @@ xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with null changed files', async () => {
 		const response = await buildEventPayload(null);
 		expect(response).toEqual({
-			alphanet: [],
 			betanet: [],
 			devnet: [],
 			mainnet: [],
