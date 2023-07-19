@@ -255,7 +255,7 @@ const methodDefForTransformResponse = {
 const dataForTransformResponse = {
 	data: [
 		{
-			tokenID: '0300000000000000',
+			tokenID: '0400000000000000',
 			tokenName: 'Lisk',
 			description: 'Default token for the entire Lisk ecosystem',
 			denomUnits: [
@@ -281,9 +281,9 @@ const dataForTransformResponse = {
 				png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
 				svg: 'https://lisk-qa.ams3.digitaloceanspaces.com/Logo-20.svg',
 			},
-			chainID: '03000000',
+			chainID: '04000000',
 			chainName: 'Lisk',
-			network: 'alphanet',
+			network: 'devnet',
 			otherName: '123',
 		},
 		{
@@ -329,11 +329,11 @@ const dataForTransformResponse = {
 const expectedResponseForTransformResponse = {
 	data: [
 		{
-			chainID: '03000000',
+			chainID: '04000000',
 			chainName: 'Lisk',
-			tokenID: '0300000000000000',
+			tokenID: '0400000000000000',
 			tokenName: 'Lisk',
-			networkType: 'alphanet',
+			networkType: 'devnet',
 			description: 'Default token for the entire Lisk ecosystem',
 			logo: {
 				png: 'https://lisk-qa.ams3.digitaloceanspaces.com/Artboard%201%20copy%2019.png',
@@ -402,8 +402,8 @@ const expectedResponseForTransformResponse = {
 
 const paramsForTransformRequest = {
 	tokenName: 'Lisk,Lis,Lik',
-	tokenIDParam: '0300000000000000,0400000000000000',
-	network: 'devnet,alphanet',
+	tokenIDParam: '0200000000000000,0400000000000000',
+	network: 'betanet,devnet',
 	limit: 10,
 	offset: 0,
 	sort: 'chainName:asc',
@@ -429,11 +429,11 @@ const expectedResponseForTransformRequest = {
 	chainID: undefined,
 	chainName: undefined,
 	limit: 10,
-	network: 'devnet,alphanet',
+	network: 'betanet,devnet',
 	offset: 0,
 	search: undefined,
 	sort: 'chainName:asc',
-	tokenID: '0300000000000000,0400000000000000',
+	tokenID: '0200000000000000,0400000000000000',
 	tokenName: 'Lisk,Lis,Lik',
 };
 

@@ -140,11 +140,6 @@ config.networks = Object.freeze({
 			serviceURL: 'https://betanet-service.lisk.com',
 		},
 		{
-			name: 'alphanet',
-			chainID: '03000000',
-			serviceURL: 'https://alphanet-service.liskdev.net',
-		},
-		{
 			name: 'devnet',
 			chainID: '04000000',
 			serviceURL: process.env.DEVNET_MAINCHAIN_URL || 'http://devnet-service.liskdev.net:9901',

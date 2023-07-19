@@ -18,6 +18,7 @@ module.exports = {
 	primaryKey: ['network', 'chainName'],
 	schema: {
 		chainName: { type: 'string' },
+		displayName: { type: 'string' },
 		chainID: { type: 'string' },
 		network: { type: 'string' },
 		isDefault: { type: 'boolean', null: false, defaultValue: false },

@@ -15,6 +15,7 @@
  */
 module.exports = {
 	chainName: '=,string',
+	displayName: '=,string',
 	chainID: '=,string',
 	title: '=,string',
 	description: '=,string',
@@ -27,6 +28,7 @@ module.exports = {
 	serviceURLs: ['serviceURLs', {
 		http: '=,string',
 		ws: '=,string',
+		apiCertificatePublicKey: '=,string',
 	}],
 	logo: {
 		png: '=,string',
@@ -38,6 +40,7 @@ module.exports = {
 	}],
 	appNodes: ['appNodes', {
 		url: '=,string',
+		apiCertificatePublicKey: '=,string',
 		maintainer: '=,string',
 	}],
 	backgroundColor: '=,string',
