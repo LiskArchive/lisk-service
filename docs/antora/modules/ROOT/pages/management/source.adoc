@@ -16,7 +16,10 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :url_build_hello_client: build-blockchain/index.adoc#the-hello-world-client
 :url_core_client: run-blockchain/index.adoc#how-to-set-up-a-lisk-mainnet-node
 
-On this page you'll find the most relevant PM2 commands for running source based Lisk Service installation. For more details about PM2, see {url_pm2_docs}[PM2 docs].
+On this page you'll find the most relevant PM2 commands for running source based Lisk Service installation.
+For more details about PM2, see {url_pm2_docs}[PM2 docs].
+
+We'll also talk about steps to reset a Lisk Service node.
 
 == Various PM2 commands
 
