@@ -141,11 +141,48 @@ const stakeTransaction = {
 	index: 1,
 };
 
+const tokenTransferCrossChainTransaction = {
+	id: '2ceda7b8ccfaa6c452651e6ba2e0a8acf88350aeeb0cde4da98701419e0657c6',
+	moduleCommand: 'token:transferCrossChain',
+	nonce: '4',
+	fee: '100000000',
+	minFee: '217000',
+	size: 218,
+	sender: {
+		address: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+		publicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+		name: 'genesis_0',
+	},
+	params: {
+		tokenID: '0400000000000000',
+		amount: '100000000000',
+		receivingChainID: '04000001',
+		recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		data: 'Cross chain transfer',
+		messageFee: '10000000',
+		messageFeeTokenID: '0400000000000000',
+	},
+	block: {
+		id: '48790249bb8c73c5f74faf8fecf4130ab292fbafcd7eaf8df641981597fa9718',
+		height: 215,
+		timestamp: 1689691860,
+		isFinal: false,
+	},
+	meta: {
+		recipient: {
+			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		},
+	},
+	executionStatus: 'success',
+	index: 1,
+};
+
 module.exports = {
 	transactions: {
 		reclaim: reclaimTransaction,
 		tokenTransfer: tokenTransferTransaction,
 		tokenTransferSelf: tokenTransferTransactionSelf,
+		tokenTransferCrossChain: tokenTransferCrossChainTransaction,
 		stake: stakeTransaction,
 	},
 };
