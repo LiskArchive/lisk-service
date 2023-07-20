@@ -1055,7 +1055,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/accountName',
 				},
 				{
-					$ref: '#/parameters/tokenID',
+					$ref: '#/parameters/tokenIDRequired',
 				},
 			],
 			responses: {

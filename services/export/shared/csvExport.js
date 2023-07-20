@@ -106,7 +106,7 @@ const validateIfAccountExists = async (address) => {
 const getCrossChainTransferTransactionInfo = async (params) => {
 	const allEvents = await requestIndexer('events', {
 		topic: params.address,
-		timestamp: `${params.from}:${params.to}`,
+		timestamp: params.timestamp,
 		sort: 'timestamp:desc',
 	});
 
@@ -114,7 +114,6 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 	const ccmTransferEvents = allEvents.data
 		.filter(event => event.module === MODULE.TOKEN && event.name === EVENT.CCM_TRANSFER);
 
-	/* eslint-disable no-await-in-loop */
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
 		const [transactionID] = ccmTransferEvents[i].topics;
 
@@ -128,7 +127,6 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 			params: ccmTransferEvents[i].data,
 		});
 	}
-	/* eslint-enable no-await-in-loop */
 
 	return transactions;
 };
@@ -268,20 +266,16 @@ const exportTransactionsCSV = async (job) => {
 		} else if (await noTransactionsCache.get(partialFilename) !== true) {
 			const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
 			const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
+			const timestamp = `${fromTimestampPast}:${toTimestampPast}`;
 			const transactions = await requestAll(
-				getTransactionsInAsc,
-				{
-					...params,
-					timestamp: `${fromTimestampPast}:${toTimestampPast}`,
-				},
+				getTransactionsInAsc, { ...params, timestamp },
 				MAX_NUM_TRANSACTIONS,
 			);
 			allTransactions.push(...transactions);
 
 			const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
 				...params,
-				from: fromTimestampPast,
-				to: toTimestampPast,
+				timestamp,
 			});
 
 			if (incomingCrossChainTransferTxs.length) {
