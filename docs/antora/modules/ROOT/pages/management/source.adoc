@@ -307,37 +307,6 @@ cd ./services/gateway && rm -rf node_modules
 cd ./services/export && rm -rf node_modules
 cd ./services/template && rm -rf node_modules
 cd ./tests && rm -rf node_modules
-docker rmi lisk/service_gateway \
-	lisk/service_blockchain_app_registry \
-	lisk/service_blockchain_connector \
-	lisk/service_blockchain_indexer \
-	lisk/service_blockchain_coordinator \
-	lisk/service_transaction_statistics \
-	lisk/service_fee_estimator \
-	lisk/service_market \
-	lisk/service_export \
-	lisk/service_template \
-	lisk/service_tests; :
-Untagged: lisk/service_gateway:latest
-Deleted: sha256:5749869435bc9c562af29435999a4e4afee6fa0a7cb8cb188ed87805b9b793ba
-Untagged: lisk/service_blockchain_app_registry:latest
-Deleted: sha256:3dbea0971611d4072e06bc677daf53611696312c7ca3c2bdf5f3854fd5310de2
-Untagged: lisk/service_blockchain_connector:latest
-Deleted: sha256:c88ea0780275c54b944f524ee85b6d935d155261bf246fd9dd7331ea0a3a0ae6
-Untagged: lisk/service_blockchain_indexer:latest
-Deleted: sha256:a3640ec100f7489c0b14043bec2f09e7f81cbe7bd3f044b9b12d04bc6976dda1
-Untagged: lisk/service_blockchain_coordinator:latest
-Deleted: sha256:a4b8aa984dba9028f60ff4a2194924065989a1aaa8429eb93119cf5036700dac
-Untagged: lisk/service_transaction_statistics:latest
-Deleted: sha256:2fbb60090859f858a87595af6c82ce3cf07015747b937bd322749efd3dfd6f9e
-Untagged: lisk/service_fee_estimator:latest
-Deleted: sha256:0759e75bde038460c42eccc3979c6c851824f7306e2c295608a58606b4de54d4
-Untagged: lisk/service_market:latest
-Deleted: sha256:0bfe5f3dbcabbe40b38718444dc5fe578e5faab35b0c53504054924190c3f928
-Untagged: lisk/service_export:latest
-Deleted: sha256:c4b7f4023da7e81271f20fd05afc3f596074d013d39c6cd0acd0f1409e854ec1
-Error response from daemon: No such image: lisk/service_template:latest
-Error response from daemon: No such image: lisk/service_tests:latest
 ----
 ====
 
