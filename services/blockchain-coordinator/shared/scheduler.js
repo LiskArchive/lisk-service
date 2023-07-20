@@ -133,10 +133,10 @@ const scheduleBlocksIndexing = async (heights) => {
 	const numBatches = Math.ceil(blockHeights.length / MAX_BATCH_SIZE);
 	if (numBatches > 1) logger.info(`Scheduling the blocks indexing in ${numBatches} smaller batches of ${MAX_BATCH_SIZE}.`);
 
+	const isMultiBatch = numBatches > 1;
 	for (let i = 0; i < numBatches; i++) {
 		/* eslint-disable no-await-in-loop */
-
-		if (numBatches > 1) logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
+		if (isMultiBatch) logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
 		const blockHeightsBatch = blockHeights.slice(i * MAX_BATCH_SIZE, (i + 1) * MAX_BATCH_SIZE);
 
 		// eslint-disable-next-line no-restricted-syntax
@@ -146,7 +146,7 @@ const scheduleBlocksIndexing = async (heights) => {
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
 
-		if (numBatches > 1) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
+		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
 		await waitForJobCountToFallBelowThreshold();
 		/* eslint-enable no-await-in-loop */
 	}
@@ -217,7 +217,7 @@ const initIndexingScheduler = async () => {
 
 const scheduleMissingBlocksIndexing = async () => {
 	if (!await isGenesisBlockIndexed()) {
-		logger.info('Genesis block is not yet indexed, skipping scheduleMissingBlocksIndexing run.');
+		logger.info('Genesis block is not yet indexed, skipping missing blocks job run.');
 		return;
 	}
 
@@ -246,21 +246,30 @@ const scheduleMissingBlocksIndexing = async () => {
 
 		// Batch into smaller ranges to avoid microservice/DB query timeouts
 		for (let i = 0; i < NUM_BATCHES; i++) {
+			/* eslint-disable no-await-in-loop */
+
 			const batchStartHeight = blockIndexLowerRange + i * MAX_QUERY_RANGE;
 			const batchEndHeight = Math.min(batchStartHeight + MAX_QUERY_RANGE, blockIndexHigherRange);
-
-			// eslint-disable-next-line no-await-in-loop
 			const result = await getMissingBlocks(batchStartHeight, batchEndHeight);
 
 			if (Array.isArray(result)) {
 				missingBlocksByHeight.push(...result);
+
+				if (result.length === 0) {
+					const lastIndexVerifiedHeight = await getIndexVerifiedHeight();
+					if (batchEndHeight === (lastIndexVerifiedHeight + MAX_QUERY_RANGE)) {
+						await setIndexVerifiedHeight(batchEndHeight);
+						logger.debug(`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`);
+					}
+				}
 			}
+			/* eslint-enable no-await-in-loop */
 		}
 
 		if (missingBlocksByHeight.length === 0) {
 			// Update 'indexVerifiedHeight' when no missing blocks are found
 			await setIndexVerifiedHeight(blockIndexHigherRange);
-			logger.info(`No missing blocks found. Setting the index verified height to ${blockIndexHigherRange}.`);
+			logger.info(`No missing blocks found in range ${blockIndexLowerRange} - ${blockIndexHigherRange}. Setting index verified height to ${blockIndexHigherRange}.`);
 		} else {
 			// Schedule indexing for the missing blocks
 			await scheduleBlocksIndexing(missingBlocksByHeight);
