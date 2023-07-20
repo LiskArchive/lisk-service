@@ -16,14 +16,15 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :url_build_hello_client: build-blockchain/index.adoc#the-hello-world-client
 :url_core_client: run-blockchain/index.adoc#how-to-set-up-a-lisk-mainnet-node
 
-On this page you'll find the most relevant PM2 commands for running source based Lisk Service installation.
+On this page, you'll find the most relevant PM2 commands for running source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
 
-We'll also talk about steps to reset a Lisk Service node.
+Moreover, We'll also talk about the steps to reset a Lisk Service node.
 
 == Various PM2 commands
 
 === Start
+Start Lisk Service.
 
 [source,bash]
 ----
@@ -70,7 +71,9 @@ pm2 start ecosystem.config.js
 ----
 ====
 
-=== Status
+=== List
+
+View the status of different microservices of Lisk Service in the list of PM2 processes:
 
 [source,bash]
 ----
@@ -99,7 +102,7 @@ pm2 list
 ----
 ====
 
-=== View logs
+=== Logs
 To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2 managed process that contains the logs you wish to view.
 
 For example, to see the logs for the Gateway microservice, execute:
@@ -133,7 +136,8 @@ pm2 logs lisk-service-gateway
 ----
 ====
 
-=== Flush logs
+=== Flush
+Remove all the logs of PM2 managed processes.
 
 [source,bash]
 ----
@@ -152,6 +156,7 @@ pm2 flush ecosystem.config.js
 
 
 === Stop
+Stop PM2 managed Lisk Service instance.
 
 [source,bash]
 ----
@@ -192,6 +197,8 @@ pm2 stop ecosystem.config.js
 
 
 === Restart
+
+Restart Lisk Service via PM2.
 
 [source,bash]
 ----
@@ -240,7 +247,8 @@ pm2 restart ecosystem.config.js
 
 
 
-=== Remove all processes from pm2 list
+=== Delete
+Remove all processes from the PM2 list.
 
 [source,bash]
 ----
@@ -270,7 +278,7 @@ pm2 delete ecosystem.config.js
 ----
 ====
 
-== Resetting Lisk Service 
+== Resetting Lisk Service
 
 === Clean all run-time files with dependencies
 
