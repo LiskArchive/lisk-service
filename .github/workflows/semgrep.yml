@@ -6,7 +6,7 @@ on:
     branches: [ "development", feature/*, hotfix/*, main, release/* ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "development", feature/*, hotfix/*, main, release/* ]
+    branches: [ "development", feature/*, hotfix/*, release/* ]
   # Schedule the CI job (this method uses cron syntax):
   schedule:
     - cron: '30 3 * * 2'
@@ -30,7 +30,7 @@ jobs:
       # Fetch project source with GitHub Actions Checkout.
       - uses: actions/checkout@v3
       # Run the "semgrep ci" command on the command line of the docker image.
-      - run: semgrep ci --sarif --output=semgrep.sarif
+      - run: semgrep ci --config=./.github/semgrep/rule.yaml --sarif --output=semgrep.sarif
         env:
           # Connect to Semgrep Cloud Platform through your SEMGREP_APP_TOKEN.
           # Generate a token from Semgrep Cloud Platform > Settings
