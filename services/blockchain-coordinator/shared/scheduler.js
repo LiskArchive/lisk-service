@@ -95,8 +95,7 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 				return false;
 			}
 
-			logger.warn('Genesis block indexing failed.');
-			return resolve(false);
+			throw new Error('Genesis block indexing failed.');
 		});
 });
 
@@ -174,7 +173,11 @@ const indexGenesisBlock = async () => {
 	await scheduleBlocksIndexing(genesisHeight);
 	logger.info('Finished scheduling genesis block indexing.');
 
-	await waitForGenesisBlockIndexing();
+	await waitForGenesisBlockIndexing()
+		.catch(async () => {
+			logger.warn('Genesis indexing failed. Retrying.');
+			await indexGenesisBlock();
+		});
 };
 
 const initIndexingScheduler = async () => {
