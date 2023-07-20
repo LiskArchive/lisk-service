@@ -89,7 +89,6 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	try {
 		logger.debug('Attempting to resolve the snapshot command.');
 		const snapshotRestoreCommand = await resolveSnapshotRestoreCommand(connEndpoint);
-		logger.info(`Resolved snapshot command to: ${snapshotRestoreCommand}.`);
 		logger.info(`Attempting to apply the snapshot file available at: ${snapshotFilePath}.`);
 		const { stdout, stderr } = await execInShell(snapshotRestoreCommand);
 		logger.info(stdout);
@@ -118,7 +117,7 @@ const initSnapshot = async () => {
 	const network = config.networks.LISK
 		.filter(networkInfo => networkInfo.chainID === chainID)[0];
 
-	snapshotFilePath = `./data/${network.name}/service-core-snapshot.sql`;
+	snapshotFilePath = `./data/${network.name}/service-snapshot.sql`;
 	let { snapshotUrl } = network;
 
 	if (config.snapshot.url) {
