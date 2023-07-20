@@ -6,15 +6,9 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :idprefix:
 :imagesdir: ../assets/images
 
-
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
-:url_mainchain_client: https://github.com/LiskHQ/lisk-core#example-using-pm2
-
-:url_global_cli: build-blockchain/create-blockchain-client.adoc#using-the-client-cli-globally
-:url_build_hello_client: build-blockchain/index.adoc#the-hello-world-client
-:url_core_client: run-blockchain/index.adoc#how-to-set-up-a-lisk-mainnet-node
 
 On this page, you'll find the most relevant PM2 commands for running a source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
@@ -104,7 +98,11 @@ pm2 list
 
 === Logs
 To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2-managed process that contains the logs you wish to view.
-Alternatively, it is also possible to check the logs for a specific PM2 process based on its process ID. For example, `pm2 logs 0` can be used to check the Lisk Service Gateway logs.
+
+Alternatively, it is also possible to check the logs for a specific PM2 process based on its process ID. 
+For example, `pm2 logs 0` can be used to check the Lisk Service Gateway logs.
+
+TIP: The process ID of each PM2-managed process can be seen by executing the <<list>> command.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
@@ -192,7 +190,6 @@ pm2 stop ecosystem.config.js
 │ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
 │ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
 └------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
-
 ----
 ====
 
