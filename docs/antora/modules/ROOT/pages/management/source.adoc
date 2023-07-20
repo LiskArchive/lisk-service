@@ -372,7 +372,7 @@ The `flushall` command truncates all existing Redis databases:
 
 > Deletes all the keys of all the existing databases, not just the current selected one. This command never fails.
 
-For more information check the Redis documentation: {url_FLUSHALL}[FLUSHALL]
+For more information, check the Redis documentation: {url_FLUSHALL}[FLUSHALL]
 
 To flush only a particular database in Redis, execute the following command instead:
 
