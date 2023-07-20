@@ -103,7 +103,8 @@ pm2 list
 ====
 
 === Logs
-To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2 managed process that contains the logs you wish to view.
+To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2-managed process that contains the logs you wish to view.
+Alternatively, it is also possible to check the logs for a specific PM2 process based on its process ID. For example, `pm2 logs 0` can be used to check the Lisk Service Gateway logs.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
@@ -137,7 +138,7 @@ pm2 logs lisk-service-gateway
 ====
 
 === Flush
-Remove all the logs of PM2 managed processes.
+Remove all the logs of the PM2-managed processes defined in the specified config file.
 
 [source,bash]
 ----
@@ -360,7 +361,7 @@ To reset the database of Lisk Service, drop the respective MySQL and Redis datab
 npm stop
 ----
 
-. Login to MySQL with the lisk user
+. Login to MySQL with the `lisk` user
 +
 [source,bash]
 ----
@@ -388,7 +389,7 @@ mysql> create database lisk;
 mysql> quit;
 ----
 
-NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated. This can be quite time-consuming and may take up to 2 hours.
+NOTE: The process to re-index all the data commences after Lisk Service starts again following a database reset. The process can be rather time-consuming and could take several hours, depending on the length of the chain.
 
 ==== Flush Redis DB
 
