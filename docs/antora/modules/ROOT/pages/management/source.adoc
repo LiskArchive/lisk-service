@@ -327,28 +327,28 @@ To reset the database of Lisk Service, drop the respective MySQL and Redis datab
 npm stop
 ----
 
-. Login to MySQL with the `lisk` user
+. Login to MySQL with the `lisk` user.
 +
 [source,bash]
 ----
 mysql -u lisk -ppassword
 ----
 
-. Drop the database
+. Drop the database.
 +
 [source,bash]
 ----
 mysql> drop database lisk;
 ----
 
-. Create fresh database
+. Create a fresh database.
 +
 [source,bash]
 ----
 mysql> create database lisk;
 ----
 
-. Quit MySQL
+. Quit MySQL.
 +
 [source,bash]
 ----
