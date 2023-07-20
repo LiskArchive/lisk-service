@@ -17,7 +17,9 @@ RUN npm ci
 
 FROM node:18-alpine
 
-RUN adduser -D lisk && \
+RUN apk update && apk add --no-cache mysql-client && \
+    mkdir -p /home/lisk/lisk-service/blockchain-indexer/data && \
+    adduser -D lisk && \
     chown -R lisk:lisk /home/lisk/
 
 USER lisk
