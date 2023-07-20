@@ -1,5 +1,5 @@
 = Configuration with Docker
-Mona Bärenfänger <mona@lightcurve.io>
+Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurve.io>
 :description: Describes how to configure Lisk Service with Docker.
 :toc:
 :imagesdir: ../assets/images
@@ -7,129 +7,29 @@ Mona Bärenfänger <mona@lightcurve.io>
 :page-previous-title: Installation with Docker
 :page-next: /lisk-service/management/docker.html
 :page-next-title: Docker commands
-
 :url_references_config: configuration/index.adoc
+:url_github_env: https://github.com/LiskHQ/lisk-service/blob/development/docker/example.env
 
-How to configure Lisk Service.
+On this page, we discuss how to customize the docker installation of Lisk Service.
+
 
 == Configuring Lisk Service
+The Docker installation of Lisk Service takes all of its configuration from an `example.env` file, which is located in the `lisk-service` directory.
 
-Copy the example configuration options to `lisk-service/.env`:
+To customize the docker installation, copy the example configuration file to any `.env` file.
 
-.lisk-service/
+.Working directory: ./lisk-service/
 [source,bash]
 ----
 cp docker/example.env .env
-vim .env
 ----
 
-TIP: Check the xref:{url_references_config}[] for a summary of all available environment variables to configure Lisk Service.
+You can edit the newly copied `.env` file to customize configurations accordingly.
+All the Lisk Service related configurations have already been explained on the xref:{url_references_config}[Configuration reference] page.
 
-Open the `.env` file to change the default configuration options of Lisk Service:
+== Default example.env
 
-.lisk-service/.env
-[source,bash]
-----
-## Common Docker configuration
-
-# Service broker
-# SERVICE_BROKER=redis://redis_common:6379/0
-
-# Lisk Service log config
-# SERVICE_LOG_CONSOLE=false
-# SERVICE_LOG_FILE=false
-# SERVICE_LOG_GELF=false
-# SERVICE_LOG_LEVEL=debug
-# SERVICE_LOG_STDOUT=true
-
-## Lisk Service Core
-
-# Lisk static assets, ie. known account lists
-LISK_STATIC=https://static-data.lisk.com
-
-# Lisk Service geolocation backend (empty = disabled)
-GEOIP_JSON=
-
-# Create search index (0 = full index)
-INDEX_N_BLOCKS=0
-
-# MySQL Snapshot settings
-
-# Enable or disable apply snapshot feature
-ENABLE_APPLY_SNAPSHOT=true
-# Custom snapshot url (Expected to end with sql.gz)
-INDEX_SNAPSHOT_URL='https://snapshots.lisk.io/mainnet/service.sql.gz'
-# When the MySQL is hosted as a docker-compose service, set the following environment variables:
-# Set docker-compose file path (use absolute path)
-DOCKER_COMPOSE_FILEPATH='/Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml'
-# Set MySQL service name as defined in the above docker-compose file
-DOCKER_MYSQL_SERVICE_NAME=mysql
-
-# Use default genesis block height
-# GENESIS_HEIGHT=0
-# FEE_EST_DEFAULT_START_BLOCK_HEIGHT=0
-
-# Fee estimator
-ENABLE_FEE_ESTIMATOR_QUICK=true
-ENABLE_FEE_ESTIMATOR_FULL=false
-
-# Transaction statistics
-ENABLE_TRANSACTION_STATS=true
-TRANSACTION_STATS_HISTORY_LENGTH_DAYS=366
-
-# Log debug messages
-#DEBUG=*dynamicFees*
-
-# Lisk ecosystem configuration
-LISK_CORE_WS=ws://host.docker.internal:8080
-
-# Websocket rate limit config
-WS_RATE_LIMIT_ENABLE=false
-WS_RATE_LIMIT_CONNECTIONS=5
-WS_RATE_LIMIT_DURATION=1 # in seconds
-
-# HTTP rate limit config
-HTTP_RATE_LIMIT_ENABLE=false
-HTTP_RATE_LIMIT_CONNECTIONS=200
-HTTP_RATE_LIMIT_WINDOW=10 # in seconds
-
-## Lisk Service Gateway
-
-# PORT=9901
-# HOST=0.0.0.0
-
-# Enabled Gateway APIs
-ENABLE_HTTP_API=http-status,http-version2
-ENABLE_WS_API=blockchain,rpc-v2
-
-# HTTP API caching config
-ENABLE_HTTP_CACHE_CONTROL=false
-HTTP_CACHE_CONTROL_DIRECTIVES=public,max-age=10
-
-# Websocket rate limit config
-ENABLE_WS_RATELIMIT=false
-WS_RATELIMIT_POINTS=5
-WS_RATELIMIT_DURATION=1 # in seconds
-
-## Lisk Service Market
-
-# Currency pairs
-SERVICE_MARKET_FIAT_CURRENCIES=USD
-SERVICE_MARKET_TARGET_PAIRS=LSK_BTC,LSK_USD
-
-## Lisk Service Newsfeed
-
-# Sources
-#SERVICE_NEWSFEED_ENABLE_SOURCES=drupal_lisk_general,drupal_lisk_announcements,twitter_lisk
-
-# Twitter authentication
-TWITTER_CONSUMER_KEY=
-TWITTER_CONSUMER_SECRET=
-TWITTER_ACCESS_TOKEN_KEY=
-TWITTER_ACCESS_TOKEN_SECRET=
-----
-
-== Show current configuration
+The default example.env file can be seen on the GitHub repository. 
 
 To show the current configuration of Lisk Service, execute the following command:
 
