@@ -16,10 +16,10 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :url_build_hello_client: build-blockchain/index.adoc#the-hello-world-client
 :url_core_client: run-blockchain/index.adoc#how-to-set-up-a-lisk-mainnet-node
 
-On this page, you'll find the most relevant PM2 commands for running source-based Lisk Service installation.
+On this page, you'll find the most relevant PM2 commands for running a source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
 
-Moreover, We'll also talk about the steps to reset a Lisk Service node.
+Moreover, we'll also talk about the steps to reset a Lisk Service node.
 
 == Various PM2 commands
 
@@ -105,7 +105,7 @@ pm2 list
 === Logs
 To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2 managed process that contains the logs you wish to view.
 
-For example, to see the logs for the Gateway microservice, execute:
+For example, to see the logs for the Gateway microservice, execute the following command:
 
 [source,bash]
 ----
@@ -284,7 +284,7 @@ pm2 delete ecosystem.config.js
 
 [source,bash]
 ----
-make clean
+make clean-local
 ----
 
 .Response
@@ -401,7 +401,7 @@ redis-cli flushall
 
 [NOTE]
 ====
-The `flushall` command removes all existing Redis databases:
+The `flushall` command truncates all existing Redis databases:
 
 > Deletes all the keys of all the existing databases, not just the current selected one. This command never fails.
 
