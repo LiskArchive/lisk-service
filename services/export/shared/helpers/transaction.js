@@ -19,7 +19,7 @@ const {
 } = require('./constants');
 
 const normalizeTransactionAmount = (address, tx) => {
-	if (!('amount' in tx.params)) return 0;
+	if (!('amount' in tx.params)) return String(0);
 
 	const isReclaim = tx.moduleCommand === MODULE_COMMAND_RECLAIM_TRANSACTION;
 	const isTokenTransfer = tx.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER;
@@ -34,7 +34,7 @@ const normalizeTransactionAmount = (address, tx) => {
 		|| (isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit)
 		? 1 : -1;
 
-	return sign * tx.params.amount;
+	return String(sign * tx.params.amount);
 };
 
 const normalizeTransactionFee = (address, tx) => {
@@ -42,7 +42,7 @@ const normalizeTransactionFee = (address, tx) => {
 	if (!isTokenTransfer) return tx.fee;
 
 	const isRecipient = address === tx.params.recipientAddress;
-	return isRecipient ? 0 : tx.fee;
+	return isRecipient ? String(0) : tx.fee;
 };
 
 const checkIfSelfTokenTransfer = (tx) => {
