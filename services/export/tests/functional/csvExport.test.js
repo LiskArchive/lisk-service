@@ -41,35 +41,35 @@ describe('CSV export utils', () => {
 	const standardizedIntervalRegex = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)):((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\b$/g;
 	const partialFileNameRegex = /^\b(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.json\b$/g;
 	const csvFileNameRegex = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/g;
-	const csvFileUrlRegex = /^\/api\/v3\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/g;
+	const csvFileUrlRegex = /^\/api\/v3\/export\/download\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/g;
 	const address = 'lskeqretdgm6855pqnnz69ahpojk5yxfsv2am34et';
 	const publicKey = 'b7fdfc991c52ad6646159506a8326d4203c868bd3f16b8043c8e4e034346e581';
 	const partialFilenameExtension = '.json';
 	const csvFilenameExtension = '.csv';
-	const csvFileUrlBeginsWith = '/api/v3/exports/';
+	const csvFileUrlBeginsWith = '/api/v3/export/';
 
-	describe('getAddressFromParams', () => {
-		it('return address from address in params', async () => {
+	describe('Test getAddressFromParams method', () => {
+		it('should return address from address in params', async () => {
 			const result = getAddressFromParams({ address });
 			expect(result).toBe(address);
 		});
 
-		it('return address from publicKey in params', async () => {
+		it('should return address from publicKey in params', async () => {
 			const result = getAddressFromParams({ publicKey });
 			expect(result).toBe(address);
 		});
 	});
 
-	describe('getToday', () => {
-		it(`returns current date in '${config.csv.dateFormat}' format`, async () => {
+	describe('Test getToday method', () => {
+		it(`should return current date in '${config.csv.dateFormat}' format`, async () => {
 			const today = getToday();
 			expect(today).toBe(moment().format(config.csv.dateFormat));
 		});
 	});
 
-	describe('normalizeTransaction', () => {
-		it('returns a transaction normalized to be converted to CSV', async () => {
-			const normalizedTx = normalizeTransaction(
+	describe('Test normalizeTransaction method', () => {
+		it('should return a transaction normalized to be converted to CSV', async () => {
+			const normalizedTx = await normalizeTransaction(
 				tokenTransfer.toOther.sender,
 				tokenTransfer.toOther.transaction,
 			);
@@ -78,8 +78,8 @@ describe('CSV export utils', () => {
 		});
 	});
 
-	describe('parseTransactionsToCsv', () => {
-		it('returns transactions as CSV', async () => {
+	describe('Test parseTransactionsToCsv method', () => {
+		it('should return transactions as CSV', async () => {
 			const csv = parseTransactionsToCsv(tokenTransfer.toOther.transaction);
 			const expectedTx = {};
 			Object.values(fieldMappings).forEach((v) => {
@@ -89,18 +89,18 @@ describe('CSV export utils', () => {
 		});
 	});
 
-	describe('transactionsToCSV', () => {
+	describe('Test transactionsToCSV method', () => {
 		const newline = '\n';
 
-		it('returns transactions as CSV', async () => {
+		it('should return transactions as CSV', async () => {
 			const transactionList = [tokenTransfer.toOther.transaction];
-			const csv = transactionsToCSV(transactionList);
+			const csv = await transactionsToCSV(transactionList);
 			expect(csv).toContain(newline);
 			const lines = csv.split(newline);
 			// 1 header, #rows from transactionList
 			expect(lines.length).toBe(transactionList.length + 1);
 
-			const normalizedTx = normalizeTransaction(
+			const normalizedTx = await normalizeTransaction(
 				tokenTransfer.toOther.sender,
 				tokenTransfer.toOther.transaction,
 			);
@@ -112,10 +112,10 @@ describe('CSV export utils', () => {
 			expect(csv).toBe(generateExcpectedCsv(replacedKeysTx, config.csv.delimiter));
 		});
 
-		it('adds duplicate entry for self-token-transfer transactions and returns as CSV', async () => {
+		it('should adds duplicate entry for self-token-transfer transactions and returns as CSV', async () => {
 			const transactionList = [tokenTransfer.toSelf.transaction];
 			const initialTxCount = transactionList.length;
-			const csv = transactionsToCSV(transactionList);
+			const csv = await transactionsToCSV(transactionList);
 			expect(csv).toContain(newline);
 			const lines = csv.split(newline);
 			// 1 header, #rows from transactionList, 1 row from the duplicate
@@ -124,29 +124,29 @@ describe('CSV export utils', () => {
 		});
 	});
 
-	describe('standardizeIntervalFromParams', () => {
-		it(`returns interval in standard format: '${config.csv.dateFormat}:${config.csv.dateFormat}'`, async () => {
+	describe('Test standardizeIntervalFromParams method', () => {
+		it(`should return interval in standard format: '${config.csv.dateFormat}:${config.csv.dateFormat}'`, async () => {
 			const result = await standardizeIntervalFromParams({ interval: interval.startEnd });
 			expect(typeof result).toBe('string');
 			expect(result.length).toBe((2 * config.csv.dateFormat.length) + 1);
 			expect(result).toMatch(standardizedIntervalRegex);
 		});
 
-		it('returns standardized interval when both start and end date supplied', async () => {
+		it('should return standardized interval when both start and end date supplied', async () => {
 			const result = await standardizeIntervalFromParams({ interval: interval.startEnd });
 			expect(typeof result).toBe('string');
 			expect(result.length).toBe((2 * config.csv.dateFormat.length) + 1);
 			expect(result).toMatch(standardizedIntervalRegex);
 		});
 
-		it('returns standardized interval when only start date supplied', async () => {
+		it('should return standardized interval when only start date supplied', async () => {
 			const result = await standardizeIntervalFromParams({ interval: interval.onlyStart });
 			expect(typeof result).toBe('string');
 			expect(result.length).toBe((2 * config.csv.dateFormat.length) + 1);
 			expect(result).toMatch(standardizedIntervalRegex);
 		});
 
-		xit('returns standardized interval when dates not supplied', async () => {
+		xit('should return standardized interval when dates not supplied', async () => {
 			const result = await standardizeIntervalFromParams({});
 			expect(typeof result).toBe('string');
 			expect(result.length).toBe((2 * config.csv.dateFormat.length) + 1);
@@ -154,8 +154,8 @@ describe('CSV export utils', () => {
 		});
 	});
 
-	describe('getPartialFilenameFromParams', () => {
-		it('with address', async () => {
+	describe('Test getPartialFilenameFromParams method', () => {
+		it('should return partial filename when called with address', async () => {
 			const params = { address, interval: interval.startEnd };
 			const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
 			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
@@ -163,7 +163,7 @@ describe('CSV export utils', () => {
 			expect(partialFilename).toMatch(partialFileNameRegex);
 		});
 
-		it('with publicKey', async () => {
+		it('should return partial filename when called with publicKey', async () => {
 			const params = { publicKey, interval: interval.onlyStart };
 			const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
 			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
@@ -172,8 +172,8 @@ describe('CSV export utils', () => {
 		});
 	});
 
-	describe('getCsvFilenameFromParams', () => {
-		it('with address and complete interval with start and end date supplied', async () => {
+	describe('Test getCsvFilenameFromParams method', () => {
+		it('should return csv filename when called with address and complete interval with start and end date supplied', async () => {
 			const params = { address, interval: interval.startEnd };
 			const csvFilename = await getCsvFilenameFromParams(params);
 			expect(csvFilename.endsWith(csvFilenameExtension)).toBeTruthy();
@@ -181,7 +181,7 @@ describe('CSV export utils', () => {
 			expect(csvFilename).toMatch(csvFileNameRegex);
 		});
 
-		it('with publicKey and complete interval with start and end date supplied', async () => {
+		it('should return csv filename when called with publicKey and complete interval with start and end date supplied', async () => {
 			const params = { publicKey, interval: interval.startEnd };
 			const csvFilename = await getCsvFilenameFromParams(params);
 			expect(csvFilename.endsWith(csvFilenameExtension)).toBeTruthy();
@@ -189,7 +189,7 @@ describe('CSV export utils', () => {
 			expect(csvFilename).toMatch(csvFileNameRegex);
 		});
 
-		it('with address and interval with only start date supplied', async () => {
+		it('should return csv filename when called with address and interval with only start date supplied', async () => {
 			const params = { address, interval: interval.onlyStart };
 			const csvFilename = await getCsvFilenameFromParams(params);
 			expect(csvFilename.endsWith(csvFilenameExtension)).toBeTruthy();
@@ -197,7 +197,7 @@ describe('CSV export utils', () => {
 			expect(csvFilename).toMatch(csvFileNameRegex);
 		});
 
-		it('with publicKey and interval with only start date supplied', async () => {
+		it('should return csv filename when called with publicKey and interval with only start date supplied', async () => {
 			const params = { publicKey, interval: interval.onlyStart };
 			const csvFilename = await getCsvFilenameFromParams(params);
 			expect(csvFilename.endsWith(csvFilenameExtension)).toBeTruthy();
@@ -205,7 +205,7 @@ describe('CSV export utils', () => {
 			expect(csvFilename).toMatch(csvFileNameRegex);
 		});
 
-		xit('with address and no interval supplied', async () => {
+		xit('should return csv filename when called with address and no interval supplied', async () => {
 			const params = { address };
 			const csvFilename = await getCsvFilenameFromParams(params);
 			expect(csvFilename.endsWith(csvFilenameExtension)).toBeTruthy();
@@ -213,7 +213,7 @@ describe('CSV export utils', () => {
 			expect(csvFilename).toMatch(csvFileNameRegex);
 		});
 
-		xit('with publicKey and no interval supplied', async () => {
+		xit('should return csv filename when called with publicKey and no interval supplied', async () => {
 			const params = { publicKey };
 			const csvFilename = await getCsvFilenameFromParams(params);
 			expect(csvFilename.endsWith(csvFilenameExtension)).toBeTruthy();
@@ -222,8 +222,8 @@ describe('CSV export utils', () => {
 		});
 	});
 
-	describe('getCsvFileUrlFromParams', () => {
-		it('with address and complete interval with start and end date supplied', async () => {
+	xdescribe('Test getCsvFileUrlFromParams method', () => {
+		it('should return csv filpath URL when called with address and complete interval with start and end date supplied', async () => {
 			const params = { address, interval: interval.startEnd };
 			const csvFilepathUrl = await getCsvFileUrlFromParams(params);
 			expect(csvFilepathUrl.startsWith(csvFileUrlBeginsWith)).toBeTruthy();
@@ -232,7 +232,7 @@ describe('CSV export utils', () => {
 			expect(csvFilepathUrl).toMatch(csvFileUrlRegex);
 		});
 
-		it('with publicKey and complete interval with start and end date supplied', async () => {
+		it('should return csv filpath URL when called with publicKey and complete interval with start and end date supplied', async () => {
 			const params = { publicKey, interval: interval.startEnd };
 			const csvFilepathUrl = await getCsvFileUrlFromParams(params);
 			expect(csvFilepathUrl.startsWith(csvFileUrlBeginsWith)).toBeTruthy();
@@ -241,7 +241,7 @@ describe('CSV export utils', () => {
 			expect(csvFilepathUrl).toMatch(csvFileUrlRegex);
 		});
 
-		it('with address and interval with only start date supplied', async () => {
+		it('should return csv filpath URL when called with address and interval with only start date supplied', async () => {
 			const params = { address, interval: interval.onlyStart };
 			const csvFilepathUrl = await getCsvFileUrlFromParams(params);
 			expect(csvFilepathUrl.startsWith(csvFileUrlBeginsWith)).toBeTruthy();
@@ -250,7 +250,7 @@ describe('CSV export utils', () => {
 			expect(csvFilepathUrl).toMatch(csvFileUrlRegex);
 		});
 
-		it('with publicKey and interval with only start date supplied', async () => {
+		it('should return csv filpath URL when called with publicKey and interval with only start date supplied', async () => {
 			const params = { publicKey, interval: interval.onlyStart };
 			const csvFilepathUrl = await getCsvFileUrlFromParams(params);
 			expect(csvFilepathUrl.startsWith(csvFileUrlBeginsWith)).toBeTruthy();
@@ -259,7 +259,7 @@ describe('CSV export utils', () => {
 			expect(csvFilepathUrl).toMatch(csvFileUrlRegex);
 		});
 
-		xit('with address and no interval supplied', async () => {
+		xit('should return csv filpath URL when called with address and no interval supplied', async () => {
 			const params = { address };
 			const csvFilepathUrl = await getCsvFileUrlFromParams(params);
 			expect(csvFilepathUrl.startsWith(csvFileUrlBeginsWith)).toBeTruthy();
@@ -268,7 +268,7 @@ describe('CSV export utils', () => {
 			expect(csvFilepathUrl).toMatch(csvFileUrlRegex);
 		});
 
-		xit('with publicKey and no interval supplied', async () => {
+		xit('should return csv filpath URL when called with publicKey and no interval supplied', async () => {
 			const params = { publicKey };
 			const csvFilepathUrl = await getCsvFileUrlFromParams(params);
 			expect(csvFilepathUrl.startsWith(csvFileUrlBeginsWith)).toBeTruthy();

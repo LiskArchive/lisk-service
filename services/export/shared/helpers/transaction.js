@@ -13,16 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	MODULE_COMMAND_TOKEN_TRANSFER,
-	MODULE_COMMAND_RECLAIM_TRANSACTION,
-} = require('./constants');
+const { MODULE, COMMAND } = require('./constants');
 
 const normalizeTransactionAmount = (address, tx) => {
 	if (!('amount' in tx.params)) return String(0);
 
-	const isReclaim = tx.moduleCommand === MODULE_COMMAND_RECLAIM_TRANSACTION;
-	const isTokenTransfer = tx.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER;
+	const isReclaim = tx.moduleCommand === `${MODULE.LEGACY}:${COMMAND.RECLAIM_LISK}`;
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
+		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`;
 
 	const isSender = address === tx.sender.address;
 	const isRecipient = isTokenTransfer && address === tx.params.recipientAddress;
@@ -38,7 +36,7 @@ const normalizeTransactionAmount = (address, tx) => {
 };
 
 const normalizeTransactionFee = (address, tx) => {
-	const isTokenTransfer = tx.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER;
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 	if (!isTokenTransfer) return tx.fee;
 
 	const isRecipient = address === tx.params.recipientAddress;
@@ -46,7 +44,7 @@ const normalizeTransactionFee = (address, tx) => {
 };
 
 const checkIfSelfTokenTransfer = (tx) => {
-	const isTokenTransfer = tx.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER;
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 	return isTokenTransfer && tx.sender.address === tx.params.recipientAddress;
 };
 

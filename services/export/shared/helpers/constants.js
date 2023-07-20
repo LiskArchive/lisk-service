@@ -13,12 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const MODULE_COMMAND_TOKEN_TRANSFER = 'token:transfer';
-const MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN = 'token:transferCrossChain';
-const MODULE_COMMAND_RECLAIM_TRANSACTION = 'legacy:reclaimLSK';
+const MODULE = Object.freeze({
+	TOKEN: 'token',
+	LEGACY: 'legacy',
+});
+
+const COMMAND = Object.freeze({
+	TRANSFER: 'transfer',
+	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
+	RECLAIM_LISK: 'reclaimLSK',
+});
+
+const EVENT = Object.freeze({
+	CCM_TRANSFER: 'ccmTransfer',
+});
 
 module.exports = {
-	MODULE_COMMAND_TOKEN_TRANSFER,
-	MODULE_COMMAND_RECLAIM_TRANSACTION,
-	MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN,
+	MODULE,
+	COMMAND,
+	EVENT,
 };

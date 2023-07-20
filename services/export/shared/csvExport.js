@@ -33,6 +33,8 @@ const {
 
 const { resolveReceivingChainID } = require('./helpers/chain');
 
+const { MODULE, COMMAND, EVENT } = require('./helpers/constants');
+
 const {
 	parseJsonToCsv,
 } = require('./helpers/csv');
@@ -96,10 +98,40 @@ const getTransactionsInAsc = async (params) => getTransactions({
 	offset: params.offset || 0,
 });
 
-// const validateIfAccountExists = async (address) => {
-// 	const accResponse = await getAccounts({ address }).catch(_ => _);
-// 	return (accResponse.data && accResponse.data.length);
-// };
+const validateIfAccountExists = async (address) => {
+	const tokenBalances = (await requestIndexer('token.balances', { address })).data;
+	return !!tokenBalances.length;
+};
+
+const getCrossChainTransferTransactionInfo = async (params) => {
+	const allEvents = await requestIndexer('events', {
+		topic: params.address,
+		timestamp: `${params.from}:${params.to}`,
+		sort: 'timestamp:desc',
+	});
+
+	const transactions = [];
+	const ccmTransferEvents = allEvents.data
+		.filter(event => event.module === MODULE.TOKEN && event.name === EVENT.CCM_TRANSFER);
+
+	/* eslint-disable no-await-in-loop */
+	for (let i = 0; i < ccmTransferEvents.length; i++) {
+		const [transactionID] = ccmTransferEvents[i].topics;
+
+		transactions.push({
+			id: transactionID,
+			moduleCommand: `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`,
+			sender: {
+				address: ccmTransferEvents[i].data.senderAddress,
+			},
+			block: ccmTransferEvents[i].block,
+			params: ccmTransferEvents[i].data,
+		});
+	}
+	/* eslint-enable no-await-in-loop */
+
+	return transactions;
+};
 
 const validateIfAccountHasTransactions = async (address) => {
 	const response = await getTransactions({ address, limit: 1 });
@@ -151,11 +183,18 @@ const getCsvFileUrlFromParams = async (params) => {
 	return url;
 };
 
-const normalizeTransaction = (address, tx, chainID) => {
+const normalizeTransaction = async (address, tx, chainID) => {
 	const {
 		moduleCommand,
 		senderPublicKey,
 	} = tx;
+
+	if (tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`) {
+		const [transaction] = (await requestIndexer('transactions', { id: tx.id })).data;
+		chainID = transaction && transaction.params.sendingChainID
+			? transaction.params.sendingChainID
+			: chainID;
+	}
 
 	const date = dateFromTimestamp(tx.block.timestamp);
 	const time = timeFromTimestamp(tx.block.timestamp);
@@ -168,8 +207,8 @@ const normalizeTransaction = (address, tx, chainID) => {
 	const blockHeight = tx.block.height;
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
-	const sendingChainID = chainID;
-	const receivingChainID = resolveReceivingChainID(tx, chainID);
+	const sendingChainID = `'${chainID}`;
+	const receivingChainID = `'${resolveReceivingChainID(tx, chainID)}`;
 
 	return {
 		date,
@@ -195,7 +234,7 @@ const parseTransactionsToCsv = (json) => {
 	return parseJsonToCsv(opts, json);
 };
 
-const transactionsToCSV = (transactions, address, chainID) => {
+const transactionsToCSV = async (transactions, address, chainID) => {
 	// Add duplicate entry with zero fees for self token transfer transactions
 	transactions.forEach((tx, i, arr) => {
 		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
@@ -203,7 +242,10 @@ const transactionsToCSV = (transactions, address, chainID) => {
 		}
 	});
 
-	return parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t, chainID)));
+	const normalizedTransactions = await Promise.all(transactions
+		.map(async (t) => normalizeTransaction(address, t, chainID)));
+
+	return parseTransactionsToCsv(normalizedTransactions);
 };
 
 const exportTransactionsCSV = async (job) => {
@@ -236,6 +278,16 @@ const exportTransactionsCSV = async (job) => {
 			);
 			allTransactions.push(...transactions);
 
+			const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
+				...params,
+				from: fromTimestampPast,
+				to: toTimestampPast,
+			});
+
+			if (incomingCrossChainTransferTxs.length) {
+				allTransactions.push(...incomingCrossChainTransferTxs);
+			}
+
 			if (day !== getToday()) {
 				if (transactions.length) {
 					partials.write(partialFilename, JSON.stringify(transactions));
@@ -256,7 +308,12 @@ const exportTransactionsCSV = async (job) => {
 		currentChainID = networkStatus.data.chainID;
 	}
 
-	const csv = transactionsToCSV(allTransactions, getAddressFromParams(params), currentChainID);
+	const csv = await transactionsToCSV(
+		allTransactions,
+		getAddressFromParams(params),
+		currentChainID,
+	);
+
 	await staticFiles.write(csvFilename, csv);
 };
 
@@ -281,9 +338,9 @@ const scheduleTransactionHistoryExport = async (params) => {
 	const { publicKey } = params;
 	const address = getAddressFromParams(params);
 
-	// // Validate if account exists
-	// const isAccountExists = await validateIfAccountExists(address);
-	// if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
+	// Validate if account exists
+	const isAccountExists = await validateIfAccountExists(address);
+	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
 
 	// Validate if account has transactions
 	const isAccountHasTransactions = await validateIfAccountHasTransactions(address);

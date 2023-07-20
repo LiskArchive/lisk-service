@@ -13,12 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN,
-} = require('./constants');
+const { MODULE, COMMAND } = require('./constants');
 
 const resolveReceivingChainID = (tx, chainID) => tx
-	.moduleCommand === MODULE_COMMAND_TOKEN_TRANSFER_CROSS_CHAIN
+	.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
 	? tx.params.receivingChainID
 	: chainID;
 
