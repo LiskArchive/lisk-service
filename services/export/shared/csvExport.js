@@ -103,12 +103,14 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 	const allEvents = await requestIndexer('events', {
 		topic: params.address,
 		timestamp: params.timestamp,
+		module: MODULE.TOKEN,
+		name: EVENT.CCM_TRANSFER,
 		sort: 'timestamp:desc',
 	});
 
 	const transactions = [];
 	const ccmTransferEvents = allEvents.data
-		.filter(event => event.module === MODULE.TOKEN && event.name === EVENT.CCM_TRANSFER);
+		.filter(event => event.data.recipientAddress === params.address);
 
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
 		const [transactionID] = ccmTransferEvents[i].topics;
