@@ -15,12 +15,12 @@
  */
 const {
 	Utils,
+	FileSystem: { exists },
 } = require('lisk-service-framework');
 const path = require('path');
 const BluebirdPromise = require('bluebird');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
-const { exists } = require('./fsUtils');
 
 const createApiDocs = async (apiName, apiJsonPaths, registeredModuleNames) => {
 	const methodsDir = path.resolve(__dirname, `../apis/${apiName}/methods`);

@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 const path = require('path');
 
 const {
+	FileSystem: { exists, getFiles, read, getDirectories },
 	Logger,
 	MySQL: {
 		getTableInstance,
@@ -29,8 +30,6 @@ const {
 
 const appMetadataTableSchema = require('./database/schema/application_metadata');
 const tokenMetadataTableSchema = require('./database/schema/token_metadata');
-
-const { getDirectories, read, getFiles, exists } = require('./utils/fs');
 
 const config = require('../config');
 

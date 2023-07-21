@@ -77,19 +77,19 @@ describe('Test indexAppMeta method', () => {
 });
 
 describe('Test indexMetadataFromFile method', () => {
-	beforeEach(() => jest.mock('../../../shared/utils/fs', () => {
-		const actual = jest.requireActual('../../../shared/utils/fs');
-		return {
-			...actual,
-			read: (filePath) => {
-				if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-				if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+	// beforeEach(() => jest.mock('../../../shared/utils/fs', () => {
+	// 	const actual = jest.requireActual('../../../shared/utils/fs');
+	// 	return {
+	// 		...actual,
+	// 		read: (filePath) => {
+	// 			if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+	// 			if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
 
-				throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
-			},
-			exists: () => true,
-		};
-	}));
+	// 			throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+	// 		},
+	// 		exists: () => true,
+	// 	};
+	// }));
 
 	it('should index app meta in db when called with valid app meta path', async () => {
 		jest.mock('lisk-service-framework', () => {
@@ -101,6 +101,16 @@ describe('Test indexMetadataFromFile method', () => {
 					getTableInstance: () => ({
 						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 					}),
+				},
+				FileSystem: {
+					...actual.FileSystem,
+					read: (filePath) => {
+						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+					},
+					exists: () => true,
 				},
 			};
 		});
@@ -123,6 +133,16 @@ describe('Test indexMetadataFromFile method', () => {
 					startDbTransaction: jest.fn(),
 					commitDbTransaction: jest.fn(),
 					rollbackDbTransaction: jest.fn(),
+				},
+				FileSystem: {
+					...actual.FileSystem,
+					read: (filePath) => {
+						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+					},
+					exists: () => true,
 				},
 			};
 		});
@@ -193,20 +213,6 @@ describe('Test deleteTokensMeta method', () => {
 });
 
 describe('Test deleteIndexedMetadataFromFile method', () => {
-	beforeEach(() => jest.mock('../../../shared/utils/fs', () => {
-		const actual = jest.requireActual('../../../shared/utils/fs');
-		return {
-			...actual,
-			read: (filePath) => {
-				if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-				if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-				throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
-			},
-			exists: () => true,
-		};
-	}));
-
 	it('should delete app meta in db when called with valid app meta path', async () => {
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
@@ -220,6 +226,16 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 							chainName: mockAppMetaObj.chainName,
 						}),
 					}),
+				},
+				FileSystem: {
+					...actual.FileSystem,
+					read: (filePath) => {
+						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+					},
+					exists: () => true,
 				},
 			};
 		});
@@ -242,6 +258,16 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 					startDbTransaction: jest.fn(),
 					commitDbTransaction: jest.fn(),
 					rollbackDbTransaction: jest.fn(),
+				},
+				FileSystem: {
+					...actual.FileSystem,
+					read: (filePath) => {
+						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+					},
+					exists: () => true,
 				},
 			};
 		});
@@ -267,25 +293,6 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 			};
 		});
 
-		jest.mock('../../../shared/utils/fs', () => {
-			const actual = jest.requireActual('../../../shared/utils/fs');
-			return {
-				...actual,
-				getDirectories: () => ['Lisk'],
-				getFiles: () => [
-					mockAppMetaPath,
-					mockTokenMetaPath,
-				],
-				read: (filePath) => {
-					if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-					if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-					throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
-				},
-				exists: () => true,
-			};
-		});
-
 		jest.mock('lisk-service-framework', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
@@ -296,6 +303,21 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 					startDBTransaction: jest.fn(),
 					commitDBTransaction: jest.fn(),
 					rollbackDBTransaction: jest.fn(),
+				},
+				FileSystem: {
+					...actualLiskServiceFramework.FileSystem,
+					getDirectories: () => ['Lisk'],
+					getFiles: () => [
+						mockAppMetaPath,
+						mockTokenMetaPath,
+					],
+					read: (filePath) => {
+						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+					},
+					exists: () => true,
 				},
 			};
 		});

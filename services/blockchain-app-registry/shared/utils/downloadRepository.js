@@ -18,6 +18,14 @@ const path = require('path');
 const { Octokit } = require('octokit');
 
 const {
+	FileSystem: {
+		exists,
+		createDir: mkdir,
+		getDirectories,
+		removeDir: rmdir,
+		removeFile: rm,
+		moveFile: mv,
+	},
 	Logger,
 	MySQL: {
 		getDBConnection,
@@ -31,7 +39,6 @@ const {
 
 const { resolveChainNameByNetworkAppDir } = require('./chain');
 const { downloadAndExtractTarball, downloadFile } = require('./download');
-const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fs');
 
 const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
 

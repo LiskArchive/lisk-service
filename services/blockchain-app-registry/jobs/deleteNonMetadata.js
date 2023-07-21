@@ -13,9 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const {
+	FileSystem: { removeDir: rmdir, removeFile: rm, getFilesAndDirs, stats },
+	Logger,
+} = require('lisk-service-framework');
+
+const logger = Logger();
 const config = require('../config');
-const { getFilesAndDirs, rmdir, rm, stats } = require('../shared/utils/fs');
 const { isMetadataFile } = require('../shared/utils/downloadRepository');
 
 const removeDirectoryIfEmpty = async (dirPath) => {
