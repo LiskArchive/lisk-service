@@ -168,6 +168,11 @@ const scheduleValidatorsIndexing = async (validators) => {
 };
 
 const indexGenesisBlock = async () => {
+	if (await isGenesisBlockIndexed()) {
+		logger.info('Genesis block is already indexed.');
+		return;
+	}
+
 	const genesisHeight = await getGenesisHeight();
 	logger.debug('Scheduling genesis block indexing.');
 	await scheduleBlocksIndexing(genesisHeight);
