@@ -57,7 +57,7 @@ To connect to the interactive shell of the MySQL Docker container in which you w
 
 [source,bash]
 ----
-docker exec -it lisk-service_mysql_core_1 bash
+docker exec -it lisk-service-mysql-primary-1 bash
 ----
  
 === Drop Database
