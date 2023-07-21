@@ -16,12 +16,12 @@
 const path = require('path');
 const fs = require('fs');
 const {
-	init,
+	createDir,
 	write,
 	read,
-	remove,
-	list,
+	removeFile,
 	exists,
+	getFilesAndDirs,
 	isFile,
 	isFilePathInDirectory,
 } = require('../../src/filesystem');
@@ -40,8 +40,8 @@ describe('Test filesystem interface', () => {
 		await fs.rmdirSync(dirPath, { recursive: true, force: true });
 	});
 
-	it('should create a directory when calling init() method', async () => {
-		await init({ dirPath });
+	it('should create a directory when calling createDir() method', async () => {
+		await createDir(dirPath);
 		const isExists = await exists(dirPath);
 		expect(isExists).toBe(true);
 	});
@@ -64,24 +64,24 @@ describe('Test filesystem interface', () => {
 		expect(result).toEqual(testData);
 	});
 
-	it('should remove a file when calling remove() method', async () => {
+	it('should remove a file when calling removeFile() method', async () => {
 		const filePath = `${dirPath}/testfile.csv`;
 		let isExists = await exists(filePath);
 		expect(isExists).toBe(true);
 
-		await remove(filePath);
+		await removeFile(filePath);
 		isExists = await exists(filePath);
 		expect(isExists).toBe(false);
 	});
 
-	it('should return the list of files in a directory when calling list() method', async () => {
+	it('should return the list of files in a directory when calling getFilesAndDirs() method', async () => {
 		const filePath1 = `${dirPath}/testfile1.csv`;
 		const filePath2 = `${dirPath}/testfile2.csv`;
 
 		await write(filePath1, testData);
 		await write(filePath2, testData);
 
-		const files = await list(dirPath);
+		const files = await getFilesAndDirs(dirPath);
 		expect(files.length).toBe(2);
 	});
 

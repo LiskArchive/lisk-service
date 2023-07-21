@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const fs = require('fs');
-const { Logger } = require('lisk-service-framework');
+const {
+	FileSystem: { exists, createDir },
+	Logger,
+} = require('lisk-service-framework');
+
 const config = require('../../config');
 
 const logger = Logger();
@@ -130,7 +133,9 @@ const mapRowsBySchema = async (rawRows, schema) => {
 
 const getDBConnection = async (tableName, dbDataDir) => {
 	if (!connectionPool[tableName]) {
-		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+		if (!(await exists(dbDataDir))) {
+			await createDir(dbDataDir, { recursive: true });
+		}
 		connectionPool[tableName] = await createDBConnection(dbDataDir, tableName);
 	}
 

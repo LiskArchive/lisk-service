@@ -13,16 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const fs = require('fs');
-
-const exists = filePath => new Promise((resolve) => {
-	fs.access(filePath, (err) => {
-		if (err) {
-			return resolve(false);
-		}
-		return resolve(true);
-	});
-});
+const {
+	FileSystem: { exists },
+} = require('lisk-service-framework');
 
 module.exports = {
 	exists,

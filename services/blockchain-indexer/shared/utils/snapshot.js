@@ -15,6 +15,7 @@
  */
 
 const {
+	FileSystem: { createDir, exists },
 	Logger,
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
@@ -28,8 +29,6 @@ const util = require('util');
 const crypto = require('crypto');
 const config = require('../../config');
 const execInShell = util.promisify(require('child_process').exec);
-
-const { mkdir, exists } = require('./fs');
 const { requestConnector } = require('./request');
 
 const logger = Logger();
@@ -146,7 +145,7 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 
 const downloadSnapshot = async (snapshotUrl) => {
 	const directoryPath = path.dirname(snapshotFilePath);
-	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
+	if (!(await exists(directoryPath))) await createDir(directoryPath, { recursive: true });
 	await downloadUnzipAndVerifyChecksum(snapshotUrl, snapshotFilePath);
 };
 
