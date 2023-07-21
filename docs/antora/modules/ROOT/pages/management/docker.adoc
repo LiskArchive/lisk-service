@@ -8,11 +8,12 @@ Mona Bärenfänger <mona@lightcurve.io>
 :imagesdir: ../assets/images
 
 :url_config: configuration/docker.adoc
+:url_FLUSHALL: https://redis.io/commands/FLUSHALL
 
 
 == Start
 
-.Inside of the `lisk-service` root folder
+.Inside the lisk-service root folder
 [source,bash]
 ----
 make up
@@ -24,7 +25,7 @@ In case a different node or network shall be used, xref:{url_config}[configure] 
 
 == Stop
 
-.Inside of the `lisk-service` root folder
+.Inside the lisk-service root folder
 [source,bash]
 ----
 make down
@@ -32,30 +33,33 @@ make down
 
 This will stop Lisk Service.
 
-== Show status of Docker containers
+== Show the status of Docker containers
 
 [source,bash]
 ----
 docker ps
 ----
 
-== Reset Lisk Service database
+== Reset the Lisk Service database
 
 To reset the database of Lisk Service, drop the respective MySQL and Redis databases.
 
 Before resetting the database, stop Lisk Service:
 
- make down
+[source,bash]
+----
+make stop
+----
 
-Now connect to the Docker container in which you wish to reset the database. If you are not sure what to choose here, check the available containers via <<show-status-of-docker-containers>>.
+Now connect to the Docker container in which you wish to reset the database. If you are not sure what to choose here, check the available containers via <<show-the-status-of-docker-containers>>.
+
+To connect to the interactive shell of the MySQL Docker container in which you wish to reset the MySQL database, execute the following command:
 
 [source,bash]
 ----
-$ docker exec -it lisk-service_mysql_core_1 bash # <1>
+docker exec -it lisk-service-mysql-primary-1 bash
 ----
-
-<1> Connect to the interactive shell of the MySQL Docker container in which you wish to reset the MySQL database.
-
+ 
 === Drop Database
 
 [tabs]
@@ -107,7 +111,7 @@ Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 MariaDB::
 +
 --
-MariaDB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries and replication.
+MariaDB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries, and replication.
 
 . Login to MariaDB with the `lisk` user.
 +
@@ -163,13 +167,15 @@ TIP: Log out of the docker container again by pressing kbd:[CRTL] + kbd:[D].
 
 [NOTE]
 ====
-The `flushall` command removes all existing Redis databases:
+The `flushall` command truncates all existing Redis databases:
 
 > Deletes all the keys of all the existing databases, not just the current selected one. This command never fails.
 
-For more information check the Redis documentation: https://redis.io/commands/FLUSHALL[FLUSHALL]
+For more information, check the Redis documentation: {url_FLUSHALL}[FLUSHALL].
 
 To flush only a particular DB in Redis, execute the following command instead:
+
+[source,bash]
 ----
  redis-cli -n <db_number> flushdb
 ----
@@ -179,7 +185,10 @@ To flush only a particular DB in Redis, execute the following command instead:
 
 After the databases are reset, start Lisk Service again as usual:
 
- make up
+[source,bash]
+----
+make up
+----
 
 NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
 This can be quite time-consuming when the chain is long, spanning over hours.
