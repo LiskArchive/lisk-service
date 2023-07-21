@@ -48,7 +48,7 @@ Before resetting the database, stop Lisk Service:
 
 [source,bash]
 ----
-make down
+make stop
 ----
 
 Now connect to the Docker container in which you wish to reset the database. If you are not sure what to choose here, check the available containers via <<show-the-status-of-docker-containers>>.

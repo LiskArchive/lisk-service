@@ -7,17 +7,20 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :page-previous-title: Installation with Docker
 :page-next: /lisk-service/management/docker.html
 :page-next-title: Docker commands
+
 :url_references_config: configuration/index.adoc
 :url_github_env: https://github.com/LiskHQ/lisk-service/blob/development/docker/example.env
+:url_github: https://github.com/LiskHQ/lisk-service
 :url_docker_commands: management/docker.adoc
 
-On this page, we discuss how to customize the docker installation of Lisk Service.
-
+On this page, we discuss how to customize the Docker installation of Lisk Service.
 
 == Configuring Lisk Service
-The Docker installation of Lisk Service takes all of its configuration from an `example.env` file, which is located in the `lisk-service` directory.
+The {url_github}[Lisk Service] provides all possible Docker related configurations and their default values in an `example.env` file.
 
-To customize the docker installation, copy the example configuration file to any `.env` file.
+TIP: The default {url_github_env}[example.env] file can be seen on the GitHub repository.
+
+To customize the Docker installation, copy the example configuration file to a `.env` file in the root of the `lisk-service` directory, where we have the `docker-compose.yml` file.
 
 .Working directory: ./lisk-service/
 [source,bash]
@@ -25,11 +28,7 @@ To customize the docker installation, copy the example configuration file to any
 cp docker/example.env .env
 ----
 
-You can edit the newly copied `.env` file to customize configurations accordingly.
+Now edit the newly copied `.env` file to customize configurations accordingly.
 All the Lisk Service related configurations have already been explained on the xref:{url_references_config}[Configuration reference] page.
 
-== Default example.env
-
-The default {url_github_env}[example.env] file can be seen on the GitHub repository.
-
-Additional commands for managing Lisk Service with docker are described on the xref:{url_docker_commands}[] page.
+Additional commands for managing Lisk Service with Docker are described on the xref:{url_docker_commands}[] page.
