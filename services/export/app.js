@@ -26,6 +26,7 @@ LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
 const { getCurrentChainID } = require('./shared/helpers/chain');
+const { setFeeEstimates } = require('./shared/helpers/feeEstimates');
 const { setAppContext } = require('./shared/helpers/request');
 
 const logger = Logger();
@@ -37,6 +38,12 @@ const app = Microservice({
 	timeout: config.brokerTimeout,
 	packageJson,
 	logger: config.log,
+	events: {
+		'update.fee_estimates': async (payload) => {
+			logger.debug('Received a \'update.fee_estimates\' event from fee estimator.');
+			await setFeeEstimates(payload);
+		},
+	},
 });
 
 setAppContext(app);

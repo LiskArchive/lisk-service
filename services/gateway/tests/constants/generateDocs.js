@@ -425,6 +425,12 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/topic',
 				},
 				{
+					$ref: '#/parameters/module',
+				},
+				{
+					$ref: '#/parameters/eventName',
+				},
+				{
 					$ref: '#/parameters/blockID',
 				},
 				{

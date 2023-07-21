@@ -32,8 +32,8 @@ const {
 } = require('./helpers/account');
 
 const { getCurrentChainID, resolveReceivingChainID } = require('./helpers/chain');
-
-const { MODULE, COMMAND, EVENT } = require('./helpers/constants');
+const { MODULE, COMMAND, EVENT, MODULE_SUB_STORE } = require('./helpers/constants');
+const { getFeeEstimates } = require('./helpers/feeEstimates');
 
 const {
 	parseJsonToCsv,
@@ -42,6 +42,8 @@ const {
 const {
 	requestIndexer,
 	requestGateway,
+	requestConnector,
+	requestAppRegistry,
 } = require('./helpers/request');
 
 const {
@@ -95,7 +97,7 @@ const getTransactionsInAsc = async (params) => getTransactions({
 });
 
 const validateIfAccountExists = async (address) => {
-	const tokenBalances = (await requestIndexer('token.balances', { address })).data;
+	const { data: tokenBalances } = await requestIndexer('token.balances', { address });
 	return !!tokenBalances.length;
 };
 
@@ -128,6 +130,42 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 
 	return transactions;
 };
+
+const getConversionFactor = async (chainID) => {
+	const { data: [tokenMetadata] } = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID });
+
+	const displayDenom = tokenMetadata.denomUnits
+		.find(denomUnit => denomUnit.denom === tokenMetadata.displayDenom);
+	const baseDenom = tokenMetadata.denomUnits
+		.find(denomUnit => denomUnit.denom === tokenMetadata.baseDenom);
+
+	const conversionFactor = displayDenom.decimals - baseDenom.decimals;
+	return conversionFactor;
+};
+
+const getOpeningBalance = async (address) => {
+	const tokenModuleData = await requestConnector(
+		'getGenesisAssetByModule',
+		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+	);
+
+	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
+	const filteredAccount = userSubStoreInfos.find(e => e.address === address);
+	const openingBalance = filteredAccount
+		? { tokenID: filteredAccount.tokenID, balance: filteredAccount.availableBalance }
+		: null;
+
+	return openingBalance;
+};
+
+const getMetadata = async (address, chainID) => ({
+	currentChainID: chainID,
+	FeeTokenID: (getFeeEstimates()).feeTokenID,
+	dateFormat: config.csv.dateFormat,
+	timeFormat: config.csv.timeFormat,
+	conversionFactor: await getConversionFactor(chainID),
+	openingBalance: await getOpeningBalance(address),
+});
 
 const validateIfAccountHasTransactions = async (address) => {
 	const response = await getTransactions({ address, limit: 1 });
@@ -225,8 +263,8 @@ const normalizeTransaction = async (address, tx, chainID) => {
 	};
 };
 
-const parseTransactionsToCsv = (json) => {
-	const opts = { delimiter: config.csv.delimiter, fields };
+const parseInputToCsv = (json, fieldsMapping) => {
+	const opts = { delimiter: config.csv.delimiter, fields: fieldsMapping };
 	return parseJsonToCsv(opts, json);
 };
 
@@ -241,7 +279,11 @@ const transactionsToCSV = async (transactions, address, chainID) => {
 	const normalizedTransactions = await Promise.all(transactions
 		.map(async (t) => normalizeTransaction(address, t, chainID)));
 
-	return parseTransactionsToCsv(normalizedTransactions);
+	const parsedTransactionsToCsv = parseInputToCsv(
+		normalizedTransactions,
+		fields.transactionMappings,
+	);
+	return parsedTransactionsToCsv;
 };
 
 const exportTransactionsCSV = async (job) => {
@@ -294,16 +336,18 @@ const exportTransactionsCSV = async (job) => {
 	}
 
 	const csvFilename = await getCsvFilenameFromParams(params);
-
 	const currentChainID = await getCurrentChainID();
 
-	const csv = await transactionsToCSV(
+	const parsedTransactionsToCsv = await transactionsToCSV(
 		allTransactions,
 		getAddressFromParams(params),
 		currentChainID,
 	);
 
-	await staticFiles.write(csvFilename, csv);
+	const metadata = await getMetadata(params.address, currentChainID);
+	const parsedMetadataToCsv = parseInputToCsv(metadata, fields.metadataMappings);
+
+	await staticFiles.write(csvFilename, parsedTransactionsToCsv);
 };
 
 const scheduleTransactionExportQueue = Queue(
@@ -386,7 +430,7 @@ module.exports = {
 	getAddressFromParams,
 	getToday,
 	normalizeTransaction,
-	parseTransactionsToCsv,
+	parseInputToCsv,
 	transactionsToCSV,
 
 	standardizeIntervalFromParams,

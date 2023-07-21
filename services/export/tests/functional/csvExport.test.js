@@ -19,7 +19,7 @@ const {
 	getAddressFromParams,
 	getToday,
 	normalizeTransaction,
-	parseTransactionsToCsv,
+	parseInputToCsv,
 	transactionsToCSV,
 
 	standardizeIntervalFromParams,
@@ -73,16 +73,19 @@ describe('CSV export utils', () => {
 				tokenTransfer.toOther.sender,
 				tokenTransfer.toOther.transaction,
 			);
-			const expectedFields = Object.values(fieldMappings).map((v) => v.value);
+			const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.value);
 			expect(Object.keys(normalizedTx)).toEqual(expect.arrayContaining(expectedFields));
 		});
 	});
 
-	describe('Test parseTransactionsToCsv method', () => {
+	describe('Test parseInputToCsv method', () => {
 		it('should return transactions as CSV', async () => {
-			const csv = parseTransactionsToCsv(tokenTransfer.toOther.transaction);
+			const csv = parseInputToCsv(
+				tokenTransfer.toOther.transaction,
+				fieldMappings.transactionMappings);
+
 			const expectedTx = {};
-			Object.values(fieldMappings).forEach((v) => {
+			Object.values(fieldMappings.transactionMappings).forEach((v) => {
 				expectedTx[`${v.label}`] = tokenTransfer.toOther.transaction[v.value] || null;
 			});
 			expect(csv).toBe(generateExcpectedCsv(expectedTx, config.csv.delimiter));
@@ -106,7 +109,7 @@ describe('CSV export utils', () => {
 			);
 			const replacedKeysTx = {};
 			Object.entries(normalizedTx).forEach(([k, v]) => {
-				const [entry] = fieldMappings.filter(e => e.value === k);
+				const [entry] = fieldMappings.transactionMappings.filter(e => e.value === k);
 				replacedKeysTx[`${entry.label}`] = v;
 			});
 			expect(csv).toBe(generateExcpectedCsv(replacedKeysTx, config.csv.delimiter));

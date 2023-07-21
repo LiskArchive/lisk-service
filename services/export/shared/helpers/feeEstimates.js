@@ -13,30 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const MODULE = Object.freeze({
-	TOKEN: 'token',
-	LEGACY: 'legacy',
-});
+let feeEstimates = {
+	low: 0,
+	med: 0,
+	high: 0,
+};
 
-const COMMAND = Object.freeze({
-	TRANSFER: 'transfer',
-	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
-	RECLAIM_LISK: 'reclaimLSK',
-});
+const setFeeEstimates = async (payload) => {
+	if (payload && Object.keys(payload).length > 0 && payload.status !== 'SERVICE_UNAVAILABLE') {
+		feeEstimates = payload;
+	}
+};
 
-const EVENT = Object.freeze({
-	CCM_TRANSFER: 'ccmTransfer',
-});
-
-const MODULE_SUB_STORE = Object.freeze({
-	TOKEN: {
-		USER: 'userSubstore',
-	},
-});
+const getFeeEstimates = () => feeEstimates;
 
 module.exports = {
-	MODULE,
-	COMMAND,
-	EVENT,
-	MODULE_SUB_STORE,
+	setFeeEstimates,
+	getFeeEstimates,
 };

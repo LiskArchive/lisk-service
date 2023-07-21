@@ -13,12 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = [
+const transactionMappings = [
 	{ label: 'Date', value: 'date' },
 	{ label: 'Time', value: 'time' },
 	{ label: 'Amount', value: 'amount' },
 	{ label: 'Fee', value: 'fee' },
-	{ label: 'Amount TokenID', value: 'amountTokenID' },
+	{ label: 'Amount Token ID', value: 'amountTokenID' },
 	{ label: 'Module:Command', value: 'moduleCommand' },
 	{ label: 'Sender Address', value: 'senderAddress' },
 	{ label: 'Recipient Address', value: 'recipientAddress' },
@@ -27,6 +27,20 @@ module.exports = [
 	{ label: 'Block Height', value: 'blockHeight' },
 	{ label: 'Note', value: 'note' },
 	{ label: 'Transaction ID', value: 'transactionID' },
-	{ label: 'Sending chainID', value: 'sendingChainID' },
-	{ label: 'Receiving chainID', value: 'receivingChainID' },
+	{ label: 'Sending chain ID', value: 'sendingChainID' },
+	{ label: 'Receiving chain ID', value: 'receivingChainID' },
 ];
+
+const metadataMappings = [
+	{ label: 'Current chain ID', value: 'currentChainID' },
+	{ label: 'Fee token ID', value: 'FeeTokenID' },
+	{ label: 'Date format', value: 'dateFormat' },
+	{ label: 'Time format', value: 'timeFormat' },
+	{ label: 'Conversion factor', value: 'conversionFactor' },
+	{ label: 'Opening balance', value: 'openingBalance' },
+];
+
+module.exports = {
+	transactionMappings,
+	metadataMappings,
+};
