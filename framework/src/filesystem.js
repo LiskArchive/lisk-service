@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable consistent-return */
 const path = require('path');
 const fs = require('fs');
 const Logger = require('./logger').get;
@@ -98,6 +99,8 @@ const removeDir = async (directoryPath, options) => removeFile(
 const existsFile = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
 const exists = filePath => new Promise(resolve => {
+	if (typeof filePath !== 'string') return resolve(false);
+
 	fs.access(filePath, err => {
 		if (err) {
 			return resolve(false);
