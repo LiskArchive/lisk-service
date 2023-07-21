@@ -20,7 +20,7 @@ The {url_github}[Lisk Service] provides all possible Docker related configuratio
 
 TIP: The default {url_github_env}[example.env] file can be seen on the GitHub repository.
 
-To customize the Docker installation, copy the example configuration file to a `.env` file in the root of the `lisk-service` directory, where we have the `docker-compose.yml` file.
+To customize the Docker installation, copy the example configuration file to a `.env` file in the root of the `lisk-service` directory, where the `docker-compose.yml` file is located.
 
 .Working directory: ./lisk-service/
 [source,bash]
