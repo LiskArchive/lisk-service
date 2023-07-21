@@ -21,6 +21,7 @@ module.exports = {
 	CacheMemory: require('./src/cacheMemory'),
 	CacheRedis: require('./src/cacheRedis'),
 	CacheLRU: require('./src/cacheLru'),
+	FileSystem: require('./src/filesystem'),
 	Exceptions: require('./src/exceptions'),
 	HTTP: require('./src/http'),
 	Signals: require('./src/signals'),

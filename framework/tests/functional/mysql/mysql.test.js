@@ -920,6 +920,34 @@ describe('Test MySQL', () => {
 			expect(count).toBe(0);
 		});
 
+		it('should delete a row using raw query', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+
+			await blocksTable.upsert([emptyBlock]);
+			const existingBlockCount = await blocksTable.count();
+			expect(existingBlockCount).toBe(1);
+
+			await blocksTable.rawQuery(`DELETE FROM ${tableName} WHERE id=${emptyBlock.id}`, trx);
+			await commitDBTransaction(trx);
+
+			const count = await blocksTable.count({});
+			expect(count).toBe(0);
+		});
+
+		it('should get row count', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+
+			await blocksTable.upsert([emptyBlock]);
+			const existingBlockCount = await blocksTable.count();
+			expect(existingBlockCount).toBe(1);
+
+			const [result] = await blocksTable.count({}, null, trx);
+			await commitDBTransaction(trx);
+			expect(result.count).toBe(1);
+		});
+
 		it('should perform batch row insert', async () => {
 			const connection = await getDBConnection();
 			const trx = await startDBTransaction(connection);

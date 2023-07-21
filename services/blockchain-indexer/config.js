@@ -129,20 +129,19 @@ config.networks = Object.freeze({
 			name: 'mainnet',
 			chainID: '00000000',
 			serviceURL: 'https://service.lisk.com',
-			snapshotUrl: 'https://snapshots.lisk.io/mainnet/service_1689588638.sql.gz',
+			snapshotURL: 'https://snapshots.lisk.com/mainnet/service.sql.gz',
 		},
 		{
 			name: 'testnet',
 			chainID: '01000000',
 			serviceURL: 'https://testnet-service.lisk.com',
-			snapshotUrl: 'https://snapshots.lisk.io/testnet/service_1689588642.sql.gz',
-
+			snapshotURL: 'https://snapshots.lisk.com/testnet/service.sql.gz',
 		},
 		{
 			name: 'betanet',
 			chainID: '02000000',
 			serviceURL: 'https://betanet-service.lisk.com',
-			snapshotUrl: 'https://snapshots.lisk.io/betanet/service_1688983845.sql.gz',
+			snapshotURL: 'https://snapshots.lisk.com/betanet/service.sql.gz',
 		},
 		{
 			name: 'devnet',
@@ -155,9 +154,9 @@ config.networks = Object.freeze({
 config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true');
 
 config.snapshot = {
+	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() === 'true'), // Disabled by default
 	url: process.env.INDEX_SNAPSHOT_URL,
 	allowInsecureHttp: Boolean(String(process.env.ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP).toLowerCase() === 'true'), // Disabled by default
-	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() === 'true'), // Disabled by default
 };
 
 config.job = {

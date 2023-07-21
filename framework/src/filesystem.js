@@ -1,0 +1,124 @@
+/*
+ * LiskHQ/lisk-service
+ * Copyright © 2023 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
+const path = require('path');
+const fs = require('fs');
+const Logger = require('./logger').get;
+
+const logger = Logger();
+
+const createDir = (dirPath, options = { recursive: true }) => new Promise((resolve, reject) => {
+	logger.debug(`Creating directory: ${dirPath}`);
+	return fs.mkdir(
+		dirPath,
+		options,
+		err => {
+			if (err) {
+				logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
+				return reject(err);
+			}
+			logger.debug(`Successfully created directory: ${dirPath}`);
+			return resolve();
+		},
+	);
+});
+
+const init = async params => createDir(params.dirPath);
+
+const write = (filePath, content) => new Promise((resolve, reject) => {
+	fs.writeFile(filePath, content, err => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve();
+	});
+});
+
+const isFilePathInDirectory = (filePath, directory) => {
+	const absoluteFilePath = path.resolve(filePath);
+	const absoluteRootDir = path.resolve(directory);
+
+	if (!absoluteFilePath.startsWith(absoluteRootDir)) {
+		logger.warn('Filepath is not allowed.');
+		return false;
+	}
+
+	return true;
+};
+
+const read = filePath => new Promise((resolve, reject) => {
+	fs.promises.readFile(filePath, 'utf8')
+		.then(data => {
+			resolve(data);
+		})
+		.catch(error => {
+			reject(error);
+		});
+});
+
+const remove = filePath => new Promise((resolve, reject) => {
+	fs.unlink(
+		filePath,
+		err => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			return resolve();
+		},
+	);
+});
+
+const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) => {
+	fs.readdir(
+		dirPath,
+		(err, files) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			return resolve(files.slice(page, page + count));
+		},
+	);
+});
+
+const exists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
+
+const isFile = async filePath => {
+	const isExists = await exists(filePath);
+
+	if (isExists) {
+		try {
+			const stats = await fs.promises.lstat(filePath);
+			return stats.isFile();
+		} catch (error) {
+			return false;
+		}
+	}
+
+	return false;
+};
+
+module.exports = {
+	init,
+	write,
+	read,
+	remove,
+	list,
+	exists,
+	isFile,
+	isFilePathInDirectory,
+};

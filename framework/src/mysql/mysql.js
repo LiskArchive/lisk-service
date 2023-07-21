@@ -497,8 +497,12 @@ const getTableInstance = async (...tableParams) => {
 		return query;
 	};
 
-	const count = async (params = {}, column) => {
-		const trx = await createDefaultTransaction(knex);
+	const count = async (params = {}, column, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
 
 		if (!column) {
 			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
@@ -512,7 +516,7 @@ const getTableInstance = async (...tableParams) => {
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
-		return query
+		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
 				const [totalCount] = result;
@@ -522,12 +526,20 @@ const getTableInstance = async (...tableParams) => {
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
-	const rawQuery = async queryStatement => {
-		const trx = await createDefaultTransaction(knex);
-		return trx
-			.raw(queryStatement)
+	const rawQuery = async (queryStatement, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const query = trx.raw(queryStatement);
+
+		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
 				const [resultSet] = result;
@@ -537,6 +549,8 @@ const getTableInstance = async (...tableParams) => {
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
 	const increment = async (params, trx) => {
@@ -602,6 +616,7 @@ module.exports = {
 	commitDBTransaction,
 	rollbackDBTransaction,
 	createTableIfNotExists,
+	CONN_ENDPOINT_DEFAULT,
 
 	// For backward compatibility
 	getDbConnection: getDBConnection,

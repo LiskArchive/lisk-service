@@ -25,6 +25,7 @@ const http = require('http');
 const https = require('https');
 const zlib = require('zlib');
 const util = require('util');
+const crypto = require('crypto');
 const config = require('../../config');
 const execInShell = util.promisify(require('child_process').exec);
 
@@ -39,43 +40,86 @@ const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const checkCommandAvailability = async () => {
 	const { stdout: mysqlAvailable } = await execInShell('which mysql').catch(() => ({}));
-	if (!mysqlAvailable) throw new NotFoundException('mysql command is unavailable in PATH');
+	if (!mysqlAvailable) throw new NotFoundException('mysql command is unavailable in PATH.');
 };
 
-function downloadAndUnzipFile(fileUrl, filePath) {
+const calculateSHA256 = async (file) => new Promise((resolve, reject) => {
+	const hash = crypto.createHash('sha256');
+	const stream = fs.createReadStream(file);
+
+	stream.on('data', (data) => hash.update(data));
+	stream.on('end', () => resolve(hash.digest('hex')));
+	stream.on('error', (error) => reject(error));
+});
+
+const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
+	const checksumUrl = fileUrl.replace('.gz', '.SHA256');
+
 	return new Promise((resolve, reject) => {
-		getHTTPProtocolByURL(fileUrl).get(fileUrl, (response) => {
+		// Download the checksum file
+		logger.info('Attempting to download the snapshot checksum.');
+		getHTTPProtocolByURL(checksumUrl).get(checksumUrl, (response) => {
 			if (response.statusCode === 200) {
-				const unzip = zlib.createUnzip();
-				const writeFile = fs.createWriteStream(filePath);
+				let checksumData = '';
 
-				response.pipe(unzip).pipe(writeFile);
-
-				response.on('error', (err) => {
-					reject(new Error(err));
+				response.on('data', (chunk) => {
+					checksumData += chunk;
 				});
 
-				writeFile.on('finish', () => {
-					resolve();
-				});
+				response.on('end', () => {
+					// Extract the SHA256 hash from the downloaded data
+					const checksum = checksumData.trim().split(' ')[0];
 
-				writeFile.on('error', (err) => {
-					reject(new Error(err));
+					// Download and unzip the file
+					logger.info('Attempting to download the snapshot file.');
+					getHTTPProtocolByURL(fileUrl).get(fileUrl, (res) => {
+						if (res.statusCode === 200) {
+							const unzip = zlib.createUnzip();
+							const writeFile = fs.createWriteStream(filePath);
+
+							res.pipe(unzip).pipe(writeFile);
+
+							res.on('error', (err) => {
+								reject(new Error(err));
+							});
+
+							writeFile.on('finish', () => {
+								// calculate hash from file.
+								calculateSHA256(filePath).then((calculatedChecksum) => {
+									if (calculatedChecksum === checksum) {
+										resolve();
+									} else {
+										reject(new Error('Checksum verification failed.'));
+									}
+								}).catch(err => {
+									reject(err);
+								});
+							});
+
+							writeFile.on('error', (err) => {
+								reject(err);
+							});
+						} else {
+							const errMessage = `Download failed with HTTP status code: ${res.statusCode} (${res.statusMessage})`;
+							console.error(errMessage);
+							if (res.statusCode === 404) {
+								reject(new Error(`NotFoundException: ${errMessage}`));
+							} else {
+								reject(new Error(errMessage));
+							}
+						}
+					}).on('error', (err) => {
+						reject(new Error(err));
+					});
 				});
 			} else {
-				const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
-				console.error(errMessage);
-				if (response.statusCode === 404) {
-					reject(new Error(`NotFoundException: ${errMessage}`));
-				} else {
-					reject(new Error(errMessage));
-				}
+				reject(new Error('Failed to download checksum file.'));
 			}
 		}).on('error', (err) => {
 			reject(new Error(err));
 		});
 	});
-}
+};
 
 const resolveSnapshotRestoreCommand = async (connEndpoint) => {
 	await checkCommandAvailability();
@@ -103,8 +147,7 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 const downloadSnapshot = async (snapshotUrl) => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-	logger.info('Attempting to download the snapshot file.');
-	await downloadAndUnzipFile(snapshotUrl, snapshotFilePath);
+	await downloadUnzipAndVerifyChecksum(snapshotUrl, snapshotFilePath);
 };
 
 const initSnapshot = async () => {
@@ -132,7 +175,7 @@ const initSnapshot = async () => {
 		throw new Error(`Please consider using a secured source (HTTPS). To continue to download snapshot from ${snapshotUrl}, set 'ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP' env variable.`);
 	}
 
-	if (!(await exists(snapshotFilePath))) await downloadSnapshot(snapshotUrl);
+	await downloadSnapshot(snapshotUrl);
 	await applySnapshot();
 };
 
