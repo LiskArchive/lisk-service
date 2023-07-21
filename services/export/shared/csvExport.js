@@ -31,7 +31,7 @@ const {
 	getLisk32AddressFromPublicKey,
 } = require('./helpers/account');
 
-const { resolveReceivingChainID } = require('./helpers/chain');
+const { getCurrentChainID, resolveReceivingChainID } = require('./helpers/chain');
 
 const { MODULE, COMMAND, EVENT } = require('./helpers/constants');
 
@@ -70,12 +70,8 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
-let currentChainID;
-
-// const getAccounts = async (params) => app.requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestIndexer('transactions', params);
-const getNetworkStatus = async () => requestIndexer('network.status');
 
 const isBlockchainIndexReady = async () => requestGateway('isBlockchainIndexReady');
 
@@ -297,10 +293,7 @@ const exportTransactionsCSV = async (job) => {
 
 	const csvFilename = await getCsvFilenameFromParams(params);
 
-	if (!currentChainID) {
-		const networkStatus = await getNetworkStatus();
-		currentChainID = networkStatus.data.chainID;
-	}
+	const currentChainID = await getCurrentChainID();
 
 	const csv = await transactionsToCSV(
 		allTransactions,

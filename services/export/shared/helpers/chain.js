@@ -14,12 +14,25 @@
  *
  */
 const { MODULE, COMMAND } = require('./constants');
+const { requestIndexer } = require('./request');
 
-const resolveReceivingChainID = (tx, chainID) => tx
+let chainID;
+
+const getCurrentChainID = async () => {
+	if (!chainID) {
+		const networkStatus = await requestIndexer('network.status');
+		chainID = networkStatus.data.chainID;
+	}
+
+	return chainID;
+};
+
+const resolveReceivingChainID = (tx, currentChainID) => tx
 	.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
 	? tx.params.receivingChainID
-	: chainID;
+	: currentChainID;
 
 module.exports = {
+	getCurrentChainID,
 	resolveReceivingChainID,
 };
