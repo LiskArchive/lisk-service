@@ -152,7 +152,7 @@ const getOpeningBalance = async (address) => {
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
 	const filteredAccount = userSubStoreInfos.find(e => e.address === address);
 	const openingBalance = filteredAccount
-		? { tokenID: filteredAccount.tokenID, balance: filteredAccount.availableBalance }
+		? { tokenID: filteredAccount.tokenID, amount: filteredAccount.availableBalance }
 		: null;
 
 	return openingBalance;
@@ -344,8 +344,8 @@ const exportTransactionsCSV = async (job) => {
 		currentChainID,
 	);
 
-	const metadata = await getMetadata(params.address, currentChainID);
-	const parsedMetadataToCsv = parseInputToCsv(metadata, fields.metadataMappings);
+	// const metadata = await getMetadata(params.address, currentChainID);
+	// const parsedMetadataToCsv = parseInputToCsv(metadata, fields.metadataMappings);
 
 	await staticFiles.write(csvFilename, parsedTransactionsToCsv);
 };
@@ -437,4 +437,8 @@ module.exports = {
 	getPartialFilenameFromParams,
 	getCsvFilenameFromParams,
 	getCsvFileUrlFromParams,
+	getCrossChainTransferTransactionInfo,
+	getConversionFactor,
+	getOpeningBalance,
+	getMetadata,
 };
