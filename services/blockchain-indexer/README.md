@@ -39,6 +39,9 @@ A list of the most commonly used environment variables is presented below:
 - `ENABLE_DATA_RETRIEVAL_MODE`: Boolean flag to enable the Data Service mode.
 - `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode.
 - `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently maintain the events in the MySQL database.
+- `ENABLE_APPLY_SNAPSHOT`: Boolean flag to enable initializing database with a snapshot.
+- `INDEX_SNAPSHOT_URL`: URL from where the database snapshot will be downloaded.
+- `ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`: Boolean flag to enable downloading snaphot from a HTTP url.
 - `LISK_STATIC`: URL of Lisk static assets.
 - `SERVICE_INDEXER_CACHE_REDIS`: URL of the cache storage (Redis).
 - `JOB_INTERVAL_DELETE_SERIALIZED_EVENTS`: Job run interval to delete serialized events. By default, it is set to 0.

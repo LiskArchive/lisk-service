@@ -35,7 +35,15 @@ const createDir = (dirPath, options = { recursive: true }) => new Promise((resol
 	);
 });
 
-const init = async params => createDir(params.dirPath);
+const read = filePath => new Promise((resolve, reject) => {
+	fs.promises.readFile(filePath, 'utf8')
+		.then(data => {
+			resolve(data);
+		})
+		.catch(error => {
+			reject(error);
+		});
+});
 
 const write = (filePath, content) => new Promise((resolve, reject) => {
 	fs.writeFile(filePath, content, err => {
@@ -59,43 +67,44 @@ const isFilePathInDirectory = (filePath, directory) => {
 	return true;
 };
 
-const read = filePath => new Promise((resolve, reject) => {
-	fs.promises.readFile(filePath, 'utf8')
-		.then(data => {
-			resolve(data);
-		})
-		.catch(error => {
-			reject(error);
-		});
-});
-
-const remove = filePath => new Promise((resolve, reject) => {
-	fs.unlink(
-		filePath,
+const removeFile = async (deletePath, options) => new Promise(resolve => {
+	logger.trace(`Removing directory: ${deletePath}.`);
+	fs.rm(
+		deletePath,
+		options,
 		err => {
 			if (err) {
-				logger.error(err);
-				return reject(err);
+				logger.error(`Error when removing file/directory: ${deletePath}.\n`, err);
+				return resolve(false);
 			}
-			return resolve();
+
+			logger.debug(`Successfully removed file/directory: ${deletePath}`);
+			return resolve(true);
 		},
 	);
 });
 
-const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) => {
-	fs.readdir(
-		dirPath,
-		(err, files) => {
-			if (err) {
-				logger.error(err);
-				return reject(err);
-			}
-			return resolve(files.slice(page, page + count));
-		},
-	);
-});
+const removeDir = async (directoryPath, options) => removeFile(
+	directoryPath,
+	{
+		...options,
+		force: true,
+		maxRetries: 3,
+		recursive: true,
+		retryDelay: 50,
+	},
+);
 
-const exists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
+const existsFile = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
+
+const exists = filePath => new Promise(resolve => {
+	fs.access(filePath, err => {
+		if (err) {
+			return resolve(false);
+		}
+		return resolve(true);
+	});
+});
 
 const isFile = async filePath => {
 	const isExists = await exists(filePath);
@@ -112,13 +121,108 @@ const isFile = async filePath => {
 	return false;
 };
 
+const stats = async filePath => new Promise((resolve, reject) => {
+	fs.stat(
+		filePath,
+		(err, stat) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+
+			return resolve(stat);
+		},
+	);
+});
+
+const getDirectories = async (directoryPath, options = { withFileTypes: true }) => new Promise(
+	(resolve, reject) => {
+		logger.trace(`Reading sub-directories in: ${directoryPath}.`);
+		fs.readdir(
+			directoryPath,
+			options,
+			async (err, dirs) => {
+				if (err) {
+					logger.error(`Error when reading directory: ${directoryPath}.\n`, err);
+					return reject(err);
+				}
+
+				const subDirsWithTime = [];
+				const subDirectories = dirs.filter(subDir => subDir.isDirectory());
+				for (let i = 0; i < subDirectories.length; i++) {
+					const fullSubDirPath = path.join(directoryPath, subDirectories[i].name);
+					// eslint-disable-next-line no-await-in-loop
+					const stat = await stats(fullSubDirPath);
+					subDirsWithTime.push({ name: fullSubDirPath, time: stat.ctime.getTime() });
+				}
+
+				const sortedDirs = subDirsWithTime
+					.sort((a, b) => b.time - a.time)
+					.map(file => file.name);
+
+				logger.trace(`Successfully read sub-directories in directory: ${directoryPath}.`);
+				return resolve(sortedDirs);
+			},
+		);
+	},
+);
+
+const getFiles = async (directoryPath, options = { withFileTypes: true }) => new Promise(
+	(resolve, reject) => {
+		logger.trace(`Reading files in directory: ${directoryPath}.`);
+		fs.readdir(directoryPath, options, (err, files) => {
+			if (err) {
+				logger.error(`Error when files in directory: ${directoryPath}.\n`, err);
+				return reject(err);
+			}
+			const filesInDirectory = files
+				.filter(file => file.isFile())
+				.map(file => path.join(directoryPath, file.name));
+
+			logger.trace(`Successfully read files in directory: ${directoryPath}.`);
+			return resolve(filesInDirectory);
+		});
+	});
+
+const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true }) => {
+	const subDirectories = await getDirectories(directoryPath, options);
+	const filesInDirectory = await getFiles(directoryPath, options);
+	return [...subDirectories, ...filesInDirectory];
+};
+
+const moveFile = async (oldName, newName) => new Promise((resolve, reject) => {
+	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
+	fs.rename(oldName, newName, err => {
+		if (err) {
+			logger.error(`Error while renaming resource: ${oldName} to ${newName}.\n`, err);
+			return reject(err);
+		}
+
+		logger.trace(`Successfully renamed resource: ${oldName} to ${newName}.`);
+		return resolve();
+	});
+});
+
 module.exports = {
-	init,
-	write,
+	// Directory operations
+	createDir,
+	removeDir,
+
+	// File operations
 	read,
-	remove,
-	list,
-	exists,
+	write,
 	isFile,
+	existsFile,
+	removeFile,
+	moveFile,
 	isFilePathInDirectory,
+
+	// Fetching
+	getFiles,
+	getDirectories,
+	getFilesAndDirs,
+
+	// Files and directories
+	exists,
+	stats,
 };
