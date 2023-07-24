@@ -5,7 +5,7 @@ rules:
       - javascript
     severity: WARNING
     patterns:
-      - pattern-inside: >
+      - pattern-inside: |
           {
             params: {
               $X: { pattern: /.../ },
