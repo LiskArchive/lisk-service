@@ -14,7 +14,9 @@
  *
  */
 const {
-	FileSystem: { createDir: mkdir, removeDir: rmdir, exists },
+	Utils: {
+		fs: { mkdir, rmdir, exists },
+	},
 } = require('lisk-service-framework');
 
 const { downloadAndExtractTarball, downloadFile } = require('../../../../shared/utils/download');

@@ -14,7 +14,9 @@
  *
  */
 const {
-	FileSystem: { removeDir: rmdir, removeFile: rm, getFilesAndDirs, stats },
+	Utils: {
+		fs: { rmdir, rm, getFilesAndDirs, stats },
+	},
 	Logger,
 } = require('lisk-service-framework');
 

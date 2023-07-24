@@ -15,7 +15,9 @@
  */
 
 const {
-	FileSystem: { createDir, exists },
+	Utils: {
+		fs: { mkdir, exists },
+	},
 	Logger,
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
@@ -99,10 +101,10 @@ const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
 								reject(err);
 							});
 						} else {
-							const errMessage = `Download failed with HTTP status code: ${res.statusCode} (${res.statusMessage})`;
+							const errMessage = `Download failed with HTTP status code: ${res.statusCode} (${res.statusMessage}).`;
 							console.error(errMessage);
 							if (res.statusCode === 404) {
-								reject(new Error(`NotFoundException: ${errMessage}`));
+								reject(new NotFoundException(errMessage));
 							} else {
 								reject(new Error(errMessage));
 							}
@@ -112,7 +114,7 @@ const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
 					});
 				});
 			} else {
-				reject(new Error('Failed to download checksum file.'));
+				reject(new Error('Failed to download the checksum file.'));
 			}
 		}).on('error', (err) => {
 			reject(new Error(err));
@@ -145,7 +147,7 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 
 const downloadSnapshot = async (snapshotUrl) => {
 	const directoryPath = path.dirname(snapshotFilePath);
-	if (!(await exists(directoryPath))) await createDir(directoryPath, { recursive: true });
+	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 	await downloadUnzipAndVerifyChecksum(snapshotUrl, snapshotFilePath);
 };
 

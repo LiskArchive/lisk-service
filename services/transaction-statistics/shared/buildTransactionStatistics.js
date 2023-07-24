@@ -20,12 +20,14 @@ const BigNumber = require('big-number');
 const {
 	Logger,
 	Queue,
-	MySQL: {
-		getDBConnection,
-		getTableInstance,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
+	DB: {
+		MySQL: {
+			getDBConnection,
+			getTableInstance,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+		},
 	},
 	Signals,
 } = require('lisk-service-framework');

@@ -17,7 +17,9 @@ const fs = require('fs');
 const tar = require('tar');
 
 const {
-	FileSystem: { exists, createDir, read, removeFile },
+	Utils: {
+		fs: { mkdir, exists, read, rm },
+	},
 	Logger,
 } = require('lisk-service-framework');
 
@@ -36,7 +38,7 @@ const extractTarBall = async (filePath, directoryPath) => new Promise((resolve, 
 module.exports = {
 	exists,
 	extractTarBall,
-	mkdir: createDir,
+	mkdir,
 	read,
-	rm: removeFile,
+	rm,
 };

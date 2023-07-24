@@ -13,17 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	FileSystem: { exists, createDir },
-	Logger,
-} = require('lisk-service-framework');
-
-const config = require('../../config');
+const Logger = require('../logger').get;
 
 const logger = Logger();
-
-const connectionPool = {};
-const tablePool = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
@@ -43,44 +35,9 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			});
 			table.primary(primaryKey);
 		})
-		.catch((err) => {
+		.catch(err => {
 			if (err.message.includes(`Table '${tableName}' already exists`)) return;
 			throw err;
-		});
-
-	return knex;
-};
-
-const createDBConnection = async (dbDataDir, tableName) => {
-	const knex = require('knex')({
-		client: 'better-sqlite3',
-		connection: {
-			filename: `./${dbDataDir}/${tableName}_db.sqlite3`,
-		},
-		useNullAsDefault: true,
-		pool: {
-			max: 100,
-			min: 2,
-		},
-		log: {
-			warn(message) { logger.warn(message); },
-			error(message) { logger.error(message); },
-			deprecate(message) { logger.warn(message); },
-			debug(message) { logger.debug(message); },
-		},
-	});
-
-	knex.select(1)
-		.on('query-error', error => {
-			logger.error(error.message);
-		})
-		.catch(err => {
-			if (err.code === 'ECONNREFUSED') {
-				logger.error(err.message);
-				logger.fatal('Unable to connect to the database, shutting down the process...');
-				process.exit(1);
-			}
-			logger.error(err.message);
 		});
 
 	return knex;
@@ -101,7 +58,8 @@ const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
 		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
-		'order', 'orSearch', 'count', 'whereNull', 'whereNotNull',
+		'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
+		'innerJoin',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -122,36 +80,14 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	const rows = [];
 	rawRows.forEach(item => {
 		const row = {};
-		Object.keys(schema).forEach(o => {
-			const val = item[o];
-			if (val || val === 0 || val === false) row[o] = getValue(cast(val, schema[o].type));
+		Object.keys(schema).forEach(column => {
+			const val = item[column];
+			const valType = schema[column].type;
+			if (`${column}` in item) row[column] = getValue(cast(val, valType));
 		});
 		rows.push(row);
 	});
 	return rows;
-};
-
-const getDBConnection = async (tableName, dbDataDir) => {
-	if (!connectionPool[tableName]) {
-		if (!(await exists(dbDataDir))) {
-			await createDir(dbDataDir, { recursive: true });
-		}
-		connectionPool[tableName] = await createDBConnection(dbDataDir, tableName);
-	}
-
-	const knex = connectionPool[tableName];
-	return knex;
-};
-
-const createTableIfNotExists = async (tableConfig) => {
-	const { tableName } = tableConfig;
-
-	if (!tablePool[tableName]) {
-		logger.info(`Creating schema for ${tableName}`);
-		const knex = await getDBConnection(tableName);
-		await loadSchema(knex, tableName, tableConfig);
-		tablePool[tableName] = true;
-	}
 };
 
 const startDBTransaction = async connection => connection.transaction();
@@ -160,14 +96,10 @@ const commitDBTransaction = async transaction => transaction.commit();
 
 const rollbackDBTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir) => {
+const getTableInstance = (tableConfig, knex) => {
 	const { tableName, primaryKey, schema } = tableConfig;
 
-	const knex = await getDBConnection(tableName, dbDataDir);
-
 	const createDefaultTransaction = async connection => startDBTransaction(connection);
-
-	await createTableIfNotExists(tableConfig);
 
 	const upsert = async (inputRows, trx) => {
 		let isDefaultTrx = false;
@@ -258,6 +190,8 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 				propBetween => {
 					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
 					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThanEqualTo' in propBetween) query.where(propBetween.property, '>=', propBetween.greaterThanEqualTo);
+					if ('lowerThanEqualTo' in propBetween) query.where(propBetween.property, '<=', propBetween.lowerThanEqualTo);
 					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
 					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
@@ -301,6 +235,21 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		if (params.orWhereIn) {
 			const { property, values } = params.orWhereIn;
 			query.orWhereIn(property, values);
+		}
+
+		if (params.leftOuterJoin) {
+			const { targetTable, leftColumn, rightColumn } = params.leftOuterJoin;
+			query.leftOuterJoin(targetTable, leftColumn, rightColumn);
+		}
+
+		if (params.rightOuterJoin) {
+			const { targetTable, leftColumn, rightColumn } = params.rightOuterJoin;
+			query.rightOuterJoin(targetTable, leftColumn, rightColumn);
+		}
+
+		if (params.innerJoin) {
+			const { targetTable, leftColumn, rightColumn } = params.innerJoin;
+			query.innerJoin(targetTable, leftColumn, rightColumn);
 		}
 
 		if (params.search) {
@@ -463,8 +412,12 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		return query;
 	};
 
-	const count = async (params = {}, column) => {
-		const trx = await createDefaultTransaction(knex);
+	const count = async (params = {}, column, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
 
 		if (!column) {
 			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
@@ -478,7 +431,7 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
-		return query
+		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
 				const [totalCount] = result;
@@ -488,20 +441,31 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
-	const rawQuery = async queryStatement => {
-		const trx = await createDefaultTransaction(knex);
-		return trx
-			.raw(queryStatement)
+	const rawQuery = async (queryStatement, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const query = trx.raw(queryStatement);
+
+		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
-				return result;
+				const [resultSet] = result;
+				return resultSet;
 			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
 	const increment = async (params, trx) => {
@@ -560,17 +524,9 @@ const getTableInstance = async (tableConfig, dbDataDir = config.cache.dbDataDir)
 };
 
 module.exports = {
-	default: getTableInstance,
-	getDBConnection,
-	getTableInstance,
 	startDBTransaction,
 	commitDBTransaction,
 	rollbackDBTransaction,
-	createTableIfNotExists,
-
-	// For backward compatibility
-	getDbConnection: getDBConnection,
-	startDbTransaction: startDBTransaction,
-	commitDbTransaction: commitDBTransaction,
-	rollbackDbTransaction: rollbackDBTransaction,
+	getTableInstance,
+	loadSchema,
 };

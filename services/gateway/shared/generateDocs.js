@@ -15,7 +15,6 @@
  */
 const {
 	Utils,
-	FileSystem: { exists },
 } = require('lisk-service-framework');
 const path = require('path');
 const BluebirdPromise = require('bluebird');
@@ -31,7 +30,7 @@ const createApiDocs = async (apiName, apiJsonPaths, registeredModuleNames) => {
 		registeredModuleNames,
 		async module => {
 			const dirPath = path.resolve(`${methodsDir}/modules/${module}`);
-			if (await exists(dirPath)) Object.assign(services, Utils.requireAllJs(dirPath));
+			if (await Utils.fs.exists(dirPath)) Object.assign(services, Utils.requireAllJs(dirPath));
 		},
 		{ concurrency: registeredModuleNames.length },
 	);

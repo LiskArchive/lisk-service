@@ -21,17 +21,20 @@ module.exports = {
 	CacheMemory: require('./src/cacheMemory'),
 	CacheRedis: require('./src/cacheRedis'),
 	CacheLRU: require('./src/cacheLru'),
-	FileSystem: require('./src/filesystem'),
 	Exceptions: require('./src/exceptions'),
 	HTTP: require('./src/http'),
 	Signals: require('./src/signals'),
 	SocketClient: require('./src/socketClient'),
 	Queue: require('./src/queue'),
 	mapper: require('./src/mapper'),
-	MySQL: require('./src/mysql'),
+	DB: {
+		MySQL: require('./src/database/mysql'),
+		Sqlite3: require('./src/database/sqlite3'),
+	},
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
 		Data: require('./src/data'),
+		fs: require('./src/fs'),
 		...(require('./src/data')),
 	},
 	Constants: {

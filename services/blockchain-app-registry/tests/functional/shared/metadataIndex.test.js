@@ -22,7 +22,9 @@ const {
 		startDBTransaction,
 		commitDBTransaction,
 	},
-	FileSystem: { createDir: mkdir, removeDir: rmdir, write },
+	Utils: {
+		fs: { mkdir, rmdir, write },
+	},
 } = require('lisk-service-framework');
 
 const {

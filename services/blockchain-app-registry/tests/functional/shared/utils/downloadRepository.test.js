@@ -17,10 +17,14 @@
 jest.setTimeout(15000);
 
 const {
-	FileSystem: { removeDir: rmdir, exists },
-	MySQL: {
-		KVStore: {
-			getKeyValueTable,
+	Utils: {
+		fs: { rmdir, exists },
+	},
+	DB: {
+		MySQL: {
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');

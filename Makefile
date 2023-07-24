@@ -9,17 +9,23 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
+start:
+	$(compose) start
+
+stop:
+	$(compose) stop
+
 restart: 
 	$(compose) restart
 
 backup-db:
-	$(compose) exec -T mysql mysqldump --no-create-db lisk -u root -ppassword > mysql_core_index.sql
+	$(compose) exec -T mysql-primary mysqldump --set-gtid-purged=OFF --no-create-db lisk -u root -ppassword > mysql_indexer_index.sql
 
 restore-db:
-	$(compose) exec -T mysql mysql lisk -u root -ppassword < mysql_core_index.sql
+	$(compose) exec -T mysql-primary mysql lisk -u root -ppassword < mysql_indexer_index.sql
 
 flush-db:
-	 echo "DROP DATABASE lisk; CREATE DATABASE lisk;" | $(compose) exec -T mysql mysql -u root -ppassword
+	echo "DROP DATABASE lisk; CREATE DATABASE lisk;" | $(compose) exec -T mysql-primary mysql -u root -ppassword
 
 stop-%:
 	$(compose) stop $*

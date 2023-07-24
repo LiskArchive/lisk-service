@@ -14,18 +14,20 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const path = require('path');
 const fs = require('fs');
 const {
-	FileSystem: {
-		stats,
-		createDir,
-		read,
-		write,
-		isFile,
-		existsFile,
-		isFilePathInDirectory,
-		removeFile,
+	Utils: {
+		fs: {
+			stats,
+			mkdir,
+			read,
+			write,
+			isFile,
+			getFiles,
+			existsFile,
+			isFilePathInDirectory,
+			rm,
+		},
 	},
 	Logger,
 	Exceptions: { ValidationException },
@@ -50,38 +52,44 @@ const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) =
 	);
 });
 
-const purge = (dirPath, days) => new Promise((resolve, reject) => {
+const purge = async (dirPath, days) => {
 	if (days === undefined) throw new ValidationException('days cannot be undefined');
-	fs.readdir(dirPath, async (err, files) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		await BluebirdPromise.map(
-			files,
-			async (file) => {
-				const stat = await stats(path.join(dirPath, file));
-				const currentTime = new Date().getTime();
-				const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
-				try {
-					if (currentTime > expirationTime) await removeFile(path.join(dirPath, file));
-				} catch (error) {
-					logger.error(err);
-				}
-			},
-			{ concurrency: files.length },
-		);
-		return resolve();
-	});
-});
+  
+	try {
+	  // Get the list of files in the directory using getFiles method
+	  const files = await getFiles(dirPath, { withFileTypes: true });
+  
+	  // Calculate the expiration time for each file and remove if expired
+	  await BluebirdPromise.map(
+		files,
+		async (filePath) => {
+		  const stat = await stats(filePath);
+		  const currentTime = new Date().getTime();
+		  const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
+  
+		  try {
+			if (currentTime > expirationTime) await rm(filePath);
+		  } catch (error) {
+			logger.error(error);
+		  }
+		},
+		{ concurrency: files.length },
+	  );
+  
+	  return;
+	} catch (err) {
+	  logger.error(err);
+	  throw err;
+	}
+  };
 
-const init = async (params) => createDir(params.dirPath);
+const init = async (params) => mkdir(params.dirPath);
 
 module.exports = {
 	init,
 	write,
 	read,
-	remove: removeFile,
+	remove: rm,
 	list,
 	purge,
 	existsFile,

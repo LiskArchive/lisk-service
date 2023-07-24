@@ -31,12 +31,15 @@ describe('Test indexTokensMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						upsert: (dataArray) => expect(dataArray[0].tokenID)
-							.toEqual(mockTokenMetaObj.tokens[0].tokenID),
-					}),
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							upsert: (dataArray) => expect(dataArray[0].tokenID)
+								.toEqual(mockTokenMetaObj.tokens[0].tokenID),
+						}),
+					},
 				},
 			};
 		});
@@ -57,11 +60,14 @@ describe('Test indexAppMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
-					}),
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
+						}),
+					},
 				},
 			};
 		});
@@ -77,40 +83,32 @@ describe('Test indexAppMeta method', () => {
 });
 
 describe('Test indexMetadataFromFile method', () => {
-	// beforeEach(() => jest.mock('../../../shared/utils/fs', () => {
-	// 	const actual = jest.requireActual('../../../shared/utils/fs');
-	// 	return {
-	// 		...actual,
-	// 		read: (filePath) => {
-	// 			if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-	// 			if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-	// 			throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
-	// 		},
-	// 		exists: () => true,
-	// 	};
-	// }));
-
 	it('should index app meta in db when called with valid app meta path', async () => {
 		jest.mock('lisk-service-framework', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
-					}),
-				},
-				FileSystem: {
-					...actual.FileSystem,
-					read: (filePath) => {
-						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
+						}),
 					},
-					exists: () => true,
+				},
+				Utils: {
+					...actual.Utils,
+					fs: {
+						...actual.Utils.fs,
+						read: (filePath) => {
+							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+							throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+						},
+						exists: () => true,
+					},
 				},
 			};
 		});
@@ -124,25 +122,31 @@ describe('Test indexMetadataFromFile method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						upsert: (data) => expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
-					}),
-					getDBConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
-				},
-				FileSystem: {
-					...actual.FileSystem,
-					read: (filePath) => {
-						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							upsert: (data) => expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
+						}),
+						getDBConnection: jest.fn(),
+						startDbTransaction: jest.fn(),
+						commitDbTransaction: jest.fn(),
+						rollbackDbTransaction: jest.fn(),
 					},
-					exists: () => true,
+				},
+				Utils: {
+					...actual.Utils,
+					fs: {
+						...actual.Utils.fs,
+						read: (filePath) => {
+							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+							throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+						},
+						exists: () => true,
+					},
 				},
 			};
 		});
@@ -164,14 +168,17 @@ describe('Test deleteAppMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						delete: (data) => expect(data).toEqual({
-							network: mockAppMetaObj.networkType,
-							chainName: mockAppMetaObj.chainName,
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							delete: (data) => expect(data).toEqual({
+								network: mockAppMetaObj.networkType,
+								chainName: mockAppMetaObj.chainName,
+							}),
 						}),
-					}),
+					},
 				},
 			};
 		});
@@ -193,11 +200,14 @@ describe('Test deleteTokensMeta method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
-					}),
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
+						}),
+					},
 				},
 			};
 		});
@@ -218,24 +228,30 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						delete: (data) => expect(data).toEqual({
-							network: mockAppMetaObj.networkType,
-							chainName: mockAppMetaObj.chainName,
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							delete: (data) => expect(data).toEqual({
+								network: mockAppMetaObj.networkType,
+								chainName: mockAppMetaObj.chainName,
+							}),
 						}),
-					}),
-				},
-				FileSystem: {
-					...actual.FileSystem,
-					read: (filePath) => {
-						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
 					},
-					exists: () => true,
+				},
+				Utils: {
+					...actual.Utils,
+					fs: {
+						...actual.Utils.fs,
+						read: (filePath) => {
+							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+							throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+						},
+						exists: () => true,
+					},
 				},
 			};
 		});
@@ -249,25 +265,31 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 			const actual = jest.requireActual('lisk-service-framework');
 			return {
 				...actual,
-				MySQL: {
-					...actual.MySQL,
-					getTableInstance: () => ({
-						delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
-					}),
-					getDBConnection: jest.fn(),
-					startDbTransaction: jest.fn(),
-					commitDbTransaction: jest.fn(),
-					rollbackDbTransaction: jest.fn(),
-				},
-				FileSystem: {
-					...actual.FileSystem,
-					read: (filePath) => {
-						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+				DB: {
+					...actual.DB,
+					MySQL: {
+						...actual.DB.MySQL,
+						getTableInstance: () => ({
+							delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
+						}),
+						getDBConnection: jest.fn(),
+						startDbTransaction: jest.fn(),
+						commitDbTransaction: jest.fn(),
+						rollbackDbTransaction: jest.fn(),
 					},
-					exists: () => true,
+				},
+				Utils: {
+					...actual.Utils,
+					fs: {
+						...actual.Utils.fs,
+						read: (filePath) => {
+							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+							throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+						},
+						exists: () => true,
+					},
 				},
 			};
 		});
@@ -297,28 +319,35 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(),
-					getDBConnection: jest.fn(),
-					startDBTransaction: jest.fn(),
-					commitDBTransaction: jest.fn(),
-					rollbackDBTransaction: jest.fn(),
-				},
-				FileSystem: {
-					...actualLiskServiceFramework.FileSystem,
-					getDirectories: () => ['Lisk'],
-					getFiles: () => [
-						mockAppMetaPath,
-						mockTokenMetaPath,
-					],
-					read: (filePath) => {
-						if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
-						if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
-
-						throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+				DB: {
+					...actualLiskServiceFramework.DB,
+					MySQL: {
+						getTableInstance: jest.fn(),
+						getDBConnection: jest.fn(),
+						startDBTransaction: jest.fn(),
+						commitDBTransaction: jest.fn(),
+						rollbackDBTransaction: jest.fn(),
 					},
-					exists: () => true,
 				},
+				Utils: {
+					...actualLiskServiceFramework.Utils,
+					fs: {
+						...actualLiskServiceFramework.Utils.fs,
+						getDirectories: () => ['Lisk'],
+						getFiles: () => [
+							mockAppMetaPath,
+							mockTokenMetaPath,
+						],
+						read: (filePath) => {
+							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
+							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
+
+							throw new Error(`Invalid file path passed to fs.read. filePath:${filePath}`);
+						},
+						exists: () => true,
+					},
+				},
+
 			};
 		});
 

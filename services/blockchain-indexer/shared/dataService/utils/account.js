@@ -25,7 +25,9 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const {
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const accountsTableSchema = require('../../database/schema/accounts');

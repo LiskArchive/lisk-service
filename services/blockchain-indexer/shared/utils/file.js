@@ -14,7 +14,9 @@
  *
  */
 const {
-	FileSystem: { getDirectories },
+	Utils: {
+		fs: { getDirectories },
+	},
 } = require('lisk-service-framework');
 
 const camelCase = require('camelcase');

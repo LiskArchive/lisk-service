@@ -14,7 +14,9 @@
  *
  */
 const {
-	FileSystem: { exists, removeDir: rmdir },
+	Utils: {
+		fs: { exists, rmdir },
+	},
 } = require('lisk-service-framework');
 
 const fs = require('fs');

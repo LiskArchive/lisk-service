@@ -18,21 +18,25 @@ const path = require('path');
 const { Octokit } = require('octokit');
 
 const {
-	FileSystem: {
-		exists,
-		createDir: mkdir,
-		getDirectories,
-		removeDir: rmdir,
-		removeFile: rm,
-		moveFile: mv,
+	Utils: {
+		fs: {
+			exists,
+			mkdir,
+			getDirectories,
+			rmdir,
+			rm,
+			mv,
+		},
 	},
 	Logger,
-	MySQL: {
-		getDBConnection,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
-		KVStore: { configureKeyValueTable, getKeyValueTable },
+	DB: {
+		MySQL: {
+			getDBConnection,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+			KVStore: { configureKeyValueTable, getKeyValueTable },
+		},
 	},
 	Signals,
 } = require('lisk-service-framework');

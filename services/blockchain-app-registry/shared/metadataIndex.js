@@ -17,14 +17,18 @@ const BluebirdPromise = require('bluebird');
 const path = require('path');
 
 const {
-	FileSystem: { exists, getFiles, read, getDirectories },
+	Utils: {
+		fs: { exists, getFiles, read, getDirectories },
+	},
 	Logger,
-	MySQL: {
-		getTableInstance,
-		getDBConnection,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
+	DB: {
+		MySQL: {
+			getTableInstance,
+			getDBConnection,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+		},
 	},
 } = require('lisk-service-framework');
 

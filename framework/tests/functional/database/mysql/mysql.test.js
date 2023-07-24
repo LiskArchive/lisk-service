@@ -19,11 +19,11 @@ const {
 	commitDBTransaction,
 	getDBConnection,
 	rollbackDBTransaction,
-} = require('../../../src/mysql');
+} = require('../../../../src/database/mysql');
 
-const blocksTableSchema = require('../../constants/blocksSchema');
-const transactionsSchema = require('../../constants/transactionsSchema');
-const compositeKeySchema = require('../../constants/compositeKeySchema');
+const blocksTableSchema = require('../../../constants/blocksSchema');
+const transactionsSchema = require('../../../constants/transactionsSchema');
+const compositeKeySchema = require('../../../constants/compositeKeySchema');
 
 const tableName = 'functional_test';
 const transactionsTableName = 'transactions_functional_test';
@@ -37,8 +37,8 @@ const getBlocksTable = () => getTableInstance(blocksTableSchema);
 const getCompositeKeyTable = () => getTableInstance(compositeKeySchema);
 const getTransactionsTable = () => getTableInstance(transactionsSchema);
 
-const { emptyBlock, nonEmptyBlock } = require('../../constants/blocks');
-const { tokenTransferTransaction } = require('../../constants/transactions');
+const { emptyBlock, nonEmptyBlock } = require('../../../constants/blocks');
+const { tokenTransferTransaction } = require('../../../constants/transactions');
 
 describe('Test MySQL', () => {
 	let blocksTable;

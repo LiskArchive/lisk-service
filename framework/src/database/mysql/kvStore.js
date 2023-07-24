@@ -15,7 +15,7 @@
  */
 const { getTableInstance, CONN_ENDPOINT_DEFAULT } = require('./mysql');
 const keyValueStoreSchema = require('./schema/kvStore');
-const Logger = require('../logger').get;
+const Logger = require('../../logger').get;
 
 const logger = Logger();
 

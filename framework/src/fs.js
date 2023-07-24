@@ -20,7 +20,7 @@ const Logger = require('./logger').get;
 
 const logger = Logger();
 
-const createDir = (dirPath, options = { recursive: true }) => new Promise((resolve, reject) => {
+const mkdir = (dirPath, options = { recursive: true }) => new Promise((resolve, reject) => {
 	logger.debug(`Creating directory: ${dirPath}`);
 	return fs.mkdir(
 		dirPath,
@@ -68,7 +68,7 @@ const isFilePathInDirectory = (filePath, directory) => {
 	return true;
 };
 
-const removeFile = async (deletePath, options) => new Promise(resolve => {
+const rm = async (deletePath, options) => new Promise(resolve => {
 	logger.trace(`Removing directory: ${deletePath}.`);
 	fs.rm(
 		deletePath,
@@ -85,7 +85,7 @@ const removeFile = async (deletePath, options) => new Promise(resolve => {
 	);
 });
 
-const removeDir = async (directoryPath, options) => removeFile(
+const rmdir = async (directoryPath, options) => rm(
 	directoryPath,
 	{
 		...options,
@@ -193,7 +193,7 @@ const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true })
 	return [...subDirectories, ...filesInDirectory];
 };
 
-const moveFile = async (oldName, newName) => new Promise((resolve, reject) => {
+const mv = async (oldName, newName) => new Promise((resolve, reject) => {
 	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
 	fs.rename(oldName, newName, err => {
 		if (err) {
@@ -208,16 +208,16 @@ const moveFile = async (oldName, newName) => new Promise((resolve, reject) => {
 
 module.exports = {
 	// Directory operations
-	createDir,
-	removeDir,
+	mkdir,
+	rmdir,
 
 	// File operations
 	read,
 	write,
+	rm,
+	mv,
 	isFile,
 	existsFile,
-	removeFile,
-	moveFile,
 	isFilePathInDirectory,
 
 	// Fetching

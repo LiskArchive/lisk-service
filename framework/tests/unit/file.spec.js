@@ -14,94 +14,159 @@
  *
  */
 const path = require('path');
-const fs = require('fs');
+const fsPromises = require('node:fs/promises');
 const {
-	createDir,
+	mkdir,
+	rmdir,
+	rm,
 	write,
 	read,
-	removeFile,
+	mv,
+	stats,
+	getFiles,
+	getDirectories,
 	exists,
 	getFilesAndDirs,
 	isFile,
-	isFilePathInDirectory,
-} = require('../../src/filesystem');
+} = require('../../src/fs');
 
-describe('Test filesystem interface', () => {
-	let dirPath;
-	const testData = 'test';
+const testData = {
+	chain_name: 'testApp',
+	chain_id: 123,
+	network: 'mainnet',
+};
 
-	beforeAll(async () => {
-		// Test directory
-		dirPath = `${path.dirname(__dirname)}/testDir`;
-	});
+describe('Test filesystem util methods', () => {
+	const dirPath = `${path.dirname(__dirname)}/testDir`;
+	const filePath = `${dirPath}/chain.json`;
 
 	afterAll(async () => {
 		// Remove test directory
-		await fs.rmdirSync(dirPath, { recursive: true, force: true });
+		await rmdir(dirPath, { recursive: true, force: true });
 	});
 
-	it('should create a directory when calling createDir() method', async () => {
-		await createDir(dirPath);
-		const isExists = await exists(dirPath);
-		expect(isExists).toBe(true);
+	it('mkdir() method', async () => {
+		expect(exists(dirPath)).resolves.toBe(false);
+		await mkdir(dirPath);
+		expect(exists(dirPath)).resolves.toBe(true);
 	});
 
-	it('should write data to a file when calling write() method', async () => {
-		const filePath = `${dirPath}/testfile.csv`;
+	it('write() method', async () => {
+		expect(exists(filePath)).resolves.toBe(false);
 
 		// Write data into the file
-		await write(filePath, testData);
+		await write(filePath, JSON.stringify(testData));
 
 		// Verify if data is written into the file
-		expect((fs.statSync(filePath)).size).toBeGreaterThan(0);
+		expect(exists(filePath)).resolves.toBe(true);
+
+		const fileStats = await stats(filePath);
+		expect(fileStats.size).toBeGreaterThan(0);
 	});
 
-	it('should return the data from a file when calling read() method', async () => {
-		const filePath = `${dirPath}/testfile.csv`;
-
+	it('read() method', async () => {
+		expect(exists(filePath)).resolves.toBe(true);
 		// Read data from file
 		const result = await read(filePath);
-		expect(result).toEqual(testData);
+		expect(result).toEqual(JSON.stringify(testData));
 	});
 
-	it('should remove a file when calling removeFile() method', async () => {
-		const filePath = `${dirPath}/testfile.csv`;
-		let isExists = await exists(filePath);
-		expect(isExists).toBe(true);
-
-		await removeFile(filePath);
-		isExists = await exists(filePath);
-		expect(isExists).toBe(false);
+	it('getDirectories() method', async () => {
+		const availableDirs = await getDirectories(`${path.dirname(__dirname)}`);
+		expect(availableDirs.length).toBeGreaterThanOrEqual(1);
+		expect(availableDirs).toContain(dirPath);
 	});
 
-	it('should return the list of files in a directory when calling getFilesAndDirs() method', async () => {
-		const filePath1 = `${dirPath}/testfile1.csv`;
-		const filePath2 = `${dirPath}/testfile2.csv`;
+	it('getFiles() method', async () => {
+		const availableFiles = await getFiles(dirPath);
+		expect(availableFiles.length).toBeGreaterThanOrEqual(1);
+		expect(availableFiles).toContain(filePath);
+	});
 
-		await write(filePath1, testData);
-		await write(filePath2, testData);
+	it('getFilesAndDirs() method', async () => {
+		const subDirPath = path.join(dirPath, 'testDir');
+		const subFilePath = path.join(dirPath, 'testFile');
+		await mkdir(subDirPath);
+		await write(subFilePath, JSON.stringify(testData));
 
-		const files = await getFilesAndDirs(dirPath);
-		expect(files.length).toBe(2);
+		const availableFilesAndDirs = await getFilesAndDirs(dirPath);
+		expect(availableFilesAndDirs).toContain(subDirPath);
+		expect(availableFilesAndDirs).toContain(subFilePath);
+	});
+
+	it('mv() method', async () => {
+		const subDirPath = path.join(dirPath, 'test');
+		const subDirPathNew = path.join(dirPath, 'testNew');
+
+		expect(exists(subDirPath)).resolves.toBe(false);
+		await mkdir(subDirPath);
+		expect(exists(subDirPath)).resolves.toBe(true);
+
+		expect(exists(subDirPathNew)).resolves.toBe(false);
+		await mv(subDirPath, subDirPathNew);
+		expect(exists(subDirPathNew)).resolves.toBe(true);
 	});
 
 	it('should return false for a directory when calling isFile() method', async () => {
 		expect(await isFile(dirPath)).toBe(false);
 
-		const filePath = `${dirPath}/testfile.csv`;
-		await write(filePath, testData);
-		expect(await isFile(filePath)).toBe(true);
+		const tempFilePath = `${dirPath}/testfile.csv`;
+		await write(tempFilePath, JSON.stringify(testData));
+		expect(await isFile(tempFilePath)).toBe(true);
+	});
+});
+
+describe('Test rm method', () => {
+	const dirPath = `${__dirname}/temp`;
+
+	beforeEach(() => mkdir(dirPath));
+	afterAll(() => rmdir(dirPath));
+
+	it('should delete file when called with existing file', async () => {
+		// Create file and check existance
+		const tempFilePath = `${dirPath}/temp.txt`;
+		await fsPromises.writeFile(tempFilePath, 'Hello content!');
+		expect(await exists(tempFilePath)).toEqual(true);
+
+		// Delete file
+		const response = await rm(tempFilePath);
+		expect(response).toEqual(true);
+		expect(await exists(tempFilePath)).toEqual(false);
 	});
 
-	it('should return true for file path within the directory', () => {
-		const filePath = `${dirPath}/testfile.csv`;
-		const result = isFilePathInDirectory(filePath, dirPath);
-		expect(result).toBe(true);
+	it('should return false when called with non existing file', async () => {
+		const nonExistingFile = 'sdfsd/werwerwe/sdfsdfs.txt';
+		expect(await exists(nonExistingFile)).toEqual(false);
+
+		const response = await rm(nonExistingFile);
+		expect(response).toEqual(false);
+		expect(await exists(nonExistingFile)).toEqual(false);
 	});
 
-	it('should return false for file path outside the directory', () => {
-		const filePath = `${dirPath}/../../testfile.csv`;
-		const result = isFilePathInDirectory(filePath, dirPath);
-		expect(result).toBe(false);
+	it('should return false when called with a directory path', async () => {
+		expect(await exists(dirPath)).toEqual(true);
+		const response = await rm(dirPath);
+		expect(response).toEqual(false);
+		expect(await exists(dirPath)).toEqual(true);
+	});
+
+	it('should delete directory when called with a directory path and recursive:true', async () => {
+		expect(await exists(dirPath)).toEqual(true);
+		const response = await rm(dirPath, { recursive: true });
+		expect(response).toEqual(true);
+		expect(await exists(dirPath)).toEqual(false);
+	});
+
+	it('should return false when called with empty string', async () => {
+		const response = await rm('');
+		expect(response).toEqual(false);
+	});
+
+	it('should throw error when called with null', async () => {
+		expect(() => rm(null)).rejects.toThrow();
+	});
+
+	it('should throw error when called with undefined', async () => {
+		expect(() => rm(undefined)).rejects.toThrow();
 	});
 });
