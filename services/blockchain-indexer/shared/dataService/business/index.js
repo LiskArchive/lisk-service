@@ -86,6 +86,7 @@ const {
 	getEvents,
 	getEventsByHeight,
 	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
 	getEventsByBlockID,
 	deleteEventsFromCache,
 } = require('./events');
@@ -135,6 +136,7 @@ module.exports = {
 	getEvents,
 	getEventsByHeight,
 	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
 	getEventsByBlockID,
 	deleteEventsFromCache,
 

@@ -40,7 +40,7 @@ const {
 	getEventsByHeight,
 	cacheEventsByBlockID,
 	getEventsByBlockID,
-	deleteEventsFromCache,
+	deleteEventsFromCacheByBlockID,
 	getTransactionsByBlockID,
 } = require('../dataService');
 
@@ -375,10 +375,12 @@ const deleteIndexedBlocks = async job => {
 
 				// Invalidate cached events for this block
 				// This must be done after processing all event related calculations
-				await deleteEventsFromCache(block.height);
-			});
+				await deleteEventsFromCacheByBlockID(block.id);
+			},
+			{ concurrency: 1 },
+		);
 
-		await blocksTable.deleteByPrimaryKey(blockIDs);
+		await blocksTable.deleteByPrimaryKey(blockIDs, dbTrx);
 		await commitDBTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	} catch (error) {
@@ -447,14 +449,18 @@ const indexNewBlock = async block => {
 		if (blockInfo && blockInfo.id !== block.id) {
 			// Fork detected
 			const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, ['height']);
-			const blocksToRemove = await blocksTable.find({
-				propBetweens: [{
-					property: 'height',
-					from: block.height + 1,
-					to: highestIndexedBlock.height,
-				}],
-				limit: highestIndexedBlock.height - block.height,
-			}, ['id']);
+			const blocksToRemove = await blocksTable.find(
+				{
+					propBetweens: [{
+						property: 'height',
+						from: block.height + 1,
+						to: highestIndexedBlock.height,
+					}],
+					sort: 'height:desc',
+					limit: highestIndexedBlock.height - block.height,
+				},
+				['id'],
+			);
 			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 		}
 	}

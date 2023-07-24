@@ -43,6 +43,7 @@ const updateAccountBalances = async (address) => {
 };
 
 const accountBalanceIndexProcessor = async job => updateAccountBalances(job.data.address);
+
 const accountBalanceIndexQueue = Queue(
 	config.endpoints.cache,
 	config.queue.accountBalanceIndex.name,

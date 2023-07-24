@@ -78,10 +78,10 @@ const getEventsByBlockID = async (blockID) => {
 
 	// Get from DB incase of cache miss
 	const eventsTable = await getEventsTable();
-	const dbEventStrs = await eventsTable.find({ blockID }, ['eventStr']);
+	const dbEventStrings = await eventsTable.find({ blockID }, ['eventStr']);
 
-	if (dbEventStrs.length) {
-		const dbEvents = dbEventStrs
+	if (dbEventStrings.length) {
+		const dbEvents = dbEventStrings
 			.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
 		eventCacheByBlockID.set(blockID, JSON.stringify(dbEvents));
 		return dbEvents;
@@ -95,6 +95,8 @@ const cacheEventsByBlockID = async (blockID, events) => {
 };
 
 const deleteEventsFromCache = async (height) => eventCache.delete(height);
+
+const deleteEventsFromCacheByBlockID = async (blockID) => eventCacheByBlockID.delete(blockID);
 
 const getEvents = async (params) => {
 	const blocksTable = await getBlocksTable();
@@ -205,6 +207,7 @@ module.exports = {
 	getEvents,
 	getEventsByHeight,
 	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
 	getEventsByBlockID,
 	deleteEventsFromCache,
 };
