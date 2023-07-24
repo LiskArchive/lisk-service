@@ -15,17 +15,16 @@
  */
 const { Utils } = require('lisk-service-framework');
 
-const requestAll = async (fn, method, params, limit) => {
+const requestAll = async (fn, params, limit) => {
 	const maxAmount = limit || 1e9;
 	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(method,
-		{
-			...params,
-			...{
-				limit: oneRequestLimit,
-				offset: 0,
-			},
-		});
+	const firstRequest = await fn({
+		...params,
+		...{
+			limit: oneRequestLimit,
+			offset: 0,
+		},
+	});
 	const totalResponse = firstRequest;
 	if (!totalResponse.error) {
 		if (maxAmount > oneRequestLimit) {
@@ -33,7 +32,7 @@ const requestAll = async (fn, method, params, limit) => {
 				const curOffset = oneRequestLimit * page;
 
 				/* eslint-disable-next-line no-await-in-loop */
-				const result = await fn(method, {
+				const result = await fn({
 					...params,
 					...{
 						limit: Math.min(oneRequestLimit, maxAmount - curOffset),

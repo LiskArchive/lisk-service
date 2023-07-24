@@ -15,17 +15,22 @@
  */
 const requestAll = require('../../../shared/requestAll');
 
-const getResponseOfLength = (n, singleRequestLimit) => new Array(n).fill().map((e, i) => ({
-	extra_param: 'extra_value',
-	offset: singleRequestLimit * i,
-	limit: singleRequestLimit,
-}));
+const getResponseOfLength = (n, singleRequestLimit) => ({
+	data: new Array(n).fill().map((e, i) => ({
+		extra_param: 'extra_value',
+		offset: singleRequestLimit * i,
+		limit: singleRequestLimit,
+	})),
+	meta: {
+		total: singleRequestLimit - 1,
+	},
+});
 
 describe('Test requestAll method', () => {
 	const func = async (params) => ({
 		data: [params],
 		meta: {
-			total: 1000,
+			total: params.limit - 1,
 		},
 	});
 
@@ -45,7 +50,7 @@ describe('Test requestAll method', () => {
 				total: singleRequestLimit - 1,
 			},
 		});
-		const response = await requestAll(func2, { limit: singleRequestLimit, extra_param: 'extra_value' }, singleRequestLimit * 10);
+		const response = await requestAll(func2, { limit: singleRequestLimit, extra_param: 'extra_value' }, 10);
 		expect(response).toEqual(expectedResponse);
 	});
 

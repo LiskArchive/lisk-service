@@ -24,8 +24,10 @@ const {
 
 const config = require('../../../config');
 const fieldMappings = require('../../../shared/csvFieldMappings');
+const { PARTIAL_FILENAME } = require('../../../shared/regex');
 
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
+const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/requestAll`);
 
 jest.mock('lisk-service-framework', () => {
 	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
@@ -46,7 +48,6 @@ jest.mock('lisk-service-framework', () => {
 
 beforeEach(() => jest.resetModules());
 
-const partialFileNameRegex = /^\b(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.json\b$/g;
 const address = 'lskeqretdgm6855pqnnz69ahpojk5yxfsv2am34et';
 const publicKey = 'b7fdfc991c52ad6646159506a8326d4203c868bd3f16b8043c8e4e034346e581';
 const chainID = '04000000';
@@ -112,19 +113,28 @@ describe('Test getConversionFactor method', () => {
 
 describe('Test getOpeningBalance method', () => {
 	it('should return opening balance when called with valid address', async () => {
+		/* eslint-disable-next-line import/no-dynamic-require */
+		const requestAll = require(mockedRequestAllFilePath);
+
+		jest.mock(mockedRequestAllFilePath, () => jest.fn());
+
+		const mockUserSubstore = [{
+			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+			availableBalance: '100000000000000',
+			lockedBalances: [],
+			tokenID: '0400000000000000',
+		}];
+
+		requestAll.mockReturnValue({
+			userSubstore: mockUserSubstore,
+		});
+
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
 			return {
 				...actual,
 				requestConnector() {
-					return {
-						userSubstore: [{
-							address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-							availableBalance: '100000000000000',
-							lockedBalances: [],
-							tokenID: '0400000000000000',
-						}],
-					};
+					return { token: { userSubstore: mockUserSubstore } };
 				},
 			};
 		});
@@ -331,7 +341,7 @@ describe('Test getPartialFilenameFromParams method', () => {
 		const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
 		expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
 		expect(partialFilename).toContain(address);
-		expect(partialFilename).toMatch(partialFileNameRegex);
+		expect(partialFilename).toMatch(PARTIAL_FILENAME);
 	});
 
 	it('should return partial filename when called with publicKey', async () => {
@@ -339,7 +349,7 @@ describe('Test getPartialFilenameFromParams method', () => {
 		const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
 		expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
 		expect(partialFilename).toContain(address);
-		expect(partialFilename).toMatch(partialFileNameRegex);
+		expect(partialFilename).toMatch(PARTIAL_FILENAME);
 	});
 });
 

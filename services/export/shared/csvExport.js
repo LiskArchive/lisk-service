@@ -33,7 +33,6 @@ const {
 
 const { getCurrentChainID, resolveReceivingChainID } = require('./helpers/chain');
 const { MODULE, COMMAND, EVENT, MODULE_SUB_STORE } = require('./helpers/constants');
-const { getFeeEstimates } = require('./helpers/feeEstimates');
 
 const {
 	parseJsonToCsv,
@@ -41,7 +40,6 @@ const {
 
 const {
 	requestIndexer,
-	requestGateway,
 	requestConnector,
 	requestAppRegistry,
 } = require('./helpers/request');
@@ -72,12 +70,13 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
+let tokenModuleData;
 
 const getTransactions = async (params) => requestIndexer('transactions', params);
 
-const isBlockchainIndexReady = async () => requestGateway('isBlockchainIndexReady');
+const isBlockchainIndexReady = async () => requestIndexer('isBlockchainFullyIndexed');
 
-const getFirstBlock = async () => requestIndexer(
+const getGenesisBlock = async () => requestIndexer(
 	'blocks',
 	{
 		limit: 1,
@@ -144,10 +143,19 @@ const getConversionFactor = async (chainID) => {
 };
 
 const getOpeningBalance = async (address) => {
-	const tokenModuleData = await requestConnector(
-		'getGenesisAssetByModule',
-		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-	);
+	if (!tokenModuleData) {
+		const genesisBlockAssetsLength = await requestConnector(
+			'getGenesisAssetsLength',
+			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+		);
+		const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
+
+		tokenModuleData = await requestAll(
+			requestConnector.bind(null, 'getGenesisAssetByModule'),
+			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+			totalUsers,
+		);
+	}
 
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
 	const filteredAccount = userSubStoreInfos.find(e => e.address === address);
@@ -160,7 +168,7 @@ const getOpeningBalance = async (address) => {
 
 const getMetadata = async (address, chainID) => ({
 	currentChainID: chainID,
-	FeeTokenID: (getFeeEstimates()).feeTokenID,
+	feeTokenID: await requestConnector('getFeeTokenID'),
 	dateFormat: config.csv.dateFormat,
 	timeFormat: config.csv.timeFormat,
 	conversionFactor: await getConversionFactor(chainID),
@@ -173,7 +181,7 @@ const validateIfAccountHasTransactions = async (address) => {
 };
 
 const getDefaultStartDate = async () => {
-	const { data: [block] } = await getFirstBlock();
+	const { data: [block] } = await getGenesisBlock();
 	return moment(block.timestamp * 1000).format(DATE_FORMAT);
 };
 
@@ -213,7 +221,7 @@ const getCsvFilenameFromParams = async (params) => {
 
 const getCsvFileUrlFromParams = async (params) => {
 	const filename = await getCsvFilenameFromParams(params);
-	const url = `${config.csv.baseUrl}?filename=${filename}`;
+	const url = `${config.csv.baseURL}?filename=${filename}`;
 	return url;
 };
 
@@ -307,7 +315,7 @@ const exportTransactionsCSV = async (job) => {
 			const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
 			const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
 			const timestamp = `${fromTimestampPast}:${toTimestampPast}`;
-			const transactions = await requestAll(
+			const { data: transactions } = await requestAll(
 				getTransactionsInAsc, { ...params, timestamp },
 				MAX_NUM_TRANSACTIONS,
 			);

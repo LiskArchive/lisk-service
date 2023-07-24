@@ -28,12 +28,10 @@ const requestRpc = async (service, method, params = {}) => {
 const requestAppRegistry = async (method, params) => requestRpc('app-registry', method, params);
 const requestConnector = async (method, params) => requestRpc('connector', method, params);
 const requestIndexer = async (method, params) => requestRpc('indexer', method, params);
-const requestGateway = async (method, params) => requestRpc('gateway', method, params);
 
 module.exports = {
 	setAppContext,
 	requestIndexer,
-	requestGateway,
 	requestConnector,
 	requestAppRegistry,
 };

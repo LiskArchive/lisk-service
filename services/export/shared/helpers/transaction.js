@@ -18,7 +18,7 @@ const { MODULE, COMMAND } = require('./constants');
 const normalizeTransactionAmount = (address, tx) => {
 	if (!('amount' in tx.params)) return String(0);
 
-	const isReclaim = tx.moduleCommand === `${MODULE.LEGACY}:${COMMAND.RECLAIM_LISK}`;
+	const isReclaim = tx.moduleCommand === `${MODULE.LEGACY}:${COMMAND.RECLAIM_LSK}`;
 	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
 		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`;
 

@@ -33,7 +33,7 @@ const transactionMappings = [
 
 const metadataMappings = [
 	{ label: 'Current chain ID', value: 'currentChainID' },
-	{ label: 'Fee token ID', value: 'FeeTokenID' },
+	{ label: 'Fee token ID', value: 'feeTokenID' },
 	{ label: 'Date format', value: 'dateFormat' },
 	{ label: 'Time format', value: 'timeFormat' },
 	{ label: 'Conversion factor', value: 'conversionFactor' },
