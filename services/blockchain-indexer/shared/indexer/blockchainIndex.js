@@ -291,12 +291,6 @@ const indexBlock = async job => {
 	}
 };
 
-const updateBlockIndex = async job => {
-	const blocksTable = await getBlocksTable();
-	const { blocks } = job.data;
-	await blocksTable.upsert(blocks);
-};
-
 const deleteIndexedBlocks = async job => {
 	const { blocks } = job.data;
 	const blockIDs = blocks.map(b => b.id).join(', ');
@@ -409,12 +403,7 @@ const indexBlocksQueue = Queue(
 	indexBlock,
 	config.queue.indexBlocks.concurrency,
 );
-const updateBlockIndexQueue = Queue(
-	config.endpoints.cache,
-	config.queue.updateBlockIndex.name,
-	updateBlockIndex,
-	config.queue.updateBlockIndex.concurrency,
-);
+
 const deleteIndexedBlocksQueue = Queue(
 	config.endpoints.cache,
 	config.queue.deleteIndexedBlocks.name,
@@ -442,14 +431,17 @@ const indexNewBlock = async block => {
 		// Index if doesn't exist, or update if it isn't set to final
 		await indexBlocksQueue.add({ height: block.height });
 
-		// Update block finality status
+		// Update finality status for the parent blocks
 		const finalizedBlockHeight = await getFinalizedHeight();
-		const nonFinalBlocks = await blocksTable.find({ isFinal: false, limit: 1000 },
-			Object.keys(blocksTableSchema.schema));
-		await updateBlockIndexQueue.add({
-			blocks: nonFinalBlocks
-				.filter(b => b.height <= finalizedBlockHeight)
-				.map(b => ({ ...b, isFinal: true })),
+		await blocksTable.update({
+			where: {
+				isFinal: false,
+				propBetweens: [{
+					property: 'height',
+					to: finalizedBlockHeight,
+				}],
+			},
+			updates: { isFinal: true },
 		});
 
 		if (blockInfo && blockInfo.id !== block.id) {

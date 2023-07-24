@@ -110,10 +110,6 @@ config.queue = {
 		name: 'PendingAccountAddressUpdates',
 		concurrency: 64,
 	},
-	updateBlockIndex: {
-		name: 'UpdateBlockIndexQueue',
-		concurrency: 1,
-	},
 };
 
 config.operations = {
