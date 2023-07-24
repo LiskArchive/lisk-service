@@ -99,11 +99,11 @@ module.exports = {
 	tokenTransfer: {
 		toSelf: {
 			transaction: selfTokenTransferTransaction,
-			sender: selfTokenTransferTransaction.senderId,
+			sender: selfTokenTransferTransaction.sender.address,
 		},
 		toOther: {
 			transaction: tokenTransferTransaction,
-			sender: tokenTransferTransaction.senderId,
+			sender: tokenTransferTransaction.sender.address,
 		},
 	},
 	interval,
