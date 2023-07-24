@@ -60,11 +60,15 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 // CSV output
-config.csv = {};
-config.csv.delimiter = ';';
-config.csv.dateFormat = 'YYYY-MM-DD';
-config.csv.timeFormat = 'hh:mm:ss';
-config.csv.baseURL = '/api/v3/export/download';
+config.excel = {};
+config.excel.delimiter = ';';
+config.excel.dateFormat = 'YYYY-MM-DD';
+config.excel.timeFormat = 'hh:mm:ss';
+config.excel.baseURL = '/api/v3/export/download';
+config.excel.sheets = {
+	TRANSACTION_HISTORY: 'Transaction History',
+	METADATA: 'Metadata',
+};
 
 /**
  * Message queue options

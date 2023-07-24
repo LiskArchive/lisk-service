@@ -15,16 +15,16 @@
  */
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_LISK32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const CSV_EXPORT_FILENAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
+const EXCEL_EXPORT_FILENAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/;
 const PARTIAL_FILENAME = /^\b(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.json\b$/g;
 const STANDARDIZED_INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)):((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\b$/g;
-const CAV_FILE_URL = /^^\/api\/v3\/export\/download\?filename=transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/g;
+const EXCEL_FILE_URL = /^^\/api\/v3\/export\/download\?filename=transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx$/g;
 
 module.exports = {
 	PUBLIC_KEY,
 	ADDRESS_LISK32,
-	CSV_EXPORT_FILENAME,
+	EXCEL_EXPORT_FILENAME,
 	PARTIAL_FILENAME,
 	STANDARDIZED_INTERVAL,
-	CAV_FILE_URL,
+	EXCEL_FILE_URL,
 };

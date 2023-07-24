@@ -18,12 +18,11 @@ const { resolve } = require('path');
 
 const {
 	interval,
-	generateExcpectedCsv,
 	tokenTransfer,
 } = require('../../constants/csvExport');
 
 const config = require('../../../config');
-const fieldMappings = require('../../../shared/csvFieldMappings');
+const fieldMappings = require('../../../shared/excelFieldMappings');
 const { PARTIAL_FILENAME } = require('../../../shared/regex');
 
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
@@ -48,8 +47,8 @@ jest.mock('lisk-service-framework', () => {
 
 beforeEach(() => jest.resetModules());
 
-const address = 'lskeqretdgm6855pqnnz69ahpojk5yxfsv2am34et';
-const publicKey = 'b7fdfc991c52ad6646159506a8326d4203c868bd3f16b8043c8e4e034346e581';
+const address = 'lskpg7qukha2nmu9483huwk8oty7q3pyevh3bohr4';
+const publicKey = '86cbecb2a176934e454f63e7ffa05783be6960d90002c5558dfd31397cd8f020';
 const chainID = '04000000';
 const partialFilenameExtension = '.json';
 
@@ -89,7 +88,7 @@ describe('Test getConversionFactor method', () => {
 			};
 		});
 
-		const { getConversionFactor } = require('../../../shared/csvExport');
+		const { getConversionFactor } = require('../../../shared/transactionsExport');
 
 		const conversionFactor = await getConversionFactor(validChainID);
 		expect(conversionFactor).toEqual(8);
@@ -106,7 +105,7 @@ describe('Test getConversionFactor method', () => {
 			};
 		});
 
-		const { getConversionFactor } = require('../../../shared/csvExport');
+		const { getConversionFactor } = require('../../../shared/transactionsExport');
 		expect(getConversionFactor(invalidChainID)).rejects.toThrow();
 	});
 });
@@ -139,9 +138,9 @@ describe('Test getOpeningBalance method', () => {
 			};
 		});
 
-		const { getOpeningBalance } = require('../../../shared/csvExport');
+		const { getOpeningBalance } = require('../../../shared/transactionsExport');
 
-		const openingBalance = await getOpeningBalance('lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo');
+		const openingBalance = await getOpeningBalance({ address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo' });
 		const expectedResponse = {
 			tokenID: '0400000000000000',
 			amount: '100000000000000',
@@ -161,8 +160,57 @@ describe('Test getOpeningBalance method', () => {
 			};
 		});
 
-		const { getOpeningBalance } = require('../../../shared/csvExport');
+		const { getOpeningBalance } = require('../../../shared/transactionsExport');
 		expect(getOpeningBalance(undefined)).rejects.toThrow();
+	});
+});
+
+describe('Test getLegacyBalance method', () => {
+	it('should return legacy balance when called with valid publicKey', async () => {
+		/* eslint-disable-next-line import/no-dynamic-require */
+		const requestAll = require(mockedRequestAllFilePath);
+
+		jest.mock(mockedRequestAllFilePath, () => jest.fn());
+
+		const mockLegacySubstore = [{
+			address: '06cbc1b95358dd27',
+			balance: '100000000000000',
+		}];
+
+		requestAll.mockReturnValue({
+			accounts: mockLegacySubstore,
+		});
+
+		jest.mock(mockedRequestFilePath, () => {
+			const actual = jest.requireActual(mockedRequestFilePath);
+			return {
+				...actual,
+				requestConnector() {
+					return { legacy: { accounts: mockLegacySubstore } };
+				},
+			};
+		});
+
+		const { getLegacyBalance } = require('../../../shared/transactionsExport');
+
+		const legacyBalance = await getLegacyBalance({ publicKey });
+
+		expect(legacyBalance).toEqual(mockLegacySubstore[0].balance);
+	});
+
+	it('should throw error when called with undefined', async () => {
+		jest.mock(mockedRequestFilePath, () => {
+			const actual = jest.requireActual(mockedRequestFilePath);
+			return {
+				...actual,
+				requestConnector() {
+					return undefined;
+				},
+			};
+		});
+
+		const { getLegacyBalance } = require('../../../shared/transactionsExport');
+		expect(getLegacyBalance(undefined)).rejects.toThrow();
 	});
 });
 
@@ -202,7 +250,7 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			};
 		});
 
-		const { getCrossChainTransferTransactionInfo } = require('../../../shared/csvExport');
+		const { getCrossChainTransferTransactionInfo } = require('../../../shared/transactionsExport');
 
 		const crossChainTransferTxs = await getCrossChainTransferTransactionInfo({ address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo' });
 		const expectedResponse = [{
@@ -240,7 +288,7 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			};
 		});
 
-		const { getCrossChainTransferTransactionInfo } = require('../../../shared/csvExport');
+		const { getCrossChainTransferTransactionInfo } = require('../../../shared/transactionsExport');
 		expect(getCrossChainTransferTransactionInfo(undefined)).rejects.toThrow();
 	});
 });
@@ -249,10 +297,8 @@ const {
 	getAddressFromParams,
 	getToday,
 	normalizeTransaction,
-	parseInputToCsv,
-	transactionsToCSV,
 	getPartialFilenameFromParams,
-} = require('../../../shared/csvExport');
+} = require('../../../shared/transactionsExport');
 
 describe('Test getAddressFromParams method', () => {
 	it('should return address from address in params', async () => {
@@ -267,71 +313,21 @@ describe('Test getAddressFromParams method', () => {
 });
 
 describe('Test getToday method', () => {
-	it(`should return current date in '${config.csv.dateFormat}' format`, async () => {
+	it(`should return current date in '${config.excel.dateFormat}' format`, async () => {
 		const today = getToday();
-		expect(today).toBe(moment().format(config.csv.dateFormat));
+		expect(today).toBe(moment().format(config.excel.dateFormat));
 	});
 });
 
 describe('Test normalizeTransaction method', () => {
-	it('should return a transaction normalized to be converted to CSV', async () => {
+	it('should return a transaction normalized', async () => {
 		const normalizedTx = await normalizeTransaction(
 			tokenTransfer.toOther.sender,
 			tokenTransfer.toOther.transaction,
 			chainID,
 		);
-		const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.value);
+		const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.key);
 		expect(Object.keys(normalizedTx)).toEqual(expect.arrayContaining(expectedFields));
-	});
-});
-
-describe('Test parseInputToCsv method', () => {
-	it('should return transactions as CSV', async () => {
-		const csv = parseInputToCsv(
-			tokenTransfer.toOther.transaction,
-			fieldMappings.transactionMappings);
-
-		const expectedTx = {};
-		Object.values(fieldMappings.transactionMappings).forEach((v) => {
-			expectedTx[`${v.label}`] = tokenTransfer.toOther.transaction[v.value] || null;
-		});
-		expect(csv).toBe(generateExcpectedCsv(expectedTx, config.csv.delimiter));
-	});
-});
-
-describe('Test transactionsToCSV method', () => {
-	const newline = '\n';
-
-	it('should return transactions as CSV', async () => {
-		const transactionList = [tokenTransfer.toOther.transaction];
-		const csv = await transactionsToCSV(transactionList, address, chainID);
-		expect(csv).toContain(newline);
-		const lines = csv.split(newline);
-		// 1 header, #rows from transactionList
-		expect(lines.length).toBe(transactionList.length + 1);
-
-		const normalizedTx = await normalizeTransaction(
-			tokenTransfer.toOther.sender,
-			tokenTransfer.toOther.transaction,
-			chainID,
-		);
-		const replacedKeysTx = {};
-		Object.entries(normalizedTx).forEach(([k, v]) => {
-			const [entry] = fieldMappings.transactionMappings.filter(e => e.value === k);
-			replacedKeysTx[`${entry.label}`] = v;
-		});
-		expect(csv).toBe(generateExcpectedCsv(replacedKeysTx, config.csv.delimiter));
-	});
-
-	it('should adds duplicate entry for self-token-transfer transactions and returns as CSV', async () => {
-		const transactionList = [tokenTransfer.toSelf.transaction];
-		const initialTxCount = transactionList.length;
-		const csv = await transactionsToCSV(transactionList, address, chainID);
-		expect(csv).toContain(newline);
-		const lines = csv.split(newline);
-		// 1 header, #rows from transactionList, 1 row from the duplicate
-		expect(transactionList.length).toBeGreaterThan(initialTxCount);
-		expect(lines.length).toBe(initialTxCount + 2);
 	});
 });
 

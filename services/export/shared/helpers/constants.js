@@ -32,6 +32,9 @@ const MODULE_SUB_STORE = Object.freeze({
 	TOKEN: {
 		USER: 'userSubstore',
 	},
+	LEGACY: {
+		ACCOUNTS: 'accounts',
+	},
 });
 
 module.exports = {

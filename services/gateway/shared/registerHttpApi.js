@@ -151,10 +151,15 @@ const buildAPIConfig = (configPath, config, aliases, whitelist, methodPaths, eTa
 		}
 
 		// Set response headers and return CSV data if filename available
-		if (data.data && data.meta && data.meta.filename && data.meta.filename.endsWith('.csv')) {
+		if (data.data && data.meta && data.meta.filename) {
 			res.setHeader('Content-Disposition', `attachment; filename="${data.meta.filename}"`);
-			res.setHeader('Content-Type', 'text/csv');
-			res.end(data.data);
+			if (data.meta.filename.endsWith('.xls') || data.meta.filename.endsWith('.xlsx')) {
+				res.setHeader('Content-Type', 'application/vnd.ms-excel');
+				res.end(Buffer.from(data.data, 'hex'));
+			} else if (data.meta.filename.endsWith('.csv')) {
+				res.setHeader('Content-Type', 'text/csv');
+				res.end(data.data);
+			}
 			return res;
 		}
 

@@ -15,6 +15,8 @@
  */
 const Moment = require('moment');
 const MomentRange = require('moment-range');
+const excelJS = require('exceljs');
+const xlsx = require('node-xlsx');
 
 const moment = MomentRange.extendMoment(Moment);
 
@@ -29,14 +31,11 @@ const {
 
 const {
 	getLisk32AddressFromPublicKey,
+	getLegacyAddress,
 } = require('./helpers/account');
 
 const { getCurrentChainID, resolveReceivingChainID } = require('./helpers/chain');
 const { MODULE, COMMAND, EVENT, MODULE_SUB_STORE } = require('./helpers/constants');
-
-const {
-	parseJsonToCsv,
-} = require('./helpers/csv');
 
 const {
 	requestIndexer,
@@ -57,7 +56,7 @@ const {
 } = require('./helpers/transaction');
 
 const config = require('../config');
-const fields = require('./csvFieldMappings');
+const fields = require('./excelFieldMappings');
 
 const requestAll = require('./requestAll');
 const FilesystemCache = require('./csvCache');
@@ -68,13 +67,14 @@ const staticFiles = FilesystemCache(config.cache.exports);
 
 const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
 
-const DATE_FORMAT = config.csv.dateFormat;
+const DATE_FORMAT = config.excel.dateFormat;
+const TIME_FORMAT = config.excel.timeFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
+
 let tokenModuleData;
+let legacyModuleData;
 
 const getTransactions = async (params) => requestIndexer('transactions', params);
-
-const isBlockchainIndexReady = async () => requestIndexer('isBlockchainFullyIndexed');
 
 const getGenesisBlock = async () => requestIndexer(
 	'blocks',
@@ -142,7 +142,7 @@ const getConversionFactor = async (chainID) => {
 	return conversionFactor;
 };
 
-const getOpeningBalance = async (address) => {
+const getOpeningBalance = async (params) => {
 	if (!tokenModuleData) {
 		const genesisBlockAssetsLength = await requestConnector(
 			'getGenesisAssetsLength',
@@ -158,7 +158,7 @@ const getOpeningBalance = async (address) => {
 	}
 
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
-	const filteredAccount = userSubStoreInfos.find(e => e.address === address);
+	const filteredAccount = userSubStoreInfos.find(e => e.address === params.address);
 	const openingBalance = filteredAccount
 		? { tokenID: filteredAccount.tokenID, amount: filteredAccount.availableBalance }
 		: null;
@@ -166,13 +166,35 @@ const getOpeningBalance = async (address) => {
 	return openingBalance;
 };
 
-const getMetadata = async (address, chainID) => ({
+const getLegacyBalance = async (params) => {
+	if (!legacyModuleData) {
+		const genesisBlockAssetsLength = await requestConnector(
+			'getGenesisAssetsLength',
+			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
+		);
+		const totalUsers = genesisBlockAssetsLength[MODULE.LEGACY][MODULE_SUB_STORE.LEGACY.ACCOUNTS];
+
+		legacyModuleData = await requestAll(
+			requestConnector.bind(null, 'getGenesisAssetByModule'),
+			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
+			totalUsers,
+		);
+	}
+
+	const legacyAccounts = legacyModuleData[MODULE_SUB_STORE.LEGACY.ACCOUNTS];
+	const legacyAddress = getLegacyAddress(params.publicKey);
+	const filteredAccount = legacyAccounts.find(e => e.address === legacyAddress);
+	return filteredAccount.balance;
+};
+
+const getMetadata = async (params, chainID) => ({
 	currentChainID: chainID,
 	feeTokenID: await requestConnector('getFeeTokenID'),
-	dateFormat: config.csv.dateFormat,
-	timeFormat: config.csv.timeFormat,
+	dateFormat: DATE_FORMAT,
+	timeFormat: TIME_FORMAT,
 	conversionFactor: await getConversionFactor(chainID),
-	openingBalance: await getOpeningBalance(address),
+	openingBalance: await getOpeningBalance(params),
+	legacyBalance: params.publicKey ? await getLegacyBalance(params) : null,
 });
 
 const validateIfAccountHasTransactions = async (address) => {
@@ -211,17 +233,17 @@ const getPartialFilenameFromParams = async (params, day) => {
 	return filename;
 };
 
-const getCsvFilenameFromParams = async (params) => {
+const getExcelFilenameFromParams = async (params) => {
 	const address = getAddressFromParams(params);
 	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
 
-	const filename = `transactions_${address}_${from}_${to}.csv`;
+	const filename = `transactions_${address}_${from}_${to}.xlsx`;
 	return filename;
 };
 
-const getCsvFileUrlFromParams = async (params) => {
-	const filename = await getCsvFilenameFromParams(params);
-	const url = `${config.csv.baseURL}?filename=${filename}`;
+const getExcelFileUrlFromParams = async (params) => {
+	const filename = await getExcelFilenameFromParams(params);
+	const url = `${config.excel.baseURL}?filename=${filename}`;
 	return url;
 };
 
@@ -249,8 +271,8 @@ const normalizeTransaction = async (address, tx, chainID) => {
 	const blockHeight = tx.block.height;
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
-	const sendingChainID = `'${chainID}`;
-	const receivingChainID = `'${resolveReceivingChainID(tx, chainID)}`;
+	const sendingChainID = chainID;
+	const receivingChainID = resolveReceivingChainID(tx, chainID);
 
 	return {
 		date,
@@ -271,30 +293,7 @@ const normalizeTransaction = async (address, tx, chainID) => {
 	};
 };
 
-const parseInputToCsv = (json, fieldsMapping) => {
-	const opts = { delimiter: config.csv.delimiter, fields: fieldsMapping };
-	return parseJsonToCsv(opts, json);
-};
-
-const transactionsToCSV = async (transactions, address, chainID) => {
-	// Add duplicate entry with zero fees for self token transfer transactions
-	transactions.forEach((tx, i, arr) => {
-		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
-			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
-		}
-	});
-
-	const normalizedTransactions = await Promise.all(transactions
-		.map(async (t) => normalizeTransaction(address, t, chainID)));
-
-	const parsedTransactionsToCsv = parseInputToCsv(
-		normalizedTransactions,
-		fields.transactionMappings,
-	);
-	return parsedTransactionsToCsv;
-};
-
-const exportTransactionsCSV = async (job) => {
+const exportTransactions = async (job) => {
 	const { params } = job.data;
 
 	const allTransactions = [];
@@ -343,31 +342,43 @@ const exportTransactionsCSV = async (job) => {
 		/* eslint-enable no-await-in-loop */
 	}
 
-	const csvFilename = await getCsvFilenameFromParams(params);
+	const excelFilename = await getExcelFilenameFromParams(params);
 	const currentChainID = await getCurrentChainID();
 
-	const parsedTransactionsToCsv = await transactionsToCSV(
-		allTransactions,
-		getAddressFromParams(params),
-		currentChainID,
-	);
+	// Add duplicate entry with zero fees for self token transfer transactions
+	allTransactions.forEach((tx, i, arr) => {
+		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
+			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
+		}
+	});
 
-	// const metadata = await getMetadata(params.address, currentChainID);
-	// const parsedMetadataToCsv = parseInputToCsv(metadata, fields.metadataMappings);
+	const normalizedTransactions = await Promise.all(allTransactions
+		.map(async (t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
+	const metadata = await getMetadata(params, currentChainID);
 
-	await staticFiles.write(csvFilename, parsedTransactionsToCsv);
+	const workBook = new excelJS.Workbook();
+	const transactionExportSheet = workBook.addWorksheet(config.excel.sheets.TRANSACTION_HISTORY);
+	const metadataSheet = workBook.addWorksheet(config.excel.sheets.METADATA);
+	transactionExportSheet.columns = fields.transactionMappings;
+	metadataSheet.columns = fields.metadataMappings;
+
+	transactionExportSheet.addRows(normalizedTransactions);
+	metadataSheet.addRows([metadata]);
+
+	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
 };
 
 const scheduleTransactionExportQueue = Queue(
 	config.endpoints.redis,
 	config.queue.scheduleTransactionExport.name,
-	exportTransactionsCSV,
+	exportTransactions,
 	config.queue.scheduleTransactionExport.concurrency,
 );
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built
-	if (!await isBlockchainIndexReady()) throw new ValidationException('Blockchain index is not yet ready.');
+	const isBlockchainIndexReady = await requestIndexer('isBlockchainFullyIndexed');
+	if (!isBlockchainIndexReady) throw new ValidationException('Blockchain index is not yet ready.');
 
 	const exportResponse = {
 		data: {},
@@ -391,13 +402,13 @@ const scheduleTransactionHistoryExport = async (params) => {
 	exportResponse.data.publicKey = publicKey;
 	exportResponse.data.interval = await standardizeIntervalFromParams(params);
 
-	const csvFilename = await getCsvFilenameFromParams(params);
-	if (await staticFiles.exists(csvFilename)) {
-		exportResponse.data.fileName = csvFilename;
-		exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
+	const excelFilename = await getExcelFilenameFromParams(params);
+	if (await staticFiles.exists(excelFilename)) {
+		exportResponse.data.fileName = excelFilename;
+		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params);
 		exportResponse.meta.ready = true;
 	} else {
-		await scheduleTransactionExportQueue.add({ params });
+		await scheduleTransactionExportQueue.add({ params: { ...params, address } });
 		exportResponse.status = 'ACCEPTED';
 	}
 
@@ -405,20 +416,20 @@ const scheduleTransactionHistoryExport = async (params) => {
 };
 
 const downloadTransactionHistory = async ({ filename }) => {
-	const csvResponse = {
+	const excelResponse = {
 		data: {},
 		meta: {},
 	};
 
-	if (!regex.CSV_EXPORT_FILENAME.test(filename)) {
+	if (!regex.EXCEL_EXPORT_FILENAME.test(filename)) {
 		throw new ValidationException(`Invalid filename (${filename}) supplied.`);
 	}
 
 	const isFile = await staticFiles.isFile(filename);
 	if (!isFile) throw new ValidationException(`Requested file (${filename}) does not exist.`);
 
-	csvResponse.data = await staticFiles.read(filename);
-	csvResponse.meta.filename = filename;
+	excelResponse.data = xlsx.build(xlsx.parse(`${config.cache.exports.dirPath}/${filename}`)).toString('hex');
+	excelResponse.meta.filename = filename;
 
 	// Remove the static file if end date is current date
 	// TODO: Implement a better solution
@@ -426,11 +437,11 @@ const downloadTransactionHistory = async ({ filename }) => {
 	const endDate = splits[splits.length - 2];
 	if (endDate === getToday()) staticFiles.remove(filename);
 
-	return csvResponse;
+	return excelResponse;
 };
 
 module.exports = {
-	exportTransactionsCSV,
+	exportTransactions,
 	scheduleTransactionHistoryExport,
 	downloadTransactionHistory,
 
@@ -438,15 +449,14 @@ module.exports = {
 	getAddressFromParams,
 	getToday,
 	normalizeTransaction,
-	parseInputToCsv,
-	transactionsToCSV,
 
 	standardizeIntervalFromParams,
 	getPartialFilenameFromParams,
-	getCsvFilenameFromParams,
-	getCsvFileUrlFromParams,
+	getExcelFilenameFromParams,
+	getExcelFileUrlFromParams,
 	getCrossChainTransferTransactionInfo,
 	getConversionFactor,
 	getOpeningBalance,
+	getLegacyBalance,
 	getMetadata,
 };
