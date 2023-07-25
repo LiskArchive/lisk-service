@@ -53,7 +53,7 @@ const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) =
 });
 
 const purge = async (dirPath, days) => {
-	if (days === undefined) throw new ValidationException('days cannot be undefined');
+	if (days === undefined) throw new ValidationException('days cannot be undefined.');
 
 	try {
 		// Get the list of files in the directory using getFiles method

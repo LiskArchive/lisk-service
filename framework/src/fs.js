@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable consistent-return */
 const path = require('path');
 const fs = require('fs');
 const Logger = require('./logger').get;
@@ -30,7 +29,7 @@ const mkdir = (dirPath, options = { recursive: true }) => new Promise((resolve, 
 				logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
 				return reject(err);
 			}
-			logger.debug(`Successfully created directory: ${dirPath}`);
+			logger.debug(`Successfully created directory: ${dirPath}.`);
 			return resolve();
 		},
 	);
@@ -98,6 +97,7 @@ const rmdir = async (directoryPath, options) => rm(
 
 const fileExists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
+// eslint-disable-next-line consistent-return
 const exists = filePath => new Promise(resolve => {
 	if (typeof filePath !== 'string') return resolve(false);
 

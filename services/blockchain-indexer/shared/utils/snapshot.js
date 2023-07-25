@@ -37,6 +37,7 @@ const logger = Logger();
 
 let snapshotFilePath = './data/service-snapshot.sql';
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+const PRIVATE_IP_REGEX = /^(10(\.\d{1,3}){3})|((172\.(1[6-9]|2\d|3[0-1])|192\.168)(\.\d{1,3}){2})$/;
 
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
@@ -55,7 +56,7 @@ const calculateSHA256 = async (file) => new Promise((resolve, reject) => {
 });
 
 // Check if the IP address is local/private
-const isLocalIP = (ip) => ip === '127.0.0.1' || ip.startsWith('10.') || ip.startsWith('192.168.');
+const isLocalIP = (ip) => ip === '127.0.0.1' || PRIVATE_IP_REGEX.test(ip);
 
 const validateSnapshotURL = async (snapshotURL) => {
 	const { hostname } = new URL(snapshotURL);
@@ -86,6 +87,8 @@ const validateSnapshotURL = async (snapshotURL) => {
 };
 
 const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
+	await validateSnapshotURL(fileUrl);
+
 	const checksumUrl = fileUrl.replace('.gz', '.SHA256');
 
 	return new Promise((resolve, reject) => {
@@ -209,7 +212,6 @@ const initSnapshot = async () => {
 		throw new Error(`Please consider using a secured source (HTTPS). To continue to download snapshot from ${snapshotUrl}, set 'ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP' env variable.`);
 	}
 
-	await validateSnapshotURL(snapshotUrl);
 	await downloadSnapshot(snapshotUrl);
 	await applySnapshot();
 };
