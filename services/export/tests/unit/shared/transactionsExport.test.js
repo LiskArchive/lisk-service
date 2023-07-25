@@ -112,11 +112,6 @@ describe('Test getConversionFactor method', () => {
 
 describe('Test getOpeningBalance method', () => {
 	it('should return opening balance when called with valid address', async () => {
-		/* eslint-disable-next-line import/no-dynamic-require */
-		const requestAll = require(mockedRequestAllFilePath);
-
-		jest.mock(mockedRequestAllFilePath, () => jest.fn());
-
 		const mockUserSubstore = [{
 			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
 			availableBalance: '100000000000000',
@@ -124,8 +119,14 @@ describe('Test getOpeningBalance method', () => {
 			tokenID: '0400000000000000',
 		}];
 
-		requestAll.mockReturnValue({
-			userSubstore: mockUserSubstore,
+		jest.mock(mockedRequestAllFilePath, () => {
+			const actual = jest.requireActual(mockedRequestAllFilePath);
+			return {
+				...actual,
+				requestAllCustom() {
+					return { userSubstore: mockUserSubstore };
+				},
+			};
 		});
 
 		jest.mock(mockedRequestFilePath, () => {
@@ -167,18 +168,18 @@ describe('Test getOpeningBalance method', () => {
 
 describe('Test getLegacyBalance method', () => {
 	it('should return legacy balance when called with valid publicKey', async () => {
-		/* eslint-disable-next-line import/no-dynamic-require */
-		const requestAll = require(mockedRequestAllFilePath);
-
-		jest.mock(mockedRequestAllFilePath, () => jest.fn());
-
 		const mockLegacySubstore = [{
 			address: '06cbc1b95358dd27',
 			balance: '100000000000000',
 		}];
-
-		requestAll.mockReturnValue({
-			accounts: mockLegacySubstore,
+		jest.mock(mockedRequestAllFilePath, () => {
+			const actual = jest.requireActual(mockedRequestAllFilePath);
+			return {
+				...actual,
+				requestAllCustom() {
+					return { accounts: mockLegacySubstore };
+				},
+			};
 		});
 
 		jest.mock(mockedRequestFilePath, () => {
@@ -216,6 +217,40 @@ describe('Test getLegacyBalance method', () => {
 
 describe('Test getCrossChainTransferTransactionInfo method', () => {
 	it('should return opening balance when called with valid address', async () => {
+		const mockEventData = [{
+			id: 'efe94d3a5ad35297098614100c5dd7bff6657d38baed08fb850fa9ce69b0862c',
+			module: 'token',
+			name: 'ccmTransfer',
+			data: {
+				senderAddress: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+				recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+				tokenID: '0400000000000000',
+				amount: '100000000000',
+				receivingChainID: '04000001',
+				result: 0,
+			},
+			topics: [
+				'efcbab90c4769dc47029412010ef76623722678f446a7417f59fed998a6407de',
+				'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+				'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+			],
+			block: {
+				id: '1fc7e1a4a06a6b9610ed5e4fb48c9f839b1fcd0f91b3f6d4c22f9f64eac40657',
+				height: 313,
+				timestamp: 1689693410,
+			},
+		}];
+
+		jest.mock(mockedRequestAllFilePath, () => {
+			const actual = jest.requireActual(mockedRequestAllFilePath);
+			return {
+				...actual,
+				requestAllStandard() {
+					return mockEventData;
+				},
+			};
+		});
+
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
 			return {
@@ -223,27 +258,8 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 				requestIndexer() {
 					return {
 						data: [{
-							id: 'efe94d3a5ad35297098614100c5dd7bff6657d38baed08fb850fa9ce69b0862c',
-							module: 'token',
-							name: 'ccmTransfer',
-							data: {
-								senderAddress: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
-								recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-								tokenID: '0400000000000000',
-								amount: '100000000000',
-								receivingChainID: '04000001',
-								result: 0,
-							},
-							topics: [
-								'efcbab90c4769dc47029412010ef76623722678f446a7417f59fed998a6407de',
-								'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
-								'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-							],
-							block: {
-								id: '1fc7e1a4a06a6b9610ed5e4fb48c9f839b1fcd0f91b3f6d4c22f9f64eac40657',
-								height: 313,
-								timestamp: 1689693410,
-							},
+							moduleCommand: 'interoperability:submitSidechainCrossChainUpdate',
+							params: { sendingChainID: '04000000' },
 						}],
 					};
 				},
@@ -260,7 +276,7 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 				timestamp: 1689693410,
 			},
 			id: 'efcbab90c4769dc47029412010ef76623722678f446a7417f59fed998a6407de',
-			moduleCommand: 'token:transferCrossChain',
+			moduleCommand: 'interoperability:submitSidechainCrossChainUpdate',
 			params: {
 				amount: '100000000000',
 				receivingChainID: '04000001',
@@ -272,6 +288,7 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			sender: {
 				address: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
 			},
+			sendingChainID: '04000000',
 		}];
 
 		expect(crossChainTransferTxs).toEqual(expectedResponse);

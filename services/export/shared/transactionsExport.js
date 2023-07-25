@@ -54,7 +54,7 @@ const {
 const config = require('../config');
 const fields = require('./excelFieldMappings');
 
-const requestAll = require('./requestAll');
+const { requestAllCustom, requestAllStandard } = require('./requestAll');
 const FilesystemCache = require('./csvCache');
 const regex = require('./regex');
 
@@ -65,6 +65,7 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 
 const DATE_FORMAT = config.excel.dateFormat;
 const TIME_FORMAT = config.excel.timeFormat;
+const MAX_NUM_TRANSACTIONS = 10000;
 
 let tokenModuleData;
 let legacyModuleData;
@@ -95,7 +96,7 @@ const validateIfAccountExists = async (address) => {
 };
 
 const getCrossChainTransferTransactionInfo = async (params) => {
-	const allEvents = await requestAll(requestIndexer.bind(null, 'events'), {
+	const allEvents = await requestAllStandard(requestIndexer.bind(null, 'events'), {
 		topic: params.address,
 		timestamp: params.timestamp,
 		module: MODULE.TOKEN,
@@ -104,23 +105,23 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 	});
 
 	const transactions = [];
-	const ccmTransferEvents = allEvents.data
+	const ccmTransferEvents = allEvents
 		.filter(event => event.data.recipientAddress === params.address);
-	const moduleCommand = regex.MAINCHAIN_ID.test(params.chainID)
-		? `${MODULE.INTEROPERABILITY}:${COMMAND.SUBMIT_SIDECHAIN_CROSS_CHAIN_UPDATE}`
-		: `${MODULE.INTEROPERABILITY}:${COMMAND.SUBMIT_MAINCHAIN_CROSS_CHAIN_UPDATE}`;
 
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
 		const [transactionID] = ccmTransferEvents[i].topics;
+		/* eslint-disable-next-line no-await-in-loop */
+		const [transaction] = (await requestIndexer('transactions', { id: transactionID })).data;
 
 		transactions.push({
 			id: transactionID,
-			moduleCommand,
+			moduleCommand: transaction.moduleCommand,
 			sender: {
 				address: ccmTransferEvents[i].data.senderAddress,
 			},
 			block: ccmTransferEvents[i].block,
 			params: ccmTransferEvents[i].data,
+			sendingChainID: transaction.params.sendingChainID,
 		});
 	}
 
@@ -153,9 +154,17 @@ const getConversionFactor = async (chainID) => {
 
 const getOpeningBalance = async (address) => {
 	if (!tokenModuleData) {
-		tokenModuleData = await requestAll(
-			requestConnector.bind(null, 'getGenesisAssetByModule'),
+		const genesisBlockAssetsLength = await requestConnector(
+			'getGenesisAssetsLength',
 			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+		);
+		const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
+
+		tokenModuleData = await requestAllCustom(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+			totalUsers,
 		);
 	}
 
@@ -170,9 +179,17 @@ const getOpeningBalance = async (address) => {
 
 const getLegacyBalance = async (publicKey) => {
 	if (!legacyModuleData) {
-		legacyModuleData = await requestAll(
-			requestConnector.bind(null, 'getGenesisAssetByModule'),
+		const genesisBlockAssetsLength = await requestConnector(
+			'getGenesisAssetsLength',
 			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
+		);
+		const totalAccounts = genesisBlockAssetsLength[MODULE.LEGACY][MODULE_SUB_STORE.LEGACY.ACCOUNTS];
+
+		legacyModuleData = await requestAllCustom(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
+			totalAccounts,
 		);
 	}
 
@@ -255,18 +272,25 @@ const getExcelFileUrlFromParams = async (params) => {
 	return url;
 };
 
+const resolveChainIDs = (tx, currentChainID) => {
+	if (tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
+		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`) {
+		const sendingChainID = tx.sendingChainID || currentChainID;
+		const receivingChainID = resolveReceivingChainID(tx, currentChainID);
+
+		return {
+			sendingChainID,
+			receivingChainID,
+		};
+	}
+	return {};
+};
+
 const normalizeTransaction = async (address, tx, currentChainID) => {
 	const {
 		moduleCommand,
 		senderPublicKey,
 	} = tx;
-
-	if (tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`) {
-		const [transaction] = (await requestIndexer('transactions', { id: tx.id })).data;
-		currentChainID = transaction && transaction.params.sendingChainID
-			? transaction.params.sendingChainID
-			: currentChainID;
-	}
 
 	const date = dateFromTimestamp(tx.block.timestamp);
 	const time = timeFromTimestamp(tx.block.timestamp);
@@ -279,8 +303,9 @@ const normalizeTransaction = async (address, tx, currentChainID) => {
 	const blockHeight = tx.block.height;
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
-	const sendingChainID = currentChainID;
-	const receivingChainID = resolveReceivingChainID(tx, currentChainID);
+	const { sendingChainID, receivingChainID } = resolveChainIDs(tx, currentChainID);
+	const { messageFeeTokenID } = tx.params;
+	const { messageFee } = tx.params;
 
 	return {
 		date,
@@ -298,6 +323,8 @@ const normalizeTransaction = async (address, tx, currentChainID) => {
 		transactionID,
 		sendingChainID,
 		receivingChainID,
+		messageFeeTokenID,
+		messageFee,
 	};
 };
 
@@ -306,52 +333,57 @@ const exportTransactions = async (job) => {
 
 	const allTransactions = [];
 
-	const interval = await standardizeIntervalFromParams(params);
-	const [from, to] = interval.split(':');
-	const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
-	const arrayOfDates = (Array.from(range.by('day'))).map(d => d.format(DATE_FORMAT));
-	const currentChainID = await getCurrentChainID();
+	// Validate if account has transactions
+	const isAccountHasTransactions = await validateIfAccountHasTransactions(params.address);
+	if (isAccountHasTransactions) {
+		const interval = await standardizeIntervalFromParams(params);
+		const [from, to] = interval.split(':');
+		const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
+		const arrayOfDates = (Array.from(range.by('day'))).map(d => d.format(DATE_FORMAT));
 
-	for (let i = 0; i < arrayOfDates.length; i++) {
-		/* eslint-disable no-await-in-loop */
-		const day = arrayOfDates[i];
-		const partialFilename = await getPartialFilenameFromParams(params, day);
-		if (await partials.exists(partialFilename)) {
-			const transactions = JSON.parse(await partials.read(partialFilename));
-			allTransactions.push(...transactions);
-		} else if (await noTransactionsCache.get(partialFilename) !== true) {
-			const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
-			const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
-			const timestampRange = `${fromTimestampPast}:${toTimestampPast}`;
-			const { data: transactions } = await requestAll(
-				getTransactionsInAsc,
-				{ ...params, timestamp: timestampRange },
-			);
-			allTransactions.push(...transactions);
-
-			const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
-				...params,
-				timestamp: timestampRange,
-				chainID: currentChainID,
-			});
-
-			if (incomingCrossChainTransferTxs.length) {
-				allTransactions.push(...incomingCrossChainTransferTxs
-					.sort((a, b) => a.block.height - b.block.height),
+		for (let i = 0; i < arrayOfDates.length; i++) {
+			/* eslint-disable no-await-in-loop */
+			const day = arrayOfDates[i];
+			const partialFilename = await getPartialFilenameFromParams(params, day);
+			if (await partials.exists(partialFilename)) {
+				const transactions = JSON.parse(await partials.read(partialFilename));
+				allTransactions.push(...transactions);
+			} else if (await noTransactionsCache.get(partialFilename) !== true) {
+				const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
+				const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
+				const timestampRange = `${fromTimestampPast}:${toTimestampPast}`;
+				const transactions = await requestAllStandard(
+					getTransactionsInAsc,
+					{ ...params, timestamp: timestampRange },
+					MAX_NUM_TRANSACTIONS,
 				);
-			}
+				allTransactions.push(...transactions);
 
-			if (day !== getToday()) {
-				if (transactions.length) {
-					partials.write(partialFilename, JSON.stringify(transactions));
-				} else {
-					// Flag to prevent unnecessary calls to core/storage space usage on the file cache
-					const RETENTION_PERIOD_MS = getDaysInMilliseconds(config.cache.partials.retentionInDays);
-					await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD_MS);
+				const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
+					...params,
+					timestamp: timestampRange,
+				});
+
+				if (incomingCrossChainTransferTxs.length) {
+					allTransactions.push(...incomingCrossChainTransferTxs
+						.sort((a, b) => a.block.height - b.block.height),
+					);
+				}
+
+				if (day !== getToday()) {
+					if (transactions.length) {
+						partials.write(partialFilename, JSON.stringify(transactions));
+					} else {
+						// Flag to prevent unnecessary calls to core/storage space usage on the file cache
+						const RETENTION_PERIOD_MS = getDaysInMilliseconds(
+							config.cache.partials.retentionInDays,
+						);
+						await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD_MS);
+					}
 				}
 			}
+			/* eslint-enable no-await-in-loop */
 		}
-		/* eslint-enable no-await-in-loop */
 	}
 
 	const excelFilename = await getExcelFilenameFromParams(params);
@@ -363,6 +395,7 @@ const exportTransactions = async (job) => {
 		}
 	});
 
+	const currentChainID = await getCurrentChainID();
 	const normalizedTransactions = await Promise.all(allTransactions
 		.map(async (t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
 	const metadata = await getMetadata(params, currentChainID);
@@ -404,10 +437,6 @@ const scheduleTransactionHistoryExport = async (params) => {
 	// Validate if account exists
 	const isAccountExists = await validateIfAccountExists(address);
 	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
-
-	// Validate if account has transactions
-	const isAccountHasTransactions = await validateIfAccountHasTransactions(address);
-	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
 
 	exportResponse.data.address = address;
 	exportResponse.data.publicKey = publicKey;

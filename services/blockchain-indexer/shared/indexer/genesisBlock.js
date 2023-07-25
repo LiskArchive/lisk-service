@@ -44,7 +44,8 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
 	const tokenModuleData = await requestAll(
-		requestConnector.bind(null, 'getGenesisAssetByModule'),
+		requestConnector,
+		'getGenesisAssetByModule',
 		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
 		totalUsers,
 	);
@@ -76,7 +77,8 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 		const commissionsTable = await getCommissionsTable();
 
 		const posModuleData = await requestAll(
-			requestConnector.bind(null, 'getGenesisAssetByModule'),
+			requestConnector,
+			'getGenesisAssetByModule',
 			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS },
 			numValidators,
 		);
@@ -100,7 +102,8 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 
 	if (numStakers > 0) {
 		const posModuleData = await requestAll(
-			requestConnector.bind(null, 'getGenesisAssetByModule'),
+			requestConnector,
+			'getGenesisAssetByModule',
 			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
 			numStakers,
 		);

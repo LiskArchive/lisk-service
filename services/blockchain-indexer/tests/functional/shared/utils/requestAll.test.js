@@ -47,21 +47,20 @@ xdescribe('Test requestAll method', () => {
 	it('should return proper response', async () => {
 		const totalLimit = 27;
 		const genesisAsset = await request.requestConnector('getGenesisAssetByModule', { module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: totalLimit });
-		const result = await requestAll(request.requestConnector.bind(null, 'getGenesisAssetByModule'), { module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 10 }, totalLimit);
+		const result = await requestAll(request.requestConnector, 'getGenesisAssetByModule', { module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 10 }, totalLimit);
 		expect(result).toBeInstanceOf(Object);
 		expect(result).toEqual(genesisAsset);
 	});
 
 	it('should throw error -> invalid method', async () => {
-		expect(() => requestAll(request.requestConnector.bind(null, 'invalid'), {})).rejects.toThrow();
+		expect(() => requestAll(request.requestConnector, 'invalid', {})).rejects.toThrow();
 	});
 
 	it('should throw error -> undefined method', async () => {
-		expect(() => requestAll(request.requestConnector.bind(null, undefined), {})).rejects.toThrow();
+		expect(() => requestAll(request.requestConnector, undefined, {})).rejects.toThrow();
 	});
 
 	it('should throw error -> null method', async () => {
-		expect(() => requestAll(request.requestConnector.bind(null, null), {})).rejects.toThrow();
+		expect(() => requestAll(request.requestConnector, null, {})).rejects.toThrow();
 	});
 });
-

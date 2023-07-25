@@ -13,31 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const requestAll = require('../../../shared/requestAll');
+const { requestAllStandard } = require('../../../shared/requestAll');
 
-const getResponseOfLength = (n, singleRequestLimit) => ({
-	data: new Array(n).fill().map((e, i) => ({
-		extra_param: 'extra_value',
-		offset: singleRequestLimit * i,
-		limit: singleRequestLimit,
-	})),
-	meta: {
-		total: singleRequestLimit - 1,
-	},
-});
+const getResponseOfLength = (n, singleRequestLimit) => new Array(n).fill().map((e, i) => ({
+	extra_param: 'extra_value',
+	offset: singleRequestLimit * i,
+	limit: singleRequestLimit,
+}));
 
 describe('Test requestAll method', () => {
 	const func = async (params) => ({
 		data: [params],
 		meta: {
-			total: params.limit - 1,
+			total: 1000,
 		},
 	});
 
 	it('should call passed function multiple times when total limit > single response limit', async () => {
 		const singleRequestLimit = 5;
 		const expectedResponse = getResponseOfLength(4, singleRequestLimit);
-		const response = await requestAll(func, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
+		const response = await requestAllStandard(func, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
 		expect(response).toEqual(expectedResponse);
 	});
 
@@ -50,22 +45,22 @@ describe('Test requestAll method', () => {
 				total: singleRequestLimit - 1,
 			},
 		});
-		const response = await requestAll(func2, { limit: singleRequestLimit, extra_param: 'extra_value' }, 10);
+		const response = await requestAllStandard(func2, { limit: singleRequestLimit, extra_param: 'extra_value' }, singleRequestLimit * 10);
 		expect(response).toEqual(expectedResponse);
 	});
 
 	it('should call passed function only once when total limit < single response limit', async () => {
 		const singleRequestLimit = 50;
 		const expectedResponse = getResponseOfLength(1, singleRequestLimit);
-		const response = await requestAll(func, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
+		const response = await requestAllStandard(func, { limit: singleRequestLimit, extra_param: 'extra_value' }, 20);
 		expect(response).toEqual(expectedResponse);
 	});
 
 	it('should throw error if passed function is null', async () => {
-		expect(async () => requestAll(null, { limit: 50, extra_param: 'extra_value' }, 20)).rejects.toThrow();
+		expect(async () => requestAllStandard(null, { limit: 50, extra_param: 'extra_value' }, 20)).rejects.toThrow();
 	});
 
 	it('should throw error if passed function is undefined', async () => {
-		expect(async () => requestAll(undefined, { limit: 50, extra_param: 'extra_value' }, 20)).rejects.toThrow();
+		expect(async () => requestAllStandard(undefined, { limit: 50, extra_param: 'extra_value' }, 20)).rejects.toThrow();
 	});
 });

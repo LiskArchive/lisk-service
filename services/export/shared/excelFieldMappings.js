@@ -19,26 +19,28 @@ const transactionMappings = [
 	{ header: 'Transaction ID', key: 'transactionID' },
 	{ header: 'Module:Command', key: 'moduleCommand' },
 	{ header: 'Block Height', key: 'blockHeight' },
-	{ header: 'Amount', key: 'amount' },
 	{ header: 'Amount Token ID', key: 'amountTokenID' },
+	{ header: 'Amount', key: 'amount' },
+	{ header: 'Message Fee Token ID', key: 'messageFeeTokenID' },
+	{ header: 'Message Fee', key: 'messageFee' },
 	{ header: 'Transaction Fee', key: 'fee' },
 	{ header: 'Sender Address', key: 'senderAddress' },
 	{ header: 'Sender Public Key', key: 'senderPublicKey' },
 	{ header: 'Recipient Address', key: 'recipientAddress' },
 	{ header: 'Recipient Public Key', key: 'recipientPublicKey' },
 	{ header: 'Note', key: 'note' },
-	{ header: 'Sending chain ID', key: 'sendingChainID' },
-	{ header: 'Receiving chain ID', key: 'receivingChainID' },
+	{ header: 'Sending Chain ID', key: 'sendingChainID' },
+	{ header: 'Receiving Chain ID', key: 'receivingChainID' },
 ];
 
 const metadataMappings = [
-	{ header: 'Current chain ID', key: 'currentChainID' },
-	{ header: 'Fee token ID', key: 'feeTokenID' },
-	{ header: 'Conversion factor', key: 'conversionFactor' },
-	{ header: 'Date format', key: 'dateFormat' },
-	{ header: 'Time format', key: 'timeFormat' },
-	{ header: 'Opening balance', key: 'openingBalance' },
-	{ header: 'Legacy balance', key: 'legacyBalance' },
+	{ header: 'Current Chain ID', key: 'currentChainID' },
+	{ header: 'Fee Token ID', key: 'feeTokenID' },
+	{ header: 'Conversion Factor', key: 'conversionFactor' },
+	{ header: 'Date Format', key: 'dateFormat' },
+	{ header: 'Time Format', key: 'timeFormat' },
+	{ header: 'Opening Balance', key: 'openingBalance' },
+	{ header: 'Legacy Balance', key: 'legacyBalance' },
 ];
 
 module.exports = {

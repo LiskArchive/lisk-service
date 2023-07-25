@@ -15,8 +15,8 @@
  */
 const { Utils } = require('lisk-service-framework');
 
-const requestAll = async (fn, params, limit) => {
-	const maxAmount = limit || 1e9;
+const requestAllStandard = async (fn, params, limit) => {
+	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn({
 		...params,
@@ -25,6 +25,41 @@ const requestAll = async (fn, params, limit) => {
 			offset: 0,
 		},
 	});
+	const { data } = firstRequest;
+	if (data.error && data.error.includes('Not found')) return [];
+	const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
+		? defaultMaxAmount
+		: firstRequest.meta.total;
+
+	if (maxAmount > oneRequestLimit) {
+		for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
+			/* eslint-disable no-await-in-loop */
+			const result = await fn({
+				...params,
+				...{
+					limit: oneRequestLimit,
+					offset: oneRequestLimit * page,
+				},
+			});
+			if (!result.data.length) break;
+			data.push(...result.data);
+			/* eslint-enable no-await-in-loop */
+		}
+	}
+	return data;
+};
+
+const requestAllCustom = async (fn, method, params, limit) => {
+	const maxAmount = limit || 1e9;
+	const oneRequestLimit = params.limit || 100;
+	const firstRequest = await fn(method,
+		{
+			...params,
+			...{
+				limit: oneRequestLimit,
+				offset: 0,
+			},
+		});
 	const totalResponse = firstRequest;
 	if (!totalResponse.error) {
 		if (maxAmount > oneRequestLimit) {
@@ -32,7 +67,7 @@ const requestAll = async (fn, params, limit) => {
 				const curOffset = oneRequestLimit * page;
 
 				/* eslint-disable-next-line no-await-in-loop */
-				const result = await fn({
+				const result = await fn(method, {
 					...params,
 					...{
 						limit: Math.min(oneRequestLimit, maxAmount - curOffset),
@@ -67,4 +102,7 @@ const requestAll = async (fn, params, limit) => {
 	return totalResponse;
 };
 
-module.exports = requestAll;
+module.exports = {
+	requestAllStandard,
+	requestAllCustom,
+};
