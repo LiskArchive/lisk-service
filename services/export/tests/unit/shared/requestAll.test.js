@@ -13,24 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const requestAll = require('../../src/requestAll');
+const requestAll = require('../../../shared/requestAll');
 
-const getResponseOfLength = (n, singleRequestLimit) => ({
-	data: new Array(n).fill().map((e, i) => ({
-		extra_param: 'extra_value',
-		offset: singleRequestLimit * i,
-		limit: singleRequestLimit,
-	})),
-	meta: {
-		total: singleRequestLimit - 1,
-	},
-});
+const getResponseOfLength = (n, singleRequestLimit) => new Array(n).fill().map((e, i) => ({
+	extra_param: 'extra_value',
+	offset: singleRequestLimit * i,
+	limit: singleRequestLimit,
+}));
 
 describe('Test requestAll method', () => {
-	const func = async params => ({
+	const func = async (params) => ({
 		data: [params],
 		meta: {
-			total: params.limit - 1,
+			total: 1000,
 		},
 	});
 
@@ -44,13 +39,13 @@ describe('Test requestAll method', () => {
 	it('should call passed function only once when total limit > single response limit but function return total < single response limit', async () => {
 		const singleRequestLimit = 50;
 		const expectedResponse = getResponseOfLength(1, singleRequestLimit);
-		const func2 = async params => ({
+		const func2 = async (params) => ({
 			data: [params],
 			meta: {
 				total: singleRequestLimit - 1,
 			},
 		});
-		const response = await requestAll(func2, { limit: singleRequestLimit, extra_param: 'extra_value' }, 10);
+		const response = await requestAll(func2, { limit: singleRequestLimit, extra_param: 'extra_value' }, singleRequestLimit * 10);
 		expect(response).toEqual(expectedResponse);
 	});
 

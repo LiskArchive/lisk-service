@@ -30,15 +30,13 @@ const {
 		},
 	},
 	Signals,
-	Utils: {
-		requestAll,
-	},
 } = require('lisk-service-framework');
 
 const { getDistributionByType } = require('./transactionStatistics');
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
 
+const requestAll = require('./utils/requestAll');
 const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
@@ -167,7 +165,7 @@ const fetchTransactions = async (date) => {
 	};
 	const txMeta = (await requestIndexer('transactions', { ...params, limit: 1 })).meta;
 	const maxCount = txMeta ? txMeta.total : 1000;
-	const result = await requestAll(requestIndexer.bind(null, 'transactions'), { ...params, limit: 100 }, maxCount);
+	const result = await requestAll(requestIndexer, 'transactions', { ...params, limit: 100 }, maxCount);
 	const transactions = result.error ? [] : result;
 	return transactions;
 };

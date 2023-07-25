@@ -34,7 +34,6 @@ module.exports = {
 	},
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
-		requestAll: require('./src/requestAll'),
 		Data: require('./src/data'),
 		fs: require('./src/fs'),
 		...(require('./src/data')),
