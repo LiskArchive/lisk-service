@@ -36,6 +36,7 @@ const { requestConnector } = require('./request');
 const logger = Logger();
 
 let snapshotFilePath = './data/service-snapshot.sql';
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
@@ -52,6 +53,37 @@ const calculateSHA256 = async (file) => new Promise((resolve, reject) => {
 	stream.on('end', () => resolve(hash.digest('hex')));
 	stream.on('error', (error) => reject(error));
 });
+
+// Check if the IP address is local/private
+const isLocalIP = (ip) => ip === '127.0.0.1' || ip.startsWith('10.') || ip.startsWith('192.168.');
+
+const validateSnapshotURL = async (snapshotURL) => {
+	const { hostname } = new URL(snapshotURL);
+
+	// Check if the hostname is a local/private IP address or localhost
+	if (isLocalIP(hostname) || hostname === 'localhost') {
+		throw new Error('Request to local/private IP addresses or localhost is not allowed.');
+	}
+
+	return new Promise((resolve, reject) => {
+		// Preflight HEAD request to check content type
+		logger.info('Performing preflight HEAD request to check content type.');
+		const options = {
+			method: 'HEAD',
+		};
+
+		getHTTPProtocolByURL(snapshotURL).request(snapshotURL, options, (res) => {
+			if (res.statusCode === 200 && res.headers['content-type'] === 'application/octet-stream') {
+				logger.info('Content type is valid. Downloading the snapshot file.');
+				resolve();
+			} else {
+				reject(new Error(`Invalid content type or download failed when using snapshot URL: ${snapshotURL}.`));
+			}
+		}).on('error', (err) => {
+			reject(err);
+		}).end();
+	});
+};
 
 const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
 	const checksumUrl = fileUrl.replace('.gz', '.SHA256');
@@ -114,6 +146,7 @@ const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
 					});
 				});
 			} else {
+				logger.error(`Failed to download the checksum file. HTTP status code: ${response.statusCode} (${response.statusMessage}).`);
 				reject(new Error('Failed to download the checksum file.'));
 			}
 		}).on('error', (err) => {
@@ -130,7 +163,7 @@ const resolveSnapshotRestoreCommand = async (connEndpoint) => {
 	return mysqlSnapshotCommand;
 };
 
-const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
+const applySnapshot = async (connEndpoint = MYSQL_ENDPOINT) => {
 	try {
 		logger.debug('Attempting to resolve the snapshot command.');
 		const snapshotRestoreCommand = await resolveSnapshotRestoreCommand(connEndpoint);
@@ -176,6 +209,7 @@ const initSnapshot = async () => {
 		throw new Error(`Please consider using a secured source (HTTPS). To continue to download snapshot from ${snapshotUrl}, set 'ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP' env variable.`);
 	}
 
+	await validateSnapshotURL(snapshotUrl);
 	await downloadSnapshot(snapshotUrl);
 	await applySnapshot();
 };
