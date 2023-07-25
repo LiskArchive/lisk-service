@@ -96,7 +96,7 @@ const rmdir = async (directoryPath, options) => rm(
 	},
 );
 
-const existsFile = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
+const fileExists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
 const exists = filePath => new Promise(resolve => {
 	if (typeof filePath !== 'string') return resolve(false);
@@ -217,7 +217,7 @@ module.exports = {
 	rm,
 	mv,
 	isFile,
-	existsFile,
+	fileExists,
 	isFilePathInDirectory,
 
 	// Fetching

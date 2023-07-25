@@ -27,12 +27,14 @@ module.exports = {
 	SocketClient: require('./src/socketClient'),
 	Queue: require('./src/queue'),
 	mapper: require('./src/mapper'),
+	MySQL: require('./src/database/mysql'),
 	DB: {
 		MySQL: require('./src/database/mysql'),
-		Sqlite3: require('./src/database/sqlite3'),
+		sqlite3: require('./src/database/sqlite3'),
 	},
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
+		requestAll: require('./src/requestAll'),
 		Data: require('./src/data'),
 		fs: require('./src/fs'),
 		...(require('./src/data')),
