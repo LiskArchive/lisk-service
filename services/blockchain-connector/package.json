@@ -39,7 +39,7 @@
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
     "knex": "^2.4.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/0521296844e5c3ab3f41b4fef9af03b045ed70ac/framework/dist/lisk-service-framework-1.4.21.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/e09f8d4a5383e9633fa82fab675284c972aa739c/framework/dist/lisk-service-framework-1.4.21.tgz",
     "moment": "^2.29.4",
     "signals": "^1.0.0",
     "tar": "^6.1.11"
