@@ -140,7 +140,7 @@ describe('Test getOpeningBalance method', () => {
 
 		const { getOpeningBalance } = require('../../../shared/transactionsExport');
 
-		const openingBalance = await getOpeningBalance({ address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo' });
+		const openingBalance = await getOpeningBalance('lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo');
 		const expectedResponse = {
 			tokenID: '0400000000000000',
 			amount: '100000000000000',
@@ -193,7 +193,7 @@ describe('Test getLegacyBalance method', () => {
 
 		const { getLegacyBalance } = require('../../../shared/transactionsExport');
 
-		const legacyBalance = await getLegacyBalance({ publicKey });
+		const legacyBalance = await getLegacyBalance(publicKey);
 
 		expect(legacyBalance).toEqual(mockLegacySubstore[0].balance);
 	});

@@ -25,8 +25,8 @@ const config = require('./config');
 LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
-const { getCurrentChainID } = require('./shared/helpers/chain');
-const { setAppContext } = require('./shared/helpers/request');
+const { init } = require('./shared/init');
+const { setAppContext } = require('./shared/helpers');
 
 const logger = Logger();
 
@@ -48,7 +48,7 @@ app.addJobs(path.join(__dirname, 'jobs'));
 // Run the application
 app.run().then(async () => {
 	// Cache current chainID during start
-	await getCurrentChainID();
+	await init();
 	logger.info(`Service started ${packageJson.name}.`);
 }).catch(err => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);

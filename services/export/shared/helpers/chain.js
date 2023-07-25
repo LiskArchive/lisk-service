@@ -17,10 +17,11 @@ const { MODULE, COMMAND } = require('./constants');
 const { requestIndexer } = require('./request');
 
 let chainID;
+let networkStatus;
 
 const getCurrentChainID = async () => {
 	if (!chainID) {
-		const networkStatus = await requestIndexer('network.status');
+		networkStatus = await requestIndexer('network.status');
 		chainID = networkStatus.data.chainID;
 	}
 
@@ -32,7 +33,16 @@ const resolveReceivingChainID = (tx, currentChainID) => tx
 	? tx.params.receivingChainID
 	: currentChainID;
 
+const getNetworkStatus = async () => {
+	if (!networkStatus) {
+		networkStatus = await requestIndexer('network.status');
+	}
+
+	return networkStatus;
+};
+
 module.exports = {
 	getCurrentChainID,
 	resolveReceivingChainID,
+	getNetworkStatus,
 };

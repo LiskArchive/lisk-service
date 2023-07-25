@@ -13,23 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
+const logger = require('lisk-service-framework').Logger();
 
-const getIndexStatus = async params => {
-	const indexStatus = {
-		data: {},
-		meta: {},
-	};
-	const response = await dataService.getIndexStatus(params);
-	if (response.data) indexStatus.data = response.data;
-	if (response.meta) indexStatus.meta = response.meta;
+const { getCurrentChainID } = require('./helpers');
 
-	return indexStatus;
+const init = async () => {
+	try {
+		await getCurrentChainID();
+	} catch (error) {
+		const errorMsg = Array.isArray(error)
+			? error.map(e => e.message).join('\n')
+			: error.message;
+		logger.error(`Unable to initialize node information due to: ${errorMsg}`);
+	}
 };
 
-const { isBlockchainFullyIndexed } = dataService;
-
 module.exports = {
-	getIndexStatus,
-	isBlockchainFullyIndexed,
+	init,
 };

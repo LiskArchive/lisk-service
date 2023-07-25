@@ -16,12 +16,15 @@
 const MODULE = Object.freeze({
 	TOKEN: 'token',
 	LEGACY: 'legacy',
+	INTEROPERABILITY: 'interoperability',
 });
 
 const COMMAND = Object.freeze({
 	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
 	RECLAIM_LSK: 'reclaimLSK',
+	SUBMIT_MAINCHAIN_CROSS_CHAIN_UPDATE: 'submitMainchainCrossChainUpdate',
+	SUBMIT_SIDECHAIN_CROSS_CHAIN_UPDATE: 'submitSidechainCrossChainUpdate',
 });
 
 const EVENT = Object.freeze({

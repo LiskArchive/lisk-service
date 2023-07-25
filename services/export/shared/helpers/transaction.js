@@ -19,8 +19,7 @@ const normalizeTransactionAmount = (address, tx) => {
 	if (!('amount' in tx.params)) return String(0);
 
 	const isReclaim = tx.moduleCommand === `${MODULE.LEGACY}:${COMMAND.RECLAIM_LSK}`;
-	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
-		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`;
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 
 	const isSender = address === tx.sender.address;
 	const isRecipient = isTokenTransfer && address === tx.params.recipientAddress;
