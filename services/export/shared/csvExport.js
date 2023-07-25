@@ -25,6 +25,9 @@ const {
 		ValidationException,
 	},
 	Queue,
+	Utils: {
+		requestAll,
+	},
 } = require('lisk-service-framework');
 
 const {
@@ -50,7 +53,6 @@ const {
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
-const requestAll = require('./requestAll');
 const FilesystemCache = require('./csvCache');
 const regex = require('./regex');
 

@@ -18,10 +18,10 @@ const BluebirdPromise = require('bluebird');
 
 const { Logger,
 	DB: {
-		Sqlite3: {
+		sqlite3: {
 			getTableInstance,
 		},
-	}
+	},
 } = require('lisk-service-framework');
 
 const logger = Logger();

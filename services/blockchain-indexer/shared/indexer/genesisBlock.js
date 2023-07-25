@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { DB: { MySQL: { getTableInstance } } } = require('lisk-service-framework');
+const {
+	DB: {
+		MySQL: { getTableInstance } },
+	Utils: {
+		requestAll,
+	} } = require('lisk-service-framework');
 
 const {
 	MODULE,
@@ -28,7 +33,6 @@ const { requestConnector } = require('../utils/request');
 const { updateAccountBalances } = require('./accountBalanceIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
-const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const commissionsTableSchema = require('../database/schema/commissions');
 
@@ -44,8 +48,7 @@ const indexTokenModuleAssets = async (dbTrx) => {
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
 	const tokenModuleData = await requestAll(
-		requestConnector,
-		'getGenesisAssetByModule',
+		requestConnector.bind(null, 'getGenesisAssetByModule'),
 		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
 		totalUsers,
 	);
@@ -77,8 +80,7 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 		const commissionsTable = await getCommissionsTable();
 
 		const posModuleData = await requestAll(
-			requestConnector,
-			'getGenesisAssetByModule',
+			requestConnector.bind(null, 'getGenesisAssetByModule'),
 			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS },
 			numValidators,
 		);
@@ -102,8 +104,7 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 
 	if (numStakers > 0) {
 		const posModuleData = await requestAll(
-			requestConnector,
-			'getGenesisAssetByModule',
+			requestConnector.bind(null, 'getGenesisAssetByModule'),
 			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
 			numStakers,
 		);

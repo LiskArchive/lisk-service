@@ -24,7 +24,7 @@ const {
 			write,
 			isFile,
 			getFiles,
-			existsFile,
+			fileExists,
 			isFilePathInDirectory,
 			rm,
 		},
@@ -54,34 +54,34 @@ const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) =
 
 const purge = async (dirPath, days) => {
 	if (days === undefined) throw new ValidationException('days cannot be undefined');
-  
+
 	try {
-	  // Get the list of files in the directory using getFiles method
-	  const files = await getFiles(dirPath, { withFileTypes: true });
-  
-	  // Calculate the expiration time for each file and remove if expired
-	  await BluebirdPromise.map(
-		files,
-		async (filePath) => {
-		  const stat = await stats(filePath);
-		  const currentTime = new Date().getTime();
-		  const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
-  
-		  try {
-			if (currentTime > expirationTime) await rm(filePath);
-		  } catch (error) {
-			logger.error(error);
-		  }
-		},
-		{ concurrency: files.length },
-	  );
-  
-	  return;
+		// Get the list of files in the directory using getFiles method
+		const files = await getFiles(dirPath, { withFileTypes: true });
+
+		// Calculate the expiration time for each file and remove if expired
+		await BluebirdPromise.map(
+			files,
+			async (filePath) => {
+				const stat = await stats(filePath);
+				const currentTime = new Date().getTime();
+				const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
+
+				try {
+					if (currentTime > expirationTime) await rm(filePath);
+				} catch (error) {
+					logger.error(error);
+				}
+			},
+			{ concurrency: files.length },
+		);
+
+		return;
 	} catch (err) {
-	  logger.error(err);
-	  throw err;
+		logger.error(err);
+		throw err;
 	}
-  };
+};
 
 const init = async (params) => mkdir(params.dirPath);
 
@@ -92,7 +92,7 @@ module.exports = {
 	remove: rm,
 	list,
 	purge,
-	existsFile,
+	fileExists,
 	isFile,
 	isFilePathInDirectory,
 };

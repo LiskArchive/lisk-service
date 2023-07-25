@@ -22,7 +22,7 @@ const {
 	remove,
 	list,
 	purge,
-	existsFile,
+	fileExists,
 	isFile,
 	isFilePathInDirectory,
 } = require('../../../../shared/helpers/file');
@@ -47,7 +47,7 @@ describe('Test filesystem interface', () => {
 
 	it('should create a directory when calling init() method', async () => {
 		await init({ dirPath });
-		const isExists = await existsFile(dirPath);
+		const isExists = await fileExists(dirPath);
 		expect(isExists).toBe(true);
 	});
 
@@ -71,11 +71,11 @@ describe('Test filesystem interface', () => {
 
 	it('should remove a file when calling remove() method', async () => {
 		const filePath = `${dirPath}/testfile.csv`;
-		let isExists = await existsFile(filePath);
+		let isExists = await fileExists(filePath);
 		expect(isExists).toBe(true);
 
 		await remove(filePath);
-		isExists = await existsFile(filePath);
+		isExists = await fileExists(filePath);
 		expect(isExists).toBe(false);
 	});
 
