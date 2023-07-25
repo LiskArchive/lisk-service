@@ -44,14 +44,15 @@ const {
 	getTransactionsByBlockID,
 } = require('../dataService');
 
-const {
-	range,
-} = require('../utils/array');
-
+const { range } = require('../utils/array');
 const { getLisk32AddressFromPublicKey } = require('../utils/account');
 const { getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
+const { indexAccountPublicKey } = require('./accountIndex');
+const { indexGenesisBlockAssets } = require('./genesisBlock');
+const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
+const { updateAccountBalancesFromTokenEvents } = require('./accountBalanceIndex');
 
 const {
 	getFinalizedHeight,
@@ -78,11 +79,6 @@ const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT)
 const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL_ENDPOINT);
 const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
-
-const { indexGenesisBlockAssets } = require('./genesisBlock');
-const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
-const { scheduleAccountBalanceUpdateFromEvents } = require('./accountBalanceIndex');
-const { indexAccountPublicKey } = require('./accountIndex');
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
@@ -261,8 +257,8 @@ const indexBlock = async job => {
 			});
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
-			// Schedule address balance updates from token module events
-			await scheduleAccountBalanceUpdateFromEvents(events);
+			// Update address balance updates from token module events
+			await updateAccountBalancesFromTokenEvents(events, dbTrx);
 		}
 
 		const blockToIndex = {
@@ -369,8 +365,8 @@ const deleteIndexedBlocks = async job => {
 					});
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
-					// Schedule address balance updates from token module events
-					await scheduleAccountBalanceUpdateFromEvents(events);
+					// Update address balance updates from token module events
+					await updateAccountBalancesFromTokenEvents(events, dbTrx);
 				}
 
 				// Invalidate cached events for this block

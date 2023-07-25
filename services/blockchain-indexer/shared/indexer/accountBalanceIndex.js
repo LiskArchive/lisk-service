@@ -16,7 +16,6 @@
 const BluebirdPromise = require('bluebird');
 const {
 	MySQL: { getTableInstance },
-	Queue,
 } = require('lisk-service-framework');
 
 const config = require('../../config');
@@ -28,7 +27,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
-const updateAccountBalances = async (address) => {
+const updateAccountBalances = async (address, dbTrx = null) => {
 	const accountBalancesTable = await getAccountBalancesTable();
 	const { data: balanceInfos } = await getTokenBalances({ address });
 
@@ -39,46 +38,32 @@ const updateAccountBalances = async (address) => {
 	}));
 
 	// Update all token balances of the address
-	await accountBalancesTable.upsert(updatedTokenBalances);
+	await accountBalancesTable.upsert(updatedTokenBalances, dbTrx);
 };
 
-const accountBalanceIndexProcessor = async job => updateAccountBalances(job.data.address);
+const updateAccountBalancesFromTokenEvents = async (events, dbTrx = null) => BluebirdPromise.map(
+	events,
+	async event => {
+		// Skip non token module events
+		if (event.module !== MODULE.TOKEN) return;
 
-const accountBalanceIndexQueue = Queue(
-	config.endpoints.cache,
-	config.queue.accountBalanceIndex.name,
-	accountBalanceIndexProcessor,
-	config.queue.accountBalanceIndex.concurrency,
+		const { data: eventData = {} } = event;
+		const eventDataKeys = Object.keys(eventData);
+		await BluebirdPromise.map(
+			eventDataKeys,
+			async key => {
+				if (key.toLowerCase().includes('address')) {
+					const address = eventData[key];
+					await updateAccountBalances(address, dbTrx);
+				}
+			},
+			{ concurrency: eventDataKeys.length },
+		);
+	},
+	{ concurrency: events.length },
 );
 
-const scheduleAccountBalanceUpdateFromEvents = async (events) => {
-	await BluebirdPromise.map(
-		events,
-		async event => {
-			// Skip non token module events
-			if (event.module !== MODULE.TOKEN) return;
-
-			const { data: eventData = {} } = event;
-			const eventDataKeys = Object.keys(eventData);
-			await BluebirdPromise.map(
-				eventDataKeys,
-				async key => {
-					// Schedule account balance update for address related properties
-					if (key.toLowerCase().includes('address')) {
-						await accountBalanceIndexQueue.add({ address: eventData[key] });
-					}
-				},
-				{ concurrency: eventDataKeys.length },
-			);
-		},
-		{ concurrency: events.length },
-	);
-};
-
 module.exports = {
-	scheduleAccountBalanceUpdateFromEvents,
 	updateAccountBalances,
-
-	// For testing
-	accountBalanceIndexQueue,
+	updateAccountBalancesFromTokenEvents,
 };

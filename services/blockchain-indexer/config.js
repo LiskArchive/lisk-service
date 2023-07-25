@@ -78,10 +78,6 @@ config.queue = {
 	event: { name: 'Event' },
 
 	// Intra-microservice job queues
-	accountBalanceIndex: {
-		name: 'AccountBalanceIndex',
-		concurrency: 1,
-	},
 	accountQueueByAddress: {
 		name: 'AccountQueueByAddress',
 		concurrency: 1,

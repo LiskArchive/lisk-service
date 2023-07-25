@@ -102,7 +102,7 @@ const reportIndexStatus = async () => {
 
 	logger.info([
 		`currentChainHeight: ${currentChainHeight}`,
-		`lastIndexedBlock: ${lastIndexedBlock.height}`,
+		`lastIndexedBlockHeight: ${lastIndexedBlock.height}`,
 	].join(', '));
 
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%).`);
