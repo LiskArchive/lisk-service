@@ -498,4 +498,5 @@ module.exports = {
 	getOpeningBalance,
 	getLegacyBalance,
 	getMetadata,
+	resolveChainIDs,
 };

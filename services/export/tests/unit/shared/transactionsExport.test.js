@@ -21,6 +21,10 @@ const {
 	tokenTransfer,
 } = require('../../constants/csvExport');
 
+const {
+	transactions,
+} = require('../../constants/transaction');
+
 const config = require('../../../config');
 const fieldMappings = require('../../../shared/excelFieldMappings');
 const { PARTIAL_FILENAME } = require('../../../shared/regex');
@@ -315,6 +319,7 @@ const {
 	getToday,
 	normalizeTransaction,
 	getPartialFilenameFromParams,
+	resolveChainIDs,
 } = require('../../../shared/transactionsExport');
 
 describe('Test getAddressFromParams method', () => {
@@ -366,3 +371,27 @@ describe('Test getPartialFilenameFromParams method', () => {
 	});
 });
 
+describe('Test resolveChainIDs method', () => {
+	it('should return same sendingChainID and receivingChainID when called with token transfer transaction', async () => {
+		const response = resolveChainIDs(transactions.tokenTransfer, chainID);
+		const expectedResponse = {
+			receivingChainID: '04000000',
+			sendingChainID: '04000000',
+		};
+		expect(response).toEqual(expectedResponse);
+	});
+
+	it('should return sendingChainID and receivingChainID when called with token transferCrossChain transaction', async () => {
+		const response = resolveChainIDs(transactions.tokenTransferCrossChain, chainID);
+		const expectedResponse = {
+			receivingChainID: '04000001',
+			sendingChainID: '04000000',
+		};
+		expect(response).toEqual(expectedResponse);
+	});
+
+	it('should return empty object when called with non-token transferCrossChain transaction', async () => {
+		const response = resolveChainIDs(transactions.stake, chainID);
+		expect(Object.getOwnPropertyNames(response).length).toBe(0);
+	});
+});
