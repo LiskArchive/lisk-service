@@ -44,7 +44,7 @@ brew install redis
 
 ### MySQL
 
-[MySQL 5.7](https://dev.mysql.com/downloads/mysql/5.7.html) is used for storing persistent data.
+[MySQL](https://dev.mysql.com/downloads/mysql) is used for storing persistent data.
 
 ```bash
 brew tap homebrew/services
@@ -52,12 +52,16 @@ brew install mysql@8
 brew services start mysql@8
 ```
 
-### Node.js
+### NVM
 
-3. [Node.js 12.x](<https://nodejs.org/>) serves as the underlying engine for code execution.
+3. [Node.js](<https://nodejs.org/>) serves as the underlying engine for code execution.
 
-```bash
-brew install node@12
+Follow the official documentation to install the most recent version of [NVM](https://github.com/nvm-sh/nvm) on macOS.
+After installing nvm, navigate to lisk-service repository and use this command to install nodejs:
+
+```
+nvm install
+nvm use
 ```
 
 > Having Node.js installed makes it possible to install [npm](https://www.npmjs.com/) packages.

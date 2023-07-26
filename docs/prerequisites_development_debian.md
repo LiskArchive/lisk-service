@@ -37,7 +37,7 @@ sudo apt install redis-server
 
 ### MySQL
 
-[MySQL 5.7](https://dev.mysql.com/downloads/mysql/5.7.html) is used for storing persistent data.
+[MySQL](https://dev.mysql.com/downloads/mysql/) is used for storing persistent data.
 
 ```bash
 wget http://repo.mysql.com/mysql-apt-config_0.8.10-1_all.deb
@@ -47,15 +47,16 @@ sudo apt install mysql-server
 sudo mysql_secure_installation
 ```
 
-### Node.js
+### NVM
 
-3. [Node.js 12.x](<https://nodejs.org/>) serves as the underlying engine for code execution.
+3. [Node.js](<https://nodejs.org/>) serves as the underlying engine for code execution.
 
-```bash
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+Follow the official documentation to install the most recent version of [NVM](https://github.com/nvm-sh/nvm) on Debian.
+After installing nvm, navigate to lisk-service repository and use this command to install nodejs:
 
-sudo apt update
-sudo apt install -y nodejs
+```
+nvm install
+nvm use
 ```
 
 > Having Node.js installed makes it possible to install [npm](https://www.npmjs.com/) packages.
