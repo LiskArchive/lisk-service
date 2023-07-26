@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -15,65 +15,64 @@
  */
 const path = require('path');
 const fs = require('fs');
-const { Logger } = require('lisk-service-framework');
+const Logger = require('./logger').get;
 
 const logger = Logger();
 
-const stats = async (filePath) => new Promise((resolve, reject) => {
-	fs.stat(
-		filePath,
-		(err, stat) => {
+const mkdir = (dirPath, options = { recursive: true }) => new Promise((resolve, reject) => {
+	logger.debug(`Creating directory: ${dirPath}`);
+	return fs.mkdir(
+		dirPath,
+		options,
+		err => {
 			if (err) {
-				logger.error(err);
+				logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
 				return reject(err);
 			}
-
-			return resolve(stat);
+			logger.debug(`Successfully created directory: ${dirPath}.`);
+			return resolve();
 		},
 	);
 });
 
-const exists = async (resourcePath) => new Promise((resolve) => {
-	logger.trace(`Checking if resource exists: ${resourcePath}.`);
-	fs.access(
-		resourcePath,
-		(err) => {
-			if (err) {
-				logger.trace(`Error when checking if resource exists: ${resourcePath}.\n`, err);
-				return resolve(false);
-			}
-
-			logger.trace(`Successfully validated that resource exists: ${resourcePath}.`);
-			return resolve(true);
-		},
-	);
+const read = filePath => new Promise((resolve, reject) => {
+	fs.promises.readFile(filePath, 'utf8')
+		.then(data => {
+			resolve(data);
+		})
+		.catch(error => {
+			reject(error);
+		});
 });
 
-const mkdir = async (directoryPath, options = { recursive: true }) => new Promise(
-	(resolve, reject) => {
-		logger.trace(`Creating directory: ${directoryPath}.`);
-		fs.mkdir(
-			directoryPath,
-			options,
-			(err) => {
-				if (err) {
-					logger.error(`Error when creating directory: ${directoryPath}.\n`, err);
-					return reject(err);
-				}
+const write = (filePath, content) => new Promise((resolve, reject) => {
+	fs.writeFile(filePath, content, err => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve();
+	});
+});
 
-				logger.debug(`Successfully created directory: ${directoryPath}.`);
-				return resolve();
-			},
-		);
-	},
-);
+const isFilePathInDirectory = (filePath, directory) => {
+	const absoluteFilePath = path.resolve(filePath);
+	const absoluteRootDir = path.resolve(directory);
 
-const rm = async (deletePath, options) => new Promise((resolve) => {
+	if (!absoluteFilePath.startsWith(absoluteRootDir)) {
+		logger.warn('Filepath is not allowed.');
+		return false;
+	}
+
+	return true;
+};
+
+const rm = async (deletePath, options) => new Promise(resolve => {
 	logger.trace(`Removing directory: ${deletePath}.`);
 	fs.rm(
 		deletePath,
 		options,
-		(err) => {
+		err => {
 			if (err) {
 				logger.error(`Error when removing file/directory: ${deletePath}.\n`, err);
 				return resolve(false);
@@ -96,30 +95,47 @@ const rmdir = async (directoryPath, options) => rm(
 	},
 );
 
-const read = async (filePath) => new Promise((resolve, reject) => {
-	logger.trace(`Reading file: ${filePath}.`);
-	fs.readFile(filePath, 'utf8', (err, data) => {
-		if (err) {
-			logger.error(`Error when reading file: ${filePath}.\n`, err);
-			return reject(err);
-		}
+const fileExists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
 
-		logger.trace(`Successfully read contents from file: ${filePath}.`);
-		return resolve(data);
+// eslint-disable-next-line consistent-return
+const exists = filePath => new Promise(resolve => {
+	if (typeof filePath !== 'string') return resolve(false);
+
+	fs.access(filePath, err => {
+		if (err) {
+			return resolve(false);
+		}
+		return resolve(true);
 	});
 });
 
-const write = async (filePath, content) => new Promise((resolve, reject) => {
-	logger.trace(`Writing to file: ${filePath}.`);
-	fs.writeFile(filePath, content, (err) => {
-		if (err) {
-			logger.error(`Error when writing to file: ${filePath}.\n`, err);
-			return reject(err);
-		}
+const isFile = async filePath => {
+	const isExists = await exists(filePath);
 
-		logger.trace(`Successfully wrote contents to file: ${filePath}.`);
-		return resolve();
-	});
+	if (isExists) {
+		try {
+			const stats = await fs.promises.lstat(filePath);
+			return stats.isFile();
+		} catch (error) {
+			return false;
+		}
+	}
+
+	return false;
+};
+
+const stats = async filePath => new Promise((resolve, reject) => {
+	fs.stat(
+		filePath,
+		(err, stat) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+
+			return resolve(stat);
+		},
+	);
 });
 
 const getDirectories = async (directoryPath, options = { withFileTypes: true }) => new Promise(
@@ -135,7 +151,7 @@ const getDirectories = async (directoryPath, options = { withFileTypes: true }) 
 				}
 
 				const subDirsWithTime = [];
-				const subDirectories = dirs.filter((subDir) => subDir.isDirectory());
+				const subDirectories = dirs.filter(subDir => subDir.isDirectory());
 				for (let i = 0; i < subDirectories.length; i++) {
 					const fullSubDirPath = path.join(directoryPath, subDirectories[i].name);
 					// eslint-disable-next-line no-await-in-loop
@@ -163,8 +179,8 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => new
 				return reject(err);
 			}
 			const filesInDirectory = files
-				.filter((file) => file.isFile())
-				.map((file) => path.join(directoryPath, file.name));
+				.filter(file => file.isFile())
+				.map(file => path.join(directoryPath, file.name));
 
 			logger.trace(`Successfully read files in directory: ${directoryPath}.`);
 			return resolve(filesInDirectory);
@@ -177,9 +193,9 @@ const getFilesAndDirs = async (directoryPath, options = { withFileTypes: true })
 	return [...subDirectories, ...filesInDirectory];
 };
 
-const rename = async (oldName, newName) => new Promise((resolve, reject) => {
+const mv = async (oldName, newName) => new Promise((resolve, reject) => {
 	logger.trace(`Renaming resource: ${oldName} to ${newName}.`);
-	fs.rename(oldName, newName, (err) => {
+	fs.rename(oldName, newName, err => {
 		if (err) {
 			logger.error(`Error while renaming resource: ${oldName} to ${newName}.\n`, err);
 			return reject(err);
@@ -190,19 +206,26 @@ const rename = async (oldName, newName) => new Promise((resolve, reject) => {
 	});
 });
 
-const mv = async (source, target) => rename(source, target);
-
 module.exports = {
-	exists,
+	// Directory operations
 	mkdir,
-	rm,
 	rmdir,
-	getDirectories,
+
+	// File operations
 	read,
 	write,
-	getFiles,
-	rename,
+	rm,
 	mv,
-	stats,
+	isFile,
+	fileExists,
+	isFilePathInDirectory,
+
+	// Fetching
+	getFiles,
+	getDirectories,
 	getFilesAndDirs,
+
+	// Files and directories
+	exists,
+	stats,
 };

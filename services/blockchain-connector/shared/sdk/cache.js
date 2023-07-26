@@ -16,11 +16,17 @@
 const moment = require('moment');
 const BluebirdPromise = require('bluebird');
 
-const logger = require('lisk-service-framework').Logger();
+const { Logger,
+	DB: {
+		sqlite3: {
+			getTableInstance,
+		},
+	},
+} = require('lisk-service-framework');
+
+const logger = Logger();
 
 const { getNodeInfo } = require('./endpoints_1');
-
-const { getTableInstance } = require('../database/sqlite3');
 const cacheBlockSchema = require('../database/schema/blocks');
 const cacheTrxIDToBlockIDSchema = require('../database/schema/transactions');
 

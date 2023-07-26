@@ -52,21 +52,23 @@ describe('getTokenTopBalances', () => {
 					info: jest.fn(),
 					warn: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						find: jest.fn((data) => {
-							expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
-							return mockTokenTopBalancesTokenInfos;
-						}),
-						count: jest.fn((data) => {
-							expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
-							return count;
-						}),
-					})),
-					KVStore: {
-						...actual.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							find: jest.fn((data) => {
+								expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
+								return mockTokenTopBalancesTokenInfos;
+							}),
+							count: jest.fn((data) => {
+								expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
+								return count;
+							}),
+						})),
+						KVStore: {
+							...actual.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 			};
@@ -134,15 +136,17 @@ describe('getTokenTopBalances', () => {
 					info: jest.fn(),
 					warn: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						find: jest.fn().mockRejectedValue('Error'),
-						count: jest.fn(),
-					})),
-					KVStore: {
-						...actual.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							find: jest.fn().mockRejectedValue('Error'),
+							count: jest.fn(),
+						})),
+						KVStore: {
+							...actual.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 			};
@@ -180,15 +184,17 @@ describe('getTokenTopBalances', () => {
 					info: jest.fn(),
 					warn: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						find: jest.fn(),
-						count: jest.fn().mockRejectedValue('Error'),
-					})),
-					KVStore: {
-						...actual.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							find: jest.fn(),
+							count: jest.fn().mockRejectedValue('Error'),
+						})),
+						KVStore: {
+							...actual.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 			};
@@ -226,15 +232,17 @@ describe('getTokenTopBalances', () => {
 					info: jest.fn(),
 					warn: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						find: jest.fn(),
-						count: jest.fn(),
-					})),
-					KVStore: {
-						...actual.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							find: jest.fn(),
+							count: jest.fn(),
+						})),
+						KVStore: {
+							...actual.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 			};

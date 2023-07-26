@@ -18,7 +18,9 @@ const Redis = require('ioredis');
 const {
 	Logger,
 	Queue,
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const logger = Logger();

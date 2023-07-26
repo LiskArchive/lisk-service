@@ -16,7 +16,7 @@
 const moment = require('moment');
 
 const {
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const { networkStatus } = require('../constants/networkStatus');

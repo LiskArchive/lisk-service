@@ -14,12 +14,14 @@
  *
  */
 const {
-	MySQL: {
-		getDBConnection,
-		startDBTransaction,
-		commitDBTransaction,
-		KVStore: {
-			getKeyValueTable,
+	DB: {
+		MySQL: {
+			getDBConnection,
+			startDBTransaction,
+			commitDBTransaction,
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');

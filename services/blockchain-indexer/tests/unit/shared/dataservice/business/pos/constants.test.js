@@ -38,8 +38,10 @@ jest.mock('lisk-service-framework', () => {
 			warn: jest.fn(),
 			trace: jest.fn(),
 		})),
-		MySQL: {
-			getTableInstance: jest.fn(),
+		DB: {
+			MySQL: {
+				getTableInstance: jest.fn(),
+			},
 		},
 	};
 });

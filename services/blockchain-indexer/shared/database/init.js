@@ -18,9 +18,11 @@ const path = require('path');
 
 const {
 	Logger,
-	MySQL: {
-		getTableInstance,
-		KVStore: { getKeyValueTable },
+	DB: {
+		MySQL: {
+			getTableInstance,
+			KVStore: { getKeyValueTable },
+		},
 	},
 	Utils,
 	Signals,

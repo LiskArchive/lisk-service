@@ -19,14 +19,16 @@ const {
 	Logger,
 	Queue,
 	Signals,
-	MySQL: {
-		getTableInstance,
-		getDBConnection,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
-		KVStore: {
-			getKeyValueTable,
+	DB: {
+		MySQL: {
+			getTableInstance,
+			getDBConnection,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');

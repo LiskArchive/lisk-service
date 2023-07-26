@@ -40,19 +40,21 @@ describe('updateAccountInfoPk', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						upsert: jest.fn((data) => {
-							expect(data).toEqual({
-								publicKey: mockPublicKey,
-								address: mockAddress,
-							});
-						}),
-					})),
-					KVStore: {
-						...actualLiskServiceFramework.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							upsert: jest.fn((data) => {
+								expect(data).toEqual({
+									publicKey: mockPublicKey,
+									address: mockAddress,
+								});
+							}),
+						})),
+						KVStore: {
+							...actualLiskServiceFramework.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 				Queue: jest.fn(),
@@ -77,16 +79,18 @@ describe('updateAccountInfoPk', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						upsert: jest.fn(() => {
-							throw Error('error');
-						}),
-					})),
-					KVStore: {
-						...actualLiskServiceFramework.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							upsert: jest.fn(() => {
+								throw Error('error');
+							}),
+						})),
+						KVStore: {
+							...actualLiskServiceFramework.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 				Queue: jest.fn(),
@@ -119,14 +123,16 @@ describe('updateAccountInfoPk', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(() => {
-						throw Error('error');
-					}),
-					KVStore: {
-						...actualLiskServiceFramework.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => {
+							throw Error('error');
+						}),
+						KVStore: {
+							...actualLiskServiceFramework.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 				Queue: jest.fn(),
@@ -166,18 +172,20 @@ describe('updateAccountInfoAddr', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						upsert: jest.fn((data) => {
-							expect(data).toEqual({
-								address: mockAddress,
-							});
-						}),
-					})),
-					KVStore: {
-						...actualLiskServiceFramework.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							upsert: jest.fn((data) => {
+								expect(data).toEqual({
+									address: mockAddress,
+								});
+							}),
+						})),
+						KVStore: {
+							...actualLiskServiceFramework.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 				Queue: jest.fn(),
@@ -202,16 +210,18 @@ describe('updateAccountInfoAddr', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						upsert: jest.fn(() => {
-							throw Error('error');
-						}),
-					})),
-					KVStore: {
-						...actualLiskServiceFramework.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => ({
+							upsert: jest.fn(() => {
+								throw Error('error');
+							}),
+						})),
+						KVStore: {
+							...actualLiskServiceFramework.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 				Queue: jest.fn(),
@@ -244,14 +254,16 @@ describe('updateAccountInfoAddr', () => {
 			const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 			return {
 				...actualLiskServiceFramework,
-				MySQL: {
-					getTableInstance: jest.fn(() => {
-						throw Error('error');
-					}),
-					KVStore: {
-						...actualLiskServiceFramework.MySQL.KVStore,
-						configureKeyValueTable: jest.fn(),
-						getKeyValueTable: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(() => {
+							throw Error('error');
+						}),
+						KVStore: {
+							...actualLiskServiceFramework.DB.MySQL.KVStore,
+							configureKeyValueTable: jest.fn(),
+							getKeyValueTable: jest.fn(),
+						},
 					},
 				},
 				Queue: jest.fn(),
