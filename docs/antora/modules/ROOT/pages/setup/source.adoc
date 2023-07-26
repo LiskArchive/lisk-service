@@ -6,6 +6,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :page-previous-title: Setup
 :page-next: /lisk-service/configuration/source.html
 :page-next-title: Configuration with PM2
+:source-language: bash
 // URLs
 :url_docker_install_linux: https://docs.docker.com/engine/install
 :url_docker_install_linux_compose: https://docs.docker.com/compose/install/
@@ -50,7 +51,6 @@ Ubuntu::
 --
 In Ubuntu and its derivatives APT is the base package management application. Ensure your local APT registry is up-to-date.
 
-[source,bash]
 ----
 apt update
 ----
@@ -62,12 +62,10 @@ Install https://brew.sh/[Brew] by following the https://brew.sh/[latest instruct
 
 Next, ensure your package sources are up to date:
 
-[source,bash]
 ----
 brew update
 ----
 
-[source,bash]
 ----
 brew doctor
 ----
@@ -82,8 +80,6 @@ Ubuntu::
 +
 --
 Install the `build-essential` package alongside with several development tools.
-
-[source,bash]
 ----
 sudo apt-get install -y build-essential git make
 ----
@@ -91,7 +87,6 @@ sudo apt-get install -y build-essential git make
 macOS::
 +
 --
-[source,bash]
 ----
 xcode-select --install
 ----
@@ -116,13 +111,11 @@ NVM is a bash script that enables the management of multiple active Node.js vers
 . Install v16 of Node.js using NVM.
 
 .Check for the latest LTS version
-[source,bash]
 ----
 nvm ls-remote
 ----
 
 .Install the latest LTS version
-[source,bash]
 ----
 nvm install 16
 ----
@@ -134,12 +127,10 @@ If NVM or other package managers are not required, it is possible to install the
 
 *Ubuntu*
 
-[source,bash]
 ----
 curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 ----
 
-[source,bash]
 ----
 sudo apt-get install -y nodejs
 ----
@@ -148,7 +139,6 @@ sudo apt-get install -y nodejs
 
 For macOS, please execute the following command below:
 
-[source,bash]
 ----
 brew install node@16
 ----
@@ -172,17 +162,14 @@ You can choose to create a custom database with a different user and password. T
 Ubuntu::
 +
 --
-[source,bash]
 ----
 sudo apt update
 ----
 
-[source,bash]
 ----
 sudo apt install mysql-server=8.0*
 ----
 
-[source,bash]
 ----
 sudo mysql_secure_installation
 ----
@@ -191,17 +178,14 @@ sudo mysql_secure_installation
 macOS::
 +
 --
-[source,bash]
 ----
 brew tap homebrew/services
 ----
 
-[source,bash]
 ----
 brew install mysql@8.0
 ----
 
-[source,bash]
 ----
 brew services start mysql@8.0
 ----
@@ -256,13 +240,11 @@ Follow the steps described in the xref:{url_setup_docker_docker}[Prerequisites >
 **Installation**
 
 .How to install and start Redis with Docker
-[source,bash]
 ----
 docker run --name redis_service --port 6379:6379 -d redis:5-alpine
 ----
 
 .How to use the custom redis.conf file
-[source,bash]
 ----
 docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf --port 6379:6379 -d redis:5-alpine
 ----
@@ -272,7 +254,6 @@ The above commands should be enough to start Redis which is ready to use with Li
 To stop the Docker container again, execute the following commands below:
 
 .How to stop Redis with Docker
-[source,bash]
 ----
 docker stop redis_service
 ----
@@ -281,15 +262,11 @@ Redis system-wide::
 +
 --
 *Ubuntu*
-
-[source, bash]
 ----
 sudo apt-get install redis-server
 ----
 
 *macOS*
-
-[source, bash]
 ----
 brew install redis
 ----
@@ -304,7 +281,7 @@ we should encourage community to make Lisk Service compatible with this service,
 
 {url_geojs}[GeoJS] is used by the Network Monitor for IP address geo-location.
 
-[source,bash]
+
 ----
 #todo
 ----
@@ -315,7 +292,6 @@ we should encourage community to make Lisk Service compatible with this service,
 
 {url_pm2}[PM2] helps manage the node processes for Lisk Service and also offers easy log rotation (Highly Recommended).
 
-[source,bash]
 ----
 npm install -g pm2
 ----
@@ -329,7 +305,7 @@ It is strongly recommended that you synchronize your Lisk Core node with the net
 
 If you have not already done so, clone the {url_github_service}[lisk-service^] GitHub repository and then navigate into the project folder and check out the latest release.
 
-[source,bash]
+
 ----
 # Clone Lisk Service repository
 git clone https://github.com/LiskHQ/lisk-service.git
@@ -346,7 +322,6 @@ git checkout development
 
 Install all npm dependencies from the root directory.
 
-[source,bash]
 ----
 make build-local
 ----
@@ -354,7 +329,6 @@ make build-local
 Now it is possible to start Lisk Service.
 
 .Start Lisk Service from Source code
-[source,bash]
 ----
 npm run start
 ----
