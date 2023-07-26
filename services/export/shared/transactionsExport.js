@@ -392,7 +392,7 @@ const exportTransactions = async (job) => {
 			/* eslint-disable no-await-in-loop */
 			const day = arrayOfDates[i];
 			const partialFilename = await getPartialFilenameFromParams(params, day);
-			if (await partials.exists(partialFilename)) {
+			if (await partials.fileExists(partialFilename)) {
 				const transactions = JSON.parse(await partials.read(partialFilename));
 				allTransactions.push(...transactions);
 			} else if (await noTransactionsCache.get(partialFilename) !== true) {
@@ -494,7 +494,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 	exportResponse.data.interval = await standardizeIntervalFromParams(params);
 
 	const excelFilename = await getExcelFilenameFromParams(params);
-	if (await staticFiles.exists(excelFilename)) {
+	if (await staticFiles.fileExists(excelFilename)) {
 		exportResponse.data.fileName = excelFilename;
 		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params);
 		exportResponse.meta.ready = true;
