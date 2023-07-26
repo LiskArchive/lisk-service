@@ -13,15 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const {
-	Utils: {
-		fs: { mkdir, exists },
-	},
-	Logger,
-	Exceptions: { NotFoundException },
-} = require('lisk-service-framework');
-
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
@@ -29,15 +20,22 @@ const https = require('https');
 const zlib = require('zlib');
 const util = require('util');
 const crypto = require('crypto');
+const {
+	Utils: {
+		fs: { mkdir, exists },
+	},
+	Logger,
+	Exceptions: { NotFoundException },
+} = require('lisk-service-framework');
 const config = require('../../config');
 const execInShell = util.promisify(require('child_process').exec);
 const { requestConnector } = require('./request');
+const regex = require('./regex');
 
 const logger = Logger();
 
 let snapshotFilePath = './data/service-snapshot.sql';
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const PRIVATE_IP_REGEX = /^(10(\.\d{1,3}){3})|((172\.(1[6-9]|2\d|3[0-1])|192\.168)(\.\d{1,3}){2})$/;
 
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
@@ -56,7 +54,7 @@ const calculateSHA256 = async (file) => new Promise((resolve, reject) => {
 });
 
 // Check if the IP address is local/private
-const isLocalIP = (ip) => ip === '127.0.0.1' || PRIVATE_IP_REGEX.test(ip);
+const isLocalIP = (ip) => ip === '127.0.0.1' || regex.PRIVATE_IP_REGEX.test(ip);
 
 const validateSnapshotURL = async (snapshotURL) => {
 	const { hostname } = new URL(snapshotURL);
@@ -195,7 +193,7 @@ const initSnapshot = async () => {
 
 	const { chainID } = await requestConnector('getNetworkStatus');
 	const network = config.networks.LISK
-		.filter(networkInfo => networkInfo.chainID === chainID)[0];
+		.find(networkInfo => networkInfo.chainID === chainID);
 
 	snapshotFilePath = `./data/${network.name}/service-snapshot.sql`;
 	let { snapshotUrl } = network;
