@@ -7,6 +7,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :page-next: /lisk-service/configuration/docker.html
 :page-next-title: Configuration with Docker
 :sectnums:
+:lisk-docs: ROOT::
 
 :url_github_service: https://github.com/LiskHQ/lisk-service
 :url_docker_hub: https://hub.docker.com/
@@ -16,8 +17,6 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :url_docker_install_windows: https://docs.docker.com/docker-for-windows/install/
 :url_docker_linux_post_install: https://docs.docker.com/install/linux/linux-postinstall/
 :url_xcode: https://developer.apple.com/xcode/features/
-
-:lisk-docs: ROOT::
 :url_index_usage: index.adoc#usage
 :url_setup: setup/index.adoc
 :url_core_setup_npm: v4@lisk-core::setup/npm.adoc
@@ -134,11 +133,18 @@ sudo ufw allow 9901
 
 Clone the {url_github_service}[lisk-service^] GitHub repository and then navigate into the project folder.
 
-.Execute in the directory where you want to store Lisk Service
 [source,bash]
 ----
 git clone https://github.com/LiskHQ/lisk-service.git
+----
+
+[source,bash]
+----
 cd lisk-service
+----
+
+[source,bash]
+----
 git checkout v0.7.0
 ----
 
@@ -146,7 +152,7 @@ git checkout v0.7.0
 
 To build Lisk Service from local files, first, navigate to the `lisk-service` repository on your system:
 
-.Working directory: ./lisk-service/
+.Working directory: lisk-service/
 [source,bash]
 ----
 make build
@@ -160,7 +166,7 @@ TIP: If you skipped the step to configure Docker to run without `*sudo*` rights,
 
 Before running the application copy the default docker-compose environment file:
 
-.Working directory: ./lisk-service/
+.Working directory: lisk-service/
 [source,bash]
 ----
 cp docker/example.env .env
@@ -178,7 +184,7 @@ vim .env
 [source,bash]
 ----
 # Lisk ecosystem configuration
-LISK_APP_WS=ws://host.docker.internal:7887 
+LISK_APP_WS=ws://host.docker.internal:7887
 ----
 
 The `example.env` assumes that the blockchain node e.g. Lisk Core node is running on the host machine, and not inside of a Docker container.
