@@ -15,8 +15,10 @@
  */
 const path = require('path');
 const {
-	MySQL: {
-		KVStore: { configureKeyValueTable },
+	DB: {
+		MySQL: {
+			KVStore: { configureKeyValueTable },
+		},
 	},
 	Microservice,
 	Logger,

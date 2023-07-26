@@ -15,7 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const config = require('../../config');

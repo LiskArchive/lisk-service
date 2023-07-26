@@ -19,11 +19,11 @@ const {
 	commitDBTransaction,
 	getDBConnection,
 	rollbackDBTransaction,
-} = require('../../../src/mysql');
+} = require('../../../../src/database/mysql');
 
-const blocksTableSchema = require('../../constants/blocksSchema');
-const transactionsSchema = require('../../constants/transactionsSchema');
-const compositeKeySchema = require('../../constants/compositeKeySchema');
+const blocksTableSchema = require('../../../constants/blocksSchema');
+const transactionsSchema = require('../../../constants/transactionsSchema');
+const compositeKeySchema = require('../../../constants/compositeKeySchema');
 
 const tableName = 'functional_test';
 const transactionsTableName = 'transactions_functional_test';
@@ -37,8 +37,8 @@ const getBlocksTable = () => getTableInstance(blocksTableSchema);
 const getCompositeKeyTable = () => getTableInstance(compositeKeySchema);
 const getTransactionsTable = () => getTableInstance(transactionsSchema);
 
-const { emptyBlock, nonEmptyBlock } = require('../../constants/blocks');
-const { tokenTransferTransaction } = require('../../constants/transactions');
+const { emptyBlock, nonEmptyBlock } = require('../../../constants/blocks');
+const { tokenTransferTransaction } = require('../../../constants/transactions');
 
 describe('Test MySQL', () => {
 	let blocksTable;
@@ -918,6 +918,34 @@ describe('Test MySQL', () => {
 
 			const count = await blocksTable.count({});
 			expect(count).toBe(0);
+		});
+
+		it('should delete a row using raw query', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+
+			await blocksTable.upsert([emptyBlock]);
+			const existingBlockCount = await blocksTable.count();
+			expect(existingBlockCount).toBe(1);
+
+			await blocksTable.rawQuery(`DELETE FROM ${tableName} WHERE id=${emptyBlock.id}`, trx);
+			await commitDBTransaction(trx);
+
+			const count = await blocksTable.count({});
+			expect(count).toBe(0);
+		});
+
+		it('should get row count', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+
+			await blocksTable.upsert([emptyBlock]);
+			const existingBlockCount = await blocksTable.count();
+			expect(existingBlockCount).toBe(1);
+
+			const [result] = await blocksTable.count({}, null, trx);
+			await commitDBTransaction(trx);
+			expect(result.count).toBe(1);
 		});
 
 		it('should perform batch row insert', async () => {

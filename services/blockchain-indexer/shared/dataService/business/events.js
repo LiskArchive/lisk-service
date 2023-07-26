@@ -18,8 +18,10 @@ const BluebirdPromise = require('bluebird');
 const {
 	CacheLRU,
 	Exceptions: { NotFoundException },
-	MySQL: {
-		getTableInstance,
+	DB: {
+		MySQL: {
+			getTableInstance,
+		},
 	},
 } = require('lisk-service-framework');
 

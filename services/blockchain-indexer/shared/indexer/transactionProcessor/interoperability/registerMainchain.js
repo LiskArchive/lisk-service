@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');

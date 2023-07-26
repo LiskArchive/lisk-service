@@ -20,7 +20,7 @@ const util = require('util');
 const {
 	CacheRedis,
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const logger = Logger();

@@ -14,9 +14,11 @@
  *
  */
 const {
-	MySQL: {
-		KVStore: {
-			getKeyValueTable,
+	DB: {
+		MySQL: {
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');

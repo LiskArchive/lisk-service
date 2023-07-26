@@ -42,8 +42,10 @@ jest.mock('lisk-service-framework', () => ({
 		info: jest.fn(),
 		warn: jest.fn(),
 	})),
-	MySQL: {
-		getTableInstance: jest.fn(),
+	DB: {
+		MySQL: {
+			getTableInstance: jest.fn(),
+		},
 	},
 }));
 

@@ -16,8 +16,13 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	Utils: {
+		fs: { read },
+	},
 	HTTP,
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 	Logger,
 } = require('lisk-service-framework');
 
@@ -25,7 +30,6 @@ const logger = Logger();
 
 const { LENGTH_CHAIN_ID } = require('./constants');
 const { isMainchain } = require('./chain');
-const { read } = require('./utils/fs');
 const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
@@ -344,6 +348,8 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 };
 
 const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
+	const applicationMetadataTable = await getApplicationMetadataTable();
+
 	const tokensMeta = [];
 	const processedChainIDs = new Set();
 	const resultTokenIDsSet = tokenInfoFromDB.reduce(
@@ -360,9 +366,11 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 			if (processedChainIDs.has(chainID)) return;
 			processedChainIDs.add(chainID);
 
+			const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['appDirName']);
+
 			const parsedTokenMeta = await readMetadataFromClonedRepo(
 				entry.network,
-				entry.chainName,
+				requestedAppInfo.appDirName,
 				config.FILENAME.NATIVETOKENS_JSON,
 			);
 
@@ -453,12 +461,12 @@ const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 	};
 
 	// Check if the metadata for the requested chainID exists
-	const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['network', 'chainName']);
+	const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['network', 'chainName', 'appDirName']);
 	if (!requestedAppInfo) return tokenMetadata;
 
 	const { serviceURLs } = await readMetadataFromClonedRepo(
 		requestedAppInfo.network,
-		requestedAppInfo.chainName,
+		requestedAppInfo.appDirName,
 		config.FILENAME.APP_JSON,
 	);
 
