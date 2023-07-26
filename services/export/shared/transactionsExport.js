@@ -120,7 +120,10 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 				address: ccmTransferEvents[i].data.senderAddress,
 			},
 			block: ccmTransferEvents[i].block,
-			params: ccmTransferEvents[i].data,
+			params: {
+				...ccmTransferEvents[i].data,
+				data: 'This entry was generated from \'ccmTransfer\' event emitted from the specified CCU transactionID.',
+			},
 			sendingChainID: transaction.params.sendingChainID,
 		});
 	}
@@ -422,7 +425,7 @@ const scheduleTransactionExportQueue = Queue(
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built
 	const isBlockchainIndexReady = await requestIndexer('isBlockchainFullyIndexed');
-	if (!isBlockchainIndexReady) throw new ValidationException('Blockchain index is not yet ready.');
+	if (!isBlockchainIndexReady) throw new ValidationException('The blockchain index is not yet ready. Please retry later.');
 
 	const exportResponse = {
 		data: {},
