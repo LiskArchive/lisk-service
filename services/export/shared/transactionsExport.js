@@ -133,6 +133,45 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 	return transactions;
 };
 
+const getRewardAssignedInfo = async (params) => {
+	const allEvents = await requestAllStandard(
+		requestIndexer.bind(null, 'events'),
+		{
+			topic: params.address,
+			timestamp: params.timestamp,
+			module: MODULE.POS,
+			name: EVENT.REWARDS_ASSIGNED,
+			sort: 'timestamp:desc',
+		},
+	);
+
+	const transactions = [];
+	const rewardsAssignedEvents = allEvents
+		.filter(event => event.data.stakerAddress === params.address);
+
+	for (let i = 0; i < rewardsAssignedEvents.length; i++) {
+		const rewardsAssignedEvent = rewardsAssignedEvents[i];
+		const [transactionID] = rewardsAssignedEvent.topics;
+		/* eslint-disable-next-line no-await-in-loop */
+		const [transaction] = (await requestIndexer('transactions', { id: transactionID })).data;
+
+		transactions.push({
+			id: transactionID,
+			moduleCommand: transaction.moduleCommand,
+			sender: { address: rewardsAssignedEvent.data.stakerAddress },
+			block: rewardsAssignedEvent.block,
+			params: {
+				...rewardsAssignedEvent.data,
+				data: 'This entry was generated from \'rewardsAssigned\' event emitted from the specified transactionID.',
+			},
+			rewardTokenID: rewardsAssignedEvent.data.tokenID,
+			rewardAmount: rewardsAssignedEvent.data.amount,
+		});
+	}
+
+	return transactions;
+};
+
 const getBlockchainAppsTokenMeta = async (chainID) => {
 	try {
 		const { data: [tokenMetadata] } = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID });
@@ -310,6 +349,8 @@ const normalizeTransaction = (address, tx, currentChainID) => {
 	const { sendingChainID, receivingChainID } = resolveChainIDs(tx, currentChainID);
 	const { messageFeeTokenID } = tx.params;
 	const { messageFee } = tx.params;
+	const { rewardTokenID } = tx;
+	const { rewardAmount } = tx;
 
 	return {
 		date,
@@ -329,6 +370,8 @@ const normalizeTransaction = (address, tx, currentChainID) => {
 		receivingChainID,
 		messageFeeTokenID,
 		messageFee,
+		rewardTokenID,
+		rewardAmount,
 	};
 };
 
@@ -368,8 +411,13 @@ const exportTransactions = async (job) => {
 					timestamp: timestampRange,
 				});
 
-				if (incomingCrossChainTransferTxs.length) {
-					allTransactions.push(...incomingCrossChainTransferTxs);
+				const rewardAssignedInfo = await getRewardAssignedInfo({
+					...params,
+					timestamp: timestampRange,
+				});
+
+				if (incomingCrossChainTransferTxs.length || rewardAssignedInfo.length) {
+					allTransactions.push(...incomingCrossChainTransferTxs, ...rewardAssignedInfo);
 					allTransactions.sort((a, b) => a.block.height - b.block.height);
 				}
 
@@ -497,6 +545,7 @@ module.exports = {
 	getExcelFilenameFromParams,
 	getExcelFileUrlFromParams,
 	getCrossChainTransferTransactionInfo,
+	getRewardAssignedInfo,
 	getConversionFactor,
 	getOpeningBalance,
 	getLegacyBalance,

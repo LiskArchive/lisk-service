@@ -24,6 +24,8 @@ const transactionMappings = [
 	{ header: 'Amount', key: 'amount' },
 	{ header: 'Message Fee Token ID', key: 'messageFeeTokenID' },
 	{ header: 'Message Fee', key: 'messageFee' },
+	{ header: 'Reward Token ID', key: 'rewardTokenID' },
+	{ header: 'Reward Amount', key: 'rewardAmount' },
 	{ header: 'Sender Address', key: 'senderAddress' },
 	{ header: 'Sender Public Key', key: 'senderPublicKey' },
 	{ header: 'Recipient Address', key: 'recipientAddress' },

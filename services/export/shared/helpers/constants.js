@@ -16,6 +16,7 @@
 const MODULE = Object.freeze({
 	TOKEN: 'token',
 	LEGACY: 'legacy',
+	POS: 'pos',
 });
 
 const COMMAND = Object.freeze({
@@ -26,6 +27,7 @@ const COMMAND = Object.freeze({
 
 const EVENT = Object.freeze({
 	CCM_TRANSFER: 'ccmTransfer',
+	REWARDS_ASSIGNED: 'rewardsAssigned',
 });
 
 const MODULE_SUB_STORE = Object.freeze({
