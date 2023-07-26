@@ -36,13 +36,6 @@ describe('Excel export utils', () => {
 	const excelFileUrlBeginsWith = '/api/v3/export/';
 
 	describe('Test standardizeIntervalFromParams method', () => {
-		it(`should return interval in standard format: '${config.excel.dateFormat}:${config.excel.dateFormat}'`, async () => {
-			const result = await standardizeIntervalFromParams({ interval: interval.startEnd });
-			expect(typeof result).toBe('string');
-			expect(result.length).toBe((2 * config.excel.dateFormat.length) + 1);
-			expect(result).toMatch(STANDARDIZED_INTERVAL);
-		});
-
 		it('should return standardized interval when both start and end date supplied', async () => {
 			const result = await standardizeIntervalFromParams({ interval: interval.startEnd });
 			expect(typeof result).toBe('string');

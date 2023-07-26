@@ -24,11 +24,13 @@ const normalizeTransactionAmount = (address, tx) => {
 	const isSender = address === tx.sender.address;
 	const isRecipient = isTokenTransfer && address === tx.params.recipientAddress;
 	const isSelfTransfer = isTokenTransfer && tx.sender.address === tx.params.recipientAddress;
+	const { isIncomingTransaction } = tx;
 
 	const { isSelfTokenTransferCredit } = tx;
 	const sign = (isReclaim && isSender)
 		|| (isTokenTransfer && isRecipient && !isSelfTransfer)
 		|| (isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit)
+		|| isIncomingTransaction
 		? 1 : -1;
 
 	return String(sign * tx.params.amount);

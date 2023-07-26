@@ -125,6 +125,7 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 				data: 'This entry was generated from \'ccmTransfer\' event emitted from the specified CCU transactionID.',
 			},
 			sendingChainID: transaction.params.sendingChainID,
+			isIncomingTransaction: true,
 		});
 	}
 
@@ -277,7 +278,8 @@ const getExcelFileUrlFromParams = async (params) => {
 
 const resolveChainIDs = (tx, currentChainID) => {
 	if (tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
-		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`) {
+		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
+		|| tx.isIncomingTransaction) {
 		const sendingChainID = tx.sendingChainID || currentChainID;
 		const receivingChainID = resolveReceivingChainID(tx, currentChainID);
 
@@ -289,7 +291,7 @@ const resolveChainIDs = (tx, currentChainID) => {
 	return {};
 };
 
-const normalizeTransaction = async (address, tx, currentChainID) => {
+const normalizeTransaction = (address, tx, currentChainID) => {
 	const {
 		moduleCommand,
 		senderPublicKey,
@@ -368,14 +370,13 @@ const exportTransactions = async (job) => {
 				});
 
 				if (incomingCrossChainTransferTxs.length) {
-					allTransactions.push(...incomingCrossChainTransferTxs
-						.sort((a, b) => a.block.height - b.block.height),
-					);
+					allTransactions.push(...incomingCrossChainTransferTxs);
+					allTransactions.sort((a, b) => a.block.height - b.block.height);
 				}
 
 				if (day !== getToday()) {
 					if (transactions.length) {
-						partials.write(partialFilename, JSON.stringify(transactions));
+						partials.write(partialFilename, JSON.stringify(allTransactions));
 					} else {
 						// Flag to prevent unnecessary calls to core/storage space usage on the file cache
 						const RETENTION_PERIOD_MS = getDaysInMilliseconds(
@@ -400,7 +401,7 @@ const exportTransactions = async (job) => {
 
 	const currentChainID = await getCurrentChainID();
 	const normalizedTransactions = await Promise.all(allTransactions
-		.map(async (t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
+		.map((t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
 	const metadata = await getMetadata(params, currentChainID);
 
 	const workBook = new excelJS.Workbook();

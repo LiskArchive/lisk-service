@@ -29,6 +29,14 @@ const config = require('../../../config');
 const fieldMappings = require('../../../shared/excelFieldMappings');
 const { PARTIAL_FILENAME } = require('../../../shared/regex');
 
+const {
+	getAddressFromParams,
+	getToday,
+	normalizeTransaction,
+	getPartialFilenameFromParams,
+	resolveChainIDs,
+} = require('../../../shared/transactionsExport');
+
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
 const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/requestAll`);
 
@@ -280,9 +288,11 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 				timestamp: 1689693410,
 			},
 			id: 'efcbab90c4769dc47029412010ef76623722678f446a7417f59fed998a6407de',
+			isIncomingTransaction: true,
 			moduleCommand: 'interoperability:submitSidechainCrossChainUpdate',
 			params: {
 				amount: '100000000000',
+				data: 'This entry was generated from \'ccmTransfer\' event emitted from the specified CCU transactionID.',
 				receivingChainID: '04000001',
 				recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
 				result: 0,
@@ -314,14 +324,6 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 	});
 });
 
-const {
-	getAddressFromParams,
-	getToday,
-	normalizeTransaction,
-	getPartialFilenameFromParams,
-	resolveChainIDs,
-} = require('../../../shared/transactionsExport');
-
 describe('Test getAddressFromParams method', () => {
 	it('should return address from address in params', async () => {
 		const result = getAddressFromParams({ address });
@@ -343,7 +345,7 @@ describe('Test getToday method', () => {
 
 describe('Test normalizeTransaction method', () => {
 	it('should return a transaction normalized', async () => {
-		const normalizedTx = await normalizeTransaction(
+		const normalizedTx = normalizeTransaction(
 			tokenTransfer.toOther.sender,
 			tokenTransfer.toOther.transaction,
 			chainID,

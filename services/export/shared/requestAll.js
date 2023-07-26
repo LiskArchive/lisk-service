@@ -61,7 +61,7 @@ const requestAllCustom = async (fn, method, params, limit) => {
 			},
 		});
 	const totalResponse = firstRequest;
-	if (!totalResponse.error) {
+	if (totalResponse && !totalResponse.error) {
 		if (maxAmount > oneRequestLimit) {
 			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
 				const curOffset = oneRequestLimit * page;
