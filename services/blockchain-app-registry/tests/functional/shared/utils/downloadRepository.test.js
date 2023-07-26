@@ -17,9 +17,14 @@
 jest.setTimeout(15000);
 
 const {
-	MySQL: {
-		KVStore: {
-			getKeyValueTable,
+	Utils: {
+		fs: { rmdir, exists },
+	},
+	DB: {
+		MySQL: {
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');
@@ -39,7 +44,6 @@ const {
 
 const { KV_STORE_KEY } = require('../../../../shared/constants');
 const config = require('../../../../config');
-const { exists, rmdir } = require('../../../../shared/utils/fs');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
@@ -149,17 +153,14 @@ xdescribe('Test getDiff method', () => {
 xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with a list of changed files', async () => {
 		const changedFiles = [
-			'alphanet/Lisk/nativetokens.json',
 			'betanet/Lisk/nativetokens.json',
 			'devnet/Lisk/nativetokens.json',
 			'Unknown/Lisk/nativetokens.json',
-			'alphanet/Enevti/nativetokens.json',
 		];
 		const response = await buildEventPayload(changedFiles);
 		expect(response).toEqual({
-			alphanet: ['Lisk', 'Enevti'],
-			betanet: ['Lisk'],
-			devnet: ['Lisk'],
+			betanet: ['lisk_mainchain'],
+			devnet: ['lisk_mainchain'],
 			mainnet: [],
 			testnet: [],
 		});
@@ -168,7 +169,6 @@ xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with empty changed files', async () => {
 		const response = await buildEventPayload([]);
 		expect(response).toEqual({
-			alphanet: [],
 			betanet: [],
 			devnet: [],
 			mainnet: [],
@@ -179,7 +179,6 @@ xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with undefined changed files', async () => {
 		const response = await buildEventPayload(undefined);
 		expect(response).toEqual({
-			alphanet: [],
 			betanet: [],
 			devnet: [],
 			mainnet: [],
@@ -190,7 +189,6 @@ xdescribe('Test buildEventPayload method', () => {
 	it('should return event payload when called with null changed files', async () => {
 		const response = await buildEventPayload(null);
 		expect(response).toEqual({
-			alphanet: [],
 			betanet: [],
 			devnet: [],
 			mainnet: [],

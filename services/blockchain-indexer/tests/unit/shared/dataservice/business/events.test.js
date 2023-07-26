@@ -40,8 +40,10 @@ describe('getEventsByBlockID', () => {
 					},
 					set: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(),
+					},
 				},
 			};
 		});
@@ -63,20 +65,22 @@ describe('getEventsByBlockID', () => {
 					},
 					set: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: () => ({
-						find: (params) => {
-							expect(params).toEqual({ blockID: mockedBlockID });
-							const dbResp = [];
+				DB: {
+					MySQL: {
+						getTableInstance: () => ({
+							find: (params) => {
+								expect(params).toEqual({ blockID: mockedBlockID });
+								const dbResp = [];
 
-							for (let i = 0; i < mockedEvents.length; i++) {
-								const eventStr = JSON.stringify(mockedEvents[i]);
-								dbResp.push({ eventStr });
-							}
+								for (let i = 0; i < mockedEvents.length; i++) {
+									const eventStr = JSON.stringify(mockedEvents[i]);
+									dbResp.push({ eventStr });
+								}
 
-							return dbResp;
-						},
-					}),
+								return dbResp;
+							},
+						}),
+					},
 				},
 			};
 		});
@@ -98,13 +102,15 @@ describe('getEventsByBlockID', () => {
 					},
 					set: jest.fn(),
 				})),
-				MySQL: {
-					getTableInstance: () => ({
-						find: (params) => {
-							expect(params).toEqual({ blockID: mockedBlockID });
-							return [];
-						},
-					}),
+				DB: {
+					MySQL: {
+						getTableInstance: () => ({
+							find: (params) => {
+								expect(params).toEqual({ blockID: mockedBlockID });
+								return [];
+							},
+						}),
+					},
 				},
 			};
 		});
@@ -133,8 +139,10 @@ describe('cacheEventsByBlockID', () => {
 						expect(value).toEqual(JSON.stringify(mockedEvents));
 					},
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(),
+					},
 				},
 			};
 		});
@@ -154,8 +162,10 @@ describe('cacheEventsByBlockID', () => {
 						throw new Error('error');
 					},
 				})),
-				MySQL: {
-					getTableInstance: jest.fn(),
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(),
+					},
 				},
 			};
 		});

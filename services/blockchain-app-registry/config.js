@@ -71,9 +71,9 @@ config.gitHub = {
 
 config.dataDir = `${__dirname}/data`;
 
-config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
+config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'devnet'];
 
-const DEFAULT_LISK_APPS = ['Lisk'];
+const DEFAULT_LISK_APPS = ['lisk_mainchain'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
@@ -90,7 +90,6 @@ config.CHAIN_ID_PREFIX_NETWORK_MAP = Object.freeze({
 	'00': 'mainnet',
 	'01': 'testnet',
 	'02': 'betanet',
-	'03': 'alphanet',
 	'04': 'devnet',
 });
 

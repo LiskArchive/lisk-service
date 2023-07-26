@@ -13,16 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { rm } = require('../../../../shared/utils/fs');
+const { rm } = require('../../../src/fs');
 
 const {
 	getTableInstance,
 	startDBTransaction,
 	commitDBTransaction,
 	getDBConnection,
-} = require('../../../../shared/database/sqlite3');
+} = require('../../../src/database/sqlite3');
 
-const schema = require('../../../constants/blocksSchema');
+const schema = require('../../constants/blocksSchema');
 
 const tableName = 'functional_test';
 const testDir = 'testDir';
@@ -30,7 +30,7 @@ schema.tableName = tableName;
 
 const getTable = () => getTableInstance(schema, testDir);
 
-const { blockWithoutTransaction, blockWithTransaction } = require('../../../constants/blocks');
+const { blockWithoutTransaction, blockWithTransaction } = require('../../constants/blocks');
 
 describe('Test sqlite3 implementation', () => {
 	let testTable;

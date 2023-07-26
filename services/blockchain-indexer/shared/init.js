@@ -24,6 +24,7 @@ const indexStatus = require('./indexer/indexStatus');
 const processor = require('./processor');
 
 const logger = Logger();
+const snapshotUtils = require('./utils/snapshot');
 
 const init = async () => {
 	try {
@@ -31,6 +32,17 @@ const init = async () => {
 		await getPosConstants();
 		await getTokenConstants();
 		await getRewardConstants();
+
+		if (config.snapshot.enable) {
+			logger.info('Initialising the automatic index snapshot application process.');
+
+			try {
+				await snapshotUtils.initSnapshot();
+				logger.info('Successfully downloaded and applied the snapshot.');
+			} catch (err) {
+				logger.warn(`Unable to apply snapshot:\n${err.message}.`);
+			}
+		}
 
 		// Init index status updates
 		await indexStatus.init();

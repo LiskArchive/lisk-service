@@ -17,11 +17,6 @@ const Logger = require('../logger').get;
 
 const logger = Logger();
 
-const connectionPool = {};
-const tablePool = {};
-
-const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@127.0.0.1:3306/lisk';
-
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
 
@@ -43,40 +38,6 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 		.catch(err => {
 			if (err.message.includes(`Table '${tableName}' already exists`)) return;
 			throw err;
-		});
-
-	return knex;
-};
-
-const createDBConnection = async connEndpoint => {
-	const knex = require('knex')({
-		client: 'mysql2',
-		version: '8',
-		connection: connEndpoint,
-		useNullAsDefault: true,
-		pool: {
-			max: 100,
-			min: 2,
-		},
-		log: {
-			warn(message) { logger.warn(message); },
-			error(message) { logger.error(message); },
-			deprecate(message) { logger.warn(message); },
-			debug(message) { logger.debug(message); },
-		},
-	});
-
-	knex.select(1)
-		.on('query-error', error => {
-			logger.error(error.message);
-		})
-		.catch(err => {
-			if (err.code === 'ECONNREFUSED') {
-				logger.error(err.message);
-				logger.fatal('Unable to connect to the database, shutting down the process...');
-				process.exit(1);
-			}
-			logger.error(err.message);
 		});
 
 	return knex;
@@ -129,64 +90,16 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	return rows;
 };
 
-const getConnectionPoolKey = (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
-	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
-	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
-	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
-	return connPoolKey;
-};
-
-const getDBConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
-	const connPoolKey = getConnectionPoolKey(connEndpoint);
-	const defaultCharset = 'utf8mb4';
-
-	if (!connectionPool[connPoolKey]) {
-		logger.info(`Attempting to connect ${connEndpoint}...`);
-		let connString = connEndpoint;
-		if (!connEndpoint.includes('charset')) {
-			connString = connEndpoint.includes('?')
-				? `${connEndpoint}&charset=${defaultCharset}`
-				: `${connEndpoint}?charset=${defaultCharset}`;
-		}
-		connectionPool[connPoolKey] = await createDBConnection(connString);
-	}
-
-	const knex = connectionPool[connPoolKey];
-	return knex;
-};
-
-const createTableIfNotExists = async (tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
-	const { tableName } = tableConfig;
-
-	const connPoolKey = getConnectionPoolKey(connEndpoint);
-	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
-
-	if (!tablePool[connPoolKeyTable]) {
-		logger.info(`Creating schema for ${tableName}.`);
-		const knex = await getDBConnection(connEndpoint);
-		await loadSchema(knex, tableName, tableConfig);
-		tablePool[connPoolKeyTable] = true;
-	}
-};
-
 const startDBTransaction = async connection => connection.transaction();
 
 const commitDBTransaction = async transaction => transaction.commit();
 
 const rollbackDBTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (...tableParams) => {
-	const tableConfig = tableParams.find(item => typeof item === 'object');
-	const connEndpoint = tableParams.find(item => typeof item === 'string' && item.startsWith('mysql:')) || CONN_ENDPOINT_DEFAULT;
-	const tableName = tableParams.find(item => typeof item === 'string' && !item.startsWith('mysql:')) || tableConfig.tableName;
-
-	const { primaryKey, schema } = tableConfig;
-
-	const knex = await getDBConnection(connEndpoint);
+const getTableInstance = (tableConfig, knex) => {
+	const { tableName, primaryKey, schema } = tableConfig;
 
 	const createDefaultTransaction = async connection => startDBTransaction(connection);
-
-	await createTableIfNotExists(tableConfig, connEndpoint);
 
 	const upsert = async (inputRows, trx) => {
 		let isDefaultTrx = false;
@@ -277,6 +190,8 @@ const getTableInstance = async (...tableParams) => {
 				propBetween => {
 					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
 					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThanEqualTo' in propBetween) query.where(propBetween.property, '>=', propBetween.greaterThanEqualTo);
+					if ('lowerThanEqualTo' in propBetween) query.where(propBetween.property, '<=', propBetween.lowerThanEqualTo);
 					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
 					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
@@ -497,8 +412,12 @@ const getTableInstance = async (...tableParams) => {
 		return query;
 	};
 
-	const count = async (params = {}, column) => {
-		const trx = await createDefaultTransaction(knex);
+	const count = async (params = {}, column, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
 
 		if (!column) {
 			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
@@ -512,7 +431,7 @@ const getTableInstance = async (...tableParams) => {
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
-		return query
+		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
 				const [totalCount] = result;
@@ -522,12 +441,20 @@ const getTableInstance = async (...tableParams) => {
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
-	const rawQuery = async queryStatement => {
-		const trx = await createDefaultTransaction(knex);
-		return trx
-			.raw(queryStatement)
+	const rawQuery = async (queryStatement, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const query = trx.raw(queryStatement);
+
+		if (isDefaultTrx) return query
 			.then(async result => {
 				await trx.commit();
 				const [resultSet] = result;
@@ -537,6 +464,8 @@ const getTableInstance = async (...tableParams) => {
 				logger.error(err.message);
 				throw err;
 			});
+
+		return query;
 	};
 
 	const increment = async (params, trx) => {
@@ -595,17 +524,9 @@ const getTableInstance = async (...tableParams) => {
 };
 
 module.exports = {
-	default: getTableInstance,
-	getDBConnection,
-	getTableInstance,
 	startDBTransaction,
 	commitDBTransaction,
 	rollbackDBTransaction,
-	createTableIfNotExists,
-
-	// For backward compatibility
-	getDbConnection: getDBConnection,
-	startDbTransaction: startDBTransaction,
-	commitDbTransaction: commitDBTransaction,
-	rollbackDbTransaction: rollbackDBTransaction,
+	getTableInstance,
+	loadSchema,
 };

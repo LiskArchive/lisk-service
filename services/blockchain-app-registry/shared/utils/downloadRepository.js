@@ -18,20 +18,31 @@ const path = require('path');
 const { Octokit } = require('octokit');
 
 const {
+	Utils: {
+		fs: {
+			exists,
+			mkdir,
+			getDirectories,
+			rmdir,
+			rm,
+			mv,
+		},
+	},
 	Logger,
-	MySQL: {
-		getDBConnection,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
-		KVStore: { configureKeyValueTable, getKeyValueTable },
+	DB: {
+		MySQL: {
+			getDBConnection,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+			KVStore: { configureKeyValueTable, getKeyValueTable },
+		},
 	},
 	Signals,
 } = require('lisk-service-framework');
 
 const { resolveChainNameByNetworkAppDir } = require('./chain');
 const { downloadAndExtractTarball, downloadFile } = require('./download');
-const { exists, mkdir, getDirectories, rmdir, rm, mv } = require('./fs');
 
 const { indexMetadataFromFile, deleteIndexedMetadataFromFile } = require('../metadataIndex');
 

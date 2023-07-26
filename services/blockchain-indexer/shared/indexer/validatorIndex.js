@@ -14,7 +14,7 @@
  *
  */
 const {
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const { requestConnector } = require('../utils/request');

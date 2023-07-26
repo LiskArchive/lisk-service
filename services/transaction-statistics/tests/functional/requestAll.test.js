@@ -62,4 +62,3 @@ xdescribe('Test requestAll method', () => {
 		expect(requestAll(request.requestIndexer, null, {})).rejects.toThrow();
 	});
 });
-

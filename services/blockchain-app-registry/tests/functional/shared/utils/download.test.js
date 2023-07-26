@@ -13,8 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Utils: {
+		fs: { mkdir, rmdir, exists },
+	},
+} = require('lisk-service-framework');
+
 const { downloadAndExtractTarball, downloadFile } = require('../../../../shared/utils/download');
-const { mkdir, rmdir, exists } = require('../../../../shared/utils/fs');
 
 const dirPath = `${__dirname}/test_data/`;
 const url = 'https://codeload.github.com/LiskHQ/lisk-service/tar.gz/refs/tags/v0.6.4';

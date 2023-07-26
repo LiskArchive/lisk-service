@@ -20,7 +20,9 @@ const {
 	CacheRedis,
 	Logger,
 	Signals,
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const business = require('../business');

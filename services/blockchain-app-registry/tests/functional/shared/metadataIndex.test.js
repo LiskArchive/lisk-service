@@ -22,9 +22,11 @@ const {
 		startDBTransaction,
 		commitDBTransaction,
 	},
+	Utils: {
+		fs: { mkdir, rmdir, write },
+	},
 } = require('lisk-service-framework');
 
-const { mkdir, rmdir, write } = require('../../../shared/utils/fs');
 const {
 	indexAppMeta,
 	indexMetadataFromFile,
