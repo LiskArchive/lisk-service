@@ -13,14 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { promises: { readdir } } = require('fs');
+const {
+	Utils: {
+		fs: { getDirectories },
+	},
+} = require('lisk-service-framework');
 
 const camelCase = require('camelcase');
 const requireAll = require('require-all');
 
 const getAllDirectories = async (sourceDirPath) => {
-	const dirEntries = await readdir(sourceDirPath, { withFileTypes: true });
-	const directories = dirEntries.filter(dirent => dirent.isDirectory());
+	const directories = await getDirectories(sourceDirPath, { withFileTypes: true });
 	const dirNames = directories.map(dirent => dirent.name);
 	return dirNames;
 };

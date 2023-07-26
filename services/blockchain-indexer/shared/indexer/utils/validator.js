@@ -15,7 +15,7 @@
  */
 const { math: { q96 } } = require('@liskhq/lisk-utils');
 const {
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const config = require('../../../config');

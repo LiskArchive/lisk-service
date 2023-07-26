@@ -17,9 +17,14 @@
 jest.setTimeout(15000);
 
 const {
-	MySQL: {
-		KVStore: {
-			getKeyValueTable,
+	Utils: {
+		fs: { rmdir, exists },
+	},
+	DB: {
+		MySQL: {
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');
@@ -39,7 +44,6 @@ const {
 
 const { KV_STORE_KEY } = require('../../../../shared/constants');
 const config = require('../../../../config');
-const { exists, rmdir } = require('../../../../shared/utils/fs');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);

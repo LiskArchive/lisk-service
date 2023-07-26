@@ -18,9 +18,11 @@ const path = require('path');
 
 const {
 	Logger,
-	MySQL: {
-		getTableInstance,
-		KVStore: { configureKeyValueTable, getKeyValueTable },
+	DB: {
+		MySQL: {
+			getTableInstance,
+			KVStore: { configureKeyValueTable, getKeyValueTable },
+		},
 	},
 	Utils,
 } = require('lisk-service-framework');

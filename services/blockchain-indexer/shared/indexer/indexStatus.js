@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 	Signals,
 } = require('lisk-service-framework');
 
