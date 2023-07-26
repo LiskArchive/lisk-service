@@ -96,32 +96,33 @@ const validateIfAccountExists = async (address) => {
 };
 
 const getCrossChainTransferTransactionInfo = async (params) => {
-	const allEvents = await requestAllStandard(requestIndexer.bind(null, 'events'), {
-		topic: params.address,
-		timestamp: params.timestamp,
-		module: MODULE.TOKEN,
-		name: EVENT.CCM_TRANSFER,
-		sort: 'timestamp:desc',
-	});
+	const allEvents = await requestAllStandard(
+		requestIndexer.bind(null, 'events'),
+		{
+			topic: params.address,
+			timestamp: params.timestamp,
+			module: MODULE.TOKEN,
+			name: EVENT.CCM_TRANSFER,
+			sort: 'timestamp:desc',
+		},
+	);
 
 	const transactions = [];
 	const ccmTransferEvents = allEvents
 		.filter(event => event.data.recipientAddress === params.address);
 
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
-		const [transactionID] = ccmTransferEvents[i].topics;
+		const ccmTransferEvent = ccmTransferEvents[i];
+		const [ccuTransactionID] = ccmTransferEvent.topics;
 		/* eslint-disable-next-line no-await-in-loop */
-		const [transaction] = (await requestIndexer('transactions', { id: transactionID })).data;
-
+		const [transaction] = (await requestIndexer('transactions', { id: ccuTransactionID })).data;
 		transactions.push({
-			id: transactionID,
+			id: ccuTransactionID,
 			moduleCommand: transaction.moduleCommand,
-			sender: {
-				address: ccmTransferEvents[i].data.senderAddress,
-			},
-			block: ccmTransferEvents[i].block,
+			sender: { address: ccmTransferEvent.data.senderAddress },
+			block: ccmTransferEvent.block,
 			params: {
-				...ccmTransferEvents[i].data,
+				...ccmTransferEvent.data,
 				data: 'This entry was generated from \'ccmTransfer\' event emitted from the specified CCU transactionID.',
 			},
 			sendingChainID: transaction.params.sendingChainID,
@@ -164,16 +165,15 @@ const getOpeningBalance = async (address) => {
 		);
 		const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
-		tokenModuleData = await requestAllCustom(
+		tokenModuleData = (await requestAllCustom(
 			requestConnector,
 			'getGenesisAssetByModule',
 			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
 			totalUsers,
-		);
+		)).userSubstore;
 	}
 
-	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
-	const filteredAccount = userSubStoreInfos.find(e => e.address === address);
+	const filteredAccount = tokenModuleData.find(e => e.address === address);
 	const openingBalance = filteredAccount
 		? { tokenID: filteredAccount.tokenID, amount: filteredAccount.availableBalance }
 		: null;
@@ -189,17 +189,16 @@ const getLegacyBalance = async (publicKey) => {
 		);
 		const totalAccounts = genesisBlockAssetsLength[MODULE.LEGACY][MODULE_SUB_STORE.LEGACY.ACCOUNTS];
 
-		legacyModuleData = await requestAllCustom(
+		legacyModuleData = (await requestAllCustom(
 			requestConnector,
 			'getGenesisAssetByModule',
 			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
 			totalAccounts,
-		);
+		)).accounts;
 	}
 
-	const legacyAccounts = legacyModuleData[MODULE_SUB_STORE.LEGACY.ACCOUNTS];
 	const legacyAddress = getLegacyAddress(publicKey);
-	const filteredAccount = legacyAccounts.find(e => e.address === legacyAddress);
+	const filteredAccount = legacyModuleData.find(e => e.address === legacyAddress);
 	return filteredAccount.balance;
 };
 
@@ -344,7 +343,7 @@ const exportTransactions = async (job) => {
 		const interval = await standardizeIntervalFromParams(params);
 		const [from, to] = interval.split(':');
 		const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
-		const arrayOfDates = (Array.from(range.by('day'))).map(d => d.format(DATE_FORMAT));
+		const arrayOfDates = Array.from(range.by('day')).map(d => d.format(DATE_FORMAT));
 
 		for (let i = 0; i < arrayOfDates.length; i++) {
 			/* eslint-disable no-await-in-loop */
@@ -354,9 +353,9 @@ const exportTransactions = async (job) => {
 				const transactions = JSON.parse(await partials.read(partialFilename));
 				allTransactions.push(...transactions);
 			} else if (await noTransactionsCache.get(partialFilename) !== true) {
-				const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
-				const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
-				const timestampRange = `${fromTimestampPast}:${toTimestampPast}`;
+				const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
+				const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
+				const timestampRange = `${fromTimestamp}:${toTimestamp}`;
 				const transactions = await requestAllStandard(
 					getTransactionsInAsc,
 					{ ...params, timestamp: timestampRange },

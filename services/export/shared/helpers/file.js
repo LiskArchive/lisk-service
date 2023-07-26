@@ -92,7 +92,7 @@ module.exports = {
 	remove: rm,
 	list,
 	purge,
-	fileExists,
+	exists: fileExists,
 	isFile,
 	isFilePathInDirectory,
 };
