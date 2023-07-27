@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable mocha/max-top-level-suites */
+
 const moment = require('moment');
 const { resolve } = require('path');
 
@@ -44,11 +46,14 @@ jest.mock('lisk-service-framework', () => {
 	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
 	return {
 		...actualLiskServiceFramework,
-		MySQL: {
-			...actualLiskServiceFramework.MySQL,
-			KVStore: {
-				...actualLiskServiceFramework.KVStore,
-				getKeyValueTable: jest.fn(),
+		DB: {
+			...actualLiskServiceFramework.DB,
+			MySQL: {
+				...actualLiskServiceFramework.DB.MySQL,
+				KVStore: {
+					...actualLiskServiceFramework.DB.MySQL.KVStore,
+					getKeyValueTable: jest.fn(),
+				},
 			},
 		},
 		CacheRedis: jest.fn(),
@@ -288,7 +293,7 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 				timestamp: 1689693410,
 			},
 			id: 'efcbab90c4769dc47029412010ef76623722678f446a7417f59fed998a6407de',
-			isIncomingTransaction: true,
+			isIncomingCrossChainTransferTransaction: true,
 			moduleCommand: 'interoperability:submitSidechainCrossChainUpdate',
 			params: {
 				amount: '100000000000',

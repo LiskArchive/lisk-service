@@ -129,10 +129,10 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 			block: ccmTransferEvent.block,
 			params: {
 				...ccmTransferEvent.data,
-				data: 'This entry was generated from \'ccmTransfer\' event emitted from the specified CCU transactionID.',
+				data: `This entry was generated from '${EVENT.CCM_TRANSFER}' event emitted from the specified CCU transactionID.`,
 			},
 			sendingChainID: transaction.params.sendingChainID,
-			isIncomingTransaction: true,
+			isIncomingCrossChainTransferTransaction: true,
 		});
 	}
 
@@ -163,7 +163,7 @@ const getRewardAssignedInfo = async (params) => {
 			block: rewardsAssignedEvent.block,
 			params: {
 				...rewardsAssignedEvent.data,
-				data: 'This entry was generated from \'rewardsAssigned\' event emitted from the specified transactionID.',
+				data: `This entry was generated from '${EVENT.REWARDS_ASSIGNED}' event emitted from the specified transactionID.`,
 			},
 			rewardTokenID: rewardsAssignedEvent.data.tokenID,
 			rewardAmount: rewardsAssignedEvent.data.amount,
@@ -318,7 +318,7 @@ const getExcelFileUrlFromParams = async (params) => {
 const resolveChainIDs = (tx, currentChainID) => {
 	if (tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
 		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
-		|| tx.isIncomingTransaction) {
+		|| tx.isIncomingCrossChainTransferTransaction) {
 		const sendingChainID = tx.sendingChainID || currentChainID;
 		const receivingChainID = resolveReceivingChainID(tx, currentChainID);
 
