@@ -135,7 +135,7 @@ Functional tests ensure that a project build on the top of the framework is able
 
 ```bash
 cd framework
-npm npm run test:functional
+npm run test:functional
 
 cd ../services/blockchain-app-registry
 npm run test:functional
@@ -177,7 +177,7 @@ pm2 start ecosystem.config.js
 To run the integration tests:
 ```bash
 cd tests
-npm run test:integration:APIv3:SDKv6
+npm run test
 ```
 
 ## Next steps

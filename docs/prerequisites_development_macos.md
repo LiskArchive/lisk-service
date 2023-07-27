@@ -57,7 +57,7 @@ brew services start mysql@8
 3. [Node.js 18](https://nodejs.org/) serves as the underlying engine for code execution. We recommend using [NVM](https://github.com/nvm-sh/nvm) to easily manage various Node.js versions locally.
 
 Follow the official documentation to install the most recent version of [NVM](https://github.com/nvm-sh/nvm) on macOS.
-After installing nvm, navigate to lisk-service repository and use the following commands to install the necessary Node.js version:
+After installing nvm, navigate to lisk-service repository and use the following commands to install the necessary Node.js version and set it as default:
 
 ```
 nvm install

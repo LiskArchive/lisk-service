@@ -50,7 +50,7 @@ sudo mysql_secure_installation
 [Node.js 18](https://nodejs.org/) serves as the underlying engine for code execution. We recommend using [NVM](https://github.com/nvm-sh/nvm) to easily manage various Node.js versions locally.
 
 Follow the official documentation to install the most recent version of [NVM](https://github.com/nvm-sh/nvm) on Ubuntu.
-After installing nvm, navigate to lisk-service repository and use the following commands to install the necessary Node.js version:
+After installing nvm, navigate to lisk-service repository and use the following commands to install the necessary Node.js version and set it as default:
 
 ```
 nvm install
@@ -75,7 +75,7 @@ Copy and paste the following snippet to complete the installation in one step:
 
 ```bash
 # Add external repositories
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
