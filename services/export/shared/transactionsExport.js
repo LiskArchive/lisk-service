@@ -95,17 +95,23 @@ const validateIfAccountExists = async (address) => {
 	return !!tokenBalances.length;
 };
 
+const getEvents = async (params) => requestAllStandard(
+	requestIndexer.bind(null, 'events'),
+	{
+		topic: params.address,
+		timestamp: params.timestamp,
+		module: params.module,
+		name: params.name,
+		sort: 'timestamp:desc',
+	},
+);
+
 const getCrossChainTransferTransactionInfo = async (params) => {
-	const allEvents = await requestAllStandard(
-		requestIndexer.bind(null, 'events'),
-		{
-			topic: params.address,
-			timestamp: params.timestamp,
-			module: MODULE.TOKEN,
-			name: EVENT.CCM_TRANSFER,
-			sort: 'timestamp:desc',
-		},
-	);
+	const allEvents = await getEvents({
+		...params,
+		module: MODULE.TOKEN,
+		name: EVENT.CCM_TRANSFER,
+	});
 
 	const transactions = [];
 	const ccmTransferEvents = allEvents
@@ -134,16 +140,11 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 };
 
 const getRewardAssignedInfo = async (params) => {
-	const allEvents = await requestAllStandard(
-		requestIndexer.bind(null, 'events'),
-		{
-			topic: params.address,
-			timestamp: params.timestamp,
-			module: MODULE.POS,
-			name: EVENT.REWARDS_ASSIGNED,
-			sort: 'timestamp:desc',
-		},
-	);
+	const allEvents = await getEvents({
+		...params,
+		module: MODULE.POS,
+		name: EVENT.REWARDS_ASSIGNED,
+	});
 
 	const transactions = [];
 	const rewardsAssignedEvents = allEvents
