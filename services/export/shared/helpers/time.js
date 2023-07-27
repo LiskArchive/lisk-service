@@ -24,12 +24,12 @@ const momentFromTimestamp = timestamp => moment.unix(timestamp);
 
 const dateFromTimestamp = timestamp => {
 	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.dateFormat);
+	return dateTime.utcOffset(0).format(config.excel.dateFormat);
 };
 
 const timeFromTimestamp = timestamp => {
 	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.timeFormat);
+	return dateTime.utcOffset(0).format(config.excel.timeFormat);
 };
 
 module.exports = {

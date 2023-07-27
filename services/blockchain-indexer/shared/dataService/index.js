@@ -97,7 +97,7 @@ const {
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
 } = require('./network');
-const { getIndexStatus } = require('./indexStatus');
+const { getIndexStatus, isBlockchainFullyIndexed } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
@@ -164,6 +164,7 @@ module.exports = {
 
 	// Index Status
 	getIndexStatus,
+	isBlockchainFullyIndexed,
 
 	// Legacy
 	getLegacyAccountInfo,

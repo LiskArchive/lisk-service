@@ -13,21 +13,35 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
+const MODULE = Object.freeze({
+	TOKEN: 'token',
+	LEGACY: 'legacy',
+	POS: 'pos',
+});
 
-const getIndexStatus = async params => {
-	const indexStatus = {
-		data: {},
-		meta: {},
-	};
-	const response = await dataService.getIndexStatus(params);
-	if (response.data) indexStatus.data = response.data;
-	if (response.meta) indexStatus.meta = response.meta;
+const COMMAND = Object.freeze({
+	TRANSFER: 'transfer',
+	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
+	RECLAIM_LSK: 'reclaimLSK',
+});
 
-	return indexStatus;
-};
+const EVENT = Object.freeze({
+	CCM_TRANSFER: 'ccmTransfer',
+	REWARDS_ASSIGNED: 'rewardsAssigned',
+});
+
+const MODULE_SUB_STORE = Object.freeze({
+	TOKEN: {
+		USER: 'userSubstore',
+	},
+	LEGACY: {
+		ACCOUNTS: 'accounts',
+	},
+});
 
 module.exports = {
-	getIndexStatus,
-	isBlockchainFullyIndexed: dataService.isBlockchainFullyIndexed,
+	MODULE,
+	COMMAND,
+	EVENT,
+	MODULE_SUB_STORE,
 };

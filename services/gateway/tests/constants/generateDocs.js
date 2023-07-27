@@ -428,6 +428,12 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/topic',
 				},
 				{
+					$ref: '#/parameters/module',
+				},
+				{
+					$ref: '#/parameters/eventName',
+				},
+				{
 					$ref: '#/parameters/blockID',
 				},
 				{
@@ -1058,7 +1064,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/accountName',
 				},
 				{
-					$ref: '#/parameters/tokenID',
+					$ref: '#/parameters/tokenIDRequired',
 				},
 			],
 			responses: {

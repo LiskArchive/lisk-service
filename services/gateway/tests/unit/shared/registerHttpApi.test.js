@@ -30,6 +30,7 @@ describe('Test buildAPIConfig method', () => {
 	let ctx;
 	let route;
 	let data;
+	let excelData;
 
 	beforeEach(() => {
 		// Initialize the required variables and objects for each test
@@ -59,6 +60,13 @@ describe('Test buildAPIConfig method', () => {
 			status: 'SUCCESS',
 			meta: {
 				filename: 'data.csv',
+			},
+		};
+		excelData = {
+			data: Buffer.alloc(0),
+			status: 'SUCCESS',
+			meta: {
+				filename: 'data.xlsx',
 			},
 		};
 	});
@@ -189,6 +197,17 @@ describe('Test buildAPIConfig method', () => {
 			expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="data.csv"');
 			expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/csv');
 			expect(res.end).toHaveBeenCalledWith(data.data);
+		});
+
+		it('should set Content-Disposition and Content-Type headers and send excel data if filename ends with .xlsx', async () => {
+			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
+
+			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
+			await result.onAfterCall(ctx, route, req, res, excelData);
+
+			expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="data.xlsx"');
+			expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/vnd.ms-excel');
+			expect(res.end).toHaveBeenCalledWith(excelData.data);
 		});
 
 		it('should set $statusCode based on the data status', async () => {

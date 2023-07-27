@@ -14,157 +14,119 @@
  *
  */
 const {
-	beddowsToLsk,
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
 } = require('../../../../shared/helpers/transaction');
 
 const {
-	lsk,
-	beddows,
-	lskInBeddows,
 	transactions,
 } = require('../../../constants/transaction');
 
-describe('Transaction utils', () => {
-	describe('Validate beddows to LSK conversion', () => {
-		it('returns correct LSK value', async () => {
-			const inLSK = beddowsToLsk(beddows);
-
-			expect(inLSK).not.toBeNull();
-			expect(typeof inLSK).toBe('string');
-			expect(inLSK.includes('.')).toBeTruthy();
-
-			const [integer, decimal] = inLSK.split('.');
-			expect(beddows.startsWith(integer)).toBeTruthy();
-			expect(decimal).toHaveLength(8);
-
-			expect(inLSK).toBe(lsk);
-			expect(beddows).toBe(String(Number(inLSK) * lskInBeddows));
-		});
-	});
-
+describe('Test Transaction utility', () => {
 	describe('Validate transaction amount is properly normalized', () => {
-		it('returns amount in a standardized format for a valid transaction', async () => {
+		it('should return amount in a standardized format for a valid transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.reclaim.senderId,
+				transactions.reclaim.sender.address,
 				transactions.reclaim,
 			);
 
 			expect(amount).not.toBeNull();
 			expect(typeof amount).toBe('string');
-			expect(amount.includes('.')).toBeTruthy();
-
-			const [integer, decimal] = amount.split('.');
-			expect(transactions.reclaim.asset.amount.startsWith(integer)).toBeTruthy();
-			expect(decimal).toHaveLength(8);
+			expect(amount).toBe(transactions.reclaim.params.amount);
 		});
 
-		it('returns positive amount value for reclaim transaction', async () => {
+		it('should return positive amount value for reclaim transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.reclaim.senderId,
+				transactions.reclaim.sender.address,
 				transactions.reclaim,
 			);
 
 			expect(Number(amount)).toBeGreaterThan(0);
 		});
 
-		it('returns positive amount value for incoming token transfer transaction', async () => {
+		it('should return positive amount value for incoming token transfer transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.tokenTransfer.asset.recipient.address,
+				transactions.tokenTransfer.params.recipientAddress,
 				transactions.tokenTransfer,
 			);
 
 			expect(Number(amount)).toBeGreaterThan(0);
 		});
 
-		it('returns negative amount value for outgoing token transfer transaction', async () => {
+		it('should return negative amount value for outgoing token transfer transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.tokenTransfer.senderId,
+				transactions.tokenTransfer.sender.address,
 				transactions.tokenTransfer,
 			);
 
 			expect(Number(amount)).toBeLessThan(0);
 		});
 
-		it('returns positive amount value for incoming self token transfer transaction', async () => {
+		it('should return positive amount value for incoming self token transfer transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.tokenTransferSelf.asset.recipient.address,
+				transactions.tokenTransferSelf.params.recipientAddress,
 				{ ...transactions.tokenTransferSelf, fee: '0', isSelfTokenTransferCredit: true },
 			);
 
 			expect(Number(amount)).toBeGreaterThan(0);
 		});
 
-		it('returns negative amount value for outgoing self token transfer transaction', async () => {
+		it('should return negative amount value for outgoing self token transfer transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.tokenTransferSelf.senderId,
+				transactions.tokenTransferSelf.sender.address,
 				transactions.tokenTransferSelf,
 			);
 
 			expect(Number(amount)).toBeLessThan(0);
 		});
 
-		it('returns 0 for other transaction types', async () => {
+		it('should should return for other transaction types', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.vote.senderId,
-				transactions.vote,
+				transactions.stake.sender.address,
+				transactions.stake,
 			);
-
 			expect(Number(amount)).toBe(0);
 		});
 	});
 
 	describe('Validate transaction fee is properly normalized', () => {
-		it('returns fee in a standardized format for a valid transaction', async () => {
+		it('should return fee in a standardized format for a valid transaction', async () => {
 			const fee = normalizeTransactionFee(
-				transactions.reclaim.senderId,
+				transactions.reclaim.sender.address,
 				transactions.reclaim,
 			);
 
 			expect(fee).not.toBeNull();
 			expect(typeof fee).toBe('string');
-			expect(fee.includes('.')).toBeTruthy();
-
-			const [, decimal] = fee.split('.');
-			expect(decimal).toHaveLength(8);
-			expect(Number(transactions.reclaim.fee)).toBe(Math.trunc(Number(fee) * 10 ** 8));
+			expect(fee).toBe(transactions.reclaim.fee);
 		});
 
-		it('returns 0 fees for a token transfer credit', async () => {
+		it('should return 0 fees for a token transfer credit', async () => {
 			const fee = normalizeTransactionFee(
-				transactions.tokenTransfer.asset.recipient.address,
+				transactions.tokenTransfer.params.recipientAddress,
 				transactions.tokenTransfer,
 			);
 
 			expect(fee).not.toBeNull();
 			expect(typeof fee).toBe('string');
-			expect(fee.includes('.')).toBeTruthy();
-
-			const [, decimal] = fee.split('.');
-			expect(decimal).toHaveLength(8);
-			expect(Number(0)).toBe(Math.trunc(Number(fee) * 10 ** 8));
+			expect(fee).toBe('0');
 		});
 
-		it('returns fee in a standardized format for a token transfer debit', async () => {
+		it('should return fee in a standardized format for a token transfer debit', async () => {
 			const fee = normalizeTransactionFee(
-				transactions.tokenTransfer.senderId,
+				transactions.tokenTransfer.sender.address,
 				transactions.tokenTransfer,
 			);
 
 			expect(fee).not.toBeNull();
 			expect(typeof fee).toBe('string');
-			expect(fee.includes('.')).toBeTruthy();
-
-			const [, decimal] = fee.split('.');
-			expect(decimal).toHaveLength(8);
-			expect(Number(transactions.tokenTransfer.fee)).toBe(Math.trunc(Number(fee) * 10 ** 8));
+			expect(fee).toBe(transactions.tokenTransfer.fee);
 		});
 	});
 
 	describe('Validate checkIfSelfTokenTransfer', () => {
-		it('returns false for non-TOKEN TRANSFER transaction', async () => {
+		it('should return false for non-TOKEN TRANSFER transaction', async () => {
 			const isSelfTokenTransfer = checkIfSelfTokenTransfer(transactions.reclaim);
 
 			expect(isSelfTokenTransfer).not.toBeNull();
@@ -172,7 +134,7 @@ describe('Transaction utils', () => {
 			expect(isSelfTokenTransfer).toBeFalsy();
 		});
 
-		it('returns false for non-self TOKEN TRANSFER transaction', async () => {
+		it('should return false for non-self TOKEN TRANSFER transaction', async () => {
 			const isSelfTokenTransfer = checkIfSelfTokenTransfer(transactions.tokenTransfer);
 
 			expect(isSelfTokenTransfer).not.toBeNull();
@@ -180,7 +142,7 @@ describe('Transaction utils', () => {
 			expect(isSelfTokenTransfer).toBeFalsy();
 		});
 
-		it('returns true for self TOKEN TRANSFER transaction', async () => {
+		it('should return true for self TOKEN TRANSFER transaction', async () => {
 			const isSelfTokenTransfer = checkIfSelfTokenTransfer(transactions.tokenTransferSelf);
 
 			expect(isSelfTokenTransfer).not.toBeNull();

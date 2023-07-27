@@ -15,19 +15,8 @@
  */
 const dataService = require('../../../shared/dataService');
 
-const getIndexStatus = async params => {
-	const indexStatus = {
-		data: {},
-		meta: {},
-	};
-	const response = await dataService.getIndexStatus(params);
-	if (response.data) indexStatus.data = response.data;
-	if (response.meta) indexStatus.meta = response.meta;
-
-	return indexStatus;
-};
+const resolveMainchainServiceURL = async () => dataService.resolveMainchainServiceURL();
 
 module.exports = {
-	getIndexStatus,
-	isBlockchainFullyIndexed: dataService.isBlockchainFullyIndexed,
+	resolveMainchainServiceURL,
 };

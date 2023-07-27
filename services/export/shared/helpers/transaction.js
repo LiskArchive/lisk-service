@@ -13,44 +13,44 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const MODULE_ASSET_ID_TOKEN_TRANSFER = '2:0';
-const MODULE_ASSET_ID_RECLAIM_TRANSACTION = '1000:0';
-
-const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
+const { MODULE, COMMAND } = require('./constants');
 
 const normalizeTransactionAmount = (address, tx) => {
-	if (!('amount' in tx.asset)) return beddowsToLsk(0);
+	if (!('amount' in tx.params)) return String(0);
 
-	const isReclaim = tx.moduleAssetId === MODULE_ASSET_ID_RECLAIM_TRANSACTION;
-	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
+	const isReclaim = tx.moduleCommand === `${MODULE.LEGACY}:${COMMAND.RECLAIM_LSK}`;
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 
-	const isSender = address === tx.senderId;
-	const isRecipient = isTokenTransfer && address === tx.asset.recipient.address;
-	const isSelfTransfer = isTokenTransfer && tx.senderId === tx.asset.recipient.address;
+	const isSender = address === tx.sender.address;
+	const isRecipient = isTokenTransfer && address === tx.params.recipientAddress;
+	const isSelfTransfer = isTokenTransfer && tx.sender.address === tx.params.recipientAddress;
+	const { isIncomingCrossChainTransferTransaction } = tx;
 
 	const { isSelfTokenTransferCredit } = tx;
 	const sign = (isReclaim && isSender)
 		|| (isTokenTransfer && isRecipient && !isSelfTransfer)
 		|| (isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit)
+		|| isIncomingCrossChainTransferTransaction
 		? 1 : -1;
-	return beddowsToLsk(sign * tx.asset.amount);
+
+	return String(sign * tx.params.amount);
 };
 
 const normalizeTransactionFee = (address, tx) => {
-	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
-	if (!isTokenTransfer) return beddowsToLsk(tx.fee);
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
+	if (!isTokenTransfer) return tx.fee;
 
-	const isRecipient = address === tx.asset.recipient.address;
-	return isRecipient ? beddowsToLsk(0) : beddowsToLsk(tx.fee);
+	const { isIncomingCrossChainTransferTransaction } = tx;
+	const isRecipient = address === tx.params.recipientAddress;
+	return isRecipient || isIncomingCrossChainTransferTransaction ? String(0) : tx.fee;
 };
 
 const checkIfSelfTokenTransfer = (tx) => {
-	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
-	return isTokenTransfer && tx.senderId === tx.asset.recipient.address;
+	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
+	return isTokenTransfer && tx.sender.address === tx.params.recipientAddress;
 };
 
 module.exports = {
-	beddowsToLsk,
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,

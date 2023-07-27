@@ -74,7 +74,7 @@ describe('Test filesystem interface', () => {
 		let isExists = await fileExists(filePath);
 		expect(isExists).toBe(true);
 
-		await remove(filePath);
+		await remove(filePath, { force: true });
 		isExists = await fileExists(filePath);
 		expect(isExists).toBe(false);
 	});

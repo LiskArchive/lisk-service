@@ -22,9 +22,9 @@ const {
 const camelCase = require('camelcase');
 const requireAll = require('require-all');
 
-const getAllDirectories = async (sourceDirPath) => {
+const getDirectoryNamesInPath = async (sourceDirPath) => {
 	const directories = await getDirectories(sourceDirPath, { withFileTypes: true });
-	const dirNames = directories.map(dirent => dirent.name);
+	const dirNames = directories.map(path => path.split('/').pop());
 	return dirNames;
 };
 
@@ -47,6 +47,6 @@ const getAllJSFiles = async (
 });
 
 module.exports = {
-	getAllDirectories,
+	getDirectoryNamesInPath,
 	getAllJSFiles,
 };

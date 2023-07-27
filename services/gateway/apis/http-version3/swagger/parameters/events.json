@@ -2,7 +2,14 @@
     "topic": {
         "name": "topic",
         "in": "query",
-        "description": "Event topic to query (can be expressed as CSV)",
+        "description": "Event topic to query (can be expressed as CSV).",
+        "type": "string",
+        "minLength": 1
+    },
+    "eventName": {
+        "name": "name",
+        "in": "query",
+        "description": "Event name to query.",
         "type": "string",
         "minLength": 1
     }
