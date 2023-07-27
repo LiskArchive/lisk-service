@@ -49,7 +49,7 @@ The `ecosystem.mainnet.config.js` contains a sample configuration, which refers 
 ### Start Lisk Service
 
 ```bash
-pm2 start ecosystem.core3.config.js
+pm2 start ecosystem.config.js
 
 # or
 
@@ -68,7 +68,7 @@ pm2 list
 ### Stop Lisk Service
 
 ```bash
-pm2 stop ecosystem.core3.config.js
+pm2 stop ecosystem.config.js
 ```
 
 ### Restart Lisk Service
@@ -76,13 +76,13 @@ pm2 stop ecosystem.core3.config.js
 Restart all microservices of Lisk Service simultaneously.
 
 ```bash
-pm2 restart ecosystem.core3.config.js
+pm2 restart ecosystem.config.js
 ```
 
 ### Remove all processes from PM2 list
 
 ```bash
-pm2 delete ecosystem.core3.config.js
+pm2 delete ecosystem.config.js
 
 # or
 
@@ -99,30 +99,63 @@ make clean
 
 Once the application is running it is now possible to run automated tests.
 
-### Unit tests (framework)
+### Unit tests 
 
-Unit tests are implemented in the framework part of the project. They are designed to test the most fundamental, product-independent logic that is used to build a micro-service on top of the framework.
+Unit tests are implemented in the framework and every microservice of the project. They are designed to test the most fundamental, product-independent logic that is used to build a micro-service on top of the framework.
 
 ```bash
 cd framework
-npm test
+npm npm run test:unit
+
+cd ../services/blockchain-app-registry
+npm run test:unit
+
+cd ../services/blockchain-connector
+npm run test:unit
+
+cd ../services/blockchain-indexer
+npm run test:unit
+
+cd ../services/fee-estimator
+npm run test:unit
+
+cd ../services/market
+npm run test:unit
+
+cd ../services/export
+npm run test:unit
+
+cd ../services/gateway
+npm run test:unit
 ```
 
 ### Functional tests
 
 Functional tests ensure that a project build on the top of the framework is able to process requests and collect responses involving the API gateway.
 
-In order to run them successfully, it is necessary to have the template microservice running alongside.
-
 ```bash
-cd service/template
-node app.js
-```
+cd framework
+npm run test:functional
 
-When the template micro-service and the gateway are running, it is possible to run the functional tests from the `tests/` directory:
+cd ../services/blockchain-app-registry
+npm run test:functional
 
-```bash
-cd tests
+cd ../services/blockchain-connector
+npm run test:functional
+
+cd ../services/blockchain-indexer
+npm run test:functional
+
+cd ../services/fee-estimator
+npm run test:functional
+
+cd ../services/market
+npm run test:functional
+
+cd ../services/export
+npm run test:functional
+
+cd ../services/gateway
 npm run test:functional
 ```
 
@@ -138,13 +171,13 @@ make up
 
 To run Lisk Service with PM2
 ```bash
-pm2 start ecosystem.core3.config.js
+pm2 start ecosystem.config.js
 ```
 
 To run the integration tests:
 ```bash
 cd tests
-npm run test:integration
+npm run test
 ```
 
 ## Next steps
