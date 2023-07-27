@@ -97,8 +97,11 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
 		} catch (err) {
-			if (retries && err instanceof TimeoutException) await delay(10);
-			else throw err;
+			if (retries && err.message.includes(timeoutMessage)) {
+				await delay(10);
+			} else {
+				throw err;
+			}
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries--);

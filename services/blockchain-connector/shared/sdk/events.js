@@ -38,6 +38,12 @@ const events = [
 	EVENT_TX_POOL_TRANSACTION_NEW,
 ];
 
+const catchAndRetry = async (err, fn, ...params) => {
+	const RETRY_MS = 1000;
+	logger.warn(`Invocation for ${fn.name} failed with error: ${err.message}. Retrying in ${RETRY_MS}ms.`);
+	setTimeout(() => fn(params).catch((_err) => logger.warn(`Retry for ${fn.name} failed with error: ${_err.message}.`)), RETRY_MS);
+};
+
 const subscribeToAllRegisteredEvents = async () => {
 	const apiClient = await getApiClient();
 	const registeredEvents = await getRegisteredEvents();
@@ -48,15 +54,17 @@ const subscribeToAllRegisteredEvents = async () => {
 			async payload => {
 				// Force update necessary caches on new chain events
 				if (event.startsWith('chain_')) {
-					await getNodeInfo(true);
-					await getEscrowedAmounts(true);
+					await getNodeInfo(true)
+						.catch((err) => catchAndRetry(err, getNodeInfo, true));
+					await getEscrowedAmounts(true)
+						.catch((err) => catchAndRetry(err, getEscrowedAmounts, true));
 				}
 
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);
 			},
 		);
-		logger.info(`Subscribed to the API client event: ${event}`);
+		logger.info(`Subscribed to the API client event: ${event}.`);
 	});
 };
 
