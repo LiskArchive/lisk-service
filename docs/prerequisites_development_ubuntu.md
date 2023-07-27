@@ -27,7 +27,7 @@ sudo apt install -y build-essential git make
 
 ### Redis
 
-4. [Redis](http://redis.io) is used for caching temporary data.
+[Redis](http://redis.io) is used for caching temporary data.
 
 ```bash
 sudo apt install -y redis-server
@@ -37,7 +37,7 @@ sudo apt install -y redis-server
 
 ### MySQL
 
-[MySQL](https://dev.mysql.com/downloads/mysql/) is used for storing persistent data.
+[MySQL 8](https://dev.mysql.com/downloads/mysql/) is used for storing persistent data.
 
 ```bash
 sudo apt update
@@ -45,16 +45,16 @@ sudo apt install mysql-server
 sudo mysql_secure_installation
 ```
 
-### NVM
+### Node.js
 
-3. [Node.js](<https://nodejs.org/>) serves as the underlying engine for code execution.
+[Node.js 18](https://nodejs.org/) serves as the underlying engine for code execution. We recommend using [NVM](https://github.com/nvm-sh/nvm) to easily manage various Node.js versions locally.
 
 Follow the official documentation to install the most recent version of [NVM](https://github.com/nvm-sh/nvm) on Ubuntu.
-After installing nvm, navigate to lisk-service repository and use this command to install nodejs:
+After installing nvm, navigate to lisk-service repository and use the following commands to install the necessary Node.js version:
 
 ```
 nvm install
-nvm use
+nvm alias default 18
 ```
 
 > Having Node.js installed makes it possible to install [npm](https://www.npmjs.com/) packages.

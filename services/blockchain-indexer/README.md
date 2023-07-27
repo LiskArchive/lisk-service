@@ -62,7 +62,6 @@ A list of the most commonly used environment variables is presented below:
 - `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`: Job run cron schedule to trigger account updates. By default, it is set to run every 15th minute (`*/15 * * * *`).
 - `ESTIMATES_BUFFER_BYTES_LENGTH`: Transaction buffer bytes to consider when estimating the transaction fees. By default, it is set to 6.
 - `MAINCHAIN_SERVICE_URL`: Mainchain service URL for custom deployments.
-- `DEVNET_MAINCHAIN_URL`: Devnet service URL for mainchain deployments.
 
 > **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
