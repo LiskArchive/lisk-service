@@ -41,7 +41,10 @@ const events = [
 const catchAndRetry = async (err, fn, ...params) => {
 	const RETRY_MS = 1000;
 	logger.warn(`Invocation for ${fn.name} failed with error: ${err.message}. Retrying in ${RETRY_MS}ms.`);
-	setTimeout(() => fn(params).catch((_err) => logger.warn(`Retry for ${fn.name} failed with error: ${_err.message}.`)), RETRY_MS);
+	setTimeout(
+		() => fn(params).catch((_err) => logger.warn(`Retry for ${fn.name} failed with error: ${_err.message}.`)),
+		RETRY_MS,
+	);
 };
 
 const subscribeToAllRegisteredEvents = async () => {
