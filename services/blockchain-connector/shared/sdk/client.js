@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Exceptions: { TimeoutException }, Signals } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const {
 	createWSClient,
 	createIPCClient,
