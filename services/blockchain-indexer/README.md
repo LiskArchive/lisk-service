@@ -58,7 +58,10 @@ A list of the most commonly used environment variables is presented below:
 - `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`: Job run cron schedule to refresh account knowledge. By default, it is set to run every 15th minute (`*/15 * * * *`).
 - `JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA`: Job run interval to delete finalized CCU metadata. By default, it is set to 0.
 - `JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA`: Job run cron schedule to delete finalized CCU metadata. By default, it is set to run once a day at 02:00 am (`0 2 * * *`).
+- `JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES`: Job run interval to trigger account updates. By default, it is set to 0.
+- `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`: Job run cron schedule to trigger account updates. By default, it is set to run every 15th minute (`*/15 * * * *`).
 - `ESTIMATES_BUFFER_BYTES_LENGTH`: Transaction buffer bytes to consider when estimating the transaction fees. By default, it is set to 6.
+- `MAINCHAIN_SERVICE_URL`: Mainchain service URL for custom deployments.
 
 > **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 

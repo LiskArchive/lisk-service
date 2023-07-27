@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Exceptions: { TimeoutException }, Signals } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const {
 	createWSClient,
 	createIPCClient,
@@ -97,8 +97,11 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
 		} catch (err) {
-			if (retries && err instanceof TimeoutException) await delay(10);
-			else throw err;
+			if (retries && err.message.includes(timeoutMessage)) {
+				await delay(10);
+			} else {
+				throw err;
+			}
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (retries--);

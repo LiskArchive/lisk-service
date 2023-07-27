@@ -73,6 +73,8 @@ const getEventsInfoToIndex = async (block, events) => {
 				tempID: event.id.concat(topic),
 				eventID: event.id,
 				height: block.height,
+				name: event.name,
+				module: event.module,
 				index: event.index,
 				timestamp: block.timestamp,
 				topic,

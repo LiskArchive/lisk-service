@@ -92,7 +92,7 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	[MODULE_NAME_TOKEN]: {
 		[EVENT_NAME_TRANSFER]: ['defaultTopic', 'senderAddress', 'recipientAddress'],
 		[EVENT_NAME_TRANSFER_CROSS_CHAIN]: ['defaultTopic', 'senderAddress', 'recipientAddress', 'receivingChainID'],
-		[EVENT_NAME_CCM_TRANSFER]: ['defaultTopic', 'senderAddress', 'recipientAddress', 'ownChainID'],
+		[EVENT_NAME_CCM_TRANSFER]: ['transactionID', 'senderAddress', 'recipientAddress'],
 		[EVENT_NAME_MINT]: ['defaultTopic', 'address'],
 		[EVENT_NAME_BURN]: ['defaultTopic', 'address'],
 		[EVENT_NAME_LOCK]: ['transactionID', 'address'],
