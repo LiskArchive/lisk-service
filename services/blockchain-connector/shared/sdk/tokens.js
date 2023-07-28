@@ -13,12 +13,14 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const { Exceptions: { TimeoutException }, Logger } = require('lisk-service-framework');
+const { Exceptions: { TimeoutException }, Logger, Signals } = require('lisk-service-framework');
 const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
 let escrowedAmounts;
+let supportedTokens;
+let totalSupply;
 
 const getTokenBalances = async (address) => {
 	try {
@@ -61,9 +63,12 @@ const getEscrowedAmounts = async (isForceUpdate = false) => {
 	}
 };
 
-const getSupportedTokens = async () => {
+const getSupportedTokens = async (isForceUpdate = false) => {
 	try {
-		return invokeEndpoint('token_getSupportedTokens');
+		if (isForceUpdate || !supportedTokens) {
+			supportedTokens = await invokeEndpoint('token_getSupportedTokens');
+		}
+		return supportedTokens;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getSupportedTokens\'.');
@@ -73,9 +78,12 @@ const getSupportedTokens = async () => {
 	}
 };
 
-const getTotalSupply = async () => {
+const getTotalSupply = async (isForceUpdate = false) => {
 	try {
-		return invokeEndpoint('token_getTotalSupply');
+		if (isForceUpdate || !totalSupply) {
+			totalSupply = await invokeEndpoint('token_getTotalSupply');
+		}
+		return totalSupply;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTotalSupply\'.');
@@ -121,6 +129,21 @@ const hasEscrowAccount = async ({ tokenID, escrowChainID }) => {
 	}
 };
 
+const cacheTokenInfo = async () => {
+	const updateTokenInfo = async () => {
+		try {
+			escrowedAmounts = await getEscrowedAmounts(true);
+			supportedTokens = await getSupportedTokens(true);
+			totalSupply = await getTotalSupply(true);
+		} catch (err) {
+			logger.error(`Error occurred when caching token information:\n${err.stack}`);
+		}
+	};
+
+	Signals.get('chain_newBlock').add(updateTokenInfo);
+	Signals.get('chain_deleteBlock').add(updateTokenInfo);
+};
+
 module.exports = {
 	tokenHasUserAccount: hasUserAccount,
 	tokenHasEscrowAccount: hasEscrowAccount,
@@ -130,4 +153,5 @@ module.exports = {
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenInitializationFees,
+	cacheTokenInfo,
 };
