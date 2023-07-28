@@ -102,13 +102,15 @@ const reportIndexStatus = async () => {
 
 	logger.info([
 		`currentChainHeight: ${currentChainHeight}`,
-		`lastIndexedBlock: ${lastIndexedBlock.height}`,
+		`lastIndexedBlockHeight: ${lastIndexedBlock.height}`,
 	].join(', '));
 
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%).`);
 };
 
 const init = async () => {
+	// Initialize index status reporting and schedule regular updates
+	await reportIndexStatus();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
 
 	// Register event listeners

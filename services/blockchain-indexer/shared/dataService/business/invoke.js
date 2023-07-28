@@ -27,8 +27,8 @@ const {
 } = require('../../constants');
 
 const checkIfEndpointRegistered = async (endpoint) => {
-	const allregisteredEndpoints = await getAllRegisteredEndpoints();
-	return allregisteredEndpoints.includes(endpoint);
+	const allRegisteredEndpoints = await getAllRegisteredEndpoints();
+	return allRegisteredEndpoints.includes(endpoint);
 };
 
 const validateEndpointParams = async (invokeEndpointParams) => {

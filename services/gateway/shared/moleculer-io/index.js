@@ -21,7 +21,7 @@ const { BadRequestError } = require('./errors');
 const { isValidNonEmptyResponse } = require('../utils');
 
 const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
-const expireMiliseconds = config.rpcCache.ttl * 1000;
+const expireMilliseconds = config.rpcCache.ttl * 1000;
 
 const rateLimiter = new RateLimiterMemory(config.websocket.rateLimit);
 
@@ -104,7 +104,7 @@ module.exports = {
 				socket.$service = this;
 				this.logger.debug(`(nsp:'${nsp}') Client connected:`, socket.id);
 				if (item.packetMiddlewares) {
-					// socketmiddlewares
+					// socket middlewares
 					for (const middleware of item.packetMiddlewares) {
 						socket.use(middleware.bind(this));
 					}
@@ -188,8 +188,10 @@ module.exports = {
 						if (handlerItem.onAfterCall) {
 							res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
 						}
-						// Store tranformed response in redis cache
-						if (isValidNonEmptyResponse(res)) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
+						// Store transformed response in redis cache
+						if (isValidNonEmptyResponse(res)) {
+							await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMilliseconds);
+						}
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
@@ -266,7 +268,7 @@ module.exports = {
 			opts = opts || this.settings.io.options || {};
 			srv = srv || this.server || (this.settings.server ? this.settings.port : undefined);
 
-			// comptability flag to support v2.x
+			// Compatibility flag to support v2.x
 			opts.allowEIO3 = true;
 
 			if (this.settings.cors && this.settings.cors.origin && !opts.origins) {
