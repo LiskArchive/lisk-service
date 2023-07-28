@@ -65,7 +65,7 @@ const dryrunTransactionInvalidResponseSchema = {
 	errorMessage: Joi.string().required(),
 };
 
-const goodRequestSchemaFortransactionsDryRun = {
+const goodRequestSchemaForTransactionsDryRun = {
 	data: Joi.object().required(),
 	meta: Joi.object().optional(),
 };
@@ -84,7 +84,7 @@ module.exports = {
 		dryrunTransactionInvalidResponseSchema,
 	).required(),
 	metaSchema: Joi.object().optional(),
-	goodRequestSchemaFortransactionsDryRun: Joi.object(
-		goodRequestSchemaFortransactionsDryRun,
+	goodRequestSchemaForTransactionsDryRun: Joi.object(
+		goodRequestSchemaForTransactionsDryRun,
 	).required(),
 };

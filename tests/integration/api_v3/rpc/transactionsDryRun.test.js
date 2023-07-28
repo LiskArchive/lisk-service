@@ -43,7 +43,7 @@ const {
 	dryrunTransactionInvalidResponseSchema,
 	dryrunTransactionPendingResponseSchema,
 	metaSchema,
-	goodRequestSchemaFortransactionsDryRun,
+	goodRequestSchemaForTransactionsDryRun,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -51,23 +51,23 @@ const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactio
 const postTransaction = async params => request(wsRpcUrl, 'post.transactions', params);
 
 describe('Method post.transactions.dryrun', () => {
-	it('should return proper response (Fail) when transaction string has less than required fee', async () => {
+	it('should return proper response (fail) when transaction string has less than required fee', async () => {
 		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_PENDING });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (Fail) when transaction object has less than required fee', async () => {
+	it('should return proper response (fail) when transaction object has less than required fee', async () => {
 		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -78,7 +78,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -89,7 +89,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -105,7 +105,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
@@ -120,13 +120,13 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTxSuccessSchemaWithSkipDecode);
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (Success) when calling with unsigned transaction with strict: false', async () => {
+	it('should return proper response (success) when calling with unsigned transaction with strict: false', async () => {
 		const response = await postDryrunTransaction(
 			{
 				transaction: UNSIGNED_TRANSACTION_OBJECT,
@@ -136,13 +136,13 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (Invalid) when calling with unsigned transaction with strict: true', async () => {
+	it('should return proper response (invalid) when calling with unsigned transaction with strict: true', async () => {
 		const response = await postDryrunTransaction(
 			{
 				transaction: UNSIGNED_TRANSACTION_OBJECT,
@@ -152,30 +152,30 @@ describe('Method post.transactions.dryrun', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (Invalid) when transaction string has less than minimum required fee', async () => {
+	it('should return proper response (invalid) when transaction string has less than minimum required fee', async () => {
 		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_INVALID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(result.data).toBeInstanceOf(Object);
 		expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	xit('should return proper response (Invalid) for duplicate transaction', async () => {
+	it('should return proper response (invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(jsonRpcEnvelopeSchema);
 
 		const { result: firstResult } = firstResponse;
-		expect(firstResult).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(firstResult).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(firstResult.data).toBeInstanceOf(Object);
 		expect(firstResult.data).toMap(dryrunTransactionSuccessResponseSchema);
 		expect(firstResult.meta).toMap(metaSchema);
@@ -189,7 +189,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(secondResponse).toMap(jsonRpcEnvelopeSchema);
 
 		const { result: secondResult } = secondResponse;
-		expect(secondResult).toMap(goodRequestSchemaFortransactionsDryRun);
+		expect(secondResult).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(secondResult.data).toBeInstanceOf(Object);
 		expect(secondResult.data).toMap(dryrunTransactionInvalidResponseSchema);
 		expect(secondResult.meta).toMap(metaSchema);

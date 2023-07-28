@@ -384,7 +384,7 @@
 			},
 			"strict": {
 				"type": "boolean",
-				"description": "A boolean indicator to enable strict mode. By default it is set to false which skips nonce and signature check",
+				"description": "A boolean indicator to enable strict mode. By default, it is set to false which skips the nonce and signature checks.",
 				"example": "false",
 				"default": false
 			},
