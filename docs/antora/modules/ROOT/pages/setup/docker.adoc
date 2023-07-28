@@ -211,6 +211,6 @@ You can stop Lisk Service again with the following command:
 make down
 ----
 
-// More commands about how to manage Lisk Service are described on the xref:{url_management}[Docker commands] page.
+More commands about how to manage Lisk Service are described on the xref:{url_management}[] page.
 
 // TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
