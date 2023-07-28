@@ -382,6 +382,12 @@
 				"example": "false",
 				"default": false
 			},
+			"strict": {
+				"type": "boolean",
+				"description": "A boolean indicator to enable strict mode. By default, it is set to false which skips the nonce and signature checks.",
+				"example": "false",
+				"default": false
+			},
 			"transaction": {
 				"type": "object",
 				"description": "Binary payload or the transaction object.",
@@ -707,7 +713,6 @@
 											}
 										}
 									}
-									
 								}
 							},
 							"params": {
