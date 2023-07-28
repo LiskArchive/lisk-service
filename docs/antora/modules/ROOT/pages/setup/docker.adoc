@@ -136,11 +136,11 @@ Clone the {url_github_service}[lisk-service^] GitHub repository and then navigat
 git clone https://github.com/LiskHQ/lisk-service.git
 ----
 
-
 ----
 cd lisk-service
 ----
 
+Switch to the latest release branch.
 
 ----
 git checkout v0.7.0
