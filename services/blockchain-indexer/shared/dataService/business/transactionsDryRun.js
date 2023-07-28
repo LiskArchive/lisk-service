@@ -21,9 +21,9 @@ const dryRunTransactions = async params => {
 		data: [],
 		meta: {},
 	};
-	const { transaction, skipVerify, skipDecode } = params;
+	const { transaction, skipVerify, skipDecode, strict } = params;
 
-	const response = await requestConnector('dryRunTransaction', { transaction, skipVerify, skipDecode });
+	const response = await requestConnector('dryRunTransaction', { transaction, skipVerify, skipDecode, strict });
 
 	dryRunTransactionsRes.data = {
 		...response,
