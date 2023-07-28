@@ -170,7 +170,7 @@ cp docker/example.env .env
 
 In the next step, open `.env` to set the required environment variables.
 
-.Working directory: ./lisk-service/
+.Working directory: lisk-service/
 ----
 vim .env
 ----
@@ -198,7 +198,7 @@ TIP: For a complete list of supported environment variables check the xref:{url_
 
 Run the following command to start Lisk Service:
 
-.Working directory: ./lisk-service/
+.Working directory: lisk-service/
 ----
 make up
 ----
@@ -206,7 +206,7 @@ make up
 == Stopping Lisk Service
 You can stop Lisk Service again with the following command:
 
-.Working directory: ./lisk-service/
+.Working directory: lisk-service/
 ----
 make down
 ----
