@@ -2,10 +2,6 @@
 Mona Bärenfänger <mona@lightcurve.io>
 :description: Describes all necessary steps and requirements to install Lisk Service from source.
 :toc:
-:page-previous: /lisk-service/index.html
-:page-previous-title: Setup
-:page-next: /lisk-service/configuration/source.html
-:page-next-title: Configuration with PM2
 :source-language: bash
 // URLs
 :url_docker_install_linux: https://docs.docker.com/engine/install
@@ -205,7 +201,9 @@ Open up `my.cnf` .
 
 If you are unsure where to find your `my.cnf`, run the following command:
 
- $ mysql --verbose --help | grep my.cnf
+----
+mysql --verbose --help | grep my.cnf
+----
 
 Add the following at the end of the file:
 
@@ -215,11 +213,15 @@ Save and exit.
 
 Next, login via the terminal:
 
- $ mysql -uroot
+----
+mysql -uroot
+----
 
 Then run the following command to update the root password:
 
- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+----
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+----
 
 Now you should be able to login to your MySQL 8 via your MySQL Client.
 
@@ -305,18 +307,23 @@ It is strongly recommended that you synchronize your Lisk Core node with the net
 
 If you have not already done so, clone the {url_github_service}[lisk-service^] GitHub repository and then navigate into the project folder and check out the latest release.
 
-
+.Clone Lisk Service repository
 ----
-# Clone Lisk Service repository
 git clone https://github.com/LiskHQ/lisk-service.git
+----
 
-# Change directory to the new repository
+.Change directory to the new repository
+----
 cd lisk-service
+----
 
-# Switch to the recent stable as a base
+.Switch to the recent stable as a base
+----
 git checkout v0.7.0
+----
 
-# ...or use the development branch
+.\...or use the development branch
+----
 git checkout development
 ----
 
@@ -335,8 +342,8 @@ npm run start
 
 The default configuration in `ecosystem.config.js` should suffice in most of the cases. If necessary, please modify the file to configure the necessary environment variables for each microservice as per your requirements.
 
-To change the default configuration, check out the page xref:{url_config}[Configuration with PM2].
+To change the default configuration, check out the page xref:{url_config}[].
 
-// TODO: More commands about how to manage Lisk Service are described on the xref:{url_management_pm2}[PM2 commands] page.
+More commands about how to manage Lisk Service are described on the xref:{url_management_pm2}[] page.
 
 // TODO: TIP: Check the xref:{url_index_usage}[Usage] section for examples of how to use and interact with Lisk Service.
