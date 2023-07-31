@@ -1,5 +1,5 @@
 {
-    "validateBLSKeyParams" : {
+    "validateBLSKeyParams": {
         "name": "body",
         "in": "body",
         "required": true,
@@ -7,5 +7,15 @@
         "schema": {
             "$ref": "#/definitions/blsKeyValidationParamEnvelope"
         }
+    },
+    "addressRequired": {
+        "name": "address",
+        "in": "query",
+        "description": "Lisk account address.",
+        "type": "string",
+        "format": "address",
+        "minLength": 41,
+        "maxLength": 41,
+        "required": true
     }
 }
