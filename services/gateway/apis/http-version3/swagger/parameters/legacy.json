@@ -4,7 +4,7 @@
         "in": "query",
         "description": "Public key of the account to query.",
         "type": "number",
-        "minLength": 1,
+        "minLength": 64,
         "maxLength": 64,
         "required": true
     }

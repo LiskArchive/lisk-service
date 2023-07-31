@@ -29,7 +29,7 @@ const getTokenBalances = async (params) => {
 	};
 
 	if (params.tokenID && !params.address) {
-		throw new InvalidParamsException('tokenID based retrieval is only possible along with address.');
+		throw new InvalidParamsException('TokenID based retrieval is only possible along with address.');
 	}
 
 	if (params.tokenID && params.address) {
