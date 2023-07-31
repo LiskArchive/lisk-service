@@ -129,8 +129,8 @@ const hasEscrowAccount = async ({ tokenID, escrowChainID }) => {
 	}
 };
 
-const cacheTokenInfo = async () => {
-	const updateTokenInfo = async () => {
+const updateTokenInfo = async () => {
+	const updateTokenInfoListener = async () => {
 		try {
 			escrowedAmounts = await getEscrowedAmounts(true);
 			supportedTokens = await getSupportedTokens(true);
@@ -140,8 +140,8 @@ const cacheTokenInfo = async () => {
 		}
 	};
 
-	Signals.get('chain_newBlock').add(updateTokenInfo);
-	Signals.get('chain_deleteBlock').add(updateTokenInfo);
+	Signals.get('chain_newBlock').add(updateTokenInfoListener);
+	Signals.get('chain_deleteBlock').add(updateTokenInfoListener);
 };
 
 module.exports = {
@@ -153,5 +153,5 @@ module.exports = {
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenInitializationFees,
-	cacheTokenInfo,
+	updateTokenInfo,
 };

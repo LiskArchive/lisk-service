@@ -103,7 +103,7 @@ const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
-const { cacheTokenInfo } = require('./tokens');
+const { updateTokenInfo } = require('./tokens');
 const { getValidator, validateBLSKey } = require('./validators');
 const {
 	getNetworkStatus,
@@ -122,7 +122,7 @@ const init = async () => {
 	await getNodeInfo(true);
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
-	await cacheTokenInfo();
+	await updateTokenInfo();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
