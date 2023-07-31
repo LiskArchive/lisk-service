@@ -29,6 +29,7 @@ const {
 	getGenesisHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
+	getLiveIndexingJobCount: getLiveIndexingJobCountFromIndexer,
 } = require('./sources/indexer');
 
 const {
@@ -38,14 +39,14 @@ const {
 
 const config = require('../config');
 
-const blockIndexQueue = new MessageQueue(
-	config.queue.blocks.name,
+const blockMessageQueue = new MessageQueue(
+	config.queue.block.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const accountIndexQueue = new MessageQueue(
-	config.queue.accounts.name,
+const accountMessageQueue = new MessageQueue(
+	config.queue.account.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
@@ -53,25 +54,78 @@ const accountIndexQueue = new MessageQueue(
 let registeredLiskModules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
+const getInProgressJobCount = async (queue) => {
+	const jobCount = await queue.getJobCounts();
+	const count = jobCount.active + jobCount.waiting;
+	return count;
+};
+
+const getLiveIndexingJobCount = async () => {
+	const messageQueueJobCount = await getInProgressJobCount(blockMessageQueue);
+	const indexerLiveIndexingJobCount = await getLiveIndexingJobCountFromIndexer();
+	return messageQueueJobCount + indexerLiveIndexingJobCount;
+};
+
+let intervalID;
+const REFRESH_INTERVAL = 30000;
+
+const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return getLiveIndexingJobCount()
+		.then((count) => {
+			const { skipThreshold } = config.job.indexMissingBlocks;
+			return count < skipThreshold
+				? resolve(true)
+				: (() => {
+					logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
+					intervalID = setInterval(
+						waitForJobCountToFallBelowThreshold.bind(null, resolve),
+						REFRESH_INTERVAL,
+					);
+				})();
+		});
+});
+
 const scheduleBlocksIndexing = async (heights) => {
 	const blockHeights = Array.isArray(heights)
 		? heights
 		: [heights];
 
-	await BluebirdPromise.map(
-		blockHeights,
-		async height => {
-			await blockIndexQueue.add({ height });
+	blockHeights.sort((h1, h2) => h1 - h2); // sort heights in ascending order
+
+	// Schedule indexing in batches when the list is too long to avoid OOM
+	const MAX_BATCH_SIZE = 15000;
+	const numBatches = Math.ceil(blockHeights.length / MAX_BATCH_SIZE);
+	if (numBatches > 1) logger.info(`Scheduling the blocks indexing in ${numBatches} smaller batches of ${MAX_BATCH_SIZE}.`);
+
+	const isMultiBatch = numBatches > 1;
+	for (let i = 0; i < numBatches; i++) {
+		/* eslint-disable no-await-in-loop */
+		if (isMultiBatch) logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
+		const blockHeightsBatch = blockHeights.slice(i * MAX_BATCH_SIZE, (i + 1) * MAX_BATCH_SIZE);
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const height of blockHeightsBatch) {
+			logger.trace(`Scheduling indexing for block at height: ${height}.`);
+			await blockMessageQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
-		},
-		{ concurrency: blockHeights.length },
-	);
+		}
+
+		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
+		await waitForJobCountToFallBelowThreshold();
+		/* eslint-enable no-await-in-loop */
+	}
 };
 
 const scheduleValidatorsIndexing = async (validators) => {
 	await BluebirdPromise.map(
 		validators,
-		async validator => accountIndexQueue.add({
+		async validator => accountMessageQueue.add({
 			account: {
 				...validator,
 				isValidator: true,
@@ -121,26 +175,44 @@ const scheduleMissingBlocksIndexing = async () => {
 	const blockIndexHigherRange = currentHeight;
 	const blockIndexLowerRange = lastVerifiedHeight;
 
-	const missingBlocksByHeight = await getMissingBlocks(
-		blockIndexLowerRange,
-		blockIndexHigherRange,
-	);
-
 	try {
-		if (!Array.isArray(missingBlocksByHeight)) {
-			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
-			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}.`);
+		const missingBlocksByHeight = [];
+		const MAX_QUERY_RANGE = 25000;
+		const NUM_BATCHES = Math.ceil((blockIndexHigherRange - blockIndexLowerRange) / MAX_QUERY_RANGE);
+
+		// Batch into smaller ranges to avoid microservice/DB query timeouts
+		for (let i = 0; i < NUM_BATCHES; i++) {
+			/* eslint-disable no-await-in-loop */
+			const batchStartHeight = blockIndexLowerRange + i * MAX_QUERY_RANGE;
+			const batchEndHeight = Math.min(batchStartHeight + MAX_QUERY_RANGE, blockIndexHigherRange);
+			const result = await getMissingBlocks(batchStartHeight, batchEndHeight);
+
+			if (Array.isArray(result)) {
+				missingBlocksByHeight.push(...result);
+
+				if (result.length === 0) {
+					const lastIndexVerifiedHeight = await getIndexVerifiedHeight();
+					if (batchEndHeight === (lastIndexVerifiedHeight + MAX_QUERY_RANGE)) {
+						await setIndexVerifiedHeight(batchEndHeight);
+						logger.debug(`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`);
+					}
+				}
+			}
+			/* eslint-enable no-await-in-loop */
 		}
 
 		if (missingBlocksByHeight.length === 0) {
 			// Update 'indexVerifiedHeight' when no missing blocks are found
 			await setIndexVerifiedHeight(blockIndexHigherRange);
+			logger.info(`No missing blocks found in range ${blockIndexLowerRange} - ${blockIndexHigherRange}. Setting index verified height to ${blockIndexHigherRange}.`);
 		} else {
 			// Schedule indexing for the missing blocks
 			await scheduleBlocksIndexing(missingBlocksByHeight);
+			logger.info('Successfully scheduled missing blocks indexing.');
 		}
 	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}.`);
+		logger.warn(`Missing blocks indexing scheduling failed due to: ${err.message}.`);
+		logger.trace(err.stack);
 	}
 };
 

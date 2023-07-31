@@ -15,18 +15,19 @@
  */
 const { requestIndexer } = require('../utils/request');
 
-const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', {
-	from,
-	to,
-});
-
 const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
 
 const getGenesisHeight = async () => requestIndexer('getGenesisHeight');
 
+const getMissingBlocks = async (from, to) => requestIndexer(
+	'getMissingBlocks', { from, to },
+);
+
 const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
 
 const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
+
+const getLiveIndexingJobCount = async () => requestIndexer('getLiveIndexingJobCount');
 
 module.exports = {
 	getMissingBlocks,
@@ -34,4 +35,5 @@ module.exports = {
 	getGenesisHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
+	getLiveIndexingJobCount,
 };
