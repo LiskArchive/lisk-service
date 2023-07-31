@@ -14,6 +14,8 @@
  *
  */
 /* eslint-disable mocha/max-top-level-suites */
+const _ = require('lodash');
+
 jest.setTimeout(15000);
 
 const {
@@ -84,7 +86,7 @@ xdescribe('Test getCommitInfo method', () => {
 xdescribe('Test getRepoDownloadURL method', () => {
 	it('should return correct repository download url info', async () => {
 		/* eslint-disable-next-line no-useless-escape */
-		const repoUrlRegex = /^https:\/\/\w*.github.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main(?:\?token=\w+)?$/;
+		const repoUrlRegex = /^https:\/\/\w*\.github\.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main(?:\?token=\w+)?$/;
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(repoUrlRegex);
 	});
@@ -95,7 +97,11 @@ xdescribe('Test getFileDownloadURL method', () => {
 		const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 		const fileName = 'devnet/Enevti/app.json';
 		/* eslint-disable-next-line no-useless-escape */
-		const fileUrlRegexStr = `^https://raw.githubusercontent.com/${owner}/${repo}/${config.gitHub.branch}/${fileName}(?:\?token=\w+)?$`;
+		const ownerSafe = _.escapeRegExp(owner);
+		const repoSafe = _.escapeRegExp(repo);
+		const branchSafe = _.escapeRegExp(config.gitHub.branch);
+		const fileNameSafe = _.escapeRegExp(fileName);
+		const fileUrlRegexStr = `^https://raw.githubusercontent.com/${ownerSafe}/${repoSafe}/${branchSafe}/${fileNameSafe}(?:\\?token=\\w+)?$`;
 		const fileUrlRegex = new RegExp(fileUrlRegexStr);
 		const response = await getFileDownloadURL(fileName);
 		expect(response).toMatch(fileUrlRegex);
