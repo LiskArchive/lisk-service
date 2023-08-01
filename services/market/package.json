@@ -32,7 +32,7 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "joi": "^17.4.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/e09f8d4a5383e9633fa82fab675284c972aa739c/framework/dist/lisk-service-framework-1.4.21.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ac59b425ea980be55053a5c4e8cd85848828dbe3/framework/dist/lisk-service-framework-1.4.22.tgz",
     "moment": "^2.29.4",
     "node-cron": "=2.0.3"
   },
