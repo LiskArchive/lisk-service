@@ -17,6 +17,11 @@ const Logger = require('../logger').get;
 
 const logger = Logger();
 
+const escapeUserInput = input => {
+	const escapedInput = input.replace(/%/g, '\\%').replace(/_/g, '\\_');
+	return escapedInput;
+};
+
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
 
@@ -258,13 +263,13 @@ const getTableInstance = (tableConfig, knex) => {
 			params.search.forEach(search => {
 				const { property, pattern, startsWith, endsWith, allowWildCards } = search;
 				if (allowWildCards === true) {
-					if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
-					if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
-					if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
+					if (pattern) query.whereILike(`${property}`, `%${pattern}%`);
+					if (startsWith) query.whereILike(`${property}`, `${startsWith}%`);
+					if (endsWith) query.whereILike(`${property}`, `%${endsWith}`);
 				} else {
-					if (pattern) query.where(`${property}`, 'like', `%${pattern.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
-					if (startsWith) query.where(`${property}`, 'like', `${startsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
-					if (endsWith) query.where(`${property}`, 'like', `%${endsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}`);
+					if (pattern) query.whereILike(`${property}`, `%${escapeUserInput(pattern)}%`);
+					if (startsWith) query.whereILike(`${property}`, `${escapeUserInput(startsWith)}%`);
+					if (endsWith) query.whereILike(`${property}`, `%${escapeUserInput(endsWith)}`);
 				}
 			});
 		}
@@ -278,22 +283,22 @@ const getTableInstance = (tableConfig, knex) => {
 
 					if (index === 0) {
 						if (allowWildCards === true) {
-							if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
-							if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
-							if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
+							if (pattern) this.whereILike(`${property}`, `%${pattern}%`);
+							if (startsWith) this.whereILike(`${property}`, `${startsWith}%`);
+							if (endsWith) this.whereILike(`${property}`, `%${endsWith}`);
 						} else {
-							if (pattern) this.where(`${property}`, 'like', `%${pattern.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
-							if (startsWith) this.where(`${property}`, 'like', `${startsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
-							if (endsWith) this.where(`${property}`, 'like', `%${endsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}`);
+							if (pattern) this.whereILike(`${property}`, `%${escapeUserInput(pattern)}%`);
+							if (startsWith) this.whereILike(`${property}`, `${escapeUserInput(startsWith)}%`);
+							if (endsWith) this.whereILike(`${property}`, `%${escapeUserInput(endsWith)}`);
 						}
 					} else if (allowWildCards === true) {
-						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
-						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
-						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
+						if (pattern) this.orWhereILike(`${property}`, `%${pattern}%`);
+						if (startsWith) this.orWhereILike(`${property}`, `${startsWith}%`);
+						if (endsWith) this.orWhereILike(`${property}`, `%${endsWith}`);
 					} else {
-						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
-						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`);
-						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith.replace(/%/g, '\\%').replace(/_/g, '\\_')}`);
+						if (pattern) this.orWhereILike(`${property}`, `%${escapeUserInput(pattern)}%`);
+						if (startsWith) this.orWhereILike(`${property}`, `${escapeUserInput(startsWith)}%`);
+						if (endsWith) this.orWhereILike(`${property}`, `%${escapeUserInput(endsWith)}`);
 					}
 				});
 			});
