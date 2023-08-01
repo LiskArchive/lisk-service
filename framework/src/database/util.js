@@ -17,8 +17,13 @@ const Logger = require('../logger').get;
 
 const logger = Logger();
 
+const CHAR_ESCAPE_MAP = Object.freeze({
+	'%': '\\%',
+	_: '\\_',
+});
+
 const escapeUserInput = input => {
-	const escapedInput = input.replace(/%/g, '\\%').replace(/_/g, '\\_');
+	const escapedInput = input.replace(new RegExp(/%|_/g), char => CHAR_ESCAPE_MAP[char]);
 	return escapedInput;
 };
 
@@ -263,13 +268,13 @@ const getTableInstance = (tableConfig, knex) => {
 			params.search.forEach(search => {
 				const { property, pattern, startsWith, endsWith, allowWildCards } = search;
 				if (allowWildCards === true) {
-					if (pattern) query.whereILike(`${property}`, `%${pattern}%`);
-					if (startsWith) query.whereILike(`${property}`, `${startsWith}%`);
-					if (endsWith) query.whereILike(`${property}`, `%${endsWith}`);
+					if (pattern) query.where(`${property}`, 'like', `%${pattern}%`);
+					if (startsWith) query.where(`${property}`, 'like', `${startsWith}%`);
+					if (endsWith) query.where(`${property}`, 'like', `%${endsWith}`);
 				} else {
-					if (pattern) query.whereILike(`${property}`, `%${escapeUserInput(pattern)}%`);
-					if (startsWith) query.whereILike(`${property}`, `${escapeUserInput(startsWith)}%`);
-					if (endsWith) query.whereILike(`${property}`, `%${escapeUserInput(endsWith)}`);
+					if (pattern) query.where(`${property}`, 'like', `%${escapeUserInput(pattern)}%`);
+					if (startsWith) query.where(`${property}`, 'like', `${escapeUserInput(startsWith)}%`);
+					if (endsWith) query.where(`${property}`, 'like', `%${escapeUserInput(endsWith)}`);
 				}
 			});
 		}
@@ -283,22 +288,22 @@ const getTableInstance = (tableConfig, knex) => {
 
 					if (index === 0) {
 						if (allowWildCards === true) {
-							if (pattern) this.whereILike(`${property}`, `%${pattern}%`);
-							if (startsWith) this.whereILike(`${property}`, `${startsWith}%`);
-							if (endsWith) this.whereILike(`${property}`, `%${endsWith}`);
+							if (pattern) this.where(`${property}`, 'like', `%${pattern}%`);
+							if (startsWith) this.where(`${property}`, 'like', `${startsWith}%`);
+							if (endsWith) this.where(`${property}`, 'like', `%${endsWith}`);
 						} else {
-							if (pattern) this.whereILike(`${property}`, `%${escapeUserInput(pattern)}%`);
-							if (startsWith) this.whereILike(`${property}`, `${escapeUserInput(startsWith)}%`);
-							if (endsWith) this.whereILike(`${property}`, `%${escapeUserInput(endsWith)}`);
+							if (pattern) this.where(`${property}`, 'like', `%${escapeUserInput(pattern)}%`);
+							if (startsWith) this.where(`${property}`, 'like', `${escapeUserInput(startsWith)}%`);
+							if (endsWith) this.where(`${property}`, 'like', `%${escapeUserInput(endsWith)}`);
 						}
 					} else if (allowWildCards === true) {
-						if (pattern) this.orWhereILike(`${property}`, `%${pattern}%`);
-						if (startsWith) this.orWhereILike(`${property}`, `${startsWith}%`);
-						if (endsWith) this.orWhereILike(`${property}`, `%${endsWith}`);
+						if (pattern) this.orWhere(`${property}`, 'like', `%${pattern}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${startsWith}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${endsWith}`);
 					} else {
-						if (pattern) this.orWhereILike(`${property}`, `%${escapeUserInput(pattern)}%`);
-						if (startsWith) this.orWhereILike(`${property}`, `${escapeUserInput(startsWith)}%`);
-						if (endsWith) this.orWhereILike(`${property}`, `%${escapeUserInput(endsWith)}`);
+						if (pattern) this.orWhere(`${property}`, 'like', `%${escapeUserInput(pattern)}%`);
+						if (startsWith) this.orWhere(`${property}`, 'like', `${escapeUserInput(startsWith)}%`);
+						if (endsWith) this.orWhere(`${property}`, 'like', `%${escapeUserInput(endsWith)}`);
 					}
 				});
 			});
@@ -534,4 +539,5 @@ module.exports = {
 	rollbackDBTransaction,
 	getTableInstance,
 	loadSchema,
+	escapeUserInput,
 };
