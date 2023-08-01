@@ -19,7 +19,7 @@ const MessageQueue = require('bull');
 const config = require('../config');
 
 const eventsQueue = new MessageQueue(
-	config.queue.events.name,
+	config.queue.event.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );

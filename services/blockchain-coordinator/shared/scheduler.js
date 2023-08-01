@@ -116,7 +116,7 @@ const scheduleBlocksIndexing = async (heights) => {
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
 
-		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
+		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches} (Heights: ${blockHeightsBatch.at(0)} - ${blockHeightsBatch.at(-1)}, ${blockHeightsBatch.length} blocks).`);
 		await waitForJobCountToFallBelowThreshold();
 		/* eslint-enable no-await-in-loop */
 	}
