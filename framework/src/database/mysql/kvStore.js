@@ -65,11 +65,12 @@ const getKeyValueTable = () => {
 		return formatValue(value, type);
 	};
 
-	const getByPattern = async pattern => {
+	const getByPattern = async (pattern, dbTrx) => {
 		const keyValueTable = await getKeyValueTableInstance;
 		const result = await keyValueTable.find(
 			{ search: { property: 'key', pattern } },
 			['key', 'value', 'type'],
+			dbTrx,
 		);
 
 		const formattedResult = result.map(row => ({
