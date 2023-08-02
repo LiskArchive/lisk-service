@@ -52,6 +52,7 @@ const initializeSearchIndex = async () => {
 };
 
 const truncateAllTables = async () => {
+	// Truncate is a DDL statement, so NO explicit DB trx required
 	logger.info('Truncating all the tables.');
 	await BluebirdPromise.map(
 		Object.values(tableSchemas),

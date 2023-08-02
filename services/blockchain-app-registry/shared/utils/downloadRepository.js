@@ -72,9 +72,8 @@ const GITHUB_FILE_STATUS = Object.freeze({
 	UNCHANGED: 'unchanged',
 });
 
-const getRepoInfoFromURL = (url) => {
-	const urlInput = url || '';
-	const [, , , owner, repo] = urlInput.split('/');
+const getRepoInfoFromURL = (url = '') => {
+	const [owner, repo] = url.split('/').slice(-2);
 	return { owner, repo };
 };
 
@@ -100,8 +99,11 @@ const getLatestCommitHash = async () => {
 	}
 };
 
-const getCommitInfo = async () => {
-	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
+const getCommitInfo = async (dbTrx = null) => {
+	const lastSyncedCommitHash = await keyValueTable.get(
+		KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
+		dbTrx,
+	);
 	const latestCommitHash = await getLatestCommitHash();
 	return { lastSyncedCommitHash, latestCommitHash };
 };
@@ -262,14 +264,19 @@ const getModifiedFileNames = (groupedFiles) => {
 	return fileNames;
 };
 
-const syncWithRemoteRepo = async () => {
-	const connection = await getDBConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDBTransaction(connection);
+const syncWithRemoteRepo = async (_dbTrx = null) => {
+	let isCustomDBTrx = false;
+	const dbTrx = _dbTrx || await (async () => {
+		const connection = await getDBConnection(MYSQL_ENDPOINT);
+		const newDBTrx = await startDBTransaction(connection);
+		isCustomDBTrx = true;
+		return newDBTrx;
+	})();
 
 	try {
 		const dataDirectory = config.dataDir;
 		const appDirPath = path.join(dataDirectory, repo);
-		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
+		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo(dbTrx);
 
 		// Skip if there is no new commit
 		if (lastSyncedCommitHash === latestCommitHash) {
@@ -356,7 +363,7 @@ const syncWithRemoteRepo = async () => {
 		);
 
 		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
-		await commitDBTransaction(dbTrx);
+		if (isCustomDBTrx) await commitDBTransaction(dbTrx);
 
 		// Delete files which are removed from remote
 		await BluebirdPromise.map(
@@ -385,7 +392,7 @@ const syncWithRemoteRepo = async () => {
 			Signals.get('metadataUpdated').dispatch(eventPayload);
 		}
 	} catch (error) {
-		await rollbackDBTransaction(dbTrx);
+		if (isCustomDBTrx) await rollbackDBTransaction(dbTrx);
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
 		logger.error(`Unable to sync changes due to: ${errorMsg}.`);
@@ -396,11 +403,19 @@ const syncWithRemoteRepo = async () => {
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
-	const lastSyncedCommitHash = await keyValueTable.get(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
+
+	const dbConnection = await getDBConnection(MYSQL_ENDPOINT);
+	const dbTrx = await startDBTransaction(dbConnection);
+	const lastSyncedCommitHash = await keyValueTable.get(
+		KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
+		dbTrx,
+	);
 
 	if (lastSyncedCommitHash && await exists(appDirPath)) {
 		logger.trace('Synchronizing with the remote repository.');
-		await syncWithRemoteRepo();
+		await syncWithRemoteRepo(dbTrx)
+			.then(() => commitDBTransaction(dbTrx))
+			.catch(() => rollbackDBTransaction(dbTrx));
 		logger.info('Finished synchronizing with the remote repository successfully.');
 	} else {
 		if (!(await exists(dataDirectory))) {
@@ -419,7 +434,8 @@ const downloadRepositoryToFS = async () => {
 		await mv(oldDir, appDirPath);
 
 		const latestCommitHash = await getLatestCommitHash();
-		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx)
+			.then(() => commitDBTransaction(dbTrx));
 	}
 };
 
@@ -440,3 +456,5 @@ module.exports = {
 	buildEventPayload,
 	getModifiedFileNames,
 };
+
+// deleteIndexedMetadataFromFile
