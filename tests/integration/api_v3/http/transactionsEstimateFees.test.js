@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 const {
