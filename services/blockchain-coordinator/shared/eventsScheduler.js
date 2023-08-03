@@ -35,7 +35,7 @@ const scheduleDeleteBlock = async (payload) => {
 };
 
 const scheduleUpdatesOnNewRound = async (payload) => {
-	const { validators } = payload;
+	const { nextValidators: validators } = payload;
 	await eventsQueue.add({ validators, isNewRound: true });
 };
 
