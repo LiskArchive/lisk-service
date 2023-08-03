@@ -23,6 +23,7 @@ const {
 const {
 	goodResponseSchemaForTokenAvailableIDs,
 } = require('../../../schemas/api_v3/tokenAvailableIDs.schema');
+const { invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -84,17 +85,33 @@ describe('Token IDs API', () => {
 	});
 
 	it('should return bad request when called with Invalid limit', async () => {
-		const response = await api.get(`${endpoint}?limit=one`, 400);
-		expect(response).toMap(badRequestSchema);
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 
 	it('should return bad request when called with Invalid offset', async () => {
-		const response = await api.get(`${endpoint}?offset=one`, 400);
-		expect(response).toMap(badRequestSchema);
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 
 	it('should return Invalid request param when called with invalid param', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return Invalid request param when called with empty param', async () => {
+		const response = await api.get(`${endpoint}?invalidParam=`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request when called with invalid sort', async () => {
+		const response = await api.get(`${endpoint}?sort=token:desc`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

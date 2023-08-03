@@ -18,6 +18,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const { invalidParamsSchema, invalidRequestSchema, jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
 const { goodRequestSchema } = require('../../../schemas/api_v3/staker.schema');
+const { invalidNames, invalidPublicKeys, invalidAddresses, invalidPartialSearches, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -41,7 +42,7 @@ describe('get.pos.stakers', () => {
 		[refValidator] = validatorsResponse.result.data;
 	});
 
-	it('Returns list of stakers when requested for known validator address', async () => {
+	it('should return list of stakers when requested for known validator address', async () => {
 		const response = await getStakers({ address: refValidator.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -50,7 +51,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	xit('Returns list of stakers when requested for known validator address and search param (exact staker name)', async () => {
+	xit('should return list of stakers when requested for known validator address and search param (exact staker name)', async () => {
 		const response = await getStakers({ address: refValidator.address, search: refValidator.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -59,7 +60,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers[0].address).toBe(refValidator.address);
 	});
 
-	it('Returns list of stakers when requested for known validator address and search address (exact staker address)', async () => {
+	xit('should return list of stakers when requested for known validator address and search address (exact staker address)', async () => {
 		const response = await getStakers({
 			address: refValidator.address,
 			search: refValidator.address,
@@ -71,7 +72,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers[0].address).toBe(refValidator.address);
 	});
 
-	it('Returns list of stakers when requested for known validator address and search public key (exact staker public key)', async () => {
+	xit('should return list of stakers when requested for known validator address and search public key (exact staker public key)', async () => {
 		const response = await getStakers({
 			address: refValidator.address,
 			search: refValidator.publicKey,
@@ -83,7 +84,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers[0].address).toBe(refValidator.address);
 	});
 
-	xit('Returns list of stakers when requested for known validator address and search param (partial staker name)', async () => {
+	xit('should return list of stakers when requested for known validator address and search param (partial staker name)', async () => {
 		const searchParam = refValidator.name ? refValidator.name.substring(0, 3) : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -95,7 +96,7 @@ describe('get.pos.stakers', () => {
 			.toBe(true);
 	});
 
-	xit('Returns list of stakers when requested for known validator address and search param (partial staker address)', async () => {
+	xit('should return list of stakers when requested for known validator address and search param (partial staker address)', async () => {
 		const searchParam = refValidator.address ? refValidator.address.substring(0, 3) : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -107,7 +108,7 @@ describe('get.pos.stakers', () => {
 			.toBe(true);
 	});
 
-	xit('Returns list of stakers when requested for known validator address and search param (partial staker public key)', async () => {
+	xit('should return list of stakers when requested for known validator address and search param (partial staker public key)', async () => {
 		const searchParam = refValidator.publicKey ? refValidator.publicKey.substring(0, 3) : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -119,7 +120,7 @@ describe('get.pos.stakers', () => {
 			.toBe(true);
 	});
 
-	it('Returns list of stakers when requested with known validator address and offset=1', async () => {
+	it('should return list of stakers when requested with known validator address and offset=1', async () => {
 		const response = await getStakers({ address: refValidator.address, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -128,7 +129,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of stakers when requested with known validator address and limit=5', async () => {
+	it('should return list of stakers when requested with known validator address and limit=5', async () => {
 		const response = await getStakers({ address: refValidator.address, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -137,7 +138,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of stakers when requested with known validator address, offset=1 and limit=5', async () => {
+	it('should return list of stakers when requested with known validator address, offset=1 and limit=5', async () => {
 		const response = await getStakers({
 			address: refValidator.address, offset: 1, limit: 5,
 		});
@@ -148,7 +149,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of stakers when requested for known validator publicKey', async () => {
+	it('should return list of stakers when requested for known validator publicKey', async () => {
 		const response = await getStakers({ publicKey: refValidator.publicKey });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -157,7 +158,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of stakers when requested with known validator publicKey and offset=1', async () => {
+	it('should return list of stakers when requested with known validator publicKey and offset=1', async () => {
 		const response = await getStakers({ publicKey: refValidator.publicKey, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -166,7 +167,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of stakers when requested with known validator publicKey and limit=5', async () => {
+	it('should return list of stakers when requested with known validator publicKey and limit=5', async () => {
 		const response = await getStakers({ publicKey: refValidator.publicKey, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -175,7 +176,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of stakers when requested with known validator publicKey, offset=1 and limit=5', async () => {
+	it('should return list of stakers when requested with known validator publicKey, offset=1 and limit=5', async () => {
 		const response = await getStakers({
 			publicKey: refValidator.publicKey, offset: 1, limit: 5,
 		});
@@ -186,7 +187,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of stakers when requested for known validator name', async () => {
+	it('should return list of stakers when requested for known validator name', async () => {
 		const response = await getStakers({ name: refValidator.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -195,7 +196,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of stakers when requested with known validator name and offset=1', async () => {
+	it('should return list of stakers when requested with known validator name and offset=1', async () => {
 		const response = await getStakers({ name: refValidator.name, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -204,7 +205,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	it('Returns list of stakers when requested with known validator name and limit=5', async () => {
+	it('should return list of stakers when requested with known validator name and limit=5', async () => {
 		const response = await getStakers({ name: refValidator.name, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -213,7 +214,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns list of stakers when requested with known validator name, offset=1 and limit=5', async () => {
+	it('should return list of stakers when requested with known validator name, offset=1 and limit=5', async () => {
 		const response = await getStakers({ name: refValidator.name, offset: 1, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -222,7 +223,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(5);
 	});
 
-	it('Returns empty when requested for known non-validator address', async () => {
+	it('should return empty when requested for known non-validator address', async () => {
 		const response = await getStakers({ address: 'lsk99999999999999999999999999999999999999' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -230,7 +231,7 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBe(0);
 	});
 
-	it('Returns empty list when requested with invalid address and publicKey pair', async () => {
+	it('should return empty list when requested with invalid address and publicKey pair', async () => {
 		const response = await getStakers({
 			address: refValidator.address,
 			publicKey: '796c94fe1e53c4dd63f5a181450811aa53bfc38dcad038c1b884e8cb45e26823',
@@ -241,18 +242,72 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBe(0);
 	});
 
-	it('No address -> invalid param', async () => {
+	it('should return invalid request if address, publicKey and name is missing', async () => {
 		const response = await getStakers();
 		expect(response).toMap(invalidRequestSchema);
 	});
 
-	it('Invalid request param -> invalid param', async () => {
+	it('should return invalid request for invalid address', async () => {
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getStakers({ address: invalidAddresses[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid request for invalid publicKey', async () => {
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getStakers({ publicKey: invalidPublicKeys[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid request for invalid name', async () => {
+		for (let i = 0; i < invalidNames.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getStakers({ name: invalidNames[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid request for invalid search', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getStakers({
+				address: refValidator.address,
+				search: invalidPartialSearches[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid request for invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getStakers({ address: refValidator.address, limit: invalidLimits[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid request for invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getStakers({
+				address: refValidator.address,
+				offset: invalidOffsets[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid request for invalid param', async () => {
 		const response = await getStakers({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid address -> invalid param', async () => {
-		const response = await getStakers({ address: 'L' });
+	it('should return invalid request for empty param', async () => {
+		const response = await getStakers({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

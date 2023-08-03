@@ -32,7 +32,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestSchemas = async params => request(wsRpcUrl, 'get.schemas', params);
 
 describe('Method get.schemas', () => {
-	it('returns list of all available schemas', async () => {
+	it('should return list of all available schemas', async () => {
 		const response = await requestSchemas({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -50,7 +50,7 @@ describe('Method get.schemas', () => {
 			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));
 	});
 
-	it('returns invalid response for invalid param', async () => {
+	it('should return invalid params for invalid param', async () => {
 		const response = await requestSchemas({ invalid_param: 'invalid_param' });
 		expect(response).toMap(invalidParamsSchema);
 	});

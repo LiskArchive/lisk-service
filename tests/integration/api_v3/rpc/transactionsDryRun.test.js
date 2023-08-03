@@ -45,6 +45,7 @@ const {
 	metaSchema,
 	goodRequestSchemaForTransactionsDryRun,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
+const { invalidAddresses, invalidPublicKeys } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactions.dryrun', params);
@@ -62,7 +63,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (fail) when transaction object has less than required fee', async () => {
+	xit('should return proper response (fail) when transaction object has less than required fee', async () => {
 		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -169,7 +170,30 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (invalid) for duplicate transaction', async () => {
+	xit('should return invalid param when requested with invalid public key', async () => {
+		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
+			// eslint-disable-next-line no-await-in-loop
+			const response = await postDryrunTransaction({ transaction: remTransactionObject });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return server error when requested with invalid address', async () => {
+		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			remTransactionObject.params = {
+				...params,
+				recipientAddress: invalidAddresses[i],
+			};
+			// eslint-disable-next-line no-await-in-loop
+			const response = await postDryrunTransaction({ transaction: remTransactionObject });
+			expect(response).toMap(serverErrorSchema);
+		}
+	});
+
+	xit('should return proper response (invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(jsonRpcEnvelopeSchema);

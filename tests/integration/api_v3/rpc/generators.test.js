@@ -24,6 +24,7 @@ const {
 const {
 	generatorResponseSchema,
 } = require('../../../schemas/api_v3/generator.schema');
+const { invalidPartialSearches, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
@@ -119,7 +120,7 @@ describe('Generators API', () => {
 			expect(result.data.length).toBe(1);
 		});
 
-		xit('should return generators list when searching with generator publicKey', async () => {
+		it('should return generators list when searching with generator publicKey', async () => {
 			const response = await getGenerators({ search: firstGenerator.publicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -145,7 +146,7 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(103);
 		});
 
-		xit('should return generators list when searching partially with generator publicKey', async () => {
+		it('should return generators list when searching partially with generator publicKey', async () => {
 			const response = await getGenerators({ search: firstGenerator.publicKey.substring(0, 3) });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -154,18 +155,37 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(103);
 		});
 
-		it('should return bad request when called with invalid search param', async () => {
-			const response = await getGenerators({ search: '(*)' }).catch(e => e);
-			expect(response).toMap(invalidParamsSchema);
+		it('should return invalid params when called with invalid search param', async () => {
+			for (let i = 0; i < invalidPartialSearches.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getGenerators({ search: invalidPartialSearches[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 
-		it('should return bad request when called with limit=0', async () => {
-			const response = await getGenerators({ limit: 0 }).catch(e => e);
-			expect(response).toMap(invalidParamsSchema);
+		it('should return invalid params when called with invalid limit param', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getGenerators({ limit: invalidLimits[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 
-		it('should return bad request when called with invalid request param', async () => {
+		it('should return invalid params when called with invalid offset param', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getGenerators({ offset: invalidOffsets[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params when called with invalid request param', async () => {
 			const response = await getGenerators({ invalidParam: 'invalid' });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('should return invalid params when called with empty invalid request param', async () => {
+			const response = await getGenerators({ invalidParam: '' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});

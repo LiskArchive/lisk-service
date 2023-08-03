@@ -27,6 +27,7 @@ const {
 const {
 	goodResponseSchemaForTokenTopBalances,
 } = require('../../../schemas/api_v3/tokenTopBalances.schema');
+const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidTokenIDs } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
@@ -137,23 +138,50 @@ describe('get.token.balances.top', () => {
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
 	});
 
-	it('should return Invalid request param when called without token ID', async () => {
+	it('should return invalid params when called without token ID', async () => {
 		const response = await getTokensTopBalances({});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return Invalid request param when called with invalid param', async () => {
+	it('should return invalid params when called with invalid token ID', async () => {
+		for (let i = 0; i < invalidTokenIDs.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID: invalidTokenIDs[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with token ID and invalid search', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID, search: invalidPartialSearches[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with Invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID, limit: invalidLimits[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with Invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID, offset: invalidOffsets[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with invalid param', async () => {
 		const response = await getTokensTopBalances({ tokenID, invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return Invalid request param when called with Invalid limit', async () => {
-		const response = await getTokensTopBalances({ tokenID, limit: 'L' });
-		expect(response).toMap(invalidParamsSchema);
-	});
-
-	it('should return Invalid request param when called with Invalid offset', async () => {
-		const response = await getTokensTopBalances({ tokenID, offset: 'L' });
+	it('should return invalid params when called with empty param', async () => {
+		const response = await getTokensTopBalances({ tokenID, invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

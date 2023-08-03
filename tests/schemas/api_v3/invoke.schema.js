@@ -21,7 +21,7 @@ const invokeMetaResponseSchema = {
 };
 
 const errorSchema = {
-	message: Joi.string().required(),
+	data: Joi.object({ error: Joi.string().required() }).required(),
 };
 
 const invokeResponseSchema = {

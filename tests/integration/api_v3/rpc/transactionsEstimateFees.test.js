@@ -26,9 +26,11 @@ const {
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
+	serverErrorSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
+const { invalidPublicKeys, invalidAddresses } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const calculateTransactionFees = async params => request(wsRpcUrl, 'post.transactions.estimate-fees', params);
@@ -69,6 +71,29 @@ describe('Method post.transactions.estimate-fees', () => {
 		expect(result).toMap(transactionEstimateFees);
 	});
 
+	it('should return invalid param when requested with invalid public key', async () => {
+		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
+			// eslint-disable-next-line no-await-in-loop
+			const response = await calculateTransactionFees({ transaction: remTransactionObject });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return server error when requested with invalid address', async () => {
+		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			remTransactionObject.params = {
+				...params,
+				recipientAddress: invalidAddresses[i],
+			};
+			// eslint-disable-next-line no-await-in-loop
+			const response = await calculateTransactionFees({ transaction: remTransactionObject });
+			expect(response).toMap(serverErrorSchema);
+		}
+	});
+
 	it('should return invalid params when called with valid transaction string', async () => {
 		const response = await calculateTransactionFees({ transaction: TRANSACTION_ENCODED_VALID });
 		expect(response).toMap(invalidParamsSchema);
@@ -76,6 +101,11 @@ describe('Method post.transactions.estimate-fees', () => {
 
 	it('should return invalid params when called with invalid transaction', async () => {
 		const response = await calculateTransactionFees({ transaction: 'INVALID_TRANSACTION' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when called with no params', async () => {
+		const response = await calculateTransactionFees();
 		expect(response).toMap(invalidParamsSchema);
 	});
 

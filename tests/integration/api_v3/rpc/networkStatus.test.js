@@ -30,7 +30,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
 describe('get.network.status', () => {
-	it('returns network status', async () => {
+	it('should return network status', async () => {
 		const response = await requestNetworkStatus();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -38,12 +38,12 @@ describe('get.network.status', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('params not supported -> 400 BAD REQUEST', async () => {
+	it('should return bad request for unsupported param', async () => {
 		const response = await requestNetworkStatus({ someparam: 'not_supported' }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('params (empty) not supported -> 400 BAD REQUEST', async () => {
+	it('should return bad request for empty param', async () => {
 		const response = await requestNetworkStatus({ someparam: '' }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});

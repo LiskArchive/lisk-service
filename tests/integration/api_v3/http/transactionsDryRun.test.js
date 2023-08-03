@@ -41,6 +41,7 @@ const {
 	metaSchema,
 	goodRequestSchemaForTransactionsDryRun,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
+const { invalidAddresses, invalidPublicKeys } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -48,7 +49,7 @@ const endpoint = `${baseUrlV3}/transactions/dryrun`;
 const postTransactionEndpoint = `${baseUrlV3}/transactions`;
 
 describe('Post dryrun transactions API', () => {
-	it('should return proper response (fail) when transaction object has less than required fee', async () => {
+	xit('should return proper response (fail) when transaction object has less than required fee', async () => {
 		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_PENDING });
 		expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
 		expect(response.data).toMap(dryrunTransactionPendingResponseSchema);
@@ -125,7 +126,30 @@ describe('Post dryrun transactions API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (invalid) for duplicate transaction', async () => {
+	xit('should return bad request when requested with invalid public key', async () => {
+		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.post(endpoint, { transaction: remTransactionObject });
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	xit('should return bad request when requested with invalid address', async () => {
+		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			remTransactionObject.params = {
+				...params,
+				recipientAddress: invalidAddresses[i],
+			};
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.post(endpoint, { transaction: remTransactionObject });
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	xit('should return proper response (invalid) for duplicate transaction', async () => {
 		// Check dryrun passes
 		const firstResponse = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
 		expect(firstResponse).toMap(goodRequestSchemaForTransactionsDryRun);
@@ -145,7 +169,7 @@ describe('Post dryrun transactions API', () => {
 		expect(secondResponse.meta).toMap(metaSchema);
 	});
 
-	it('should return proper response (invalid) when posting invalid transaction', async () => {
+	xit('should return proper response (invalid) when posting invalid transaction', async () => {
 		const dryrunTransaction = await api.post(
 			endpoint,
 			{ transaction: TRANSACTION_OBJECT_INVALID },

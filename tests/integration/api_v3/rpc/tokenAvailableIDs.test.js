@@ -27,6 +27,7 @@ const {
 const {
 	goodResponseSchemaForTokenAvailableIDs,
 } = require('../../../schemas/api_v3/tokenAvailableIDs.schema');
+const { invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
@@ -98,18 +99,38 @@ describe('get.token.available-ids', () => {
 		expect(result.data.tokenIDs.length).toBeLessThanOrEqual(5);
 	});
 
-	it('should return bad request when called with invalid param', async () => {
+	it('should return invalid params when called with Invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensIDs({
+				limit: invalidLimits[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with Invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensIDs({
+				offset: invalidOffsets[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with invalid param', async () => {
 		const response = await getTokensIDs({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return bad request when called with Invalid limit', async () => {
-		const response = await getTokensIDs({ limit: 'L' });
+	it('should return invalid params param when called with empty param', async () => {
+		const response = await getTokensIDs({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return bad request when called with Invalid offset', async () => {
-		const response = await getTokensIDs({ offset: 'L' });
+	it('should return invalid params when called with invalid sort', async () => {
+		const response = await getTokensIDs({ sort: 'token:desc' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

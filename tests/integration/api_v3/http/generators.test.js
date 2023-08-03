@@ -23,6 +23,7 @@ const {
 const {
 	generatorResponseSchema,
 } = require('../../../schemas/api_v3/generator.schema');
+const { invalidPartialSearches, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/v3`;
@@ -61,7 +62,7 @@ describe('Generators API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(103);
 
-			// TODO: Verify and fix
+			// // TODO: Verify and fix
 			// const activeGenerators = response.data
 			// 	.filter(generator => generator.status === STATUS.ACTIVE);
 			// const standbyGenerators = response.data
@@ -96,7 +97,7 @@ describe('Generators API', () => {
 			expect(response.data.length).toBe(1);
 		});
 
-		xit('should return generators list when searching with generator publicKey', async () => {
+		it('should return generators list when searching with generator publicKey', async () => {
 			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey}`);
 			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBe(1);
@@ -116,7 +117,7 @@ describe('Generators API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(100);
 		});
 
-		xit('should return generators list when searching partially with generator publicKey', async () => {
+		it('should return generators list when searching partially with generator publicKey', async () => {
 			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey.substring(0, 3)}`);
 			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -124,12 +125,51 @@ describe('Generators API', () => {
 		});
 
 		it('should return bad request when called with invalid search param', async () => {
-			const response = await api.get(`${endpoint}/generators?search=(*)`, 400);
+			for (let i = 0; i < invalidPartialSearches.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}/generators?search=${invalidPartialSearches[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
+
+		it('should return bad request when called with invalid limit param', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}/generators?limit=${invalidLimits[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
+
+		it('should return bad request when called with invalid offset param', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}/generators?offset=${invalidOffsets[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
+
+		it('should return bad request when called with limit less than 1', async () => {
+			const response = await api.get(`${endpoint}/generators?limit=0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('should return bad request when called with limit=0', async () => {
-			const response = await api.get(`${endpoint}/generators?limit=0`, 400);
+		it('should return bad request when called with limit greater than 103', async () => {
+			const response = await api.get(`${endpoint}/generators?limit=104`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('should return bad request when called with limit not a number', async () => {
+			const response = await api.get(`${endpoint}/generators?limit=abc`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('should return bad request when called with offset less than 0', async () => {
+			const response = await api.get(`${endpoint}/generators?offset=-1`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('should return bad request when called with offset not a number', async () => {
+			const response = await api.get(`${endpoint}/generators?offset=abc`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
@@ -142,6 +182,11 @@ describe('Generators API', () => {
 
 		it('should return bad request when called with invalid request param', async () => {
 			const response = await api.get(`${endpoint}/generators?invalidParam=invalid`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('should return bad request when called with empty invalid request param', async () => {
+			const response = await api.get(`${endpoint}/generators?invalidParam=`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});

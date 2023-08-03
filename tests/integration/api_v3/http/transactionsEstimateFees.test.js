@@ -26,6 +26,7 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
+const { invalidAddresses, invalidPublicKeys } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -53,6 +54,29 @@ describe('Post estimate-fees transactions API', () => {
 		const { fee, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		const response = await api.post(endpoint, { transaction: remTransactionObject });
 		expect(response).toMap(transactionEstimateFees);
+	});
+
+	xit('should return bad request when requested with invalid public key', async () => {
+		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.post(endpoint, { transaction: remTransactionObject });
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	xit('should return bad request when requested with invalid address', async () => {
+		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			remTransactionObject.params = {
+				...params,
+				recipientAddress: invalidAddresses[i],
+			};
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.post(endpoint, { transaction: remTransactionObject });
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 
 	it('should return bad request when called with valid transaction string', async () => {

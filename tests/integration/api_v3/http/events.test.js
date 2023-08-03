@@ -32,6 +32,8 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/events`;
 
+const { invalidAddresses, invalidBlockIDs, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
+
 describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
@@ -40,7 +42,7 @@ describe('Events API', () => {
 	});
 
 	describe('Retrieve events', () => {
-		it('returns all events', async () => {
+		it('should return all events', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -61,7 +63,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns events by limit=5', async () => {
+		it('should return events by limit=5', async () => {
 			const response = await api.get(`${endpoint}?limit=5`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -81,10 +83,26 @@ describe('Events API', () => {
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('should return bad request for invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?blockID=${invalidLimits[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
+
+		it('should return bad request for invalid offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
 	});
 
 	describe('Retrieve event list by transactionID', () => {
-		it('returns event with known transactionID', async () => {
+		it('should return event with known transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -96,7 +114,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty transactionID -> ok', async () => {
+		it('should return empty transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -117,19 +135,19 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('short invalid transactionID -> BAD_REQUEST', async () => {
+		it('should return bad request for short invalid transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=41287`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('long invalid transactionID -> 400', async () => {
+		it('should return bad request for long invalid transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve event list by blockID', () => {
-		it('return event with known block -> ok', async () => {
+		it('should return event with known block', async () => {
 			const response = await api.get(`${endpoint}?blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -144,7 +162,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty blockID -> ok', async () => {
+		it('should return empty blockID', async () => {
 			const response = await api.get(`${endpoint}?blockID=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -165,14 +183,17 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid blockID -> 400', async () => {
-			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 400);
-			expect(response).toMap(badRequestSchema);
+		it('should return bad request for invalid block ID', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
 		});
 	});
 
 	describe('Retrieve event list by height', () => {
-		it('known height -> ok', async () => {
+		it('should return known height', async () => {
 			const response = await api.get(`${endpoint}?height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -187,7 +208,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty height -> ok', async () => {
+		it('should return empty height', async () => {
 			const response = await api.get(`${endpoint}?height=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -208,14 +229,14 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> 400', async () => {
+		it('should return invalid height', async () => {
 			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('Retrieve event list by senderAddress', () => {
-		it('known address -> ok', async () => {
+		it('should return known address', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -236,7 +257,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty senderAddress -> ok', async () => {
+		it('should return empty senderAddress', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -257,14 +278,17 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid senderAddress -> 400', async () => {
-			const response = await api.get(`${endpoint}?senderAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
-			expect(response).toMap(badRequestSchema);
+		it('should return bad request for invalid sender address', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?senderAddress=${invalidAddresses[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
 		});
 	});
 
 	describe('Retrieve event list within timestamps', () => {
-		it('events within set timestamps are returned', async () => {
+		it('should return events within set timestamps', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
@@ -289,7 +313,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('events with half bounded range: fromTimestamp', async () => {
+		it('should return events with half bounded range: fromTimestamp', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
@@ -312,7 +336,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('events with half bounded range: toTimestamp', async () => {
+		it('should return events with half bounded range: toTimestamp', async () => {
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
@@ -337,7 +361,7 @@ describe('Events API', () => {
 	});
 
 	describe('Retrieve event list within height range', () => {
-		it('events within set heights are returned', async () => {
+		it('should return events within set heights', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}`);
@@ -364,7 +388,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('events with half bounded range: fromHeight', async () => {
+		it('should return events with half bounded range: fromHeight', async () => {
 			const minHeight = refTransaction.block.height;
 			const response = await api.get(`${endpoint}?height=${minHeight}:`);
 			expect(response).toMap(goodRequestSchema);
@@ -389,7 +413,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('events with half bounded range: toHeight', async () => {
+		it('should return events with half bounded range: toHeight', async () => {
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await api.get(`${endpoint}?height=:${maxHeight}`);
 			expect(response).toMap(goodRequestSchema);
@@ -414,7 +438,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('events with minHeight greater than maxHeight -> INTERNAL_SERVER_ERROR', async () => {
+		it('should return events with minHeight greater than maxHeight -> INTERNAL_SERVER_ERROR', async () => {
 			const expectedStatusCode = 500;
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
@@ -424,7 +448,7 @@ describe('Events API', () => {
 	});
 
 	describe('Events sorted by timestamp', () => {
-		it('returns events sorted by timestamp descending', async () => {
+		it('should return events sorted by timestamp descending', async () => {
 			const response = await api.get(`${endpoint}?sort=timestamp:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -445,7 +469,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns events sorted by timestamp ascending', async () => {
+		it('should return events sorted by timestamp ascending', async () => {
 			const response = await api.get(`${endpoint}?sort=timestamp:asc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -468,7 +492,7 @@ describe('Events API', () => {
 	});
 
 	describe('Fetch events based on multiple request params', () => {
-		it('returns event when queried with transactionID and blockID', async () => {
+		it('should return event when queried with transactionID and blockID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -483,7 +507,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns event when queried with transactionID and height', async () => {
+		it('should return event when queried with transactionID and height', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -498,13 +522,13 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 400 BAD REQUEST with unsupported params', async () => {
+		it('should return 400 BAD REQUEST with unsupported params', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('returns events when queried with limit and offset', async () => {
+		it('should return events when queried with limit and offset', async () => {
 			const response = await api.get(`${endpoint}?limit=5&offset=1`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -526,7 +550,7 @@ describe('Events API', () => {
 		});
 	});
 	describe('Retrieve events by topic', () => {
-		it('returns event with topic as transactionID', async () => {
+		it('should return event with topic as transactionID', async () => {
 			const response = await api.get(`${endpoint}?topic=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -536,7 +560,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns event with topic as CSV - transactionID,senderAddress', async () => {
+		it('should return event with topic as CSV - transactionID,senderAddress', async () => {
 			const topic = refTransaction.id.concat(',', refTransaction.sender.address);
 			const response = await api.get(`${endpoint}?topic=${topic}`);
 			expect(response).toMap(goodRequestSchema);
@@ -547,7 +571,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns event with topic as senderAddress', async () => {
+		it('should return event with topic as senderAddress', async () => {
 			const response = await api.get(`${endpoint}?topic=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -557,7 +581,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty topic -> ok', async () => {
+		it('empty topic', async () => {
 			const response = await api.get(`${endpoint}?topic=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -580,7 +604,7 @@ describe('Events API', () => {
 	});
 
 	describe('Events ordered by index', () => {
-		it('returns events ordered by index descending', async () => {
+		it('should return events ordered by index descending', async () => {
 			const order = 'index:desc';
 			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);
@@ -603,7 +627,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns events ordered by index ascending', async () => {
+		it('should return events ordered by index ascending', async () => {
 			const order = 'index:asc';
 			const response = await api.get(`${endpoint}?order=${order}`);
 			expect(response).toMap(goodRequestSchema);

@@ -14,12 +14,12 @@
  *
  */
 const path = require('path');
+const { MoleculerError, MoleculerServerError } = require('moleculer').Errors;
 const {
 	Microservice,
 	Logger,
 	LoggerConfig,
 	Libs,
-	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const config = require('./config');
@@ -142,7 +142,8 @@ tempApp.run().then(async () => {
 			},
 
 			onError(req, res, err) {
-				if (err instanceof ValidationException === false) {
+				if (err instanceof MoleculerError === false
+					&& err instanceof MoleculerServerError === false) {
 					res.setHeader('Content-Type', 'application/json');
 					res.writeHead(err.code || 500);
 					res.end(JSON.stringify({
