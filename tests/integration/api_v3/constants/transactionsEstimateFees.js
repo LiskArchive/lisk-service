@@ -20,7 +20,6 @@ const ESTIMATE_FEES_BASE_TRANSACTION = {
 	command: 'command',
 	nonce: '1',
 	senderPublicKey: TRANSACTION_OBJECT_VALID.senderPublicKey,
-	signatures: [],
 	params: {},
 };
 

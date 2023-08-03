@@ -67,7 +67,6 @@ const mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest = {
 				},
 			},
 		},
-		id: '0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395',
 	},
 };
 
@@ -129,7 +128,6 @@ const mockInteroperabilityRegisterSidechainTxRequest = {
 			],
 			sidechainCertificateThreshold: '5',
 		},
-		id: '0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395',
 	},
 };
 
