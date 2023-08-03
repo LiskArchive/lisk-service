@@ -78,9 +78,7 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 		txSchema,
 		{
 			...schemaCompliantTransaction,
-			fee: schemaCompliantTransaction.fee
-				? schemaCompliantTransaction.fee
-				: transactionMinFee,
+			fee: schemaCompliantTransaction.fee || transactionMinFee,
 		},
 	);
 	const transactionSize = transactionBuffer.length;
@@ -141,7 +139,9 @@ const formatEvent = (event, skipDecode) => {
 	} else {
 		const eventDataSchema = getDataSchemaByEventName(event.name);
 		try {
-			eventData = eventDataSchema ? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex')) : { data: event.data };
+			eventData = eventDataSchema
+				? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
+				: { data: event.data };
 		} catch (err) {
 			logger.warn(`Unable to decode data for ${event.name} (${event.module}) event:\n${err.stack}`);
 			return { data: event.data };

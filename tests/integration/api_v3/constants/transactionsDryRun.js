@@ -31,7 +31,7 @@ const TRANSACTION_OBJECT_VALID = {
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 };
 
-// Invalid receipient address
+// Invalid recipient address
 const TRANSACTION_OBJECT_INVALID = {
 	module: 'token',
 	command: 'transfer',
@@ -93,112 +93,6 @@ const UNSIGNED_TRANSACTION_OBJECT = {
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 };
 
-const TOKEN_TRANSFER_TRANSACTION_OBJECT = TRANSACTION_OBJECT_VALID;
-
-const AUTH_REGISTER_MULTI_SIGNATURE_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'auth',
-	command: 'registerMultisignature',
-	params: {
-		numberOfSignatures: 1,
-		mandatoryKeys: [],
-		optionalKeys: [],
-		signatures: ['cd3e42528d47d63c643832297162e0786cfeabdf92b3adb8d33fdc40a65b1f367a93355b2a25c0abd74b26bba46c0fb47184fac2f49cd172c286836dd707af03'],
-	},
-};
-
-const POS_REGISTER_VALIDATOR_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'registerValidator',
-	params: {
-		name: 'test_validator',
-		blsKey: '8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32',
-		proofOfPossession: 'abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996',
-		generatorKey: '59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf',
-	},
-};
-
-const POS_UNLOCK_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'unlock',
-	params: {},
-};
-
-const POS_REPORT_MISBEHAVIOR_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'reportMisbehavior',
-	params: {
-		header1: '5dfaeae5cb8e8165ddabeef9acfe055d8422bd14f3992297b615b225ce7b02ed',
-		header2: '588ca03cb3fa2b26893a7bde9d2401ca04d937755fe005a5802b4a719789a585',
-	},
-};
-
-const POS_UPDATE_GENERATOR_KEY_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'updateGeneratorKey',
-	params: {
-		generatorKey: '59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf',
-	},
-};
-
-const POS_STAKE_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'stake',
-	params: {
-		stakes: [
-			{
-				validatorAddress: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
-				amount: '1000000000000',
-			},
-			{
-				validatorAddress: 'lskx7rscmxc3k9yokbqpxspjj92zz6fue84e2xw92',
-				amount: '2000000000000',
-			},
-		],
-	},
-};
-
-const POS_CHANGE_COMMISSION_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'changeCommission',
-	params: {
-		newCommission: '10000',
-	},
-};
-
-const POS_CLAIM_REWARDS_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'pos',
-	command: 'claimRewards',
-	params: {},
-};
-
-const LEGACY_RECLAIM_LSK = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'legacy',
-	command: 'reclaimLSK',
-	params: {
-		amount: '1000000000000',
-	},
-};
-
-const LEGACY_REGISTER_KEYS_TRANSACTION_OBJECT = {
-	...TRANSACTION_OBJECT_VALID,
-	module: 'legacy',
-	command: 'registerKeys',
-	params: {
-		blsKey: '8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32',
-		proofOfPossession: 'abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996',
-		generatorKey: '59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf',
-	},
-};
-
 module.exports = {
 	TRANSACTION_ENCODED_VALID,
 	TRANSACTION_ENCODED_INVALID,
@@ -207,23 +101,4 @@ module.exports = {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_PENDING,
 	UNSIGNED_TRANSACTION_OBJECT,
-
-	// Token
-	TOKEN_TRANSFER_TRANSACTION_OBJECT,
-
-	// Auth
-	AUTH_REGISTER_MULTI_SIGNATURE_TRANSACTION_OBJECT,
-
-	// PoS
-	POS_REGISTER_VALIDATOR_TRANSACTION_OBJECT,
-	POS_UNLOCK_TRANSACTION_OBJECT,
-	POS_REPORT_MISBEHAVIOR_TRANSACTION_OBJECT,
-	POS_UPDATE_GENERATOR_KEY_TRANSACTION_OBJECT,
-	POS_STAKE_TRANSACTION_OBJECT,
-	POS_CHANGE_COMMISSION_TRANSACTION_OBJECT,
-	POS_CLAIM_REWARDS_TRANSACTION_OBJECT,
-
-	// Legacy
-	LEGACY_RECLAIM_LSK,
-	LEGACY_REGISTER_KEYS_TRANSACTION_OBJECT,
 };

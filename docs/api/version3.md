@@ -514,19 +514,18 @@ Request payload:
 
 ```jsonc
 {
-  "transaction":  {
+  "transaction": {
     "module": "token",
     "command": "transferCrossChain",
-    "nonce": "1",
-    "senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
+    "nonce": "0",
+    "senderPublicKey": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
     "params": {
-      "tokenID": "0000000000000000",
-      "amount": "100000000000",
+      "recipientAddress": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
       "receivingChainID": "00000001",
-      "recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
-      "data": ""
-    },
-    "id": "0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395"
+      "amount": "10000000000",
+      "tokenID": "0000000000000000",
+      "data": "Cross chain transfer tx",
+    }
   }
 }
 ```
@@ -564,7 +563,8 @@ Request payload:
                     "additionalFees": { // optional - entries vary by command
                         "validatorRegistrationFee": "5000000", // only for pos:registerDelegate
                         "userAccountInitializationFee": "5000000", // only for token:transfer
-                        "escrowAccountInitializationFee": "5000000" // only for token:transferCrossChain
+                        "escrowAccountInitializationFee": "5000000", // only for token:transferCrossChain
+                        "bufferBytes": "6000"
                     }
                 }
             },
@@ -573,6 +573,7 @@ Request payload:
                     "ccmByteFee": "120000",
                     "additionalFees": {
                         "userAccountInitializationFee": "5000000",
+                        "bufferBytes": "6000"
                     }
                 }
             }

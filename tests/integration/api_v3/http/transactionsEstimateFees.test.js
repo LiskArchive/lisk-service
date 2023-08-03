@@ -18,18 +18,8 @@ const { api } = require('../../../helpers/api');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_ENCODED_VALID,
-	TOKEN_TRANSFER_TRANSACTION_OBJECT,
-	AUTH_REGISTER_MULTI_SIGNATURE_TRANSACTION_OBJECT,
-	POS_REGISTER_VALIDATOR_TRANSACTION_OBJECT,
-	POS_UNLOCK_TRANSACTION_OBJECT,
-	LEGACY_RECLAIM_LSK,
-	LEGACY_REGISTER_KEYS_TRANSACTION_OBJECT,
-	POS_REPORT_MISBEHAVIOR_TRANSACTION_OBJECT,
-	POS_STAKE_TRANSACTION_OBJECT,
-	POS_UPDATE_GENERATOR_KEY_TRANSACTION_OBJECT,
-	POS_CHANGE_COMMISSION_TRANSACTION_OBJECT,
-	POS_CLAIM_REWARDS_TRANSACTION_OBJECT,
 } = require('../constants/transactionsDryRun');
+const { transactionsMap } = require('../constants/transactionsEstimateFees');
 
 const {
 	badRequestSchema,
@@ -81,22 +71,7 @@ describe('Post estimate-fees transactions API', () => {
 		expect(response).toMap(transactionEstimateFees);
 	});
 
-	describe.only('Test estimate-fees transactions for all transaction types', () => {
-		const transactionsMap = {
-			'token:transfer': TOKEN_TRANSFER_TRANSACTION_OBJECT,
-			'auth:registerMultisignature': AUTH_REGISTER_MULTI_SIGNATURE_TRANSACTION_OBJECT,
-			'pos:registerValidator': POS_REGISTER_VALIDATOR_TRANSACTION_OBJECT,
-			'pos:unlock': POS_UNLOCK_TRANSACTION_OBJECT,
-			'pos:updateGeneratorKey': POS_UPDATE_GENERATOR_KEY_TRANSACTION_OBJECT,
-			'pos:reportMisbehavior': POS_REPORT_MISBEHAVIOR_TRANSACTION_OBJECT,
-			'pos:stake': POS_STAKE_TRANSACTION_OBJECT,
-			'pos:changeCommission': POS_CHANGE_COMMISSION_TRANSACTION_OBJECT,
-			'pos:claimRewards': POS_CLAIM_REWARDS_TRANSACTION_OBJECT,
-
-			'legacy:reclaimLSK': LEGACY_RECLAIM_LSK,
-			'legacy:registerKeys': LEGACY_REGISTER_KEYS_TRANSACTION_OBJECT,
-		};
-
+	describe('Test estimate-fees transactions for all transaction types', () => {
 		Object
 			.entries(transactionsMap)
 			.forEach(([transactionType, transactionObject]) => {
