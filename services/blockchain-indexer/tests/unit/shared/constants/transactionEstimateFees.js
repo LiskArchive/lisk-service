@@ -50,6 +50,7 @@ const mockTxResult = {
 				minimum: {
 					byteFee: '167000',
 					additionalFees: {
+						bufferBytes: '6000',
 						userAccountInitializationFee: '1',
 					},
 				},
@@ -78,12 +79,15 @@ const mockTransferCrossChainTxResult = {
 			fee: {
 				minimum: {
 					byteFee: '167000',
-					additionalFees: {},
+					additionalFees: {
+						bufferBytes: '6000',
+					},
 				},
 			},
 			params: {
 				messageFee: {
 					additionalFees: {
+						bufferBytes: '6000',
 						userAccountInitializationFee: '1',
 					},
 					ccmByteFee: '0',

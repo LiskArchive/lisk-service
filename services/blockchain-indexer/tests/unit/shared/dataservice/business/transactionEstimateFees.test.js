@@ -104,7 +104,7 @@ describe('Test transaction fees estimates', () => {
 		};
 	});
 
-	describe('Test transaction fees estimate', () => {
+	describe('Test calcDynamicFeeEstimates method', () => {
 		const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
 		const minFee = 150000;
 		const size = 150;
@@ -337,7 +337,7 @@ describe('Test transaction fees estimates', () => {
 		});
 	});
 
-	describe('estimateTransactionFees', () => {
+	describe('Test estimateTransactionFees method', () => {
 		jest.resetModules();
 
 		// Mock the dependencies
