@@ -246,7 +246,12 @@ const estimateTransactionFees = async params => {
 			fee: {
 				minimum: {
 					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
-					additionalFees: { ...additionalFees.fee },
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.fee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						}
+						: { ...additionalFees.fee },
 				},
 			},
 		},
@@ -294,9 +299,13 @@ const estimateTransactionFees = async params => {
 			params: {
 				messageFee: {
 					ccmByteFee: ccmByteFee.toString(),
-					additionalFees: {
-						...additionalFees.params.messageFee,
-					},
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.params.messageFee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						} : {
+							...additionalFees.params.messageFee,
+						},
 				},
 			},
 		};

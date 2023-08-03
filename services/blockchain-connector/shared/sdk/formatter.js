@@ -57,8 +57,6 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 		);
 	}
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
-	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
-	const transactionSize = transactionBuffer.length;
 
 	// Calculate transaction min fee
 	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
@@ -74,6 +72,18 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 			additionalFee: BigInt(additionalFee),
 		},
 	);
+
+	// Calculate transaction size
+	const transactionBuffer = codec.encode(
+		txSchema,
+		{
+			...schemaCompliantTransaction,
+			fee: schemaCompliantTransaction.fee
+				? schemaCompliantTransaction.fee
+				: transactionMinFee,
+		},
+	);
+	const transactionSize = transactionBuffer.length;
 
 	const formattedTransaction = {
 		...transaction,
