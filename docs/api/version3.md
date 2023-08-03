@@ -564,7 +564,7 @@ Request payload:
                         "validatorRegistrationFee": "5000000", // only for pos:registerDelegate
                         "userAccountInitializationFee": "5000000", // only for token:transfer
                         "escrowAccountInitializationFee": "5000000", // only for token:transferCrossChain
-                        "bufferBytes": "6000"
+                        "bufferBytes": "6000" // temporary
                     }
                 }
             },
@@ -573,7 +573,7 @@ Request payload:
                     "ccmByteFee": "120000",
                     "additionalFees": {
                         "userAccountInitializationFee": "5000000",
-                        "bufferBytes": "6000"
+                        "bufferBytes": "6000" // temporary
                     }
                 }
             }
