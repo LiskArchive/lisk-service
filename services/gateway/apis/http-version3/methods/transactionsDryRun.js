@@ -30,7 +30,6 @@ module.exports = {
 				optional: false,
 				type: 'object',
 				props: {
-					id: { type: 'string' },
 					module: { type: 'string' },
 					command: { type: 'string' },
 					fee: { type: 'string' },

@@ -130,9 +130,12 @@ const formatEvent = (event, skipDecode) => {
 		eventData = event.data;
 	} else {
 		const eventDataSchema = getDataSchemaByEventName(event.name);
-		eventData = eventDataSchema
-			? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
-			: { data: event.data };
+		try {
+			eventData = eventDataSchema ? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex')) : { data: event.data };
+		} catch (err) {
+			logger.warn(`Unable to decode data for ${event.name} (${event.module}) event:\n${err.stack}`);
+			return { data: event.data };
+		}
 
 		if (!eventDataSchema) {
 			// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)
