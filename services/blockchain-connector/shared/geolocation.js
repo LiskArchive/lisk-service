@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, CacheRedis, Logger } = require('lisk-service-framework');
-
 const crypto = require('crypto');
+const { HTTP, CacheRedis, Logger } = require('lisk-service-framework');
 
 const requestLib = HTTP.request;
 const logger = Logger();
