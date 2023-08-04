@@ -184,7 +184,7 @@ const mockTransferCrossChainTxResult = {
 			},
 			params: {
 				messageFee: {
-					amount: '0',
+					amount: '1',
 					tokenID: '0400000000000000',
 				},
 			},
