@@ -31,7 +31,7 @@ const TRANSACTION_OBJECT_VALID = {
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 };
 
-// Invalid receipient address
+// Invalid recipient address
 const TRANSACTION_OBJECT_INVALID = {
 	module: 'token',
 	command: 'transfer',

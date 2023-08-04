@@ -2,7 +2,6 @@
 
 const IO = require('socket.io');
 const _ = require('lodash');
-const { match } = require('moleculer').Utils;
 const { ServiceNotFoundError } = require('moleculer').Errors;
 const chalk = require('chalk');
 
@@ -16,6 +15,7 @@ const {
 	Utils,
 	CacheRedis,
 } = require('lisk-service-framework');
+const { checkWhitelist } = require('./util');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
 const { isValidNonEmptyResponse } = require('../utils');
@@ -333,16 +333,6 @@ module.exports = {
 		},
 	},
 };
-
-function checkWhitelist(action, whitelist) {
-	return whitelist.find(mask => {
-		if (_.isString(mask)) {
-			return match(action, mask);
-		} if (_.isRegExp(mask)) {
-			return mask.test(action);
-		}
-	}) != null;
-}
 
 function checkOrigin(origin, settings) {
 	if (_.isString(settings)) {

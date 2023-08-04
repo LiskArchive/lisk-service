@@ -194,7 +194,7 @@ config.job = {
 };
 
 config.estimateFees = {
-	bufferBytesLength: process.env.ESTIMATES_BUFFER_BYTES_LENGTH || 6,
+	bufferBytesLength: process.env.ESTIMATES_BUFFER_BYTES_LENGTH || 0,
 };
 
 module.exports = config;

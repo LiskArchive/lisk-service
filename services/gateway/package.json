@@ -37,6 +37,7 @@
     "moleculer": "^0.14.13",
     "moment": "^2.29.4",
     "rate-limiter-flexible": "^2.2.4",
+    "safe-regex": "^2.1.1",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
