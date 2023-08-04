@@ -139,6 +139,7 @@ const calcAdditionalFees = async (transaction) => {
 	const additionalFees = {
 		fee: {},
 		params: {},
+		total: BigInt(0),
 	};
 
 	if (transaction.module === MODULE.TOKEN) {
@@ -155,6 +156,7 @@ const calcAdditionalFees = async (transaction) => {
 				additionalFees.fee = {
 					userAccountInitializationFee: extraCommandFees.userAccountInitializationFee,
 				};
+				additionalFees.total += BigInt(extraCommandFees.userAccountInitializationFee);
 			}
 		} else if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 			const mainchainServiceURL = await resolveMainchainServiceURL();
@@ -176,6 +178,7 @@ const calcAdditionalFees = async (transaction) => {
 				additionalFees.fee = {
 					escrowAccountInitializationFee: extraCommandFees.escrowAccountInitializationFee,
 				};
+				additionalFees.total += BigInt(extraCommandFees.escrowAccountInitializationFee);
 			}
 
 			// Check if user account exists on the receiving chain
@@ -196,6 +199,7 @@ const calcAdditionalFees = async (transaction) => {
 			additionalFees.fee = {
 				validatorRegistrationFee: posConstants.data.validatorRegistrationFee,
 			};
+			additionalFees.total += BigInt(posConstants.data.validatorRegistrationFee);
 		}
 	}
 
@@ -204,7 +208,9 @@ const calcAdditionalFees = async (transaction) => {
 
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
-		data: {},
+		data: {
+			transaction: { params: {} },
+		},
 		meta: {},
 	};
 
@@ -212,65 +218,12 @@ const estimateTransactionFees = async params => {
 	const { data: authAccountInfo } = await getAuthAccountInfo({ address: senderAddress });
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
-	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
+	const additionalFees = await calcAdditionalFees(trxWithMockProps);
+	let formattedTransaction = await requestConnector(
+		'formatTransaction',
+		{ transaction: trxWithMockProps, additionalFee: additionalFees.total.toString() },
+	);
 	const feeEstimatePerByte = getFeeEstimates();
-
-	const { minFee, size } = formattedTransaction;
-	const additionalFees = await calcAdditionalFees(formattedTransaction);
-	const estimateMinFee = (() => {
-		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
-			if (k.toLowerCase().endsWith('fee')) {
-				return acc + BigInt(v);
-			}
-			return acc;
-		}, BigInt(0));
-
-		// TODO: Remove BUFFER_BYTES_LENGTH support after https://github.com/LiskHQ/lisk-service/issues/1604 is complete
-		return BigInt(minFee) + totalAdditionalFees
-			+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
-	})();
-
-	// Populate the response with transaction minimum fee information
-	estimateTransactionFeesRes.data = {
-		...estimateTransactionFeesRes.data,
-		transaction: {
-			fee: {
-				tokenID: feeEstimatePerByte.feeTokenID,
-				minimum: estimateMinFee.toString(),
-			},
-		},
-	};
-	estimateTransactionFeesRes.meta = {
-		...estimateTransactionFeesRes.meta,
-		breakdown: {
-			fee: {
-				minimum: {
-					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
-					additionalFees: BUFFER_BYTES_LENGTH
-						? {
-							...additionalFees.fee,
-							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
-						}
-						: { ...additionalFees.fee },
-				},
-			},
-		},
-	};
-
-	// Add priority only when fee values are not 0
-	if (
-		feeEstimatePerByte.low !== 0
-		|| feeEstimatePerByte.med !== 0
-		|| feeEstimatePerByte.high !== 0
-	) {
-		const dynamicFeeEstimates = calcDynamicFeeEstimates(
-			feeEstimatePerByte,
-			estimateMinFee,
-			size,
-		);
-
-		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
-	}
 
 	// Calculate message fee for cross-chain transfers
 	if (
@@ -293,12 +246,28 @@ const estimateTransactionFees = async params => {
 			},
 		};
 
+		// Calculate the transaction size and minFee with updated params, for higher accuracy
+		formattedTransaction = await requestConnector(
+			'formatTransaction',
+			{
+				transaction: {
+					...trxWithMockProps,
+					params: {
+						...trxWithMockProps.params,
+						messageFeeTokenID: channelInfo.messageFeeTokenID,
+						messageFee: totalMessageFee.toString(),
+					},
+				},
+				additionalFee: additionalFees.total.toString(),
+			},
+		);
+
 		// Add params to meta
 		estimateTransactionFeesRes.meta.breakdown = {
 			...estimateTransactionFeesRes.meta.breakdown,
 			params: {
 				messageFee: {
-					ccmByteFee: ccmByteFee.toString(),
+					ccmByteFee,
 					additionalFees: BUFFER_BYTES_LENGTH
 						? {
 							...additionalFees.params.messageFee,
@@ -309,6 +278,59 @@ const estimateTransactionFees = async params => {
 				},
 			},
 		};
+	}
+
+	const { minFee, size } = formattedTransaction;
+
+	const estimateMinFee = (() => {
+		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
+			if (k.toLowerCase().endsWith('fee')) {
+				return acc + BigInt(v);
+			}
+			return acc;
+		}, BigInt(0));
+
+		// TODO: Remove BUFFER_BYTES_LENGTH support after https://github.com/LiskHQ/lisk-service/issues/1604 is complete
+		return BigInt(minFee) + totalAdditionalFees
+			+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
+	})();
+
+	// Populate the response with transaction minimum fee information
+	estimateTransactionFeesRes.data = {
+		...estimateTransactionFeesRes.data,
+		transaction: {
+			...estimateTransactionFeesRes.data.transaction,
+			fee: {
+				tokenID: feeEstimatePerByte.feeTokenID,
+				minimum: estimateMinFee.toString(),
+			},
+		},
+	};
+	estimateTransactionFeesRes.meta = {
+		...estimateTransactionFeesRes.meta,
+		breakdown: {
+			...estimateTransactionFeesRes.meta.breakdown,
+			fee: {
+				minimum: {
+					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.fee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						}
+						: { ...additionalFees.fee },
+				},
+			},
+		},
+	};
+
+	// Add priority only when fee values are not 0
+	const { low, med, high } = feeEstimatePerByte;
+	if (low !== 0 || med !== 0 || high !== 0) {
+		const dynamicFeeEstimates = calcDynamicFeeEstimates(
+			feeEstimatePerByte, estimateMinFee, size);
+
+		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
 	}
 
 	return parseToJSONCompatObj(estimateTransactionFeesRes);
