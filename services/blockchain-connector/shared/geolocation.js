@@ -15,6 +15,8 @@
  */
 const { HTTP, CacheRedis, Logger } = require('lisk-service-framework');
 
+const crypto = require('crypto');
+
 const requestLib = HTTP.request;
 const logger = Logger();
 
@@ -31,7 +33,17 @@ const freegeoAddress = config.endpoints.geoip;
 const cacheRedis = CacheRedis('geodata', config.endpoints.redis);
 
 const refreshSchedule = [];
-const getRandInt = max => Math.ceil(Math.random() * max);
+const getRandInt = max => {
+	const randomBytes = crypto.randomBytes(4); // 4 bytes for a 32-bit integer
+	const maxMultiple = 0x100000000 - (0x100000000 % max);
+
+	let randomValue;
+	do {
+		randomValue = randomBytes.readUInt32BE(0);
+	} while (randomValue >= maxMultiple);
+
+	return randomValue % max;
+};
 
 const httpTest = new RegExp('http:*');
 

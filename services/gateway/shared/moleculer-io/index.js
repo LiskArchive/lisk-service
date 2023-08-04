@@ -5,6 +5,7 @@ const _ = require('lodash');
 const { match } = require('moleculer').Utils;
 const { ServiceNotFoundError } = require('moleculer').Errors;
 const chalk = require('chalk');
+const safeRegex = require('safe-regex');
 
 const util = require('util');
 
@@ -332,14 +333,24 @@ module.exports = {
 	},
 };
 
+function safeTestRegex(regex, action) {
+	try {
+		if (safeRegex(regex)) {
+			return regex.test(action);
+		}
+	} catch (e) {
+		return false;
+	}
+}
+
 function checkWhitelist(action, whitelist) {
-	return whitelist.find(mask => {
+	return whitelist.some(mask => {
 		if (_.isString(mask)) {
 			return match(action, mask);
 		} if (_.isRegExp(mask)) {
-			return mask.test(action);
+			return safeTestRegex(mask, action);
 		}
-	}) != null;
+	});
 }
 
 function checkOrigin(origin, settings) {

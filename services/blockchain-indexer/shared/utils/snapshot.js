@@ -84,10 +84,8 @@ const validateSnapshotURL = async (snapshotURL) => {
 	});
 };
 
-const downloadUnzipAndVerifyChecksum = async (fileUrl, filePath) => {
+const downloadUnzipAndVerifyChecksum = async (fileUrl, checksumUrl, filePath) => {
 	await validateSnapshotURL(fileUrl);
-
-	const checksumUrl = fileUrl.replace('.gz', '.SHA256');
 
 	return new Promise((resolve, reject) => {
 		// Download the checksum file
@@ -182,7 +180,7 @@ const applySnapshot = async (connEndpoint = MYSQL_ENDPOINT) => {
 const downloadSnapshot = async (snapshotUrl) => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-	await downloadUnzipAndVerifyChecksum(snapshotUrl, snapshotFilePath);
+	await downloadUnzipAndVerifyChecksum(snapshotUrl, snapshotUrl.replace('.gz', '.SHA256'), snapshotFilePath);
 };
 
 const initSnapshot = async () => {
