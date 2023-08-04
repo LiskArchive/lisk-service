@@ -26,13 +26,15 @@ const safeTestRegex = (regex, action) => {
 	}
 };
 
-// eslint-disable-next-line consistent-return,array-callback-return
+// eslint-disable-next-line array-callback-return
 const checkWhitelist = (action, whitelist) => whitelist.some(mask => {
 	if (typeof mask === 'string') {
 		return match(action, mask);
-	} if (mask instanceof RegExp) {
+	}
+	if (mask instanceof RegExp) {
 		return safeTestRegex(mask, action);
 	}
+	return false;
 });
 
 module.exports = {
