@@ -88,6 +88,7 @@ jest.mock('lisk-service-framework', () => {
 							data: {
 								extraCommandFees: {
 									userAccountInitializationFee: '1',
+									escrowAccountInitializationFee: '1',
 								},
 
 							},
@@ -409,7 +410,7 @@ describe('Test transaction fees estimates', () => {
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
 				.mockReturnValueOnce(mockTxrequestConnector)
-				.mockReturnValue({ userAccount: '1', escrowAccount: '0' });
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
@@ -428,8 +429,8 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
-				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
+				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
 				.mockReturnValueOnce('encoded CCM Object');
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});

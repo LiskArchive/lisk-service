@@ -75,8 +75,9 @@ const mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '172001',
+				minimum: '166000',
 			},
+			params: {},
 		},
 	},
 	meta: {
@@ -84,10 +85,7 @@ const mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult = {
 			fee: {
 				minimum: {
 					byteFee: '167000',
-					additionalFees: {
-						bufferBytes: '6000',
-						userAccountInitializationFee: '1',
-					},
+					additionalFees: {},
 				},
 			},
 		},
@@ -136,8 +134,9 @@ const mockInteroperabilityRegisterSidechainTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '172001',
+				minimum: '166000',
 			},
+			params: {},
 		},
 	},
 	meta: {
@@ -145,10 +144,7 @@ const mockInteroperabilityRegisterSidechainTxResult = {
 			fee: {
 				minimum: {
 					byteFee: '167000',
-					additionalFees: {
-						bufferBytes: '6000',
-						userAccountInitializationFee: '1',
-					},
+					additionalFees: {},
 				},
 			},
 		},
@@ -160,17 +156,17 @@ const mockTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '172001',
+				minimum: '130001',
 			},
+			params: {},
 		},
 	},
 	meta: {
 		breakdown: {
 			fee: {
 				minimum: {
-					byteFee: '167000',
+					byteFee: '160000',
 					additionalFees: {
-						bufferBytes: '6000',
 						userAccountInitializationFee: '1',
 					},
 				},
@@ -184,7 +180,7 @@ const mockTransferCrossChainTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '172000',
+				minimum: '130000',
 			},
 			params: {
 				messageFee: {
@@ -198,16 +194,13 @@ const mockTransferCrossChainTxResult = {
 		breakdown: {
 			fee: {
 				minimum: {
-					byteFee: '167000',
-					additionalFees: {
-						bufferBytes: '6000',
-					},
+					byteFee: '160000',
+					additionalFees: {},
 				},
 			},
 			params: {
 				messageFee: {
 					additionalFees: {
-						bufferBytes: '6000',
 						userAccountInitializationFee: '1',
 					},
 					ccmByteFee: '0',
