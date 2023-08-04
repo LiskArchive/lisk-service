@@ -180,7 +180,9 @@ const applySnapshot = async (connEndpoint = MYSQL_ENDPOINT) => {
 const downloadSnapshot = async (snapshotUrl) => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-	await downloadUnzipAndVerifyChecksum(snapshotUrl, snapshotUrl.replace('.gz', '.SHA256'), snapshotFilePath);
+
+	const expectedChecksumURL = snapshotUrl.replace('.gz', '.SHA256');
+	await downloadUnzipAndVerifyChecksum(snapshotUrl, expectedChecksumURL, snapshotFilePath);
 };
 
 const initSnapshot = async () => {

@@ -92,4 +92,7 @@ autoCleanUp();
 
 module.exports = {
 	requestData,
+
+	// Testing
+	getRandInt,
 };
