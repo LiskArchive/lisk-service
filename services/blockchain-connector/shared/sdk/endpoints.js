@@ -263,9 +263,9 @@ const postTransaction = async (transaction) => {
 	}
 };
 
-const dryRunTransaction = async ({ transaction, skipVerify }) => {
+const dryRunTransaction = async ({ transaction, skipVerify, strict }) => {
 	try {
-		const response = await invokeEndpoint('txpool_dryRunTransaction', { transaction, skipVerify });
+		const response = await invokeEndpoint('txpool_dryRunTransaction', { transaction, skipVerify, strict });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

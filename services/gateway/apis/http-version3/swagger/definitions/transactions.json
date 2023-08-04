@@ -382,6 +382,12 @@
 				"example": "false",
 				"default": false
 			},
+			"strict": {
+				"type": "boolean",
+				"description": "A boolean indicator to enable strict mode. By default, it is set to false which skips the nonce and signature checks.",
+				"example": "false",
+				"default": false
+			},
 			"transaction": {
 				"type": "object",
 				"description": "Binary payload or the transaction object.",
@@ -561,7 +567,7 @@
 		"properties": {
 			"transaction": {
 				"type": "object",
-				"description": "Transaction object.\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.",
+				"description": "Transaction object.\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.\nWhen estimating 'token:transferCrossChain' transactions do not include 'messageFee' and 'messageFeeTokenID' in the params.",
 				"required": [
 					"module",
 					"command",
@@ -580,11 +586,6 @@
 						"example": "transferCrossChain",
 						"description": "Specific command name in the module to be executed."
 					},
-					"fee": {
-						"type": "string",
-						"example": "100000000",
-						"description": "Transaction fee."
-					},
 					"nonce": {
 						"type": "string",
 						"example": "0"
@@ -593,13 +594,6 @@
 						"type": "string",
 						"example": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
 						"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
-					},
-					"signatures": {
-						"type": "string",
-						"example": [
-							"48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
-						],
-						"description": "An array representing signature(s) of the transaction sender."
 					},
 					"params": {
 						"type": "object",
@@ -628,16 +622,6 @@
 								"type": "string",
 								"example": "Cross chain transfer tx",
 								"description": "Transaction data."
-							},
-							"messageFee": {
-								"type": "string",
-								"example": "10000000",
-								"description": "The fee required for CCM execution."
-							},
-							"messageFeeTokenID": {
-								"type": "string",
-								"example": "0000000000000000",
-								"description": "The token ID of the token required to pay cross-chain message fee."
 							}
 						}
 					}
@@ -707,7 +691,6 @@
 											}
 										}
 									}
-									
 								}
 							},
 							"params": {
@@ -787,6 +770,11 @@
 														"type": "string",
 														"example": "10000000",
 														"description": "The extra fee to be supplied for initializing an escrow token account."
+													},
+													"bufferBytes": {
+														"type": "string",
+														"example": "6000",
+														"description": "The extra fee to be supplied for buffer bytes."
 													}
 												}
 											}
@@ -818,6 +806,11 @@
 														"type": "string",
 														"example": "5000000",
 														"description": "The extra fee to be supplied for initializing a new user token account."
+													},
+													"bufferBytes": {
+														"type": "string",
+														"example": "6000",
+														"description": "The extra fee to be supplied for buffer bytes."
 													}
 												}
 											}

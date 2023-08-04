@@ -415,6 +415,7 @@ Request payload:
 {
   "skipDecode": false,
   "skipVerify": false,
+  "strict": false,
   "transaction": {
     "module": "token",
     "command": "transfer",
@@ -440,6 +441,7 @@ or
 {
   "skipDecode": false,
   "skipVerify": false,
+  "strict": false,
   "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
 }
 ```
@@ -512,19 +514,18 @@ Request payload:
 
 ```jsonc
 {
-  "transaction":  {
+  "transaction": {
     "module": "token",
     "command": "transferCrossChain",
-    "nonce": "1",
-    "senderPublicKey": "3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c",
+    "nonce": "0",
+    "senderPublicKey": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
     "params": {
-      "tokenID": "0000000000000000",
-      "amount": "100000000000",
+      "recipientAddress": "lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup",
       "receivingChainID": "00000001",
-      "recipientAddress": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
-      "data": ""
-    },
-    "id": "0f77248481c050fcf4f88ef7b967548452869879137364df3b33da09cc419395"
+      "amount": "10000000000",
+      "tokenID": "0000000000000000",
+      "data": "Cross chain transfer tx",
+    }
   }
 }
 ```
@@ -562,7 +563,8 @@ Request payload:
                     "additionalFees": { // optional - entries vary by command
                         "validatorRegistrationFee": "5000000", // only for pos:registerDelegate
                         "userAccountInitializationFee": "5000000", // only for token:transfer
-                        "escrowAccountInitializationFee": "5000000" // only for token:transferCrossChain
+                        "escrowAccountInitializationFee": "5000000", // only for token:transferCrossChain
+                        "bufferBytes": "6000" // temporary
                     }
                 }
             },
@@ -571,6 +573,7 @@ Request payload:
                     "ccmByteFee": "120000",
                     "additionalFees": {
                         "userAccountInitializationFee": "5000000",
+                        "bufferBytes": "6000" // temporary
                     }
                 }
             }

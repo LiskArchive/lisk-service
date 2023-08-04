@@ -5,7 +5,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :idseparator: -
 :idprefix:
 :imagesdir: ../assets/images
-
+:source-language: bash
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
@@ -20,7 +20,6 @@ Moreover, we'll also talk about the steps to reset a Lisk Service node.
 === Start
 Start Lisk Service.
 
-[source,bash]
 ----
 pm2 start ecosystem.config.js
 ----
@@ -29,7 +28,6 @@ pm2 start ecosystem.config.js
 [%collapsible]
 ====
 .Example output
-[source,bash]
 ----
 [PM2] Applying action restartProcessId on app [lisk-service-gateway](ids: [ 0 ])
 [PM2] Applying action restartProcessId on app [lisk-service-blockchain-app-registry](ids: [ 1 ])
@@ -69,7 +67,6 @@ pm2 start ecosystem.config.js
 
 View the status of different microservices of Lisk Service in the list of PM2 processes:
 
-[source,bash]
 ----
 pm2 list
 ----
@@ -78,7 +75,6 @@ pm2 list
 [%collapsible]
 ====
 .Example output
-[source,bash]
 ----
 ┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
@@ -99,14 +95,13 @@ pm2 list
 === Logs
 To check the logs for the different microservices of Lisk Service, use the command `pm2 logs PROCESS_NAME`, where `PROCESS_NAME` is the respective PM2-managed process that contains the logs you wish to view.
 
-Alternatively, it is also possible to check the logs for a specific PM2 process based on its process ID. 
+Alternatively, it is also possible to check the logs for a specific PM2 process based on its process ID.
 For example, `pm2 logs 0` can be used to check the Lisk Service Gateway logs.
 
 TIP: The process ID of each PM2-managed process can be seen by executing the <<list>> command.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
-[source,bash]
 ----
 pm2 logs lisk-service-gateway
 ----
@@ -115,7 +110,6 @@ pm2 logs lisk-service-gateway
 [%collapsible]
 ====
 .Example output
-[source,bash]
 ----
 0|lisk-ser | 2023-07-19 17:53:08 503: 2023-07-19T17:53:08.503 INFO [TRANSIT] Connecting to the transporter...
 0|lisk-ser | 2023-07-19 17:53:08 504: 2023-07-19T17:53:08.503 INFO [TRANSPORTER] Setting Redis transporter
@@ -138,7 +132,6 @@ pm2 logs lisk-service-gateway
 === Flush
 Remove all the logs of the PM2-managed processes defined in the specified config file.
 
-[source,bash]
 ----
 pm2 flush ecosystem.config.js
 ----
@@ -147,7 +140,6 @@ pm2 flush ecosystem.config.js
 [%collapsible]
 ====
 .Example output
-[source,bash]
 ----
 [PM2] Logs flushed
 ----
@@ -157,7 +149,6 @@ pm2 flush ecosystem.config.js
 === Stop
 Stop PM2 managed Lisk Service instance.
 
-[source,bash]
 ----
 pm2 stop ecosystem.config.js
 ----
@@ -198,7 +189,6 @@ pm2 stop ecosystem.config.js
 
 Restart Lisk Service via PM2.
 
-[source,bash]
 ----
 pm2 restart ecosystem.config.js
 ----
@@ -243,12 +233,9 @@ pm2 restart ecosystem.config.js
 ----
 ====
 
-
-
 === Delete
 Remove all processes from the PM2 list.
 
-[source,bash]
 ----
 pm2 delete ecosystem.config.js
 ----
@@ -258,7 +245,6 @@ pm2 delete ecosystem.config.js
 [%collapsible]
 ====
 .Example output
-[source,bash]
 ----
 [PM2] [lisk-service-gateway](0) ✓
 [PM2] [lisk-service-blockchain-app-registry](1) ✓
@@ -280,7 +266,6 @@ pm2 delete ecosystem.config.js
 
 === Clean all run-time files with dependencies
 
-[source,bash]
 ----
 make clean-local
 ----
@@ -289,7 +274,6 @@ make clean-local
 [%collapsible]
 ====
 .Example output
-[source,bash]
 ----
 rm -rf node_modules
 cd ./framework && rm -rf node_modules
@@ -309,7 +293,6 @@ cd ./tests && rm -rf node_modules
 
 === Install npm dependencies
 
-[source,bash]
 ----
 make build-local
 ----
@@ -322,35 +305,30 @@ To reset the database of Lisk Service, drop the respective MySQL and Redis datab
 
 . Stop Lisk Service
 +
-[source,bash]
 ----
 npm stop
 ----
 
 . Login to MySQL with the `lisk` user.
 +
-[source,bash]
 ----
 mysql -u lisk -ppassword
 ----
 
 . Drop the database.
 +
-[source,bash]
 ----
 mysql> drop database lisk;
 ----
 
 . Create a fresh database.
 +
-[source,bash]
 ----
 mysql> create database lisk;
 ----
 
 . Quit MySQL.
 +
-[source,bash]
 ----
 mysql> quit;
 ----
@@ -361,7 +339,6 @@ NOTE: The process to re-index all the data commences after Lisk Service starts a
 
 Reset the databases for Redis after dropping the MySQL database:
 
-[source,bash]
 ----
 redis-cli flushall
 ----
@@ -376,7 +353,6 @@ For more information, check the Redis documentation: {url_FLUSHALL}[FLUSHALL].
 
 To flush only a particular database in Redis, execute the following command instead:
 
-[source,bash]
 ----
 redis-cli -n <db_number> flushdb
 ----

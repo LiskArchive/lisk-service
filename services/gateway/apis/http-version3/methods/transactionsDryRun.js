@@ -43,6 +43,7 @@ module.exports = {
 		],
 		skipVerify: { optional: true, type: 'boolean', default: false },
 		skipDecode: { optional: true, type: 'boolean', default: false },
+		strict: { optional: true, type: 'boolean', default: false },
 	},
 	get schema() {
 		const dryRunTransactionSchema = {};

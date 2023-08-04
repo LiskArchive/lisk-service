@@ -139,6 +139,7 @@ const calcAdditionalFees = async (transaction) => {
 	const additionalFees = {
 		fee: {},
 		params: {},
+		total: BigInt(0),
 	};
 
 	if (transaction.module === MODULE.TOKEN) {
@@ -155,6 +156,7 @@ const calcAdditionalFees = async (transaction) => {
 				additionalFees.fee = {
 					userAccountInitializationFee: extraCommandFees.userAccountInitializationFee,
 				};
+				additionalFees.total += BigInt(extraCommandFees.userAccountInitializationFee);
 			}
 		} else if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 			const mainchainServiceURL = await resolveMainchainServiceURL();
@@ -176,6 +178,7 @@ const calcAdditionalFees = async (transaction) => {
 				additionalFees.fee = {
 					escrowAccountInitializationFee: extraCommandFees.escrowAccountInitializationFee,
 				};
+				additionalFees.total += BigInt(extraCommandFees.escrowAccountInitializationFee);
 			}
 
 			// Check if user account exists on the receiving chain
@@ -196,6 +199,7 @@ const calcAdditionalFees = async (transaction) => {
 			additionalFees.fee = {
 				validatorRegistrationFee: posConstants.data.validatorRegistrationFee,
 			};
+			additionalFees.total += BigInt(posConstants.data.validatorRegistrationFee);
 		}
 	}
 
@@ -204,7 +208,9 @@ const calcAdditionalFees = async (transaction) => {
 
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
-		data: {},
+		data: {
+			transaction: { params: {} },
+		},
 		meta: {},
 	};
 
@@ -212,11 +218,70 @@ const estimateTransactionFees = async params => {
 	const { data: authAccountInfo } = await getAuthAccountInfo({ address: senderAddress });
 
 	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
-	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
+	const additionalFees = await calcAdditionalFees(trxWithMockProps);
+	let formattedTransaction = await requestConnector(
+		'formatTransaction',
+		{ transaction: trxWithMockProps, additionalFee: additionalFees.total.toString() },
+	);
 	const feeEstimatePerByte = getFeeEstimates();
 
+	// Calculate message fee for cross-chain transfers
+	if (
+		params.transaction.module === MODULE.TOKEN
+		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
+	) {
+		// Calculate message fee
+		const ccmBuffer = await getCcmBuffer(formattedTransaction);
+		const ccmLength = ccmBuffer.length;
+		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
+
+		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
+		const totalMessageFee = ccmByteFee
+			+ BigInt(additionalFees.params.messageFee.userAccountInitializationFee || 0);
+
+		estimateTransactionFeesRes.data.transaction.params = {
+			messageFee: {
+				tokenID: channelInfo.messageFeeTokenID,
+				amount: totalMessageFee,
+			},
+		};
+
+		// Calculate the transaction size and minFee with updated params, for higher accuracy
+		formattedTransaction = await requestConnector(
+			'formatTransaction',
+			{
+				transaction: {
+					...trxWithMockProps,
+					params: {
+						...trxWithMockProps.params,
+						messageFeeTokenID: channelInfo.messageFeeTokenID,
+						messageFee: totalMessageFee.toString(),
+					},
+				},
+				additionalFee: additionalFees.total.toString(),
+			},
+		);
+
+		// Add params to meta
+		estimateTransactionFeesRes.meta.breakdown = {
+			...estimateTransactionFeesRes.meta.breakdown,
+			params: {
+				messageFee: {
+					ccmByteFee,
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.params.messageFee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						} : {
+							...additionalFees.params.messageFee,
+						},
+				},
+			},
+		};
+	}
+
 	const { minFee, size } = formattedTransaction;
-	const additionalFees = await calcAdditionalFees(formattedTransaction);
+
 	const estimateMinFee = (() => {
 		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
 			if (k.toLowerCase().endsWith('fee')) {
@@ -234,6 +299,7 @@ const estimateTransactionFees = async params => {
 	estimateTransactionFeesRes.data = {
 		...estimateTransactionFeesRes.data,
 		transaction: {
+			...estimateTransactionFeesRes.data.transaction,
 			fee: {
 				tokenID: feeEstimatePerByte.feeTokenID,
 				minimum: estimateMinFee.toString(),
@@ -243,63 +309,28 @@ const estimateTransactionFees = async params => {
 	estimateTransactionFeesRes.meta = {
 		...estimateTransactionFeesRes.meta,
 		breakdown: {
+			...estimateTransactionFeesRes.meta.breakdown,
 			fee: {
 				minimum: {
 					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
-					additionalFees: { ...additionalFees.fee },
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.fee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						}
+						: { ...additionalFees.fee },
 				},
 			},
 		},
 	};
 
 	// Add priority only when fee values are not 0
-	if (
-		feeEstimatePerByte.low !== 0
-		|| feeEstimatePerByte.med !== 0
-		|| feeEstimatePerByte.high !== 0
-	) {
+	const { low, med, high } = feeEstimatePerByte;
+	if (low !== 0 || med !== 0 || high !== 0) {
 		const dynamicFeeEstimates = calcDynamicFeeEstimates(
-			feeEstimatePerByte,
-			estimateMinFee,
-			size,
-		);
+			feeEstimatePerByte, estimateMinFee, size);
 
 		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
-	}
-
-	// Calculate message fee for cross-chain transfers
-	if (
-		params.transaction.module === MODULE.TOKEN
-		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
-	) {
-		// Calculate message fee
-		const ccmBuffer = await getCcmBuffer(params.transaction);
-		const ccmLength = ccmBuffer.length;
-		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
-
-		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
-		const totalMessageFee = ccmByteFee
-			+ BigInt(additionalFees.params.userAccountInitializationFee || 0);
-
-		estimateTransactionFeesRes.data.transaction.params = {
-			messageFee: {
-				tokenID: channelInfo.messageFeeTokenID,
-				amount: totalMessageFee,
-			},
-		};
-
-		// Add params to meta
-		estimateTransactionFeesRes.meta.breakdown = {
-			...estimateTransactionFeesRes.meta.breakdown,
-			params: {
-				messageFee: {
-					ccmByteFee: ccmByteFee.toString(),
-					additionalFees: {
-						...additionalFees.params.messageFee,
-					},
-				},
-			},
-		};
 	}
 
 	return parseToJSONCompatObj(estimateTransactionFeesRes);
