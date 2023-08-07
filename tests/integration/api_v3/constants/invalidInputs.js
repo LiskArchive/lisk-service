@@ -15,8 +15,8 @@
  */
 
 const invalidAddresses = [
-	'lsk12345678901234567890123456789012345678901', // length exceeds 40 characters
-	'Lsk1234567890123456789012345678901234567890', // starts with 'L' instead of 'lsk'
+	'lsk12345678901234567890123456789012345678901', // length exceeds 41 characters
+	'L1234567890123456789012345678901234567890', // starts with 'L' instead of 'lsk'
 	'lsk1234567890123456789012345678901234567890', // length is 40, missing the last character
 	'lsk12345678901234567890123456789012345678', // length is 38, missing the 'lsk' prefix
 	'lsk%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%',
@@ -39,14 +39,14 @@ const invalidNames = [
 	'abc$def%ghi', // contains invalid characters % and %
 	'space space', // contains spaces
 	'special?char', // contains invalid character ?
-	'test OR 1=1', // SQL wildcard
+	'test OR 1=1', // SQL injection
 	'______%',
 ];
 
 const invalidTokenIDs = [
-	'0123456789abcdefG', // contains invalid character 'G')
+	'0123456789abcdefG', // contains invalid character 'G'
 	'0123456789abcdef?', // contains invalid character '?'
-	'000000000 OR 1=1', // SQL wildcard
+	'000000000 OR 1=1', // SQL injection
 ];
 
 const invalidTokenIDCSV = [

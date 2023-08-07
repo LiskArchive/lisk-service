@@ -41,7 +41,7 @@ describe('Token Constants API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('should return invalid params when requested with empty param', async () => {
+	it('should return invalid params when requested with empty invalid param', async () => {
 		const response = await api.get(`${endpoint}?someparam=''`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

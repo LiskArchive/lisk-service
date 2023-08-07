@@ -234,7 +234,7 @@ describe('Rewards Locked API', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return invalid params if requested with empty param', async () => {
+	it('should return invalid params if requested with empty invalid param', async () => {
 		const response = await getPosRewardsLocked({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});

@@ -50,7 +50,7 @@ describe('get.token.summary', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return invalid params when requested with empty params', async () => {
+	it('should return invalid params when requested with empty invalid params', async () => {
 		const response = await gettokenSummaryInfo({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});

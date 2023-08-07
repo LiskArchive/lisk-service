@@ -56,17 +56,17 @@ describe('Post estimate-fees transactions API', () => {
 		expect(response).toMap(transactionEstimateFees);
 	});
 
-	xit('should return bad request when requested with invalid public key', async () => {
+	it('should return bad request when requested with invalid public key', async () => {
 		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
 			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
 			// eslint-disable-next-line no-await-in-loop
-			const response = await api.post(endpoint, { transaction: remTransactionObject });
+			const response = await api.post(endpoint, { transaction: remTransactionObject }, 400);
 			expect(response).toMap(badRequestSchema);
 		}
 	});
 
-	xit('should return bad request when requested with invalid address', async () => {
+	it('should return bad request when requested with invalid address', async () => {
 		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		for (let i = 0; i < invalidAddresses.length; i++) {
 			remTransactionObject.params = {
@@ -74,7 +74,7 @@ describe('Post estimate-fees transactions API', () => {
 				recipientAddress: invalidAddresses[i],
 			};
 			// eslint-disable-next-line no-await-in-loop
-			const response = await api.post(endpoint, { transaction: remTransactionObject });
+			const response = await api.post(endpoint, { transaction: remTransactionObject }, 400);
 			expect(response).toMap(badRequestSchema);
 		}
 	});

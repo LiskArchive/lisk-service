@@ -224,7 +224,7 @@ describe('Claimable rewards API', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return invalid params if requested with empty param', async () => {
+	it('should return invalid params if requested with empty invalid param', async () => {
 		const response = await getPosClaimableRewards({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});

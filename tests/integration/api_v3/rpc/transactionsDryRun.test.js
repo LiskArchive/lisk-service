@@ -34,7 +34,7 @@ const {
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	serverErrorSchema,
+	emptyResponseSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -63,7 +63,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	xit('should return proper response (fail) when transaction object has less than required fee', async () => {
+	it('should return proper response (fail) when transaction object has less than required fee', async () => {
 		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -170,7 +170,7 @@ describe('Method post.transactions.dryrun', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	xit('should return invalid param when requested with invalid public key', async () => {
+	it('should return invalid param when requested with invalid public key', async () => {
 		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
 			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
@@ -180,7 +180,7 @@ describe('Method post.transactions.dryrun', () => {
 		}
 	});
 
-	it('should return server error when requested with invalid address', async () => {
+	it('should return empty response when requested with invalid address', async () => {
 		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		for (let i = 0; i < invalidAddresses.length; i++) {
 			remTransactionObject.params = {
@@ -189,7 +189,7 @@ describe('Method post.transactions.dryrun', () => {
 			};
 			// eslint-disable-next-line no-await-in-loop
 			const response = await postDryrunTransaction({ transaction: remTransactionObject });
-			expect(response).toMap(serverErrorSchema);
+			expect(response).toMap(emptyResponseSchema);
 		}
 	});
 
@@ -223,7 +223,7 @@ describe('Method post.transactions.dryrun', () => {
 		const response = await postDryrunTransaction({
 			transaction: TRANSACTION_OBJECT_INVALID,
 		}).catch(e => e);
-		expect(response).toMap(serverErrorSchema);
+		expect(response).toMap(emptyResponseSchema);
 	});
 
 	it('should return invalid params when called with no transaction', async () => {

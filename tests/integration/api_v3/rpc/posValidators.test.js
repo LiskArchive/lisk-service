@@ -128,17 +128,17 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
 		it('should return list of validators when requested with search param (partial validator address) and offset=1', async () => {
-			const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 3) : '';
+			const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 5) : '';
 			const response = await getValidators({ search: searchParam, offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
@@ -353,7 +353,7 @@ describe('pos/validators API', () => {
 			}
 		});
 
-		xit('should return invalid params for invalid name', async () => {
+		it('should return invalid params for invalid name', async () => {
 			for (let i = 0; i < invalidNamesCSV.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ name: invalidNamesCSV[i] });

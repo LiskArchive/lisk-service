@@ -143,7 +143,7 @@ describe('Tokens top balances API', () => {
 		}
 	});
 
-	it('should return bad request when called with Invalid limit', async () => {
+	it('should return bad request when called with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=${invalidLimits[i]}`, 400);
@@ -151,7 +151,7 @@ describe('Tokens top balances API', () => {
 		}
 	});
 
-	it('should return bad request when called with Invalid offset', async () => {
+	it('should return bad request when called with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=${invalidOffsets[i]}`, 400);
@@ -164,7 +164,7 @@ describe('Tokens top balances API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('should return bad request when called with empty param', async () => {
+	it('should return bad request when called with empty invalid param', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&invalidParam=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

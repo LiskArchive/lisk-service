@@ -231,7 +231,7 @@ describe('PoS Unlocks API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('should return bad request if requested with empty param', async () => {
+		it('should return bad request if requested with empty invalid param', async () => {
 			const response = await api.get(`${endpoint}?invalidParam=`, 400);
 			expect(response).toMap(badRequestSchema);
 		});

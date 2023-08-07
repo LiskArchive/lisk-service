@@ -41,7 +41,7 @@ describe('Reward Constants API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('should return bad request when requested with empty param', async () => {
+		it('should return bad request when requested with empty invalid param', async () => {
 			const response = await api.get(`${endpoint}?invalidParam=`, 400);
 			expect(response).toMap(badRequestSchema);
 		});

@@ -42,7 +42,7 @@ describe('Tokens API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('should return bad request when requested with empty params', async () => {
+	it('should return bad request when requested with empty invalid params', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

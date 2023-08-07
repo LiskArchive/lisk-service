@@ -15,6 +15,7 @@
  */
 const dryRunTransactionsSource = require('../../../sources/version3/transactionsDryRun');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const regex = require('../../../shared/regex');
 const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
@@ -30,13 +31,13 @@ module.exports = {
 				optional: false,
 				type: 'object',
 				props: {
-					id: { type: 'string' },
-					module: { type: 'string' },
-					command: { type: 'string' },
-					fee: { type: 'string' },
-					nonce: { type: 'string' },
-					senderPublicKey: { type: 'string' },
-					signatures: { type: 'array', items: 'string' },
+					id: { type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
+					module: { type: 'string', pattern: regex.MODULE },
+					command: { type: 'string', pattern: regex.COMMAND },
+					fee: { type: 'string', pattern: regex.FEE },
+					nonce: { type: 'string', min: 1, pattern: regex.NONCE },
+					senderPublicKey: { type: 'string', pattern: regex.PUBLIC_KEY },
+					signatures: { optional: true, type: 'array', min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
 					params: { type: 'object' },
 				},
 			},

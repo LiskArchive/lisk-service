@@ -26,6 +26,8 @@ const getStakers = async params => request(wsRpcUrl, 'get.pos.stakers', params);
 
 describe('get.pos.stakers', () => {
 	let refValidator;
+	let refStaker;
+
 	beforeAll(async () => {
 		let refValidatorAddress;
 		do {
@@ -35,6 +37,7 @@ describe('get.pos.stakers', () => {
 			if (stakeTx) {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { stakes: [stake] } } = stakeTx;
+				refStaker = stakeTx.sender;
 				refValidatorAddress = stake.validatorAddress;
 			}
 		} while (!refValidatorAddress);
@@ -51,72 +54,72 @@ describe('get.pos.stakers', () => {
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
 	});
 
-	xit('should return list of stakers when requested for known validator address and search param (exact staker name)', async () => {
-		const response = await getStakers({ address: refValidator.address, search: refValidator.name });
+	it('should return list of stakers when requested for known validator address and search param (exact staker name)', async () => {
+		const response = await getStakers({ address: refValidator.address, search: refStaker.name });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBe(1);
-		expect(result.data.stakers[0].address).toBe(refValidator.address);
+		expect(result.data.stakers[0].address).toBe(refStaker.address);
 	});
 
-	xit('should return list of stakers when requested for known validator address and search address (exact staker address)', async () => {
+	it('should return list of stakers when requested for known validator address and search address (exact staker address)', async () => {
 		const response = await getStakers({
 			address: refValidator.address,
-			search: refValidator.address,
+			search: refStaker.address,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBe(1);
-		expect(result.data.stakers[0].address).toBe(refValidator.address);
+		expect(result.data.stakers[0].address).toBe(refStaker.address);
 	});
 
-	xit('should return list of stakers when requested for known validator address and search public key (exact staker public key)', async () => {
+	it('should return list of stakers when requested for known validator address and search public key (exact staker public key)', async () => {
 		const response = await getStakers({
 			address: refValidator.address,
-			search: refValidator.publicKey,
+			search: refStaker.publicKey,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBe(1);
-		expect(result.data.stakers[0].address).toBe(refValidator.address);
+		expect(result.data.stakers[0].address).toBe(refStaker.address);
 	});
 
-	xit('should return list of stakers when requested for known validator address and search param (partial staker name)', async () => {
-		const searchParam = refValidator.name ? refValidator.name.substring(0, 3) : '';
+	it('should return list of stakers when requested for known validator address and search param (partial staker name)', async () => {
+		const searchParam = refStaker.name ? refStaker.name.substring(0, 3) : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
-		expect(result.data.stakers.some(staker => staker.address === refValidator.address))
+		expect(result.data.stakers.some(staker => staker.address === refStaker.address))
 			.toBe(true);
 	});
 
-	xit('should return list of stakers when requested for known validator address and search param (partial staker address)', async () => {
-		const searchParam = refValidator.address ? refValidator.address.substring(0, 3) : '';
+	it('should return list of stakers when requested for known validator address and search param (partial staker address)', async () => {
+		const searchParam = refStaker.address ? refStaker.address.substring(0, 3) : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
-		expect(result.data.stakers.some(staker => staker.address === refValidator.address))
+		expect(result.data.stakers.some(staker => staker.address === refStaker.address))
 			.toBe(true);
 	});
 
-	xit('should return list of stakers when requested for known validator address and search param (partial staker public key)', async () => {
-		const searchParam = refValidator.publicKey ? refValidator.publicKey.substring(0, 3) : '';
+	it('should return list of stakers when requested for known validator address and search param (partial staker public key)', async () => {
+		const searchParam = refStaker.publicKey ? refStaker.publicKey.substring(0, 3) : '';
 		const response = await getStakers({ address: refValidator.address, search: searchParam });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(goodRequestSchema);
 		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
-		expect(result.data.stakers.some(staker => staker.address === refValidator.address))
+		expect(result.data.stakers.some(staker => staker.address === refStaker.address))
 			.toBe(true);
 	});
 

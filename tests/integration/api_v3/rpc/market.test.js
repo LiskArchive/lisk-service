@@ -52,7 +52,7 @@ describe('Method get.market.prices', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('should return bad request when requested with empty params', async () => {
+		it('should return bad request when requested with empty invalid param', async () => {
 			const response = await getMarketPrices({ limit: '' });
 			expect(response).toMap(invalidParamsSchema);
 		});

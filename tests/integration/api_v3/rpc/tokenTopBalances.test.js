@@ -159,7 +159,7 @@ describe('get.token.balances.top', () => {
 		}
 	});
 
-	it('should return invalid params when called with Invalid limit', async () => {
+	it('should return invalid params when called with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensTopBalances({ tokenID, limit: invalidLimits[i] });
@@ -167,7 +167,7 @@ describe('get.token.balances.top', () => {
 		}
 	});
 
-	it('should return invalid params when called with Invalid offset', async () => {
+	it('should return invalid params when called with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensTopBalances({ tokenID, offset: invalidOffsets[i] });
@@ -180,7 +180,7 @@ describe('get.token.balances.top', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return invalid params when called with empty param', async () => {
+	it('should return invalid params when called with invalid empty param', async () => {
 		const response = await getTokensTopBalances({ tokenID, invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
