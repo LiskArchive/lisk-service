@@ -108,6 +108,8 @@ describe('Test set and get methods', () => {
 		// Check value before committing transaction
 		const responseBeforeCommit = await keyValueTable.get(KEY_1, dbTrx);
 		expect(responseBeforeCommit).toBe(VALUE_1);
+		const [responseFromGetByPattern] = await keyValueTable.getByPattern(KEY_1, dbTrx);
+		expect(responseFromGetByPattern.value).toBe(VALUE_1);
 
 		// Commit transaction and check key
 		await commitDBTransaction(dbTrx);

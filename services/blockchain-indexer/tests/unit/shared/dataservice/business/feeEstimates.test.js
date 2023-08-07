@@ -67,3 +67,18 @@ describe('Fee estimates', () => {
 		expect(feeEstimates).toEqual(mockTxFeeEstimate);
 	});
 });
+
+describe('Test getFeeEstimatesFromFeeEstimator', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.resetModules();
+	});
+
+	it('should assign payload to feeEstimates if payload is defined', async () => {
+		const { getFeeEstimatesFromFeeEstimator } = require(mockFeeEstimatesFilePath);
+		const feeEstimates = await getFeeEstimatesFromFeeEstimator();
+
+		expect(requestFeeEstimator).toHaveBeenCalledTimes(0);
+		expect(feeEstimates).toEqual(mockTxFeeEstimate);
+	});
+});

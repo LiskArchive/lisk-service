@@ -27,9 +27,23 @@ const mockedPOSConstantsFilePath = resolve(`${__dirname}/../../../../../shared/d
 const mockedFeeEstimateFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/feeEstimates`);
 const mockedRTransactionsDryRunFilePath = resolve(`${__dirname}../../../../../../shared/dataService/business/transactionsDryRun`);
 
-const { mockTxRequest, mockTxResult, mockTxsenderAddress, mockTxAuthAccountInfo,
-	mockTxrequestConnector, posConstants, mockTxFeeEstimate, mockTransferCrossChainTxRequest,
-	mockTransferCrossChainTxrequestConnector, mockTransferCrossChainTxResult, mockEscrowAccountExistsRequestConnector } = require('../../constants/transactionEstimateFees');
+const {
+	mockTxRequest,
+	mockTxResult,
+	mockTxsenderAddress,
+	mockTxAuthAccountInfo,
+	mockTxrequestConnector,
+	posConstants,
+	mockTxFeeEstimate,
+	mockTransferCrossChainTxRequest,
+	mockTransferCrossChainTxrequestConnector,
+	mockTransferCrossChainTxResult,
+	mockEscrowAccountExistsRequestConnector,
+	mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
+	mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,
+	mockInteroperabilityRegisterSidechainTxRequest,
+	mockInteroperabilityRegisterSidechainTxResult,
+} = require('../../constants/transactionEstimateFees');
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');
@@ -74,6 +88,7 @@ jest.mock('lisk-service-framework', () => {
 							data: {
 								extraCommandFees: {
 									userAccountInitializationFee: '1',
+									escrowAccountInitializationFee: '1',
 								},
 
 							},
@@ -104,7 +119,7 @@ describe('Test transaction fees estimates', () => {
 		};
 	});
 
-	describe('Test transaction fees estimate', () => {
+	describe('Test calcDynamicFeeEstimates method', () => {
 		const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
 		const minFee = 150000;
 		const size = 150;
@@ -337,7 +352,7 @@ describe('Test transaction fees estimates', () => {
 		});
 	});
 
-	describe('estimateTransactionFees', () => {
+	describe('Test estimateTransactionFees method', () => {
 		jest.resetModules();
 
 		// Mock the dependencies
@@ -395,7 +410,7 @@ describe('Test transaction fees estimates', () => {
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
 				.mockReturnValueOnce(mockTxrequestConnector)
-				.mockReturnValue({ userAccount: '1', escrowAccount: '0' });
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
@@ -414,8 +429,8 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
-				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
+				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
 				.mockReturnValueOnce('encoded CCM Object');
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
@@ -490,6 +505,44 @@ describe('Test transaction fees estimates', () => {
 
 			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
 			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
+		});
+
+		describe('Test estimateTransactionFees method for interoperability transactions', () => {
+			const transactionsMap = {
+				'interoperability:submitMainchainCrossChainUpdate': {
+					request: mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
+					result: mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,
+				},
+				'interoperability:registerSidechain': {
+					request: mockInteroperabilityRegisterSidechainTxRequest,
+					result: mockInteroperabilityRegisterSidechainTxResult,
+				},
+			};
+
+			Object.entries(transactionsMap).forEach(([transactionType, transactionInfo]) => {
+				it(`should calculate transaction fees correctly for ${transactionType} transaction`, async () => {
+					// Mock the return values of the functions
+					getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+					getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
+					requestConnector
+						.mockReturnValueOnce(mockTxrequestConnector)
+						.mockReturnValue({ userAccount: '1', escrowAccount: '0' });
+					getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
+					calcAdditionalFees.mockResolvedValue({});
+					calcMessageFee.mockResolvedValue({});
+					getPosConstants.mockResolvedValue(posConstants);
+
+					const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
+
+					// Call the function
+					const result = await estimateTransactionFees(
+						transactionInfo.request,
+					);
+					expect(result).toEqual(
+						transactionInfo.result,
+					);
+				});
+			});
 		});
 	});
 });

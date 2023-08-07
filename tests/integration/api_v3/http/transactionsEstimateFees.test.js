@@ -19,6 +19,7 @@ const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_ENCODED_VALID,
 } = require('../constants/transactionsDryRun');
+const { transactionsMap } = require('../constants/transactionsEstimateFees');
 
 const {
 	badRequestSchema,
@@ -31,6 +32,21 @@ const { invalidAddresses, invalidPublicKeys } = require('../constants/invalidInp
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/transactions/estimate-fees`;
+
+const getEntries = (o, prefix = '') => Object
+	.entries(o)
+	.flatMap(
+		([k, v]) => Object(v) === v ? getEntries(v, `${prefix}${k}.`) : [[`${prefix}${k}`, v]],
+	);
+
+const getSumOfMetaValues = (meta) => {
+	const flattenedEntries = getEntries(meta.breakdown);
+	const flattenedObject = Object.fromEntries(flattenedEntries);
+	const sum = Object
+		.values(flattenedObject)
+		.reduce((a, b) => BigInt(a) + BigInt(b), BigInt(0));
+	return sum.toString();
+};
 
 describe('Post estimate-fees transactions API', () => {
 	it('should return transaction fees with valid transaction object', async () => {
@@ -77,6 +93,19 @@ describe('Post estimate-fees transactions API', () => {
 			const response = await api.post(endpoint, { transaction: remTransactionObject }, 400);
 			expect(response).toMap(badRequestSchema);
 		}
+	});
+
+	describe('Test estimate-fees transactions for all transaction types', () => {
+		Object
+			.entries(transactionsMap)
+			.forEach(([transactionType, transactionObject]) => {
+				it(`should return transaction fees when called with ${transactionType} transaction object`, async () => {
+					const { fee, ...remTransactionObject } = transactionObject;
+					const response = await api.post(endpoint, { transaction: remTransactionObject });
+					expect(response).toMap(transactionEstimateFees);
+					expect(getSumOfMetaValues(response.meta)).toEqual(response.data.transaction.fee.minimum);
+				});
+			});
 	});
 
 	it('should return bad request when called with valid transaction string', async () => {

@@ -18,6 +18,7 @@ const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_ENCODED_VALID,
 } = require('../constants/transactionsDryRun');
+const { transactionsMap } = require('../constants/transactionsEstimateFees');
 
 const {
 	request,
@@ -31,6 +32,21 @@ const {
 
 const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
 const { invalidPublicKeys, invalidAddresses } = require('../constants/invalidInputs');
+
+const getEntries = (o, prefix = '') => Object
+	.entries(o)
+	.flatMap(
+		([k, v]) => Object(v) === v ? getEntries(v, `${prefix}${k}.`) : [[`${prefix}${k}`, v]],
+	);
+
+const getSumOfMetaValues = (meta) => {
+	const flattenedEntries = getEntries(meta.breakdown);
+	const flattenedObject = Object.fromEntries(flattenedEntries);
+	const sum = Object
+		.values(flattenedObject)
+		.reduce((a, b) => BigInt(a) + BigInt(b), BigInt(0));
+	return sum.toString();
+};
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const calculateTransactionFees = async params => request(wsRpcUrl, 'post.transactions.estimate-fees', params);
@@ -92,6 +108,20 @@ describe('Method post.transactions.estimate-fees', () => {
 			const response = await calculateTransactionFees({ transaction: remTransactionObject });
 			expect(response).toMap(emptyResponseSchema);
 		}
+	});
+
+	describe('Test estimate-fees transactions for all transaction types', () => {
+		Object
+			.entries(transactionsMap)
+			.forEach(([transactionType, transactionObject]) => {
+				it(`should return transaction fees when called with ${transactionType} transaction object`, async () => {
+					const { fee, ...remTransactionObject } = transactionObject;
+					const response = await calculateTransactionFees({ transaction: remTransactionObject });
+					const { result } = response;
+					expect(result).toMap(transactionEstimateFees);
+					expect(getSumOfMetaValues(result.meta)).toEqual(result.data.transaction.fee.minimum);
+				});
+			});
 	});
 
 	it('should return invalid params when called with valid transaction string', async () => {
