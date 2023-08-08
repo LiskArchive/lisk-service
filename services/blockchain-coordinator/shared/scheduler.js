@@ -123,8 +123,8 @@ const scheduleBlocksIndexing = async (heights) => {
 			await blockIndexQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
-                  /* eslint-enable no-await-in-loop */
-               
+		/* eslint-enable no-await-in-loop */
+
 		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
 	}
 };
