@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const io = require('socket.io-client');
 const debug = require('debug')('framework:socket');
-const util = require('util');
 
 const connectionPool = {};
 

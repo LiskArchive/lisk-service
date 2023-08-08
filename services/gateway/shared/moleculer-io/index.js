@@ -1,11 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies,no-restricted-syntax,guard-for-in,no-use-before-define,prefer-const,no-unused-vars,eqeqeq,consistent-return,max-len,array-callback-return,no-const-assign */
 
+const util = require('util');
 const IO = require('socket.io');
 const _ = require('lodash');
 const { ServiceNotFoundError } = require('moleculer').Errors;
 const chalk = require('chalk');
-
-const util = require('util');
 
 const BluebirdPromise = require('bluebird');
 const { RateLimiterMemory } = require('rate-limiter-flexible');

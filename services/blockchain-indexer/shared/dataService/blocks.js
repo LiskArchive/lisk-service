@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis, Logger } = require('lisk-service-framework');
 const util = require('util');
+const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 

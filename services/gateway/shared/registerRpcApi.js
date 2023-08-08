@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Utils,
 	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST, SERVICE_UNAVAILABLE } },
@@ -20,7 +21,6 @@ const {
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
-const path = require('path');
 
 const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate } = require('./paramValidator');

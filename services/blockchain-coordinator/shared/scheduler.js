@@ -27,13 +27,11 @@ const {
 	getMissingBlocks,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
-} = require('./sources/indexer');
-
-const { getAllPosValidators } = require('./sources/connector');
-const {
 	isGenesisBlockIndexed,
 	getLiveIndexingJobCount: getLiveIndexingJobCountFromIndexer,
 } = require('./sources/indexer');
+
+const { getAllPosValidators } = require('./sources/connector');
 
 const {
 	getCurrentHeight,
@@ -55,6 +53,9 @@ const accountMessageQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
+let intervalID;
+const REFRESH_INTERVAL = 30000;
+
 const getInProgressJobCount = async (queue) => {
 	const jobCount = await queue.getJobCounts();
 	const count = jobCount.active + jobCount.waiting;
@@ -67,8 +68,27 @@ const getLiveIndexingJobCount = async () => {
 	return messageQueueJobCount + indexerLiveIndexingJobCount;
 };
 
-let intervalID;
-const REFRESH_INTERVAL = 30000;
+const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return getLiveIndexingJobCount()
+		.then((count) => {
+			const { skipThreshold } = config.job.indexMissingBlocks;
+			return count < skipThreshold
+				? resolve(true)
+				: (() => {
+					logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
+					intervalID = setInterval(
+						waitForJobCountToFallBelowThreshold.bind(null, resolve),
+						REFRESH_INTERVAL,
+					);
+				})();
+		});
+});
 
 const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 	if (!resolve) resolve = res;
@@ -96,28 +116,6 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 			}
 
 			throw new Error('Genesis block indexing failed.');
-		});
-});
-
-const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
-	if (!resolve) resolve = res;
-	if (intervalID) {
-		clearInterval(intervalID);
-		intervalID = null;
-	}
-
-	return getLiveIndexingJobCount()
-		.then((count) => {
-			const { skipThreshold } = config.job.indexMissingBlocks;
-			return count < skipThreshold
-				? resolve(true)
-				: (() => {
-					logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
-					intervalID = setInterval(
-						waitForJobCountToFallBelowThreshold.bind(null, resolve),
-						REFRESH_INTERVAL,
-					);
-				})();
 		});
 });
 

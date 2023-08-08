@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Utils,
 } = require('lisk-service-framework');
-const path = require('path');
 const BluebirdPromise = require('bluebird');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
