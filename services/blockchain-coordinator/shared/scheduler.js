@@ -92,7 +92,7 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 					waitForGenesisBlockIndexing.bind(null, resolve),
 					REFRESH_INTERVAL,
 				);
-				return resolve(false);
+				return false;
 			}
 
 			throw new Error('Genesis block indexing failed.');
