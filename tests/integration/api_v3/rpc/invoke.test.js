@@ -19,11 +19,11 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
 	invokeResponseSchema,
-	errorSchema,
 } = require('../../../schemas/api_v3/invoke.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -50,16 +50,14 @@ describe('post.invoke', () => {
 		expect(blockIDSDK).toEqual(blockIDService);
 	});
 
-	it('should return error when requested with valid SDK endpoint invoked with invalid params', async () => {
+	it('should return invalid request when requested with valid SDK endpoint invoked with invalid params', async () => {
 		const response = await invoke({ endpoint: 'chain_getBlockByHeight', params: { height: 'abc' } });
-		const { result } = response;
-		expect(result).toMap(errorSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
-	it('should return error when requested with invalid SDK endpoint invoked', async () => {
+	it('should return invalid request when requested with invalid SDK endpoint invoked', async () => {
 		const response = await invoke({ endpoint: 'chain_%' });
-		const { result } = response;
-		expect(result).toMap(errorSchema);
+		expect(response).toMap(invalidRequestSchema);
 	});
 
 	it('should return invalid params when requested with invalid request param', async () => {

@@ -44,7 +44,7 @@ const sortComparator = (sortParam) => {
 	return comparator;
 };
 
-const isSubstringInArray = (collection, pattern) => collection.some((item) => item
+const isSubstringInArray = (collection, pattern) => collection.some((item) => item && pattern
 	&& item.toLowerCase().includes(pattern.toLowerCase()));
 
 module.exports = {
