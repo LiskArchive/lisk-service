@@ -36,7 +36,7 @@ describe('Token Constants API', () => {
 		expect(response.meta).toMap(tokenConstantsMetaSchema);
 	});
 
-	it('hould return invalid params when requested with invalid param', async () => {
+	it('should return invalid params when requested with invalid param', async () => {
 		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

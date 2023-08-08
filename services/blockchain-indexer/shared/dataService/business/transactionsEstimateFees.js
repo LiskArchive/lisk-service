@@ -217,7 +217,7 @@ const estimateTransactionFees = async params => {
 
 	// Test all regex
 	const { tokenID, recipientAddress } = params.transaction.params;
-	if (tokenID && !regex.TOKEN_ID) {
+	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
 		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
 	}
 
