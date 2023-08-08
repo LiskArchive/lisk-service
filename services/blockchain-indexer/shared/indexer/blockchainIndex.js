@@ -462,6 +462,16 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
+const isGenesisBlockIndexed = async () => {
+	const blocksTable = await getBlocksTable();
+	const [{ height } = {}] = await blocksTable.find(
+		{ height: await getGenesisHeight(), limit: 1 },
+		['height'],
+	);
+
+	return height !== undefined;
+};
+
 module.exports = {
 	indexNewBlock,
 	addBlockToQueue,
@@ -470,4 +480,5 @@ module.exports = {
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,
+	isGenesisBlockIndexed,
 };

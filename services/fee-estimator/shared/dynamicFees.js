@@ -13,13 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const {
 	CacheRedis,
 	Logger,
 	Signals,
 } = require('lisk-service-framework');
 
-const util = require('util');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');

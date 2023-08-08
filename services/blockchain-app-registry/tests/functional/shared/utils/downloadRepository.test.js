@@ -14,6 +14,7 @@
  *
  */
 /* eslint-disable mocha/max-top-level-suites */
+const path = require('path');
 const _ = require('lodash');
 
 jest.setTimeout(15000);
@@ -31,7 +32,6 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const path = require('path');
 const {
 	getRepoDownloadURL,
 	getLatestCommitHash,

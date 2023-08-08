@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const debug = require('debug')('http');
-const util = require('util');
 
 const delay = require('./delay');
 

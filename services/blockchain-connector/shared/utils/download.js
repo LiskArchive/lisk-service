@@ -16,9 +16,9 @@
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
-const tar = require('tar');
 const zlib = require('zlib');
 const crypto = require('crypto');
+const tar = require('tar');
 
 const {
 	Logger,

@@ -29,6 +29,7 @@ const {
 	getGenesisHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
+	isGenesisBlockIndexed,
 	getLiveIndexingJobCount: getLiveIndexingJobCountFromIndexer,
 } = require('./sources/indexer');
 
@@ -52,7 +53,8 @@ const accountMessageQueue = new MessageQueue(
 );
 
 let registeredLiskModules;
-const getRegisteredModuleAssets = () => registeredLiskModules;
+let intervalID;
+const REFRESH_INTERVAL = 30000;
 
 const getInProgressJobCount = async (queue) => {
 	const jobCount = await queue.getJobCounts();
@@ -66,8 +68,7 @@ const getLiveIndexingJobCount = async () => {
 	return messageQueueJobCount + indexerLiveIndexingJobCount;
 };
 
-let intervalID;
-const REFRESH_INTERVAL = 30000;
+const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
 	if (!resolve) resolve = res;
@@ -88,6 +89,35 @@ const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
 						REFRESH_INTERVAL,
 					);
 				})();
+		});
+});
+
+const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return isGenesisBlockIndexed()
+		.then(async (isIndexed) => {
+			const jobCount = await getLiveIndexingJobCount();
+
+			if (isIndexed) {
+				logger.info('Genesis block is indexed.');
+				return resolve(true);
+			}
+
+			if (jobCount <= 1) {
+				logger.info(`Genesis block indexing is still in progress. Waiting for ${REFRESH_INTERVAL}ms to re-check the genesis block indexing status.`);
+				intervalID = setInterval(
+					waitForGenesisBlockIndexing.bind(null, resolve),
+					REFRESH_INTERVAL,
+				);
+				return false;
+			}
+
+			throw new Error('Genesis block indexing failed.');
 		});
 });
 
@@ -138,8 +168,21 @@ const scheduleValidatorsIndexing = async (validators) => {
 };
 
 const indexGenesisBlock = async () => {
+	if (await isGenesisBlockIndexed()) {
+		logger.info('Genesis block is already indexed.');
+		return;
+	}
+
 	const genesisHeight = await getGenesisHeight();
+	logger.debug('Scheduling genesis block indexing.');
 	await scheduleBlocksIndexing(genesisHeight);
+	logger.info('Finished scheduling genesis block indexing.');
+
+	await waitForGenesisBlockIndexing()
+		.catch(async () => {
+			logger.warn('Genesis indexing failed. Retrying.');
+			await indexGenesisBlock();
+		});
 };
 
 const initIndexingScheduler = async () => {

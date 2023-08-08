@@ -15,8 +15,8 @@
  */
 /* eslint-disable mocha/max-top-level-suites */
 
-const moment = require('moment');
 const { resolve } = require('path');
+const moment = require('moment');
 
 const {
 	interval,

@@ -5,10 +5,10 @@
  * Copyright (c) 2020 MoleculerJS (https://github.com/moleculerjs/moleculer)
  * MIT Licensed
  */
+const util = require('util');
 const { MoleculerError, MoleculerServerError } = require('moleculer').Errors;
 const _ = require('lodash');
 const kleur = require('kleur');
-const util = require('util');
 
 module.exports = {
 	methods: {
