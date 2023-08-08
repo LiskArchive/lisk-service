@@ -397,7 +397,7 @@ const indexNewBlock = async block => {
 };
 
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
-	let result = [];
+	const result = [];
 
 	const totalNumOfBlocks = toHeight - fromHeight + 1;
 	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks).`);
@@ -412,25 +412,35 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
-		result = [{ from: fromHeight, to: toHeight }];
+		result.push({ from: fromHeight, to: toHeight });
 	} else if (indexedBlockCount !== totalNumOfBlocks) {
-		const missingBlocksQueryStatement = `
-			SELECT
-				(SELECT COALESCE(MAX(b0.height), ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
-				(b1.height - 1) AS 'to'
-			FROM blocks b1
-			WHERE b1.height BETWEEN ${fromHeight} + 1 AND ${toHeight}
-				AND b1.height != ${toHeight}
-				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
-		`;
+		const BATCH_SIZE = 25000;
+		const NUM_BATCHES = Math.ceil((toHeight - fromHeight) / BATCH_SIZE);
 
-		const missingBlockRanges = await blocksTable.rawQuery(missingBlocksQueryStatement);
+		for (let i = 0; i < NUM_BATCHES; i++) {
+			const batchStartHeight = fromHeight + i * BATCH_SIZE;
+			const batchEndHeight = Math.min(batchStartHeight + BATCH_SIZE, toHeight);
 
-		result = missingBlockRanges;
+			const missingBlocksQueryStatement = `
+				SELECT
+					(SELECT COALESCE(MAX(b0.height), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+					(b1.height - 1) AS 'to'
+				FROM blocks b1
+				WHERE b1.height BETWEEN ${batchStartHeight} + 1 AND ${batchEndHeight}
+					AND b1.height != ${batchEndHeight}
+					AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+			`;
+
+			logger.trace(`Checking for missing blocks between heights: ${batchStartHeight} - ${batchEndHeight}.`);
+			// eslint-disable-next-line no-await-in-loop
+			const missingBlockRanges = await blocksTable.rawQuery(missingBlocksQueryStatement);
+			logger.trace(`Found the following missing block ranges between heights: ${missingBlockRanges}.`);
+
+			result.push(...missingBlockRanges);
+		}
 	}
 
-	const logContent = result.map(o => `${o.from}-${o.to} (${o.to - o.from + 1} blocks)`);
-	logContent.forEach(o => logger.info(`Missing blocks in range: ${o}.`));
+	result.forEach(({ from, to }) => logger.info(`Missing blocks in range: ${from}-${to} (${to - from + 1} blocks).`));
 
 	return result;
 };
@@ -452,6 +462,16 @@ const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_
 
 const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
 
+const isGenesisBlockIndexed = async () => {
+	const blocksTable = await getBlocksTable();
+	const [{ height } = {}] = await blocksTable.find(
+		{ height: await getGenesisHeight(), limit: 1 },
+		['height'],
+	);
+
+	return height !== undefined;
+};
+
 module.exports = {
 	indexNewBlock,
 	addBlockToQueue,
@@ -460,4 +480,5 @@ module.exports = {
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,
+	isGenesisBlockIndexed,
 };
