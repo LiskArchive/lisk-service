@@ -218,11 +218,11 @@ const estimateTransactionFees = async params => {
 	// Test all regex
 	const { tokenID, recipientAddress } = params.transaction.params;
 	if (tokenID && !regex.TOKEN_ID) {
-		throw new ValidationException('Token ID specified is incorrect.');
+		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
 	}
 
 	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
-		throw new ValidationException('Recipient address specified is incorrect.');
+		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
 	}
 
 	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
