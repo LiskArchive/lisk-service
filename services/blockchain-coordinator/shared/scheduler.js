@@ -92,7 +92,7 @@ const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 					waitForGenesisBlockIndexing.bind(null, resolve),
 					REFRESH_INTERVAL,
 				);
-				return false;
+				return resolve(false);
 			}
 
 			throw new Error('Genesis block indexing failed.');
@@ -123,7 +123,8 @@ const scheduleBlocksIndexing = async (heights) => {
 			await blockIndexQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
-
+                  /* eslint-enable no-await-in-loop */
+               
 		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
 	}
 };
