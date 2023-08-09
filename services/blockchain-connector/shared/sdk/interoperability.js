@@ -24,6 +24,7 @@ const { getNodeInfo } = require('./endpoints_1');
 const logger = Logger();
 
 let mainchainID;
+let registrationFee;
 
 const getChainAccount = async (chainID) => {
 	try {
@@ -72,8 +73,24 @@ const getChannel = async (chainID) => {
 	}
 };
 
+const getRegistrationFee = async () => {
+	try {
+		if (!registrationFee) {
+			registrationFee = await invokeEndpoint('interoperability_getRegistrationFee');
+		}
+		return registrationFee;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getRegistrationFee\'.');
+		}
+		logger.warn(`Error returned when invoking 'interoperability_getRegistrationFee'.\n${err.stack}`);
+		throw err;
+	}
+};
+
 module.exports = {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getRegistrationFee,
 };
