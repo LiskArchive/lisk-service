@@ -80,6 +80,12 @@ config.api.versions = {
 };
 
 /**
+ * API timeout
+ */
+config.api.httpKeepAliveTimeout = Number(process.env.HTTP_KEEP_ALIVE_TIMEOUT || 65000);
+config.api.httpHeadersTimeout = Number(process.env.HTTP_HEADERS_TIMEOUT || 66000);
+
+/**
  * HTTP API response caching support
  */
 config.api.httpCacheControlDirectives = String(process.env.HTTP_CACHE_CONTROL_DIRECTIVES || 'public, max-age=10');
