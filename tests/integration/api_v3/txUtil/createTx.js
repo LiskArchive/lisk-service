@@ -14,19 +14,18 @@
  *
  */
 
-const { transactions } = require('@liskhq/lisk-client');
-const { cryptography } = require('@liskhq/lisk-client');
-const axios = require('axios');
+const { transactions, cryptography } = require('@liskhq/lisk-client');
+const { api } = require('../../../helpers/api');
 
 const { address, privateKey, publicKey, tokenTransferParamsSchema } = require('./constants');
 
 const createTokenTransferTx = async (authEndpoint) => {
-	const authResponse = await axios.get(`${authEndpoint}?address=${address}`);
+	const authResponse = await api.get(`${authEndpoint}?address=${address}`);
 
 	const txBuilder = {
 		module: 'token',
 		command: 'transfer',
-		nonce: BigInt(authResponse.data.data.nonce),
+		nonce: BigInt(authResponse.data.nonce),
 		fee: BigInt('100000000'),
 		senderPublicKey: Buffer.from(publicKey, 'hex'),
 		params: {

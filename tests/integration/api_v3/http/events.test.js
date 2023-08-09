@@ -114,7 +114,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should return empty transactionID', async () => {
+		it('should return valid response when called with empty transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -162,7 +162,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should return empty blockID', async () => {
+		it('should return valid response when called with empty blockID', async () => {
 			const response = await api.get(`${endpoint}?blockID=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -257,7 +257,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should return empty senderAddress', async () => {
+		it('should return valid response when called with empty senderAddress', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -581,7 +581,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty topic', async () => {
+		it('should return valid response when called with empty topic', async () => {
 			const response = await api.get(`${endpoint}?topic=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

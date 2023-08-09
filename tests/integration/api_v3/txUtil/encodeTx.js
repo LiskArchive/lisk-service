@@ -16,7 +16,7 @@
 const { codec } = require('@liskhq/lisk-codec');
 const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
 const { validator } = require('@liskhq/lisk-validator');
-const axios = require('axios');
+const { api } = require('../../../helpers/api');
 
 const { schemas } = require('./constants');
 
@@ -72,7 +72,7 @@ const parseInputBySchema = (input, schema) => {
 
 const encodeTransaction = async (transaction, endpoint) => {
 	// Get metadata
-	const metadataResponse = await axios.request({
+	const metadataResponse = await api.request({
 		method: 'post',
 		maxBodyLength: Infinity,
 		url: `${endpoint}/invoke`,
@@ -83,7 +83,7 @@ const encodeTransaction = async (transaction, endpoint) => {
 			endpoint: 'system_getMetadata',
 		}),
 	});
-	metadata = metadataResponse.data.data;
+	metadata = metadataResponse.data;
 
 	// Handle the transaction params
 	const txParamsSchema = getTransactionParamsSchema(transaction);
