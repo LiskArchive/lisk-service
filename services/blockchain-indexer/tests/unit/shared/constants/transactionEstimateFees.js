@@ -156,7 +156,7 @@ const mockTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '130001',
+				minimum: '130000',
 			},
 			params: {},
 		},

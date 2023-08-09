@@ -29,6 +29,7 @@ module.exports = {
 			optional: false,
 			type: 'object',
 			props: {
+				id: { optional: true, type: 'string', patter: regex.HASH_SHA256 },
 				module: { optional: false, type: 'string', pattern: regex.MODULE },
 				command: { optional: false, type: 'string', pattern: regex.COMMAND },
 				nonce: { optional: false, type: 'string', pattern: regex.NONCE },

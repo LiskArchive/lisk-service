@@ -85,31 +85,35 @@ const mockOptionalProperties = (inputObject, inputObjectOptionalProps, additiona
 };
 
 const mockTransaction = async (_transaction, authAccountInfo) => {
-	const transaction = _.cloneDeep(_transaction);
+	const transactionCopy = _.cloneDeep(_transaction);
+	const filteredRequiredProperties = _.omit(
+		transactionCopy,
+		Object.keys(OPTIONAL_TRANSACTION_PROPERTIES).map(optionalProp => optionalProp.toLowerCase()),
+	);
 
 	const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
 		+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
 
 	const mockedTransaction = mockOptionalProperties(
-		transaction,
+		filteredRequiredProperties,
 		OPTIONAL_TRANSACTION_PROPERTIES,
 		{ numberOfSignatures },
 	);
 
-	const channelInfo = transaction.module === MODULE.TOKEN
-		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
-		? await resolveChannelInfo(transaction.params.receivingChainID)
+	const channelInfo = filteredRequiredProperties.module === MODULE.TOKEN
+		&& filteredRequiredProperties.command === COMMAND.TRANSFER_CROSS_CHAIN
+		? await resolveChannelInfo(filteredRequiredProperties.params.receivingChainID)
 		: {};
 
 	const { messageFeeTokenID } = channelInfo;
 
 	const mockedTransactionParams = messageFeeTokenID
 		? mockOptionalProperties(
-			transaction.params,
+			filteredRequiredProperties.params,
 			OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
 			{ messageFeeTokenID },
 		)
-		: transaction.params;
+		: filteredRequiredProperties.params;
 
 	return { ...mockedTransaction, params: mockedTransactionParams };
 };
@@ -293,18 +297,9 @@ const estimateTransactionFees = async params => {
 
 	const { minFee, size } = formattedTransaction;
 
-	const estimateMinFee = (() => {
-		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
-			if (k.toLowerCase().endsWith('fee')) {
-				return acc + BigInt(v);
-			}
-			return acc;
-		}, BigInt(0));
-
-		// TODO: Remove BUFFER_BYTES_LENGTH support after https://github.com/LiskHQ/lisk-service/issues/1604 is complete
-		return BigInt(minFee) + totalAdditionalFees
-			+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
-	})();
+	// TODO: Remove BUFFER_BYTES_LENGTH support after RC is tagged
+	const estimatedMinFee = BigInt(minFee)
+		+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
 
 	// Populate the response with transaction minimum fee information
 	estimateTransactionFeesRes.data = {
@@ -313,7 +308,7 @@ const estimateTransactionFees = async params => {
 			...estimateTransactionFeesRes.data.transaction,
 			fee: {
 				tokenID: feeEstimatePerByte.feeTokenID,
-				minimum: estimateMinFee.toString(),
+				minimum: estimatedMinFee.toString(),
 			},
 		},
 	};
@@ -335,11 +330,11 @@ const estimateTransactionFees = async params => {
 		},
 	};
 
-	// Add priority only when fee values are not 0
+	// Add priority only when the priority fee values are non-zero
 	const { low, med, high } = feeEstimatePerByte;
 	if (low !== 0 || med !== 0 || high !== 0) {
 		const dynamicFeeEstimates = calcDynamicFeeEstimates(
-			feeEstimatePerByte, estimateMinFee, size);
+			feeEstimatePerByte, estimatedMinFee, size);
 
 		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
 	}
