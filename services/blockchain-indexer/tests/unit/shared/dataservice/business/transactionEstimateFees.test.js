@@ -44,6 +44,7 @@ const {
 	mockInteroperabilityRegisterSidechainTxRequest,
 	mockInteroperabilityRegisterSidechainTxResult,
 	mockAuthAccountInfo,
+	mockAuthInfoForMultisigAccount,
 } = require('../../constants/transactionEstimateFees');
 
 jest.mock('lisk-service-framework', () => {
@@ -639,6 +640,37 @@ describe('Test transaction fees estimates', () => {
 
 			const txWithRequiredProps = filterOptionalProps(undefined, optionalProps);
 			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
+		});
+	});
+
+	describe('Test getNumberOfSignatures method', () => {
+		// Mock the dependencies
+		const { requestConnector } = require(mockedRequestFilePath);
+
+		jest.mock(mockedRequestFilePath, () => ({
+			requestConnector: jest.fn(),
+		}));
+
+		it('should return number of signatures as 1 for non-multiSig account', async () => {
+			// Mock the return values of the functions
+			requestConnector.mockReturnValueOnce(mockAuthAccountInfo);
+
+			const { getNumberOfSignatures } = require(mockedTransactionFeeEstimatesFilePath);
+
+			// Call the function
+			const result = await getNumberOfSignatures(mockTxsenderAddress);
+			expect(result).toEqual(1);
+		});
+
+		it('should return number of signatures as 2 for multiSig account', async () => {
+			// Mock the return values of the functions
+			requestConnector.mockReturnValueOnce(mockAuthInfoForMultisigAccount);
+
+			const { getNumberOfSignatures } = require(mockedTransactionFeeEstimatesFilePath);
+
+			// Call the function
+			const result = await getNumberOfSignatures(mockTxsenderAddress);
+			expect(result).toEqual(2);
 		});
 	});
 });

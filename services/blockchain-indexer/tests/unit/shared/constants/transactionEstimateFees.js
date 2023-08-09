@@ -306,6 +306,16 @@ const mockEscrowAccountExistsRequestConnector = {
 
 const mockAuthAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optionalKeys: [] };
 
+const mockAuthInfoForMultisigAccount = {
+	...mockAuthAccountInfo,
+	mandatoryKeys: [
+		'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
+	],
+	optionalKeys: [
+		'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
+	],
+};
+
 module.exports = {
 	mockTxRequest,
 	mockTransferCrossChainTxRequest,
@@ -319,6 +329,7 @@ module.exports = {
 	mockTransferCrossChainTxrequestConnector,
 	mockTransferCrossChainTxResult,
 	mockAuthAccountInfo,
+	mockAuthInfoForMultisigAccount,
 
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,

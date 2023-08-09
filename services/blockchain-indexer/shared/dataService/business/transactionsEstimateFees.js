@@ -374,4 +374,5 @@ module.exports = {
 	mockTransaction,
 	calcAdditionalFees,
 	filterOptionalProps,
+	getNumberOfSignatures,
 };
