@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { isIncludePendingTransactions } = require('../../../../shared/dataService/transactions');
+/* eslint-disable import/no-dynamic-require */
+const { resolve } = require('path');
+
+// All file paths
+const transactionsFilePath = resolve(`${__dirname}/../../../../shared/dataService/transactions`);
+const mockBusinessFilePath = resolve(`${__dirname}/../../../../shared/dataService/business`);
 
 // Mock KeyValueStore table
 jest.mock('lisk-service-framework', () => {
@@ -35,9 +40,72 @@ jest.mock('lisk-service-framework', () => {
 	};
 });
 
+describe('dryRunTransactions', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.resetModules();
+	});
+
+	it('should return response on successful operation', async () => {
+		const mockResponse = { data: 'Success' };
+
+		const business = require(mockBusinessFilePath);
+		jest.mock(mockBusinessFilePath, () => ({
+			dryRunTransactions: jest.fn().mockResolvedValueOnce(mockResponse),
+		}));
+
+		const { dryRunTransactions } = require(transactionsFilePath);
+		const response = await dryRunTransactions({});
+
+		expect(response).toEqual(mockResponse);
+		expect(business.dryRunTransactions).toHaveBeenCalledWith({});
+	});
+
+	it('should return internal server error response on network error', async () => {
+		const mockError = new Error('ECONNREFUSED');
+		const expectedErrorResponse = {
+			data: { error: 'Unable to reach a network node.' },
+			status: 'INTERNAL_SERVER_ERROR',
+		};
+
+		const business = require(mockBusinessFilePath);
+		jest.mock(mockBusinessFilePath, () => ({
+			dryRunTransactions: jest.fn(() => {
+				throw new Error(mockError);
+			}),
+		}));
+
+		const { dryRunTransactions } = require(transactionsFilePath); // Update with the correct path
+		const response = await dryRunTransactions({});
+		expect(response).toEqual(expectedErrorResponse);
+		expect(business.dryRunTransactions).toHaveBeenCalledWith({});
+	});
+
+	it('should return bad request error response on other error', async () => {
+		const mockError = new Error('Some other error');
+		const expectedErrorResponse = {
+			data: { error: `Failed to dry run transaction: Error: ${mockError.message}.` },
+			status: 'BAD_REQUEST',
+		};
+
+		const business = require(mockBusinessFilePath);
+		jest.mock(mockBusinessFilePath, () => ({
+			dryRunTransactions: jest.fn(() => {
+				throw new Error(mockError);
+			}),
+		}));
+
+		const { dryRunTransactions } = require(transactionsFilePath); // Update with the correct path
+		const response = await dryRunTransactions({});
+		expect(response).toEqual(expectedErrorResponse);
+		expect(business.dryRunTransactions).toHaveBeenCalledWith({});
+	});
+});
+
 describe('Test isIncludePendingTransactions method', () => {
 	it('should return true when called with pending execution status', async () => {
 		const executionStatus = 'pending,success';
+		const { isIncludePendingTransactions } = require(transactionsFilePath);
 		const result = isIncludePendingTransactions(executionStatus);
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(true);
@@ -45,18 +113,21 @@ describe('Test isIncludePendingTransactions method', () => {
 
 	it('should return false when called without pending execution status', async () => {
 		const executionStatus = 'success,fail';
+		const { isIncludePendingTransactions } = require(transactionsFilePath);
 		const result = isIncludePendingTransactions(executionStatus);
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
 	});
 
 	it('should return false when called with undefined', async () => {
+		const { isIncludePendingTransactions } = require(transactionsFilePath);
 		const result = isIncludePendingTransactions(undefined);
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);
 	});
 
 	it('should return false when called with null', async () => {
+		const { isIncludePendingTransactions } = require(transactionsFilePath);
 		const result = isIncludePendingTransactions(null);
 		expect(typeof result).toBe('boolean');
 		expect(result).toBe(false);

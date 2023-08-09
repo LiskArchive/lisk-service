@@ -28,6 +28,7 @@ const {
 const {
 	blockchainAppsTokenMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsTokenMetadataSchema.schema');
+const { invalidLimits, invalidChainIDCSV, invalidOffsets } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsTokensSupportedMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.tokens.supported', params);
@@ -41,7 +42,7 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 		curChainID = response.result.data.chainID;
 	});
 
-	it('returns blockchain applications off-chain metadata for supported tokens by chainID', async () => {
+	it('should return blockchain applications off-chain metadata for supported tokens by chainID', async () => {
 		const response = await getBlockchainAppsTokensSupportedMetadata({ chainID: curChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -54,7 +55,7 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata for supported tokens by chainID and limit=5', async () => {
+	it('should return blockchain applications off-chain metadata for supported tokens by chainID and limit=5', async () => {
 		const response = await getBlockchainAppsTokensSupportedMetadata({
 			chainID: curChainID,
 			limit: 5,
@@ -70,7 +71,7 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata for supported tokens by chainID, limit=5 and offset=1', async () => {
+	it('should return blockchain applications off-chain metadata for supported tokens by chainID, limit=5 and offset=1', async () => {
 		const response = await getBlockchainAppsTokensSupportedMetadata({
 			chainID: curChainID,
 			limit: 5,
@@ -87,7 +88,7 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata for supported tokens by chainID and sort=tokenID:desc', async () => {
+	it('should return blockchain applications off-chain metadata for supported tokens by chainID and sort=tokenID:desc', async () => {
 		const response = await getBlockchainAppsTokensSupportedMetadata({ chainID: curChainID, sort: 'tokenID:desc' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -100,13 +101,46 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('No params -> invalid param', async () => {
+	it('should return invalid params for an invalid param', async () => {
+		const response = await getBlockchainAppsTokensSupportedMetadata({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for missing chainID', async () => {
 		const response = await getBlockchainAppsTokensSupportedMetadata();
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
-		const response = await getBlockchainAppsTokensSupportedMetadata({ invalidParam: 'invalid' });
+	it('should return invalid params for an invalid chainID param', async () => {
+		for (let i = 0; i < invalidChainIDCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsTokensSupportedMetadata({
+				chainID: invalidChainIDCSV[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsTokensSupportedMetadata({ limit: invalidLimits[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsTokensSupportedMetadata({
+				offset: invalidOffsets[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid sort option', async () => {
+		const response = await getBlockchainAppsTokensSupportedMetadata({ sort: 'invalidSort' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

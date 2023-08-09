@@ -22,7 +22,6 @@ const {
 
 const {
 	invokeResponseSchema,
-	errorSchema,
 } = require('../../../schemas/api_v3/invoke.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -30,12 +29,12 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/invoke`;
 
 describe('Invoke API', () => {
-	it('Returns response when valid SDK endpoint invoked', async () => {
+	it('should return response when valid SDK endpoint invoked', async () => {
 		const response = await api.post(endpoint, { endpoint: 'system_getNodeInfo' });
 		expect(response).toMap(invokeResponseSchema);
 	});
 
-	it('Returns response when valid SDK endpoint invoked with valid params', async () => {
+	it('should return response when valid SDK endpoint invoked with valid params', async () => {
 		const response = await api.post(endpoint, { endpoint: 'chain_getBlockByHeight', params: { height: 1 } });
 		const [block] = (await api.get(`${baseUrlV3}/blocks?height=1`)).data;
 		expect(response).toMap(invokeResponseSchema);
@@ -45,13 +44,17 @@ describe('Invoke API', () => {
 		expect(blockIDSDK).toEqual(blockIDService);
 	});
 
-	it('Returns error when invalid SDK endpoint invoked', async () => {
-		const response = await api.post(endpoint, { endpoint: 'invalid_endpoint' });
-		expect(response).toMap(invokeResponseSchema);
-		expect(response.data.error).toMap(errorSchema);
+	it('should return bad request when requested with valid SDK endpoint invoked with invalid params', async () => {
+		const response = await api.post(endpoint, { endpoint: 'chain_getBlockByHeight', params: { height: 'abc' } }, 400);
+		expect(response).toMap(badRequestSchema);
 	});
 
-	it('Invalid request param -> bad request', async () => {
+	it('should return bad request when requested with invalid SDK endpoint invoked', async () => {
+		const response = await api.post(endpoint, { endpoint: 'chain_%' }, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request when requested with invalid request param', async () => {
 		const response = await api.post(endpoint, { invalidParams: 'invalid' }, 400);
 		expect(response).toMap(badRequestSchema);
 	});

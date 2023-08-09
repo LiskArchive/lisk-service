@@ -27,9 +27,11 @@ const {
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
+	emptyResponseSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const { transactionEstimateFees } = require('../../../schemas/api_v3/transactionsEstimateFees.schema');
+const { invalidPublicKeys, invalidAddresses } = require('../constants/invalidInputs');
 
 const getEntries = (o, prefix = '') => Object
 	.entries(o)
@@ -83,6 +85,29 @@ describe('Method post.transactions.estimate-fees', () => {
 
 		const { result } = response;
 		expect(result).toMap(transactionEstimateFees);
+	});
+
+	it('should return invalid param when requested with invalid public key', async () => {
+		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
+			// eslint-disable-next-line no-await-in-loop
+			const response = await calculateTransactionFees({ transaction: remTransactionObject });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return empty response when requested with invalid address', async () => {
+		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			remTransactionObject.params = {
+				...params,
+				recipientAddress: invalidAddresses[i],
+			};
+			// eslint-disable-next-line no-await-in-loop
+			const response = await calculateTransactionFees({ transaction: remTransactionObject });
+			expect(response).toMap(emptyResponseSchema);
+		}
 	});
 
 	describe('Test estimate-fees transactions for all transaction types', () => {

@@ -28,6 +28,7 @@ const {
 	tokenBalancesSchema,
 	tokenBalancesMetaSchema,
 } = require('../../../schemas/api_v3/tokenBalances.schema');
+const { invalidLimits, invalidTokenIDs, invalidAddresses, invalidOffsets } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensInfo = async (params) => request(wsRpcUrl, 'get.token.balances', params);
@@ -46,7 +47,7 @@ describe('get.token.balances', () => {
 		currTokenID = networkStatus.result.data.chainID.substring(0, 2).padEnd(16, '0');
 	});
 
-	it('returns tokens info when call with address', async () => {
+	it('should return tokens info when call with address', async () => {
 		const response = await getTokensInfo({ address: refValidator.address });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -57,7 +58,7 @@ describe('get.token.balances', () => {
 		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
-	it('returns tokens info when call with address and limit=10', async () => {
+	it('should return tokens info when call with address and limit=10', async () => {
 		const response = await getTokensInfo({ address: refValidator.address, limit: 10 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -68,7 +69,7 @@ describe('get.token.balances', () => {
 		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
-	it('returns tokens info when call with address, limit=10 and offset=1', async () => {
+	it('should return tokens info when call with address, limit=10 and offset=1', async () => {
 		const response = await getTokensInfo({ address: refValidator.address, limit: 10, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -79,7 +80,7 @@ describe('get.token.balances', () => {
 		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
-	it('returns token info when call with address and tokenID', async () => {
+	it('should return token info when call with address and tokenID', async () => {
 		const response = await getTokensInfo({ address: refValidator.address, tokenID: currTokenID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -89,18 +90,63 @@ describe('get.token.balances', () => {
 		expect(result.meta).toMap(tokenBalancesMetaSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
-		const response = await getTokensInfo({ invalidParam: 'invalid' });
-		expect(response).toMap(invalidParamsSchema);
+	it('should return invalid params when requested with invalid address', async () => {
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensInfo({ address: invalidAddresses[i], tokenID: currTokenID });
+			expect(response).toMap(invalidParamsSchema);
+		}
 	});
 
-	it('No address -> invalid param', async () => {
+	it('should return invalid params when requested with invalid tokenIDs', async () => {
+		for (let i = 0; i < invalidTokenIDs.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensInfo({ address: refValidator.address,
+				tokenID: invalidTokenIDs[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when requested with invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensInfo({ address: refValidator.address,
+				tokenID: currTokenID,
+				limit: invalidLimits[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when requested with invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensInfo({ address: refValidator.address,
+				tokenID: currTokenID,
+				offset: invalidOffsets[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when requested without address', async () => {
 		const response = await getTokensInfo();
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('No address with tokenID -> invalid param', async () => {
-		const response = await getTokensInfo({ tokenID: '' });
+	it('should return invalid params when requested with tokenID but without address', async () => {
+		const response = await getTokensInfo({ tokenID: currTokenID });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when requested with invalid param', async () => {
+		const response = await getTokensInfo({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when requested with empty invalid param', async () => {
+		const response = await getTokensInfo({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

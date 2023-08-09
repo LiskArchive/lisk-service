@@ -37,6 +37,7 @@ const config = require('../../../config');
 
 const { getPosConstants } = require('./pos/constants');
 const { getFeeEstimates } = require('./feeEstimates');
+const regex = require('../../regex');
 
 const SIZE_BYTE_SIGNATURE = 64;
 const SIZE_BYTE_ID = 32;
@@ -213,6 +214,16 @@ const estimateTransactionFees = async params => {
 		},
 		meta: {},
 	};
+
+	// Test all regex
+	const { tokenID, recipientAddress } = params.transaction.params;
+	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
+		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
+	}
+
+	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
+		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
+	}
 
 	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
 	const { data: authAccountInfo } = await getAuthAccountInfo({ address: senderAddress });

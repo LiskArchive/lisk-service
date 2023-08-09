@@ -30,7 +30,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/pos/constants`;
 
 describe('PoS Constants API', () => {
-	it('returns PoS module constants', async () => {
+	it('should return PoS module constants', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response.data).toMap(posConstantsSchema);
 		expect(response.meta).toMap(posConstantsMetaSchema);
@@ -39,8 +39,13 @@ describe('PoS Constants API', () => {
 			.toEqual(response.data.numberActiveValidators + response.data.numberStandbyValidators);
 	});
 
-	it('params not supported -> 400 BAD_REQUEST', async () => {
+	it('should return bad request for unsupported param', async () => {
 		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for empty param', async () => {
+		const response = await api.get(`${endpoint}?someparam=''`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });
