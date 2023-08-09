@@ -88,36 +88,43 @@ const mockOptionalProperties = (inputObject, inputObjectOptionalProps, additiona
 	return inputObject;
 };
 
+const filterOptionalProps = (inputObject, optionalProps) => _.omit(inputObject, optionalProps);
+
 const mockTransaction = async (_transaction, authAccountInfo) => {
 	const transactionCopy = _.cloneDeep(_transaction);
-	const filteredRequiredProperties = _.omit(
+	const txWithRequiredProps = filterOptionalProps(
 		transactionCopy,
-		Object.keys(OPTIONAL_TRANSACTION_PROPERTIES).map(optionalProp => optionalProp.toLowerCase()),
+		Object.values(OPTIONAL_TRANSACTION_PROPERTIES).map(optionalProp => optionalProp.propName),
 	);
 
 	const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
 		+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
 
 	const mockedTransaction = mockOptionalProperties(
-		filteredRequiredProperties,
+		txWithRequiredProps,
 		OPTIONAL_TRANSACTION_PROPERTIES,
 		{ numberOfSignatures },
 	);
 
-	const channelInfo = filteredRequiredProperties.module === MODULE.TOKEN
-		&& filteredRequiredProperties.command === COMMAND.TRANSFER_CROSS_CHAIN
-		? await resolveChannelInfo(filteredRequiredProperties.params.receivingChainID)
+	const channelInfo = txWithRequiredProps.module === MODULE.TOKEN
+		&& txWithRequiredProps.command === COMMAND.TRANSFER_CROSS_CHAIN
+		? await resolveChannelInfo(txWithRequiredProps.params.receivingChainID)
 		: {};
 
 	const { messageFeeTokenID } = channelInfo;
 
 	const mockedTransactionParams = messageFeeTokenID
 		? mockOptionalProperties(
-			filteredRequiredProperties.params,
+			filterOptionalProps(
+				txWithRequiredProps.params,
+				Object
+					.values(OPTIONAL_TRANSACTION_PARAMS_PROPERTIES)
+					.map(optionalProp => optionalProp.propName),
+			),
 			OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
 			{ messageFeeTokenID },
 		)
-		: filteredRequiredProperties.params;
+		: txWithRequiredProps.params;
 
 	return { ...mockedTransaction, params: mockedTransactionParams };
 };
@@ -353,4 +360,5 @@ module.exports = {
 	calcDynamicFeeEstimates,
 	mockTransaction,
 	calcAdditionalFees,
+	filterOptionalProps,
 };

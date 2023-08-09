@@ -585,4 +585,54 @@ describe('Test transaction fees estimates', () => {
 			});
 		});
 	});
+
+	describe('Test filterOptionalProps method', () => {
+		const optionalProps = ['id', 'fee', 'signatures'];
+
+		it('should return object with required properties', async () => {
+			const {
+				filterOptionalProps,
+			} = require(mockedTransactionFeeEstimatesFilePath);
+
+			const input = {
+				module: 'token',
+				command: 'transferCrossChain',
+				fee: '217000',
+				nonce: '7',
+				senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+				id: '0448028b3b0717776d4db10fc64dacf8096298377b31f740d73c9e9859ea4a26',
+				signatures: [
+					'7185e6e035c7804c5cbb166cb85581bc9beafd0fe2ecac9b83cb514c32ddc64ac546f16a1fba372f74493261658d1c8deac234e37b8ca23c4fd396e44e33fd0d',
+				],
+			};
+
+			const expectedResponse = {
+				module: 'token',
+				command: 'transferCrossChain',
+				nonce: '7',
+				senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+			};
+
+			const txWithRequiredProps = filterOptionalProps(input, optionalProps);
+			expect(txWithRequiredProps).toMatchObject(expectedResponse);
+		});
+
+		it('should return object when input is undefined', async () => {
+			const {
+				filterOptionalProps,
+			} = require(mockedTransactionFeeEstimatesFilePath);
+
+			const txWithRequiredProps = filterOptionalProps(undefined, optionalProps);
+			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
+		});
+
+		it('should return object when input is null', async () => {
+			const {
+				filterOptionalProps,
+			} = require(mockedTransactionFeeEstimatesFilePath);
+
+			const txWithRequiredProps = filterOptionalProps(undefined, optionalProps);
+			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
+		});
+	});
 });
