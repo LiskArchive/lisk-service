@@ -23,6 +23,7 @@ const {
 const {
 	blockchainAppsSchema,
 } = require('../../../schemas/api_v3/blockchainApps.schema');
+const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidChainIDCSV, invalidNames } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -97,8 +98,75 @@ describe('Blockchain apps API', () => {
 		expect(response.data.length).toBeLessThanOrEqual(10);
 	});
 
+	it('should return status 200 and a valid response for a valid status and search parameter', async () => {
+		const response = await api.get(`${endpoint}?status=registered&search=enevti`);
+		expect(response).toMap(blockchainAppsSchema);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+	});
+
+	it('should return bad request for an invalid search param', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?search=${invalidPartialSearches[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid chainID param', async () => {
+		for (let i = 0; i < invalidChainIDCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?chainID=${invalidChainIDCSV[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid chain name param', async () => {
+		for (let i = 0; i < invalidNames.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?chainName=${invalidNames[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
 	it('should return bad request when called with invalid request param', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for an invalid chainName', async () => {
+		const response = await api.get(`${endpoint}?chainName=%^&(!&)`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for chainName more than 20 characters', async () => {
+		const response = await api.get(`${endpoint}?chainName=llisk_mainchain_used_for_testingi`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for chainName less than 3 characters', async () => {
+		const response = await api.get(`${endpoint}?chainName=li`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for an invalid status', async () => {
+		const response = await api.get(`${endpoint}?status=invalidStatus`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for an invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 });

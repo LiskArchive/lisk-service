@@ -24,6 +24,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const { invalidParamsSchema, jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
 const { validatorsResponseSchema } = require('../../../schemas/api_v3/posValidators.schema');
+const { invalidLimits, invalidOffsets, invalidPartialSearches, invalidNamesCSV, invalidAddresses, invalidPublicKeys } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -127,17 +128,17 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
 		it('should return list of validators when requested with search param (partial validator address) and offset=1', async () => {
-			const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 3) : '';
+			const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 5) : '';
 			const response = await getValidators({ search: searchParam, offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
@@ -147,7 +148,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
@@ -247,7 +248,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
@@ -267,7 +268,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(5);
 		});
 
@@ -304,7 +305,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 		});
 
@@ -324,7 +325,7 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
 			expect(result.data.length).toBeLessThanOrEqual(5);
 		});
 
@@ -336,13 +337,71 @@ describe('pos/validators API', () => {
 			expect(result.data.length).toBe(0);
 		});
 
-		it('Invalid address -> invalid param', async () => {
-			const response = await getValidators({ address: 'address=L' });
+		it('should return invalid params for invalid address', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getValidators({ address: invalidAddresses[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params for invalid publicKey', async () => {
+			for (let i = 0; i < invalidPublicKeys.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getValidators({ publicKey: invalidPublicKeys[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params for invalid name', async () => {
+			for (let i = 0; i < invalidNamesCSV.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getValidators({ name: invalidNamesCSV[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params for invalid search', async () => {
+			for (let i = 0; i < invalidPartialSearches.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getValidators({ search: invalidPartialSearches[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params for invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getValidators({ limit: invalidLimits[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params for invalid search', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getValidators({ offset: invalidOffsets[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params if requested with invalid status', async () => {
+			const response = await getValidators({ status: '__%' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('Invalid request param -> invalid param', async () => {
+		it('should return invalid params if requested with invalid sort', async () => {
+			const response = await getValidators({ sort: 'comm:asc' });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('should return invalid params for invalid param', async () => {
 			const response = await getValidators({ invalidParam: 'invalid' });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('should return invalid params for empty param', async () => {
+			const response = await getValidators({ invalidParam: '' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});

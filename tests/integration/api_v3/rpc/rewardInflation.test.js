@@ -44,13 +44,23 @@ describe('Test get.reward.annual-inflation', () => {
 		expect(result).toMap(rewardInflationResponseSchema);
 	});
 
-	it('should return INVALID_PARAMS (-32602) when called with unsupported param', async () => {
-		const response = await getRewardInflation({ invalidParam: 'invalidParam' });
+	it('should return invalid params for missing height', async () => {
+		const response = await getRewardInflation();
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return INVALID_PARAMS (-32602) when called without param', async () => {
-		const response = await getRewardInflation();
+	it('should return invalid params for a height less than 0', async () => {
+		const response = await getRewardInflation({ height: -1 });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for a non-integer height', async () => {
+		const response = await getRewardInflation({ height: 'abc' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for a invalid param', async () => {
+		const response = await getRewardInflation({ invalidParam: 'invalidParam' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

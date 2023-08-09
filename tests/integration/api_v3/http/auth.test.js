@@ -25,6 +25,7 @@ const {
 	authAccountInfoSchema,
 	authAccountMetaSchema,
 } = require('../../../schemas/api_v3/authAccountSchema.schema');
+const { invalidAddresses } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -37,25 +38,23 @@ describe('Auth accounts API', () => {
 		[refTransaction] = response.data;
 	});
 
-	it('retrieves auth account info -> ok', async () => {
+	it('should retrieve auth account info for a valid address', async () => {
 		const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`);
 		expect(response).toMap(goodRequestSchemaForAuth);
 		expect(response.data).toMap(authAccountInfoSchema);
 		expect(response.meta).toMap(authAccountMetaSchema);
 	});
 
-	it('No address -> bad request', async () => {
+	it('should return bad request for missing address parameter', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid address -> 400', async () => {
-		const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
-		expect(response).toMap(badRequestSchema);
-	});
-
-	it('invalid request param -> bad request', async () => {
-		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
-		expect(response).toMap(badRequestSchema);
+	it('should return bad request for an invalid address', async () => {
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 });

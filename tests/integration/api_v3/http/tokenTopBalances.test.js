@@ -21,6 +21,7 @@ const { badRequestSchema, goodRequestSchema } = require('../../../schemas/httpGe
 const {
 	goodResponseSchemaForTokenTopBalances,
 } = require('../../../schemas/api_v3/tokenTopBalances.schema');
+const { invalidPartialSearches, invalidTokenIDs, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -126,18 +127,45 @@ describe('Tokens top balances API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('should return bad request when called with Invalid limit', async () => {
-		const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=one`, 400);
-		expect(response).toMap(badRequestSchema);
+	it('should return bad request when called with invalid token ID', async () => {
+		for (let i = 0; i < invalidTokenIDs.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?tokenID=${invalidTokenIDs[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 
-	it('should return bad request when called with Invalid offset', async () => {
-		const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=one`, 400);
-		expect(response).toMap(badRequestSchema);
+	it('should return bad request when called with token ID and invalid search', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${invalidPartialSearches[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request when called with invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?tokenID=${tokenID}&limit=${invalidLimits[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request when called with invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?tokenID=${tokenID}&offset=${invalidOffsets[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
 	});
 
 	it('should return bad request when called with invalid param', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${tokenID}&invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request when called with empty invalid param', async () => {
+		const response = await api.get(`${endpoint}?tokenID=${tokenID}&invalidParam=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

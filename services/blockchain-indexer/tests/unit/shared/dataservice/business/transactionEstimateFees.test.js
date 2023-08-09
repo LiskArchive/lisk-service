@@ -507,6 +507,46 @@ describe('Test transaction fees estimates', () => {
 			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
 		});
 
+		it('should throw Validation Exception when TOKEN_ID specified are incorrect', async () => {
+			// Mock the return values of the functions
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
+			requestConnector
+				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
+			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
+			calcAdditionalFees.mockResolvedValue({});
+			calcMessageFee.mockResolvedValue({});
+			getPosConstants.mockResolvedValue(posConstants);
+
+			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
+
+			mockTxRequest.transaction.params.tokenID = 'invalidTokenID';
+
+			// Call the function
+			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
+		});
+
+		it('should throw Validation Exception when address specified are incorrect', async () => {
+			// Mock the return values of the functions
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
+			requestConnector
+				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
+			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
+			calcAdditionalFees.mockResolvedValue({});
+			calcMessageFee.mockResolvedValue({});
+			getPosConstants.mockResolvedValue(posConstants);
+
+			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
+
+			mockTxRequest.transaction.params.recipientAddress = 'invalidAddress';
+
+			// Call the function
+			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
+		});
+
 		describe('Test estimateTransactionFees method for interoperability transactions', () => {
 			const transactionsMap = {
 				'interoperability:submitMainchainCrossChainUpdate': {

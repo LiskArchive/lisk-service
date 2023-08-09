@@ -14,6 +14,7 @@
  *
  */
 import moment from 'moment';
+import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
@@ -42,7 +43,7 @@ describe('Method get.events', () => {
 	});
 
 	describe('Retrieve events', () => {
-		it('returns list of events', async () => {
+		it('should return list of events', async () => {
 			const response = await getEvents({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -65,7 +66,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns list of events with limit=5 and offset=1', async () => {
+		it('should return list of events with limit=5 and offset=1', async () => {
 			const response = await getEvents({ limit: 5, offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -87,10 +88,26 @@ describe('Method get.events', () => {
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
+
+		it('should return bad request for invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getEvents({ limit: invalidLimits[i] });
+				expect(response).toMap(serverErrorSchema);
+			}
+		});
+
+		it('should return bad request for invalid offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getEvents({ offset: invalidOffsets[i] });
+				expect(response).toMap(serverErrorSchema);
+			}
+		});
 	});
 
 	describe('is able to retrieve event using transactionID', () => {
-		it('known transactionID -> ok', async () => {
+		it('should return success for known transactionID', async () => {
 			const response = await getEvents({ transactionID: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -113,14 +130,14 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transactionID -> server error', async () => {
+		it('should return server error for empty transactionID', async () => {
 			const response = await getEvents({ transactionID: '' });
 			expect(response).toMap(serverErrorSchema);
 		});
 	});
 
 	describe('is able to retrieve event using blockID', () => {
-		it('known blockID -> ok', async () => {
+		it('should return success for known blockID', async () => {
 			const response = await getEvents({ blockID: refTransaction.block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -131,14 +148,22 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty blockID -> server error', async () => {
+		it('should return server error for empty blockID', async () => {
 			const response = await getEvents({ blockID: '' });
 			expect(response).toMap(serverErrorSchema);
+		});
+
+		it('should return bad request for invalid block ID', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getEvents({ blockID: invalidBlockIDs[i] });
+				expect(response).toMap(serverErrorSchema);
+			}
 		});
 	});
 
 	describe('is able to retrieve event by senderAddress', () => {
-		it('known senderAddress -> ok', async () => {
+		it('should return success for known senderAddress', async () => {
 			const response = await getEvents({ senderAddress: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -161,19 +186,27 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty senderAddress -> server error', async () => {
+		it('should return server error for empty senderAddress', async () => {
 			const response = await getEvents({ senderAddress: '' });
 			expect(response).toMap(serverErrorSchema);
 		});
 
-		it('invalid senderAddress -> invalid params', async () => {
+		it('should return invalid param for invalid senderAddress', async () => {
 			const response = await getEvents({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('should return bad request for invalid senderAddress', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getEvents({ senderAddress: invalidAddresses[i] });
+				expect(response).toMap(serverErrorSchema);
+			}
 		});
 	});
 
 	describe('is able to retrieve events using height', () => {
-		it('known height -> ok', async () => {
+		it('should return known height', async () => {
 			const response = await getEvents({ height: String(refTransaction.block.height) });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -184,7 +217,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty height -> valid response', async () => {
+		it('should return empty height', async () => {
 			const response = await getEvents({ height: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -195,7 +228,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Events with min...max height -> ok', async () => {
+		it('should return events with min...max height', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `${minHeight}:${maxHeight}` });
@@ -223,7 +256,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Events with min... height -> ok', async () => {
+		it('should return events with min... height', async () => {
 			const minHeight = refTransaction.block.height;
 			const response = await getEvents({ height: `${minHeight}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -249,7 +282,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Events with ...max height -> ok', async () => {
+		it('should return events with ...max height', async () => {
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -275,7 +308,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Events with max...min height -> server error', async () => {
+		it('should return events with max...min height -> server error', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `${maxHeight}:${minHeight}` });
@@ -284,7 +317,7 @@ describe('Method get.events', () => {
 	});
 
 	describe('is able to retrieve events using timestamps', () => {
-		it('from to -> ok', async () => {
+		it('should return from to', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await getEvents({ timestamp: `${from}:${toTimestamp}` });
@@ -312,7 +345,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Half bounded range from -> ok', async () => {
+		it('should return half bounded range from', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await getEvents({ timestamp: `${from}:` });
 
@@ -338,7 +371,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Half bounded range to -> ok', async () => {
+		it('should return half bounded range to', async () => {
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await getEvents({ timestamp: `:${toTimestamp}` });
 
@@ -366,7 +399,7 @@ describe('Method get.events', () => {
 	});
 
 	describe('Events sorted by timestamp', () => {
-		it('returns events sorted by timestamp descending', async () => {
+		it('should return events sorted by timestamp descending', async () => {
 			const response = await getEvents({ sort: 'timestamp:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -389,7 +422,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns eventss sorted by timestamp ascending', async () => {
+		it('should return events sorted by timestamp ascending', async () => {
 			const response = await getEvents({ sort: 'timestamp:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -414,7 +447,7 @@ describe('Method get.events', () => {
 	});
 
 	describe('Fetch events based on multiple request params', () => {
-		it('returns event when queried with transactionID and blockID', async () => {
+		it('should return event when queried with transactionID and blockID', async () => {
 			const response = await getEvents({
 				transactionID: refTransaction.id,
 				blockID: refTransaction.block.id,
@@ -433,7 +466,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns event when queried with transactionID and height', async () => {
+		it('should return event when queried with transactionID and height', async () => {
 			const response = await getEvents({
 				transactionID: refTransaction.id,
 				height: String(refTransaction.block.height),
@@ -452,14 +485,14 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns invalid params response with unsupported params', async () => {
+		it('should return invalid params response with unsupported params', async () => {
 			const response = await getEvents({ address: refTransaction.sender.address });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retrieve events using topic', () => {
-		it('known transactionID -> ok', async () => {
+		it('should return known transactionID', async () => {
 			const response = await getEvents({ topic: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -471,7 +504,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('as CSV transactionID,senderrAddress -> ok', async () => {
+		it('should return as CSV transactionID,senderrAddress', async () => {
 			const topic = refTransaction.id.concat(',', refTransaction.sender.address);
 			const response = await getEvents({ topic });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -484,7 +517,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('known senderAddress -> ok', async () => {
+		it('should return known senderAddress', async () => {
 			const response = await getEvents({ topic: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -496,7 +529,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty topic -> valid response', async () => {
+		it('should return empty topic', async () => {
 			const response = await getEvents({ topic: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -509,7 +542,7 @@ describe('Method get.events', () => {
 	});
 
 	describe('Events ordered by index', () => {
-		it('returns events ordered by index descending', async () => {
+		it('should return events ordered by index descending', async () => {
 			const order = 'index:desc';
 			const response = await getEvents({ order });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -534,7 +567,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns eventss ordered by index ascending', async () => {
+		it('should return eventss ordered by index ascending', async () => {
 			const order = 'index:asc';
 			const response = await getEvents({ order: 'index:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);

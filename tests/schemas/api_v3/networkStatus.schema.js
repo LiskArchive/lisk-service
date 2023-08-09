@@ -27,6 +27,7 @@ const genesisSchema = {
 	bftBatchSize: Joi.number().integer().positive().required(),
 	blockTime: Joi.number().integer().positive().required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
+	minimumCertifyHeight: Joi.number().integer().min(1).required(),
 	maxTransactionsSize: Joi.number().integer().positive().required(),
 };
 

@@ -26,6 +26,7 @@ const {
 const {
 	unlockSchema,
 } = require('../../../schemas/api_v3/unlock.schema');
+const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidNames, invalidPublicKeys, invalidAddresses } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -236,23 +237,75 @@ describe('get.pos.unlocks', () => {
 		}
 	});
 
-	it('No Params -> invalid request', async () => {
-		const response = await getUnlocks({});
+	it('should return invalid params if address, publicKey and name is missing', async () => {
+		const response = await getUnlocks();
 		expect(response).toMap(invalidRequestSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
+	it('should return invalid params for invalid address', async () => {
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getUnlocks({ address: invalidAddresses[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for invalid publicKey', async () => {
+		for (let i = 0; i < invalidPublicKeys.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getUnlocks({ publicKey: invalidPublicKeys[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for invalid name', async () => {
+		for (let i = 0; i < invalidNames.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getUnlocks({ name: invalidNames[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for invalid search', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getUnlocks({
+				address: refTransaction.sender.address,
+				search: invalidPartialSearches[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getUnlocks({
+				address: refTransaction.sender.address,
+				limit: invalidLimits[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for invalid search', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getUnlocks({
+				address: refTransaction.sender.address,
+				offset: invalidOffsets[i],
+			});
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for invalid param', async () => {
 		const response = await getUnlocks({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('invalid address -> invalid param', async () => {
-		const response = await getUnlocks({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-		expect(response).toMap(invalidParamsSchema);
-	});
-
-	it('invalid publicKey -> invalid param', async () => {
-		const response = await getUnlocks({ publicKey: 'invalid_pk' });
+	it('should return invalid params for empty param', async () => {
+		const response = await getUnlocks({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

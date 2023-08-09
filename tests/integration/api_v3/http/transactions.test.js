@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
+import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -174,9 +175,12 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should throw error when called with invalid blockID', async () => {
-			const response = await api.get(`${endpoint}?blockID=1000000000000000000000000'`, 400);
-			expect(response).toMap(badRequestSchema);
+		it('should return bad request when called with invalid blockID', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
 		});
 	});
 
@@ -253,9 +257,12 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should throw error when called with invalid senderAddress', async () => {
-			const response = await api.get(`${endpoint}?senderAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
-			expect(response).toMap(badRequestSchema);
+		it('should return bad request when called with invalid senderAddress', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?senderAddress=${invalidAddresses[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
 		});
 	});
 
@@ -296,8 +303,11 @@ describe('Transactions API', () => {
 		});
 
 		it('should throw error when called with invalid recipientAddress', async () => {
-			const response = await api.get(`${endpoint}?recipientAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
-			expect(response).toMap(badRequestSchema);
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?recipientAddress=${invalidAddresses[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
 		});
 	});
 
@@ -325,8 +335,11 @@ describe('Transactions API', () => {
 		});
 
 		it('should throw error when called with invalid address', async () => {
-			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
-			expect(response).toMap(badRequestSchema);
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
 		});
 	});
 
@@ -530,6 +543,11 @@ describe('Transactions API', () => {
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('should return bad request if requested with invalid sort ', async () => {
+			const response = await api.get(`${endpoint}?sort=rank:asc`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
 	});
 
 	describe('Fetch transactions based on multiple request params', () => {
@@ -606,6 +624,22 @@ describe('Transactions API', () => {
 				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBe(0);
 				expect(response.meta).toMap(metaSchema);
+			}
+		});
+
+		it('should return bad request if requested with invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
+
+		it('should return bad request if requested with invalid offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
 			}
 		});
 	});

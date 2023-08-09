@@ -36,7 +36,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getNetworkStatistics = async (params) => request(wsRpcUrl, 'get.network.statistics', params);
 
 describe('get.network.statistics', () => {
-	it('returns network statistics', async () => {
+	it('should return network statistics', async () => {
 		const response = await getNetworkStatistics();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -44,8 +44,13 @@ describe('get.network.statistics', () => {
 		expect(result.data).toMap(networkStatisticsSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
+	it('should return bad request for unsupported param', async () => {
 		const response = await getNetworkStatistics({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return bad request for empty param', async () => {
+		const response = await getNetworkStatistics({ emptyParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });
