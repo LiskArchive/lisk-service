@@ -21,9 +21,9 @@ const {
 const {
 	HTTP,
 	Exceptions: { ValidationException },
+	Logger,
 } = require('lisk-service-framework');
 
-const { getAuthAccountInfo } = require('./auth');
 const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
@@ -32,8 +32,8 @@ const {
 	MODULE,
 	COMMAND,
 	EVENT,
-	SIZE_BYTE_SIGNATURE,
-	SIZE_BYTE_ID,
+	LENGTH_BYTE_SIGNATURE,
+	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
 } = require('../../constants');
 
@@ -46,6 +46,8 @@ const { getPosConstants } = require('./pos/constants');
 const { getFeeEstimates } = require('./feeEstimates');
 const regex = require('../../regex');
 
+const logger = Logger();
+
 const { bufferBytesLength: BUFFER_BYTES_LENGTH } = config.estimateFees;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
@@ -57,11 +59,11 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 		propName: 'signatures',
 		defaultValue: (params) => new Array(params.numberOfSignatures)
 			.fill()
-			.map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
+			.map(() => getRandomBytes(LENGTH_BYTE_SIGNATURE).toString('hex')),
 	},
 	ID: {
 		propName: 'id',
-		defaultValue: () => getRandomBytes(SIZE_BYTE_ID).toString('hex'),
+		defaultValue: () => getRandomBytes(LENGTH_BYTE_ID).toString('hex'),
 	},
 });
 
@@ -90,15 +92,14 @@ const mockOptionalProperties = (inputObject, inputObjectOptionalProps, additiona
 
 const filterOptionalProps = (inputObject, optionalProps) => _.omit(inputObject, optionalProps);
 
-const mockTransaction = async (_transaction, authAccountInfo) => {
+const mockTransaction = async (_transaction, numberOfSignatures) => {
+	if (!_transaction) throw new Error('No transaction passed.');
+
 	const transactionCopy = _.cloneDeep(_transaction);
 	const txWithRequiredProps = filterOptionalProps(
 		transactionCopy,
 		Object.values(OPTIONAL_TRANSACTION_PROPERTIES).map(optionalProp => optionalProp.propName),
 	);
-
-	const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
-		+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
 
 	const mockedTransaction = mockOptionalProperties(
 		txWithRequiredProps,
@@ -127,6 +128,18 @@ const mockTransaction = async (_transaction, authAccountInfo) => {
 		: txWithRequiredProps.params;
 
 	return { ...mockedTransaction, params: mockedTransactionParams };
+};
+
+const getNumberOfSignatures = async (address) => {
+	try {
+		const authAccountInfo = await requestConnector('getAuthAccount', { address });
+		const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
+			+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
+		return numberOfSignatures;
+	} catch (error) {
+		logger.warn(`Error while retrieving auth information for the account ${address}.`);
+		return DEFAULT_NUM_OF_SIGNATURES;
+	}
 };
 
 const getCcmBuffer = async (transaction) => {
@@ -241,9 +254,9 @@ const estimateTransactionFees = async params => {
 	}
 
 	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
-	const { data: authAccountInfo } = await getAuthAccountInfo({ address: senderAddress });
+	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
 
-	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
+	const trxWithMockProps = await mockTransaction(params.transaction, numberOfSignatures);
 	const additionalFees = await calcAdditionalFees(trxWithMockProps);
 	let formattedTransaction = await requestConnector(
 		'formatTransaction',

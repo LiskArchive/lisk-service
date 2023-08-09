@@ -43,6 +43,7 @@ const {
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,
 	mockInteroperabilityRegisterSidechainTxRequest,
 	mockInteroperabilityRegisterSidechainTxResult,
+	mockAuthAccountInfo,
 } = require('../../constants/transactionEstimateFees');
 
 jest.mock('lisk-service-framework', () => {
@@ -221,7 +222,10 @@ describe('Test transaction fees estimates', () => {
 				mockTransaction,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			const transaction = await mockTransaction(inputTransaction, authAccountInfo);
+			const transaction = await mockTransaction(
+				inputTransaction,
+				authAccountInfo.numberOfSignatures,
+			);
 			expect(transaction).toMatchObject(inputTransaction);
 		});
 
@@ -232,7 +236,7 @@ describe('Test transaction fees estimates', () => {
 
 			const transaction = await mockTransaction(
 				inputMultisigTransaction,
-				authInfoForMultisigAccount,
+				authInfoForMultisigAccount.numberOfSignatures,
 			);
 
 			const expectedResponse = {
@@ -252,7 +256,7 @@ describe('Test transaction fees estimates', () => {
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { id, ...remParams } = inputTransaction;
-			const transaction = await mockTransaction(remParams, authAccountInfo);
+			const transaction = await mockTransaction(remParams, authAccountInfo.numberOfSignatures);
 
 			const expectedResponse = {
 				...inputTransaction,
@@ -268,7 +272,7 @@ describe('Test transaction fees estimates', () => {
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { fee, ...remParams } = inputTransaction;
-			const transaction = await mockTransaction(remParams, authAccountInfo);
+			const transaction = await mockTransaction(remParams, authAccountInfo.numberOfSignatures);
 
 			const expectedResponse = {
 				...inputTransaction,
@@ -284,7 +288,10 @@ describe('Test transaction fees estimates', () => {
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { signatures, ...remParams } = inputMultisigTransaction;
-			const transaction = await mockTransaction(remParams, authInfoForMultisigAccount);
+			const transaction = await mockTransaction(
+				remParams,
+				authInfoForMultisigAccount.numberOfSignatures,
+			);
 
 			const expectedResponse = {
 				...inputMultisigTransaction,
@@ -304,7 +311,7 @@ describe('Test transaction fees estimates', () => {
 
 			const transaction = await mockTransaction(
 				{ ...inputTransaction, params: remTransactionParams },
-				authAccountInfo,
+				authAccountInfo.numberOfSignatures,
 			);
 
 			const expectedResponse = {
@@ -324,7 +331,7 @@ describe('Test transaction fees estimates', () => {
 
 			const transaction = await mockTransaction(
 				{ ...inputTransaction, params: remTransactionParams },
-				authAccountInfo,
+				authAccountInfo.numberOfSignatures,
 			);
 
 			const expectedResponse = {
@@ -340,7 +347,7 @@ describe('Test transaction fees estimates', () => {
 				mockTransaction,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			expect(async () => mockTransaction(undefined)).rejects.toThrow(TypeError);
+			expect(async () => mockTransaction(undefined)).rejects.toThrow();
 		});
 
 		it('should throw error when transaction is null', async () => {
@@ -348,7 +355,7 @@ describe('Test transaction fees estimates', () => {
 				mockTransaction,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			expect(async () => mockTransaction(null)).rejects.toThrow(TypeError);
+			expect(async () => mockTransaction(null)).rejects.toThrow();
 		});
 	});
 
@@ -429,6 +436,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
+				.mockReturnValueOnce(mockAuthAccountInfo)
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
 				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
 				.mockReturnValueOnce('encoded CCM Object');
@@ -463,11 +471,9 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw when getAuthAccountInfo fails', async () => {
-			getAuthAccountInfo.mockRejectedValue('Error');
-
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
-			requestConnector.mockResolvedValue(mockTxrequestConnector);
+			requestConnector.mockRejectedValue('Error');
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
