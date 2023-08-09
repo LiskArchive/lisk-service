@@ -624,7 +624,7 @@ describe('Test transaction fees estimates', () => {
 			expect(txWithRequiredProps).toMatchObject(expectedResponse);
 		});
 
-		it('should return object when input is undefined', async () => {
+		it('should return an object when input is undefined', async () => {
 			const {
 				filterOptionalProps,
 			} = require(mockedTransactionFeeEstimatesFilePath);
@@ -633,12 +633,12 @@ describe('Test transaction fees estimates', () => {
 			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
 		});
 
-		it('should return object when input is null', async () => {
+		it('should return an object when input is null', async () => {
 			const {
 				filterOptionalProps,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			const txWithRequiredProps = filterOptionalProps(undefined, optionalProps);
+			const txWithRequiredProps = filterOptionalProps(null, optionalProps);
 			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
 		});
 	});

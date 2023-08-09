@@ -93,6 +93,19 @@ const UNSIGNED_TRANSACTION_OBJECT = {
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 };
 
+const TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS = {
+	module: 'token',
+	command: 'transfer',
+	nonce: '1',
+	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+	params: {
+		amount: '1000000000000',
+		recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+		data: '',
+		tokenID: '0400000000000000',
+	},
+};
+
 module.exports = {
 	TRANSACTION_ENCODED_VALID,
 	TRANSACTION_ENCODED_INVALID,
@@ -101,4 +114,5 @@ module.exports = {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_PENDING,
 	UNSIGNED_TRANSACTION_OBJECT,
+	TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS,
 };
