@@ -28,7 +28,14 @@ const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain'
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 
-const { MODULE, COMMAND, EVENT } = require('../../constants');
+const {
+	MODULE,
+	COMMAND,
+	EVENT,
+	SIZE_BYTE_SIGNATURE,
+	SIZE_BYTE_ID,
+	DEFAULT_NUM_OF_SIGNATURES,
+} = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -39,9 +46,6 @@ const { getPosConstants } = require('./pos/constants');
 const { getFeeEstimates } = require('./feeEstimates');
 const regex = require('../../regex');
 
-const SIZE_BYTE_SIGNATURE = 64;
-const SIZE_BYTE_ID = 32;
-const DEFAULT_NUM_OF_SIGNATURES = 1;
 const { bufferBytesLength: BUFFER_BYTES_LENGTH } = config.estimateFees;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
