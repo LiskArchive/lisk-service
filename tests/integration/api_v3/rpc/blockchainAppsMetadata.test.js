@@ -30,6 +30,8 @@ const {
 	blockchainAppMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetadataSchema.schema');
 
+const { invalidChainIDCSV, invalidNamesCSV, invalidOffsets, invalidLimits, invalidPartialSearches } = require('../constants/invalidInputs');
+
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
@@ -236,6 +238,84 @@ describe('get.blockchain.apps.meta', () => {
 
 	it('should return invalid param when called with invalid request param', async () => {
 		const response = await getBlockchainAppsMetadata({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an invalid chainName', async () => {
+		const response = await getBlockchainAppsMetadata({ chainName: '%^&*^*' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an invalid displayName', async () => {
+		const response = await getBlockchainAppsMetadata({ displayName: '%^&*^*' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an invalid chainID', async () => {
+		const response = await getBlockchainAppsMetadata({ chainID: 'invalidChainID' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an invalid chain ID param', async () => {
+		for (let i = 0; i < invalidChainIDCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsMetadata({ chainID: invalidChainIDCSV[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid chain name param', async () => {
+		for (let i = 0; i < invalidNamesCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsMetadata({ chainName: invalidNamesCSV[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid display name param', async () => {
+		for (let i = 0; i < invalidNamesCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsMetadata({ displayName: invalidNamesCSV[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid network', async () => {
+		const response = await getBlockchainAppsMetadata({ network: 'gammaNet' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an invalid search param', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsMetadata({ search: invalidPartialSearches[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid search parameter', async () => {
+		const response = await getBlockchainAppsMetadata({ search: '^!%@*' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsMetadata({ limit: invalidLimits[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getBlockchainAppsMetadata({ offset: invalidOffsets[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid sort option', async () => {
+		const response = await getBlockchainAppsMetadata({ sort: 'invalidSort' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

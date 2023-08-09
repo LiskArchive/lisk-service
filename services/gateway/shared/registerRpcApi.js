@@ -140,6 +140,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 					if (data.data && data.status) {
 						if (data.status === 'INVALID_PARAMS') throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: data.data.error });
 						if (data.status === 'SERVICE_UNAVAILABLE') throw new MoleculerClientError({ code: SERVICE_UNAVAILABLE[0], message: data.data.error });
+						if (data.status !== 'ACCEPTED') throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: data.data.error });
 					}
 
 					return transformResponse(methodPaths[req.method], data);

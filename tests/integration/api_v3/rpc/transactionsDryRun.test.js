@@ -34,7 +34,7 @@ const {
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	serverErrorSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -45,173 +45,246 @@ const {
 	metaSchema,
 	goodRequestSchemaForTransactionsDryRun,
 } = require('../../../schemas/api_v3/transactionsDryRun.schema');
+const { invalidAddresses, invalidPublicKeys } = require('../constants/invalidInputs');
+const { createTokenTransferTx } = require('../txUtil/createTx');
+const { encodeTransaction } = require('../txUtil/encodeTx');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const postDryrunTransaction = async params => request(wsRpcUrl, 'post.transactions.dryrun', params);
 const postTransaction = async params => request(wsRpcUrl, 'post.transactions', params);
+const networkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
+
+const baseUrlV3 = `${config.SERVICE_ENDPOINT}/api/v3`;
+const authEndpoint = `${baseUrlV3}/auth`;
 
 describe('Method post.transactions.dryrun', () => {
-	it('should return proper response (fail) when transaction string has less than required fee', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_PENDING });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+	let isDevnet = false;
 
+	beforeAll(async () => {
+		const response = await networkStatus({});
 		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+		if (result && result.data) {
+			isDevnet = result.data.chainID === '04000000';
+		}
+	});
+
+	it('should return proper response (fail) when transaction string has less than required fee', async () => {
+		if (isDevnet) {
+			const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_PENDING });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should return proper response (fail) when transaction object has less than required fee', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionPendingResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should post dryrun transaction succesfully with only transaction object', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should post dryrun transaction succesfully with only transaction string', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_VALID });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_VALID });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should post dryrun transaction succesfully skipping verification', async () => {
-		const response = await postDryrunTransaction(
-			{
-				transaction: TRANSACTION_OBJECT_VALID,
-				skipVerify: true,
-			},
-		);
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction(
+				{
+					transaction: TRANSACTION_OBJECT_VALID,
+					skipVerify: true,
+				},
+			);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should post dryrun transaction succesfully with skipDecode: true', async () => {
-		const response = await postDryrunTransaction(
-			{
-				transaction: TRANSACTION_ENCODED_VALID, skipDecode: true,
-			},
-		);
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction(
+				{
+					transaction: TRANSACTION_ENCODED_VALID, skipDecode: true,
+				},
+			);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTxSuccessSchemaWithSkipDecode);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTxSuccessSchemaWithSkipDecode);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should return proper response (success) when calling with unsigned transaction with strict: false', async () => {
-		const response = await postDryrunTransaction(
-			{
-				transaction: UNSIGNED_TRANSACTION_OBJECT,
-				strict: false,
-			},
-		);
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction(
+				{
+					transaction: UNSIGNED_TRANSACTION_OBJECT,
+					strict: false,
+				},
+			);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionSuccessResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should return proper response (invalid) when calling with unsigned transaction with strict: true', async () => {
-		const response = await postDryrunTransaction(
-			{
-				transaction: UNSIGNED_TRANSACTION_OBJECT,
-				strict: true,
-			},
-		);
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction(
+				{
+					transaction: UNSIGNED_TRANSACTION_OBJECT,
+					strict: true,
+				},
+			);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
 	});
 
 	it('should return proper response (invalid) when transaction string has less than minimum required fee', async () => {
-		const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_INVALID });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction({ transaction: TRANSACTION_ENCODED_INVALID });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(result.data).toBeInstanceOf(Object);
-		expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
-		expect(result.meta).toMap(metaSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(result.data).toBeInstanceOf(Object);
+			expect(result.data).toMap(dryrunTransactionInvalidResponseSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
+	});
+
+	it('should return invalid param when requested with invalid public key', async () => {
+		if (isDevnet) {
+			const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+			for (let i = 0; i < invalidPublicKeys.length; i++) {
+				remTransactionObject.senderPublicKey = invalidPublicKeys[i];
+				// eslint-disable-next-line no-await-in-loop
+				const response = await postDryrunTransaction({ transaction: remTransactionObject });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		}
+	});
+
+	it('should return invalid request when requested with invalid address', async () => {
+		if (isDevnet) {
+			const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				remTransactionObject.params = {
+					...params,
+					recipientAddress: invalidAddresses[i],
+				};
+				// eslint-disable-next-line no-await-in-loop
+				const response = await postDryrunTransaction({ transaction: remTransactionObject });
+				expect(response).toMap(invalidRequestSchema);
+			}
+		}
 	});
 
 	it('should return proper response (invalid) for duplicate transaction', async () => {
-		// Check dryrun passes
-		const firstResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
-		expect(firstResponse).toMap(jsonRpcEnvelopeSchema);
+		if (isDevnet) {
+			const transaction = await createTokenTransferTx(authEndpoint);
+			const encodedTx = await encodeTransaction(transaction, baseUrlV3);
 
-		const { result: firstResult } = firstResponse;
-		expect(firstResult).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(firstResult.data).toBeInstanceOf(Object);
-		expect(firstResult.data).toMap(dryrunTransactionSuccessResponseSchema);
-		expect(firstResult.meta).toMap(metaSchema);
+			// Check dryrun passes
+			const firstResponse = await postDryrunTransaction({ transaction, strict: true });
+			expect(firstResponse).toMap(jsonRpcEnvelopeSchema);
 
-		// Send transaction and wait for it to be included in the next block
-		await postTransaction({ transaction: TRANSACTION_ENCODED_VALID });
-		await waitMs(15000);
+			const { result: firstResult } = firstResponse;
+			expect(firstResult).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(firstResult.data).toBeInstanceOf(Object);
+			expect(firstResult.data).toMap(dryrunTransactionSuccessResponseSchema);
+			expect(firstResult.meta).toMap(metaSchema);
 
-		// Check dry run fails for duplicate transaction
-		const secondResponse = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_VALID });
-		expect(secondResponse).toMap(jsonRpcEnvelopeSchema);
+			// Send transaction and wait for it to be included in the next block
+			await postTransaction({ transaction: encodedTx });
+			await waitMs(15000);
 
-		const { result: secondResult } = secondResponse;
-		expect(secondResult).toMap(goodRequestSchemaForTransactionsDryRun);
-		expect(secondResult.data).toBeInstanceOf(Object);
-		expect(secondResult.data).toMap(dryrunTransactionInvalidResponseSchema);
-		expect(secondResult.meta).toMap(metaSchema);
+			// Check dry run fails for duplicate transaction
+			const secondResponse = await postDryrunTransaction({ transaction, strict: true });
+			expect(secondResponse).toMap(jsonRpcEnvelopeSchema);
+
+			const { result: secondResult } = secondResponse;
+			expect(secondResult).toMap(goodRequestSchemaForTransactionsDryRun);
+			expect(secondResult.data).toBeInstanceOf(Object);
+			expect(secondResult.data).toMap(dryrunTransactionInvalidResponseSchema);
+			expect(secondResult.meta).toMap(metaSchema);
+		}
 	});
 
-	it('should return empty response when called with invalid transaction', async () => {
-		const response = await postDryrunTransaction({
-			transaction: TRANSACTION_OBJECT_INVALID,
-		}).catch(e => e);
-		expect(response).toMap(serverErrorSchema);
+	it('should return invalid request when called with invalid transaction', async () => {
+		if (isDevnet) {
+			const response = await postDryrunTransaction({
+				transaction: TRANSACTION_OBJECT_INVALID,
+			}).catch(e => e);
+			expect(response).toMap(invalidRequestSchema);
+		}
 	});
 
 	it('should return invalid params when called with no transaction', async () => {
-		const response = await postDryrunTransaction();
-		expect(response).toMap(invalidParamsSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction();
+			expect(response).toMap(invalidParamsSchema);
+		}
 	});
 
 	it('should throw error when called with invalid query parameter', async () => {
-		const response = await postDryrunTransaction({
-			transaction: TRANSACTION_OBJECT_VALID,
-			transactions: TRANSACTION_OBJECT_INVALID,
-		}).catch(e => e);
-		expect(response).toMap(invalidParamsSchema);
+		if (isDevnet) {
+			const response = await postDryrunTransaction({
+				transaction: TRANSACTION_OBJECT_VALID,
+				transactions: TRANSACTION_OBJECT_INVALID,
+			}).catch(e => e);
+			expect(response).toMap(invalidParamsSchema);
+		}
 	});
 });

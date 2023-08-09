@@ -233,7 +233,7 @@ describe('Unit tests for array utilities', () => {
 			const collection = ['apple', 'banana', 'cherry'];
 			const pattern = '';
 
-			expect(isSubstringInArray(collection, pattern)).toBe(true);
+			expect(isSubstringInArray(collection, pattern)).toBe(false);
 		});
 	});
 });

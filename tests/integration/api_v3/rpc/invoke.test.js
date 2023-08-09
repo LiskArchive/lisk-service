@@ -19,11 +19,11 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
 	invokeResponseSchema,
-	errorSchema,
 } = require('../../../schemas/api_v3/invoke.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -31,14 +31,14 @@ const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
 const getBlocks = async (params) => request(wsRpcUrl, 'get.blocks', params);
 
 describe('post.invoke', () => {
-	it('returns response when valid SDK endpoint invoked', async () => {
+	it('should return response when valid SDK endpoint invoked', async () => {
 		const response = await invoke({ endpoint: 'system_getNodeInfo' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(invokeResponseSchema);
 	});
 
-	it('returns response when valid SDK endpoint invoked with params', async () => {
+	it('should return response when valid SDK endpoint invoked with valid params', async () => {
 		const response = await invoke({ endpoint: 'chain_getBlockByHeight', params: { height: 1 } });
 		const [block] = (await getBlocks({ height: '1' })).result.data;
 		expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -50,15 +50,17 @@ describe('post.invoke', () => {
 		expect(blockIDSDK).toEqual(blockIDService);
 	});
 
-	it('returns error when invalid SDK endpoint invoked', async () => {
-		const response = await invoke({ endpoint: 'invalid_endpoint' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(invokeResponseSchema);
-		expect(result.data.error).toMap(errorSchema);
+	it('should return invalid request when requested with valid SDK endpoint invoked with invalid params', async () => {
+		const response = await invoke({ endpoint: 'chain_getBlockByHeight', params: { height: 'abc' } });
+		expect(response).toMap(invalidRequestSchema);
 	});
 
-	it('Invalid request param -> bad request', async () => {
+	it('should return invalid request when requested with invalid SDK endpoint invoked', async () => {
+		const response = await invoke({ endpoint: 'chain_%' });
+		expect(response).toMap(invalidRequestSchema);
+	});
+
+	it('should return invalid params when requested with invalid request param', async () => {
 		const response = await invoke({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});

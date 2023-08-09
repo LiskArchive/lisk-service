@@ -33,7 +33,7 @@ const endpoint = `${baseUrlV3}/market/prices`;
 
 describe('Market API', () => {
 	describe('Retrieve prices', () => {
-		it('returns market prices or 503 SERVICE UNAVAILABLE', async () => {
+		it('should return market prices or 503 SERVICE UNAVAILABLE when requested with no params', async () => {
 			try {
 				const response = await api.get(`${endpoint}`);
 				expect(response).toMap(goodRequestSchema);
@@ -48,9 +48,15 @@ describe('Market API', () => {
 			}
 		});
 
-		it('returns 400 BAD REQUEST with params', async () => {
+		it('should returns bad request when requested with params', async () => {
 			const expectedResponseCode = 400;
 			const response = await api.get(`${endpoint}?limit=10`, expectedResponseCode);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('should returns bad request when requested with empty params', async () => {
+			const expectedResponseCode = 400;
+			const response = await api.get(`${endpoint}?limit=`, expectedResponseCode);
 			expect(response).toMap(badRequestSchema);
 		});
 	});

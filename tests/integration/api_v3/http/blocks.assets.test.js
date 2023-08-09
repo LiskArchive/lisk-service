@@ -14,6 +14,7 @@
  *
  */
 import moment from 'moment';
+import { invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -42,7 +43,7 @@ describe('Blocks Assets API', () => {
 	});
 
 	describe('GET /blocks/assets', () => {
-		it('returns list of blocks assets', async () => {
+		it('should return list of blocks assets', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -58,7 +59,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns list of blocks assets when call with limit 10', async () => {
+		it('should return list of blocks assets when call with limit 10', async () => {
 			const response = await api.get(`${endpoint}?limit=10`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -74,7 +75,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by module -> ok', async () => {
+		it('should return block assets by module', async () => {
 			const response = await api.get(`${endpoint}?module=${refAsset.module}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -87,7 +88,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by multiple modules -> ok', async () => {
+		it('should return block assets by multiple modules', async () => {
 			const modules = refBlockAssets.assets.map(asset => asset.module);
 			const response = await api.get(`${endpoint}?module=${modules.join(',')}`);
 			expect(response).toMap(goodRequestSchema);
@@ -101,7 +102,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by blockID -> ok', async () => {
+		it('should return block assets by blockID', async () => {
 			const response = await api.get(`${endpoint}?blockID=${refBlockAssets.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -113,7 +114,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by height -> ok', async () => {
+		it('should return block assets by height', async () => {
 			const response = await api.get(`${endpoint}?height=${refBlockAssets.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -125,7 +126,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by timestamp -> ok', async () => {
+		it('should return block assets by timestamp', async () => {
 			const response = await api.get(`${endpoint}?timestamp=${refBlockAssets.block.timestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -142,26 +143,55 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('limit=0 -> 400', async () => {
+		it('should return bad request when requested with limit=0', async () => {
 			const response = await api.get(`${endpoint}?limit=0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('non-existent height -> 200', async () => {
+		it('should return bad request when requested with non-existent height', async () => {
 			const response = await api.get(`${endpoint}?height=2000000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid query parameter -> 400', async () => {
+		it('should return bad request if requested with invalid block ID', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
+				expect(response).toMap(wrongInputParamSchema);
+			}
+		});
+
+		it('should return bad request if requested with invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
+				expect(response).toMap(wrongInputParamSchema);
+			}
+		});
+
+		it('should return bad request if requested with invalid offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
+				expect(response).toMap(wrongInputParamSchema);
+			}
+		});
+
+		it('should return bad request if requested with invalid sort ', async () => {
+			const response = await api.get(`${endpoint}?sort=rank:asc`, 400);
+			expect(response).toMap(wrongInputParamSchema);
+		});
+
+		it('hould return wrong input param if requested with invalid query parameter', async () => {
 			const response = await api.get(`${endpoint}?block=12602944501676077162`, 400);
 			expect(response).toMap(wrongInputParamSchema);
 		});
 	});
 
 	describe('Retrieve blocks assets within timestamps', () => {
-		it('returns blocks assets within set timestamps are returned', async () => {
+		it('should return blocks assets within set timestamps are returned', async () => {
 			const from = moment(refBlockAssets.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const toTimestamp = refBlockAssets.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
@@ -181,7 +211,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns blocks assets with half bounded range: fromTimestamp', async () => {
+		it('should return blocks assets with half bounded range: fromTimestamp', async () => {
 			const from = moment(refBlockAssets.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -199,7 +229,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns blocks assets with half bounded range: toTimestamp', async () => {
+		it('should return blocks assets with half bounded range: toTimestamp', async () => {
 			const toTimestamp = refBlockAssets.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -219,7 +249,7 @@ describe('Blocks Assets API', () => {
 	});
 
 	describe('Retrieve blocks assets within height range', () => {
-		it('returns blocks assets within set height are returned', async () => {
+		it('should return blocks assets within set height are returned', async () => {
 			const minHeight = refBlockAssets.block.height;
 			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
@@ -239,7 +269,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('return blocks assets with half bounded range: minHeight', async () => {
+		it('should return blocks assets with half bounded range: minHeight', async () => {
 			const minHeight = refBlockAssets.block.height;
 			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -257,7 +287,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('return blocks assets with half bounded range: maxHeight', async () => {
+		it('should return blocks assets with half bounded range: maxHeight', async () => {
 			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await api.get(`${endpoint}?height=:${maxHeight}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -277,7 +307,7 @@ describe('Blocks Assets API', () => {
 	});
 
 	describe('Blocks assets sorted by height', () => {
-		it('returns 10 blocks assets sorted by height descending', async () => {
+		it('should return return 10 blocks assets sorted by height descending', async () => {
 			const response = await api.get(`${endpoint}?sort=height:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -294,7 +324,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 blocks assets sorted by height ascending', async () => {
+		it('should return 10 blocks assets sorted by height ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await api.get(`${endpoint}?sort=height:asc&offset=1`);
 			expect(response).toMap(goodRequestSchema);
@@ -314,7 +344,7 @@ describe('Blocks Assets API', () => {
 	});
 
 	describe('Blocks assets sorted by timestamp', () => {
-		it('returns 10 blocks assets sorted by timestamp descending', async () => {
+		it('should return 10 blocks assets sorted by timestamp descending', async () => {
 			const response = await api.get(`${endpoint}?sort=timestamp:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -331,7 +361,7 @@ describe('Blocks Assets API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 blocks asssets sorted by timestamp ascending', async () => {
+		it('should return 10 blocks asssets sorted by timestamp ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await api.get(`${endpoint}?sort=timestamp:asc&offset=1`);
 			expect(response).toMap(goodRequestSchema);

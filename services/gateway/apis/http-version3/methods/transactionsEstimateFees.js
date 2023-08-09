@@ -31,10 +31,9 @@ module.exports = {
 			props: {
 				module: { optional: false, type: 'string', pattern: regex.MODULE },
 				command: { optional: false, type: 'string', pattern: regex.COMMAND },
-				fee: { optional: true, type: 'string', pattern: regex.FEE },
 				nonce: { optional: false, type: 'string', pattern: regex.NONCE },
 				senderPublicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
-				signatures: { optional: true, type: 'array', min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
+				signatures: { optional: true, type: 'array', min: 1, items: { type: 'string', pattern: regex.HASH_SHA512 } },
 				params: { optional: false, type: 'object' },
 			},
 		},

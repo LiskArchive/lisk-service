@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
+import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
@@ -127,6 +128,14 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
+
+		it('should return bad request if requested with invalid sort ', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ blockID: invalidBlockIDs[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
 	});
 
 	describe('is able to retrieve list of transactions using moduleCommand', () => {
@@ -193,9 +202,12 @@ describe('Method get.transactions', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('should return invalid params when called with invalid senderAddress', async () => {
-			const response = await getTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(invalidParamsSchema);
+		it('should throw error when called with invalid senderAddress', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ senderAddress: invalidAddresses[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 	});
 
@@ -229,9 +241,12 @@ describe('Method get.transactions', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('should return invalid params when called with invalid recipientAddress', async () => {
-			const response = await getTransactions({ recipientAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(invalidParamsSchema);
+		it('should throw error when called with invalid recipientAddress', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ recipientAddress: invalidAddresses[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 	});
 
@@ -261,9 +276,12 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return invalid params when called with invalid address', async () => {
-			const response = await getTransactions({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(invalidParamsSchema);
+		it('should throw error when called with invalid address', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ address: invalidAddresses[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 	});
 
@@ -469,6 +487,11 @@ describe('Method get.transactions', () => {
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
+
+		it('should return bad request if requested with invalid sort ', async () => {
+			const response = await getTransactions({ sort: 'rank:asc' });
+			expect(response).toMap(invalidParamsSchema);
+		});
 	});
 
 	describe('Fetch transactions based on multiple request params', () => {
@@ -544,6 +567,22 @@ describe('Method get.transactions', () => {
 				expect(transaction.block.height).toBe(refTransaction.block.height);
 			});
 			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('should return bad request if requested with invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ limit: invalidLimits[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return bad request if requested with invalid offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ offset: invalidOffsets[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 	});
 

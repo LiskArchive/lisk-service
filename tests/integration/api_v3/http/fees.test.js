@@ -31,15 +31,20 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/fees`;
 
 describe('Fee estimates API', () => {
-	it('estimate fees true -> 200 OK', async () => {
+	it('should return fees estimate', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(feeEstimateSchema);
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('params not supported -> 400 BAD_REQUEST', async () => {
+	it('should return bad request when requested with unsupported param', async () => {
 		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request when requested with an empty param', async () => {
+		const response = await api.get(`${endpoint}?someparam=''`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

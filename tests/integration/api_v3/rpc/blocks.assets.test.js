@@ -14,6 +14,7 @@
  *
  */
 import moment from 'moment';
+import { invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
 
 const config = require('../../../config');
 
@@ -43,7 +44,7 @@ describe('Method get.blocks.assets', () => {
 	});
 
 	describe('is able to retireve block assets', () => {
-		it('no params -> ok', async () => {
+		it('should return blocks if requested without any params', async () => {
 			const response = await getBlocksAssets({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -60,7 +61,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('limit=10 -> ok', async () => {
+		it('should return blocks if requested with limit=10', async () => {
 			const response = await getBlocksAssets({ limit: 10 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -77,7 +78,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by blockID -> ok', async () => {
+		it('should return block assets by blockID', async () => {
 			const response = await getBlocksAssets({ blockID: refBlockAssets.block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -90,7 +91,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns block assets by height -> ok', async () => {
+		it('should return block assets by height', async () => {
 			const response = await getBlocksAssets({ height: `${refBlockAssets.block.height}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -102,7 +103,7 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('returns block assets by module', async () => {
+		it('should return block assets by module', async () => {
 			const response = await getBlocksAssets({ module: refAsset.module });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -112,7 +113,7 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('returns block assets by multiple modules', async () => {
+		it('should return block assets by multiple modules', async () => {
 			const modules = refBlockAssets.assets.map(asset => asset.module);
 			const response = await getBlocksAssets({ module: modules.join(',') });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -123,19 +124,43 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('invalid blockID -> bad request response', async () => {
-			const response = await getBlocksAssets({ blockID: '12602944501676077162' }).catch(e => e);
+		it('should return invalid params if requested with invalid block ID', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocksAssets({ blockID: invalidBlockIDs[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params if requested with invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocksAssets({ limit: invalidLimits[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params if requested with invalid offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocksAssets({ offset: invalidOffsets[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return invalid params if requested with invalid sort ', async () => {
+			const response = await getBlocksAssets({ sort: 'rank:asc' }).catch(e => e);
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('invalid query parameter -> -32602', async () => {
+		it('should return invalid params if requested with invalid query parameter ', async () => {
 			const response = await getBlocksAssets({ block: '12602944501676077162' }).catch(e => e);
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retireve block assets by timestamp', () => {
-		it('retusn blocks assets with from...to timestamp -> ok', async () => {
+		it('should return blocks assets with from...to timestamp', async () => {
 			const from = moment(refBlockAssets.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const to = refBlockAssets.block.timestamp;
 			const response = await getBlocksAssets({ timestamp: `${from}:${to}`, limit: 100 });
@@ -155,7 +180,7 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('returns blocks assets with from... timestamp -> ok', async () => {
+		it('should return blocks assets with from... timestamp', async () => {
 			const from = moment(refBlockAssets.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await getBlocksAssets({ timestamp: `${from}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -173,7 +198,7 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('returns blocks assets with ...to timestamp -> ok', async () => {
+		it('should return blocks assets with ...to timestamp', async () => {
 			const to = refBlockAssets.block.timestamp;
 			const response = await getBlocksAssets({ timestamp: `:${to}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -193,7 +218,7 @@ describe('Method get.blocks.assets', () => {
 	});
 
 	describe('is able to retireve block assets within height range', () => {
-		it('return blocks assets with min...max height -> ok', async () => {
+		it('should return blocks assets with min...max height', async () => {
 			const minHeight = refBlockAssets.block.height;
 			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await getBlocksAssets({ height: `${minHeight}:${maxHeight}`, limit: 100 });
@@ -213,7 +238,7 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('returns blocks assets with min... height -> ok', async () => {
+		it('should return blocks assets with min... height', async () => {
 			const minHeight = refBlockAssets.block.height;
 			const response = await getBlocksAssets({ height: `${minHeight}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -231,7 +256,7 @@ describe('Method get.blocks.assets', () => {
 			});
 		});
 
-		it('Breturns blocks assets with ...max height -> ok', async () => {
+		it('should return blocks assets with ...max height', async () => {
 			const maxHeight = refBlockAssets.block.height + 10;
 			const response = await getBlocksAssets({ height: `:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -251,7 +276,7 @@ describe('Method get.blocks.assets', () => {
 	});
 
 	describe('Blocks assets sorted by height', () => {
-		it('returns 10 blocks assets sorted by height descending', async () => {
+		it('should return 10 blocks assets sorted by height descending', async () => {
 			const response = await getBlocksAssets({ sort: 'height:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -269,7 +294,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 blocks assets sorted by height ascending', async () => {
+		it('should return 10 blocks assets sorted by height ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await getBlocksAssets({ sort: 'height:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -290,7 +315,7 @@ describe('Method get.blocks.assets', () => {
 	});
 
 	describe('Blocks assets sorted by timestamp', () => {
-		it('returns 10 blocks assets sorted by timestamp descending', async () => {
+		it('should return 10 blocks assets sorted by timestamp descending', async () => {
 			const response = await getBlocksAssets({ sort: 'timestamp:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -308,7 +333,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 blocks assets sorted by timestamp ascending', async () => {
+		it('should return 10 blocks assets sorted by timestamp ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await getBlocksAssets({ sort: 'timestamp:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
