@@ -174,6 +174,19 @@ Required when `ENABLE_REQUEST_CACHING` is enabled.
 | Describes the microservices on which the `gateway` service depends.
 | indexer,connector
 
+| `HTTP_KEEP_ALIVE_TIMEOUT`
+| number
+| Defines the time gateway will wait before closing an idle connection.
+By default it is set to 65000 seconds.
+| 65000
+
+| `HTTP_HEADERS_TIMEOUT`
+| number
+| Defines the time for gateway to send HTTP response headers after the client's request.
+Ensure the headersTimeout is set higher than the keepAliveTimeout.
+By default it is set to 66000 seconds.
+| 66000
+
 | `WS_RATE_LIMIT_ENABLE`
 | string
 | To enable the WebSocket rate limit, this environment variable is required to be `true`.
