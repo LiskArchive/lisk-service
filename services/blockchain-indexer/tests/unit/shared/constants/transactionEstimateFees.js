@@ -143,8 +143,10 @@ const mockInteroperabilityRegisterSidechainTxResult = {
 		breakdown: {
 			fee: {
 				minimum: {
-					byteFee: '167000',
-					additionalFees: {},
+					byteFee: '166000',
+					additionalFees: {
+						chainRegistrationFee: '100000000',
+					},
 				},
 			},
 		},

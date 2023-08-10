@@ -804,6 +804,11 @@
 														"example": "10000000",
 														"description": "The extra fee to be supplied for initializing an escrow token account."
 													},
+													"chainRegistrationFee": {
+														"type": "string",
+														"example": "1000000000",
+														"description": "The extra fee to be supplied for a chain registration transaction."
+													},
 													"bufferBytes": {
 														"type": "string",
 														"example": "6000",

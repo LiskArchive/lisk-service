@@ -211,7 +211,7 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
-	getRegistrationFee,
+	getChainRegistrationFee: getRegistrationFee,
 
 	// Legacy
 	getLegacyAccount,

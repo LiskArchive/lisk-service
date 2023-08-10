@@ -361,6 +361,7 @@ describe('Test transaction fees estimates', () => {
 	});
 
 	describe('Test estimateTransactionFees method', () => {
+		afterEach(() => jest.clearAllMocks());
 		jest.resetModules();
 
 		// Mock the dependencies
@@ -573,7 +574,7 @@ describe('Test transaction fees estimates', () => {
 					getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 					requestConnector
 						.mockReturnValueOnce(mockTxrequestConnector)
-						.mockReturnValue({ userAccount: '1', escrowAccount: '0' });
+						.mockReturnValue({ userAccount: '1', escrowAccount: '0', fee: '100000000', minFee: '166000', size: 166 });
 					getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 					calcAdditionalFees.mockResolvedValue({});
 					calcMessageFee.mockResolvedValue({});
