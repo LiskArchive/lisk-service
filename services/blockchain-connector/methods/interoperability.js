@@ -17,6 +17,7 @@ const {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getChainRegistrationFee,
 } = require('../shared/sdk');
 
 const regex = require('../shared/utils/regex');
@@ -40,5 +41,10 @@ module.exports = [
 		params: {
 			chainID: { optional: false, type: 'string', pattern: regex.CHAIN_ID },
 		},
+	},
+	{
+		name: 'getChainRegistrationFee',
+		controller: async () => getChainRegistrationFee(),
+		params: {},
 	},
 ];

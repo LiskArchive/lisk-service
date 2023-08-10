@@ -139,6 +139,8 @@ const COMMAND = Object.freeze({
 	CHANGE_COMMISSION: 'changeCommission',
 	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
+	REGISTER_SIDECHAIN: 'registerSidechain',
+	REGISTER_MAINCHAIN: 'registerMainchain',
 });
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
@@ -147,6 +149,9 @@ const PATTERN_ANY_TOKEN_ID = '*';
 const PATTERN_ANY_CHAIN_TOKEN_ID = '*'.repeat(LENGTH_TOKEN_LOCAL_ID);
 const LENGTH_TOKEN_ID = LENGTH_CHAIN_ID + LENGTH_TOKEN_LOCAL_ID;
 const LENGTH_NETWORK_ID = 1 * 2; // Each byte is represented with 2 nibbles
+const LENGTH_BYTE_SIGNATURE = 64;
+const LENGTH_BYTE_ID = 32;
+const DEFAULT_NUM_OF_SIGNATURES = 1;
 
 const MAX_COMMISSION = BigInt('10000');
 
@@ -205,4 +210,7 @@ module.exports = {
 	KV_STORE_KEY,
 	TRANSACTION_STATUS,
 	TRANSACTION_VERIFY_RESULT,
+	LENGTH_BYTE_SIGNATURE,
+	LENGTH_BYTE_ID,
+	DEFAULT_NUM_OF_SIGNATURES,
 };

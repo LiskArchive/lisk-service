@@ -38,7 +38,7 @@ module.exports = {
 					nonce: { type: 'string', min: 1, pattern: regex.NONCE },
 					senderPublicKey: { type: 'string', pattern: regex.PUBLIC_KEY },
 					signatures: { type: 'array', optional: true, min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
-					params: { type: 'object', optional: false, minProps: 1 },
+					params: { type: 'object', optional: false, minProps: 0 },
 				},
 			},
 		],
