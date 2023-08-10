@@ -139,6 +139,8 @@ const COMMAND = Object.freeze({
 	CHANGE_COMMISSION: 'changeCommission',
 	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
+	REGISTER_SIDECHAIN: 'registerSidechain',
+	REGISTER_MAINCHAIN: 'registerMainchain',
 });
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles

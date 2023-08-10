@@ -564,6 +564,9 @@
 	},
 	"transactionEstimateFeesRequestBody": {
 		"type": "object",
+		"required": [
+			"transaction"
+		],
 		"properties": {
 			"transaction": {
 				"type": "object",
@@ -642,6 +645,16 @@
 								"type": "string",
 								"example": "Cross chain transfer tx",
 								"description": "Transaction data."
+							},
+							"messageFee": {
+								"type": "string",
+								"example": "1000000",
+								"description": "Fee to be used for transaction processing in the receiving chain."
+							},
+							"messageFeeTokenID": {
+								"type": "string",
+								"example": "0000000000000000",
+								"description": "Token used for cross-chain message fee."
 							}
 						}
 					}

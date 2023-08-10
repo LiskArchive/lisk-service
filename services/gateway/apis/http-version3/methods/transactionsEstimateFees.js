@@ -37,6 +37,7 @@ module.exports = {
 				signatures: { optional: true, type: 'array', min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
 				params: { optional: false, type: 'object', minProps: 0 },
 			},
+			altSwaggerKey: 'transactionEstimateFees',
 		},
 	},
 	get schema() {

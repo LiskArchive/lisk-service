@@ -230,6 +230,12 @@ const calcAdditionalFees = async (transaction) => {
 			};
 			additionalFees.total += BigInt(posConstants.data.validatorRegistrationFee);
 		}
+	} else if (transaction.module === MODULE.INTEROPERABILITY) {
+		if ([COMMAND.REGISTER_MAINCHAIN, COMMAND.REGISTER_SIDECHAIN].includes(transaction.command)) {
+			const { fee: chainRegistrationFee } = await requestConnector('getRegistrationFee');
+			additionalFees.fee = { chainRegistrationFee };
+			additionalFees.total += BigInt(chainRegistrationFee);
+		}
 	}
 
 	return additionalFees;
