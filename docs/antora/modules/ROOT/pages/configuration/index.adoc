@@ -184,15 +184,15 @@ Check {url_molecular_load_balancer_faq}[this FAQ] for more information.
 
 | `HTTP_KEEP_ALIVE_TIMEOUT`
 | number
-| Defines the number of microseconds gateway will wait before closing an idle connection.
-To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+| Defines the number of microseconds the gateway will wait before closing an idle connection.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
 By default, it is set to 65000.
 | 65000
 
 | `HTTP_HEADERS_TIMEOUT`
 | number
-| Defines the maximum number of microseconds for gateway to send HTTP response headers after the client's request.
-To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+| Defines the maximum number of microseconds for the gateway to send HTTP response headers after the client's request.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
 Please ensure that the `HTTP_HEADERS_TIMEOUT` is set higher than the `HTTP_KEEP_ALIVE_TIMEOUT`.
 By default, it is set to 66000.
 | 66000
