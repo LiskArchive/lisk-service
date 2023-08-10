@@ -174,9 +174,15 @@ Required when `ENABLE_REQUEST_CACHING` is enabled.
 | Describes the microservices on which the `gateway` service depends.
 | indexer,connector
 
+| `ENABLE_REVERSE_PROXY_CONNECTION`
+| string
+| Boolean flag to indicate presence of a reverse proxy or a load balancer between gateway and the client.
+| false
+
 | `HTTP_KEEP_ALIVE_TIMEOUT`
 | number
 | Defines the time gateway will wait before closing an idle connection.
+To enable, ensure `ENABLE_REVERSE_PROXY_CONNECTION` is set to true or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
 By default it is set to 65000 seconds.
 | 65000
 

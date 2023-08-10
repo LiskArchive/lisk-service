@@ -32,7 +32,8 @@ A list of the most commonly used environment variables is presented below:
 - `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma.
 - `CORS_ALLOWED_ORIGIN`: Allows request from the comma separated string of origins. By default, it is set to `*` which allows request from all origins.
 - `SERVICE_GATEWAY_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
-- `HTTP_KEEP_ALIVE_TIMEOUT`: Defines the number of seconds gateway will wait before closing an idle connection. By default, it is set to 65000.
+- `ENABLE_REVERSE_PROXY_CONNECTION`: Boolean flag to indicate presence of a reverse proxy or a load balancer between gateway and the client.
+- `HTTP_KEEP_ALIVE_TIMEOUT`: Defines the number of seconds gateway will wait before closing an idle connection. To enable, ensure `ENABLE_REVERSE_PROXY_CONNECTION` is set to true or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0. By default, it is set to 65000.
 - `HTTP_HEADERS_TIMEOUT`: Defines the maximum number of seconds for gateway to send HTTP response headers after the client's request. Ensure the headersTimeout is set higher than the keepAliveTimeout. By default, it is set to 66000.
 - `HTTP_RATE_LIMIT_ENABLE`: Boolean flag to enable HTTP rate limiter. Disabled by default. To enable, set it to `true`.
 - `HTTP_RATE_LIMIT_WINDOW`: To keep a record of requests in the memory (in seconds). By default, it is set to 10 seconds.

@@ -82,6 +82,7 @@ config.api.versions = {
 /**
  * API timeout
  */
+config.api.isReverseProxyPresent = Boolean(String(process.env.ENABLE_REVERSE_PROXY_CONNECTION).toLowerCase() === 'true');
 config.api.httpKeepAliveTimeout = Number(process.env.HTTP_KEEP_ALIVE_TIMEOUT || 65000);
 config.api.httpHeadersTimeout = Number(process.env.HTTP_HEADERS_TIMEOUT || 66000);
 
