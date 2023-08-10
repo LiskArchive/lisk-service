@@ -43,6 +43,7 @@ const { requestConnector } = require('../../utils/request');
 const config = require('../../../config');
 
 const { getPosConstants } = require('./pos/constants');
+const { getInteroperabilityConstants } = require('./interoperability/constants');
 const { getFeeEstimates } = require('./feeEstimates');
 const regex = require('../../regex');
 
@@ -232,9 +233,11 @@ const calcAdditionalFees = async (transaction) => {
 		}
 	} else if (transaction.module === MODULE.INTEROPERABILITY) {
 		if ([COMMAND.REGISTER_MAINCHAIN, COMMAND.REGISTER_SIDECHAIN].includes(transaction.command)) {
-			const { fee: chainRegistrationFee } = await requestConnector('getRegistrationFee');
-			additionalFees.fee = { chainRegistrationFee };
-			additionalFees.total += BigInt(chainRegistrationFee);
+			const interoperabilityConstants = await getInteroperabilityConstants();
+			additionalFees.fee = {
+				chainRegistrationFee: interoperabilityConstants.data.chainRegistrationFee,
+			};
+			additionalFees.total += BigInt(interoperabilityConstants.data.chainRegistrationFee);
 		}
 	}
 
