@@ -1,6 +1,13 @@
 = Lisk Service Configuration Reference
 Muhammad Talha <muhammad.talha@lightcurve.io>
-:toc:
+// Settings
+:toc: preamble
+:toclevels: 5
+:page-toclevels: 3
+:idprefix:
+:idseparator: -
+:experimental:
+
 :url_microservices: index.adoc#microservices
 :url_intro_services: index.adoc
 :url_pm2: https://pm2.keymetrics.io/
@@ -60,13 +67,13 @@ This could be a NATS or a Redis instance.
 | info
 
 | `SERVICE_LOG_STDOUT`
-| string
+| boolean
 | Enable posting logs to the standard output stream.
 Accepted values are `true` and `false`.
 | true
 
 | `SERVICE_LOG_CONSOLE`
-| string
+| boolean
 | Enable posting logs to the JavaScript `console.log()` output (blocking).
 This property should be enabled only for debugging purposes.
 | false
@@ -74,13 +81,18 @@ This property should be enabled only for debugging purposes.
 | `SERVICE_LOG_FILE`
 | string
 | File path to capture the logs.
-| './logs/app.log'
+| ./logs/app.log
 
 | `SERVICE_LOG_GELF`
 | string
 | Enable log output in GELF for remote logging.
 For example, Graylog 'localhost:12201/udp'.
-| 'localhost:12201/udp'
+| localhost:12201/udp
+
+| `DOCKER_HOST`
+| string
+| 
+| local
 |===
 
 --
@@ -134,7 +146,7 @@ Properties::
 |Sample
 
 | `PORT`
-| string
+| number
 | Port that provides the possibility to connect with Lisk Service.
 | 9901
 
@@ -149,7 +161,7 @@ Properties::
 | redis://localhost:6379/0
 
 | `JSON_RPC_STRICT_MODE`
-| string
+| boolean
 | Ensures that JSON-RPC accepts a valid JSON-RPC 2.0 envelope.
 | false
 
@@ -180,7 +192,7 @@ The list can be expressed as a CSV.
 | indexer,connector
 
 | `WS_RATE_LIMIT_ENABLE`
-| string
+| boolean
 | To enable the WebSocket rate limit, this environment variable is required to be `true`.
 | false
 
@@ -195,13 +207,13 @@ The list can be expressed as a CSV.
 | 1
 
 | `ENABLE_REQUEST_CACHING`
-| string
+| boolean
 | To enable RPC response caching, this environment variable is required to be `true`.
 Requires `SERVICE_GATEWAY_REDIS_VOLATILE` to be set.
 | true
 
 | `HTTP_RATE_LIMIT_ENABLE`
-| string
+| boolean
 | To enable the HTTP rate limit, this environment variable is required to be `true`.
 | false
 
@@ -218,7 +230,7 @@ The default duration of a window is 10 seconds.
 | 10
 
 | `ENABLE_HTTP_CACHE_CONTROL`
-| string
+| boolean
 | To enable response caching, this environment variable is required to be `true`.
 This would include the `Cache-Control` header within the responses.
 | true
@@ -235,7 +247,7 @@ By default, it is set to `*` which allows requests from all origins.
 | *
 
 | `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS`
-| string
+| boolean
 |Boolean flag to enforce the `headersTimeout` and `keepAliveTimeout` settings on the API server.
 Enabling this might be helpful when deploying Lisk Service behind a load balancer or a reverse proxy. Check this {url_faq}[FAQ^] for more information.
 | true
@@ -254,9 +266,8 @@ Please ensure that the `HTTP_HEADERS_TIMEOUT` is set higher than the `HTTP_KEEP_
 By default, it is set to `66000`.
 | 66000
 
-
 | `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR`
-| string
+| boolean
 | When set to true, the rate-limiting algorithm considers the X-Forwarded-For header value to determine the client's IP address for rate-limiting purposes.
 By default, it is set to `false`.
 | false
@@ -295,35 +306,35 @@ module.exports = {
       name: "lisk-service-gateway",
       // [...]
       env: {
-        PORT: '9901',
+        PORT: 9901,
         // --- Remember to set the properties below
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/5',
         ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
         ENABLE_WS_API: 'blockchain,rpc-v3',
         GATEWAY_DEPENDENCIES: 'indexer,connector',
-        WS_RATE_LIMIT_ENABLE: 'false',
+        WS_RATE_LIMIT_ENABLE: false,
         WS_RATE_LIMIT_CONNECTIONS: 5,
         WS_RATE_LIMIT_DURATION: 1, // in seconds
-        ENABLE_REQUEST_CACHING: 'true',
-        JSON_RPC_STRICT_MODE: 'false',
-        HTTP_RATE_LIMIT_ENABLE: 'false',
+        ENABLE_REQUEST_CACHING: true,
+        JSON_RPC_STRICT_MODE: false,
+        HTTP_RATE_LIMIT_ENABLE: false,
         HTTP_RATE_LIMIT_CONNECTIONS: 200,
         HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
         HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
-        ENABLE_HTTP_CACHE_CONTROL: 'true',
-        HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR: 'false',
+        ENABLE_HTTP_CACHE_CONTROL: true,
+        HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR: false,
         HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES: 0,
-        // ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS: 'true'
+        // ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS: true
         // HTTP_KEEP_ALIVE_TIMEOUT: 65000,
         // HTTP_HEADERS_TIMEOUT: 66000,
         // CORS_ALLOWED_ORIGIN: '*',
         // SERVICE_BROKER_TIMEOUT: 10,
         // SERVICE_LOG_LEVEL: 'info',
-        // SERVICE_LOG_CONSOLE: 'false',
-        // SERVICE_LOG_STDOUT: 'true',
-        // SERVICE_LOG_GELF: 'false',
-        // SERVICE_LOG_FILE: 'false',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
         // DOCKER_HOST: 'local',
         // JOB_INTERVAL_UPDATE_READINESS_STATUS: 0,
         // JOB_SCHEDULE_UPDATE_READINESS_STATUS: '* * * * *',
@@ -362,7 +373,7 @@ Properties::
 | ws://localhost:7887
 
 | `USE_LISK_IPC_CLIENT`
-| string
+| boolean
 | Boolean flag to enable IPC-based connection to the Lisk application node.
 Requires `LISK_APP_DATA_PATH` to be set.
 | true
@@ -375,13 +386,50 @@ Requires `LISK_APP_DATA_PATH` to be set.
 | `GEOIP_JSON`
 | string
 | URL of the GeoIP server.
-| https://geoip.lisk.com/json
+| https://geoip.lisk.com/json[GeoIP Server's URL^]
 
 | `GENESIS_BLOCK_URL`
 | string
 | URL of the Lisk SDK-based application's genesis block.
 Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
-| https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz
+| https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz[Genesis block URL^]
+
+| `ENABLE_BLOCK_CACHING`
+| boolean
+| Boolean flag to enable block caching.
+Enabled by default. 
+To disable it, set it to `false`.
+| true
+
+| `EXPIRY_IN_HOURS`
+| number
+| Expiry time in hours for block cache. 
+By default, it is set to `12` hours.
+| 12
+
+| `JOB_INTERVAL_CACHE_CLEANUP`
+| number
+| Job run interval to cleanup block cache. 
+By default, it is set to 0.
+| 0
+
+| `JOB_SCHEDULE_CACHE_CLEANUP`
+| string
+| Job run cron schedule to cleanup block cache.
+By default, it is set to run every 12 hours.
+|0 */12 * * *
+
+| `JOB_INTERVAL_REFRESH_PEERS`
+| number
+| Job run interval to refresh the peers' list.
+By default, it is set to run every `60` seconds.
+| 60
+
+| `JOB_SCHEDULE_REFRESH_PEERS`
+| string
+| Job run cron schedule to refresh the peers' list.
+By default, it is set to an empty string `''`.
+|
 
 |===
 
@@ -399,12 +447,26 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: "redis://localhost:6379/0",
-        LISK_APP_WS: "ws://localhost:7887",
-        GEOIP_JSON: "https://geoip.lisk.com/json",
-        USE_LISK_IPC_CLIENT: "true",
-        GENESIS_BLOCK_URL: "",
-        LISK_APP_DATA_PATH: "~/.lisk/lisk-core",
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        LISK_APP_WS: 'ws://localhost:7887',
+        GEOIP_JSON: 'https://geoip.lisk.com/json',
+        // ENABLE_BLOCK_CACHING: true,
+        // EXPIRY_IN_HOURS: 12,
+        // USE_LISK_IPC_CLIENT: true,
+        // LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+        // ENABLE_TESTING_MODE: false,
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
+        // JOB_INTERVAL_CACHE_CLEANUP: 0,
+        // JOB_SCHEDULE_CACHE_CLEANUP: '0 */12 * * *',
+        // JOB_INTERVAL_REFRESH_PEERS: 60,
+        // JOB_SCHEDULE_REFRESH_PEERS: '',
       },
     },
     // Configuration for other microservices.
@@ -544,9 +606,9 @@ module.exports = {
         SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
         SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
         SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-        ENABLE_DATA_RETRIEVAL_MODE: 'true',
-        ENABLE_INDEXING_MODE: 'true',
-        ENABLE_PERSIST_EVENTS: 'false',
+        ENABLE_DATA_RETRIEVAL_MODE: true,
+        ENABLE_INDEXING_MODE: true,
+        ENABLE_PERSIST_EVENTS: false,
       },
     },
     // Configuration for other microservices.
@@ -604,7 +666,7 @@ module.exports = {
         // --- Remember to set the properties below
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-        ENABLE_REBUILD_INDEX_AT_INIT: 'false',
+        ENABLE_REBUILD_INDEX_AT_INIT: false,
       },
     },
     // Configuration for other microservices.
@@ -677,8 +739,8 @@ module.exports = {
         // --- Remember to set the properties below
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_FEE_ESTIMATOR_CACHE: 'redis://localhost:6379/1',
-        ENABLE_FEE_ESTIMATOR_QUICK: 'true',
-        ENABLE_FEE_ESTIMATOR_FULL: 'false',
+        ENABLE_FEE_ESTIMATOR_QUICK: true,
+        ENABLE_FEE_ESTIMATOR_FULL: false,
         FEE_EST_COLD_START_BATCH_SIZE: '1',
         FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
       },
