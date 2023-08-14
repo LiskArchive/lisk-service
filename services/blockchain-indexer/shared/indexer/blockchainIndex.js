@@ -174,10 +174,12 @@ const indexBlock = async job => {
 						block.generatorAddress, blockReward, commissionAmount,
 					);
 
+					logger.trace(`Incrementing validator commission with address ${block.generatorAddress} by ${commissionAmount}.`);
 					await validatorsTable.increment({
 						increment: { totalCommission: BigInt(commissionAmount) },
 						where: { address: block.generatorAddress },
 					}, dbTrx);
+					logger.trace(`Incrementing validator self stake rewards with address ${block.generatorAddress} by ${selfStakeReward}.`);
 					await validatorsTable.increment({
 						increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
 						where: { address: block.generatorAddress },
@@ -247,10 +249,16 @@ const deleteIndexedBlocks = async job => {
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDBTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
+
+	let blockReward = BigInt('0');
+
 	try {
 		await BluebirdPromise.map(
 			blocks,
 			async block => {
+				const retrivedBlock = await getBlockByHeight(block.height);
+				if (retrivedBlock.id === block.id) return;
+
 				let { data: forkedTransactions } = await getTransactionsByBlockID(block.id);
 				const transactionsTable = await getTransactionsTable();
 				const events = await getEventsByBlockID(block.id);
@@ -285,6 +293,44 @@ const deleteIndexedBlocks = async job => {
 
 				// Calculate locked amount change from events and update in key_value_store table
 				if (events.length) {
+					const eventsTable = await getEventsTable();
+					const eventTopicsTable = await getEventTopicsTable();
+
+					const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
+					await eventsTable.delete(eventsInfo, dbTrx);
+					await eventTopicsTable.delete(eventTopicsInfo, dbTrx);
+
+					// Update the generator's rewards
+					const blockRewardEvent = events.find(
+						e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
+							&& e.name === EVENT.REWARD_MINTED,
+					);
+					if (blockRewardEvent) {
+						blockReward = BigInt(blockRewardEvent.data.amount || '0');
+
+						if (blockReward !== BigInt('0')) {
+							const commissionAmount = await calcCommissionAmount(
+								block.generatorAddress, block.height, blockReward,
+							);
+							const selfStakeReward = await calcSelfStakeReward(
+								block.generatorAddress, blockReward, commissionAmount,
+							);
+
+							const validatorsTable = await getValidatorsTable();
+							logger.trace(`Decrementing validator commission with address ${block.generatorAddress} by ${commissionAmount}.`);
+							await validatorsTable.decrement({
+								increment: { totalCommission: BigInt(commissionAmount) },
+								where: { address: block.generatorAddress },
+							}, dbTrx);
+							logger.trace(`Decrementing validator self stake rewards with address ${block.generatorAddress} by ${selfStakeReward}.`);
+							await validatorsTable.decrement({
+								increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
+								where: { address: block.generatorAddress },
+							}, dbTrx);
+						}
+					}
+
+					// Calculate locked amount change and update in key_value_store table for affected tokens
 					const tokenIDLockedAmountChangeMap = {};
 					events.forEach(event => {
 						const { data: eventData } = event;
@@ -310,7 +356,9 @@ const deleteIndexedBlocks = async job => {
 				// Invalidate cached events for this block
 				// This must be done after processing all event related calculations
 				await deleteEventsFromCache(block.height);
-			});
+			},
+			{ concurrency: 1 },
+		);
 
 		await blocksTable.deleteByPrimaryKey(blockIDs);
 		await commitDBTransaction(dbTrx);

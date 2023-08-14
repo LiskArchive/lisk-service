@@ -82,16 +82,10 @@ module.exports = [
 	},
 	{
 		name: 'getPoSGenesisStakers',
-		controller: async ({ height }) => getPoSGenesisStakers(height),
-		params: {
-			height: { optional: false, type: 'number' },
-		},
+		controller: async () => getPoSGenesisStakers(),
 	},
 	{
 		name: 'getPoSGenesisValidators',
-		controller: async ({ height }) => getPoSGenesisValidators(height),
-		params: {
-			height: { optional: false, type: 'number' },
-		},
+		controller: async () => getPoSGenesisValidators(),
 	},
 ];

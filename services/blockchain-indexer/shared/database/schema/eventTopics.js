@@ -15,9 +15,8 @@
  */
 module.exports = {
 	tableName: 'event_topics',
-	primaryKey: 'tempID',
+	primaryKey: ['eventID', 'topic'],
 	schema: {
-		tempID: { type: 'string' },
 		eventID: { type: 'string' },
 		topic: { type: 'string' },
 		height: { type: 'integer' },

@@ -30,7 +30,7 @@ const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT)
 
 const indexValidatorCommissionInfo = async (genesisBlock) => {
 	const commissionsTable = await getCommissionsTable();
-	const validators = await requestConnector('getPoSGenesisValidators', { height: genesisBlock.height });
+	const validators = await requestConnector('getPoSGenesisValidators');
 	const commissionInfo = validators.map(validator => ({
 		address: validator.address,
 		height: genesisBlock.height,
@@ -39,9 +39,9 @@ const indexValidatorCommissionInfo = async (genesisBlock) => {
 	if (commissionInfo.length) await commissionsTable.upsert(commissionInfo);
 };
 
-const indexStakersInfo = async (genesisBlock) => {
+const indexStakersInfo = async () => {
 	const stakesTable = await getStakesTable();
-	const stakers = await requestConnector('getPoSGenesisStakers', { height: genesisBlock.height });
+	const stakers = await requestConnector('getPoSGenesisStakers');
 	const stakestoIndex = [];
 	await stakers.forEach(async staker => staker.stakes.forEach(stake => {
 		stakestoIndex.push({

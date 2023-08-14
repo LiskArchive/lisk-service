@@ -119,7 +119,7 @@ const init = async () => {
 
 	// Index stakers and commission information available in genesis block
 	await indexValidatorCommissionInfo(genesisBlock);
-	await indexStakersInfo(genesisBlock);
+	await indexStakersInfo();
 };
 
 module.exports = {

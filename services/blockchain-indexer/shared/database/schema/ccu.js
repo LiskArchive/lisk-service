@@ -13,13 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
 module.exports = {
 	tableName: 'ccu',
 	primaryKey: 'transactionID',
 	schema: {
 		transactionID: { type: 'string', null: false },
 		height: { type: 'integer', null: false },
-		sendingChainID: { type: 'string', null: true, default: null },
+		sendingChainID: { type: 'string', null: true, defaultValue: null },
 	},
 	indexes: {
 		height: { type: 'range' },

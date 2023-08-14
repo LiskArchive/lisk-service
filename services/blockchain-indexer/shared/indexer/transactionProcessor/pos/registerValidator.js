@@ -30,6 +30,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');
 const validatorsTableSchema = require('../../../database/schema/validators');
+const commissionsTableSchema = require('../../../database/schema/commissions');
 
 const { getPosConstants } = require('../../../dataService');
 const { requestConnector } = require('../../../utils/request');
@@ -37,9 +38,20 @@ const { requestConnector } = require('../../../utils/request');
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'registerValidator';
+
+const getCommissionIndexingInfo = (blockHeader, tx) => {
+	const newCommissionEntry = {
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		commission: 10000,
+		height: blockHeader.height,
+	};
+
+	return newCommissionEntry;
+};
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
@@ -48,6 +60,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const accountsTable = await getAccountsTable();
 	const transactionsTable = await getTransactionsTable();
 	const validatorsTable = await getValidatorsTable();
+	const commissionsTable = await getCommissionsTable();
 
 	const account = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
@@ -77,6 +90,11 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await transactionsTable.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
+
+	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
+	logger.trace(`Indexing commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	await commissionsTable.upsert(commissionInfo, dbTrx);
+	logger.debug(`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -85,6 +103,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	const accountsTable = await getAccountsTable();
 	const validatorsTable = await getValidatorsTable();
+	const commissionsTable = await getCommissionsTable();
 
 	// Remove the validator details from the table on transaction reversal
 	const account = {
@@ -105,6 +124,11 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const validatorPK = account[validatorsTableSchema.primaryKey];
 	await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
 	logger.debug(`Removed validator entry for address ${account.address}.`);
+
+	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
+	logger.trace(`Deleting commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	await commissionsTable.delete(commissionInfo, dbTrx);
+	logger.debug(`Deleted commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
 };
 
 module.exports = {
