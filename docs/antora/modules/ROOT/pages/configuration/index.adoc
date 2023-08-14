@@ -8,6 +8,10 @@ Muhammad Talha <muhammad.talha@lightcurve.io>
 :url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
 :source-language: js
 
+:url_faq: https://moleculer.services/docs/0.14/faq.html#Why-am-I-getting-502-Bad-Gateway-when-api-gateway-is-behind-ALB-on-AWS
+
+
+
 On the xref:{url_intro_services}[Introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
 On this page, we will thoroughly discuss the configuration options available for each service.
 
@@ -137,7 +141,7 @@ Properties::
 | `HOST`
 | string
 | URL of the host.
-| 127.0.0.1
+| 0.0.0.0
 
 | `SERVICE_BROKER`
 | string
@@ -172,6 +176,7 @@ Required when `ENABLE_REQUEST_CACHING` is enabled.
 | `GATEWAY_DEPENDENCIES`
 | string
 | Describes the microservices on which the `gateway` service depends.
+The list can be expressed as a CSV.
 | indexer,connector
 
 | `WS_RATE_LIMIT_ENABLE`
@@ -215,13 +220,65 @@ The default duration of a window is 10 seconds.
 | `ENABLE_HTTP_CACHE_CONTROL`
 | string
 | To enable response caching, this environment variable is required to be `true`.
-This would include the Cache-Control header within the responses.
+This would include the `Cache-Control` header within the responses.
 | true
 
 | `HTTP_CACHE_CONTROL_DIRECTIVES`
 | string
 | The `Cache-Control` HTTP directive can be overridden with this environment variable.
 | public, max-age=10
+
+| `CORS_ALLOWED_ORIGIN`
+| string
+| Allows request from the comma-separated string of origins.
+By default, it is set to `*` which allows requests from all origins.
+| *
+
+| `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS`
+| string
+|Boolean flag to enforce the `headersTimeout` and `keepAliveTimeout` settings on the API server.
+Enabling this might be helpful when deploying Lisk Service behind a load balancer or a reverse proxy. Check this {url_faq}[FAQ^] for more information.
+| true
+
+| `HTTP_KEEP_ALIVE_TIMEOUT`
+| number
+|Defines the number of microseconds the gateway will wait before closing an idle connection. To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+By default, it is set to `65000`.
+| 65000
+
+| `HTTP_HEADERS_TIMEOUT`
+| number
+|Defines the maximum number of microseconds for the gateway to send HTTP response headers after the client's request.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to `true`, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than `0`.
+Please ensure that the `HTTP_HEADERS_TIMEOUT` is set higher than the `HTTP_KEEP_ALIVE_TIMEOUT`.
+By default, it is set to `66000`.
+| 66000
+
+
+| `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR`
+| string
+| When set to true, the rate-limiting algorithm considers the X-Forwarded-For header value to determine the client's IP address for rate-limiting purposes.
+By default, it is set to `false`.
+| false
+
+| `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES`
+| number
+| Defines the number of proxies that exist between the gateway and the external client application, enabling accurate identification of the client's IP address for rate-limiting.
+Requires `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR` to be enabled.
+By default, it is set to `0`.
+| 0
+
+| `JOB_INTERVAL_UPDATE_READINESS_STATUS`
+| number
+| Job run interval to update the readiness status.
+By default, it is set to 0.
+| 0
+
+| `JOB_SCHEDULE_UPDATE_READINESS_STATUS`
+| string
+| Job run cron schedule to update the readiness status.
+By default, it is set to run every minute.
+| * * * * *
 
 |===
 
@@ -233,32 +290,46 @@ Sample::
 ----
 module.exports = {
   apps: [
-    // Configuration for other microservices.
+  // Configuration for other microservices.
     {
       name: "lisk-service-gateway",
       // [...]
       env: {
-        PORT: "9901",
-        HOST: "127.0.0.1",
+        PORT: '9901',
         // --- Remember to set the properties below
-        SERVICE_BROKER: "redis://localhost:6379/0",
-        SERVICE_GATEWAY_REDIS_VOLATILE: "redis://localhost:6379/5",
-        ENABLE_HTTP_API: "http-status,http-version3,http-exports",
-        ENABLE_WS_API: "blockchain,rpc-v3",
-        GATEWAY_DEPENDENCIES: "indexer,connector",
-        WS_RATE_LIMIT_ENABLE: "false",
+        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/5',
+        ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
+        ENABLE_WS_API: 'blockchain,rpc-v3',
+        GATEWAY_DEPENDENCIES: 'indexer,connector',
+        WS_RATE_LIMIT_ENABLE: 'false',
         WS_RATE_LIMIT_CONNECTIONS: 5,
         WS_RATE_LIMIT_DURATION: 1, // in seconds
-        ENABLE_REQUEST_CACHING: "true",
-        JSON_RPC_STRICT_MODE: "false",
-        HTTP_RATE_LIMIT_ENABLE: "false",
+        ENABLE_REQUEST_CACHING: 'true',
+        JSON_RPC_STRICT_MODE: 'false',
+        HTTP_RATE_LIMIT_ENABLE: 'false',
         HTTP_RATE_LIMIT_CONNECTIONS: 200,
         HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
-        HTTP_CACHE_CONTROL_DIRECTIVES: "public, max-age=10",
-        ENABLE_HTTP_CACHE_CONTROL: "true",
-      },
+        HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
+        ENABLE_HTTP_CACHE_CONTROL: 'true',
+        HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR: 'false',
+        HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES: 0,
+        // ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS: 'true'
+        // HTTP_KEEP_ALIVE_TIMEOUT: 65000,
+        // HTTP_HEADERS_TIMEOUT: 66000,
+        // CORS_ALLOWED_ORIGIN: '*',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
+        // DOCKER_HOST: 'local',
+        // JOB_INTERVAL_UPDATE_READINESS_STATUS: 0,
+        // JOB_SCHEDULE_UPDATE_READINESS_STATUS: '* * * * *',
     },
-    // Configuration for other microservices.
+  },
+  // Configuration for other microservices.
   ],
 };
 ----
