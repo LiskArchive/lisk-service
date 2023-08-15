@@ -41,15 +41,14 @@ const getChainAccount = async (chainID) => {
 
 const getMainchainID = async () => {
 	try {
+		const { chainID } = await getNodeInfo();
+
 		if (!mainchainID) {
-			// const mainchainID = await invokeEndpoint('interoperability_getMainchainID');
-
-			// TODO: Remove this and use SDK endpoint once following issue is closed: https://github.com/LiskHQ/lisk-sdk/issues/8309
-			const { chainID } = await getNodeInfo();
-			const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
-			mainchainID = chainID.substring(0, 2).padEnd(LENGTH_CHAIN_ID, '0');
+			const response = await invokeEndpoint('interoperability_getMainchainID', { chainID });
+			mainchainID = response.error && response.error.message.includes('not registered to bus')
+				? chainID
+				: response.mainchainID;
 		}
-
 		return mainchainID;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
