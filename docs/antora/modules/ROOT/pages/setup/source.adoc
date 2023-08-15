@@ -105,7 +105,7 @@ It is recommended to use a Node version manager such as {url_nvm}[NVM^].
 NVM is a bash script that enables the management of multiple active Node.js versions.
 
 . Install NVM by following the {url_nvm_instructions}[official instructions^].
-. Install v16 of Node.js using NVM.
+. Install v18 of Node.js using NVM.
 
 .Check for the latest LTS version
 ----
