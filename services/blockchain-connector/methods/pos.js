@@ -83,9 +83,11 @@ module.exports = [
 	{
 		name: 'getPoSGenesisStakers',
 		controller: async () => getPoSGenesisStakers(),
+		params: {},
 	},
 	{
 		name: 'getPoSGenesisValidators',
 		controller: async () => getPoSGenesisValidators(),
+		params: {},
 	},
 ];

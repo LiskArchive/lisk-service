@@ -174,16 +174,18 @@ const indexBlock = async job => {
 						block.generatorAddress, blockReward, commissionAmount,
 					);
 
-					logger.trace(`Incrementing validator commission with address ${block.generatorAddress} by ${commissionAmount}.`);
+					logger.trace(`Increasing commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
 					await validatorsTable.increment({
 						increment: { totalCommission: BigInt(commissionAmount) },
 						where: { address: block.generatorAddress },
 					}, dbTrx);
-					logger.trace(`Incrementing validator self stake rewards with address ${block.generatorAddress} by ${selfStakeReward}.`);
+					logger.debug(`Increased commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
+					logger.trace(`Increasing self-stake rewards for validator ${block.generatorAddress} by ${commissionAmount}.`);
 					await validatorsTable.increment({
 						increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
 						where: { address: block.generatorAddress },
 					}, dbTrx);
+					logger.debug(`Increased self-stake rewards for validator ${block.generatorAddress} by ${commissionAmount}.`);
 				}
 			}
 
@@ -218,7 +220,7 @@ const indexBlock = async job => {
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
 		await commitDBTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
+		logger.info(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
 	} catch (error) {
 		await rollbackDBTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`);
@@ -317,16 +319,18 @@ const deleteIndexedBlocks = async job => {
 							);
 
 							const validatorsTable = await getValidatorsTable();
-							logger.trace(`Decrementing validator commission with address ${block.generatorAddress} by ${commissionAmount}.`);
+							logger.trace(`Decreasing commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
 							await validatorsTable.decrement({
 								increment: { totalCommission: BigInt(commissionAmount) },
 								where: { address: block.generatorAddress },
 							}, dbTrx);
-							logger.trace(`Decrementing validator self stake rewards with address ${block.generatorAddress} by ${selfStakeReward}.`);
+							logger.debug(`Decreased commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
+							logger.trace(`Decreasing self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`);
 							await validatorsTable.decrement({
 								increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
 								where: { address: block.generatorAddress },
 							}, dbTrx);
+							logger.debug(`Decreased self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`);
 						}
 					}
 

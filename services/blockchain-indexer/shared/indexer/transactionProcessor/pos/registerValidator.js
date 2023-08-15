@@ -44,6 +44,7 @@ const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL
 const COMMAND_NAME = 'registerValidator';
 
 const getCommissionIndexingInfo = (blockHeader, tx) => {
+	// TODO: Fetch default commission value from node.
 	const newCommissionEntry = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		commission: 10000,

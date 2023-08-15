@@ -29,7 +29,6 @@ module.exports = {
 			max_memory_restart: '300M',
 			autorestart: true,
 			env: {
-				PORT: 9901,
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/5',
@@ -54,6 +53,8 @@ module.exports = {
 				// CORS_ALLOWED_ORIGIN: '*',
 				// HOST: '0.0.0.0',
 				// SERVICE_BROKER_TIMEOUT: 10,
+				// HOST: '0.0.0.0',
+				// PORT: 9901,
 				// SERVICE_LOG_LEVEL: 'info',
 				// SERVICE_LOG_CONSOLE: false,
 				// SERVICE_LOG_STDOUT: true,
