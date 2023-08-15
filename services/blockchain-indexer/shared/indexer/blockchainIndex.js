@@ -220,7 +220,7 @@ const indexBlock = async job => {
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
 		await commitDBTransaction(dbTrx);
-		logger.info(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
+		logger.debug(`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`);
 	} catch (error) {
 		await rollbackDBTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`);
