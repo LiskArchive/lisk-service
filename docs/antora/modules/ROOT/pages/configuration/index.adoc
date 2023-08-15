@@ -828,10 +828,49 @@ Properties::
 | mysql://lisk:password@127.0.0.1:3306/lisk
 
 | `ENABLE_REBUILD_INDEX_AT_INIT`
-| string
+| boolean
 | Boolean flag to truncate the index and rebuild at application init.
 | false
 
+| `DEFAULT_APPS`
+| string
+| Default blockchain applications. 
+By default, it is set to `lisk_mainchain`.
+| lisk_mainchain
+
+| `JOB_INTERVAL_DELETE_NON_METADATA_FILES`
+| number
+| Job run interval to delete non-metadata files.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_DELETE_NON_METADATA_FILES`
+| string
+| Job run cron schedule to delete non-metadata files.
+By default, it is set to run every day at midnight.
+| 0 0 * * *
+
+| `JOB_INTERVAL_UPDATE_METADATA`
+| number
+| Job run interval to update off-chain metadata.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_UPDATE_METADATA`
+| string
+| Job run cron schedule to update off-chain metadata.
+By default, it is set to run every `10` minutes.
+| */10 * * * *
+
+| `GITHUB_APP_REGISTRY_REPO`
+| string
+| URL of `app-registry` GitHub repository.
+| https://github.com/LiskHQ/app-registry
+
+| `GITHUB_APP_REGISTRY_REPO_BRANCH`
+| string
+| Relevant branch for `app-registry` GitHub repository.
+| main
 |===
 
 --
@@ -851,6 +890,19 @@ module.exports = {
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
         ENABLE_REBUILD_INDEX_AT_INIT: false,
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // GITHUB_APP_REGISTRY_REPO: 'https://github.com/LiskHQ/app-registry',
+        // GITHUB_APP_REGISTRY_REPO_BRANCH: 'main',
+        // JOB_INTERVAL_DELETE_NON_METADATA_FILES: 0,
+        // JOB_SCHEDULE_DELETE_NON_METADATA_FILES: '0 0 * * *',
+        // JOB_INTERVAL_UPDATE_METADATA: 0,
+        // JOB_SCHEDULE_UPDATE_METADATA: '*/10 * * * *',
       },
     },
     // Configuration for other microservices.
