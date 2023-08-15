@@ -534,10 +534,10 @@ module.exports = {
         SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
         // SERVICE_BROKER_TIMEOUT: 10,
         // SERVICE_LOG_LEVEL: 'info',
-        // SERVICE_LOG_CONSOLE: 'false',
-        // SERVICE_LOG_STDOUT: 'true',
-        // SERVICE_LOG_GELF: 'false',
-        // SERVICE_LOG_FILE: 'false',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
         // DOCKER_HOST: 'local',
         // JOB_INTERVAL_INDEX_MISSING_BLOCKS: 0,
         // JOB_SCHEDULE_INDEX_MISSING_BLOCKS: '*/15 * * * *',
@@ -558,7 +558,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,4,2",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -572,7 +572,7 @@ Properties::
 
 | `SERVICE_INDEXER_MYSQL`
 | string
-| Connection string of the MySQL instance that the microservice connects to.
+| Connection string (read/write) of the primary MySQL instance that the microservice connects to.
 | mysql://lisk:password@127.0.0.1:3306/lisk
 
 | `SERVICE_MESSAGE_QUEUE_REDIS`
@@ -605,6 +605,139 @@ Must match the value supplied for the `coordinator` microservice.
 | string
 | URL of the cache storage (Redis).
 | redis://localhost:6379/1
+
+| `SERVICE_INDEXER_MYSQL_READ_REPLICA`
+| string
+| Connection string (read-only) of the replicated MySQL instance that the microservice connects to.
+| mysql://lisk:password@127.0.0.1:3306/lisk
+
+| `ENABLE_APPLY_SNAPSHOT`
+| boolean
+| Boolean flag to enable initialization of the index with the Lisk Service database snapshot.
+| false
+
+| `INDEX_SNAPSHOT_URL`
+| string
+| URL from where the Lisk Service database snapshot will be downloaded.
+| 
+
+| `ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
+| boolean
+| Boolean flag to enable downloading the snapshot from an (unsecured) HTTP URL.
+| true
+
+| `LISK_STATIC`
+| string
+| URL of Lisk static assets.
+| https://static-data.lisk.com
+
+| `JOB_INTERVAL_DELETE_SERIALIZED_EVENTS`
+| number
+| Job run interval to delete serialized events.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`
+| string
+| Job run cron schedule to delete serialized events.
+By default, it is set to run every 5th minute.
+| */5 * * * *
+
+| `JOB_INTERVAL_REFRESH_VALIDATORS`
+| number
+| Job run interval to refresh validators cache.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_VALIDATORS`
+| string
+| Job run cron schedule to refresh validators cache.
+By default, it is set to run every 5th minute.
+| */5 * * * *
+
+| `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`
+| number
+| Job run interval to validate the rank for all the validators.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK`
+| string
+| Job run cron schedule to validate the rank for all the validators.
+By default, it is set to run every `15` minutes and starts at `4` minutes past the hour.
+| 4-59/15 * * * *
+
+| `JOB_INTERVAL_REFRESH_INDEX_STATUS`
+| string
+| Job run interval to refresh indexing status.
+By default, it is set to run every `10` seconds.
+| 10
+
+| `JOB_SCHEDULE_REFRESH_INDEX_STATUS`
+| string
+| Job run cron schedule to refresh indexing status. 
+By default, it is set to an empty string `''`.
+| 
+
+| `JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS`
+| number
+| Job run interval to refresh blockchain application statistics.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`
+| string
+| Job run cron schedule to refresh blockchain application statistics.
+By default, it is set to run every 15th minute.
+| */15 * * * *
+
+| `JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE`
+| number
+| Job run interval to refresh account knowledge.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`
+| string
+| Job run cron schedule to refresh account knowledge.
+By default, it is set to run every 15th minute.
+| */15 * * * *
+
+| `JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA`
+| number
+| Job run interval to delete finalized CCU metadata.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA`
+| string
+| Job run cron schedule to delete finalized CCU metadata.
+By default, it is set to run once a day at 02:00 am.
+| 0 2 * * *
+
+| `JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES`
+| number
+| Job run interval to trigger account updates.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`
+| string
+| Job run cron schedule to trigger account updates. 
+By default, it is set to run every 15th minute.
+| */15 * * * *
+
+| `ESTIMATES_BUFFER_BYTES_LENGTH`
+| number
+| Transaction buffer bytes to consider when estimating the transaction fees.
+By default, it is set to `0`.
+| 0
+
+| `MAINCHAIN_SERVICE_URL`
+| string
+| Mainchain service URL for custom deployments.
+| https://service.lisk.com
+
 |===
 
 --
@@ -626,9 +759,40 @@ module.exports = {
         SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
         SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
         SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-        ENABLE_DATA_RETRIEVAL_MODE: true,
-        ENABLE_INDEXING_MODE: true,
-        ENABLE_PERSIST_EVENTS: false,
+        ENABLE_DATA_RETRIEVAL_MODE: 'true',
+        ENABLE_INDEXING_MODE: 'true',
+        ENABLE_PERSIST_EVENTS: 'false',
+        // ENABLE_APPLY_SNAPSHOT: 'false',
+        // INDEX_SNAPSHOT_URL: '',
+        // ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP: 'true',
+        // SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
+        // DOCKER_HOST: 'local',
+        // MAINCHAIN_SERVICE_URL: 'https://service.lisk.com',
+        // LISK_STATIC: 'https://static-data.lisk.com',
+        // DEVNET_MAINCHAIN_URL: 'http://devnet-service.liskdev.net:9901',
+        // ESTIMATES_BUFFER_BYTES_LENGTH: 0,
+        // JOB_INTERVAL_DELETE_SERIALIZED_EVENTS: 0,
+        // JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS: '*/5 * * * *',
+        // JOB_INTERVAL_REFRESH_VALIDATORS: 0,
+        // JOB_SCHEDULE_REFRESH_VALIDATORS: '*/5 * * * *',
+        // JOB_INTERVAL_VALIDATE_VALIDATORS_RANK: 0,
+        // JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK: '4-59/15 * * * *',
+        // JOB_INTERVAL_REFRESH_INDEX_STATUS: 10,
+        // JOB_SCHEDULE_REFRESH_INDEX_STATUS: '',
+        // JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS: 0,
+        // JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS: '*/15 * * * *',
+        // JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE: 0,
+        // JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE: '*/15 * * * *',
+        // JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA: 0,
+        // JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA: '0 2 * * *',
+        // JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES: 0,
+        // JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES: '*/15 * * * *',
       },
     },
     // Configuration for other microservices.
