@@ -2,7 +2,7 @@
     "executionStatus": {
         "name": "executionStatus",
         "in": "query",
-        "description": "Query transactions by their executionStatus status.\nAccepted values: pending, successful, failed.",
+        "description": "Query transactions by their executionStatus.\nAccepted values: pending, successful, failed.",
         "type": "string",
         "minLength": 1
     },
