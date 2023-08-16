@@ -84,6 +84,10 @@ initDatabase()
 			await tempApp.run();
 			const { getRegisteredModules } = require('./shared/constants');
 			registeredModules.push(...await getRegisteredModules());
+
+			// TODO: remove this after SDK implements NFT
+			registeredModules.push('nft');
+
 			// Stop the temporary node before app definition to avoid context (logger) overwriting issue
 			await tempApp.getBroker().stop();
 		}

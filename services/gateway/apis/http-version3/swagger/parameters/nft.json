@@ -1,0 +1,20 @@
+{
+    "nftID": {
+        "name": "nftID",
+        "in": "query",
+        "description": "ID of the NFT.",
+        "type": "string"
+    },
+    "nftCollectionID": {
+        "name": "collectionID",
+        "in": "query",
+        "description": "Collection ID of the NFT.",
+        "type": "string"
+    },
+    "nftOwner": {
+        "name": "owner",
+        "in": "query",
+        "description": "Owner of the NFT.",
+        "type": "string"
+    }
+}

@@ -1,0 +1,108 @@
+{
+    "NFTAttributes": {
+        "type": "object",
+        "required": [
+            "module",
+            "attributes"
+        ],
+        "properties": {
+            "module": {
+                "type": "string",
+                "example": "customModule"
+            },
+            "attributes": {
+                "type": "string",
+                "example": "Custom attribute"
+            }
+        }
+    },
+    "NFT": {
+        "type": "object",
+        "required": [
+            "id",
+            "nft",
+            "owner",
+            "attributesArray",
+            "lockingModule",
+            "isNftEscrowerd"
+        ],
+        "properties": {
+            "id": {
+                "type": "string",
+                "description": "ID of the NFT.",
+                "example": "00000000100000001"
+            },
+            "nft": {
+                "type": "object",
+                "required": [
+                    "chainID",
+                    "collectionID",
+                    "index"
+                ],
+                "properties": {
+                    "chainID": {
+                        "type": "string",
+                        "description": "Chain ID on which the NFT was created.",
+                        "example": "00000000"
+                    },
+                    "collectionID": {
+                        "type": "string",
+                        "description": "Collection ID of the NFT.",
+                        "example": "10000000"
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index of NFT in the collection.",
+                        "example": 1
+                    }
+                }
+            },
+            "owner": {
+                "type": "string",
+                "description": "owner of the NFT. It can either be an address or chain ID.",
+                "example": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo"
+            },
+            "attributesArray": {
+                "description": "List of NFT attributes.",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/NFTAttributes"
+                }
+            },
+            "lockingModule": {
+                "type": "string",
+                "description": "Module name that locked the NFT.",
+                "example": "customModule"
+            },
+            "isNftEscrowerd": {
+                "type": "boolean",
+                "description": "A boolean flag indicating if the NFT is escrowed.",
+                "example": "true"
+            },
+            "escrowedChainID": {
+                "type": "string",
+                "description": "Chain ID of the chain to which NFT is escrowed.",
+                "example": "04000002"
+            }
+        }
+    },
+    "NFTsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of NFTs.",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/NFT"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/pagination"
+            }
+        }
+    }
+}

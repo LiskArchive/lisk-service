@@ -347,7 +347,7 @@ describe('Test registerApi method', () => {
 		aliases: {},
 		path: '/v3',
 	};
-	const registeredModuleNames = ['fee', 'interoperability', 'legacy', 'pos', 'random', 'token', 'validators'];
+	const registeredModuleNames = ['fee', 'interoperability', 'legacy', 'pos', 'random', 'token', 'validators', 'nft'];
 
 	it('should return correct api info when called with valid inputs', async () => {
 		const { registerApi } = require('../../../shared/registerHttpApi');
