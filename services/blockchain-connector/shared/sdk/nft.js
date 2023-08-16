@@ -14,20 +14,25 @@
 *
 */
 const { Exceptions: { TimeoutException }, Logger } = require('lisk-service-framework');
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { timeoutMessage } = require('./client');
 
 const logger = Logger();
 
+let moduleConstants;
+
 const getNFTConstants = async () => {
 	try {
-		const response = await invokeEndpoint('nft_getNFTConstants');
-		if (response.error) throw new Error(response.error);
-		return response;
+		if (!moduleConstants) {
+			// TODO: Fetch feeCreateNFT directly from node when implemented
+			// moduleConstants = await invokeEndpoint('nft_getConstants');
+			moduleConstants = { feeCreateNFT: 5000000 };
+		}
+		return moduleConstants;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNFTConstants\'.');
+			throw new TimeoutException('Request timed out when calling \'getConstants\'.');
 		}
-		logger.warn(`Error returned when invoking 'nft_getNFTConstants'.\n${err.stack}`);
+		logger.warn(`Error returned when invoking 'nft_getConstants'.\n${err.stack}`);
 		throw err;
 	}
 };
