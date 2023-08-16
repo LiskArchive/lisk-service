@@ -17,6 +17,7 @@ const config = require('../../../config');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_ENCODED_VALID,
+	TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS,
 } = require('../constants/transactionsDryRun');
 const { transactionsMap } = require('../constants/transactionsEstimateFees');
 
@@ -52,8 +53,18 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const calculateTransactionFees = async params => request(wsRpcUrl, 'post.transactions.estimate-fees', params);
 
 describe('Method post.transactions.estimate-fees', () => {
-	it('should return transaction fees when called with valid transaction object', async () => {
+	it('should return transaction fees when called with valid transaction object with all properties', async () => {
 		const response = await calculateTransactionFees({ transaction: TRANSACTION_OBJECT_VALID });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(transactionEstimateFees);
+	});
+
+	it('should return transaction fees when called with valid transaction object with only required properties', async () => {
+		const response = await calculateTransactionFees({
+			transaction: TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;

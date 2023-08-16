@@ -27,7 +27,7 @@ const COMMAND_NAME = 'reportMisbehavior';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	logger.debug('Reloading validators cache on reportMisbehavior transaction.');
 	await reloadValidatorCache();
@@ -35,7 +35,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	logger.debug('Reloading validators cache on reversal of reportMisbehavior transaction.');
 	await reloadValidatorCache();

@@ -95,6 +95,16 @@ tempApp.run().then(async () => {
 		transporter: config.transporter,
 		mixins: [ApiService, SocketIOService],
 		name: 'gateway',
+		created() {
+			if (config.rateLimit.numKnownProxies > 0 || config.api.isReverseProxyPresent) {
+				// Ensure all inactive connections are terminated by the ALB,
+				// by setting this a few seconds higher than the ALB idle timeout
+				this.server.keepAliveTimeout = config.api.httpKeepAliveTimeout;
+				// Ensure the headersTimeout is set higher than the keepAliveTimeout
+				// due to this nodejs regression bug: https://github.com/nodejs/node/issues/27363
+				this.server.headersTimeout = config.api.httpHeadersTimeout;
+			}
+		},
 		actions: {
 			ready() { return getReady(); },
 			async spec(ctx) { return genDocs(ctx, registeredModuleNames); },

@@ -83,8 +83,7 @@ const request = async (url, params = {}) => {
 
 	if (!httpParams.method) httpParams.method = 'get';
 
-	if (httpParams.method.toLowerCase() === 'get'
-		&& params.cacheTTL && params.cacheTTL > 0) {
+	if (httpParams.method.toLowerCase() === 'get' && params.cacheTTL && params.cacheTTL > 0) {
 		key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
 		response = await cache.get(key);
 	}

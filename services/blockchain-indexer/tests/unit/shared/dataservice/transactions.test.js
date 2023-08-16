@@ -47,7 +47,7 @@ describe('dryRunTransactions', () => {
 	});
 
 	it('should return response on successful operation', async () => {
-		const mockResponse = { data: 'Success' };
+		const mockResponse = { data: { success: true } };
 
 		const business = require(mockBusinessFilePath);
 		jest.mock(mockBusinessFilePath, () => ({
@@ -104,7 +104,7 @@ describe('dryRunTransactions', () => {
 
 describe('Test isIncludePendingTransactions method', () => {
 	it('should return true when called with pending execution status', async () => {
-		const executionStatus = 'pending,success';
+		const executionStatus = 'pending,successful';
 		const { isIncludePendingTransactions } = require(transactionsFilePath);
 		const result = isIncludePendingTransactions(executionStatus);
 		expect(typeof result).toBe('boolean');
@@ -112,7 +112,7 @@ describe('Test isIncludePendingTransactions method', () => {
 	});
 
 	it('should return false when called without pending execution status', async () => {
-		const executionStatus = 'success,fail';
+		const executionStatus = 'successful,failed';
 		const { isIncludePendingTransactions } = require(transactionsFilePath);
 		const result = isIncludePendingTransactions(executionStatus);
 		expect(typeof result).toBe('boolean');

@@ -262,8 +262,8 @@
 			},
 			"executionStatus": {
 				"type": "string",
-				"example": "success",
-				"description": "Execution status of the transaction.\nAccepted values: pending, success, fail."
+				"example": "successful",
+				"description": "Execution status of the transaction.\nAccepted values: pending, successful, failed."
 			},
 			"index": {
 				"type": "integer",
@@ -473,7 +473,7 @@
 					},
 					"status": {
 						"type": "string",
-						"example": "ok",
+						"example": "valid",
 						"description": "Transaction verification status."
 					},
 					"events": {
@@ -564,6 +564,9 @@
 	},
 	"transactionEstimateFeesRequestBody": {
 		"type": "object",
+		"required": [
+			"transaction"
+		],
 		"properties": {
 			"transaction": {
 				"type": "object",
@@ -576,6 +579,11 @@
 					"params"
 				],
 				"properties": {
+					"id": {
+						"type": "string",
+						"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
+						"description": "Unique identifier of the transaction."
+					},
 					"module": {
 						"type": "string",
 						"example": "token",
@@ -590,6 +598,11 @@
 						"type": "string",
 						"example": "0"
 					},
+					"fee": {
+						"type": "string",
+						"example": "1000000",
+						"description": "Transaction fee."
+					},
 					"senderPublicKey": {
 						"type": "string",
 						"example": "a3f96c50d0446220ef2f98240898515cbba8155730679ca35326d98dcfb680f0",
@@ -598,7 +611,6 @@
 					"signatures": {
 						"type": "array",
 						"description": "An array representing signature(s) of the transaction sender.",
-						"minItems": 1,
 						"items": {
 							"type": "string"
 						},
@@ -633,6 +645,16 @@
 								"type": "string",
 								"example": "Cross chain transfer tx",
 								"description": "Transaction data."
+							},
+							"messageFee": {
+								"type": "string",
+								"example": "1000000",
+								"description": "Fee to be used for transaction processing in the receiving chain."
+							},
+							"messageFeeTokenID": {
+								"type": "string",
+								"example": "0000000000000000",
+								"description": "Token used for cross-chain message fee."
 							}
 						}
 					}
@@ -781,6 +803,11 @@
 														"type": "string",
 														"example": "10000000",
 														"description": "The extra fee to be supplied for initializing an escrow token account."
+													},
+													"chainRegistrationFee": {
+														"type": "string",
+														"example": "1000000000",
+														"description": "The extra fee to be supplied for a chain registration transaction."
 													},
 													"bufferBytes": {
 														"type": "string",

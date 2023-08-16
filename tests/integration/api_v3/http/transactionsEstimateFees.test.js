@@ -18,6 +18,7 @@ const { api } = require('../../../helpers/api');
 const {
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_ENCODED_VALID,
+	TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS,
 } = require('../constants/transactionsDryRun');
 const { transactionsMap } = require('../constants/transactionsEstimateFees');
 
@@ -49,8 +50,16 @@ const getSumOfMetaValues = (meta) => {
 };
 
 describe('Post estimate-fees transactions API', () => {
-	it('should return transaction fees with valid transaction object', async () => {
+	it('should return transaction fees with valid transaction object with all properties', async () => {
 		const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
+		expect(response).toMap(transactionEstimateFees);
+	});
+
+	it('should return transaction fees with valid transaction object with only required properties', async () => {
+		const response = await api.post(
+			endpoint,
+			{ transaction: TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS },
+		);
 		expect(response).toMap(transactionEstimateFees);
 	});
 

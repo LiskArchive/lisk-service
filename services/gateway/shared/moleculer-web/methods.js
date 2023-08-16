@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies,eqeqeq,consistent-return */
 
 /*
-* moleculer
+ * moleculer
  * Copyright (c) 2020 MoleculerJS (https://github.com/moleculerjs/moleculer)
  * MIT Licensed
  */
@@ -43,16 +43,23 @@ module.exports = {
 				}
 			} catch (err) {
 				if (this.settings.log4XXResponses || (err && !_.inRange(err.code, 400, 500))) {
-					const reqParams = Object
-						.fromEntries(new Map(Object.entries(req.$params).filter(([, v]) => v)));
-					if (err && err.name !== 'ValidationException') this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(reqParams)} \nRequest body: ${util.inspect(req.body)}`);
+					const reqParams = Object.fromEntries(
+						new Map(Object.entries(req.$params).filter(([, v]) => v)),
+					);
+					if (err && err.name !== 'ValidationException') this.logger.error(
+						`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${
+							err.message
+						} \n${err.stack} \nData: \nRequest params: ${util.inspect(
+							reqParams,
+						)} \nRequest body: ${util.inspect(req.body)}`,
+					);
 				}
 
 				if (err && err.name === 'ValidationException') {
 					const molecularError = new MoleculerError(err.message, 400);
 					this.sendError(req, res, molecularError);
 				} else {
-					const errMessage = (err && err.message) ? err.message : 'Internal server error';
+					const errMessage = err && err.message ? err.message : 'Internal server error';
 					const molecularError = new MoleculerServerError(errMessage, 500);
 					this.sendError(req, res, molecularError);
 				}
@@ -72,7 +79,11 @@ module.exports = {
 
 			if (this.settings.enable2XXResponses) {
 				if (this.settings.log2XXResponses && this.settings.log2XXResponses in this.logger) {
-					this.logger[this.settings.log2XXResponses](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
+					this.logger[this.settings.log2XXResponses](
+						`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(
+							req.originalUrl,
+						)} ${time}`,
+					);
 				}
 				if (this.settings.logResponseData && this.settings.logResponseData in this.logger) {
 					this.logger[this.settings.logResponseData]('  Data:', data);
@@ -131,5 +142,4 @@ module.exports = {
 			}
 		},
 	},
-
 };

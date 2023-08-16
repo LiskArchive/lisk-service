@@ -50,7 +50,7 @@ const tokenTransferTransaction = {
 			name: 'genesis_0',
 		},
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 0,
 };
 
@@ -85,7 +85,7 @@ const selfTokenTransferTransaction = {
 			name: 'genesis_0',
 		},
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 0,
 };
 

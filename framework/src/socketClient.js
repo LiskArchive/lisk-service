@@ -65,19 +65,25 @@ const SocketClient = endpoint => {
 	});
 
 	const emit = (event, data) => new Promise(resolve => {
-		socket.emit(event, data, answer => {
-			debug(`Emitting socket event ${event} with data ${util.inspect(data)}: ${util.inspect(answer)}`);
-			resolve(answer);
+			socket.emit(event, data, answer => {
+				debug(
+					`Emitting socket event ${event} with data ${util.inspect(data)}: ${util.inspect(answer)}`,
+				);
+				resolve(answer);
+			});
 		});
-	});
 
 	const requestRpc = params => new Promise(resolve => {
-		debug(`Emitting RPC request ${params}`);
-		socket.emit('request', params, answer => {
-			debug(`Received RPC answer for method ${params.method} with params ${params}: ${util.inspect(answer)}`);
-			answer(resolve);
+			debug(`Emitting RPC request ${params}`);
+			socket.emit('request', params, answer => {
+				debug(
+					`Received RPC answer for method ${params.method} with params ${params}: ${util.inspect(
+						answer,
+					)}`,
+				);
+				answer(resolve);
+			});
 		});
-	});
 
 	return {
 		emit,
