@@ -70,7 +70,6 @@ const getEventsInfoToIndex = async (block, events) => {
 
 		event.topics.forEach(topic => {
 			const eventTopicInfo = {
-				tempID: event.id.concat(topic),
 				eventID: event.id,
 				height: block.height,
 				name: event.name,

@@ -22,7 +22,6 @@ module.exports = {
 		memberAddress: { type: 'string' },
 	},
 	indexes: {
-		id: { type: 'key' },
 		groupAddress: { type: 'key' },
 		memberAddress: { type: 'key' },
 	},
