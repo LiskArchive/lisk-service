@@ -91,7 +91,7 @@ For example, Graylog 'localhost:12201/udp'.
 
 | `DOCKER_HOST`
 | string
-| 
+| Used by the Docker CLI to determine the host to connect to.
 | local
 |===
 
@@ -1046,9 +1046,38 @@ Properties::
 | redis://localhost:6379/1
 
 | `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`
-| string
+| number
 | The number of days for which the transaction statistics need to be built in retrospect to the application init.
 | 366
+
+| `SERVICE_STATISTICS_MYSQL_READ_REPLICA`
+| string
+| Connection string (read-only) of the replicated MySQL instance that the microservice connects to.
+| mysql://reader:password@127.0.0.1:3307/lisk
+
+| `JOB_INTERVAL_REFRESH_TRANSACTION_STATS`
+| number
+| Job run interval to refresh transaction statistics.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_TRANSACTION_STATS`
+| string
+| Job run cron schedule to refresh transaction statistics.
+By default, it is set to run every 30th minute.
+| */30 * * * *
+
+| `JOB_INTERVAL_VERIFY_TRANSACTION_STATS`
+| number
+| Job run interval to verify if the transaction statistics have been built correctly.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_VERIFY_TRANSACTION_STATS`
+| string
+|Job run cron schedule to verify if the transaction statistics have been built correctly. 
+By default, it is set to run every 3rd hour after the first `15` minutes.
+| 15 */3 * * *
 
 |===
 
@@ -1069,7 +1098,19 @@ module.exports = {
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
         SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-        TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
+        TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
+        // SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@127.0.0.1:3307/lisk',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // JOB_INTERVAL_REFRESH_TRANSACTION_STATS: 0,
+        // JOB_SCHEDULE_REFRESH_TRANSACTION_STATS: '*/30 * * * *',
+        // JOB_INTERVAL_VERIFY_TRANSACTION_STATS: 0,
+        // JOB_SCHEDULE_VERIFY_TRANSACTION_STATS: '15 */3 * * *',
       },
     },
     // Configuration for other microservices.
