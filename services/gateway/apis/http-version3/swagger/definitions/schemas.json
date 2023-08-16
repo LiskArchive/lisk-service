@@ -458,7 +458,7 @@
                                                         "type": "integer",
                                                         "example": 2
                                                     }
-                                                } 
+                                                }
                                             },
                                             "certificateSignature": {
                                                 "type": "object",
@@ -1414,7 +1414,7 @@
                                         "example": "array"
                                     },
                                     "items": {
-                                        "type":"object",
+                                        "type": "object",
                                         "properties": {
                                             "dataType": {
                                                 "type": "string",

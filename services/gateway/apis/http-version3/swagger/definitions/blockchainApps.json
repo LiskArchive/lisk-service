@@ -22,7 +22,7 @@
 			},
 			"status": {
 				"type": "string",
-				"example": "active",
+				"example": "activated",
 				"description": "Current status of the application."
 			},
 			"address": {
@@ -101,10 +101,10 @@
 						"example": 2503,
 						"description": "List of registered blockchain applications"
 					},
-					"active": {
+					"activated": {
 						"type": "integer",
 						"example": 2328,
-						"description": "List of active blockchain applications"
+						"description": "List of activated blockchain applications"
 					},
 					"terminated": {
 						"type": "integer",
@@ -210,7 +210,7 @@
 			},
 			"status": {
 				"type": "string",
-				"example": "active",
+				"example": "activated",
 				"description": "Current status of the application."
 			},
 			"description": {

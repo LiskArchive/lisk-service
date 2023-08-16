@@ -20,7 +20,7 @@ const regex = require('./regex');
 const TRANSACTION_VERIFY_RESULT = {
 	INVALID: -1,
 	PENDING: 0,
-	OK: 1,
+	VALID: 1,
 };
 
 const TRANSACTION_VERIFY_STATUSES = Object
@@ -42,13 +42,13 @@ const eventSchemaWithSkipDecode = {
 };
 
 const dryrunTransactionSuccessResponseSchema = {
-	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.VALID).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 
 const dryrunTxSuccessSchemaWithSkipDecode = {
-	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.VALID).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(eventSchemaWithSkipDecode).required()).min(1).required(),
 };
