@@ -14,6 +14,7 @@
  *
  */
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../../../shared/utils/transactions');
+const { TRANSACTION_STATUS } = require('../../../../shared/constants');
 
 const {
 	inputTransaction,
@@ -25,11 +26,6 @@ const {
 	eventsForValidTx,
 	eventsWithFailStatus,
 } = require('../../../constants/events');
-
-const TRANSACTION_STATUS = Object.freeze({
-	SUCCESSFUL: 'successful',
-	FAILED: 'failed',
-});
 
 describe('Test normalizeTransaction method', () => {
 	it('should return normalizedTransaction -> valid tx', async () => {
