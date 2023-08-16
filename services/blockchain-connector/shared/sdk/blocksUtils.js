@@ -14,8 +14,8 @@
  *
  */
 const fs = require('fs');
-const json = require('big-json');
 const path = require('path');
+const json = require('big-json');
 
 const {
 	Logger,

@@ -27,9 +27,7 @@ const {
 } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -122,12 +120,10 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('should post dryrun transaction successfully skipping verification', async () => {
 		if (isDevnet) {
-			const response = await postDryrunTransaction(
-				{
-					transaction: TRANSACTION_OBJECT_VALID,
-					skipVerify: true,
-				},
-			);
+			const response = await postDryrunTransaction({
+				transaction: TRANSACTION_OBJECT_VALID,
+				skipVerify: true,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 
 			const { result } = response;
@@ -140,11 +136,10 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('should post dryrun transaction successfully with skipDecode: true', async () => {
 		if (isDevnet) {
-			const response = await postDryrunTransaction(
-				{
-					transaction: TRANSACTION_ENCODED_VALID, skipDecode: true,
-				},
-			);
+			const response = await postDryrunTransaction({
+				transaction: TRANSACTION_ENCODED_VALID,
+				skipDecode: true,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 
 			const { result } = response;
@@ -157,12 +152,10 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('should return proper response (valid) when calling with unsigned transaction with strict: false', async () => {
 		if (isDevnet) {
-			const response = await postDryrunTransaction(
-				{
-					transaction: UNSIGNED_TRANSACTION_OBJECT,
-					strict: false,
-				},
-			);
+			const response = await postDryrunTransaction({
+				transaction: UNSIGNED_TRANSACTION_OBJECT,
+				strict: false,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 
 			const { result } = response;
@@ -175,12 +168,10 @@ describe('Method post.transactions.dryrun', () => {
 
 	it('should return proper response (invalid) when calling with unsigned transaction with strict: true', async () => {
 		if (isDevnet) {
-			const response = await postDryrunTransaction(
-				{
-					transaction: UNSIGNED_TRANSACTION_OBJECT,
-					strict: true,
-				},
-			);
+			const response = await postDryrunTransaction({
+				transaction: UNSIGNED_TRANSACTION_OBJECT,
+				strict: true,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 
 			const { result } = response;
