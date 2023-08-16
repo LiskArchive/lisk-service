@@ -180,12 +180,12 @@ const indexBlock = async job => {
 						where: { address: block.generatorAddress },
 					}, dbTrx);
 					logger.debug(`Increased commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
-					logger.trace(`Increasing self-stake rewards for validator ${block.generatorAddress} by ${commissionAmount}.`);
+					logger.trace(`Increasing self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`);
 					await validatorsTable.increment({
 						increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
 						where: { address: block.generatorAddress },
 					}, dbTrx);
-					logger.debug(`Increased self-stake rewards for validator ${block.generatorAddress} by ${commissionAmount}.`);
+					logger.debug(`Increased self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`);
 				}
 			}
 
@@ -321,13 +321,13 @@ const deleteIndexedBlocks = async job => {
 							const validatorsTable = await getValidatorsTable();
 							logger.trace(`Decreasing commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
 							await validatorsTable.decrement({
-								increment: { totalCommission: BigInt(commissionAmount) },
+								decrement: { totalCommission: BigInt(commissionAmount) },
 								where: { address: block.generatorAddress },
 							}, dbTrx);
 							logger.debug(`Decreased commission for validator ${block.generatorAddress} by ${commissionAmount}.`);
 							logger.trace(`Decreasing self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`);
 							await validatorsTable.decrement({
-								increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
+								decrement: { totalSelfStakeRewards: BigInt(selfStakeReward) },
 								where: { address: block.generatorAddress },
 							}, dbTrx);
 							logger.debug(`Decreased self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`);
