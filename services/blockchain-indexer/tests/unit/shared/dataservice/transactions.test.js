@@ -47,7 +47,7 @@ describe('dryRunTransactions', () => {
 	});
 
 	it('should return response on successful operation', async () => {
-		const mockResponse = { data: { Success: true } };
+		const mockResponse = { data: { success: true } };
 
 		const business = require(mockBusinessFilePath);
 		jest.mock(mockBusinessFilePath, () => ({
