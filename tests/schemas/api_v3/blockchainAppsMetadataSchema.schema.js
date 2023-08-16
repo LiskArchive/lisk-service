@@ -17,7 +17,7 @@ import Joi from 'joi';
 import regex from './regex';
 
 const EMPTY_STRING = '';
-const validStatuses = ['registered', 'active', 'terminated', 'unregistered'];
+const validStatuses = ['registered', 'activated', 'terminated', 'unregistered'];
 
 const logo = {
 	png: Joi.string().required(),
