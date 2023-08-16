@@ -7,25 +7,23 @@ Muhammad Talha <muhammad.talha@lightcurve.io>
 :idprefix:
 :idseparator: -
 :experimental:
+:source-language: js
 
 :url_microservices: index.adoc#microservices
 :url_intro_services: index.adoc
+
 :url_pm2: https://pm2.keymetrics.io/
-:url_config_file: https://github.com/LiskHQ/lisk-service/blob/development/ecosystem.config.js
+:url_config_file: https://github.com/LiskHQ/lisk-service/blob/release/0.7.0/ecosystem.config.js
 :url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
-:source-language: js
-
 :url_faq: https://moleculer.services/docs/0.14/faq.html#Why-am-I-getting-502-Bad-Gateway-when-api-gateway-is-behind-ALB-on-AWS
-
-
 
 On the xref:{url_intro_services}[Introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
 On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
-By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2].
+By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2^].
 
-NOTE: The actual {url_config_file}[`*ecosystem.config.js*`] file for Lisk Service can be found in the {url_lisk_service_repo}[lisk-service] GitHub repository.
+NOTE: The actual {url_config_file}[`*ecosystem.config.js*`^] file for Lisk Service can be found in the {url_lisk_service_repo}[lisk-service^] GitHub repository.
 
 The values of various environment variables are automatically picked by the microservices based on the installation environment.
 Aside from that, many environment variables can be configured to meet the specific requirements, the details of which have been outlined with each microservice.
@@ -36,25 +34,20 @@ In this section, we discuss the common and specific configurations of all the mi
 === Common configurations
 The common configurations described in this section apply to all the microservices within Lisk Service.
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
 |Description
 |Sample
 
-| `SERVICE_BROKER`
-| string
-| URL of the microservice message broker.
+|`SERVICE_BROKER`
+|string
+|URL of the microservice message broker.
 *Must be identical for all the microservices.*
 Make sure that all microservices can connect with the message broker.
 This could be a NATS or a Redis instance.
-| redis://localhost:6379/0
+|redis://localhost:6379/0
 
 | `SERVICE_BROKER_TIMEOUT`
 | number
@@ -86,7 +79,7 @@ This property should be enabled only for debugging purposes.
 | `SERVICE_LOG_GELF`
 | string
 | Enable log output in GELF for remote logging.
-For example, Graylog 'localhost:12201/udp'.
+For example, Graylog: `localhost:12201/udp`.
 | localhost:12201/udp
 
 | `DOCKER_HOST`
@@ -95,11 +88,10 @@ For example, Graylog 'localhost:12201/udp'.
 | local
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example of two microservices having the same environment variables
 ----
 module.exports = {
   apps: [
@@ -111,6 +103,11 @@ module.exports = {
         // --- Remember to set the properties below
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
         // [...]
       },
     },
@@ -121,6 +118,11 @@ module.exports = {
         // --- Remember to set the properties below
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
         // [...]
       },
     },
@@ -128,17 +130,11 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 === Gateway
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -293,11 +289,10 @@ By default, it is set to run every minute.
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Gateway microservice 
 ----
 module.exports = {
   apps: [
@@ -344,18 +339,13 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 
 === Connector
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 | Environment variable
 |Datatype
@@ -433,11 +423,10 @@ By default, it is set to an empty string `''`.
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Blockchain Connector microservice 
 ----
 module.exports = {
   apps: [
@@ -473,19 +462,13 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 
 
 === Coordinator
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -516,11 +499,10 @@ By default, it is set to run every 15 minutes.
 | */15 * * * *
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Coordinator microservice 
 ----
 module.exports = {
   apps: [
@@ -547,18 +529,12 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 
 === Indexer
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,4,2m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -740,11 +716,10 @@ By default, it is set to `0`.
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Blockchain Indexer microservice 
 ----
 module.exports = {
   apps: [
@@ -799,18 +774,13 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 
 
 === Blockchain application registry
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -873,11 +843,10 @@ By default, it is set to run every `10` minutes.
 | main
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Blockchain App Registry microservice 
 ----
 module.exports = {
   apps: [
@@ -909,18 +878,12 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 
 === Fee estimator
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -975,11 +938,10 @@ By default, it starts at the genesis height in full mode and the current block h
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Fee Estimator microservice 
 ----
 module.exports = {
   apps: [
@@ -1011,19 +973,13 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 
 
 === Transaction statistics
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1081,11 +1037,10 @@ By default, it is set to run every 3rd hour after the first `15` minutes.
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Transaction Statistics microservice 
 ----
 module.exports = {
   apps: [
@@ -1117,17 +1072,11 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 === Market
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1225,11 +1174,10 @@ By default, it is set to an empty string `''`.
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Market microservice 
 ----
 module.exports = {
   apps: [
@@ -1267,17 +1215,11 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 === Export
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1362,11 +1304,10 @@ By default, it is set to run daily at 04:45 am.
 | export
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Export microservice 
 ----
 module.exports = {
   apps: [
@@ -1402,8 +1343,7 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 == Lisk Settings
 
@@ -1412,9 +1352,9 @@ Configurable environment variables related to Lisk node.
 === MySQL Snapshot settings for Docker
 Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
 
-[cols="2,1,3,3m",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
-|Property's Name
+|Environment variable
 |Datatype
 |Description
 |Sample
