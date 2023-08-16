@@ -41,7 +41,7 @@ The common configurations described in this section apply to all the microservic
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -138,7 +138,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -355,7 +355,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 | Environment variable
 |Datatype
@@ -485,7 +485,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -558,7 +558,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,4,2",options="header",stripes="hover"]
+[cols="2,1,4,2m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -810,7 +810,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -920,7 +920,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1023,7 +1023,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1127,7 +1127,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1222,6 +1222,7 @@ By default, it is set to run every `5` seconds.
 | Job run cron schedule to update market prices.
 By default, it is set to an empty string `''`.
 |
+
 |===
 
 --
@@ -1276,7 +1277,7 @@ module.exports = {
 Properties::
 +
 --
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,3,3m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -1286,7 +1287,7 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://localhost:6379/0  
 
 | `SERVICE_EXPORT_REDIS`
 | string
@@ -1298,6 +1299,67 @@ Properties::
 | URL of the volatile cache storage (Redis).
 | redis://localhost:6379/4
 
+| `SERVICE_EXPORT_PARTIALS`
+| string
+| 
+| ./data/partials
+
+| `EXPORT_S3_BUCKET_NAME_PARTIALS`
+| string
+| 
+| partials
+
+| `SERVICE_EXPORT_STATIC`
+| string
+| 
+| ./data/static
+
+| `EXPORT_S3_BUCKET_NAME_EXPORTS`
+| string
+| 
+| exports
+
+| `JOB_INTERVAL_CACHE_PURGE`
+| number
+| Job run interval to cleanup cache.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_CACHE_PURGE`
+| string
+| Job run cron schedule to cleanup cache.
+By default, it is set to run daily at 04:45 am.
+| 45 4 * * *
+
+| `EXPORT_S3_ENDPOINT`
+| string
+| Amazon S3 bucket endpoint.
+| s3.amazonaws.com
+
+| `EXPORT_S3_ACCESS_KEY`
+| string
+| Amazon S3 bucket access key for the specified endpoint.
+| 
+
+| `EXPORT_S3_SECRET_KEY`
+| string
+| Amazon S3 bucket secret key.
+| 
+
+| `EXPORT_S3_SESSION_TOKEN`
+| string
+| Amazon S3 bucket session token.
+| 
+
+| `EXPORT_S3_REGION`
+| string
+| Region where Amazon S3 bucket is hosted. Optional.
+| eu-central-1
+
+| `EXPORT_S3_BUCKET_NAME`
+| string
+| Amazon S3 bucket name. Optional.
+| export
 |===
 
 --
@@ -1316,53 +1378,59 @@ module.exports = {
         SERVICE_BROKER: 'redis://localhost:6379/0',
         SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
         SERVICE_EXPORT_REDIS_VOLATILE: 'redis://localhost:6379/4',
+        // SERVICE_EXPORT_PARTIALS: './data/partials',
+        // EXPORT_S3_BUCKET_NAME_PARTIALS: 'partials',
+        // SERVICE_EXPORT_STATIC: './data/static',
+        // EXPORT_S3_BUCKET_NAME_EXPORTS: 'exports',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
+        // DOCKER_HOST: 'local',
+        // EXPORT_S3_ENDPOINT: 's3.amazonaws.com',
+        // EXPORT_S3_ACCESS_KEY: '',
+        // EXPORT_S3_SECRET_KEY: '',
+        // EXPORT_S3_SESSION_TOKEN: '',
+        // EXPORT_S3_REGION: 'eu-central-1',
+        // EXPORT_S3_BUCKET_NAME: 'export',
+        // JOB_INTERVAL_CACHE_PURGE: 0,
+        // JOB_SCHEDULE_CACHE_PURGE: '45 4 * * *',
       },
     },
-    // Configuration for other microservices.
   ],
 };
 ----
 --
 =====
 
-// == Lisk Settings
+== Lisk Settings
 
-// Configurable environment variables related to Lisk node.
+Configurable environment variables related to Lisk node.
 
-// TODO: needs verification from Sameer
+=== MySQL Snapshot settings for Docker
+Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
 
-// === MySQL Snapshot settings for Docker
-// Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
+[cols="2,1,3,3m",options="header",stripes="hover"]
+|===
+|Property's Name
+|Datatype
+|Description
+|Sample
 
-// [cols="2,1,3,3",options="header",stripes="hover"]
-// |===
-// |Property's Name
-// |Datatype
-// |Description
-// |Sample
+| `DOCKER_COMPOSE_FILEPATH`
+| string
+| When MySQL is hosted as a docker-compose service, set the following environment variables.
+Set docker-compose file path by using the absolute path.
+| /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
 
-// | `ENABLE_APPLY_SNAPSHOT`
-// | string
-// | Enable or disable apply snapshot feature.
-// | true
+| `DOCKER_MYSQL_SERVICE_NAME`
+| string
+| Set MySQL service name as defined in the above docker-compose file.
+| mysql
 
-// | `INDEX_SNAPSHOT_URL`
-// | string
-// | Custom snapshot URL: expected to end with "sql.gz".
-// | https://snapshots.lisk.io/mainnet/service.sql.gz
-
-// | `DOCKER_COMPOSE_FILEPATH`
-// | string
-// | When MySQL is hosted as a docker-compose service, set the following environment variables.
-// Set docker-compose file path by using the absolute path.
-// | /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
-
-// | `DOCKER_MYSQL_SERVICE_NAME`
-// | string
-// | Set MySQL service name as defined in the above docker-compose file.
-// | mysql
-
-// |===
+|===
 
 
 
