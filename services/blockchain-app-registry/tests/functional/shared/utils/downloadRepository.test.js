@@ -25,9 +25,7 @@ const {
 	},
 	DB: {
 		MySQL: {
-			KVStore: {
-				getKeyValueTable,
-			},
+			KVStore: { getKeyValueTable },
 		},
 	},
 } = require('lisk-service-framework');
@@ -66,9 +64,7 @@ xdescribe('Test getCommitInfo method', () => {
 	beforeAll(async () => {
 		const keyValueTable = await getKeyValueTableInstance();
 
-		keyValueTable.set(
-			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
-			lastSyncedCommitHash);
+		keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, lastSyncedCommitHash);
 	});
 	afterAll(async () => {
 		const keyValueTable = await getKeyValueTableInstance();
@@ -86,7 +82,7 @@ xdescribe('Test getCommitInfo method', () => {
 xdescribe('Test getRepoDownloadURL method', () => {
 	it('should return correct repository download url info', async () => {
 		/* eslint-disable-next-line no-useless-escape */
-		const repoUrlRegex = /^https:\/\/\w*\.github\.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main(?:\?token=\w+)?$/;
+		const repoUrlRegex =			/^https:\/\/\w*\.github\.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main(?:\?token=\w+)?$/;
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(repoUrlRegex);
 	});
@@ -122,7 +118,10 @@ xdescribe('Test getFileDownloadURL method', () => {
 
 xdescribe('Test getDiff method', () => {
 	it('should return list of file differences between two commits when commits are valid', async () => {
-		const response = await getDiff('838464896420410dcbade293980fe42ca95931d0', '5ca021f84cdcdb3b28d3766cf675d942887327c3');
+		const response = await getDiff(
+			'838464896420410dcbade293980fe42ca95931d0',
+			'5ca021f84cdcdb3b28d3766cf675d942887327c3',
+		);
 		const fileNames = response.data.files.map(file => file.filename);
 		expect(fileNames).toEqual([
 			'alphanet/Lisk/nativetokens.json',
@@ -132,15 +131,27 @@ xdescribe('Test getDiff method', () => {
 	});
 
 	it('should throw error when both commits are invalid', async () => {
-		expect(() => getDiff('aaaa64896420410dcbade293980fe42ca95931d0', 'bbbb21f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
+		expect(() => getDiff(
+			'aaaa64896420410dcbade293980fe42ca95931d0',
+			'bbbb21f84cdcdb3b28d3766cf675d942887327c3',
+		),
+		).rejects.toThrow();
 	});
 
 	it('should throw error when lastSyncedCommitHash is invalid', async () => {
-		expect(() => getDiff('aaaa64896420410dcbade293980fe42ca95931d0', '5ca021f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
+		expect(() => getDiff(
+			'aaaa64896420410dcbade293980fe42ca95931d0',
+			'5ca021f84cdcdb3b28d3766cf675d942887327c3',
+		),
+		).rejects.toThrow();
 	});
 
 	it('should throw error when both latestCommitHash is invalid', async () => {
-		expect(() => getDiff('838464896420410dcbade293980fe42ca95931d0', 'bbbb21f84cdcdb3b28d3766cf675d942887327c3')).rejects.toThrow();
+		expect(() => getDiff(
+			'838464896420410dcbade293980fe42ca95931d0',
+			'bbbb21f84cdcdb3b28d3766cf675d942887327c3',
+		),
+		).rejects.toThrow();
 	});
 
 	it('should throw error when one or both commits are undefined', async () => {
@@ -218,10 +229,7 @@ xdescribe('Test downloadRepositoryToFS method', () => {
 
 		await rmdir(enevtiAppFilePath);
 		expect(await exists(enevtiAppFilePath)).toEqual(false);
-		await keyValueTable.set(
-			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
-			lastSyncedCommitHash,
-		);
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, lastSyncedCommitHash);
 		await downloadRepositoryToFS();
 		expect(await exists(enevtiAppFilePath)).toEqual(true);
 		await keyValueTable.delete(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC);
@@ -234,10 +242,7 @@ xdescribe('Test syncWithRemoteRepo method', () => {
 		// Set last sync commit hash in db and remove existing file
 		const keyValueTable = await getKeyValueTableInstance();
 
-		await keyValueTable.set(
-			KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
-			lastSyncedCommitHash,
-		);
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, lastSyncedCommitHash);
 		await rmdir(enevtiAppFilePath);
 	});
 	afterAll(async () => {

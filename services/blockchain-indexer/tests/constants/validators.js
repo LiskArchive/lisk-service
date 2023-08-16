@@ -20,9 +20,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -33,13 +31,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskzzw334cgd7cew5mb9bbayjmojbodgmw9pdym6p',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 1,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_45',
@@ -47,9 +42,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -60,13 +53,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskz6x7dzjr547cv42gk7suw76ojpwhu8q43ydhdp',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 2,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_10',
@@ -74,9 +64,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -87,13 +75,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskzr72jsfyvrj66krxg7tjmzhs28ko6okc9ufubj',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 3,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_33',
@@ -101,9 +86,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -114,13 +97,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskzkkm35mnozqckwzt8ajeg2j47tpu2x9bnh4d7a',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 4,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_101',
@@ -128,9 +108,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 0,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -141,13 +119,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskxvhb3f52hye5huvyzbe6hoq2mrd4qrackdthht',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 5,
 		status: 'standby',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_98',
@@ -155,9 +130,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -168,13 +141,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskx6f4vp5n9vmdwdkf7fynov42tzugsn29sj545s',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 6,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_1',
@@ -182,9 +152,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -195,13 +163,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskx7rscmxc3k9yokbqpxspjj92zz6fue84e2xw92',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 7,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_85',
@@ -209,9 +174,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -222,13 +185,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskvp52wg4co7rt634r7wq4qgc4xfzmztszv2pyn2',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 8,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_40',
@@ -236,9 +196,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -249,13 +207,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskvdf7k9d9jcefmz8o4t4odz825hh3q26o6mvbjy',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 9,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 	{
 		name: 'genesis_93',
@@ -263,9 +218,7 @@ const posValidators = [
 		selfStake: '100000000000',
 		lastGeneratedHeight: 0,
 		isBanned: false,
-		reportMisbehaviorHeights: [
-
-		],
+		reportMisbehaviorHeights: [],
 		consecutiveMissedBlocks: 2720,
 		commission: 5000,
 		lastCommissionIncreaseHeight: 0,
@@ -276,13 +229,10 @@ const posValidators = [
 			},
 		],
 		address: 'lskvfe2ug6bkb5jdwzoq48nx4dbd4n88brewo6s5c',
-		punishmentPeriods: [
-
-		],
+		punishmentPeriods: [],
 		validatorWeight: 100000000000,
 		rank: 10,
 		status: 'active',
-		valiatorWeight: 100000000000,
 	},
 ];
 

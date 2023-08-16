@@ -315,7 +315,7 @@ _Supports pagination._
 | blockID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
 | timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
-| executionStatus | String | `/^\b(?:pending\|success\|fail\|,){0,5}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| executionStatus | String | `/^\b(?:pending\|successful\|failed\|,){0,5}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | nonce | Number | `/^\d+$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -360,7 +360,7 @@ _Supports pagination._
           "name": null
         }
       },
-      "executionStatus": "success",
+      "executionStatus": "successful",
       "index": 0
     },
   ],
@@ -454,7 +454,7 @@ or
 {
   "data": {
     "result": 1,
-    "status": "ok",
+    "status": "valid",
     "events": [
       {
         "data": {
@@ -5631,7 +5631,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| status | String | `/^\b(?:registered\|active\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| status | String | `/^\b(?:registered\|activated\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -5646,7 +5646,7 @@ _Supports pagination._
     {
       "name": "Lisk",
       "chainID": "00000000",
-      "status": "active",
+      "status": "activated",
       "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
       "lastCertificateHeight": 160,
       "lastUpdated": 1616008148
@@ -5697,7 +5697,7 @@ No parameters are required.
 {
   "data": {
     "registered": 2503,
-    "active": 2328,
+    "activated": 2328,
     "terminated": 35,
     "totalSupplyLSK": "5000000",
     "totalStakedLSK": "3000000",
@@ -5964,7 +5964,7 @@ _Supports pagination._
       "displayName": "Lisk",
       "chainID": "00000000",
       "title": "Lisk blockchain application",
-      "status": "active",
+      "status": "activated",
       "description": "Lisk is a blockchain application platform.",
       "networkType": "mainnet",
       "isDefault": true,

@@ -56,7 +56,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
 	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
 
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const multisignatureTable = await getMultisignatureTable();
 
@@ -72,7 +72,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
 	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
 
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const multisignatureTable = await getMultisignatureTable();
 

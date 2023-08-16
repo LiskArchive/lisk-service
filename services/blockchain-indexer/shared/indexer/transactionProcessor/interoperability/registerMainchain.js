@@ -46,7 +46,7 @@ const getChainInfo = async chainID => {
 };
 
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const mainchainID = await getMainchainID();
@@ -68,7 +68,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const mainchainID = await getMainchainID();

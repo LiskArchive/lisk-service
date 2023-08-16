@@ -37,7 +37,7 @@ const reclaimTransaction = {
 	params: {
 		amount: '16500000000',
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 0,
 };
 
@@ -72,7 +72,7 @@ const tokenTransferTransaction = {
 			name: 'genesis_0',
 		},
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 0,
 };
 
@@ -107,7 +107,7 @@ const tokenTransferTransactionSelf = {
 			name: 'genesis_0',
 		},
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 0,
 };
 
@@ -137,7 +137,7 @@ const stakeTransaction = {
 		timestamp: 1689775110,
 		isFinal: true,
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 1,
 };
 
@@ -173,7 +173,7 @@ const tokenTransferCrossChainTransaction = {
 			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
 		},
 	},
-	executionStatus: 'success',
+	executionStatus: 'successful',
 	index: 1,
 };
 

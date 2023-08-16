@@ -40,7 +40,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const APP_STATUS = {
 	DEFAULT: 'unregistered',
-	ACTIVE: 'active',
+	ACTIVATED: 'activated',
 };
 
 const knownMainchainIDs = Object
@@ -213,7 +213,7 @@ const getBlockchainAppsMetadata = async (params) => {
 
 			if (await isMainchain()
 				&& knownMainchainIDs.includes(appMeta.chainID)) {
-				appMeta.status = APP_STATUS.ACTIVE;
+				appMeta.status = APP_STATUS.ACTIVATED;
 			} else {
 				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: appMeta.chainID })).data;
 				appMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;

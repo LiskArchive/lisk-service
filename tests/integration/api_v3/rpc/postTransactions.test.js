@@ -49,7 +49,7 @@ describe('Method post.transactions', () => {
 		}
 	});
 
-	it('should post transaction succesfully', async () => {
+	it('should post transaction successfully', async () => {
 		if (isDevnet) {
 			const transaction = await createTokenTransferTx(authEndpoint);
 			const encodedTx = await encodeTransaction(transaction, baseUrlV3);

@@ -14,6 +14,7 @@
  *
  */
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../../../shared/utils/transactions');
+const { TRANSACTION_STATUS } = require('../../../../shared/constants');
 
 const {
 	inputTransaction,
@@ -25,11 +26,6 @@ const {
 	eventsForValidTx,
 	eventsWithFailStatus,
 } = require('../../../constants/events');
-
-const TRANSACTION_STATUS = Object.freeze({
-	SUCCESS: 'success',
-	FAIL: 'fail',
-});
 
 describe('Test normalizeTransaction method', () => {
 	it('should return normalizedTransaction -> valid tx', async () => {
@@ -48,14 +44,14 @@ describe('Test normalizeTransaction method', () => {
 });
 
 describe('Test getTransactionExecutionStatus method', () => {
-	it('should return transaction execution status -> success', async () => {
+	it('should return transaction execution status -> successful', async () => {
 		const executionStatus = await getTransactionExecutionStatus(validTx, eventsForValidTx);
-		expect(executionStatus).toBe(TRANSACTION_STATUS.SUCCESS);
+		expect(executionStatus).toBe(TRANSACTION_STATUS.SUCCESSFUL);
 	});
 
-	it('should return transaction execution status -> fail', async () => {
+	it('should return transaction execution status -> failed', async () => {
 		const executionStatus = await getTransactionExecutionStatus(validTx, eventsWithFailStatus);
-		expect(executionStatus).toBe(TRANSACTION_STATUS.FAIL);
+		expect(executionStatus).toBe(TRANSACTION_STATUS.FAILED);
 	});
 
 	it('should throw error when event is not available for the transaction', async () => {

@@ -28,10 +28,7 @@ const {
 } = require('../constants/transactionsDryRun');
 const { waitMs } = require('../../../helpers/utils');
 
-const {
-	badRequestSchema,
-	wrongInputParamSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema, wrongInputParamSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	dryrunTransactionSuccessResponseSchema,
@@ -62,7 +59,7 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	it('should return proper response (fail) when transaction object has less than required fee', async () => {
+	it('should return proper response (pending) when transaction object has less than required fee', async () => {
 		if (isDevnet) {
 			const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_PENDING });
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
@@ -71,7 +68,7 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	it('should return proper response (fail) when transaction string has less than required fee', async () => {
+	it('should return proper response (pending) when transaction string has less than required fee', async () => {
 		if (isDevnet) {
 			const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_PENDING });
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
@@ -80,7 +77,7 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	it('should post dryrun transaction succesfully with only transaction object', async () => {
+	it('should post dryrun transaction successfully with only transaction object', async () => {
 		if (isDevnet) {
 			const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_VALID });
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
@@ -89,7 +86,7 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	it('should post dryrun transaction succesfully with only transaction string', async () => {
+	it('should post dryrun transaction successfully with only transaction string', async () => {
 		if (isDevnet) {
 			const response = await api.post(endpoint, { transaction: TRANSACTION_ENCODED_VALID });
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
@@ -98,12 +95,12 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	it('should return proper response (success) when posting unsigned transaction with strict: false', async () => {
+	it('should return proper response (valid) when posting unsigned transaction with strict: false', async () => {
 		if (isDevnet) {
-			const response = await api.post(
-				endpoint,
-				{ transaction: UNSIGNED_TRANSACTION_OBJECT, strict: false },
-			);
+			const response = await api.post(endpoint, {
+				transaction: UNSIGNED_TRANSACTION_OBJECT,
+				strict: false,
+			});
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
 			expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
 			expect(response.data.events.length).toBeGreaterThan(0);
@@ -113,22 +110,22 @@ describe('Post dryrun transactions API', () => {
 
 	it('should return proper response (invalid) when posting unsigned transaction with strict: true', async () => {
 		if (isDevnet) {
-			const response = await api.post(
-				endpoint,
-				{ transaction: UNSIGNED_TRANSACTION_OBJECT, strict: true },
-			);
+			const response = await api.post(endpoint, {
+				transaction: UNSIGNED_TRANSACTION_OBJECT,
+				strict: true,
+			});
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
 			expect(response.data).toMap(dryrunTransactionInvalidResponseSchema);
 			expect(response.meta).toMap(metaSchema);
 		}
 	});
 
-	it('should post dryrun transaction succesfully with only transaction skipping verification', async () => {
+	it('should post dryrun transaction successfully with only transaction skipping verification', async () => {
 		if (isDevnet) {
-			const response = await api.post(
-				endpoint,
-				{ transaction: TRANSACTION_OBJECT_VALID, skipVerify: true },
-			);
+			const response = await api.post(endpoint, {
+				transaction: TRANSACTION_OBJECT_VALID,
+				skipVerify: true,
+			});
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
 			expect(response.data).toMap(dryrunTransactionSuccessResponseSchema);
 			expect(response.data.events.length).toBeGreaterThan(0);
@@ -136,12 +133,12 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	it('should post dryrun transaction succesfully with skipDecode: true', async () => {
+	it('should post dryrun transaction successfully with skipDecode: true', async () => {
 		if (isDevnet) {
-			const response = await api.post(
-				endpoint,
-				{ transaction: TRANSACTION_ENCODED_VALID, skipDecode: true },
-			);
+			const response = await api.post(endpoint, {
+				transaction: TRANSACTION_ENCODED_VALID,
+				skipDecode: true,
+			});
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);
 			expect(response.data).toMap(dryrunTxSuccessSchemaWithSkipDecode);
 			expect(response.meta).toMap(metaSchema);
