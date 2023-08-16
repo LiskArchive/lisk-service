@@ -27,7 +27,7 @@
     "blockchainAppStatus": {
         "name": "status",
         "in": "query",
-        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'active', 'terminated'.",
+        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'activated', 'terminated'.",
         "type": "string"
     },
     "network": {
@@ -38,12 +38,12 @@
         "minLength": 1
     },
     "blockchainAppSearch": {
-		"name": "search",
-		"in": "query",
-		"description": "Search by name. Supports both partial and full text search.",
-		"type": "string",
-		"minLength": 1,
-		"maxLength": 20
+        "name": "search",
+        "in": "query",
+        "description": "Search by name. Supports both partial and full text search.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20
     },
     "chainName": {
         "name": "chainName",

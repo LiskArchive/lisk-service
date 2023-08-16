@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger } = require('lisk-service-framework');
 const util = require('util');
+const { HTTP, Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
 const { LENGTH_NETWORK_ID } = require('../constants');

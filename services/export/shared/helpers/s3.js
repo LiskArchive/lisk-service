@@ -13,12 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Minio = require('minio');
-const moment = require('moment');
-
 const {
 	Readable,
 } = require('stream');
+const Minio = require('minio');
+const moment = require('moment');
 
 const {
 	Logger,

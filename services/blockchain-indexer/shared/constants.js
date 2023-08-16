@@ -164,8 +164,8 @@ const KV_STORE_KEY = Object.freeze({
 });
 
 const TRANSACTION_STATUS = Object.freeze({
-	SUCCESS: 'success',
-	FAIL: 'fail',
+	SUCCESSFUL: 'successful',
+	FAILED: 'failed',
 	PENDING: 'pending',
 });
 
@@ -180,7 +180,7 @@ const EVENT = Object.freeze({
 const TRANSACTION_VERIFY_RESULT = {
 	INVALID: -1,
 	PENDING: 0,
-	OK: 1,
+	VALID: 1,
 };
 
 module.exports = {

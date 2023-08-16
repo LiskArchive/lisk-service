@@ -262,8 +262,8 @@
 			},
 			"executionStatus": {
 				"type": "string",
-				"example": "success",
-				"description": "Execution status of the transaction.\nAccepted values: pending, success, fail."
+				"example": "successful",
+				"description": "Execution status of the transaction.\nAccepted values: pending, successful, failed."
 			},
 			"index": {
 				"type": "integer",
@@ -473,7 +473,7 @@
 					},
 					"status": {
 						"type": "string",
-						"example": "ok",
+						"example": "valid",
 						"description": "Transaction verification status."
 					},
 					"events": {

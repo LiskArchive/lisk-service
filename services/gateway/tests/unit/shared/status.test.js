@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+const fs = require('fs');
+const path = require('path');
 const {
 	Utils: {
 		fs: { exists, rmdir },
 	},
 } = require('lisk-service-framework');
-
-const fs = require('fs');
-const path = require('path');
 
 const { getBuildTimestamp } = require('../../../shared/status');
 

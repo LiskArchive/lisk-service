@@ -14,9 +14,9 @@
  *
  */
 const path = require('path');
-const { ServiceBroker } = require('moleculer');
 const fs = require('fs');
 const crypto = require('crypto');
+const { ServiceBroker } = require('moleculer');
 
 const { exists } = require('../../shared/utils/fs');
 const config = require('../../config');
