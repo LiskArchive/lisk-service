@@ -16,12 +16,7 @@
 import Joi from 'joi';
 
 const regex = require('./regex');
-
-const TRANSACTION_VERIFY_RESULT = {
-	INVALID: -1,
-	PENDING: 0,
-	VALID: 1,
-};
+const { TRANSACTION_VERIFY_RESULT } = require('../../../services/blockchain-indexer/shared/constants');
 
 const TRANSACTION_VERIFY_STATUSES = Object
 	.keys(TRANSACTION_VERIFY_RESULT).map(e => e.toLowerCase());

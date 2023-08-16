@@ -99,17 +99,17 @@
 					"registered": {
 						"type": "integer",
 						"example": 2503,
-						"description": "List of registered blockchain applications"
+						"description": "List of registered blockchain applications."
 					},
 					"activated": {
 						"type": "integer",
 						"example": 2328,
-						"description": "List of activated blockchain applications"
+						"description": "List of activated blockchain applications."
 					},
 					"terminated": {
 						"type": "integer",
 						"example": 35,
-						"description": "List of terminated blockchain applications"
+						"description": "List of terminated blockchain applications."
 					},
 					"totalSupplyLSK": {
 						"type": "string",
