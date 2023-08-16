@@ -43,8 +43,11 @@ const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL
 // Command specific constants
 const COMMAND_NAME = 'registerValidator';
 
-const getCommissionIndexingInfo = (blockHeader, tx) => {
-	// TODO: Fetch default commission value from node.
+const getCommissionIndexingInfo = async (blockHeader, tx) => {
+	// TODO: Enable this to fetch default commission value from node once SDK fixes https://github.com/LiskHQ/lisk-sdk/issues/8856
+	// const posConstants = await getPosConstants();
+	// const defaultComission = posConstants.defaultCommission;
+
 	const newCommissionEntry = {
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		commission: 10000,
@@ -92,7 +95,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	await transactionsTable.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 
-	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
+	const commissionInfo = await getCommissionIndexingInfo(blockHeader, tx);
 	logger.trace(`Indexing commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
 	await commissionsTable.upsert(commissionInfo, dbTrx);
 	logger.debug(`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
@@ -126,7 +129,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	await validatorsTable.deleteByPrimaryKey(validatorPK, dbTrx);
 	logger.debug(`Removed validator entry for address ${account.address}.`);
 
-	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
+	const commissionInfo = await getCommissionIndexingInfo(blockHeader, tx);
 	logger.trace(`Deleting commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
 	await commissionsTable.delete(commissionInfo, dbTrx);
 	logger.debug(`Deleted commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
