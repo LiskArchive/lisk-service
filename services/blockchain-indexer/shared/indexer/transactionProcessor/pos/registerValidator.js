@@ -18,8 +18,6 @@ const {
 	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
-const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
-
 const config = require('../../../../config');
 
 const { TRANSACTION_STATUS } = require('../../../constants');
@@ -49,7 +47,7 @@ const getCommissionIndexingInfo = async (blockHeader, tx) => {
 	// const defaultComission = posConstants.defaultCommission;
 
 	const newCommissionEntry = {
-		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		address: tx.senderAddress,
 		commission: 10000,
 		height: blockHeader.height,
 	};
@@ -67,7 +65,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const commissionsTable = await getCommissionsTable();
 
 	const account = {
-		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		address: tx.senderAddress,
 		publicKey: tx.senderPublicKey,
 		name: tx.params.name,
 		isValidator: true,
@@ -111,7 +109,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	// Remove the validator details from the table on transaction reversal
 	const account = {
-		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
+		address: tx.senderAddress,
 		publicKey: tx.senderPublicKey,
 		name: null,
 		isValidator: false,
