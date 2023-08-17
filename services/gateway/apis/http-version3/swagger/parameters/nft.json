@@ -3,18 +3,52 @@
         "name": "nftID",
         "in": "query",
         "description": "ID of the NFT.",
-        "type": "string"
+        "type": "string",
+        "format": "id",
+        "minLength": 32,
+        "maxLength": 32
     },
     "nftCollectionID": {
         "name": "collectionID",
         "in": "query",
         "description": "Collection ID of the NFT.",
-        "type": "string"
+        "type": "string",
+        "format": "id",
+        "minLength": 8,
+        "maxLength": 8
     },
     "nftOwner": {
         "name": "owner",
         "in": "query",
         "description": "Owner of the NFT.",
-        "type": "string"
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 41
+    },
+    "nftIndex": {
+        "name": "Index",
+        "in": "query",
+        "description": "Index of the NFT.",
+        "type": "integer",
+        "format": "int32",
+        "minimum": 1
+    },
+    "nftChainID": {
+        "name": "Chain ID",
+        "in": "query",
+        "description": "Chain ID of the NFT.",
+        "type": "string",
+        "format": "id",
+        "minLength": 8,
+        "maxLength": 8
+    },
+    "nftEscrowChainID": {
+        "name": "owner",
+        "in": "query",
+        "description": "chain ID of the chain to which NFT is escrowed.",
+        "type": "string",
+        "format": "id",
+        "minLength": 8,
+        "maxLength": 8
     }
 }

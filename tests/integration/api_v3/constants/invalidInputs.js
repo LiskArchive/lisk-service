@@ -115,6 +115,14 @@ const invalidNFTOwner = [
 	'__%',
 ];
 
+const invalidChainID = [
+	'123456789',
+	'abcdefghijklmnop',
+	'ABCDEFGH',
+	'01234567abcdef',
+	'__%',
+];
+
 module.exports = {
 	invalidAddresses,
 	invalidPublicKeys: invalidSHA,
@@ -124,6 +132,7 @@ module.exports = {
 	invalidTokenIDs,
 	invalidTokenIDCSV,
 	invalidChainIDCSV,
+	invalidChainID,
 	invalidPartialSearches,
 	invalidLimits,
 	invalidOffsets,

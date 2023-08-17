@@ -22,7 +22,10 @@ module.exports = {
 	params: {
 		nftID: '=,string',
 		collectionID: '=,string',
+		chainID: '=,string',
+		index: '=,number',
 		owner: '=,string',
+		escrowChainID: '=,string',
 		limit: '=,number',
 		offset: '=,number',
 	},

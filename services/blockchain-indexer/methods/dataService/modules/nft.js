@@ -24,7 +24,10 @@ module.exports = [
 		params: {
 			nftID: { optional: true, type: 'string' },
 			collectionID: { optional: true, type: 'string' },
+			chainID: { optional: true, type: 'string' },
+			index: { optional: true, type: 'number' },
 			owner: { optional: true, type: 'string' },
+			escrowChainID: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},

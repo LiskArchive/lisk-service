@@ -26,7 +26,10 @@ module.exports = {
 	params: {
 		nftID: { optional: true, type: 'string', pattern: regex.NFT_ID },
 		collectionID: { optional: true, type: 'string', pattern: regex.NFT_COLLECTION_ID, altSwaggerKey: 'nftCollectionID' },
+		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID, altSwaggerKey: 'nftChainID' },
+		index: { optional: true, type: 'number', min: 1, altSwaggerKey: 'nftIndex' },
 		owner: { optional: true, type: 'string', pattern: regex.NFT_OWNER, altSwaggerKey: 'nftOwner' },
+		escrowChainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID, altSwaggerKey: 'nftEscrowChainID' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},

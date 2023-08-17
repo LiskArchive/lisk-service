@@ -28,21 +28,30 @@ const {
 const {
 	nftSchema,
 } = require('../../../schemas/api_v3/nft.schema');
-const { invalidOffsets, invalidLimits, invalidNFTOwner, invalidNFTCollectionID, invalidNFTID } = require('../constants/invalidInputs');
+const { invalidOffsets, invalidLimits, invalidNFTOwner, invalidNFTCollectionID, invalidNFTID, invalidChainID } = require('../constants/invalidInputs');
+const { escrowedChainID } = require('../../../../services/gateway/sources/version3/mappings/nft');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getNFTs = async (params) => request(wsRpcUrl, 'get.nft', params);
 
 describe('get.blockchain.apps.meta.list', () => {
 	let nftID;
+	let nftIndex;
+	let nftChainID;
 	let nftCollectionID;
 	let nftOwner;
+	let nftEscrowChainID;
 
 	beforeAll(async () => {
 		[{
 			id: nftID,
-			nft: { collectionID: nftCollectionID },
+			nft: {
+				chainID: nftChainID,
+				collectionID: nftCollectionID,
+				index: nftIndex,
+			},
 			owner: nftOwner,
+			escrowedChainID: nftEscrowChainID,
 		}] = (await getNFTs()).result.data;
 	});
 
@@ -99,8 +108,38 @@ describe('get.blockchain.apps.meta.list', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
+	it('should return list of NFTs by chain ID', async () => {
+		const response = await getNFTs({ chainID: nftChainID });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		result.data.forEach(nft => expect(nft).toMap(nftSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('should return list of NFTs by NFT index', async () => {
+		const response = await getNFTs({ index: nftIndex });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		result.data.forEach(nft => expect(nft).toMap(nftSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
 	it('should return list of NFTs by NFT owner', async () => {
 		const response = await getNFTs({ owner: nftOwner });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		result.data.forEach(nft => expect(nft).toMap(nftSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('should return list of NFTs by NFT escrowed chain ID', async () => {
+		const response = await getNFTs({ escrowChainID: nftEscrowChainID });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -125,10 +164,26 @@ describe('get.blockchain.apps.meta.list', () => {
 		}
 	});
 
+	it('should return invalid params for an invalid chain ID param', async () => {
+		for (let i = 0; i < invalidChainID.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getNFTs({ collectionID: invalidChainID[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
 	it('should return invalid params for an invalid owner param', async () => {
 		for (let i = 0; i < invalidNFTOwner.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await getNFTs({ owner: invalidNFTOwner[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params for an invalid escrow chain ID param', async () => {
+		for (let i = 0; i < escrowedChainID.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getNFTs({ collectionID: escrowedChainID[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
 	});

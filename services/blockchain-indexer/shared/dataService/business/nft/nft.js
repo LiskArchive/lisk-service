@@ -14,32 +14,46 @@
  *
  */
 
+const {
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
+
 // TODO: Populate data after indexing.
-const getNFTs = async () => ({
-	data: [
-		{
-			id: '00000000000000000000000000000000',
-			nft: {
-				chainID: '00000000',
-				collectionID: '10000000',
-				index: 1,
+const getNFTs = async (params) => {
+	if ('collectionID' in params && !('chainID' in params)) {
+		throw new ValidationException('Chain ID must be provided when collection ID is specified.');
+	}
+
+	if (('index' in params) && !('chainID' in params && 'collectionID' in params)) {
+		throw new ValidationException('Chain ID and collection ID must be provided when index is specified.');
+	}
+
+	return {
+		data: [
+			{
+				id: '00000000000000000000000000000000',
+				nft: {
+					chainID: '00000000',
+					collectionID: '10000000',
+					index: 1,
+				},
+				owner: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+				attributesArray: [{
+					module: 'customModule',
+					attributes: 'represent as a string',
+				}],
+				lockingModule: 'customModule', // Module name that locked the NFT
+				isNftEscrowed: true,
+				escrowedChainID: '04000002', // optional
 			},
-			owner: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-			attributesArray: [{
-				module: 'customModule',
-				attributes: 'represent as a string',
-			}],
-			lockingModule: 'customModule', // Module name that locked the NFT
-			isNftEscrowed: true,
-			escrowedChainID: '04000002', // optional
+		],
+		meta: {
+			count: 10,
+			offset: 20,
+			total: 1023,
 		},
-	],
-	meta: {
-		count: 10,
-		offset: 20,
-		total: 1023,
-	},
-});
+	};
+};
 module.exports = {
 	getNFTs,
 };
