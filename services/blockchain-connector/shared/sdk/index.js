@@ -120,6 +120,7 @@ const { encodeCCM } = require('./encoder');
 const {
 	getNFTConstants,
 	getCollectionIDs,
+	updateCollectionIDsOnBlockChange,
 } = require('./nft');
 
 const init = async () => {
@@ -128,6 +129,7 @@ const init = async () => {
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 	await updateTokenInfo();
+	await updateCollectionIDsOnBlockChange();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());

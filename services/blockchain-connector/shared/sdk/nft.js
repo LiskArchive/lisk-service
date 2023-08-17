@@ -13,8 +13,10 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const { Exceptions: { TimeoutException }, Logger } = require('lisk-service-framework');
+const { Exceptions: { TimeoutException }, Logger, Signals } = require('lisk-service-framework');
 const { timeoutMessage } = require('./client');
+
+const { getNetworkStatus } = require('./network');
 
 const logger = Logger();
 
@@ -43,11 +45,10 @@ const getNFTConstants = async () => {
 // eslint-disable-next-line no-unused-vars
 const updateCollectionIds = async (params) => {
 	try {
-		if (!supportedCollectionIDInfo) {
-			// TODO: Invoke sdk endpoint once available
-			// moduleConstants = await invokeEndpoint('nft_getCollectionIDs',{ chainID: params.chainID });
-			supportedCollectionIDInfo = { collectionIDs: ['*'] };
-		}
+		// TODO: Invoke sdk endpoint once available
+		// moduleConstants = await invokeEndpoint('nft_getCollectionIDs',{ chainID: params.chainID });
+		supportedCollectionIDInfo = { collectionIDs: ['*'] };
+
 		return supportedCollectionIDInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -58,15 +59,28 @@ const updateCollectionIds = async (params) => {
 	}
 };
 
-const getCollectionIDs = async (params) => {
-	if (!supportedCollectionIDInfo) {
-		await updateCollectionIds(params);
-	}
-	return supportedCollectionIDInfo;
+const getCollectionIDs = async () => supportedCollectionIDInfo;
+
+const updateCollectionIDsOnBlockChange = async () => {
+	const { chainID } = await getNetworkStatus();
+
+	const updateCollectionIdsListener = async () => {
+		try {
+			await updateCollectionIds({ chainID });
+		} catch (err) {
+			logger.error(`Error occurred when caching token information:\n${err.stack}`);
+		}
+	};
+
+	// Call once to set initial values
+	await updateCollectionIdsListener();
+
+	Signals.get('chain_newBlock').add(updateCollectionIdsListener);
+	Signals.get('chain_deleteBlock').add(updateCollectionIdsListener);
 };
 
 module.exports = {
 	getNFTConstants,
 	getCollectionIDs,
-	updateCollectionIds,
+	updateCollectionIDsOnBlockChange,
 };
