@@ -30,4 +30,20 @@ describe('getNFTs', () => {
 		const params = { index: 1 };
 		await expect(getNFTs(params)).rejects.toThrow(ValidationException);
 	});
+
+	it('should return NFT data when valid parameters are provided', async () => {
+		const params = {
+			chainID: '00000000',
+			collectionID: '10000000',
+		};
+
+		const result = await getNFTs(params);
+
+		expect(result).toHaveProperty('data');
+		expect(result).toHaveProperty('meta');
+		expect(result.data).toHaveLength(1);
+		expect(result.data[0]).toHaveProperty('nft');
+		expect(result.data[0].nft.chainID).toBe(params.chainID);
+		expect(result.data[0].nft.collectionID).toBe(params.collectionID);
+	});
 });

@@ -34,16 +34,16 @@ module.exports = {
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
-		const accountExistsSchema = {};
-		accountExistsSchema[this.swaggerApiPath] = { get: {} };
-		accountExistsSchema[this.swaggerApiPath].get.tags = this.tags;
-		accountExistsSchema[this.swaggerApiPath].get.summary = 'Requests NFT data.';
-		accountExistsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const nftSchema = {};
+		nftSchema[this.swaggerApiPath] = { get: {} };
+		nftSchema[this.swaggerApiPath].get.tags = this.tags;
+		nftSchema[this.swaggerApiPath].get.summary = 'Requests NFT data.';
+		nftSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns NFT data.',
 		});
-		accountExistsSchema[this.swaggerApiPath].get.parameters = transformParams('nft', this.params);
-		accountExistsSchema[this.swaggerApiPath].get.responses = {
+		nftSchema[this.swaggerApiPath].get.parameters = transformParams('nft', this.params);
+		nftSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of NFTs.',
 				schema: {
@@ -51,8 +51,8 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(accountExistsSchema[this.swaggerApiPath].get.responses, response);
-		return accountExistsSchema;
+		Object.assign(nftSchema[this.swaggerApiPath].get.responses, response);
+		return nftSchema;
 	},
 	source: nftSource,
 	envelope,

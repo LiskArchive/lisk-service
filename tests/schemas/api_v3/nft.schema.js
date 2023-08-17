@@ -16,7 +16,7 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const nftIDs = {
+const nftDetail = {
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	collectionID: Joi.string().pattern(regex.NFT_COLLECTION_ID).required(),
 	index: Joi.number().required(),
@@ -29,7 +29,7 @@ const nftAttribute = {
 
 const nftSchema = {
 	id: Joi.string().pattern(regex.NFT_ID).required(),
-	nft: Joi.object(nftIDs).required(),
+	nft: Joi.object(nftDetail).required(),
 	owner: Joi.string().pattern(regex.NFT_OWNER).required(),
 	attributesArray: Joi.array().items(nftAttribute).required(),
 	lockingModule: Joi.string().optional(),
