@@ -26,6 +26,6 @@ module.exports = {
 		attributes: '=,string',
 	}],
 	lockingModule: '=,string',
-	isNftEscrowerd: '=,boolean',
+	isNftEscrowed: '=,boolean',
 	escrowedChainID: '=,string',
 };

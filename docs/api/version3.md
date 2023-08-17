@@ -57,6 +57,8 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Module Constants](#module-constants-2)
     - [Default Reward](#default-reward)
     - [Annual Inflation](#annual-inflation)
+  - [NFT](#nft)
+    - [NFT search](#nft-search)
   - [Legacy](#legacy)
     - [Legacy Account Details](#legacy-account-details)
   - [Network](#network)
@@ -1995,6 +1997,78 @@ Retrieves the annual inflation at a specified height for the Reward token.
 ```
 https://service.lisk.com/api/v3/reward/annual-inflation?height=500
 ```
+
+## NFT
+
+### Event search
+
+Retrieves NFTs based on criteria defined by params.
+
+_Supports pagination._
+
+
+#### Endpoints
+
+- HTTP GET `/api/v3/nft`
+- RPC `get.nft`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| nftID | String | `/^\b(?:[A-Fa-f0-9]){32}\b$/` | *(empty)* |  |
+| collectionID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* |  |
+| owner | String | `/^(lsk([a-hjkm-z][2-9]){38})$|^(?:\b[a-fA-F0-9]{8}\b)$/` | *(empty)* | |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": [
+    {
+      "id": "0000000000000000000000000000000000",
+      "nft":{
+         "chainID": "00000000",
+         "collectionID": "10000000",
+         "index": 1,
+       },
+      "owner": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
+      "attributesArray": [{
+          "module": "customModule",
+          "attributes": "represent as a string"
+        }],
+      "lockingModule": "customModule", // Module name that locked the NFT
+      "isNftEscrowed" : true,
+      "escrowedChainID": "04000002", // optional
+    },
+  ],
+  "meta": {
+    "count": 1,
+    "offset": 10,
+    "total": 1023
+  },
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get all NFTs
+```
+https://service.lisk.com/api/v3/nft
+```
+
 
 ## Legacy
 

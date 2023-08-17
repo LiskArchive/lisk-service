@@ -14,7 +14,7 @@
  *
  */
 
-// TODO: Propulate data after indexing.
+// TODO: Populate data after indexing.
 const getNFTs = async () => ({
 	data: [
 		{
@@ -30,7 +30,7 @@ const getNFTs = async () => ({
 				attributes: 'represent as a string',
 			}],
 			lockingModule: 'customModule', // Module name that locked the NFT
-			isNftEscrowerd: true,
+			isNftEscrowed: true,
 			escrowedChainID: '04000002', // optional
 		},
 	],

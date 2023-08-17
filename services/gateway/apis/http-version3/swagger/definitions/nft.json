@@ -24,12 +24,12 @@
             "owner",
             "attributesArray",
             "lockingModule",
-            "isNftEscrowerd"
+            "isNftEscrowed"
         ],
         "properties": {
             "id": {
                 "type": "string",
-                "description": "ID of the NFT.",
+                "description": "Universal identifier of the NFT.",
                 "example": "00000000100000001"
             },
             "nft": {
@@ -74,7 +74,7 @@
                 "description": "Module name that locked the NFT.",
                 "example": "customModule"
             },
-            "isNftEscrowerd": {
+            "isNftEscrowed": {
                 "type": "boolean",
                 "description": "A boolean flag indicating if the NFT is escrowed.",
                 "example": "true"
