@@ -13,20 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getNFTConstants,
-	getNFTSupported,
-} = require('../controllers/nft');
-
-module.exports = [
-	{
-		name: 'nft.constants',
-		controller: getNFTConstants,
-		params: {},
-	},
-	{
-		name: 'nft.supported',
-		controller: getNFTSupported,
-		params: {},
-	},
-];
+module.exports = {
+	isSupportAllNFTs: '=,boolean',
+	exactCollectionIDs: 'data.exactCollectionIDs',
+};

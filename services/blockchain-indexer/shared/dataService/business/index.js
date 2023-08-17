@@ -73,6 +73,10 @@ const {
 } = require('./pos');
 
 const {
+	getNFTSupported,
+} = require('./nft');
+
+const {
 	getDefaultRewardAtHeight,
 	getAnnualInflation,
 	getRewardConstants,
@@ -164,6 +168,9 @@ module.exports = {
 	getPosClaimableRewards,
 	getPosUnlocks,
 	getPosConstants,
+
+	// NFT
+	getNFTSupported,
 
 	// Schemas
 	getSchemas,

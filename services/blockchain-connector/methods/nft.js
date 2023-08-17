@@ -13,12 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTConstants } = require('../shared/sdk');
+const {
+	getNFTConstants,
+	getCollectionIDs,
+} = require('../shared/sdk');
 
 module.exports = [
 	{
 		name: 'getNFTConstants',
 		controller: async () => getNFTConstants(),
+		params: {},
+	},
+	{
+		name: 'getCollectionIDs',
+		controller: async () => getCollectionIDs(),
 		params: {},
 	},
 ];

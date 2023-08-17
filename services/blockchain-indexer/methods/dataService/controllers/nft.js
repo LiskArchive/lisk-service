@@ -28,6 +28,20 @@ const getNFTConstants = async () => {
 	return constants;
 };
 
+const getNFTSupported = async () => {
+	const nftSupported = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getNFTSupported();
+	if (response.data) nftSupported.data = response.data;
+	if (response.meta) nftSupported.meta = response.meta;
+
+	return nftSupported;
+};
+
 module.exports = {
 	getNFTConstants,
+	getNFTSupported,
 };

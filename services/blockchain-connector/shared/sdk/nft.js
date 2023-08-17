@@ -20,6 +20,8 @@ const logger = Logger();
 
 let moduleConstants;
 
+let supportedCollectionIDInfo;
+
 const getNFTConstants = async () => {
 	try {
 		if (!moduleConstants) {
@@ -37,6 +39,34 @@ const getNFTConstants = async () => {
 	}
 };
 
+// TODO: Remove lint suppression once sdk endpoint is available:
+// eslint-disable-next-line no-unused-vars
+const updateCollectionIds = async (params) => {
+	try {
+		if (!supportedCollectionIDInfo) {
+			// TODO: Invoke sdk endpoint once available
+			// moduleConstants = await invokeEndpoint('nft_getCollectionIDs',{ chainID: params.chainID });
+			supportedCollectionIDInfo = { collectionIDs: ['*'] };
+		}
+		return supportedCollectionIDInfo;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getCollectionIDs\'.');
+		}
+		logger.warn(`Error returned when invoking 'nft_getCollectionIDs'.\n${err.stack}`);
+		throw err;
+	}
+};
+
+const getCollectionIDs = async (params) => {
+	if (!supportedCollectionIDInfo) {
+		await updateCollectionIds(params);
+	}
+	return supportedCollectionIDInfo;
+};
+
 module.exports = {
 	getNFTConstants,
+	getCollectionIDs,
+	updateCollectionIds,
 };

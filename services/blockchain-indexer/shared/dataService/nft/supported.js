@@ -13,20 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getNFTConstants,
-	getNFTSupported,
-} = require('../controllers/nft');
+const business = require('../business');
 
-module.exports = [
-	{
-		name: 'nft.constants',
-		controller: getNFTConstants,
-		params: {},
-	},
-	{
-		name: 'nft.supported',
-		controller: getNFTSupported,
-		params: {},
-	},
-];
+const getNFTSupported = async () => business.getNFTSupported();
+
+module.exports = {
+	getNFTSupported,
+};
