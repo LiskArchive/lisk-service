@@ -1,21 +1,31 @@
 = Lisk Service Configuration Reference
 Muhammad Talha <muhammad.talha@lightcurve.io>
-:toc:
+// Settings
+:toc: preamble
+:toclevels: 5
+:page-toclevels: 3
+:idprefix:
+:idseparator: -
+:experimental:
+:source-language: js
+
 :url_microservices: index.adoc#microservices
 :url_intro_services: index.adoc
+
 :url_pm2: https://pm2.keymetrics.io/
-:url_config_file: https://github.com/LiskHQ/lisk-service/blob/development/ecosystem.config.js
+
+//TODO: Update the URL to point to the `main` branch once we make the release in production.
+:url_config_file: https://github.com/LiskHQ/lisk-service/blob/release/0.7.0/ecosystem.config.js
 :url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
-:url_molecular_load_balancer_faq: https://moleculer.services/docs/0.14/faq.html#Why-am-I-getting-502-Bad-Gateway-when-api-gateway-is-behind-ALB-on-AWS
-:source-language: js
+:url_faq: https://moleculer.services/docs/0.14/faq.html#Why-am-I-getting-502-Bad-Gateway-when-api-gateway-is-behind-ALB-on-AWS
 
 On the xref:{url_intro_services}[Introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
 On this page, we will thoroughly discuss the configuration options available for each service.
 
 == Default configurations
-By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2].
+By default, a Lisk Service installation will have an `ecosystem.config.js` file with all the default configurations that could be used to run and manage the various microservices with {url_pm2}[pm2^].
 
-NOTE: The actual {url_config_file}[`*ecosystem.config.js*`] file for Lisk Service can be found in the {url_lisk_service_repo}[lisk-service] GitHub repository.
+NOTE: The actual {url_config_file}[`*ecosystem.config.js*`^] file for Lisk Service can be found in the {url_lisk_service_repo}[lisk-service^] GitHub repository.
 
 The values of various environment variables are automatically picked by the microservices based on the installation environment.
 Aside from that, many environment variables can be configured to meet the specific requirements, the details of which have been outlined with each microservice.
@@ -26,25 +36,20 @@ In this section, we discuss the common and specific configurations of all the mi
 === Common configurations
 The common configurations described in this section apply to all the microservices within Lisk Service.
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
 |Description
 |Sample
 
-| `SERVICE_BROKER`
-| string
-| URL of the microservice message broker.
+|`SERVICE_BROKER`
+|string
+|URL of the microservice message broker.
 *Must be identical for all the microservices.*
 Make sure that all microservices can connect with the message broker.
 This could be a NATS or a Redis instance.
-| redis://localhost:6379/0
+|redis://127.0.0.1:6379/0
 
 | `SERVICE_BROKER_TIMEOUT`
 | number
@@ -57,13 +62,13 @@ This could be a NATS or a Redis instance.
 | info
 
 | `SERVICE_LOG_STDOUT`
-| string
+| boolean
 | Enable posting logs to the standard output stream.
 Accepted values are `true` and `false`.
 | true
 
 | `SERVICE_LOG_CONSOLE`
-| string
+| boolean
 | Enable posting logs to the JavaScript `console.log()` output (blocking).
 This property should be enabled only for debugging purposes.
 | false
@@ -71,20 +76,24 @@ This property should be enabled only for debugging purposes.
 | `SERVICE_LOG_FILE`
 | string
 | File path to capture the logs.
-| './logs/app.log'
+| ./logs/app.log
 
 | `SERVICE_LOG_GELF`
 | string
 | Enable log output in GELF for remote logging.
-For example, Graylog 'localhost:12201/udp'.
-| 'localhost:12201/udp'
+For example, Graylog: `127.0.0.1:12201/udp`.
+| 127.0.0.1:12201/udp
+
+| `DOCKER_HOST`
+| string
+| Used by the Docker CLI to determine the host to connect to.
+| local
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example of two microservices having the same environment variables
 ----
 module.exports = {
   apps: [
@@ -94,8 +103,13 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
         SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
         // [...]
       },
     },
@@ -104,8 +118,13 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
         SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
         // [...]
       },
     },
@@ -113,17 +132,11 @@ module.exports = {
   ],
 };
 ----
---
-=====
+====
 
 === Gateway
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -131,7 +144,7 @@ Properties::
 |Sample
 
 | `PORT`
-| string
+| number
 | Port that provides the possibility to connect with Lisk Service.
 | 9901
 
@@ -143,10 +156,10 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `JSON_RPC_STRICT_MODE`
-| string
+| boolean
 | Ensures that JSON-RPC accepts a valid JSON-RPC 2.0 envelope.
 | false
 
@@ -168,37 +181,38 @@ Must be listed as comma-separated values.
 | URL of the volatile cache storage (Redis).
 Used to cache RPC requests.
 Required when `ENABLE_REQUEST_CACHING` is enabled.
-| redis://localhost:6379/5
+| redis://127.0.0.1:6379/5
 
 | `GATEWAY_DEPENDENCIES`
 | string
 | Describes the microservices on which the `gateway` service depends.
+The list can be expressed as a CSV.
 | indexer,connector
 
 | `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS`
-| string
-| Boolean flag to enforce the `headersTimeout` and `keepAliveTimeout` settings on the API server.
+| boolean
+|Boolean flag to enforce the `headersTimeout` and `keepAliveTimeout` settings on the API server.
 Enabling this might be helpful when deploying Lisk Service behind a load balancer or a reverse proxy.
-Check {url_molecular_load_balancer_faq}[this FAQ] for more information.
+Check this {url_faq}[FAQ^] for more information.
 | false
 
 | `HTTP_KEEP_ALIVE_TIMEOUT`
 | number
-| Defines the number of microseconds the gateway will wait before closing an idle connection.
+|Defines the number of microseconds the gateway will wait before closing an idle connection.
 To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
-By default, it is set to 65000.
+By default, it is set to `65000`.
 | 65000
 
 | `HTTP_HEADERS_TIMEOUT`
 | number
-| Defines the maximum number of microseconds for the gateway to send HTTP response headers after the client's request.
-To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+|Defines the maximum number of microseconds for the gateway to send HTTP response headers after the client's request.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to `true`, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than `0`.
 Please ensure that the `HTTP_HEADERS_TIMEOUT` is set higher than the `HTTP_KEEP_ALIVE_TIMEOUT`.
-By default, it is set to 66000.
+By default, it is set to `66000`.
 | 66000
 
 | `WS_RATE_LIMIT_ENABLE`
-| string
+| boolean
 | To enable the WebSocket rate limit, this environment variable is required to be `true`.
 | false
 
@@ -213,13 +227,13 @@ By default, it is set to 66000.
 | 1
 
 | `ENABLE_REQUEST_CACHING`
-| string
+| boolean
 | To enable RPC response caching, this environment variable is required to be `true`.
 Requires `SERVICE_GATEWAY_REDIS_VOLATILE` to be set.
 | true
 
 | `HTTP_RATE_LIMIT_ENABLE`
-| string
+| boolean
 | To enable the HTTP rate limit, this environment variable is required to be `true`.
 | false
 
@@ -236,9 +250,9 @@ The default duration of a window is 10 seconds.
 | 10
 
 | `ENABLE_HTTP_CACHE_CONTROL`
-| string
+| boolean
 | To enable response caching, this environment variable is required to be `true`.
-This would include the Cache-Control header within the responses.
+This would include the `Cache-Control` header within the responses.
 | true
 
 | `HTTP_CACHE_CONTROL_DIRECTIVES`
@@ -246,57 +260,96 @@ This would include the Cache-Control header within the responses.
 | The `Cache-Control` HTTP directive can be overridden with this environment variable.
 | public, max-age=10
 
+| `CORS_ALLOWED_ORIGIN`
+| string
+| Allows request from the comma-separated string of origins.
+By default, it is set to `*` which allows requests from all origins.
+| *
+
+| `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR`
+| boolean
+| When set to true, the rate-limiting algorithm considers the `X-Forwarded-For` header value to determine the client's IP address for rate-limiting purposes.
+By default, it is set to `false`.
+| false
+
+| `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES`
+| number
+| Defines the number of proxies that exist between the gateway and the external client application, enabling accurate identification of the client's IP address for rate-limiting.
+Requires `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR` to be enabled.
+By default, it is set to `0`.
+| 0
+
+| `JOB_INTERVAL_UPDATE_READINESS_STATUS`
+| number
+| Job run interval to update the readiness status.
+By default, it is set to 0.
+| 0
+
+| `JOB_SCHEDULE_UPDATE_READINESS_STATUS`
+| string
+| Job run cron schedule to update the readiness status.
+By default, it is set to run every minute.
+| * * * * *
+
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Gateway microservice 
 ----
 module.exports = {
   apps: [
-    // Configuration for other microservices.
+  // Configuration for other microservices.
     {
       name: "lisk-service-gateway",
       // [...]
       env: {
-        PORT: "9901",
-        HOST: "127.0.0.1",
+        PORT: 9901,
         // --- Remember to set the properties below
-        SERVICE_BROKER: "redis://localhost:6379/0",
-        SERVICE_GATEWAY_REDIS_VOLATILE: "redis://localhost:6379/5",
-        ENABLE_HTTP_API: "http-status,http-version3,http-exports",
-        ENABLE_WS_API: "blockchain,rpc-v3",
-        GATEWAY_DEPENDENCIES: "indexer,connector",
-        WS_RATE_LIMIT_ENABLE: "false",
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://127.0.0.1:6379/5',
+        ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
+        ENABLE_WS_API: 'blockchain,rpc-v3',
+        GATEWAY_DEPENDENCIES: 'indexer,connector',
+        WS_RATE_LIMIT_ENABLE: false,
         WS_RATE_LIMIT_CONNECTIONS: 5,
         WS_RATE_LIMIT_DURATION: 1, // in seconds
-        ENABLE_REQUEST_CACHING: "true",
-        JSON_RPC_STRICT_MODE: "false",
-        HTTP_RATE_LIMIT_ENABLE: "false",
+        ENABLE_REQUEST_CACHING: true,
+        JSON_RPC_STRICT_MODE: false,
+        HTTP_RATE_LIMIT_ENABLE: false,
         HTTP_RATE_LIMIT_CONNECTIONS: 200,
         HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
-        HTTP_CACHE_CONTROL_DIRECTIVES: "public, max-age=10",
-        ENABLE_HTTP_CACHE_CONTROL: "true",
-      },
+        HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
+        ENABLE_HTTP_CACHE_CONTROL: true,
+        HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR: false,
+        HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES: 0,
+        // ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS: true
+        // HTTP_KEEP_ALIVE_TIMEOUT: 65000,
+        // HTTP_HEADERS_TIMEOUT: 66000,
+        // CORS_ALLOWED_ORIGIN: '*',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // JOB_INTERVAL_UPDATE_READINESS_STATUS: 0,
+        // JOB_SCHEDULE_UPDATE_READINESS_STATUS: '* * * * *',
     },
-    // Configuration for other microservices.
+  },
+  // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 
 === Connector
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 | Environment variable
 |Datatype
@@ -306,15 +359,15 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `LISK_APP_WS`
 | string
 | URL to connect with the Lisk application node over WebSocket.
-| ws://localhost:7887
+| ws://127.0.0.1:7887
 
 | `USE_LISK_IPC_CLIENT`
-| string
+| boolean
 | Boolean flag to enable IPC-based connection to the Lisk application node.
 Requires `LISK_APP_DATA_PATH` to be set.
 | true
@@ -327,21 +380,57 @@ Requires `LISK_APP_DATA_PATH` to be set.
 | `GEOIP_JSON`
 | string
 | URL of the GeoIP server.
-| https://geoip.lisk.com/json
+| https://geoip.lisk.com/json[GeoIP Server's URL^]
 
 | `GENESIS_BLOCK_URL`
 | string
 | URL of the Lisk SDK-based application's genesis block.
 Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
-| https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz
+| https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz[Genesis block URL^]
+
+| `ENABLE_BLOCK_CACHING`
+| boolean
+| Boolean flag to enable block caching.
+Enabled by default. 
+To disable it, set it to `false`.
+| true
+
+| `EXPIRY_IN_HOURS`
+| number
+| Expiry time in hours for block cache. 
+By default, it is set to `12` hours.
+| 12
+
+| `JOB_INTERVAL_CACHE_CLEANUP`
+| number
+| Job run interval to clean up block cache. 
+By default, it is set to 0.
+| 0
+
+| `JOB_SCHEDULE_CACHE_CLEANUP`
+| string
+| Job run cron schedule to clean up block cache.
+By default, it is set to run every 12 hours.
+|0 */12 * * *
+
+| `JOB_INTERVAL_REFRESH_PEERS`
+| number
+| Job run interval to refresh the peers' list.
+By default, it is set to run every `60` seconds.
+| 60
+
+| `JOB_SCHEDULE_REFRESH_PEERS`
+| string
+| Job run cron schedule to refresh the peers' list.
+By default, it is set to an empty string `''`.
+|
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Blockchain Connector microservice 
 ----
 module.exports = {
   apps: [
@@ -351,31 +440,39 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: "redis://localhost:6379/0",
-        LISK_APP_WS: "ws://localhost:7887",
-        GEOIP_JSON: "https://geoip.lisk.com/json",
-        USE_LISK_IPC_CLIENT: "true",
-        GENESIS_BLOCK_URL: "",
-        LISK_APP_DATA_PATH: "~/.lisk/lisk-core",
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        LISK_APP_WS: 'ws://127.0.0.1:7887',
+        GEOIP_JSON: 'https://geoip.lisk.com/json',
+        // ENABLE_BLOCK_CACHING: true,
+        // EXPIRY_IN_HOURS: 12,
+        // USE_LISK_IPC_CLIENT: true,
+        // LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+        // ENABLE_TESTING_MODE: false,
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
+        // JOB_INTERVAL_CACHE_CLEANUP: 0,
+        // JOB_SCHEDULE_CACHE_CLEANUP: '0 */12 * * *',
+        // JOB_INTERVAL_REFRESH_PEERS: 60,
+        // JOB_SCHEDULE_REFRESH_PEERS: '',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 
 
 === Coordinator
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -385,21 +482,31 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | URL of the Redis instance hosting the job queue to schedule the block indexing jobs.
 Must match the value supplied for the `indexer` microservice.
-| redis://localhost:6379/3
+| redis://127.0.0.1:6379/3
 
+| `JOB_INTERVAL_INDEX_MISSING_BLOCKS`
+| number
+| Job run interval to index missing blocks.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_INDEX_MISSING_BLOCKS`
+| string
+| Job run cron schedule to index missing blocks.
+By default, it is set to run every 15 minutes.
+| */15 * * * *
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Coordinator microservice 
 ----
 module.exports = {
   apps: [
@@ -409,26 +516,29 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
-        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // JOB_INTERVAL_INDEX_MISSING_BLOCKS: 0,
+        // JOB_SCHEDULE_INDEX_MISSING_BLOCKS: '*/15 * * * *',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 
 === Indexer
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -438,23 +548,23 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `SERVICE_INDEXER_MYSQL`
 | string
-| Connection string of the MySQL instance that the microservice connects to.
+| Connection string for the primary MySQL (read/write) instance that the microservice connects to.
 | mysql://lisk:password@127.0.0.1:3306/lisk
 
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis).
 Must match the value supplied for the `coordinator` microservice.
-| redis://localhost:6379/3
+| redis://127.0.0.1:6379/3
 
 | `SERVICE_INDEXER_REDIS_VOLATILE`
 | string
 | URL of the volatile cache storage (Redis).
-| redis://localhost:6379/2
+| redis://127.0.0.1:6379/2
 
 | `ENABLE_DATA_RETRIEVAL_MODE`
 | string
@@ -474,14 +584,146 @@ Must match the value supplied for the `coordinator` microservice.
 | `SERVICE_INDEXER_CACHE_REDIS`
 | string
 | URL of the cache storage (Redis).
-| redis://localhost:6379/1
+| redis://127.0.0.1:6379/1
+
+| `SERVICE_INDEXER_MYSQL_READ_REPLICA`
+| string
+| Connection string for the replicated MySQL (read-only) instance that the microservice connects to.
+| mysql://lisk:password@127.0.0.1:3306/lisk
+
+| `ENABLE_APPLY_SNAPSHOT`
+| boolean
+| Boolean flag to enable initialization of the index with the Lisk Service database snapshot.
+| false
+
+| `INDEX_SNAPSHOT_URL`
+| string
+| URL from where the Lisk Service database snapshot will be downloaded.
+| 
+
+| `ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
+| boolean
+| Boolean flag to enable downloading the snapshot from an (unsecured) HTTP URL.
+| true
+
+| `LISK_STATIC`
+| string
+| URL of Lisk static assets.
+| https://static-data.lisk.com
+
+| `JOB_INTERVAL_DELETE_SERIALIZED_EVENTS`
+| number
+| Job run interval to delete serialized events.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`
+| string
+| Job run cron schedule to delete serialized events.
+By default, it is set to run every 5 minutes.
+| */5 * * * *
+
+| `JOB_INTERVAL_REFRESH_VALIDATORS`
+| number
+| Job run interval to refresh validators cache.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_VALIDATORS`
+| string
+| Job run cron schedule to refresh validators cache.
+By default, it is set to run every 5 minutes.
+| */5 * * * *
+
+| `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`
+| number
+| Job run interval to validate the rank for all the validators.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK`
+| string
+| Job run cron schedule to validate the rank for all the validators.
+By default, it is set to run every `15` minutes and starts at `4` minutes past the hour.
+| 4-59/15 * * * *
+
+| `JOB_INTERVAL_REFRESH_INDEX_STATUS`
+| string
+| Job run interval to refresh indexing status.
+By default, it is set to run every `10` seconds.
+| 10
+
+| `JOB_SCHEDULE_REFRESH_INDEX_STATUS`
+| string
+| Job run cron schedule to refresh indexing status. 
+By default, it is set to an empty string `''`.
+| 
+
+| `JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS`
+| number
+| Job run interval to refresh blockchain application statistics.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`
+| string
+| Job run cron schedule to refresh blockchain application statistics.
+By default, it is set to run every 15 minutes.
+| */15 * * * *
+
+| `JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE`
+| number
+| Job run interval to refresh account knowledge.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`
+| string
+| Job run cron schedule to refresh account knowledge.
+By default, it is set to run every 15 minutes.
+| */15 * * * *
+
+| `JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA`
+| number
+| Job run interval to delete finalized CCU metadata.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA`
+| string
+| Job run cron schedule to delete finalized CCU metadata.
+By default, it is set to run once a day at 02:00 am.
+| 0 2 * * *
+
+| `JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES`
+| number
+| Job run interval to trigger account updates.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`
+| string
+| Job run cron schedule to trigger account updates. 
+By default, it is set to run every 15 minutes.
+| */15 * * * *
+
+| `ESTIMATES_BUFFER_BYTES_LENGTH`
+| number
+| Transaction buffer bytes to consider when estimating the transaction fees.
+By default, it is set to `0`.
+| 0
+
+| `MAINCHAIN_SERVICE_URL`
+| string
+| Mainchain service URL for custom deployments.
+| https://service.lisk.com
+
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Blockchain Indexer microservice 
 ----
 module.exports = {
   apps: [
@@ -491,32 +733,58 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
-        SERVICE_INDEXER_CACHE_REDIS: 'redis://localhost:6379/1',
-        SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
-        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_INDEXER_CACHE_REDIS: 'redis://127.0.0.1:6379/1',
+        SERVICE_INDEXER_REDIS_VOLATILE: 'redis://127.0.0.1:6379/2',
+        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
         SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
         ENABLE_DATA_RETRIEVAL_MODE: 'true',
         ENABLE_INDEXING_MODE: 'true',
         ENABLE_PERSIST_EVENTS: 'false',
+        // ENABLE_APPLY_SNAPSHOT: 'false',
+        // INDEX_SNAPSHOT_URL: '',
+        // ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP: 'true',
+        // SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
+        // DOCKER_HOST: 'local',
+        // MAINCHAIN_SERVICE_URL: 'https://service.lisk.com',
+        // LISK_STATIC: 'https://static-data.lisk.com',
+        // DEVNET_MAINCHAIN_URL: 'http://devnet-service.liskdev.net:9901',
+        // ESTIMATES_BUFFER_BYTES_LENGTH: 0,
+        // JOB_INTERVAL_DELETE_SERIALIZED_EVENTS: 0,
+        // JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS: '*/5 * * * *',
+        // JOB_INTERVAL_REFRESH_VALIDATORS: 0,
+        // JOB_SCHEDULE_REFRESH_VALIDATORS: '*/5 * * * *',
+        // JOB_INTERVAL_VALIDATE_VALIDATORS_RANK: 0,
+        // JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK: '4-59/15 * * * *',
+        // JOB_INTERVAL_REFRESH_INDEX_STATUS: 10,
+        // JOB_SCHEDULE_REFRESH_INDEX_STATUS: '',
+        // JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS: 0,
+        // JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS: '*/15 * * * *',
+        // JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE: 0,
+        // JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE: '*/15 * * * *',
+        // JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA: 0,
+        // JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA: '0 2 * * *',
+        // JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES: 0,
+        // JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES: '*/15 * * * *',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 
 
 === Blockchain application registry
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -526,7 +794,7 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `SERVICE_APP_REGISTRY_MYSQL`
 | string
@@ -534,17 +802,55 @@ Properties::
 | mysql://lisk:password@127.0.0.1:3306/lisk
 
 | `ENABLE_REBUILD_INDEX_AT_INIT`
-| string
+| boolean
 | Boolean flag to truncate the index and rebuild at application init.
 | false
 
+| `DEFAULT_APPS`
+| string
+| Default blockchain applications. 
+By default, it is set to `lisk_mainchain`.
+| lisk_mainchain
+
+| `JOB_INTERVAL_DELETE_NON_METADATA_FILES`
+| number
+| Job run interval to delete non-metadata files.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_DELETE_NON_METADATA_FILES`
+| string
+| Job run cron schedule to delete non-metadata files.
+By default, it is set to run every day at midnight.
+| 0 0 * * *
+
+| `JOB_INTERVAL_UPDATE_METADATA`
+| number
+| Job run interval to update off-chain metadata.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_UPDATE_METADATA`
+| string
+| Job run cron schedule to update off-chain metadata.
+By default, it is set to run every `10` minutes.
+| */10 * * * *
+
+| `GITHUB_APP_REGISTRY_REPO`
+| string
+| URL of `app-registry` GitHub repository.
+| https://github.com/LiskHQ/app-registry
+
+| `GITHUB_APP_REGISTRY_REPO_BRANCH`
+| string
+| Relevant branch for `app-registry` GitHub repository.
+| main
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Blockchain App Registry microservice 
 ----
 module.exports = {
   apps: [
@@ -554,27 +860,34 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
         SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-        ENABLE_REBUILD_INDEX_AT_INIT: 'false',
+        ENABLE_REBUILD_INDEX_AT_INIT: false,
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // GITHUB_APP_REGISTRY_REPO: 'https://github.com/LiskHQ/app-registry',
+        // GITHUB_APP_REGISTRY_REPO_BRANCH: 'main',
+        // JOB_INTERVAL_DELETE_NON_METADATA_FILES: 0,
+        // JOB_SCHEDULE_DELETE_NON_METADATA_FILES: '0 0 * * *',
+        // JOB_INTERVAL_UPDATE_METADATA: 0,
+        // JOB_SCHEDULE_UPDATE_METADATA: '*/10 * * * *',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 
 === Fee estimator
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -584,40 +897,55 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `SERVICE_FEE_ESTIMATOR_CACHE`
 | string
 | URL of the cache storage (Redis).
-| redis://localhost:6379/1
+| redis://127.0.0.1:6379/1
 
 | `ENABLE_FEE_ESTIMATOR_QUICK`
-| string
+| boolean
 | Enable quick algorithm for fee estimation.
 | true
 
 | `ENABLE_FEE_ESTIMATOR_FULL`
-| string
+| boolean
 | Enable full algorithm for fee estimation.
 | false
 
 | `FEE_EST_COLD_START_BATCH_SIZE`
-| string
+| number
 | Defines the number of blocks that are analyzed during cold start.
 | 1
 
 | `FEE_EST_DEFAULT_START_BLOCK_HEIGHT`
-| string
+| number
 | Defines the block height at which the dynamic fee estimation algorithm starts.
+By default, it starts at the genesis height in full mode and the current block height at the moment of application initialization in quick mode.
 | 1
+
+| `FEE_EST_EMA_BATCH_SIZE`
+| number
+| Estimated moving average algorithm batch size.
+| 20
+
+| `FEE_EST_EMA_DECAY_RATE`
+| number
+| Estimated moving average algorithm decay rate.
+| 0.5
+
+| `FEE_EST_WAVG_DECAY_PERCENTAGE`
+| number
+| Estimated moving average algorithm weighted average decay percentage.
+| 10
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Fee Estimator microservice 
 ----
 module.exports = {
   apps: [
@@ -627,31 +955,35 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
-        SERVICE_FEE_ESTIMATOR_CACHE: 'redis://localhost:6379/1',
-        ENABLE_FEE_ESTIMATOR_QUICK: 'true',
-        ENABLE_FEE_ESTIMATOR_FULL: 'false',
-        FEE_EST_COLD_START_BATCH_SIZE: '1',
-        FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_FEE_ESTIMATOR_CACHE: 'redis://127.0.0.1:6379/1',
+        ENABLE_FEE_ESTIMATOR_QUICK: true,
+        ENABLE_FEE_ESTIMATOR_FULL: false,
+        // FEE_EST_COLD_START_BATCH_SIZE: 1,
+        // FEE_EST_DEFAULT_START_BLOCK_HEIGHT: 1,
+        // FEE_EST_EMA_BATCH_SIZE: 20,
+        // FEE_EST_EMA_DECAY_RATE: 0.5,
+        // FEE_EST_WAVG_DECAY_PERCENTAGE: 10,
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 
 
 === Transaction statistics
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -661,7 +993,7 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `SERVICE_STATISTICS_MYSQL`
 | string
@@ -671,20 +1003,48 @@ Properties::
 | `SERVICE_STATISTICS_REDIS`
 | string
 | URL of the cache storage (Redis).
-| redis://localhost:6379/1
+| redis://127.0.0.1:6379/1
 
 | `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`
-| string
+| number
 | The number of days for which the transaction statistics need to be built in retrospect to the application init.
 | 366
 
+| `SERVICE_STATISTICS_MYSQL_READ_REPLICA`
+| string
+| Connection string (read-only) of the replicated MySQL instance that the microservice connects to.
+| mysql://reader:password@127.0.0.1:3307/lisk
+
+| `JOB_INTERVAL_REFRESH_TRANSACTION_STATS`
+| number
+| Job run interval to refresh transaction statistics.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_TRANSACTION_STATS`
+| string
+| Job run cron schedule to refresh transaction statistics.
+By default, it is set to run every 30 minutes.
+| */30 * * * *
+
+| `JOB_INTERVAL_VERIFY_TRANSACTION_STATS`
+| number
+| Job run interval to verify if the transaction statistics have been built correctly.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_VERIFY_TRANSACTION_STATS`
+| string
+|Job run cron schedule to verify if the transaction statistics have been built correctly. 
+By default, it is set to run every 3rd hour after the first `15` minutes.
+| 15 */3 * * *
+
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Transaction Statistics microservice 
 ----
 module.exports = {
   apps: [
@@ -694,27 +1054,33 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
-        SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_STATISTICS_REDIS: 'redis://127.0.0.1:6379/1',
         SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-        TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
+        TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
+        // SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@127.0.0.1:3307/lisk',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // JOB_INTERVAL_REFRESH_TRANSACTION_STATS: 0,
+        // JOB_SCHEDULE_REFRESH_TRANSACTION_STATS: '*/30 * * * *',
+        // JOB_INTERVAL_VERIFY_TRANSACTION_STATS: 0,
+        // JOB_SCHEDULE_VERIFY_TRANSACTION_STATS: '15 */3 * * *',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 === Market
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -724,12 +1090,12 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0
 
 | `SERVICE_MARKET_REDIS`
 | string
 | URL of the cache storage (Redis).
-| redis://localhost:6379/2
+| redis://127.0.0.1:6379/2
 
 | `SERVICE_MARKET_FIAT_CURRENCIES`
 | string
@@ -749,13 +1115,73 @@ The values listed here must be comma separated.
 The `/market/prices` endpoint will respond with additional data, specifically the exchange rates for various cryptocurrencies in other fiat currencies.
 The free plan would suffice for Lisk Service.
 |
+
+| `JOB_INTERVAL_REFRESH_PRICES_BINANCE`
+| number
+| Job run interval to refresh prices from Binance.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_PRICES_BINANCE`
+| string
+| Job run cron schedule to refresh prices from Binance.
+By default, it is set to run every minute.
+|* * * * *
+
+| `JOB_INTERVAL_REFRESH_PRICES_BITTREX`
+| string
+| Job run interval to refresh prices from Bittrex.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_PRICES_BITTREX`
+| string
+| Job run cron schedule to refresh prices from Bittrex.
+By default, it is set to run every minute.
+|* * * * *
+
+| `JOB_INTERVAL_REFRESH_PRICES_EXCHANGERATESAPI`
+| string
+| Job run interval to refresh prices from exchangeratesapi.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_PRICES_EXCHANGERATESAPI`
+| string
+| Job run cron schedule to refresh prices from exchangeratesapi.
+By default, it is set to run every minute.
+|* * * * *
+
+| `JOB_INTERVAL_REFRESH_PRICES_KRAKEN`
+| string
+| Job run interval to refresh prices from Kraken.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_REFRESH_PRICES_KRAKEN`
+| string
+| Job run cron schedule to refresh prices from Kraken.
+By default, it is set to run every minute.
+|* * * * *
+
+| `JOB_INTERVAL_UPDATE_PRICES`
+| string
+| Job run interval to update market prices.
+By default, it is set to run every `5` seconds.
+| 5
+
+| `JOB_SCHEDULE_UPDATE_PRICES`
+| string
+| Job run cron schedule to update market prices.
+By default, it is set to an empty string `''`.
+|
+
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Market microservice 
 ----
 module.exports = {
   apps: [
@@ -765,28 +1191,42 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://localhost:6379/0',
-        SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
-        SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
-        SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_MARKET_REDIS: 'redis://127.0.0.1:6379/2',
+        SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB,PLN,JPY,AUD,GBP,INR',
+        SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,LSK_PLN,LSK_JPY,LSK_AUD,LSK_GBP,LSK_INR,BTC_EUR,BTC_USD,BTC_CHF',
         // EXCHANGERATESAPI_IO_API_KEY: ''
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: false,
+        // SERVICE_LOG_STDOUT: true,
+        // SERVICE_LOG_GELF: false,
+        // SERVICE_LOG_FILE: false,
+        // DOCKER_HOST: 'local',
+        // JOB_INTERVAL_REFRESH_PRICES_BINANCE: 0,
+        // JOB_SCHEDULE_REFRESH_PRICES_BINANCE: '* * * * *',
+        // JOB_INTERVAL_REFRESH_PRICES_BITTREX: 0,
+        // JOB_SCHEDULE_REFRESH_PRICES_BITTREX: '* * * * *',
+        // JOB_INTERVAL_REFRESH_PRICES_EXCHANGERATESAPI: 0,
+        // JOB_SCHEDULE_REFRESH_PRICES_EXCHANGERATESAPI: '* * * * *',
+        // JOB_INTERVAL_REFRESH_PRICES_KRAKEN: 0,
+        // JOB_SCHEDULE_REFRESH_PRICES_KRAKEN: '* * * * *',
+        // JOB_INTERVAL_UPDATE_PRICES: 5,
+        // JOB_SCHEDULE_UPDATE_PRICES: '',
       },
     },
     // Configuration for other microservices.
   ],
 };
 ----
---
-=====
+====
 
 === Export
 
-[tabs]
-=====
-Properties::
-+
---
-[cols="2,1,3,3",options="header",stripes="hover"]
+NOTE: The `*EXPORT_S3_**` variables should only be configured when using AWS S3 instead of a local file system.
+For the local file system, use `*SERVICE_EXPORT_PARTIALS*` and `*SERVICE_EXPORT_STATIC*` variables.
+
+[cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
 |Datatype
@@ -796,25 +1236,91 @@ Properties::
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://localhost:6379/0
+| redis://127.0.0.1:6379/0  
 
 | `SERVICE_EXPORT_REDIS`
 | string
 | URL of the permanent cache storage (Redis).
-| redis://localhost:6379/3
+| redis://127.0.0.1:6379/3
 
 | `SERVICE_EXPORT_REDIS_VOLATILE`
 | string
 | URL of the volatile cache storage (Redis).
-| redis://localhost:6379/4
+| redis://127.0.0.1:6379/4
+
+| `SERVICE_EXPORT_PARTIALS`
+| string
+| Local filepath where the partial (per day) transaction history files for a specified account are temporarily cached.
+| ./data/partials
+
+| `SERVICE_EXPORT_STATIC`
+| string
+| Local filepath where the aggregated transaction history files, as requested by the user are stored.
+| ./data/static
+
+| `EXPORT_S3_ENDPOINT`
+| string
+| Amazon S3 bucket endpoint.
+| s3.amazonaws.com
+
+| `EXPORT_S3_ACCESS_KEY`
+| string
+| Amazon S3 bucket access key for the specified endpoint.
+| 
+
+| `EXPORT_S3_SECRET_KEY`
+| string
+| Amazon S3 bucket secret key.
+| 
+
+| `EXPORT_S3_SESSION_TOKEN`
+| string
+| Amazon S3 bucket session token.
+| 
+
+| `EXPORT_S3_REGION`
+| string
+| The region where Amazon S3 bucket is hosted. Optional.
+| eu-central-1
+
+| `EXPORT_S3_BUCKET_NAME`
+| string
+| Amazon S3 bucket name. Optional.
+| export
+
+| `EXPORT_S3_BUCKET_NAME_PARTIALS`
+| string
+| Amazon S3 bucket where the partial (per day) transaction history files for a specified account are temporarily cached.
+| partials
+
+| `EXPORT_S3_BUCKET_NAME_STATIC`
+| string
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user are stored.
+| exports
+
+| `EXPORT_S3_BUCKET_NAME_EXPORTS`
+| string
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user are stored.
+| exports
+
+| `JOB_INTERVAL_CACHE_PURGE`
+| number
+| Job run interval to clean up cache.
+By default, it is set to `0`.
+| 0
+
+| `JOB_SCHEDULE_CACHE_PURGE`
+| string
+| Job run cron schedule to clean up the cache.
+By default, it is set to run daily at 04:45 am.
+| 45 4 * * *
 
 |===
 
---
-Sample::
-+
---
-
+.Sample Configurations
+[%collapsible]
+====
+.Example environment variables for the Export microservice 
 ----
 module.exports = {
   apps: [
@@ -823,73 +1329,31 @@ module.exports = {
       name: 'lisk-service-export',
       // [...]
       env: {
-        SERVICE_BROKER: 'redis://localhost:6379/0',
-        SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
-        SERVICE_EXPORT_REDIS_VOLATILE: 'redis://localhost:6379/4',
+        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_EXPORT_REDIS: 'redis://127.0.0.1:6379/3',
+        SERVICE_EXPORT_REDIS_VOLATILE: 'redis://127.0.0.1:6379/4',
+        // SERVICE_EXPORT_PARTIALS: './data/partials',
+        // EXPORT_S3_BUCKET_NAME_PARTIALS: 'partials',
+        // SERVICE_EXPORT_STATIC: './data/static',
+        // EXPORT_S3_BUCKET_NAME_EXPORTS: 'exports',
+        // SERVICE_BROKER_TIMEOUT: 10,
+        // SERVICE_LOG_LEVEL: 'info',
+        // SERVICE_LOG_CONSOLE: 'false',
+        // SERVICE_LOG_STDOUT: 'true',
+        // SERVICE_LOG_GELF: 'false',
+        // SERVICE_LOG_FILE: 'false',
+        // DOCKER_HOST: 'local',
+        // EXPORT_S3_ENDPOINT: 's3.amazonaws.com',
+        // EXPORT_S3_ACCESS_KEY: '',
+        // EXPORT_S3_SECRET_KEY: '',
+        // EXPORT_S3_SESSION_TOKEN: '',
+        // EXPORT_S3_REGION: 'eu-central-1',
+        // EXPORT_S3_BUCKET_NAME: 'export',
+        // JOB_INTERVAL_CACHE_PURGE: 0,
+        // JOB_SCHEDULE_CACHE_PURGE: '45 4 * * *',
       },
     },
-    // Configuration for other microservices.
   ],
 };
 ----
---
-=====
-
-// == Lisk Settings
-
-// Configurable environment variables related to Lisk node.
-
-// TODO: needs verification from Sameer
-
-// === MySQL Snapshot settings for Docker
-// Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
-
-// [cols="2,1,3,3",options="header",stripes="hover"]
-// |===
-// |Property's Name
-// |Datatype
-// |Description
-// |Sample
-
-// | `ENABLE_APPLY_SNAPSHOT`
-// | string
-// | Enable or disable apply snapshot feature.
-// | true
-
-// | `INDEX_SNAPSHOT_URL`
-// | string
-// | Custom snapshot URL: expected to end with "sql.gz".
-// | https://snapshots.lisk.io/mainnet/service.sql.gz
-
-// | `DOCKER_COMPOSE_FILEPATH`
-// | string
-// | When MySQL is hosted as a docker-compose service, set the following environment variables.
-// Set docker-compose file path by using the absolute path.
-// | /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
-
-// | `DOCKER_MYSQL_SERVICE_NAME`
-// | string
-// | Set MySQL service name as defined in the above docker-compose file.
-// | mysql
-
-// |===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+====
