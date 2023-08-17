@@ -52,7 +52,7 @@ const reloadBlockchainAppsStats = async () => {
 		// TODO: Update implementation once interoperability_getOwnChainAccount is available
 		const blockchainAppsTable = await getBlockchainAppsTable();
 
-		const numActiveChains = await blockchainAppsTable.count({ status: APP_STATUS.ACTIVE });
+		const numActivatedChains = await blockchainAppsTable.count({ status: APP_STATUS.ACTIVATED });
 		const numRegisteredChains = await blockchainAppsTable.count({ status: APP_STATUS.REGISTERED });
 		const numTerminatedChains = await blockchainAppsTable.count({ status: APP_STATUS.TERMINATED });
 
@@ -65,7 +65,7 @@ const reloadBlockchainAppsStats = async () => {
 
 		blockchainAppsStatsCache = {
 			registered: numRegisteredChains,
-			active: numActiveChains,
+			activated: numActivatedChains,
 			terminated: numTerminatedChains,
 			totalSupplyLSK: totalSupply,
 			totalStakedLSK: totalStaked,

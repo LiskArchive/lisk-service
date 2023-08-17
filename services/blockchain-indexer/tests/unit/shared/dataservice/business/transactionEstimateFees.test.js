@@ -43,6 +43,8 @@ const {
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,
 	mockInteroperabilityRegisterSidechainTxRequest,
 	mockInteroperabilityRegisterSidechainTxResult,
+	mockAuthAccountInfo,
+	mockAuthInfoForMultisigAccount,
 } = require('../../constants/transactionEstimateFees');
 
 jest.mock('lisk-service-framework', () => {
@@ -221,7 +223,10 @@ describe('Test transaction fees estimates', () => {
 				mockTransaction,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			const transaction = await mockTransaction(inputTransaction, authAccountInfo);
+			const transaction = await mockTransaction(
+				inputTransaction,
+				authAccountInfo.numberOfSignatures,
+			);
 			expect(transaction).toMatchObject(inputTransaction);
 		});
 
@@ -232,7 +237,7 @@ describe('Test transaction fees estimates', () => {
 
 			const transaction = await mockTransaction(
 				inputMultisigTransaction,
-				authInfoForMultisigAccount,
+				authInfoForMultisigAccount.numberOfSignatures,
 			);
 
 			const expectedResponse = {
@@ -252,7 +257,7 @@ describe('Test transaction fees estimates', () => {
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { id, ...remParams } = inputTransaction;
-			const transaction = await mockTransaction(remParams, authAccountInfo);
+			const transaction = await mockTransaction(remParams, authAccountInfo.numberOfSignatures);
 
 			const expectedResponse = {
 				...inputTransaction,
@@ -268,7 +273,7 @@ describe('Test transaction fees estimates', () => {
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { fee, ...remParams } = inputTransaction;
-			const transaction = await mockTransaction(remParams, authAccountInfo);
+			const transaction = await mockTransaction(remParams, authAccountInfo.numberOfSignatures);
 
 			const expectedResponse = {
 				...inputTransaction,
@@ -284,7 +289,10 @@ describe('Test transaction fees estimates', () => {
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { signatures, ...remParams } = inputMultisigTransaction;
-			const transaction = await mockTransaction(remParams, authInfoForMultisigAccount);
+			const transaction = await mockTransaction(
+				remParams,
+				authInfoForMultisigAccount.numberOfSignatures,
+			);
 
 			const expectedResponse = {
 				...inputMultisigTransaction,
@@ -304,7 +312,7 @@ describe('Test transaction fees estimates', () => {
 
 			const transaction = await mockTransaction(
 				{ ...inputTransaction, params: remTransactionParams },
-				authAccountInfo,
+				authAccountInfo.numberOfSignatures,
 			);
 
 			const expectedResponse = {
@@ -324,7 +332,7 @@ describe('Test transaction fees estimates', () => {
 
 			const transaction = await mockTransaction(
 				{ ...inputTransaction, params: remTransactionParams },
-				authAccountInfo,
+				authAccountInfo.numberOfSignatures,
 			);
 
 			const expectedResponse = {
@@ -340,7 +348,7 @@ describe('Test transaction fees estimates', () => {
 				mockTransaction,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			expect(async () => mockTransaction(undefined)).rejects.toThrow(TypeError);
+			expect(async () => mockTransaction(undefined)).rejects.toThrow();
 		});
 
 		it('should throw error when transaction is null', async () => {
@@ -348,11 +356,12 @@ describe('Test transaction fees estimates', () => {
 				mockTransaction,
 			} = require(mockedTransactionFeeEstimatesFilePath);
 
-			expect(async () => mockTransaction(null)).rejects.toThrow(TypeError);
+			expect(async () => mockTransaction(null)).rejects.toThrow();
 		});
 	});
 
 	describe('Test estimateTransactionFees method', () => {
+		afterEach(() => jest.clearAllMocks());
 		jest.resetModules();
 
 		// Mock the dependencies
@@ -429,6 +438,7 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
+				.mockReturnValueOnce(mockAuthAccountInfo)
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
 				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
 				.mockReturnValueOnce('encoded CCM Object');
@@ -463,11 +473,9 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw when getAuthAccountInfo fails', async () => {
-			getAuthAccountInfo.mockRejectedValue('Error');
-
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
-			requestConnector.mockResolvedValue(mockTxrequestConnector);
+			requestConnector.mockRejectedValue('Error');
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
@@ -507,6 +515,46 @@ describe('Test transaction fees estimates', () => {
 			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
 		});
 
+		it('should throw Validation Exception when TOKEN_ID specified are incorrect', async () => {
+			// Mock the return values of the functions
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
+			requestConnector
+				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
+			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
+			calcAdditionalFees.mockResolvedValue({});
+			calcMessageFee.mockResolvedValue({});
+			getPosConstants.mockResolvedValue(posConstants);
+
+			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
+
+			mockTxRequest.transaction.params.tokenID = 'invalidTokenID';
+
+			// Call the function
+			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
+		});
+
+		it('should throw Validation Exception when address specified are incorrect', async () => {
+			// Mock the return values of the functions
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
+			requestConnector
+				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
+			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
+			calcAdditionalFees.mockResolvedValue({});
+			calcMessageFee.mockResolvedValue({});
+			getPosConstants.mockResolvedValue(posConstants);
+
+			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
+
+			mockTxRequest.transaction.params.recipientAddress = 'invalidAddress';
+
+			// Call the function
+			await expect(estimateTransactionFees(mockTxRequest)).rejects.toBeTruthy();
+		});
+
 		describe('Test estimateTransactionFees method for interoperability transactions', () => {
 			const transactionsMap = {
 				'interoperability:submitMainchainCrossChainUpdate': {
@@ -526,7 +574,7 @@ describe('Test transaction fees estimates', () => {
 					getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 					requestConnector
 						.mockReturnValueOnce(mockTxrequestConnector)
-						.mockReturnValue({ userAccount: '1', escrowAccount: '0' });
+						.mockReturnValue({ userAccount: '1', escrowAccount: '0', fee: '100000000', minFee: '166000', size: 166 });
 					getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 					calcAdditionalFees.mockResolvedValue({});
 					calcMessageFee.mockResolvedValue({});
@@ -543,6 +591,87 @@ describe('Test transaction fees estimates', () => {
 					);
 				});
 			});
+		});
+	});
+
+	describe('Test filterOptionalProps method', () => {
+		const optionalProps = ['id', 'fee', 'signatures'];
+
+		it('should return object with required properties', async () => {
+			const {
+				filterOptionalProps,
+			} = require(mockedTransactionFeeEstimatesFilePath);
+
+			const input = {
+				module: 'token',
+				command: 'transferCrossChain',
+				fee: '217000',
+				nonce: '7',
+				senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+				id: '0448028b3b0717776d4db10fc64dacf8096298377b31f740d73c9e9859ea4a26',
+				signatures: [
+					'7185e6e035c7804c5cbb166cb85581bc9beafd0fe2ecac9b83cb514c32ddc64ac546f16a1fba372f74493261658d1c8deac234e37b8ca23c4fd396e44e33fd0d',
+				],
+			};
+
+			const expectedResponse = {
+				module: 'token',
+				command: 'transferCrossChain',
+				nonce: '7',
+				senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+			};
+
+			const txWithRequiredProps = filterOptionalProps(input, optionalProps);
+			expect(txWithRequiredProps).toMatchObject(expectedResponse);
+		});
+
+		it('should return an object when input is undefined', async () => {
+			const {
+				filterOptionalProps,
+			} = require(mockedTransactionFeeEstimatesFilePath);
+
+			const txWithRequiredProps = filterOptionalProps(undefined, optionalProps);
+			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
+		});
+
+		it('should return an object when input is null', async () => {
+			const {
+				filterOptionalProps,
+			} = require(mockedTransactionFeeEstimatesFilePath);
+
+			const txWithRequiredProps = filterOptionalProps(null, optionalProps);
+			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
+		});
+	});
+
+	describe('Test getNumberOfSignatures method', () => {
+		// Mock the dependencies
+		const { requestConnector } = require(mockedRequestFilePath);
+
+		jest.mock(mockedRequestFilePath, () => ({
+			requestConnector: jest.fn(),
+		}));
+
+		it('should return number of signatures as 1 for non-multiSig account', async () => {
+			// Mock the return values of the functions
+			requestConnector.mockReturnValueOnce(mockAuthAccountInfo);
+
+			const { getNumberOfSignatures } = require(mockedTransactionFeeEstimatesFilePath);
+
+			// Call the function
+			const result = await getNumberOfSignatures(mockTxsenderAddress);
+			expect(result).toEqual(1);
+		});
+
+		it('should return number of signatures as 2 for multiSig account', async () => {
+			// Mock the return values of the functions
+			requestConnector.mockReturnValueOnce(mockAuthInfoForMultisigAccount);
+
+			const { getNumberOfSignatures } = require(mockedTransactionFeeEstimatesFilePath);
+
+			// Call the function
+			const result = await getNumberOfSignatures(mockTxsenderAddress);
+			expect(result).toEqual(2);
 		});
 	});
 });

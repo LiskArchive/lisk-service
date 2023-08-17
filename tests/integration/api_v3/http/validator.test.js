@@ -26,6 +26,10 @@ const {
 	validatorMetaSchema,
 } = require('../../../schemas/api_v3/validatorSchema.schema');
 
+const {
+	invalidAddresses,
+} = require('../constants/invalidInputs');
+
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/validator`;
@@ -37,25 +41,38 @@ describe('Validator API', () => {
 		[refGenerator] = response.data;
 	});
 
-	it('retrieves validator info -> ok', async () => {
+	it('should return validator info', async () => {
 		const response = await api.get(`${endpoint}?address=${refGenerator.address}`);
 		expect(response).toMap(goodRequestSchemaForValidator);
 		expect(response.data).toMap(validatorInfoSchema);
 		expect(response.meta).toMap(validatorMetaSchema);
 	});
 
-	it('No address -> bad request', async () => {
+	it('should return bad request when requested without address', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid address -> 400', async () => {
-		const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
+	it('should return bad request when requested with invalid address', async () => {
+		for (let i = 0; i < invalidAddresses.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request when requested with address CSV', async () => {
+		const response = await api.get(`${endpoint}?address=${refGenerator.address},${refGenerator.address}`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid request param -> bad request', async () => {
+	it('should return bad request when requested with invalid param', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request when requested with empty invalid param', async () => {
+		const response = await api.get(`${endpoint}?invalidParam=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

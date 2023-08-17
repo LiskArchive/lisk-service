@@ -213,7 +213,7 @@ Updates about included transactions within a newly generated block.
           "name": null
         }
       },
-      "executionStatus": "success",
+      "executionStatus": "successful",
       "index": 0
     },
   ],
@@ -265,7 +265,7 @@ Updates about deleted transactions within a deleted block. This usually happens 
           "name": null
         }
       },
-      "executionStatus": "success",
+      "executionStatus": "successful",
       "index": 0
     },
   ],

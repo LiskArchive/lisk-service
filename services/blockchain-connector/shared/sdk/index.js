@@ -97,6 +97,7 @@ const {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getRegistrationFee,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -210,6 +211,7 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getChainRegistrationFee: getRegistrationFee,
 
 	// Legacy
 	getLegacyAccount,

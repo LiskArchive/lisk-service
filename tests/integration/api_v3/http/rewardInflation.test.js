@@ -42,13 +42,23 @@ describe(`GET ${endpoint}`, () => {
 		expect(response).toMap(rewardInflationResponseSchema);
 	});
 
-	it('should return bad request when called with unsupported param', async () => {
-		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+	it('should return bad request for missing height', async () => {
+		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('should return bad request param when called without param', async () => {
-		const response = await api.get(endpoint, 400);
+	it('should return bad request for a height less than 0', async () => {
+		const response = await api.get(`${endpoint}?height=-1`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for a non-integer height', async () => {
+		const response = await api.get(`${endpoint}?height=abc`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for a invalid param', async () => {
+		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

@@ -183,7 +183,7 @@ const mockTransactionsDryRunResult = {
 				height: 29137,
 			},
 		],
-		status: 'ok',
+		status: 'valid',
 	},
 	meta: {},
 };

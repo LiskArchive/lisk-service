@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Utils,
 	HTTP: { StatusCodes },
@@ -21,7 +22,6 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const path = require('path');
 const gatewayConfig = require('../config');
 const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate, dropEmptyProps } = require('./paramValidator');

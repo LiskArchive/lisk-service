@@ -44,7 +44,7 @@ const blockSchema = {
 };
 
 const headerSchema = {
-	$id: '/block/header/3',
+	$id: '/block/header/3/without-id',
 	type: 'object',
 	properties: {
 		version: {
@@ -249,6 +249,7 @@ const eventSchema = {
 		topics: {
 			type: 'array',
 			fieldNumber: 4,
+			maxItems: 4,
 			items: {
 				dataType: 'bytes',
 			},
@@ -260,6 +261,7 @@ const eventSchema = {
 		index: {
 			dataType: 'uint32',
 			fieldNumber: 6,
+			maximum: 1073741823,
 		},
 	},
 };

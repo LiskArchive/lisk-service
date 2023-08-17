@@ -187,6 +187,28 @@ Required when `ENABLE_REQUEST_CACHING` is enabled.
 The list can be expressed as a CSV.
 | indexer,connector
 
+| `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS`
+| string
+| Boolean flag to enforce the `headersTimeout` and `keepAliveTimeout` settings on the API server.
+Enabling this might be helpful when deploying Lisk Service behind a load balancer or a reverse proxy.
+Check {url_molecular_load_balancer_faq}[this FAQ] for more information.
+| false
+
+| `HTTP_KEEP_ALIVE_TIMEOUT`
+| number
+| Defines the number of microseconds the gateway will wait before closing an idle connection.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+By default, it is set to 65000.
+| 65000
+
+| `HTTP_HEADERS_TIMEOUT`
+| number
+| Defines the maximum number of microseconds for the gateway to send HTTP response headers after the client's request.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+Please ensure that the `HTTP_HEADERS_TIMEOUT` is set higher than the `HTTP_KEEP_ALIVE_TIMEOUT`.
+By default, it is set to 66000.
+| 66000
+
 | `WS_RATE_LIMIT_ENABLE`
 | boolean
 | To enable the WebSocket rate limit, this environment variable is required to be `true`.

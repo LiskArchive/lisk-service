@@ -16,8 +16,8 @@
  */
 /* eslint-disable no-console */
 
-const io = require('socket.io-client');
 const util = require('util');
+const io = require('socket.io-client');
 const colorize = require('json-colorizer');
 
 if (process.argv.length < 3) {

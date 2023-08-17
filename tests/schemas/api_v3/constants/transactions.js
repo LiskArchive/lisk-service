@@ -16,8 +16,8 @@
 
 const TRANSACTION_EXECUTION_STATUSES = [
 	'pending',
-	'success',
-	'fail',
+	'successful',
+	'failed',
 ];
 
 module.exports = {

@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const requireAll = require('require-all');
 const path = require('path');
+const requireAll = require('require-all');
 
 const requireAllJs = absolutePath => requireAll({
 	filter: /(.+)\.js$/,

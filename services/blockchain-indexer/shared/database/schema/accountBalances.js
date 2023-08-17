@@ -19,7 +19,7 @@ module.exports = {
 	schema: {
 		address: { type: 'string', null: false },
 		tokenID: { type: 'string', null: false },
-		balance: { type: 'bigInteger', null: false, default: BigInt('0') },
+		balance: { type: 'bigInteger', null: false, defaultValue: BigInt('0') },
 	},
 	indexes: {
 		address: { type: 'key' },
