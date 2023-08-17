@@ -399,13 +399,13 @@ By default, it is set to `12` hours.
 
 | `JOB_INTERVAL_CACHE_CLEANUP`
 | number
-| Job run interval to cleanup block cache. 
+| Job run interval to clean up block cache. 
 By default, it is set to 0.
 | 0
 
 | `JOB_SCHEDULE_CACHE_CLEANUP`
 | string
-| Job run cron schedule to cleanup block cache.
+| Job run cron schedule to clean up block cache.
 By default, it is set to run every 12 hours.
 |0 */12 * * *
 
@@ -616,7 +616,7 @@ By default, it is set to `0`.
 | `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`
 | string
 | Job run cron schedule to delete serialized events.
-By default, it is set to run every 5th minute.
+By default, it is set to run every 5 minutes.
 | */5 * * * *
 
 | `JOB_INTERVAL_REFRESH_VALIDATORS`
@@ -628,7 +628,7 @@ By default, it is set to `0`.
 | `JOB_SCHEDULE_REFRESH_VALIDATORS`
 | string
 | Job run cron schedule to refresh validators cache.
-By default, it is set to run every 5th minute.
+By default, it is set to run every 5 minutes.
 | */5 * * * *
 
 | `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`
@@ -664,7 +664,7 @@ By default, it is set to `0`.
 | `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`
 | string
 | Job run cron schedule to refresh blockchain application statistics.
-By default, it is set to run every 15th minute.
+By default, it is set to run every 15 minutes.
 | */15 * * * *
 
 | `JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE`
@@ -676,7 +676,7 @@ By default, it is set to `0`.
 | `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`
 | string
 | Job run cron schedule to refresh account knowledge.
-By default, it is set to run every 15th minute.
+By default, it is set to run every 15 minutes.
 | */15 * * * *
 
 | `JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA`
@@ -700,7 +700,7 @@ By default, it is set to `0`.
 | `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`
 | string
 | Job run cron schedule to trigger account updates. 
-By default, it is set to run every 15th minute.
+By default, it is set to run every 15 minutes.
 | */15 * * * *
 
 | `ESTIMATES_BUFFER_BYTES_LENGTH`
@@ -918,7 +918,7 @@ module.exports = {
 | `FEE_EST_DEFAULT_START_BLOCK_HEIGHT`
 | number
 | Defines the block height at which the dynamic fee estimation algorithm starts.
-By default, it starts at the genesis height in full mode and the current block height at the moment of application initialization in the quick mode.
+By default, it starts at the genesis height in full mode and the current block height at the moment of application initialization in quick mode.
 | 1
 
 | `FEE_EST_EMA_BATCH_SIZE`
@@ -1020,7 +1020,7 @@ By default, it is set to `0`.
 | `JOB_SCHEDULE_REFRESH_TRANSACTION_STATS`
 | string
 | Job run cron schedule to refresh transaction statistics.
-By default, it is set to run every 30th minute.
+By default, it is set to run every 30 minutes.
 | */30 * * * *
 
 | `JOB_INTERVAL_VERIFY_TRANSACTION_STATS`
@@ -1263,13 +1263,13 @@ module.exports = {
 
 | `JOB_INTERVAL_CACHE_PURGE`
 | number
-| Job run interval to cleanup cache.
+| Job run interval to clean up cache.
 By default, it is set to `0`.
 | 0
 
 | `JOB_SCHEDULE_CACHE_PURGE`
 | string
-| Job run cron schedule to cleanup cache.
+| Job run cron schedule to clean up the cache.
 By default, it is set to run daily at 04:45 am.
 | 45 4 * * *
 
@@ -1295,7 +1295,7 @@ By default, it is set to run daily at 04:45 am.
 
 | `EXPORT_S3_REGION`
 | string
-| Region where Amazon S3 bucket is hosted. Optional.
+| The region where Amazon S3 bucket is hosted. Optional.
 | eu-central-1
 
 | `EXPORT_S3_BUCKET_NAME`
@@ -1347,7 +1347,7 @@ module.exports = {
 
 == Lisk Settings
 
-Configurable environment variables related to Lisk node.
+Configurable environment variables related to the Lisk node.
 
 === MySQL Snapshot settings for Docker
 Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
@@ -1362,12 +1362,12 @@ Configurations to sync Lisk Service from an existing snapshot and to speed up th
 | `DOCKER_COMPOSE_FILEPATH`
 | string
 | When MySQL is hosted as a docker-compose service, set the following environment variables.
-Set docker-compose file path by using the absolute path.
+Set the docker-compose file path by using the absolute path.
 | /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
 
 | `DOCKER_MYSQL_SERVICE_NAME`
 | string
-| Set MySQL service name as defined in the above docker-compose file.
+| Set the MySQL service name as defined in the above docker-compose file.
 | mysql
 
 |===
