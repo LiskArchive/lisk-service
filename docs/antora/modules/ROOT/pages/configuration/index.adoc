@@ -268,7 +268,7 @@ By default, it is set to `*` which allows requests from all origins.
 
 | `HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR`
 | boolean
-| When set to true, the rate-limiting algorithm considers the X-Forwarded-For header value to determine the client's IP address for rate-limiting purposes.
+| When set to true, the rate-limiting algorithm considers the `X-Forwarded-For` header value to determine the client's IP address for rate-limiting purposes.
 By default, it is set to `false`.
 | false
 
