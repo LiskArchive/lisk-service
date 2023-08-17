@@ -13,6 +13,8 @@ Muhammad Talha <muhammad.talha@lightcurve.io>
 :url_intro_services: index.adoc
 
 :url_pm2: https://pm2.keymetrics.io/
+
+//TODO: Update the URL to point to the `main` branch once we make the release in production.
 :url_config_file: https://github.com/LiskHQ/lisk-service/blob/release/0.7.0/ecosystem.config.js
 :url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
 :url_faq: https://moleculer.services/docs/0.14/faq.html#Why-am-I-getting-502-Bad-Gateway-when-api-gateway-is-behind-ALB-on-AWS
