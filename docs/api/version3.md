@@ -2070,7 +2070,7 @@ No parameters are required.
 ```jsonc
 {
   "data": {
-      "5000000": "5000000",
+      "feeCreateNFT": "5000000",
   },
   "meta": {}
 }

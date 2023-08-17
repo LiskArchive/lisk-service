@@ -23,17 +23,17 @@ let moduleConstants;
 const getNFTConstants = async () => {
 	try {
 		if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getNFTConstants');
+		
+		return {
+			data: moduleConstants,
+			meta: {},
+		};
 	} catch (err) {
 		const errMessage = `Unable to fetch the NFT constants from connector due to: ${err.message}.`;
 		logger.warn(errMessage);
 		logger.trace(err.stack);
 		throw new Error(errMessage);
 	}
-
-	return {
-		data: moduleConstants,
-		meta: {},
-	};
 };
 
 module.exports = {
