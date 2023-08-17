@@ -103,6 +103,10 @@ const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
 const { invokeEndpoint } = require('./invoke');
 
+const {
+	getNFTConstants,
+} = require('./nft');
+
 module.exports = {
 	// Blocks
 	getBlocks,
@@ -201,4 +205,7 @@ module.exports = {
 	resolveMainchainServiceURL,
 
 	invokeEndpoint,
+
+	// NFT
+	getNFTConstants,
 };
