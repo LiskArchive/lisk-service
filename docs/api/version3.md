@@ -2021,7 +2021,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | nftID | String | `/^\b(?:[A-Fa-f0-9]){32}\b$/` | *(empty)* |  |
 | collectionID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* |  |
-| owner | String | `/^(lsk([a-hjkm-z][2-9]){38})$|^(?:\b[a-fA-F0-9]{8}\b)$/` | *(empty)* | |
+| owner | String | `/^(lsk[a-hjkm-z2-9]{38})$|^(?:\b[a-fA-F0-9]{8}\b)$/` | *(empty)* | |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -2033,7 +2033,7 @@ _Supports pagination._
 {
   "data": [
     {
-      "id": "0000000000000000000000000000000000",
+      "id": "00000000000000000000000000000000",
       "nft":{
          "chainID": "00000000",
          "collectionID": "10000000",

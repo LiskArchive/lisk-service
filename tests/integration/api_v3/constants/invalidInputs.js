@@ -92,6 +92,29 @@ const invalidChainIDCSV = [
 	'__%',
 ];
 
+const invalidNFTID = [
+	'l123456789ABCDEFabcdef0123456789',
+	'%,%',
+	'__%',
+];
+
+const invalidNFTCollectionID = [
+	'123456789',
+	'abcdefghijklmnop',
+	'ABCDEFGH',
+	'01234567abcdef',
+	'__%',
+];
+
+const invalidNFTOwner = [
+	'lsk12345678901234567890123456789012345678901',
+	'Lsk1234567890123456789012345678901234567890',
+	'lsk1234567890123456789012345678901234567890',
+	'abcdefghijklmnop',
+	'01234567abcdef',
+	'__%',
+];
+
 module.exports = {
 	invalidAddresses,
 	invalidPublicKeys: invalidSHA,
@@ -104,4 +127,9 @@ module.exports = {
 	invalidPartialSearches,
 	invalidLimits,
 	invalidOffsets,
+
+	// NFTs
+	invalidNFTID,
+	invalidNFTCollectionID,
+	invalidNFTOwner,
 };
