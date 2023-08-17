@@ -58,6 +58,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Default Reward](#default-reward)
     - [Annual Inflation](#annual-inflation)
   - [NFT](#nft)
+    - [NFT constants](#nft-constants)
     - [NFT search](#nft-search)
   - [Legacy](#legacy)
     - [Legacy Account Details](#legacy-account-details)
@@ -2005,7 +2006,46 @@ https://service.lisk.com/api/v3/reward/annual-inflation?height=500
 
 ## NFT
 
-### Event search
+### NFT constants
+
+Retrieves configurable constants information from the NFT module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/nft/constants`
+- RPC `get.nft.constants`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": {
+    "feeCreateNFT": "5000000",
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/nft/constants
+```
+
+### NFT search
 
 Retrieves NFTs based on criteria defined by params.
 
