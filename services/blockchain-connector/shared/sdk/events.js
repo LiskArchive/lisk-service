@@ -20,7 +20,7 @@ const { Logger, Signals } = require('lisk-service-framework');
 const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
-const { getEscrowedAmounts } = require('./tokens');
+const { getEscrowedAmounts } = require('./token');
 
 const logger = Logger();
 
