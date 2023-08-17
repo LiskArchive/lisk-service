@@ -23,7 +23,7 @@ let moduleConstants;
 const getNFTConstants = async () => {
 	try {
 		if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getNFTConstants');
-		
+
 		return {
 			data: moduleConstants,
 			meta: {},
