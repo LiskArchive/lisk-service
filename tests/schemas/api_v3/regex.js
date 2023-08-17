@@ -41,6 +41,9 @@ const TOPIC = /^\b(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})\b$/;
 const EMPTY_STRING = /^$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible)\b$/;
 const SWAGGER_RESPONSE_KEY = /^([0-9]{3})$|^(default)$/;
+const NFT_ID = /^\b(?:[A-Fa-f0-9]){32}\b$/;
+const NFT_COLLECTION_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const NFT_OWNER = /^(lsk[a-hjkm-z2-9]{38})$|^(?:\b[a-fA-F0-9]{8}\b)$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -71,4 +74,7 @@ module.exports = {
 	POSITIVE_DIGITS,
 	POS_VALIDATOR_STATUS,
 	SWAGGER_RESPONSE_KEY,
+	NFT_ID,
+	NFT_COLLECTION_ID,
+	NFT_OWNER,
 };

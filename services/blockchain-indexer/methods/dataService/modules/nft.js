@@ -13,9 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTConstants } = require('../controllers/nft');
+const {
+	getNFTs,
+	getNFTConstants,
+} = require('../controllers/nft');
 
 module.exports = [
+	{
+		name: 'nft',
+		controller: getNFTs,
+		params: {
+			nftID: { optional: true, type: 'string' },
+			chainID: { optional: true, type: 'string' },
+			collectionID: { optional: true, type: 'string' },
+			index: { optional: true, type: 'number' },
+			owner: { optional: true, type: 'string' },
+			escrowChainID: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
 	{
 		name: 'nft.constants',
 		controller: getNFTConstants,

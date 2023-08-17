@@ -70,6 +70,10 @@ const {
 } = require('./token');
 
 const {
+	getNFTs,
+} = require('./nft');
+
+const {
 	getTransactions,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
@@ -125,6 +129,9 @@ module.exports = {
 	getStakes,
 	getStakers,
 	getPosClaimableRewards,
+
+	// NFTs
+	getNFTs,
 
 	// Token
 	tokenHasUserAccount,

@@ -52,6 +52,10 @@
                 "description": "Lisk PoS module API calls."
             },
             {
+                "name": "NFT",
+                "description": "Lisk NFT module API calls."
+            },
+            {
                 "name": "(Dynamic) Reward",
                 "description": "Lisk (Dynamic) Reward module API calls."
             },
