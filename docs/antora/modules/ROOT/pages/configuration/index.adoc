@@ -1351,32 +1351,6 @@ module.exports = {
 ----
 ====
 
-== Lisk Settings
-
-Configurable environment variables related to the Lisk node.
-
-=== MySQL Snapshot settings for Docker
-Configurations to sync Lisk Service from an existing snapshot and to speed up the syncing process in the Docker environment.
-
-[cols="2,1,~,~m",options="header",stripes="hover"]
-|===
-|Environment variable
-|Datatype
-|Description
-|Sample
-
-| `DOCKER_COMPOSE_FILEPATH`
-| string
-| When MySQL is hosted as a docker-compose service, set the following environment variables.
-Set the docker-compose file path by using the absolute path.
-| /Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml
-
-| `DOCKER_MYSQL_SERVICE_NAME`
-| string
-| Set the MySQL service name as defined in the above docker-compose file.
-| mysql
-
-|===
 
 
 
