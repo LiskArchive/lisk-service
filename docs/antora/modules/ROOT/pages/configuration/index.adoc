@@ -149,7 +149,7 @@ module.exports = {
 | `HOST`
 | string
 | URL of the host.
-| 0.0.0.0
+| 127.0.0.1
 
 | `SERVICE_BROKER`
 | string
@@ -550,7 +550,7 @@ module.exports = {
 
 | `SERVICE_INDEXER_MYSQL`
 | string
-| Connection string (read/write) of the primary MySQL instance that the microservice connects to.
+| Connection string for the primary MySQL (read/write) instance that the microservice connects to.
 | mysql://lisk:password@127.0.0.1:3306/lisk
 
 | `SERVICE_MESSAGE_QUEUE_REDIS`
@@ -586,7 +586,7 @@ Must match the value supplied for the `coordinator` microservice.
 
 | `SERVICE_INDEXER_MYSQL_READ_REPLICA`
 | string
-| Connection string (read-only) of the replicated MySQL instance that the microservice connects to.
+| Connection string for the replicated MySQL (read-only) instance that the microservice connects to.
 | mysql://lisk:password@127.0.0.1:3306/lisk
 
 | `ENABLE_APPLY_SNAPSHOT`
@@ -1245,7 +1245,7 @@ module.exports = {
 
 | `SERVICE_EXPORT_PARTIALS`
 | string
-| 
+| Local filepath where the partial (per day) transaction history files for a specified account are temporarily cached.
 | ./data/partials
 
 
@@ -1263,7 +1263,7 @@ By default, it is set to run daily at 04:45 am.
 
 | `SERVICE_EXPORT_STATIC`
 | string
-| 
+| Local filepath where the aggregated transaction history files, as requested by the user, are stored.
 | ./data/static
 
 | `EXPORT_S3_ACCESS_KEY`
@@ -1278,12 +1278,12 @@ By default, it is set to run daily at 04:45 am.
 
 | `EXPORT_S3_BUCKET_NAME_PARTIALS`
 | string
-| 
+| Amazon S3 bucket where the partial (per day) transaction history files for a specified account are temporarily cached.
 | partials
 
 | `EXPORT_S3_BUCKET_NAME_EXPORTS`
 | string
-| 
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user, are stored.
 | exports
 
 | `EXPORT_S3_ENDPOINT`
