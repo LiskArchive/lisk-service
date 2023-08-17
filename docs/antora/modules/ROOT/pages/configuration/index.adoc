@@ -1268,20 +1268,6 @@ module.exports = {
 | 
 | ./data/partials
 
-| `EXPORT_S3_BUCKET_NAME_PARTIALS`
-| string
-| 
-| partials
-
-| `SERVICE_EXPORT_STATIC`
-| string
-| 
-| ./data/static
-
-| `EXPORT_S3_BUCKET_NAME_EXPORTS`
-| string
-| 
-| exports
 
 | `JOB_INTERVAL_CACHE_PURGE`
 | number
@@ -1295,15 +1281,40 @@ By default, it is set to `0`.
 By default, it is set to run daily at 04:45 am.
 | 45 4 * * *
 
-| `EXPORT_S3_ENDPOINT`
+| `SERVICE_EXPORT_STATIC`
 | string
-| Amazon S3 bucket endpoint.
-| s3.amazonaws.com
+| 
+| ./data/static
 
 | `EXPORT_S3_ACCESS_KEY`
 | string
 | Amazon S3 bucket access key for the specified endpoint.
 | 
+
+| `EXPORT_S3_BUCKET_NAME`
+| string
+| Amazon S3 bucket name. Optional.
+| export
+
+| `EXPORT_S3_BUCKET_NAME_PARTIALS`
+| string
+| 
+| partials
+
+| `EXPORT_S3_BUCKET_NAME_EXPORTS`
+| string
+| 
+| exports
+
+| `EXPORT_S3_ENDPOINT`
+| string
+| Amazon S3 bucket endpoint.
+| s3.amazonaws.com
+
+| `EXPORT_S3_REGION`
+| string
+| The region where Amazon S3 bucket is hosted. Optional.
+| eu-central-1
 
 | `EXPORT_S3_SECRET_KEY`
 | string
@@ -1315,15 +1326,6 @@ By default, it is set to run daily at 04:45 am.
 | Amazon S3 bucket session token.
 | 
 
-| `EXPORT_S3_REGION`
-| string
-| The region where Amazon S3 bucket is hosted. Optional.
-| eu-central-1
-
-| `EXPORT_S3_BUCKET_NAME`
-| string
-| Amazon S3 bucket name. Optional.
-| export
 |===
 
 .Sample Configurations
