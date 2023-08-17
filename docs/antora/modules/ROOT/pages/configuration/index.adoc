@@ -1255,7 +1255,7 @@ For the local file system, use `*SERVICE_EXPORT_PARTIALS*` and `*SERVICE_EXPORT_
 
 | `SERVICE_EXPORT_STATIC`
 | string
-| Local filepath where the aggregated transaction history files, as requested by the user, are stored.
+| Local filepath where the aggregated transaction history files, as requested by the user are stored.
 | ./data/static
 
 | `EXPORT_S3_ENDPOINT`
@@ -1295,12 +1295,12 @@ For the local file system, use `*SERVICE_EXPORT_PARTIALS*` and `*SERVICE_EXPORT_
 
 | `EXPORT_S3_BUCKET_NAME_STATIC`
 | string
-| Amazon S3 bucket where the aggregated transaction history files, as requested by the user, are stored.
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user are stored.
 | exports
 
 | `EXPORT_S3_BUCKET_NAME_EXPORTS`
 | string
-| Amazon S3 bucket where the aggregated transaction history files, as requested by the user, are stored.
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user are stored.
 | exports
 
 | `JOB_INTERVAL_CACHE_PURGE`
