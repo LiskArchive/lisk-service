@@ -1223,6 +1223,9 @@ module.exports = {
 
 === Export
 
+NOTE: The `*EXPORT_S3_**` variables should only be configured when using AWS S3 instead of a local file system.
+For the local file system, use `*SERVICE_EXPORT_PARTIALS*` and `*SERVICE_EXPORT_STATIC*` variables.
+
 [cols="2,1,~,~m",options="header",stripes="hover"]
 |===
 |Environment variable
@@ -1250,6 +1253,55 @@ module.exports = {
 | Local filepath where the partial (per day) transaction history files for a specified account are temporarily cached.
 | ./data/partials
 
+| `SERVICE_EXPORT_STATIC`
+| string
+| Local filepath where the aggregated transaction history files, as requested by the user, are stored.
+| ./data/static
+
+| `EXPORT_S3_ENDPOINT`
+| string
+| Amazon S3 bucket endpoint.
+| s3.amazonaws.com
+
+| `EXPORT_S3_ACCESS_KEY`
+| string
+| Amazon S3 bucket access key for the specified endpoint.
+| 
+
+| `EXPORT_S3_SECRET_KEY`
+| string
+| Amazon S3 bucket secret key.
+| 
+
+| `EXPORT_S3_SESSION_TOKEN`
+| string
+| Amazon S3 bucket session token.
+| 
+
+| `EXPORT_S3_REGION`
+| string
+| The region where Amazon S3 bucket is hosted. Optional.
+| eu-central-1
+
+| `EXPORT_S3_BUCKET_NAME`
+| string
+| Amazon S3 bucket name. Optional.
+| export
+
+| `EXPORT_S3_BUCKET_NAME_PARTIALS`
+| string
+| Amazon S3 bucket where the partial (per day) transaction history files for a specified account are temporarily cached.
+| partials
+
+| `EXPORT_S3_BUCKET_NAME_STATIC`
+| string
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user, are stored.
+| exports
+
+| `EXPORT_S3_BUCKET_NAME_EXPORTS`
+| string
+| Amazon S3 bucket where the aggregated transaction history files, as requested by the user, are stored.
+| exports
 
 | `JOB_INTERVAL_CACHE_PURGE`
 | number
@@ -1262,51 +1314,6 @@ By default, it is set to `0`.
 | Job run cron schedule to clean up the cache.
 By default, it is set to run daily at 04:45 am.
 | 45 4 * * *
-
-| `SERVICE_EXPORT_STATIC`
-| string
-| Local filepath where the aggregated transaction history files, as requested by the user, are stored.
-| ./data/static
-
-| `EXPORT_S3_ACCESS_KEY`
-| string
-| Amazon S3 bucket access key for the specified endpoint.
-| 
-
-| `EXPORT_S3_BUCKET_NAME`
-| string
-| Amazon S3 bucket name. Optional.
-| export
-
-| `EXPORT_S3_BUCKET_NAME_PARTIALS`
-| string
-| Amazon S3 bucket where the partial (per day) transaction history files for a specified account are temporarily cached.
-| partials
-
-| `EXPORT_S3_BUCKET_NAME_EXPORTS`
-| string
-| Amazon S3 bucket where the aggregated transaction history files, as requested by the user, are stored.
-| exports
-
-| `EXPORT_S3_ENDPOINT`
-| string
-| Amazon S3 bucket endpoint.
-| s3.amazonaws.com
-
-| `EXPORT_S3_REGION`
-| string
-| The region where Amazon S3 bucket is hosted. Optional.
-| eu-central-1
-
-| `EXPORT_S3_SECRET_KEY`
-| string
-| Amazon S3 bucket secret key.
-| 
-
-| `EXPORT_S3_SESSION_TOKEN`
-| string
-| Amazon S3 bucket session token.
-| 
 
 |===
 
@@ -1350,24 +1357,3 @@ module.exports = {
 };
 ----
 ====
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
