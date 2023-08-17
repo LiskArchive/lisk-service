@@ -51,14 +51,14 @@
                     },
                     "index": {
                         "type": "number",
-                        "description": "Index of NFT in the collection.",
+                        "description": "Index of NFT within the collection.",
                         "example": 1
                     }
                 }
             },
             "owner": {
                 "type": "string",
-                "description": "owner of the NFT. It can either be an address or chain ID.",
+                "description": "Owner of the NFT. It will be an address when owned by an account on the chain it was created or a chainID when escrowed.",
                 "example": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo"
             },
             "attributes": {
@@ -75,7 +75,7 @@
             },
             "escrowedChainID": {
                 "type": "string",
-                "description": "Chain ID of the chain to which NFT is escrowed.",
+                "description": "Chain ID to which the NFT is escrowed.",
                 "example": "04000002"
             }
         }

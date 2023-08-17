@@ -42,7 +42,7 @@ const getNFTs = async (params) => {
 					module: 'customModule',
 					attribute: 'represent as a string',
 				}],
-				lockingModule: 'customModule', // Module name that locked the NFT
+				lockingModule: 'customModule', // Module that locked the NFT
 				escrowedChainID: '04000002', // optional
 			},
 		],
