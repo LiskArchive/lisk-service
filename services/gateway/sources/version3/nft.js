@@ -21,8 +21,8 @@ module.exports = {
 	method: 'indexer.nft',
 	params: {
 		nftID: '=,string',
-		collectionID: '=,string',
 		chainID: '=,string',
+		collectionID: '=,string',
 		index: '=,number',
 		owner: '=,string',
 		escrowChainID: '=,string',

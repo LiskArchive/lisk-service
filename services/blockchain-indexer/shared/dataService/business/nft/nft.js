@@ -21,11 +21,11 @@ const {
 // TODO: Populate data after indexing.
 const getNFTs = async (params) => {
 	if ('collectionID' in params && !('chainID' in params)) {
-		throw new ValidationException('Chain ID must be provided when collection ID is specified.');
+		throw new ValidationException('chainID must be provided when collectionID is specified.');
 	}
 
 	if (('index' in params) && !('chainID' in params && 'collectionID' in params)) {
-		throw new ValidationException('Chain ID and collection ID must be provided when index is specified.');
+		throw new ValidationException('chainID and collectionID must be provided when index is specified.');
 	}
 
 	return {

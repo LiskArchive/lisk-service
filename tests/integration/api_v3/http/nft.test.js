@@ -91,8 +91,8 @@ describe('Fetch NFTs API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('should return list of NFTs by Collection ID', async () => {
-		const response = await api.get(`${endpoint}?collectionID=${nftCollectionID}`);
+	it('should return list of NFTs by Collection ID and chain ID', async () => {
+		const response = await api.get(`${endpoint}?collectionID=${nftCollectionID}&chainID=${nftChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -100,8 +100,8 @@ describe('Fetch NFTs API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('should return list of NFTs by NFT Index', async () => {
-		const response = await api.get(`${endpoint}?index=${nftIndex}`);
+	it('should return list of NFTs by NFT Index, collection ID and chain ID', async () => {
+		const response = await api.get(`${endpoint}?index=${nftIndex}&collectionID=${nftCollectionID}&chainID=${nftChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -146,10 +146,10 @@ describe('Fetch NFTs API', () => {
 		}
 	});
 
-	it('should return bad request for an invalid Collection ID param', async () => {
+	it('should return bad request for an invalid Collection ID and valid chain ID param', async () => {
 		for (let i = 0; i < invalidNFTCollectionID.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
-			const response = await api.get(`${endpoint}?collectionID=${invalidNFTCollectionID[i]}`, 400);
+			const response = await api.get(`${endpoint}?collectionID=${invalidNFTCollectionID[i]}&chainID=${nftChainID}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
 	});

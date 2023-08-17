@@ -6,7 +6,8 @@
         "type": "string",
         "format": "id",
         "minLength": 32,
-        "maxLength": 32
+        "maxLength": 32,
+        "pattern": "^[a-fA-F0-9]{32}$"
     },
     "nftCollectionID": {
         "name": "collectionID",
@@ -15,7 +16,8 @@
         "type": "string",
         "format": "id",
         "minLength": 8,
-        "maxLength": 8
+        "maxLength": 8,
+        "pattern": "^[a-fA-F0-9]{8}$"
     },
     "nftOwner": {
         "name": "owner",
@@ -23,7 +25,8 @@
         "description": "Owner of the NFT.",
         "type": "string",
         "minLength": 8,
-        "maxLength": 41
+        "maxLength": 41,
+        "pattern": "^(lsk[a-hjkm-z2-9]{38})$|^(?:[a-fA-F0-9]{8})$"
     },
     "nftIndex": {
         "name": "Index",
@@ -40,15 +43,17 @@
         "type": "string",
         "format": "id",
         "minLength": 8,
-        "maxLength": 8
+        "maxLength": 8,
+        "pattern": "^[a-fA-F0-9]{8}$"
     },
     "nftEscrowChainID": {
-        "name": "owner",
+        "name": "Escrow chain ID",
         "in": "query",
         "description": "chain ID of the chain to which NFT is escrowed.",
         "type": "string",
         "format": "id",
         "minLength": 8,
-        "maxLength": 8
+        "maxLength": 8,
+        "pattern": "^[a-fA-F0-9]{8}$"
     }
 }

@@ -2020,8 +2020,11 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | nftID | String | `/^\b(?:[A-Fa-f0-9]){32}\b$/` | *(empty)* |  |
-| collectionID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* |  |
+| chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* |  |
+| collectionID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | chainID needs to be specified if collectionID is specified. |
+| index | Number | `[1,Inf)` | *(empty)* | collectionID and chainID needs to be specified if index is specified. |
 | owner | String | `/^(lsk[a-hjkm-z2-9]{38})$|^(?:\b[a-fA-F0-9]{8}\b)$/` | *(empty)* | |
+| escrowChainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
