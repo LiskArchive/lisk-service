@@ -60,6 +60,11 @@ const {
 } = require('./token');
 
 const {
+	getNFTs,
+	getNFTConstants,
+} = require('./nft');
+
+const {
 	getPosValidators,
 	getAllPosValidators,
 	getPosValidatorsByStake,
@@ -156,6 +161,10 @@ module.exports = {
 	getTokenSummary,
 	getTokenConstants,
 	getTokenTopBalances,
+
+	// NFTs
+	getNFTs,
+	getNFTConstants,
 
 	// PoS
 	getPosValidators,

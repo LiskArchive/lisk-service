@@ -60,7 +60,8 @@ const {
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenInitializationFees,
-} = require('./tokens');
+	updateTokenInfo,
+} = require('./token');
 
 const {
 	getAllPosValidators,
@@ -104,7 +105,6 @@ const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
-const { updateTokenInfo } = require('./tokens');
 const { getValidator, validateBLSKey } = require('./validators');
 const {
 	getNetworkStatus,

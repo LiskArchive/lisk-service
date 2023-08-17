@@ -212,6 +212,30 @@ const mockTransferCrossChainTxResult = {
 	},
 };
 
+const mockRegisterValidatorTxResult = {
+	data: {
+		transaction: {
+			fee: {
+				tokenID: '0400000000000000',
+				minimum: '130000',
+			},
+			params: {},
+		},
+	},
+	meta: {
+		breakdown: {
+			fee: {
+				minimum: {
+					byteFee: '160000',
+					additionalFees: {
+						validatorRegistrationFee: '1',
+					},
+				},
+			},
+		},
+	},
+};
+
 const mockTxsenderAddress = 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad';
 
 const mockTxAuthAccountInfo = {
@@ -264,6 +288,28 @@ const mockTransferCrossChainTxrequestConnector = {
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 	size: 167,
 	minFee: '166000',
+};
+
+const mockRegisterValidatorTxrequestConnector = {
+	transaction: {
+		module: 'pos',
+		command: 'registerValidator',
+		fee: '100000000',
+		nonce: '1',
+		senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+		signatures: [
+			'c7fd1abf9a552fa9c91b4121c87ae2c97cb0fc0aecc87d0ee8b1aa742238eef4a6815ddba31e21144c9652a7bd5c05577ae1100eac34fba43da6fc4879b8f206',
+		],
+		params: {
+			name: 'test_validator',
+			blsKey: 'a984c12c76b42b2d6ef2cae7ce09951e7d71eb160abdedbfba51bd216c42f2f3eda04a2e57b2cfb01768b94419b65190',
+			proofOfPossession: 'ab7661489a290464310c8615b387117ff27a209742e0e711f22d5ba3e7480de4eda293a651a48be9ae57b569a977d65e101179e1fcd73ab32c6c3fef4a1aedc7119e90eb2af7a3450399b15743c145bb49fdcb61b333817345c1d46769005d04',
+			generatorKey: 'b9c0211c8eb94ee61154a4dc7af36d2a36e14dd1644b43aa250186bfa107ce6b',
+		},
+		id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
+		size: 167,
+		minFee: '166000',
+	},
 };
 
 const posConstants = {
@@ -332,6 +378,8 @@ module.exports = {
 	mockTransferCrossChainTxResult,
 	mockAuthAccountInfo,
 	mockAuthInfoForMultisigAccount,
+	mockRegisterValidatorTxrequestConnector,
+	mockRegisterValidatorTxResult,
 
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,

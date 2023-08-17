@@ -75,6 +75,7 @@ tempApp.run().then(async () => {
 	const registeredModuleNames = registeredModules.map(
 		module => module.name === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module.name,
 	);
+
 	await tempApp.getBroker().stop();
 	const httpRoutes = getHttpRoutes(registeredModuleNames);
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);

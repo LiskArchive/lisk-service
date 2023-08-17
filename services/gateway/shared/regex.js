@@ -51,8 +51,12 @@ const MODULE_CSV = /^(?:[0-9a-zA-Z]{1,32})(?:,[0-9a-zA-Z]{1,32})*$/;
 const COMMAND_CSV = MODULE_CSV;
 const TOPIC_CSV = /^\b(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})(?:,(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}))*\b$/;
 const HEX_STRING = /^\b[a-fA-F0-9]+\b$/;
+const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
 const EXCEL_EXPORT_FILENAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/;
 const EVENT_NAME = /^[\w!@$&. ]{1,32}$/;
+const NFT_ID = /^\b(?:[A-Fa-f0-9]){32}\b$/;
+const NFT_COLLECTION_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const NFT_OWNER = /^(lsk[a-hjkm-z2-9]{38})$|^(?:\b[a-fA-F0-9]{8}\b)$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -93,6 +97,10 @@ module.exports = {
 	TOPIC_CSV,
 	HEX_STRING,
 	FEE,
+	CSV_EXPORT_FILENAME,
 	EXCEL_EXPORT_FILENAME,
 	EVENT_NAME,
+	NFT_ID,
+	NFT_COLLECTION_ID,
+	NFT_OWNER,
 };
