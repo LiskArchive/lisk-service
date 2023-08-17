@@ -19,21 +19,20 @@ import regex from './regex';
 const nftDetail = {
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	collectionID: Joi.string().pattern(regex.NFT_COLLECTION_ID).required(),
-	index: Joi.number().required(),
+	index: Joi.number().integer().min(0).required(),
 };
 
 const nftAttribute = {
-	module: Joi.string().required(),
-	attributes: Joi.string().required(),
+	module: Joi.string().pattern(regex.MODULE).required(),
+	attribute: Joi.string().required(),
 };
 
 const nftSchema = {
 	id: Joi.string().pattern(regex.NFT_ID).required(),
 	nft: Joi.object(nftDetail).required(),
 	owner: Joi.string().pattern(regex.NFT_OWNER).required(),
-	attributesArray: Joi.array().items(nftAttribute).required(),
-	lockingModule: Joi.string().optional(),
-	isNftEscrowed: Joi.boolean().required(),
+	attributes: Joi.array().items(nftAttribute).required(),
+	lockingModule: Joi.string().pattern(regex.MODULE).optional(),
 	escrowedChainID: Joi.string().pattern(regex.CHAIN_ID).optional(),
 };
 

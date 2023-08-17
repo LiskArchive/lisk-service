@@ -76,9 +76,6 @@ tempApp.run().then(async () => {
 		module => module.name === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module.name,
 	);
 
-	// TODO: remove after getSystemMetadata returns NFT
-	registeredModuleNames.push('nft');
-
 	await tempApp.getBroker().stop();
 	const httpRoutes = getHttpRoutes(registeredModuleNames);
 	const socketNamespaces = getSocketNamespaces(registeredModuleNames);

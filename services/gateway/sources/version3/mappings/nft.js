@@ -21,11 +21,10 @@ module.exports = {
 		index: '=,number',
 	},
 	owner: '=,string',
-	attributesArray: ['attributesArray', {
+	attributes: ['attributes', {
 		module: '=,string',
-		attributes: '=,string',
+		attribute: '=,string',
 	}],
 	lockingModule: '=,string',
-	isNftEscrowed: '=,boolean',
 	escrowedChainID: '=,string',
 };

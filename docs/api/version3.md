@@ -2085,12 +2085,11 @@ _Supports pagination._
          "index": 1,
        },
       "owner": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
-      "attributesArray": [{
+      "attributes": [{
           "module": "customModule",
-          "attributes": "represent as a string"
+          "attribute": "represent as a string"
         }],
       "lockingModule": "customModule", // Module name that locked the NFT
-      "isNftEscrowed" : true,
       "escrowedChainID": "04000002", // optional
     },
   ],

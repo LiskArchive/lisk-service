@@ -10,7 +10,7 @@
                 "type": "string",
                 "example": "customModule"
             },
-            "attributes": {
+            "attribute": {
                 "type": "string",
                 "example": "Custom attribute"
             }
@@ -22,9 +22,8 @@
             "id",
             "nft",
             "owner",
-            "attributesArray",
-            "lockingModule",
-            "isNftEscrowed"
+            "attributes",
+            "lockingModule"
         ],
         "properties": {
             "id": {
@@ -62,7 +61,7 @@
                 "description": "owner of the NFT. It can either be an address or chain ID.",
                 "example": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo"
             },
-            "attributesArray": {
+            "attributes": {
                 "description": "List of NFT attributes.",
                 "type": "array",
                 "items": {
@@ -73,11 +72,6 @@
                 "type": "string",
                 "description": "Module name that locked the NFT.",
                 "example": "customModule"
-            },
-            "isNftEscrowed": {
-                "type": "boolean",
-                "description": "A boolean flag indicating if the NFT is escrowed.",
-                "example": "true"
             },
             "escrowedChainID": {
                 "type": "string",

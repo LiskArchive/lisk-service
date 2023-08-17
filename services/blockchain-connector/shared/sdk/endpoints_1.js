@@ -92,6 +92,12 @@ const getSystemMetadata = async () => {
 	try {
 		if (!metadata) {
 			metadata = await invokeEndpoint('system_getMetadata');
+
+			// TODO: Remove after getSystemMetadata returns NFT
+			const allModules = metadata.modules.map(module => module.name);
+			if (!allModules.includes('nft')) {
+				metadata.modules.push({ name: 'nft', commands: [], events: [], endpoints: [], assets: [] });
+			}
 		}
 		return metadata;
 	} catch (err) {
