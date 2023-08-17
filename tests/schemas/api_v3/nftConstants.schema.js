@@ -13,10 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
+import Joi from 'joi';
+
+const regex = require('./regex');
+
+const nftConstantsDataSchema = {
+	feeCreateNFT: Joi.string().pattern(regex.DIGITS).required(),
+};
+
+const nftConstantsMetaSchema = {};
+
+const nftConstantsSchema = {
+	data: Joi.object(nftConstantsDataSchema).required(),
+	meta: Joi.object(nftConstantsMetaSchema).required(),
+};
 
 module.exports = {
-	getNFTs,
-	getNFTConstants,
+	nftConstantsSchema: Joi.object(nftConstantsSchema).required(),
 };

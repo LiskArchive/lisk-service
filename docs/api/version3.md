@@ -61,6 +61,8 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [NFT search](#nft-search)
   - [Legacy](#legacy)
     - [Legacy Account Details](#legacy-account-details)
+  - [Non-fungible Token](#non-fungible-token)
+    - [Module Constants](#module-constants-3)
   - [Network](#network)
     - [Network peers](#network-peers)
     - [Network status](#network-status)
@@ -2126,6 +2128,48 @@ Get legacy account details by publicKey
 https://service.lisk.com/api/v3/legacy?publicKey=b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd
 ```
 
+## Non-fungible Token
+
+### Module Constants
+
+Retrieves module constants from the NFT module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/nft/constants`
+- RPC `get.nft.constants`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "data": {
+      "feeCreateNFT": "5000000",
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get module constants from the NFT module
+```
+https://service.lisk.com/api/v3/nft/constants
+```
 ## Network
 
 ### Network peers

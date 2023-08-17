@@ -104,5 +104,31 @@
                 "$ref": "#/definitions/pagination"
             }
         }
+    },
+    "nftConstantsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "NFT module constants.",
+                "type": "object",
+                "required": [
+                    "feeCreateNFT"
+                ],
+                "properties": {
+                    "feeCreateNFT": {
+                        "type": "string",
+                        "example": "5000000",
+                        "description": "The extra fee to be supplied for creating NFT."
+                    }
+                }
+            },
+            "meta": {
+                "type": "object"
+            }
+        }
     }
 }

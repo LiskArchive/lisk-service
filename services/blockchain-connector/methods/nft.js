@@ -13,10 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
+const { getNFTConstants } = require('../shared/sdk');
 
-module.exports = {
-	getNFTs,
-	getNFTConstants,
-};
+module.exports = [
+	{
+		name: 'getNFTConstants',
+		controller: async () => getNFTConstants(),
+		params: {},
+	},
+];
