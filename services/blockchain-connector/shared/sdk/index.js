@@ -97,12 +97,14 @@ const {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getRegistrationFee,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
 const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
+const { updateTokenInfo } = require('./tokens');
 const { getValidator, validateBLSKey } = require('./validators');
 const {
 	getNetworkStatus,
@@ -121,6 +123,7 @@ const init = async () => {
 	await getNodeInfo(true);
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
+	await updateTokenInfo();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
@@ -208,6 +211,7 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getChainRegistrationFee: getRegistrationFee,
 
 	// Legacy
 	getLegacyAccount,

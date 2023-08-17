@@ -6,7 +6,8 @@ Muhammad Talha <muhammad.talha@lightcurve.io>
 :url_pm2: https://pm2.keymetrics.io/
 :url_config_file: https://github.com/LiskHQ/lisk-service/blob/development/ecosystem.config.js
 :url_lisk_service_repo: https://github.com/LiskHQ/lisk-service
-
+:url_molecular_load_balancer_faq: https://moleculer.services/docs/0.14/faq.html#Why-am-I-getting-502-Bad-Gateway-when-api-gateway-is-behind-ALB-on-AWS
+:source-language: js
 
 On the xref:{url_intro_services}[Introduction to Lisk Service] page, we have discussed the various xref:{url_microservices}[microservices] that combine to form Lisk Service.
 On this page, we will thoroughly discuss the configuration options available for each service.
@@ -49,12 +50,12 @@ This could be a NATS or a Redis instance.
 | number
 | Inter-microservice request timeout in seconds.
 | 10
- 
+
 | `SERVICE_LOG_LEVEL`
 | string
 | Set the application logging level; Available options are `trace`, `debug`, `info`, `warn`, `error`, and `fatal`.
 | info
- 
+
 | `SERVICE_LOG_STDOUT`
 | string
 | Enable posting logs to the standard output stream.
@@ -83,7 +84,7 @@ For example, Graylog 'localhost:12201/udp'.
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -138,7 +139,7 @@ Properties::
 | string
 | URL of the host.
 | 127.0.0.1
- 
+
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
@@ -148,7 +149,7 @@ Properties::
 | string
 | Ensures that JSON-RPC accepts a valid JSON-RPC 2.0 envelope.
 | false
- 
+
 | `ENABLE_HTTP_API`
 | string
 | Enables particular HTTP API endpoints.
@@ -173,6 +174,28 @@ Required when `ENABLE_REQUEST_CACHING` is enabled.
 | string
 | Describes the microservices on which the `gateway` service depends.
 | indexer,connector
+
+| `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS`
+| string
+| Boolean flag to enforce the `headersTimeout` and `keepAliveTimeout` settings on the API server.
+Enabling this might be helpful when deploying Lisk Service behind a load balancer or a reverse proxy.
+Check {url_molecular_load_balancer_faq}[this FAQ] for more information.
+| false
+
+| `HTTP_KEEP_ALIVE_TIMEOUT`
+| number
+| Defines the number of microseconds the gateway will wait before closing an idle connection.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+By default, it is set to 65000.
+| 65000
+
+| `HTTP_HEADERS_TIMEOUT`
+| number
+| Defines the maximum number of microseconds for the gateway to send HTTP response headers after the client's request.
+To enable, ensure `ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS` is set to true, or `HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES` is set to greater than 0.
+Please ensure that the `HTTP_HEADERS_TIMEOUT` is set higher than the `HTTP_KEEP_ALIVE_TIMEOUT`.
+By default, it is set to 66000.
+| 66000
 
 | `WS_RATE_LIMIT_ENABLE`
 | string
@@ -229,7 +252,7 @@ This would include the Cache-Control header within the responses.
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -284,7 +307,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `LISK_APP_WS`
 | string
 | URL to connect with the Lisk application node over WebSocket.
@@ -294,7 +317,7 @@ Properties::
 | string
 | Boolean flag to enable IPC-based connection to the Lisk application node.
 Requires `LISK_APP_DATA_PATH` to be set.
-| true 
+| true
 
 | `LISK_APP_DATA_PATH`
 | string
@@ -318,7 +341,7 @@ Only to be used when the genesis block is large enough to be transmitted over AP
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -363,7 +386,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | URL of the Redis instance hosting the job queue to schedule the block indexing jobs.
@@ -376,7 +399,7 @@ Must match the value supplied for the `indexer` microservice.
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -416,7 +439,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_INDEXER_MYSQL`
 | string
 | Connection string of the MySQL instance that the microservice connects to.
@@ -458,7 +481,7 @@ Must match the value supplied for the `coordinator` microservice.
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -504,7 +527,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_APP_REGISTRY_MYSQL`
 | string
 | Connection string of the MySQL instance that the microservice connects to.
@@ -521,7 +544,7 @@ Properties::
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -562,7 +585,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_FEE_ESTIMATOR_CACHE`
 | string
 | URL of the cache storage (Redis).
@@ -594,7 +617,7 @@ Properties::
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -639,7 +662,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_STATISTICS_MYSQL`
 | string
 | Connection string of the MySQL instance that the microservice connects to.
@@ -661,7 +684,7 @@ Properties::
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -702,7 +725,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_MARKET_REDIS`
 | string
 | URL of the cache storage (Redis).
@@ -710,9 +733,9 @@ Properties::
 
 | `SERVICE_MARKET_FIAT_CURRENCIES`
 | string
-| Fiat currencies are used for price calculation. 
+| Fiat currencies are used for price calculation.
 All Fiat currencies used here need to be comma separated.
-| EUR,USD,CHF,GBP,RUB 
+| EUR,USD,CHF,GBP,RUB
 
 | `SERVICE_MARKET_TARGET_PAIRS`
 | string
@@ -725,14 +748,14 @@ The values listed here must be comma separated.
 | Optional API key for https://exchangeratesapi.io/.
 The `/market/prices` endpoint will respond with additional data, specifically the exchange rates for various cryptocurrencies in other fiat currencies.
 The free plan would suffice for Lisk Service.
-|  
+|
 |===
 
 --
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -774,7 +797,7 @@ Properties::
 | string
 | URL of the microservice message broker (NATS or Redis).
 | redis://localhost:6379/0
- 
+
 | `SERVICE_EXPORT_REDIS`
 | string
 | URL of the permanent cache storage (Redis).
@@ -791,7 +814,7 @@ Properties::
 Sample::
 +
 --
-[source,js]
+
 ----
 module.exports = {
   apps: [
@@ -832,7 +855,7 @@ module.exports = {
 // | string
 // | Enable or disable apply snapshot feature.
 // | true
- 
+
 // | `INDEX_SNAPSHOT_URL`
 // | string
 // | Custom snapshot URL: expected to end with "sql.gz".

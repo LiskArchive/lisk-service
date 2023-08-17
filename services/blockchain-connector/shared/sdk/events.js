@@ -48,15 +48,17 @@ const subscribeToAllRegisteredEvents = async () => {
 			async payload => {
 				// Force update necessary caches on new chain events
 				if (event.startsWith('chain_')) {
-					await getNodeInfo(true);
-					await getEscrowedAmounts(true);
+					await getNodeInfo(true)
+						.catch(err => logger.warn(`Invocation for 'getNodeInfo' failed with error: ${err.message}.`));
+					await getEscrowedAmounts(true)
+						.catch(err => logger.warn(`Invocation for 'getEscrowedAmounts' failed with error: ${err.message}.`));
 				}
 
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);
 			},
 		);
-		logger.info(`Subscribed to the API client event: ${event}`);
+		logger.info(`Subscribed to the API client event: ${event}.`);
 	});
 };
 

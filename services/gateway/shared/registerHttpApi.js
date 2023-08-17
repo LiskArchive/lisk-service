@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Utils,
 	HTTP: { StatusCodes },
@@ -21,7 +22,6 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const path = require('path');
 const gatewayConfig = require('../config');
 const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate, dropEmptyProps } = require('./paramValidator');
@@ -150,11 +150,16 @@ const buildAPIConfig = (configPath, config, aliases, whitelist, methodPaths, eTa
 			ctx.meta.$responseHeaders = { 'Cache-Control': gatewayConfig.api.httpCacheControlDirectives };
 		}
 
-		// Set response headers and return CSV data if filename available
-		if (data.data && data.meta && data.meta.filename && data.meta.filename.endsWith('.csv')) {
+		// Set response headers and return excel or CSV data if filename available
+		if (data.data && data.meta && data.meta.filename) {
 			res.setHeader('Content-Disposition', `attachment; filename="${data.meta.filename}"`);
-			res.setHeader('Content-Type', 'text/csv');
-			res.end(data.data);
+			if (data.meta.filename.endsWith('.xlsx') || data.meta.filename.endsWith('.xls')) {
+				res.setHeader('Content-Type', 'application/vnd.ms-excel');
+				res.end(Buffer.from(data.data, 'hex'));
+			} else if (data.meta.filename.endsWith('.csv')) {
+				res.setHeader('Content-Type', 'text/csv');
+				res.end(data.data);
+			}
 			return res;
 		}
 

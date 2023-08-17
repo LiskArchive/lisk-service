@@ -21,14 +21,21 @@ const {
 const {
 	HTTP,
 	Exceptions: { ValidationException },
+	Logger,
 } = require('lisk-service-framework');
 
-const { getAuthAccountInfo } = require('./auth');
 const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 
-const { MODULE, COMMAND, EVENT } = require('../../constants');
+const {
+	MODULE,
+	COMMAND,
+	EVENT,
+	LENGTH_BYTE_SIGNATURE,
+	LENGTH_BYTE_ID,
+	DEFAULT_NUM_OF_SIGNATURES,
+} = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -36,11 +43,12 @@ const { requestConnector } = require('../../utils/request');
 const config = require('../../../config');
 
 const { getPosConstants } = require('./pos/constants');
+const { getInteroperabilityConstants } = require('./interoperability/constants');
 const { getFeeEstimates } = require('./feeEstimates');
+const regex = require('../../regex');
 
-const SIZE_BYTE_SIGNATURE = 64;
-const SIZE_BYTE_ID = 32;
-const DEFAULT_NUM_OF_SIGNATURES = 1;
+const logger = Logger();
+
 const { bufferBytesLength: BUFFER_BYTES_LENGTH } = config.estimateFees;
 
 const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
@@ -52,11 +60,11 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 		propName: 'signatures',
 		defaultValue: (params) => new Array(params.numberOfSignatures)
 			.fill()
-			.map(() => getRandomBytes(SIZE_BYTE_SIGNATURE).toString('hex')),
+			.map(() => getRandomBytes(LENGTH_BYTE_SIGNATURE).toString('hex')),
 	},
 	ID: {
 		propName: 'id',
-		defaultValue: () => getRandomBytes(SIZE_BYTE_ID).toString('hex'),
+		defaultValue: () => getRandomBytes(LENGTH_BYTE_ID).toString('hex'),
 	},
 });
 
@@ -83,34 +91,56 @@ const mockOptionalProperties = (inputObject, inputObjectOptionalProps, additiona
 	return inputObject;
 };
 
-const mockTransaction = async (_transaction, authAccountInfo) => {
-	const transaction = _.cloneDeep(_transaction);
+const filterOptionalProps = (inputObject, optionalProps) => _.omit(inputObject, optionalProps);
 
-	const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
-		+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
+const mockTransaction = async (_transaction, numberOfSignatures) => {
+	if (!_transaction) throw new Error('No transaction passed.');
+
+	const transactionCopy = _.cloneDeep(_transaction);
+	const txWithRequiredProps = filterOptionalProps(
+		transactionCopy,
+		Object.values(OPTIONAL_TRANSACTION_PROPERTIES).map(optionalProp => optionalProp.propName),
+	);
 
 	const mockedTransaction = mockOptionalProperties(
-		transaction,
+		txWithRequiredProps,
 		OPTIONAL_TRANSACTION_PROPERTIES,
 		{ numberOfSignatures },
 	);
 
-	const channelInfo = transaction.module === MODULE.TOKEN
-		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
-		? await resolveChannelInfo(transaction.params.receivingChainID)
+	const channelInfo = txWithRequiredProps.module === MODULE.TOKEN
+		&& txWithRequiredProps.command === COMMAND.TRANSFER_CROSS_CHAIN
+		? await resolveChannelInfo(txWithRequiredProps.params.receivingChainID)
 		: {};
 
 	const { messageFeeTokenID } = channelInfo;
 
 	const mockedTransactionParams = messageFeeTokenID
 		? mockOptionalProperties(
-			transaction.params,
+			filterOptionalProps(
+				txWithRequiredProps.params,
+				Object
+					.values(OPTIONAL_TRANSACTION_PARAMS_PROPERTIES)
+					.map(optionalProp => optionalProp.propName),
+			),
 			OPTIONAL_TRANSACTION_PARAMS_PROPERTIES,
 			{ messageFeeTokenID },
 		)
-		: transaction.params;
+		: txWithRequiredProps.params;
 
 	return { ...mockedTransaction, params: mockedTransactionParams };
+};
+
+const getNumberOfSignatures = async (address) => {
+	try {
+		const authAccountInfo = await requestConnector('getAuthAccount', { address });
+		const numberOfSignatures = (authAccountInfo.mandatoryKeys.length
+			+ authAccountInfo.optionalKeys.length) || DEFAULT_NUM_OF_SIGNATURES;
+		return numberOfSignatures;
+	} catch (error) {
+		logger.warn(`Error while retrieving auth information for the account ${address}.`);
+		return DEFAULT_NUM_OF_SIGNATURES;
+	}
 };
 
 const getCcmBuffer = async (transaction) => {
@@ -139,6 +169,7 @@ const calcAdditionalFees = async (transaction) => {
 	const additionalFees = {
 		fee: {},
 		params: {},
+		total: BigInt(0),
 	};
 
 	if (transaction.module === MODULE.TOKEN) {
@@ -155,6 +186,7 @@ const calcAdditionalFees = async (transaction) => {
 				additionalFees.fee = {
 					userAccountInitializationFee: extraCommandFees.userAccountInitializationFee,
 				};
+				additionalFees.total += BigInt(extraCommandFees.userAccountInitializationFee);
 			}
 		} else if (transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 			const mainchainServiceURL = await resolveMainchainServiceURL();
@@ -176,6 +208,7 @@ const calcAdditionalFees = async (transaction) => {
 				additionalFees.fee = {
 					escrowAccountInitializationFee: extraCommandFees.escrowAccountInitializationFee,
 				};
+				additionalFees.total += BigInt(extraCommandFees.escrowAccountInitializationFee);
 			}
 
 			// Check if user account exists on the receiving chain
@@ -196,6 +229,15 @@ const calcAdditionalFees = async (transaction) => {
 			additionalFees.fee = {
 				validatorRegistrationFee: posConstants.data.validatorRegistrationFee,
 			};
+			additionalFees.total += BigInt(posConstants.data.validatorRegistrationFee);
+		}
+	} else if (transaction.module === MODULE.INTEROPERABILITY) {
+		if ([COMMAND.REGISTER_MAINCHAIN, COMMAND.REGISTER_SIDECHAIN].includes(transaction.command)) {
+			const interoperabilityConstants = await getInteroperabilityConstants();
+			additionalFees.fee = {
+				chainRegistrationFee: interoperabilityConstants.data.chainRegistrationFee,
+			};
+			additionalFees.total += BigInt(interoperabilityConstants.data.chainRegistrationFee);
 		}
 	}
 
@@ -204,68 +246,32 @@ const calcAdditionalFees = async (transaction) => {
 
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
-		data: {},
+		data: {
+			transaction: { params: {} },
+		},
 		meta: {},
 	};
 
-	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
-	const { data: authAccountInfo } = await getAuthAccountInfo({ address: senderAddress });
-
-	const trxWithMockProps = await mockTransaction(params.transaction, authAccountInfo);
-	const formattedTransaction = await requestConnector('formatTransaction', { transaction: trxWithMockProps });
-	const feeEstimatePerByte = getFeeEstimates();
-
-	const { minFee, size } = formattedTransaction;
-	const additionalFees = await calcAdditionalFees(formattedTransaction);
-	const estimateMinFee = (() => {
-		const totalAdditionalFees = Object.entries(additionalFees.fee).reduce((acc, [k, v]) => {
-			if (k.toLowerCase().endsWith('fee')) {
-				return acc + BigInt(v);
-			}
-			return acc;
-		}, BigInt(0));
-
-		// TODO: Remove BUFFER_BYTES_LENGTH support after https://github.com/LiskHQ/lisk-service/issues/1604 is complete
-		return BigInt(minFee) + totalAdditionalFees
-			+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
-	})();
-
-	// Populate the response with transaction minimum fee information
-	estimateTransactionFeesRes.data = {
-		...estimateTransactionFeesRes.data,
-		transaction: {
-			fee: {
-				tokenID: feeEstimatePerByte.feeTokenID,
-				minimum: estimateMinFee.toString(),
-			},
-		},
-	};
-	estimateTransactionFeesRes.meta = {
-		...estimateTransactionFeesRes.meta,
-		breakdown: {
-			fee: {
-				minimum: {
-					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
-					additionalFees: { ...additionalFees.fee },
-				},
-			},
-		},
-	};
-
-	// Add priority only when fee values are not 0
-	if (
-		feeEstimatePerByte.low !== 0
-		|| feeEstimatePerByte.med !== 0
-		|| feeEstimatePerByte.high !== 0
-	) {
-		const dynamicFeeEstimates = calcDynamicFeeEstimates(
-			feeEstimatePerByte,
-			estimateMinFee,
-			size,
-		);
-
-		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
+	// Test all regex
+	const { tokenID, recipientAddress } = params.transaction.params;
+	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
+		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
 	}
+
+	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
+		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
+	}
+
+	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
+	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
+
+	const trxWithMockProps = await mockTransaction(params.transaction, numberOfSignatures);
+	const additionalFees = await calcAdditionalFees(trxWithMockProps);
+	let formattedTransaction = await requestConnector(
+		'formatTransaction',
+		{ transaction: trxWithMockProps, additionalFee: additionalFees.total.toString() },
+	);
+	const feeEstimatePerByte = getFeeEstimates();
 
 	// Calculate message fee for cross-chain transfers
 	if (
@@ -273,13 +279,13 @@ const estimateTransactionFees = async params => {
 		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
 	) {
 		// Calculate message fee
-		const ccmBuffer = await getCcmBuffer(params.transaction);
+		const ccmBuffer = await getCcmBuffer(formattedTransaction);
 		const ccmLength = ccmBuffer.length;
 		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
 
 		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
 		const totalMessageFee = ccmByteFee
-			+ BigInt(additionalFees.params.userAccountInitializationFee || 0);
+			+ BigInt(additionalFees.params.messageFee.userAccountInitializationFee || 0);
 
 		estimateTransactionFeesRes.data.transaction.params = {
 			messageFee: {
@@ -288,18 +294,82 @@ const estimateTransactionFees = async params => {
 			},
 		};
 
+		// Calculate the transaction size and minFee with updated params, for higher accuracy
+		formattedTransaction = await requestConnector(
+			'formatTransaction',
+			{
+				transaction: {
+					...trxWithMockProps,
+					params: {
+						...trxWithMockProps.params,
+						messageFeeTokenID: channelInfo.messageFeeTokenID,
+						messageFee: totalMessageFee.toString(),
+					},
+				},
+				additionalFee: additionalFees.total.toString(),
+			},
+		);
+
 		// Add params to meta
 		estimateTransactionFeesRes.meta.breakdown = {
 			...estimateTransactionFeesRes.meta.breakdown,
 			params: {
 				messageFee: {
-					ccmByteFee: ccmByteFee.toString(),
-					additionalFees: {
-						...additionalFees.params.messageFee,
-					},
+					ccmByteFee,
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.params.messageFee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						} : {
+							...additionalFees.params.messageFee,
+						},
 				},
 			},
 		};
+	}
+
+	const { minFee, size } = formattedTransaction;
+
+	// TODO: Remove BUFFER_BYTES_LENGTH support after RC is tagged
+	const estimatedMinFee = BigInt(minFee)
+		+ BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
+
+	// Populate the response with transaction minimum fee information
+	estimateTransactionFeesRes.data = {
+		...estimateTransactionFeesRes.data,
+		transaction: {
+			...estimateTransactionFeesRes.data.transaction,
+			fee: {
+				tokenID: feeEstimatePerByte.feeTokenID,
+				minimum: estimatedMinFee.toString(),
+			},
+		},
+	};
+	estimateTransactionFeesRes.meta = {
+		...estimateTransactionFeesRes.meta,
+		breakdown: {
+			...estimateTransactionFeesRes.meta.breakdown,
+			fee: {
+				minimum: {
+					byteFee: (BigInt(size) * BigInt(feeEstimatePerByte.minFeePerByte)).toString(),
+					additionalFees: BUFFER_BYTES_LENGTH
+						? {
+							...additionalFees.fee,
+							bufferBytes: BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte),
+						}
+						: { ...additionalFees.fee },
+				},
+			},
+		},
+	};
+
+	// Add priority only when the priority fee values are non-zero
+	const { low, med, high } = feeEstimatePerByte;
+	if (low !== 0 || med !== 0 || high !== 0) {
+		const dynamicFeeEstimates = calcDynamicFeeEstimates(
+			feeEstimatePerByte, estimatedMinFee, size);
+
+		estimateTransactionFeesRes.transaction.fee.priority = dynamicFeeEstimates;
 	}
 
 	return parseToJSONCompatObj(estimateTransactionFeesRes);
@@ -312,4 +382,6 @@ module.exports = {
 	calcDynamicFeeEstimates,
 	mockTransaction,
 	calcAdditionalFees,
+	filterOptionalProps,
+	getNumberOfSignatures,
 };

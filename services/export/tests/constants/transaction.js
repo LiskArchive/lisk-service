@@ -13,132 +13,176 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const lsk = '10.00268000';
-const beddows = '1000268000';
-const lskInBeddows = 10 ** 8;
-
 const reclaimTransaction = {
 	id: '6cff643daaa2bd1112d1b4591abef3e62f9e4f6e37a260fcd7508ce6a06f061c',
-	moduleAssetId: '1000:0',
-	moduleAssetName: 'legacyAccount:reclaimLSK',
+	moduleCommand: 'legacy:reclaimLSK',
 	fee: '119000',
-	height: 424,
+	minFee: '165000',
+	size: 165,
 	nonce: '0',
 	block: {
 		id: 'c3a515cbfacd65402500ba423710ef9debf87f2877bd9c47d35097a9d4c28b7b',
 		height: 424,
 		timestamp: 1629456896,
+		isFinal: true,
 	},
-	senderId: 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
-	senderPublicKey: '10bdf57ee21ff657ab617395acab81814c3983f608bf6f0be6e626298225331d',
+	sender: {
+		address: 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
+		publicKey: '10bdf57ee21ff657ab617395acab81814c3983f608bf6f0be6e626298225331d',
+		name: null,
+	},
 	signatures: [
 		'a639b29d0a28054968bd6185e0785927b0e61b90c9f88a37c9d97adfa3b3d9cef46887b7d13f52f461017ffe11462e1d11506d6904088916d61727cdc23aa503',
 	],
-	asset: {
+	params: {
 		amount: '16500000000',
 	},
-	isPending: false,
+	executionStatus: 'successful',
+	index: 0,
 };
 
 const tokenTransferTransaction = {
-	id: 'a22d1d1959af42988746d350d4c21c3ffb81086e116de34d29148e6799bc2e8e',
-	moduleAssetId: '2:0',
-	moduleAssetName: 'token:transfer',
-	fee: '143000',
-	height: 415,
-	nonce: '135',
-	block: {
-		id: '34c00b25881646cc112f37ab7bdbf587815a0d2ecc536f310386ac5ef444168c',
-		height: 415,
-		timestamp: 1629456806,
+	id: 'd41e8fbb909fdf44ffccef6f5b0fb5edf853f0dcf699243a0a92403d2a4f1d1d',
+	moduleCommand: 'token:transfer',
+	nonce: '3',
+	fee: '167000',
+	minFee: '165000',
+	size: 165,
+	sender: {
+		address: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+		publicKey: '1a315a7c7ccfb44ee0730f22cac4370307a7ef29710b938cff52e653cac753ad',
+		name: null,
 	},
-	senderId: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-	senderPublicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-	signatures: [
-		'fc953e325c33dee5e32616483800ee8cb649531b07ce8f29d18dabdbcd434a86e7db7bc8d8272926b6cce6c2c59a897907eb15e74e0d17fe83486a9351b85308',
-	],
-	asset: {
-		amount: '2000000000',
+	params: {
+		tokenID: '0400000000000000',
+		amount: '1200000000',
+		recipientAddress: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
 		data: '',
+	},
+	block: {
+		id: '227c65bb47ba5a061a98ea9c459be750ba4e66a36c68e2c45b096fdeb6bb29fc',
+		height: 1745,
+		timestamp: 1689785580,
+		isFinal: true,
+	},
+	meta: {
 		recipient: {
-			address: 'lskse4hng55r4raxtp53m6cbscjdoeyafhac4r73d',
-			publicKey: 'c348769465d4119868ec9e8aa9c8bdebc5a504fa40fdc2072c6629e77b3c1856',
+			address: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+			publicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+			name: 'genesis_0',
 		},
 	},
-	isPending: false,
+	executionStatus: 'successful',
+	index: 0,
 };
 
 const tokenTransferTransactionSelf = {
-	id: 'a22d1d1959af42988746d350d4c21c3ffb81086e116de34d29148e6799bc2e8e',
-	moduleAssetId: '2:0',
-	moduleAssetName: 'token:transfer',
-	fee: '143000',
-	height: 415,
-	nonce: '135',
-	block: {
-		id: '34c00b25881646cc112f37ab7bdbf587815a0d2ecc536f310386ac5ef444168c',
-		height: 415,
-		timestamp: 1629456806,
+	id: 'd41e8fbb909fdf44ffccef6f5b0fb5edf853f0dcf699243a0a92403d2a4f1d1d',
+	moduleCommand: 'token:transfer',
+	nonce: '3',
+	fee: '167000',
+	minFee: '165000',
+	size: 165,
+	sender: {
+		address: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+		publicKey: '1a315a7c7ccfb44ee0730f22cac4370307a7ef29710b938cff52e653cac753ad',
+		name: null,
 	},
-	senderId: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-	senderPublicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-	signatures: [
-		'fc953e325c33dee5e32616483800ee8cb649531b07ce8f29d18dabdbcd434a86e7db7bc8d8272926b6cce6c2c59a897907eb15e74e0d17fe83486a9351b85308',
-	],
-	asset: {
-		amount: '2000000000',
+	params: {
+		tokenID: '0400000000000000',
+		amount: '1200000000',
+		recipientAddress: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
 		data: '',
+	},
+	block: {
+		id: '227c65bb47ba5a061a98ea9c459be750ba4e66a36c68e2c45b096fdeb6bb29fc',
+		height: 1745,
+		timestamp: 1689785580,
+		isFinal: true,
+	},
+	meta: {
 		recipient: {
-			address: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-			publicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
+			address: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+			publicKey: '1a315a7c7ccfb44ee0730f22cac4370307a7ef29710b938cff52e653cac753ad',
+			name: 'genesis_0',
 		},
 	},
-	isPending: false,
+	executionStatus: 'successful',
+	index: 0,
 };
 
-const voteTransaction = {
-	id: '61ca0e9e5fa3fc1c798016eb6e0b5f2d93a806d3ae30b601bb4aa4152ad0e256',
-	moduleAssetId: '5:1',
-	moduleAssetName: 'dpos:voteDelegate',
-	fee: '304000',
-	height: 336,
-	nonce: '3',
-	block: {
-		id: '3b01dca7dd089e9f71b08ebf0d68b8ba36070a45ba2463c5b306de7241953ebe',
-		height: 336,
-		timestamp: 1629113786,
+const stakeTransaction = {
+	id: 'c8179da88d441e876e0a60a2fb12427ed0d6ea78d50c27df8becde2a0fe0f825',
+	moduleCommand: 'pos:stake',
+	nonce: '0',
+	fee: '20000000',
+	minFee: '151000',
+	size: 152,
+	sender: {
+		address: 'lskcgfpjvt23ygspv2fx4s8o3p2dfhm7grmqxpzx3',
+		publicKey: '8f2027e3a7416e352aef5f9f204a18f70bb6c75148eb761eaf7d9950038aebb5',
+		name: 'genesis_20',
 	},
-	senderId: 'lskatchyvyh9y3tz3mmpu9z3kptw56c6qcw4k7fks',
-	senderPublicKey: '2f3dfb37326c6c42af28d04e6b6a76865430ade3d26969f1b86e3987b500bbaf',
-	senderUsername: 'multisig_delegateacc',
-	signatures: [
-		'5ede8ac818b0acae725751ddda1bb5754761ce5eb7e1aaa8ff11d8ca72d4865ea748adfe72493d8daa9ed40b83119bb1dd539a068f2845a5445eca6c10d90c00',
-		'94c115708a3daa65800b510cf14e51a8efd6a87922ef4740fe682aaae7b9ef76051b9387858048fe66aba5d3edc1f4adaafc54722156f7064ed344205d924601',
-		'038ae3472d9f672dd93612d88e2e13da18ca80c013df01b2b3d30ac6c04dc1c24cc17f294cea33f342de33e6274a46fc81c1debc94c51747384b9bbdb4252e0e',
-	],
-	asset: {
-		votes: [
+	params: {
+		stakes: [
 			{
-				delegateAddress: 'lskatchyvyh9y3tz3mmpu9z3kptw56c6qcw4k7fks',
-				amount: '1000000000',
-			},
-			{
-				delegateAddress: 'lskep7mup86zhmczmx9u4mehcnhnw2ke4k3nhzms4',
-				amount: '1000000000',
+				validatorAddress: 'lskcgfpjvt23ygspv2fx4s8o3p2dfhm7grmqxpzx3',
+				amount: '100000000000',
 			},
 		],
 	},
-	isPending: false,
+	block: {
+		id: '27660fcce66ae954d65042bbfcfb7a7207202d1157525fdcf473c0d1cedc56c9',
+		height: 698,
+		timestamp: 1689775110,
+		isFinal: true,
+	},
+	executionStatus: 'successful',
+	index: 1,
+};
+
+const tokenTransferCrossChainTransaction = {
+	id: '2ceda7b8ccfaa6c452651e6ba2e0a8acf88350aeeb0cde4da98701419e0657c6',
+	moduleCommand: 'token:transferCrossChain',
+	nonce: '4',
+	fee: '100000000',
+	minFee: '217000',
+	size: 218,
+	sender: {
+		address: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+		publicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+		name: 'genesis_0',
+	},
+	params: {
+		tokenID: '0400000000000000',
+		amount: '100000000000',
+		receivingChainID: '04000001',
+		recipientAddress: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		data: 'Cross chain transfer',
+		messageFee: '10000000',
+		messageFeeTokenID: '0400000000000000',
+	},
+	block: {
+		id: '48790249bb8c73c5f74faf8fecf4130ab292fbafcd7eaf8df641981597fa9718',
+		height: 215,
+		timestamp: 1689691860,
+		isFinal: false,
+	},
+	meta: {
+		recipient: {
+			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		},
+	},
+	executionStatus: 'successful',
+	index: 1,
 };
 
 module.exports = {
-	lsk,
-	beddows,
-	lskInBeddows,
 	transactions: {
 		reclaim: reclaimTransaction,
 		tokenTransfer: tokenTransferTransaction,
 		tokenTransferSelf: tokenTransferTransactionSelf,
-		vote: voteTransaction,
+		tokenTransferCrossChain: tokenTransferCrossChainTransaction,
+		stake: stakeTransaction,
 	},
 };

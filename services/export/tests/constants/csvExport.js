@@ -20,63 +20,73 @@ const generateExcpectedCsv = (json, delimiter) => ''.concat(
 );
 
 const tokenTransferTransaction = {
-	moduleID: 2,
-	assetID: 0,
-	nonce: '0',
-	fee: '149000',
-	senderPublicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-	asset: {
-		amount: '20000000000',
-		data: 'Test tx',
+	id: 'd41e8fbb909fdf44ffccef6f5b0fb5edf853f0dcf699243a0a92403d2a4f1d1d',
+	moduleCommand: 'token:transfer',
+	nonce: '3',
+	fee: '167000',
+	minFee: '165000',
+	size: 165,
+	sender: {
+		address: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+		publicKey: '1a315a7c7ccfb44ee0730f22cac4370307a7ef29710b938cff52e653cac753ad',
+		name: null,
+	},
+	params: {
+		tokenID: '0400000000000000',
+		amount: '1200000000',
+		recipientAddress: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+		data: '',
+	},
+	block: {
+		id: '227c65bb47ba5a061a98ea9c459be750ba4e66a36c68e2c45b096fdeb6bb29fc',
+		height: 1745,
+		timestamp: 1689785580,
+		isFinal: true,
+	},
+	meta: {
 		recipient: {
-			address: 'lskhyoacr3xdfjy24mnzagb6tyt7wkqf2s6fezxn8',
-			publicKey: 'bfccf04909701c44add442c12cd86bb1332e61a70b2b6d48d97021b4dc3e6a60',
-			username: 'test_delegate',
+			address: 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad',
+			publicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+			name: 'genesis_0',
 		},
 	},
-	signatures: [
-		'16bc38cb999f64debb93bcd27bc06361f95fc0d4fee8f1376cf09af7ac67294cf815a97dd946e6b1920e492606b07a39b5ae6e16ac558c728039352720567907',
-	],
-	id: '052b7e922e6c703d9f7e32f6bafce8f67d9ebd65329ef8b1e61d4eb267096377',
-	moduleAssetId: '2:0',
-	moduleAssetName: 'token:transfer',
-	unixTimestamp: 1629113166,
-	height: 274,
-	blockId: 'f128eb61e6e64ad7b6e96b71a191ee171ac21f009944d5d96c71092d5ae68a98',
-	senderId: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-	isPending: false,
-	type: '2:0',
-	amount: '20000000000',
+	executionStatus: 'successful',
+	index: 0,
 };
 
 const selfTokenTransferTransaction = {
-	moduleID: 2,
-	assetID: 0,
-	nonce: '0',
-	fee: '149000',
-	senderPublicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-	asset: {
-		amount: '20000000000',
-		data: 'Test tx',
+	id: 'd41e8fbb909fdf44ffccef6f5b0fb5edf853f0dcf699243a0a92403d2a4f1d1d',
+	moduleCommand: 'token:transfer',
+	nonce: '3',
+	fee: '167000',
+	minFee: '165000',
+	size: 165,
+	sender: {
+		address: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+		publicKey: '1a315a7c7ccfb44ee0730f22cac4370307a7ef29710b938cff52e653cac753ad',
+		name: null,
+	},
+	params: {
+		tokenID: '0400000000000000',
+		amount: '1200000000',
+		recipientAddress: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+		data: '',
+	},
+	block: {
+		id: '227c65bb47ba5a061a98ea9c459be750ba4e66a36c68e2c45b096fdeb6bb29fc',
+		height: 1745,
+		timestamp: 1689785580,
+		isFinal: true,
+	},
+	meta: {
 		recipient: {
-			address: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-			publicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-			username: '',
+			address: 'lskxud8mwmw4et3zhrr6cee9q4d8thhe2b3x6yqdp',
+			publicKey: '1a315a7c7ccfb44ee0730f22cac4370307a7ef29710b938cff52e653cac753ad',
+			name: 'genesis_0',
 		},
 	},
-	signatures: [
-		'16bc38cb999f64debb93bcd27bc06361f95fc0d4fee8f1376cf09af7ac67294cf815a97dd946e6b1920e492606b07a39b5ae6e16ac558c728039352720567907',
-	],
-	id: '052b7e922e6c703d9f7e32f6bafce8f67d9ebd65329ef8b1e61d4eb267096377',
-	moduleAssetId: '2:0',
-	moduleAssetName: 'token:transfer',
-	unixTimestamp: 1629113166,
-	height: 274,
-	blockId: 'f128eb61e6e64ad7b6e96b71a191ee171ac21f009944d5d96c71092d5ae68a98',
-	senderId: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-	isPending: false,
-	type: '2:0',
-	amount: '20000000000',
+	executionStatus: 'successful',
+	index: 0,
 };
 
 const interval = {
@@ -89,11 +99,11 @@ module.exports = {
 	tokenTransfer: {
 		toSelf: {
 			transaction: selfTokenTransferTransaction,
-			sender: selfTokenTransferTransaction.senderId,
+			sender: selfTokenTransferTransaction.sender.address,
 		},
 		toOther: {
 			transaction: tokenTransferTransaction,
-			sender: tokenTransferTransaction.senderId,
+			sender: tokenTransferTransaction.sender.address,
 		},
 	},
 	interval,

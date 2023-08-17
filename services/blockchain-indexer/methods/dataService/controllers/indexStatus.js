@@ -29,4 +29,5 @@ const getIndexStatus = async params => {
 
 module.exports = {
 	getIndexStatus,
+	isBlockchainFullyIndexed: dataService.isBlockchainFullyIndexed,
 };

@@ -15,12 +15,18 @@
  */
 const {
 	getIndexStatus,
+	isBlockchainFullyIndexed,
 } = require('./controllers/indexStatus');
 
 module.exports = [
 	{
 		name: 'index.status',
 		controller: getIndexStatus,
+		params: {},
+	},
+	{
+		name: 'isBlockchainFullyIndexed',
+		controller: isBlockchainFullyIndexed,
 		params: {},
 	},
 ];

@@ -13,14 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Utils,
-	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST, SERVICE_UNAVAILABLE } },
+	Constants: {
+		JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST, SERVICE_UNAVAILABLE },
+	},
 	Logger,
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
-const path = require('path');
 
 const { transformPath, transformRequest, transformResponse } = require('./apiUtils');
 const { validate } = require('./paramValidator');
@@ -42,12 +44,11 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 		registeredModuleNames.forEach(moduleName => {
 			const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
 			try {
-				Object.assign(
-					allMethods,
-					Utils.requireAllJs(path.resolve(__dirname, dirPath)),
-				);
+				Object.assign(allMethods, Utils.requireAllJs(path.resolve(__dirname, dirPath)));
 			} catch (err) {
-				logger.warn(`Moleculer method definitions (RPC endpoints) missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`);
+				logger.warn(
+					`Moleculer method definitions (RPC endpoints) missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`,
+				);
 			}
 		});
 	});
@@ -61,17 +62,26 @@ const configureApi = (apiNames, apiPrefix, registeredModuleNames) => {
 		return { ...acc, [key]: method };
 	}, {});
 
-	const whitelist = Object.keys(methods).reduce((acc, key) => [
-		...acc, methods[key].source.method,
-	], []);
+	const whitelist = Object.keys(methods).reduce(
+		(acc, key) => [...acc, methods[key].source.method],
+		[],
+	);
 
-	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${transformPath(methods[key].rpcMethod)}`]: methods[key].source.method,
-	}), {});
+	const aliases = Object.keys(methods).reduce(
+		(acc, key) => ({
+			...acc,
+			[`${transformPath(methods[key].rpcMethod)}`]: methods[key].source.method,
+		}),
+		{},
+	);
 
-	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${transformPath(methods[key].rpcMethod)}`]: methods[key],
-	}), {});
+	const methodPaths = Object.keys(methods).reduce(
+		(acc, key) => ({
+			...acc,
+			[`${transformPath(methods[key].rpcMethod)}`]: methods[key],
+		}),
+		{},
+	);
 
 	const meta = {
 		apiPrefix,
@@ -103,10 +113,7 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 				...config,
 
 				mappingPolicy: 'restrict',
-				whitelist: [
-					...config.whitelist,
-					...whitelist,
-				],
+				whitelist: [...config.whitelist, ...whitelist],
 				aliases: {
 					...config.aliases,
 					...aliases,
@@ -116,21 +123,37 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 					const paramReport = validate(request.params, methodPaths[request.method]);
 
 					if (paramReport.missing.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
+						throw new MoleculerClientError({
+							code: INVALID_PARAMS[0],
+							message: `Missing parameter(s): ${paramReport.missing.join(', ')}`,
+						});
 					}
 
 					const unknownList = Object.keys(paramReport.unknown);
 					if (unknownList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
+						throw new MoleculerClientError({
+							code: INVALID_PARAMS[0],
+							message: `Unknown input parameter(s): ${unknownList.join(', ')}`,
+						});
 					}
 
 					if (paramReport.required.length) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}` });
+						throw new MoleculerClientError({
+							code: INVALID_REQUEST[0],
+							message: `Require one of the following parameter combination(s): ${paramReport.required.join(
+								', ',
+							)}`,
+						});
 					}
 
 					const invalidList = paramReport.invalid;
 					if (invalidList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
+						throw new MoleculerClientError({
+							code: INVALID_PARAMS[0],
+							message: `Invalid input parameter values: ${invalidList
+								.map(o => o.message)
+								.join(', ')}`,
+						});
 					}
 
 					request.params = transformRequest(methodPaths[request.method], paramReport.valid);
@@ -139,7 +162,14 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 				onAfterCall: async (ctx, socket, req, data) => {
 					if (data.data && data.status) {
 						if (data.status === 'INVALID_PARAMS') throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: data.data.error });
-						if (data.status === 'SERVICE_UNAVAILABLE') throw new MoleculerClientError({ code: SERVICE_UNAVAILABLE[0], message: data.data.error });
+						if (data.status === 'SERVICE_UNAVAILABLE') throw new MoleculerClientError({
+							code: SERVICE_UNAVAILABLE[0],
+							message: data.data.error,
+						});
+						if (data.status !== 'ACCEPTED') throw new MoleculerClientError({
+							code: INVALID_REQUEST[0],
+							message: data.data.error,
+						});
 					}
 
 					return transformResponse(methodPaths[req.method], data);

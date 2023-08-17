@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const { MODULE_NAME } = require('./index');
@@ -41,7 +41,7 @@ const getCCUTable = () => getTableInstance(ccuTableSchema, MYSQL_ENDPOINT);
 const COMMAND_NAME = 'submitSidechainCrossChainUpdate';
 
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const ccuTable = await getCCUTable();
@@ -68,7 +68,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const ccuTable = await getCCUTable();
@@ -78,7 +78,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	let prevTransaction;
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 
-	if (chainInfo.status === APP_STATUS.ACTIVE) {
+	if (chainInfo.status === APP_STATUS.ACTIVATED) {
 		const searchParams = {
 			sendingChainID: tx.params.sendingChainID,
 			propBetweens: [{
@@ -95,7 +95,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 			const result = (await getTransactions({
 				height: resultSet[i].height,
 				moduleCommand: tx.moduleCommand,
-				executionStatus: TRANSACTION_STATUS.SUCCESS,
+				executionStatus: TRANSACTION_STATUS.SUCCESSFUL,
 			})).data;
 
 			if (result.length) {
@@ -110,7 +110,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 		const result = (await getTransactions({
 			moduleCommand: `${MODULE_NAME}:${COMMAND}`,
-			executionStatus: TRANSACTION_STATUS.SUCCESS,
+			executionStatus: TRANSACTION_STATUS.SUCCESSFUL,
 			propBetweens: [{
 				property: 'height',
 				lowerThan: blockHeader.height,

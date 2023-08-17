@@ -9,17 +9,23 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
+start:
+	$(compose) start
+
+stop:
+	$(compose) stop
+
 restart: 
 	$(compose) restart
 
 backup-db:
-	$(compose) exec -T mysql mysqldump --no-create-db lisk -u root -ppassword > mysql_core_index.sql
+	$(compose) exec -T mysql-primary mysqldump --set-gtid-purged=OFF --no-create-db lisk -u root -ppassword > mysql_indexer_index.sql
 
 restore-db:
-	$(compose) exec -T mysql mysql lisk -u root -ppassword < mysql_core_index.sql
+	$(compose) exec -T mysql-primary mysql lisk -u root -ppassword < mysql_indexer_index.sql
 
 flush-db:
-	 echo "DROP DATABASE lisk; CREATE DATABASE lisk;" | $(compose) exec -T mysql mysql -u root -ppassword
+	echo "DROP DATABASE lisk; CREATE DATABASE lisk;" | $(compose) exec -T mysql-primary mysql -u root -ppassword
 
 stop-%:
 	$(compose) stop $*
@@ -69,37 +75,37 @@ build: build-app-registry build-connector build-indexer build-coordinator build-
 build-all: build build-template build-tests
 
 build-app-registry:
-	cd ./services/blockchain-app-registry && docker build --tag=lisk/service_blockchain_app_registry ./
+	cd ./services/blockchain-app-registry && docker buildx build --tag=lisk/service_blockchain_app_registry ./
 
 build-connector:
-	cd ./services/blockchain-connector && docker build --tag=lisk/service_blockchain_connector ./	
+	cd ./services/blockchain-connector && docker buildx build --tag=lisk/service_blockchain_connector ./	
 
 build-indexer:
-	cd ./services/blockchain-indexer && docker build --tag=lisk/service_blockchain_indexer ./
+	cd ./services/blockchain-indexer && docker buildx build --tag=lisk/service_blockchain_indexer ./
 
 build-coordinator:
-	cd ./services/blockchain-coordinator && docker build --tag=lisk/service_blockchain_coordinator ./
+	cd ./services/blockchain-coordinator && docker buildx build --tag=lisk/service_blockchain_coordinator ./
 
 build-statistics:
-	cd ./services/transaction-statistics && docker build --tag=lisk/service_transaction_statistics ./
+	cd ./services/transaction-statistics && docker buildx build --tag=lisk/service_transaction_statistics ./
 
 build-fees:
-	cd ./services/fee-estimator && docker build --tag=lisk/service_fee_estimator ./
+	cd ./services/fee-estimator && docker buildx build --tag=lisk/service_fee_estimator ./
 
 build-market:
-	cd ./services/market && docker build --tag=lisk/service_market ./
+	cd ./services/market && docker buildx build --tag=lisk/service_market ./
 
 build-export:
-	cd ./services/export && docker build --tag=lisk/service_export ./
+	cd ./services/export && docker buildx build --tag=lisk/service_export ./
 
 build-gateway:
-	cd ./services/gateway && docker build --tag=lisk/service_gateway ./
+	cd ./services/gateway && docker buildx build --tag=lisk/service_gateway ./
 
 build-template:
-	cd ./services/template && docker build --tag=lisk/service_template ./
+	cd ./services/template && docker buildx build --tag=lisk/service_template ./
 
 build-tests:
-	cd ./tests && docker build --tag=lisk/service_tests ./
+	cd ./tests && docker buildx build --tag=lisk/service_tests ./
 
 build-local:
 	npm ci

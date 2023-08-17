@@ -20,7 +20,9 @@ const {
 	CacheRedis,
 	Logger,
 	Signals,
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const business = require('../business');
@@ -81,7 +83,7 @@ const computeValidatorStatus = async () => {
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
-	const latestBlock = getLastBlock();
+	const latestBlock = await getLastBlock();
 	const generatorsList = await business.getGenerators();
 
 	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));

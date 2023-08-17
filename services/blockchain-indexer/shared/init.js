@@ -20,10 +20,12 @@ const {
 const config = require('../config');
 
 const { getTokenConstants, getRewardConstants, getPosConstants } = require('./dataService');
+const { getFeeEstimatesFromFeeEstimator } = require('./dataService/business/feeEstimates');
 const indexStatus = require('./indexer/indexStatus');
 const processor = require('./processor');
 
 const logger = Logger();
+const snapshotUtils = require('./utils/snapshot');
 
 const init = async () => {
 	try {
@@ -32,8 +34,22 @@ const init = async () => {
 		await getTokenConstants();
 		await getRewardConstants();
 
+		if (config.snapshot.enable) {
+			logger.info('Initializing the automatic index snapshot application process.');
+
+			try {
+				await snapshotUtils.initSnapshot();
+				logger.info('Successfully downloaded and applied the snapshot.');
+			} catch (err) {
+				logger.warn(`Unable to apply snapshot:\n${err.message}.`);
+			}
+		}
+
 		// Init index status updates
 		await indexStatus.init();
+
+		// Set priority fee estimates
+		await getFeeEstimatesFromFeeEstimator();
 
 		if (config.operations.isIndexingModeEnabled) {
 			await processor.init();

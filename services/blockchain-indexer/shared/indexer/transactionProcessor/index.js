@@ -18,7 +18,7 @@ const requireAll = require('require-all');
 const { Logger } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
-const { getAllDirectories } = require('../../utils/file');
+const { getDirectoryNamesInPath } = require('../../utils/file');
 
 const logger = Logger();
 
@@ -28,7 +28,7 @@ const moduleProcessorMap = new Map();
 
 const getAvailableModuleProcessors = async () => {
 	const IGNORE_DIRS = ['0_moduleName'];
-	const processors = await getAllDirectories(__dirname);
+	const processors = await getDirectoryNamesInPath(__dirname);
 	return processors.filter(e => !IGNORE_DIRS.includes(e));
 };
 

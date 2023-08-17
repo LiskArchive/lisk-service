@@ -428,6 +428,12 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/topic',
 				},
 				{
+					$ref: '#/parameters/module',
+				},
+				{
+					$ref: '#/parameters/eventName',
+				},
+				{
 					$ref: '#/parameters/blockID',
 				},
 				{
@@ -965,7 +971,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns auth details by address\n RPC => get.auth',
 			parameters: [
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/addressRequired',
 				},
 			],
 			responses: {
@@ -993,7 +999,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns validator information\n RPC => get.validator',
 			parameters: [
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/addressRequired',
 				},
 			],
 			responses: {
@@ -1058,7 +1064,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/accountName',
 				},
 				{
-					$ref: '#/parameters/tokenID',
+					$ref: '#/parameters/tokenIDRequired',
 				},
 			],
 			responses: {
@@ -1215,7 +1221,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
 			parameters: [
 				{
-					$ref: '#/parameters/tokenID',
+					$ref: '#/parameters/tokenIDRequired',
 				},
 				{
 					$ref: '#/parameters/searchByNameAddressPubKey',

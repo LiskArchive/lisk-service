@@ -14,7 +14,9 @@
  *
  */
 const {
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 

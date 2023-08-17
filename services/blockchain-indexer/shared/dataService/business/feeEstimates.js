@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { requestFeeEstimator } = require('../../utils/request');
+
 let feeEstimates = {
 	low: 0,
 	med: 0,
@@ -27,7 +29,15 @@ const setFeeEstimates = async (payload) => {
 
 const getFeeEstimates = () => feeEstimates;
 
+const getFeeEstimatesFromFeeEstimator = async () => {
+	const response = await requestFeeEstimator('estimates');
+	setFeeEstimates(response);
+
+	return getFeeEstimates();
+};
+
 module.exports = {
 	setFeeEstimates,
 	getFeeEstimates,
+	getFeeEstimatesFromFeeEstimator,
 };

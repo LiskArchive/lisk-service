@@ -13,14 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Utils,
 } = require('lisk-service-framework');
-const path = require('path');
 const BluebirdPromise = require('bluebird');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
-const { exists } = require('./fsUtils');
 
 const createApiDocs = async (apiName, apiJsonPaths, registeredModuleNames) => {
 	const methodsDir = path.resolve(__dirname, `../apis/${apiName}/methods`);
@@ -31,7 +30,7 @@ const createApiDocs = async (apiName, apiJsonPaths, registeredModuleNames) => {
 		registeredModuleNames,
 		async module => {
 			const dirPath = path.resolve(`${methodsDir}/modules/${module}`);
-			if (await exists(dirPath)) Object.assign(services, Utils.requireAllJs(dirPath));
+			if (await Utils.fs.exists(dirPath)) Object.assign(services, Utils.requireAllJs(dirPath));
 		},
 		{ concurrency: registeredModuleNames.length },
 	);

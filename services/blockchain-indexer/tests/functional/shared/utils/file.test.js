@@ -16,7 +16,7 @@
 const fs = require('fs');
 
 const {
-	getAllDirectories,
+	getDirectoryNamesInPath,
 	getAllJSFiles,
 } = require('../../../../shared/utils/file');
 
@@ -60,19 +60,19 @@ describe('Unit tests for file utilities', () => {
 		await rmdir(testDir);
 	});
 
-	describe('Test \'getAllDirectories\'', () => {
+	describe('Test \'getDirectoryNamesInPath\'', () => {
 		it('Throws error when the source directory does not exist', async () => {
-			expect(getAllDirectories(nonExistentTestDir)).rejects.toThrow();
+			expect(getDirectoryNamesInPath(nonExistentTestDir)).rejects.toThrow();
 		});
 
 		it('Returns empty list when source directory does not contain sub-directories', async () => {
-			const result = await getAllDirectories(emptyTestDir);
+			const result = await getDirectoryNamesInPath(emptyTestDir);
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(result.length).toBe(0);
 		});
 
 		it('Returns list of sub-directories contained within the source directory', async () => {
-			const result = await getAllDirectories(testDir);
+			const result = await getDirectoryNamesInPath(testDir);
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(result.length).toBe(testSubDirs.length);
 			expect(result).toEqual(testSubDirs);

@@ -15,14 +15,16 @@
  */
 const {
 	Logger,
-	MySQL: {
-		getTableInstance,
-		getDBConnection,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
-		KVStore: {
-			getKeyValueTable,
+	DB: {
+		MySQL: {
+			getTableInstance,
+			getDBConnection,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+			KVStore: {
+				getKeyValueTable,
+			},
 		},
 	},
 } = require('lisk-service-framework');
@@ -68,9 +70,10 @@ const getEventsInfoToIndex = async (block, events) => {
 
 		event.topics.forEach(topic => {
 			const eventTopicInfo = {
-				tempID: event.id.concat(topic),
 				eventID: event.id,
 				height: block.height,
+				name: event.name,
+				module: event.module,
 				index: event.index,
 				timestamp: block.timestamp,
 				topic,

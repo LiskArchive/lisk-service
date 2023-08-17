@@ -30,14 +30,19 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/constants`;
 
 describe('Token Constants API', () => {
-	it('returns Token module constants', async () => {
+	it('should return token module constants', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response.data).toMap(tokenConstantsSchema);
 		expect(response.meta).toMap(tokenConstantsMetaSchema);
 	});
 
-	it('params not supported -> 400 BAD_REQUEST', async () => {
+	it('should return invalid params when requested with invalid param', async () => {
 		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return invalid params when requested with empty invalid param', async () => {
+		const response = await api.get(`${endpoint}?someparam=''`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

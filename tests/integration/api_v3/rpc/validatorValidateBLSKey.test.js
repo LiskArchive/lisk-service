@@ -27,7 +27,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const validateBLSKey = async params => request(wsRpcUrl, 'post.validator.validate-bls-key', params);
 
 describe('Method post.validator.validate-bls-key', () => {
-	it('Returns true for valid blsKey and proofOfPossession pair', async () => {
+	it('should return false when requested with valid blsKey and proofOfPossession pair', async () => {
 		const response = await validateBLSKey({
 			blsKey: BLS_KEY.VALID,
 			proofOfPossession: PROOF_OF_POSSESSION.VALID,
@@ -41,7 +41,7 @@ describe('Method post.validator.validate-bls-key', () => {
 		expect(result.data.isValid).toEqual(true);
 	});
 
-	it('Returns false for invalid blsKey', async () => {
+	it('should return false when requested with invalid blsKey', async () => {
 		const response = await validateBLSKey({
 			blsKey: BLS_KEY.INVALID,
 			proofOfPossession: PROOF_OF_POSSESSION.VALID,
@@ -55,7 +55,7 @@ describe('Method post.validator.validate-bls-key', () => {
 		expect(result.data.isValid).toEqual(false);
 	});
 
-	it('Returns false for invalid proofOfPossession message', async () => {
+	it('should return false when requested with invalid proofOfPossession', async () => {
 		const response = await validateBLSKey({
 			blsKey: BLS_KEY.VALID,
 			proofOfPossession: PROOF_OF_POSSESSION.INVALID,
@@ -69,12 +69,40 @@ describe('Method post.validator.validate-bls-key', () => {
 		expect(result.data.isValid).toEqual(false);
 	});
 
-	it('No param -> invalid param', async () => {
+	it('should return false when requested with invalid blsKey and proofOfPossession', async () => {
+		const response = await validateBLSKey({
+			blsKey: BLS_KEY.INVALID,
+			proofOfPossession: PROOF_OF_POSSESSION.INVALID,
+		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+
+		const { result } = response;
+		expect(result).toMap(validateBLSKeyGoodRequestSchema);
+		expect(result.data).toBeInstanceOf(Object);
+		expect(result.data).toMap(validateBLSKeySchema);
+		expect(result.data.isValid).toEqual(false);
+	});
+
+	it('should return invalid params when requested without blsKey', async () => {
+		const response = await validateBLSKey({
+			proofOfPossession: PROOF_OF_POSSESSION.VALID,
+		});
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when requested without proofOfPossession', async () => {
+		const response = await validateBLSKey({
+			blsKey: BLS_KEY.VALID,
+		});
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when requested without a param', async () => {
 		const response = await validateBLSKey({});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('Invalid param -> invalid param', async () => {
+	it('should return invalid params when requested with invalid param', async () => {
 		const response = await validateBLSKey({
 			blsKey: BLS_KEY.VALID,
 			proofOfPossession: PROOF_OF_POSSESSION.VALID,

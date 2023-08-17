@@ -52,17 +52,17 @@ const queueInstance = (redisEndpoint, jobName = 'defaultJob', jobFn, concurrency
         logger.info(`Initialized queue ${queueName}`);
 
         queue.on('completed', job => {
-            logger.debug(`${jobName} Job completed ${job.name}`);
+            logger.debug(`${jobName} job completed ${job.name}`);
             job.remove();
         });
 
         queue.on('error', err => {
-            logger.error(`${jobName} Job error`, err);
+            logger.error(`${jobName} job error`, err);
         });
 
         queue.on('failed', (job, err) => {
-            logger.warn(`${jobName} Job failed`, err.message);
-            logger.warn(`${jobName} Job failed`, err.stack);
+            logger.warn(`${jobName} job failed`, err.message);
+            logger.warn(`${jobName} job failed`, err.stack);
         });
 
         setInterval(async () => {

@@ -57,8 +57,6 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 		);
 	}
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
-	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
-	const transactionSize = transactionBuffer.length;
 
 	// Calculate transaction min fee
 	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
@@ -74,6 +72,16 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 			additionalFee: BigInt(additionalFee),
 		},
 	);
+
+	// Calculate transaction size
+	const transactionBuffer = codec.encode(
+		txSchema,
+		{
+			...schemaCompliantTransaction,
+			fee: schemaCompliantTransaction.fee || transactionMinFee,
+		},
+	);
+	const transactionSize = transactionBuffer.length;
 
 	const formattedTransaction = {
 		...transaction,
@@ -130,9 +138,14 @@ const formatEvent = (event, skipDecode) => {
 		eventData = event.data;
 	} else {
 		const eventDataSchema = getDataSchemaByEventName(event.name);
-		eventData = eventDataSchema
-			? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
-			: { data: event.data };
+		try {
+			eventData = eventDataSchema
+				? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
+				: { data: event.data };
+		} catch (err) {
+			logger.warn(`Unable to decode data for ${event.name} (${event.module}) event:\n${err.stack}`);
+			return { data: event.data };
+		}
 
 		if (!eventDataSchema) {
 			// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)

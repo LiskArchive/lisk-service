@@ -32,12 +32,12 @@ const NAME = /^[\w!@$&.]{3,20}$/;
 const NAME_CSV = /^\b[\w!@$&.,]{3,}\b$/;
 const NETWORK_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(.\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/;
 const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
-const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|success|fail|,){0,5}\b$/;
+const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|successful|failed|,){0,5}\b$/;
 const POS_VALIDATOR_STATUS = /^\b(?:active|standby|banned|punished|ineligible|,){0,9}\b$/;
 const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_unavailable|recovered|,){0,9}\b$/;
 const DATE_INTERVAL = /^\b(?:(?:\d{4})-(?:(?:1[012])|(?:0?[1-9]))-(?:(?:[012][1-9])|(?:[123]0)|31))(?::(?:(?:\d{4})-(?:(?:1[012])|(?:0?[1-9]))-(?:(?:[012][1-9])|(?:[123]0)|31)))?\b$/;
 const NETWORK_CSV = /^\b(?:mainnet|testnet|betanet|devnet|,){0,7}\b$/;
-const APPLICATION_STATUS = /^\b(?:registered|active|terminated|unregistered|,){1,7}\b$/;
+const APPLICATION_STATUS = /^\b(?:registered|activated|terminated|unregistered|,){1,7}\b$/;
 const MODULE_COMMAND = /^[0-9a-zA-Z]{0,32}:[0-9a-zA-Z]{0,32}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const CHAIN_ID_CSV = /^\b(?:[a-fA-F0-9]{8}|,)+\b$/;
@@ -52,6 +52,8 @@ const COMMAND_CSV = MODULE_CSV;
 const TOPIC_CSV = /^\b(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})(?:,(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}))*\b$/;
 const HEX_STRING = /^\b[a-fA-F0-9]+\b$/;
 const CSV_EXPORT_FILENAME = /^transactions_(lsk[a-hjkm-z2-9]{38})_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))_(\d{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01]))\.csv$/;
+const EXCEL_EXPORT_FILENAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/;
+const EVENT_NAME = /^[\w!@$&. ]{1,32}$/;
 const NFT_ID = /^\b(?:[A-Fa-f0-9]){32}\b$/;
 const NFT_COLLECTION_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const NFT_OWNER = /^(lsk([a-hjkm-z][2-9]){38})$|^(?:\b[a-fA-F0-9]{8}\b)$/;
@@ -96,6 +98,8 @@ module.exports = {
 	HEX_STRING,
 	FEE,
 	CSV_EXPORT_FILENAME,
+	EXCEL_EXPORT_FILENAME,
+	EVENT_NAME,
 	NFT_ID,
 	NFT_COLLECTION_ID,
 	NFT_OWNER,

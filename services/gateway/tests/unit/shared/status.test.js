@@ -13,11 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
 const fs = require('fs');
 const path = require('path');
+const {
+	Utils: {
+		fs: { exists, rmdir },
+	},
+} = require('lisk-service-framework');
 
-const { rmdir } = require('../../../../blockchain-app-registry/shared/utils/fs');
-const { exists } = require('../../../shared/fsUtils');
 const { getBuildTimestamp } = require('../../../shared/status');
 
 describe('Test getBuildTimestamp method', () => {

@@ -18,7 +18,7 @@ import regex from './regex';
 
 const { metaSchema } = require('../generics.schema');
 
-const validStatuses = ['registered', 'active', 'terminated', 'any'];
+const validStatuses = ['registered', 'activated', 'terminated', 'any'];
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
 const goodRequestSchemaForStats = {
@@ -29,7 +29,7 @@ const goodRequestSchemaForStats = {
 
 const blockchainAppsStatsSchema = {
 	registered: Joi.number().integer().min(0).required(),
-	active: Joi.number().integer().min(0).required(),
+	activated: Joi.number().integer().min(0).required(),
 	terminated: Joi.number().integer().min(0).required(),
 	totalSupplyLSK: Joi.string().required(),
 	totalStakedLSK: Joi.string().required(),

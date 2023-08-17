@@ -13,14 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
 const path = require('path');
+const BluebirdPromise = require('bluebird');
 
 const {
 	Logger,
-	MySQL: {
-		getTableInstance,
-		KVStore: { configureKeyValueTable, getKeyValueTable },
+	DB: {
+		MySQL: {
+			getTableInstance,
+			KVStore: { configureKeyValueTable, getKeyValueTable },
+		},
 	},
 	Utils,
 } = require('lisk-service-framework');

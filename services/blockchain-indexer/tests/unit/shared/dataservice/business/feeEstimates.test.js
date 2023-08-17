@@ -32,11 +32,14 @@ jest.mock('lisk-service-framework', () => {
 			warn: jest.fn(),
 			error: jest.fn(),
 		}),
-		MySQL: {
-			...actual.MySQL,
-			KVStore: {
-				...actual.KVStore,
-				getKeyValueTable: jest.fn(),
+		DB: {
+			...actual.DB,
+			MySQL: {
+				...actual.DB.MySQL,
+				KVStore: {
+					...actual.DB.MySQL.KVStore,
+					getKeyValueTable: jest.fn(),
+				},
 			},
 		},
 		CacheRedis: jest.fn(),
@@ -59,6 +62,21 @@ describe('Fee estimates', () => {
 
 		await setFeeEstimates(mockTxFeeEstimate);
 		const feeEstimates = getFeeEstimates();
+
+		expect(requestFeeEstimator).toHaveBeenCalledTimes(0);
+		expect(feeEstimates).toEqual(mockTxFeeEstimate);
+	});
+});
+
+describe('Test getFeeEstimatesFromFeeEstimator', () => {
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.resetModules();
+	});
+
+	it('should assign payload to feeEstimates if payload is defined', async () => {
+		const { getFeeEstimatesFromFeeEstimator } = require(mockFeeEstimatesFilePath);
+		const feeEstimates = await getFeeEstimatesFromFeeEstimator();
 
 		expect(requestFeeEstimator).toHaveBeenCalledTimes(0);
 		expect(feeEstimates).toEqual(mockTxFeeEstimate);

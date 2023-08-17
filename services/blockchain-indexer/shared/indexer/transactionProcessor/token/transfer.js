@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
@@ -41,7 +41,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
 	indexAccountAddress(tx.params.recipientAddress);
 
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	tx = {
 		...tx,

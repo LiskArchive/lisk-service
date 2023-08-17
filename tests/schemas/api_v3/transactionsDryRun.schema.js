@@ -16,12 +16,7 @@
 import Joi from 'joi';
 
 const regex = require('./regex');
-
-const TRANSACTION_VERIFY_RESULT = {
-	INVALID: -1,
-	PENDING: 0,
-	OK: 1,
-};
+const { TRANSACTION_VERIFY_RESULT } = require('../../../services/blockchain-indexer/shared/constants');
 
 const TRANSACTION_VERIFY_STATUSES = Object
 	.keys(TRANSACTION_VERIFY_RESULT).map(e => e.toLowerCase());
@@ -42,13 +37,13 @@ const eventSchemaWithSkipDecode = {
 };
 
 const dryrunTransactionSuccessResponseSchema = {
-	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.VALID).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 
 const dryrunTxSuccessSchemaWithSkipDecode = {
-	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.OK).required(),
+	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.VALID).required(),
 	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
 	events: Joi.array().items(Joi.object(eventSchemaWithSkipDecode).required()).min(1).required(),
 };
@@ -65,7 +60,7 @@ const dryrunTransactionInvalidResponseSchema = {
 	errorMessage: Joi.string().required(),
 };
 
-const goodRequestSchemaFortransactionsDryRun = {
+const goodRequestSchemaForTransactionsDryRun = {
 	data: Joi.object().required(),
 	meta: Joi.object().optional(),
 };
@@ -84,7 +79,7 @@ module.exports = {
 		dryrunTransactionInvalidResponseSchema,
 	).required(),
 	metaSchema: Joi.object().optional(),
-	goodRequestSchemaFortransactionsDryRun: Joi.object(
-		goodRequestSchemaFortransactionsDryRun,
+	goodRequestSchemaForTransactionsDryRun: Joi.object(
+		goodRequestSchemaForTransactionsDryRun,
 	).required(),
 };

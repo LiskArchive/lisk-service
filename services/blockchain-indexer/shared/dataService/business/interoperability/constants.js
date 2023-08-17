@@ -13,8 +13,12 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const { requestConnector } = require('../../../utils/request');
+
+let moduleConstants;
+
 const APP_STATUS = {
-	ACTIVE: 'active',
+	ACTIVATED: 'activated',
 	REGISTERED: 'registered',
 	TERMINATED: 'terminated',
 };
@@ -22,11 +26,27 @@ const APP_STATUS = {
 // TODO: Update values from SDK once the discussion is concluded: https://github.com/LiskHQ/discussions/discussions/101
 const CHAIN_STATUS = Object.freeze({
 	0: 'registered',
-	1: 'active',
+	1: 'activated',
 	2: 'terminated',
 });
+
+const getInteroperabilityConstants = async () => {
+	if (typeof moduleConstants === 'undefined') {
+		const registrationFee = await requestConnector('getChainRegistrationFee');
+
+		moduleConstants = {
+			chainRegistrationFee: registrationFee.fee,
+		};
+	}
+
+	return {
+		data: moduleConstants,
+		meta: {},
+	};
+};
 
 module.exports = {
 	APP_STATUS,
 	CHAIN_STATUS,
+	getInteroperabilityConstants,
 };

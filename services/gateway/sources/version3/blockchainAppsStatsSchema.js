@@ -20,7 +20,7 @@ module.exports = {
 	definition: {
 		data: {
 			registered: '=,number',
-			active: '=,number',
+			activated: '=,number',
 			terminated: '=,number',
 			totalSupplyLSK: '=,string',
 			totalStakedLSK: '=,string',

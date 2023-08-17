@@ -20,12 +20,14 @@ const BigNumber = require('big-number');
 const {
 	Logger,
 	Queue,
-	MySQL: {
-		getDBConnection,
-		getTableInstance,
-		startDBTransaction,
-		commitDBTransaction,
-		rollbackDBTransaction,
+	DB: {
+		MySQL: {
+			getDBConnection,
+			getTableInstance,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+		},
 	},
 	Signals,
 } = require('lisk-service-framework');
@@ -33,8 +35,8 @@ const {
 const { getDistributionByType } = require('./transactionStatistics');
 const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
-const requestAll = require('./utils/requestAll');
 
+const requestAll = require('./utils/requestAll');
 const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
