@@ -44,6 +44,7 @@ const SWAGGER_RESPONSE_KEY = /^([0-9]{3})$|^(default)$/;
 const NFT_ID = /^\b(?:[A-Fa-f0-9]){32}\b$/;
 const NFT_COLLECTION_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const NFT_OWNER = /^(lsk[a-hjkm-z2-9]{38})$|^(?:\b[a-fA-F0-9]{8}\b)$/;
+const NFT_SUPPORTED_COLLECTION_IDS = /^[a-fA-F0-9]{8}|\*$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -77,4 +78,5 @@ module.exports = {
 	NFT_ID,
 	NFT_COLLECTION_ID,
 	NFT_OWNER,
+	NFT_SUPPORTED_COLLECTION_IDS,
 };
