@@ -160,12 +160,14 @@ const indexNFTSubstore = async (nftSubstoreLength, dbTrx) => {
 
 const cacheSupportedNFTs = async (supportedNFTsSubstoreLength) => {
 	if (supportedNFTsSubstoreLength > 0 && !supportedNFTs) {
-		supportedNFTs = (await requestAll(
+		const response = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
-			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.NFT_SUB_STORE },
+			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.SUPPORTED_NFT },
 			supportedNFTsSubstoreLength,
-		)).supportedNFTsSubstore;
+		);
+
+		supportedNFTs = response[MODULE_SUB_STORE.NFT.SUPPORTED_NFT];
 	}
 };
 
