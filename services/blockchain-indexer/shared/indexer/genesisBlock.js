@@ -31,10 +31,14 @@ const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const commissionsTableSchema = require('../database/schema/commissions');
+const nftTableSchema = require('../database/schema/nft');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
+const getNFTTable = () => getTableInstance(nftTableSchema, MYSQL_ENDPOINT);
+
+let supportedNFTs;
 
 const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector(
@@ -133,9 +137,56 @@ const indexPosModuleAssets = async (dbTrx) => {
 	await indexPosStakesInfo(numStakers, dbTrx);
 };
 
+const indexNFTSubstore = async (nftSubstoreLength, dbTrx) => {
+	const nftTable = await getNFTTable();
+
+	if (nftSubstoreLength > 0) {
+		const response = await requestAll(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.NFT_SUB_STORE },
+			nftSubstoreLength,
+		);
+		const nftSubstore = response[MODULE_SUB_STORE.NFT.NFT_SUB_STORE];
+
+		const nftEntries = nftSubstore.map(nftInfo => ({
+			nftID: nftInfo.nftID,
+			owner: nftInfo.owner,
+		}));
+
+		await nftTable.upsert(nftEntries, dbTrx);
+	}
+};
+
+const cacheSupportedNFTs = async (supportedNFTsSubstoreLength) => {
+	if (supportedNFTsSubstoreLength > 0 && !supportedNFTs) {
+		const response = await requestAll(
+			requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.SUPPORTED_NFT },
+			supportedNFTsSubstoreLength,
+		);
+
+		supportedNFTs = response[MODULE_SUB_STORE.NFT.SUPPORTED_NFT];
+	}
+};
+
+const indexNFTModuleAssets = async (dbTrx) => {
+	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.NFT });
+	/* eslint-disable max-len */
+	const nftSubstoreLength = genesisBlockAssetsLength[MODULE.NFT][MODULE_SUB_STORE.NFT.NFT_SUB_STORE];
+	const supportedNFTsSubstoreLength = genesisBlockAssetsLength[MODULE.NFT][MODULE_SUB_STORE.NFT.SUPPORTED_NFT];
+	/* eslint-enable max-len */
+
+	await indexNFTSubstore(nftSubstoreLength, dbTrx);
+	// TODO: Remove cache once method to fetch supported NFTs exposed from SDK
+	await cacheSupportedNFTs(supportedNFTsSubstoreLength);
+};
+
 const indexGenesisBlockAssets = async (dbTrx) => {
 	await indexTokenModuleAssets(dbTrx);
 	await indexPosModuleAssets(dbTrx);
+	await indexNFTModuleAssets(dbTrx);
 };
 
 module.exports = {

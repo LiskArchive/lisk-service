@@ -121,6 +121,7 @@ const MODULE = Object.freeze({
 	REWARD: 'reward',
 	TOKEN: 'token',
 	INTEROPERABILITY: 'interoperability',
+	NFT: 'nft',
 });
 
 const MODULE_SUB_STORE = Object.freeze({
@@ -130,6 +131,10 @@ const MODULE_SUB_STORE = Object.freeze({
 	POS: {
 		STAKERS: 'stakers',
 		VALIDATORS: 'validators',
+	},
+	NFT: {
+		NFT_SUB_STORE: 'NFTSubstore',
+		SUPPORTED_NFT: 'supportedNFTsSubstore',
 	},
 });
 
