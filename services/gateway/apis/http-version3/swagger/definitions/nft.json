@@ -124,5 +124,40 @@
                 "type": "object"
             }
         }
+    },
+    "nftSupportedWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "NFT module supported collection IDs information.",
+                "type": "object",
+                "required": [
+                    "isSupportAllNFTs",
+                    "exactCollectionIDs"
+                ],
+                "properties": {
+                    "isSupportAllNFTs": {
+                        "type": "boolean",
+                        "example": "true",
+                        "description": "A boolean indicating if all NFTs are supported by the application."
+                    },
+                    "exactCollectionIDs": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "*",
+                            "description": "List of NFT collection IDs supported by the application."
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "type": "object"
+            }
+        }
     }
 }

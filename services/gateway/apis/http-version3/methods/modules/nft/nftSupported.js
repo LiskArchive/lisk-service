@@ -20,7 +20,7 @@ const { response, getSwaggerDescription } = require('../../../../../shared/utils
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: 'nft/supported',
+	swaggerApiPath: '/nft/supported',
 	rpcMethod: 'get.nft.supported',
 	tags: ['NFT'],
 	get schema() {
