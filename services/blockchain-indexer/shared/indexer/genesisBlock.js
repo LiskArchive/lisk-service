@@ -162,7 +162,7 @@ const cacheSupportedNFTs = async (supportedNFTsSubstoreLength) => {
 		supportedNFTs = (await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
-			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.NFT_SUB_STORE },
+			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.SUPPORTED_NFT },
 			supportedNFTsSubstoreLength,
 		)).supportedNFTsSubstore;
 	}

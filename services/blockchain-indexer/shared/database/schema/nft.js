@@ -17,8 +17,8 @@ module.exports = {
 	tableName: 'nft',
 	primaryKey: 'nftID',
 	schema: {
-		nftID: { type: 'string' },
-		owner: { type: 'string' },
+		nftID: { type: 'string', null: false },
+		owner: { type: 'string', null: false },
 	},
 	indexes: {
 		owner: { type: 'key' },
