@@ -56,7 +56,7 @@ describe('getNFTSupported', () => {
 		});
 	});
 
-	it("should return isSupportAllNFTs:true when connector does not return '*' in collectionIDs", async () => {
+	it("should return isSupportAllNFTs:false when connector does not return '*' in collectionIDs", async () => {
 		// Mock dependencies
 		jest.mock(mockedNFTSupportedFilePath, () => {
 			const actual = jest.requireActual(mockedNFTSupportedFilePath);

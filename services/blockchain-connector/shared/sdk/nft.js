@@ -22,7 +22,7 @@ const logger = Logger();
 
 let moduleConstants;
 
-let supportedCollectionIDInfo;
+let supportedCollectionIDsInfo;
 
 const getNFTConstants = async () => {
 	try {
@@ -41,42 +41,42 @@ const getNFTConstants = async () => {
 	}
 };
 
-// TODO: Remove lint suppression once sdk endpoint is available:
+// TODO: Remove lint suppression once sdk endpoint is available
 // eslint-disable-next-line no-unused-vars
-const updateCollectionIds = async (params) => {
+const updateCollectionIDs = async (params) => {
 	try {
 		// TODO: Invoke sdk endpoint once available
 		// moduleConstants = await invokeEndpoint('nft_getCollectionIDs',{ chainID: params.chainID });
-		supportedCollectionIDInfo = { collectionIDs: ['*'] };
+		supportedCollectionIDsInfo = { collectionIDs: ['*'] };
 
-		return supportedCollectionIDInfo;
+		return supportedCollectionIDsInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getCollectionIDs\'.');
+			throw new TimeoutException('Request timed out when calling \'updateCollectionIDs\'.');
 		}
 		logger.warn(`Error returned when invoking 'nft_getCollectionIDs'.\n${err.stack}`);
 		throw err;
 	}
 };
 
-const getCollectionIDs = async () => supportedCollectionIDInfo;
+const getCollectionIDs = async () => supportedCollectionIDsInfo;
 
 const updateCollectionIDsOnBlockChange = async () => {
 	const { chainID } = await getNetworkStatus();
 
-	const updateCollectionIdsListener = async () => {
+	const updateCollectionIDsListener = async () => {
 		try {
-			await updateCollectionIds({ chainID });
+			await updateCollectionIDs({ chainID });
 		} catch (err) {
 			logger.error(`Error occurred when caching token information:\n${err.stack}`);
 		}
 	};
 
 	// Call once to set initial values
-	await updateCollectionIdsListener();
+	await updateCollectionIDsListener();
 
-	Signals.get('chain_newBlock').add(updateCollectionIdsListener);
-	Signals.get('chain_deleteBlock').add(updateCollectionIdsListener);
+	Signals.get('chain_newBlock').add(updateCollectionIDsListener);
+	Signals.get('chain_deleteBlock').add(updateCollectionIDsListener);
 };
 
 module.exports = {
