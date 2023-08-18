@@ -68,7 +68,8 @@ const updateCollectionIDsOnBlockChange = async () => {
 		try {
 			await updateCollectionIDs({ chainID });
 		} catch (err) {
-			logger.error(`Error occurred when caching token information:\n${err.stack}`);
+			logger.error(`Caching supported NFT information failed due to: ${err.message}.`);
+			logger.debug(err.stack);
 		}
 	};
 

@@ -27,12 +27,12 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/nft/supported`;
 
 describe('Test NFT Supported API', () => {
-	it('should return NFT module supported collection ids information', async () => {
+	it('should return NFT module supported collection IDs information', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(nftSupportedSchema);
 	});
 
-	it('params not supported -> 400 BAD_REQUEST', async () => {
+	it('should return 400 Bad Request with unsupported request params', async () => {
 		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

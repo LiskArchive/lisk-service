@@ -62,6 +62,7 @@ const {
 const {
 	getNFTs,
 	getNFTConstants,
+	getNFTSupported,
 } = require('./nft');
 
 const {
@@ -76,10 +77,6 @@ const {
 	getPosUnlocks,
 	getPosConstants,
 } = require('./pos');
-
-const {
-	getNFTSupported,
-} = require('./nft');
 
 const {
 	getDefaultRewardAtHeight,

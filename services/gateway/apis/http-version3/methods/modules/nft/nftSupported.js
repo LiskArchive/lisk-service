@@ -27,14 +27,14 @@ module.exports = {
 		const nftSupportedSchema = {};
 		nftSupportedSchema[this.swaggerApiPath] = { get: {} };
 		nftSupportedSchema[this.swaggerApiPath].get.tags = this.tags;
-		nftSupportedSchema[this.swaggerApiPath].get.summary = 'Requests NFT Module supported collection IDs information.';
+		nftSupportedSchema[this.swaggerApiPath].get.summary = 'Requests NFT module supported collection IDs information.';
 		nftSupportedSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Requests supported collection IDs information for the NFT Module.',
 		});
 		nftSupportedSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns supported collection IDs information for the NFT Modulee.',
+				description: 'Returns supported collection IDs information for the NFT module.',
 				schema: {
 					$ref: '#/definitions/nftSupportedWithEnvelope',
 				},
