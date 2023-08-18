@@ -2117,6 +2117,49 @@ https://service.lisk.com/api/v3/nft
 ```
 
 
+
+### NFT supported
+
+Retrieves supported collection IDs information from the NFT module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/nft/supported`
+- RPC `get.nft.supported`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": {
+    "isSupportAllNFTs": true,
+    "exactCollectionIDs": [
+      "*"
+    ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/nft/supported
+```
+
 ## Legacy
 
 ### Legacy Account Details
