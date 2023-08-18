@@ -19,9 +19,11 @@ module.exports = {
 	schema: {
 		nftID: { type: 'string' },
 		owner: { type: 'string' },
+		escrowChainID: { type: 'string' },
 	},
 	indexes: {
 		owner: { type: 'key' },
+		escrowChainID: { type: 'key' },
 	},
 	purge: {},
 };

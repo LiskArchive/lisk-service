@@ -141,12 +141,13 @@ const indexNFTSubstore = async (nftSubstoreLength, dbTrx) => {
 	const nftTable = await getNFTTable();
 
 	if (nftSubstoreLength > 0) {
-		const nftSubstore = (await requestAll(
+		const response = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
 			{ module: MODULE.NFT, subStore: MODULE_SUB_STORE.NFT.NFT_SUB_STORE },
 			nftSubstoreLength,
-		)).NFTSubstore;
+		);
+		const nftSubstore = response[MODULE_SUB_STORE.NFT.NFT_SUB_STORE];
 
 		const nftEntries = nftSubstore.map(nftInfo => ({
 			nftID: nftInfo.nftID,
@@ -176,7 +177,7 @@ const indexNFTModuleAssets = async (dbTrx) => {
 	/* eslint-enable max-len */
 
 	await indexNFTSubstore(nftSubstoreLength, dbTrx);
-	// TODO: Remove cache once method to fetch sdupported NFTs exposed from SDK
+	// TODO: Remove cache once method to fetch supported NFTs exposed from SDK
 	await cacheSupportedNFTs(supportedNFTsSubstoreLength);
 };
 
