@@ -139,6 +139,7 @@ const indexPosModuleAssets = async (dbTrx) => {
 
 const indexNFTSubstore = async (nftSubstoreLength, dbTrx) => {
 	const nftTable = await getNFTTable();
+
 	if (nftSubstoreLength > 0) {
 		const nftSubstore = (await requestAll(
 			requestConnector,
@@ -169,10 +170,13 @@ const cacheSupportedNFTs = async (supportedNFTsSubstoreLength) => {
 
 const indexNFTModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.NFT });
+	/* eslint-disable max-len */
 	const nftSubstoreLength = genesisBlockAssetsLength[MODULE.NFT][MODULE_SUB_STORE.NFT.NFT_SUB_STORE];
 	const supportedNFTsSubstoreLength = genesisBlockAssetsLength[MODULE.NFT][MODULE_SUB_STORE.NFT.SUPPORTED_NFT];
+	/* eslint-enable max-len */
 
 	await indexNFTSubstore(nftSubstoreLength, dbTrx);
+	// TODO: Remove cache once method to fetch sdupported NFTs exposed from SDK
 	await cacheSupportedNFTs(supportedNFTsSubstoreLength);
 };
 
