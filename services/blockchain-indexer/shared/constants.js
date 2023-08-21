@@ -188,6 +188,9 @@ const TRANSACTION_VERIFY_RESULT = {
 	VALID: 1,
 };
 
+const PATTERN_ANY_NFT_COLLECTION_ID = '*';
+const PATTERN_CHAIN_ANY_NFT_COLLECTION_ID = '********';
+
 module.exports = {
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -218,4 +221,6 @@ module.exports = {
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
+	PATTERN_ANY_NFT_COLLECTION_ID,
+	PATTERN_CHAIN_ANY_NFT_COLLECTION_ID,
 };

@@ -15,7 +15,7 @@
  */
 const mockedNFTSupportedFilePath = `${__dirname}/../../../../../../shared/utils/request`;
 
-describe('getNFTSupported', () => {
+describe('getSupportedNFTs', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		jest.resetModules();
@@ -31,8 +31,8 @@ describe('getNFTSupported', () => {
 			};
 		});
 
-		const { getNFTSupported } = require('../../../../../../shared/dataService/business/nft');
-		const response = await getNFTSupported();
+		const { getSupportedNFTs } = require('../../../../../../shared/dataService/business/nft');
+		const response = await getSupportedNFTs();
 		expect(response).toEqual({
 			data: {
 				isSupportAllNFTs: true,
@@ -53,8 +53,8 @@ describe('getNFTSupported', () => {
 			};
 		});
 
-		const { getNFTSupported } = require('../../../../../../shared/dataService/business/nft');
-		const response = await getNFTSupported();
+		const { getSupportedNFTs } = require('../../../../../../shared/dataService/business/nft');
+		const response = await getSupportedNFTs();
 		expect(response).toEqual({
 			data: {
 				isSupportAllNFTs: false,
@@ -75,7 +75,7 @@ describe('getNFTSupported', () => {
 			};
 		});
 
-		const { getNFTSupported } = require('../../../../../../shared/dataService/business/nft');
-		expect(getNFTSupported()).rejects.toThrow();
+		const { getSupportedNFTs } = require('../../../../../../shared/dataService/business/nft');
+		expect(getSupportedNFTs()).rejects.toThrow();
 	});
 });

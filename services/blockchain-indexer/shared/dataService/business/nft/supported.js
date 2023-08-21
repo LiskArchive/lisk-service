@@ -14,17 +14,19 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const { LENGTH_CHAIN_ID } = require('../../../constants');
+
+const {
+	LENGTH_CHAIN_ID,
+	PATTERN_ANY_NFT_COLLECTION_ID,
+	PATTERN_CHAIN_ANY_NFT_COLLECTION_ID,
+} = require('../../../constants');
 const { requestConnector } = require('../../../utils/request');
 
 const logger = Logger();
 
-const PATTERN_SUPPORT_ALL_NFT_COLLECTIONS = '*';
-const PATTERN_SUPPORT_ALL_COLLECTION_IDS = '********';
-
 let nftSupportedResponse;
 
-const getNFTSupported = async () => {
+const getSupportedNFTs = async () => {
 	// Return response if already cached
 	if (nftSupportedResponse) return nftSupportedResponse;
 
@@ -41,9 +43,11 @@ const getNFTSupported = async () => {
 		const collectionIDs = await requestConnector('getSupportedNFTs');
 		collectionIDs.forEach(
 			collectionID => {
-				if (collectionID === PATTERN_SUPPORT_ALL_NFT_COLLECTIONS) {
+				if (collectionID === PATTERN_ANY_NFT_COLLECTION_ID) {
 					nftSupportedResponse.data.isSupportAllNFTs = true;
-				} else if (collectionID.substring(LENGTH_CHAIN_ID) === PATTERN_SUPPORT_ALL_COLLECTION_IDS) {
+				} else if (
+					collectionID.substring(LENGTH_CHAIN_ID) === PATTERN_CHAIN_ANY_NFT_COLLECTION_ID
+				) {
 					nftSupportedResponse.data.patternCollectionIDs.push(collectionID);
 				} else {
 					nftSupportedResponse.data.exactCollectionIDs.push(collectionID);
@@ -61,5 +65,5 @@ const getNFTSupported = async () => {
 };
 
 module.exports = {
-	getNFTSupported,
+	getSupportedNFTs,
 };

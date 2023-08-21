@@ -15,8 +15,8 @@
  */
 const business = require('../business');
 
-const getNFTSupported = async () => business.getNFTSupported();
+const getSupportedNFTs = async () => business.getSupportedNFTs();
 
 module.exports = {
-	getNFTSupported,
+	getSupportedNFTs,
 };

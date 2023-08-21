@@ -109,7 +109,7 @@ const { invokeEndpoint } = require('./invoke');
 
 const {
 	getNFTConstants,
-	getNFTSupported,
+	getSupportedNFTs,
 } = require('./nft');
 
 module.exports = {
@@ -216,5 +216,5 @@ module.exports = {
 
 	// NFT
 	getNFTConstants,
-	getNFTSupported,
+	getSupportedNFTs,
 };

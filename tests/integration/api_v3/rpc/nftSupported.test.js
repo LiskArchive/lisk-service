@@ -25,11 +25,11 @@ const { nftSupportedSchema } = require('../../../schemas/api_v3/nftSupported.sch
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getNFTSupported = async (params) => request(wsRpcUrl, 'get.nft.supported', params);
+const getSupportedNFTs = async (params) => request(wsRpcUrl, 'get.nft.supported', params);
 
 describe('get.nft.supported', () => {
 	it('should return NFT module supported collection IDs information', async () => {
-		const response = await getNFTSupported();
+		const response = await getSupportedNFTs();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
 		const { result } = response;
@@ -37,7 +37,7 @@ describe('get.nft.supported', () => {
 	});
 
 	it('should return -32602 INVALID_PARAMS with unsupported request params', async () => {
-		const response = await getNFTSupported(
+		const response = await getSupportedNFTs(
 			{ someparam: 'not_supported' },
 		).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
