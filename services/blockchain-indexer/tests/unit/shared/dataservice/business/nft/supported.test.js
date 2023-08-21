@@ -50,7 +50,7 @@ describe('getNFTSupported', () => {
 		expect(response).toEqual({
 			data: {
 				isSupportAllNFTs: true,
-				exactCollectionIDs: ['*'],
+				exactCollectionIDs: [],
 			},
 			meta: {},
 		});

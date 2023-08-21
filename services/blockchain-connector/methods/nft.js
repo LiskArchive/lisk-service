@@ -15,7 +15,7 @@
  */
 const {
 	getNFTConstants,
-	getCollectionIDs,
+	getSupportedNFTs,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -25,8 +25,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getCollectionIDs',
-		controller: async () => getCollectionIDs(),
+		name: 'getSupportedNFTs',
+		controller: async () => getSupportedNFTs(),
 		params: {},
 	},
 ];

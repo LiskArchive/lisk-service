@@ -13,16 +13,14 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const { Exceptions: { TimeoutException }, Logger, Signals } = require('lisk-service-framework');
+const { Exceptions: { TimeoutException }, Logger } = require('lisk-service-framework');
 const { timeoutMessage } = require('./client');
-
-const { getNetworkStatus } = require('./network');
 
 const logger = Logger();
 
 let moduleConstants;
 
-let supportedCollectionIDsInfo;
+let supportedNFTsInfo;
 
 const getNFTConstants = async () => {
 	try {
@@ -41,47 +39,25 @@ const getNFTConstants = async () => {
 	}
 };
 
-// TODO: Remove lint suppression once sdk endpoint is available
-// eslint-disable-next-line no-unused-vars
-const updateCollectionIDs = async (params) => {
+const getSupportedNFTs = async () => {
 	try {
-		// TODO: Invoke sdk endpoint once available
-		// moduleConstants = await invokeEndpoint('nft_getCollectionIDs',{ chainID: params.chainID });
-		supportedCollectionIDsInfo = { collectionIDs: ['*'] };
+		if (!supportedNFTsInfo) {
+			// TODO: Invoke SDK endpoint once available
+			// moduleConstants = await invokeEndpoint('nft_getSupportedNFTs');
+			supportedNFTsInfo = ['00000000********', '00000001********', '0000000210000000', '0000000220000000'];
+		}
 
-		return supportedCollectionIDsInfo;
+		return supportedNFTsInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'updateCollectionIDs\'.');
+			throw new TimeoutException('Request timed out when calling \'getSupportedNFTs\'.');
 		}
-		logger.warn(`Error returned when invoking 'nft_getCollectionIDs'.\n${err.stack}`);
+		logger.warn(`Error returned when invoking 'nft_getSupportedNFTs'.\n${err.stack}`);
 		throw err;
 	}
 };
 
-const getCollectionIDs = async () => supportedCollectionIDsInfo;
-
-const updateCollectionIDsOnBlockChange = async () => {
-	const { chainID } = await getNetworkStatus();
-
-	const updateCollectionIDsListener = async () => {
-		try {
-			await updateCollectionIDs({ chainID });
-		} catch (err) {
-			logger.error(`Caching supported NFT information failed due to: ${err.message}.`);
-			logger.debug(err.stack);
-		}
-	};
-
-	// Call once to set initial values
-	await updateCollectionIDsListener();
-
-	Signals.get('chain_newBlock').add(updateCollectionIDsListener);
-	Signals.get('chain_deleteBlock').add(updateCollectionIDsListener);
-};
-
 module.exports = {
 	getNFTConstants,
-	getCollectionIDs,
-	updateCollectionIDsOnBlockChange,
+	getSupportedNFTs,
 };

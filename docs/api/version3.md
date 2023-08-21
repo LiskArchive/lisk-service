@@ -2136,9 +2136,14 @@ No parameters are required.
 ```jsonc
 {
   "data": {
-    "isSupportAllNFTs": true,
+    "isSupportAllNFTs": false,
+    "patternCollectionIDs": [
+        "00000000********",
+        "00000001********"
+    ],
     "exactCollectionIDs": [
-      "*"
+      "0000000210000000",
+      "0000000220000000"
     ]
   },
   "meta": {}

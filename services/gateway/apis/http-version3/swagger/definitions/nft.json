@@ -142,16 +142,24 @@
                 "properties": {
                     "isSupportAllNFTs": {
                         "type": "boolean",
-                        "example": "true",
+                        "example": "false",
                         "description": "A boolean indicating if all NFTs are supported by the application."
+                    },
+                    "patternCollectionIDs": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "description": "List of patterns representing chains whose all collection IDs are supported by the application."
+                        },
+                        "example": "[00000000********, 00000001********]"
                     },
                     "exactCollectionIDs": {
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "example": "*",
                             "description": "List of NFT collection IDs supported by the application."
-                        }
+                        },
+                        "example": "[0000000210000000, 0000000220000000]"
                     }
                 }
             },

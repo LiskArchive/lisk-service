@@ -16,4 +16,5 @@
 module.exports = {
 	isSupportAllNFTs: '=,boolean',
 	exactCollectionIDs: 'data.exactCollectionIDs',
+	patternCollectionIDs: 'data.patternCollectionIDs',
 };

@@ -159,9 +159,10 @@ module.exports = {
 	getTokenConstants,
 	getTokenTopBalances,
 
-	// NFTs
+	// NFT
 	getNFTs,
 	getNFTConstants,
+	getNFTSupported,
 
 	// PoS
 	getPosValidators,
@@ -174,9 +175,6 @@ module.exports = {
 	getPosClaimableRewards,
 	getPosUnlocks,
 	getPosConstants,
-
-	// NFT
-	getNFTSupported,
 
 	// Schemas
 	getSchemas,

@@ -119,8 +119,7 @@ const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
 const {
 	getNFTConstants,
-	getCollectionIDs,
-	updateCollectionIDsOnBlockChange,
+	getSupportedNFTs,
 } = require('./nft');
 
 const init = async () => {
@@ -129,7 +128,6 @@ const init = async () => {
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 	await updateTokenInfo();
-	await updateCollectionIDsOnBlockChange();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
@@ -251,5 +249,5 @@ module.exports = {
 
 	// NFT
 	getNFTConstants,
-	getCollectionIDs,
+	getSupportedNFTs,
 };
