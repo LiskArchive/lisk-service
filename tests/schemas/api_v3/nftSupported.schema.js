@@ -19,9 +19,14 @@ const regex = require('./regex');
 
 const nftSupportedDataSchema = {
 	isSupportAllNFTs: Joi.boolean().required(),
+	patternCollectionIDs: Joi
+		.array()
+		.items(Joi.string().pattern(regex.NFT_PATTERN_COLLECTION_IDS).required())
+		.min(0)
+		.required(),
 	exactCollectionIDs: Joi
 		.array()
-		.items(Joi.string().pattern(regex.NFT_SUPPORTED_COLLECTION_IDS).required())
+		.items(Joi.string().pattern(regex.NFT_EXACT_COLLECTION_IDS).required())
 		.min(0)
 		.required(),
 };
