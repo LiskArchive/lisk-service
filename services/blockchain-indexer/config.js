@@ -35,16 +35,13 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
  * External endpoints
  */
 config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://127.0.0.1:6379/2';
-config.endpoints.volatileRedis =
-	process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://127.0.0.1:6379/3';
-config.endpoints.messageQueue =
-	process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://127.0.0.1:6379/4';
+config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://127.0.0.1:6379/3';
+config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://127.0.0.1:6379/4';
 // Primary database. Used for both read-write operations.
-config.endpoints.mysql =
-	process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
+config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
 // DB replicas against the primary. Used for read-only operations.
-config.endpoints.mysqlReplica =
-	process.env.SERVICE_INDEXER_MYSQL_READ_REPLICA || config.endpoints.mysql;
+config.endpoints.mysqlReplica = process.env.SERVICE_INDEXER_MYSQL_READ_REPLICA
+	|| config.endpoints.mysql;
 config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL; // For custom deployments
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 
