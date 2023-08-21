@@ -137,6 +137,7 @@
                 "type": "object",
                 "required": [
                     "isSupportAllNFTs",
+                    "patternCollectionIDs",
                     "exactCollectionIDs"
                 ],
                 "properties": {
@@ -149,7 +150,7 @@
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "description": "List of patterns representing chains whose all collection IDs are supported by the application."
+                            "description": "A pattern representing chain IDs whose all collection IDs are supported by the application."
                         },
                         "example": "[00000000********, 00000001********]"
                     },

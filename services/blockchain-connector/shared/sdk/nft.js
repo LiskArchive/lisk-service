@@ -43,7 +43,7 @@ const getSupportedNFTs = async () => {
 	try {
 		if (!supportedNFTsInfo) {
 			// TODO: Invoke SDK endpoint once available. related SDK issue: https://github.com/LiskHQ/lisk-sdk/issues/8886
-			// moduleConstants = await invokeEndpoint('nft_getSupportedNFTs');
+			// supportedNFTsInfo = await invokeEndpoint('nft_getSupportedNFTs');
 			supportedNFTsInfo = ['00000000********', '00000001********', '0000000210000000', '0000000220000000'];
 		}
 
