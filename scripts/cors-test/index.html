@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<meta charset="utf-8" />
+		<title>cors-test</title>
+	</head>
 
-    <head>
-        <meta charset="utf-8"/>
-        <title>cors-test</title>
-    </head>
+	<script>
+		function send() {
+			const data = {
+				transaction:
+					'08021000180d2080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32270880c2d72f12144fd8cc4e27a3489b57ed986efe3d327d3de40d921a0a73656e6420746f6b656e3a4069242925e0e377906364fe6c2eed67f419dfc1a757f73e848ff2f1ff97477f90263487d20aedf538edffe2ce5b3e7601a8528e5cd63845272e9d79c294a6590a',
+			};
+			const http = new XMLHttpRequest();
+			// http.open('POST', "http://127.0.0.1:9901/api/v3/transactions");
+			http.open('POST', 'http://devnet-service.liskdev.net:9901/api/v3/transactions');
+			http.setRequestHeader('Content-type', 'application/json');
+			http.setRequestHeader('Access-Control-Request-Method', 'POST');
+			http.setRequestHeader(
+				'Access-Control-Request-Headers',
+				'Content-Type, Access-Control-Max-Age',
+			);
+			http.setRequestHeader('Access-Control-Max-Age', '3600');
+			http.send(JSON.stringify(data));
+			http.onreadystatechange = function () {
+				if (http.readyState == 4) {
+					// && http.status == 200
+					console.log(http.responseText);
+				}
+			};
+			http.onload = function () {
+				console.log(http.responseText);
+			};
+		}
 
-    <script>
-        function send() {
-            const data = {"transaction":"08021000180d2080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32270880c2d72f12144fd8cc4e27a3489b57ed986efe3d327d3de40d921a0a73656e6420746f6b656e3a4069242925e0e377906364fe6c2eed67f419dfc1a757f73e848ff2f1ff97477f90263487d20aedf538edffe2ce5b3e7601a8528e5cd63845272e9d79c294a6590a"};
-            const http = new XMLHttpRequest();
-            // http.open('POST', "http://localhost:9901/api/v3/transactions");
-            http.open('POST', "http://service-v6.liskdev.net/api/v3/transactions");
-            http.setRequestHeader('Content-type', 'application/json');
-            http.setRequestHeader('Access-Control-Request-Method', 'POST');
-            http.setRequestHeader('Access-Control-Request-Headers', 'Content-Type, Access-Control-Max-Age');
-            http.setRequestHeader('Access-Control-Max-Age', '3600');
-            http.send(JSON.stringify(data));
-            http.onreadystatechange = function() {
-                if(http.readyState == 4) { // && http.status == 200
-                    console.log(http.responseText);
-                }
-            }
-            http.onload = function() {
-                console.log(http.responseText);
-            }
-        }
-
-        // Execute immediately
-        send();
-    </script>
-
+		// Execute immediately
+		send();
+	</script>
 </html>

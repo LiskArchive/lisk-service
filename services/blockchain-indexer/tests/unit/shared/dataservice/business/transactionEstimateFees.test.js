@@ -45,6 +45,8 @@ const {
 	mockInteroperabilityRegisterSidechainTxResult,
 	mockAuthAccountInfo,
 	mockAuthInfoForMultisigAccount,
+	mockRegisterValidatorTxrequestConnector,
+	mockRegisterValidatorTxResult,
 } = require('../../constants/transactionEstimateFees');
 
 jest.mock('lisk-service-framework', () => {
@@ -452,6 +454,25 @@ describe('Test transaction fees estimates', () => {
 			// Call the function
 			const result = await estimateTransactionFees(mockTransferCrossChainTxRequest);
 			expect(result).toEqual(mockTransferCrossChainTxResult);
+		});
+
+		it('should calculate transaction fees correctly for register validator transaction', async () => {
+			// Mock the return values of the functions
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
+			requestConnector
+				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValue({ validatorRegistrationFee: '1', minFee: '130000', size: 160 });
+			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
+			calcAdditionalFees.mockResolvedValue({});
+			calcMessageFee.mockResolvedValue({});
+			getPosConstants.mockResolvedValue(posConstants);
+
+			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
+
+			// Call the function
+			const result = await estimateTransactionFees(mockRegisterValidatorTxrequestConnector);
+			expect(result).toEqual(mockRegisterValidatorTxResult);
 		});
 
 		it('should throw if empty, undefined or null object is passed', async () => {

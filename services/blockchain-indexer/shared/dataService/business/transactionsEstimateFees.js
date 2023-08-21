@@ -284,8 +284,9 @@ const estimateTransactionFees = async params => {
 		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
 
 		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
-		const totalMessageFee = ccmByteFee
-			+ BigInt(additionalFees.params.messageFee.userAccountInitializationFee || 0);
+		const totalMessageFee = additionalFees.params.messageFee
+			? ccmByteFee + BigInt(additionalFees.params.messageFee.userAccountInitializationFee)
+			: ccmByteFee;
 
 		estimateTransactionFeesRes.data.transaction.params = {
 			messageFee: {
