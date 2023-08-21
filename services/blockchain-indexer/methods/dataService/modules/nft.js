@@ -16,6 +16,7 @@
 const {
 	getNFTs,
 	getNFTConstants,
+	getNFTHistory,
 } = require('../controllers/nft');
 
 module.exports = [
@@ -37,5 +38,15 @@ module.exports = [
 		name: 'nft.constants',
 		controller: getNFTConstants,
 		params: {},
+	},
+	{
+		name: 'nft.history',
+		controller: getNFTHistory,
+		params: {
+			nftID: { optional: false, type: 'string' },
+			type: { optional: false, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
 	},
 ];

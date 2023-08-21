@@ -55,7 +55,21 @@ const getNFTConstants = async () => {
 	return constants;
 };
 
+const getNFTHistory = async () => {
+	const history = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await dataService.getNFTHistory();
+	if (response.data) history.data = response.data;
+	if (response.meta) history.meta = response.meta;
+
+	return history;
+};
+
 module.exports = {
 	getNFTs,
 	getNFTConstants,
+	getNFTHistory,
 };
