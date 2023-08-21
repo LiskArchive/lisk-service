@@ -13,16 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const auth = require('./mappings/auth');
+const validator = require('../../mappings/validator');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.auth',
+	method: 'indexer.validator',
 	params: {
 		address: '=,string',
 	},
 	definition: {
-		data: auth,
+		data: validator,
 		meta: {
 			address: '=,string',
 			publicKey: '=,string',

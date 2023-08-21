@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posClaimableRewardsSource = require('../../../../../sources/version3/posClaimableRewards');
+const posClaimableRewardsSource = require('../../../../../sources/version3/modules/pos/posClaimableRewards');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');

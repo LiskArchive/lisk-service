@@ -13,20 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const validator = require('./mappings/validator');
+const validator = require('../../mappings/posValidator');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.validator',
+	method: 'indexer.pos.validators',
 	params: {
 		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
+		status: '=,string',
+		search: '=,string',
+		offset: '=,number',
+		limit: '=,number',
+		sort: '=,string',
 	},
 	definition: {
-		data: validator,
+		data: ['data', validator],
 		meta: {
-			address: '=,string',
-			publicKey: '=,string',
-			name: '=,string',
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
 		},
 	},
 };

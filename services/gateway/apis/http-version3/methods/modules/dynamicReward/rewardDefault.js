@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const rewardDefaultSource = require('../../../../../sources/version3/rewardDefault');
+const rewardDefaultSource = require('../../../../../sources/version3/modules/dynamicReward/rewardDefault');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { getSwaggerDescription, transformParams } = require('../../../../../shared/utils');
 

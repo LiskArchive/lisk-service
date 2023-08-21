@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,28 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posStake = require('./mappings/posStake');
+const meta = require('../../mappings/meta');
+const nft = require('../../mappings/nft');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.stakes',
+	method: 'indexer.nft',
 	params: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-		search: '=,string',
+		nftID: '=,string',
+		chainID: '=,string',
+		collectionID: '=,string',
+		index: '=,number',
+		owner: '=,string',
+		escrowChainID: '=,string',
+		limit: '=,number',
+		offset: '=,number',
 	},
 	definition: {
-		data: {
-			stakes: ['data.stakes', posStake],
-		},
-		meta: {
-			staker: {
-				address: '=,string',
-				publicKey: '=,string',
-				name: '=,string',
-			},
-			count: '=,number',
-		},
+		data: ['data', nft],
+		meta,
 	},
 };

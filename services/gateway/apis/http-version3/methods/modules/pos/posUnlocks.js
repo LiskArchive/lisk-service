@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posUnlocksSource = require('../../../../../sources/version3/posUnlocks');
+const posUnlocksSource = require('../../../../../sources/version3/modules/pos/posUnlocks');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');

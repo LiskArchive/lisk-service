@@ -13,25 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posUnlock = require('./mappings/posUnlock');
+const posConstants = require('../../mappings/posConstants');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.unlocks',
-	params: {
-		address: '=,string',
-		name: '=,string',
-		publicKey: '=,string',
-		isLocked: '=,boolean',
-		limit: '=,number',
-		offset: '=,number',
-	},
+	method: 'indexer.pos.constants',
+	params: {},
 	definition: {
-		data: posUnlock,
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
+		data: posConstants,
+		meta: {},
 	},
 };

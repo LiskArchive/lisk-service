@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const authSource = require('../../../../../sources/version3/auth');
+const authSource = require('../../../../../sources/version3/modules/auth/auth');
 const regex = require('../../../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 

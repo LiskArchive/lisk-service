@@ -13,14 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posConstants = require('./mappings/posConstants');
+const {
+	escrowedAmount,
+	supportedToken,
+	totalSupplyByToken,
+} = require('../../mappings/tokenSummary');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.constants',
-	params: {},
+	method: 'indexer.token.summary',
+	params: {
+		offset: '=,number',
+		limit: '=,number',
+	},
 	definition: {
-		data: posConstants,
+		data: {
+			escrowedAmounts: ['data.escrowedAmounts', escrowedAmount],
+			supportedTokens: supportedToken,
+			totalSupply: ['data.totalSupply', totalSupplyByToken],
+		},
 		meta: {},
 	},
 };

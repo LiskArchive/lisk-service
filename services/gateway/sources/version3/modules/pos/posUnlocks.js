@@ -13,21 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const token = require('./mappings/token');
+const posUnlock = require('../../mappings/posUnlock');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.token.balances',
+	method: 'indexer.pos.unlocks',
 	params: {
 		address: '=,string',
-		tokenID: '=,string',
-		offset: '=,number',
+		name: '=,string',
+		publicKey: '=,string',
+		isLocked: '=,boolean',
 		limit: '=,number',
+		offset: '=,number',
 	},
 	definition: {
-		data: ['data', token],
+		data: posUnlock,
 		meta: {
-			address: '=,string',
 			count: '=,number',
 			offset: '=,number',
 			total: '=,number',

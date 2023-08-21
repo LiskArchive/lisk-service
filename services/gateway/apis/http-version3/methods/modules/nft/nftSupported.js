@@ -14,7 +14,7 @@
  *
  */
 
-const nftSupportedSource = require('../../../../../sources/version3/nftSupported');
+const nftSupportedSource = require('../../../../../sources/version3/modules/nft/nftSupported');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { response, getSwaggerDescription } = require('../../../../../shared/utils');
 
