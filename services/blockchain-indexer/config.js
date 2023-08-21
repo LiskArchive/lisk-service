@@ -28,20 +28,23 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * External endpoints
  */
-config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://localhost:6379/2';
-config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://localhost:6379/3';
-config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
+config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://127.0.0.1:6379/2';
+config.endpoints.volatileRedis =
+	process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://127.0.0.1:6379/3';
+config.endpoints.messageQueue =
+	process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://127.0.0.1:6379/4';
 // Primary database. Used for both read-write operations.
-config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
+config.endpoints.mysql =
+	process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
 // DB replicas against the primary. Used for read-only operations.
-config.endpoints.mysqlReplica = process.env.SERVICE_INDEXER_MYSQL_READ_REPLICA
-	|| config.endpoints.mysql;
+config.endpoints.mysqlReplica =
+	process.env.SERVICE_INDEXER_MYSQL_READ_REPLICA || config.endpoints.mysql;
 config.endpoints.mainchainServiceUrl = process.env.MAINCHAIN_SERVICE_URL; // For custom deployments
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 
@@ -52,7 +55,7 @@ config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.li
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
@@ -119,8 +122,12 @@ config.queue = {
 };
 
 config.operations = {
-	isDataRetrievalModeEnabled: Boolean(String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false'), // Enabled by default
-	isIndexingModeEnabled: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
+	isDataRetrievalModeEnabled: Boolean(
+		String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false',
+	), // Enabled by default
+	isIndexingModeEnabled: Boolean(
+		String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false',
+	), // Enabled by default
 };
 
 config.networks = Object.freeze({
@@ -151,12 +158,16 @@ config.networks = Object.freeze({
 	],
 });
 
-config.db.isPersistEvents = Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true');
+config.db.isPersistEvents = Boolean(
+	String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true',
+);
 
 config.snapshot = {
 	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() === 'true'), // Disabled by default
 	url: process.env.INDEX_SNAPSHOT_URL,
-	allowInsecureHttp: Boolean(String(process.env.ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP).toLowerCase() === 'true'), // Disabled by default
+	allowInsecureHttp: Boolean(
+		String(process.env.ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP).toLowerCase() === 'true',
+	), // Disabled by default
 };
 
 config.job = {
