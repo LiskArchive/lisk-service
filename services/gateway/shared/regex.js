@@ -57,6 +57,7 @@ const EVENT_NAME = /^[\w!@$&. ]{1,32}$/;
 const NFT_ID = /^\b(?:[A-Fa-f0-9]){32}\b$/;
 const NFT_COLLECTION_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const NFT_OWNER = /^(lsk[a-hjkm-z2-9]{38})$|^(?:\b[a-fA-F0-9]{8}\b)$/;
+const TYPE = /^\b(?:transfer|attribute|,)\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -103,4 +104,5 @@ module.exports = {
 	NFT_ID,
 	NFT_COLLECTION_ID,
 	NFT_OWNER,
+	TYPE,
 };
