@@ -14,7 +14,6 @@
  *
  */
 const mockedNFTSupportedFilePath = `${__dirname}/../../../../../../shared/utils/request`;
-const mockedNetworkFilePath = `${__dirname}/../../../../../../shared/dataService/business/network`;
 
 describe('getNFTSupported', () => {
 	beforeEach(() => {
@@ -28,20 +27,7 @@ describe('getNFTSupported', () => {
 			const actual = jest.requireActual(mockedNFTSupportedFilePath);
 			return {
 				...actual,
-				requestConnector: async () => ({
-					collectionIDs: ['*'],
-				}),
-			};
-		});
-		jest.mock(mockedNetworkFilePath, () => {
-			const actual = jest.requireActual(mockedNetworkFilePath);
-			return {
-				...actual,
-				getNetworkStatus: async () => ({
-					data: {
-						chainID: '04000000',
-					},
-				}),
+				requestConnector: async () => ['*'],
 			};
 		});
 
@@ -50,6 +36,7 @@ describe('getNFTSupported', () => {
 		expect(response).toEqual({
 			data: {
 				isSupportAllNFTs: true,
+				patternCollectionIDs: [],
 				exactCollectionIDs: [],
 			},
 			meta: {},
@@ -62,20 +49,7 @@ describe('getNFTSupported', () => {
 			const actual = jest.requireActual(mockedNFTSupportedFilePath);
 			return {
 				...actual,
-				requestConnector: async () => ({
-					collectionIDs: ['10000000', '20000000'],
-				}),
-			};
-		});
-		jest.mock(mockedNetworkFilePath, () => {
-			const actual = jest.requireActual(mockedNetworkFilePath);
-			return {
-				...actual,
-				getNetworkStatus: async () => ({
-					data: {
-						chainID: '04000000',
-					},
-				}),
+				requestConnector: async () => ['00000000********', '00000001********', '0000000210000000', '0000000220000000'],
 			};
 		});
 
@@ -84,7 +58,8 @@ describe('getNFTSupported', () => {
 		expect(response).toEqual({
 			data: {
 				isSupportAllNFTs: false,
-				exactCollectionIDs: ['10000000', '20000000'],
+				patternCollectionIDs: ['00000000********', '00000001********'],
+				exactCollectionIDs: ['0000000210000000', '0000000220000000'],
 			},
 			meta: {},
 		});
@@ -97,17 +72,6 @@ describe('getNFTSupported', () => {
 			return {
 				...actual,
 				requestConnector: async () => null,
-			};
-		});
-		jest.mock(mockedNetworkFilePath, () => {
-			const actual = jest.requireActual(mockedNetworkFilePath);
-			return {
-				...actual,
-				getNetworkStatus: async () => ({
-					data: {
-						chainID: '04000000',
-					},
-				}),
 			};
 		});
 
