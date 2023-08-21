@@ -26,17 +26,21 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * External endpoints
  */
-config.endpoints.cache = process.env.SERVICE_FEE_ESTIMATOR_CACHE || 'redis://localhost:6379/1';
+config.endpoints.cache = process.env.SERVICE_FEE_ESTIMATOR_CACHE || 'redis://127.0.0.1:6379/1';
 
 config.feeEstimates = {
-	quickAlgorithmEnabled: Boolean(String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() !== 'false'),
-	fullAlgorithmEnabled: Boolean(String(process.env.ENABLE_FEE_ESTIMATOR_FULL).toLowerCase() === 'true'),
+	quickAlgorithmEnabled: Boolean(
+		String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() !== 'false',
+	),
+	fullAlgorithmEnabled: Boolean(
+		String(process.env.ENABLE_FEE_ESTIMATOR_FULL).toLowerCase() === 'true',
+	),
 	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
 	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),
 	medEstLowerPercentile: 25,
@@ -60,7 +64,7 @@ config.cacheKeys = Object.freeze({
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';

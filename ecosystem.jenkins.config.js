@@ -30,8 +30,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				PORT: 9901,
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/3',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://127.0.0.1:6379/3',
 				ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
 				ENABLE_WS_API: 'blockchain,rpc-v3',
 				GATEWAY_DEPENDENCIES: 'indexer,connector',
@@ -61,7 +61,7 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
 				SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				ENABLE_REBUILD_INDEX_AT_INIT: false,
 			},
@@ -80,8 +80,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				LISK_APP_WS: 'ws://localhost:7887',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				LISK_APP_WS: 'ws://127.0.0.1:7887',
 				GEOIP_JSON: 'https://geoip.lisk.com/json',
 				// USE_LISK_IPC_CLIENT: true,
 				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
@@ -102,10 +102,10 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_INDEXER_CACHE_REDIS: 'redis://localhost:6379/1',
-				SERVICE_INDEXER_REDIS_VOLATILE: 'redis://localhost:6379/2',
-				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_INDEXER_CACHE_REDIS: 'redis://127.0.0.1:6379/1',
+				SERVICE_INDEXER_REDIS_VOLATILE: 'redis://127.0.0.1:6379/2',
+				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
 				SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				ENABLE_DATA_RETRIEVAL_MODE: true,
 				ENABLE_INDEXING_MODE: true,
@@ -126,8 +126,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://localhost:6379/3',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
 			},
 		},
 		{
@@ -144,8 +144,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_FEE_ESTIMATOR_CACHE: 'redis://localhost:6379/1',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_FEE_ESTIMATOR_CACHE: 'redis://127.0.0.1:6379/1',
 				ENABLE_FEE_ESTIMATOR_QUICK: true,
 				ENABLE_FEE_ESTIMATOR_FULL: false,
 			},
@@ -164,8 +164,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_STATISTICS_REDIS: 'redis://localhost:6379/1',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_STATISTICS_REDIS: 'redis://127.0.0.1:6379/1',
 				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
 			},
@@ -183,8 +183,8 @@ module.exports = {
 			max_memory_restart: '300M',
 			autorestart: true,
 			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_MARKET_REDIS: 'redis://127.0.0.1:6379/2',
 				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
 				SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''

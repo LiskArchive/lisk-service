@@ -2,7 +2,7 @@
 :toc:
 
 == Access paths and compatibility
-The RPC WebSocket API can be accessed by the `ws://localhost:9901/rpc-v2`.
+The RPC WebSocket API can be accessed by the `ws://127.0.0.1:9901/rpc-v2`.
 
 === Access paths and compatibility
 The WebSocket API can be accessed by the `wss://service.lisk.com/rpc-v2`.
@@ -31,7 +31,7 @@ const request = async (endpoint, method, params) => new Promise(resolve => {
 });
 
 const wsRequest = async () => {
-  return await request('ws://localhost:9901/rpc', 'get.accounts', { "address": "lskzkfw7ofgp3uusknbetemrey4aeatgf2ntbhcds" });
+  return await request('ws://127.0.0.1:9901/rpc', 'get.accounts', { "address": "lskzkfw7ofgp3uusknbetemrey4aeatgf2ntbhcds" });
 };
 
 wsRequest().then(response => {

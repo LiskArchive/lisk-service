@@ -28,7 +28,7 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
@@ -40,12 +40,14 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json'
 /**
  * API Client related settings
  */
-config.isUseLiskIPCClient = Boolean(String(process.env.USE_LISK_IPC_CLIENT).toLowerCase() === 'true');
+config.isUseLiskIPCClient = Boolean(
+	String(process.env.USE_LISK_IPC_CLIENT).toLowerCase() === 'true',
+);
 config.liskAppDataPath = process.env.LISK_APP_DATA_PATH || '~/.lisk/lisk-core';
 
 /**
-  * Network-related settings
-  */
+ * Network-related settings
+ */
 config.constants.GENESIS_BLOCK_URL_DEFAULT = '';
 config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL
 	|| config.constants.GENESIS_BLOCK_URL_DEFAULT;
@@ -76,7 +78,7 @@ config.networks = {
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
@@ -86,13 +88,16 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
-config.enableTestingMode = Boolean(String(process.env.ENABLE_TESTING_MODE).toLowerCase() === 'true');
+config.enableTestingMode = Boolean(
+	String(process.env.ENABLE_TESTING_MODE).toLowerCase() === 'true',
+);
 
 config.cache = {
-	isBlockCachingEnabled: Boolean(String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false'), // Enabled by default
+	isBlockCachingEnabled: Boolean(
+		String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false',
+	), // Enabled by default
 	expiryInHours: process.env.EXPIRY_IN_HOURS || 12,
 	dbDataDir: 'data/db_cache',
-
 };
 
 config.job = {

@@ -13,11 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const {
+	Exceptions: { TimeoutException },
+} = require('lisk-service-framework');
 const { invokeEndpoint } = require('./client');
 
 const { engineEndpoints } = require('./constants/endpoints');
-const { ccmSchema } = require('./constants/schemas');
 
 // Constants
 const timeoutMessage = 'Response not received in';
@@ -34,13 +35,12 @@ const getSchemas = async () => {
 	try {
 		if (!schema) {
 			schema = await invokeEndpoint('system_getSchema');
-			// TODO: Assign ccm schema, remove once this issue is closed https://github.com/LiskHQ/lisk-sdk/issues/8375
-			schema.ccm = ccmSchema;
+			schema.ccm = (await invokeEndpoint('interoperability_getCCMSchema')).schema;
 		}
 		return schema;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSchema\'.');
+			throw new TimeoutException("Request timed out when calling 'getSchema'.");
 		}
 		throw err;
 	}
@@ -49,12 +49,12 @@ const getSchemas = async () => {
 const getRegisteredEndpoints = async () => {
 	try {
 		if (!registeredEndpoints) {
-			registeredEndpoints = await invokeEndpoint('app_getRegisteredActions');
+			registeredEndpoints = await invokeEndpoint('app_getRegisteredEndpoints');
 		}
 		return registeredEndpoints;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredEndpoints\'.');
+			throw new TimeoutException("Request timed out when calling 'getRegisteredEndpoints'.");
 		}
 		throw err;
 	}
@@ -68,7 +68,7 @@ const getRegisteredEvents = async () => {
 		return registeredEvents;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredEvents\'.');
+			throw new TimeoutException("Request timed out when calling 'getRegisteredEvents'.");
 		}
 		throw err;
 	}
@@ -82,7 +82,7 @@ const getNodeInfo = async (isForceUpdate = false) => {
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'.');
+			throw new TimeoutException("Request timed out when calling 'getNodeInfo'.");
 		}
 		throw err;
 	}
@@ -96,7 +96,7 @@ const getSystemMetadata = async () => {
 		return metadata;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSystemMetadata\'.');
+			throw new TimeoutException("Request timed out when calling 'getSystemMetadata'.");
 		}
 		throw err;
 	}
@@ -111,7 +111,7 @@ const getRegisteredModules = async () => {
 		return registeredModules;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredModules\'.');
+			throw new TimeoutException("Request timed out when calling 'getRegisteredModules'.");
 		}
 		throw err;
 	}
