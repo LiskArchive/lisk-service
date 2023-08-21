@@ -12,7 +12,7 @@ When using the Docker setup, the default values specified in the [`docker/exampl
 ```bash
 # Must be identical for all microservices
 # Make sure that all microservices are able to connect with the common Redis
-SERVICE_BROKER=redis://localhost:6379/0
+SERVICE_BROKER=redis://127.0.0.1:6379/0
 
 # Number of seconds to wait before returning a RequestTimeout error when it takes too long to return a value. To disable use 0.
 SERVICE_BROKER_TIMEOUT=10
@@ -23,7 +23,7 @@ SERVICE_BROKER_TIMEOUT=10
 SERVICE_LOG_STDOUT=true   # Asynchronous console output (non-blocking, preferred)
 SERVICE_LOG_CONSOLE=false # console.log() output, only for debug
 SERVICE_LOG_FILE=false    # file path ex. ./logs/service.log
-SERVICE_LOG_GELF=false    # GELF output for remote logging ex. Graylog localhost:12201/udp
+SERVICE_LOG_GELF=false    # GELF output for remote logging ex. Graylog 127.0.0.1:12201/udp
 SERVICE_LOG_LEVEL=info    # Default log level
 DOCKER_HOST=local         # Custom field for logger. This will result in all log messages having the custom field _docker_host set to 'local'.
 ```

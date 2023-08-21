@@ -26,7 +26,7 @@ LoggerConfig(loggerConf);
 
 const app = Microservice({
 	name: 'test-service',
-	transporter: 'redis://localhost:6379/0',
+	transporter: 'redis://127.0.0.1:6379/0',
 	logger: loggerConf,
 });
 

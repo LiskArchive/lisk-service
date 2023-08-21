@@ -26,13 +26,13 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * External endpoints
  */
-config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://localhost:6379/2';
+config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://127.0.0.1:6379/2';
 // Primary database. Used for both read-write operations.
 config.endpoints.mysql = process.env.SERVICE_STATISTICS_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
 // DB replicas against the primary. Used for read-only operations.
@@ -50,7 +50,7 @@ config.transactionStatistics = {
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
@@ -84,7 +84,6 @@ config.networks = [
 		networkName: 'testnet',
 		chainID: '01000000',
 		serviceUrl: 'https://testnet-service.lisk.com',
-
 	},
 	{
 		networkName: 'betanet',

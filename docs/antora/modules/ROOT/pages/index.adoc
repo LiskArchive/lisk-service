@@ -164,7 +164,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 // == Installation
 
 // The default port for REST API requests and Socket.IO-based communication is `9901`.
-// The API is accessible through the URL `http://localhost:9901` when running locally.
+// The API is accessible through the URL `http://127.0.0.1:9901` when running locally.
 // The REST API is accessible via HTTP clients such as {url_postman}[Postman^], {url_curl}[cURL^] and {url_curl}[HTTPie^].
 
 // The WebSocket-based APIs can be accessed with the help of the {url_socket}[Socket.IO^] library that is available for many programming languages and frameworks.
@@ -300,7 +300,7 @@ For example:
 // .Example request: Obtain a list of the block generators in the current round.
 // [source,bash]
 // ----
-// curl -X GET "http://localhost:9901/api/v3/generators" -H  "accept: application/json"
+// curl -X GET "http://127.0.0.1:9901/api/v3/generators" -H  "accept: application/json"
 // ----
 
 // .Example response
@@ -375,7 +375,7 @@ Lisk Testnet::
 // jsome.params.colored = true;
 
 // Use local Service node
-// const WS_RPC_ENDPOINT = 'ws://localhost:9901/rpc-v3';
+// const WS_RPC_ENDPOINT = 'ws://127.0.0.1:9901/rpc-v3';
 //Use public Service node
 //const WS_RPC_ENDPOINT = "wss://service.lisk.com/rpc-v3";
 
@@ -437,7 +437,7 @@ Lisk Testnet::
 // jsome.params.colored = true;
 
 // Uses local Service node
-// const WS_SUBSCRIBE_ENDPOINT = 'ws://localhost:9901/blockchain';
+// const WS_SUBSCRIBE_ENDPOINT = 'ws://127.0.0.1:9901/blockchain';
 // Uses public Service node
 //const WS_SUBSCRIBE_ENDPOINT = "wss://service.lisk.com/blockchain";
 
