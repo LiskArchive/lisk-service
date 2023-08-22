@@ -39,7 +39,7 @@ const getTokenSummary = async () => {
 
 	supportedTokenIDs.forEach(tokenID => {
 		if (tokenID === PATTERN_ANY_TOKEN_ID) {
-			supportedTokens.isSupportAllToken = true;
+			supportedTokens.isSupportAllTokens = true;
 		} else if (tokenID.substring(LENGTH_CHAIN_ID) === PATTERN_ANY_CHAIN_TOKEN_ID) {
 			supportedTokens.patternTokenIDs.push(tokenID);
 		} else {
