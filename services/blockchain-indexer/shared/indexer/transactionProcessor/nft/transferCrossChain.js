@@ -51,16 +51,14 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		...tx.params,
 	};
 
-	const searchParams = {
-		nftID: tx.nftID,
-	};
-	const [nft] = await nftTable.find(searchParams, ['nftID', 'owner', 'escrowChainID']);
-
 	logger.trace(`Updating owner of nft ${tx.nftID} to ${tx.recipientAddress}.`);
-	nft.owner = tx.recipientAddress;
-	nft.escrowChainID = tx.receivingChainID;
+	const nft = {
+		nftID: tx.nftID,
+		owner: tx.recipientAddress,
+		escrowChainID: tx.receivingChainID,
+	};
 	await nftTable.upsert(nft, dbTrx);
-	logger.trace(`Updated owner of nft ${tx.nftID} to ${tx.recipientAddress}.`);
+	logger.debug(`Updated owner of nft ${tx.nftID} to ${tx.recipientAddress}.`);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 	tx.tokenID = tx.nftID;
@@ -82,16 +80,14 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		...tx.params,
 	};
 
-	const searchParams = {
-		nftID: tx.nftID,
-	};
-	const [nft] = await nftTable.find(searchParams, ['nftID', 'owner', 'escrowChainID']);
-
 	logger.trace(`Updating owner of nft ${tx.nftID} to ${tx.senderAddress}.`);
-	nft.owner = tx.senderAddress;
-	nft.escrowChainID = null;
+	const nft = {
+		nftID: tx.nftID,
+		owner: tx.senderAddress,
+		escrowChainID: null,
+	};
 	await nftTable.upsert(nft, dbTrx);
-	logger.trace(`Updated owner of nft ${tx.nftID} to ${tx.senderAddress}.`);
+	logger.debug(`Updated owner of nft ${tx.nftID} to ${tx.senderAddress}.`);
 };
 
 module.exports = {
