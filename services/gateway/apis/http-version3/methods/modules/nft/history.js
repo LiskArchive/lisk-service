@@ -41,7 +41,7 @@ module.exports = {
 		nftSchema[this.swaggerApiPath].get.parameters = transformParams('nft', this.params);
 		nftSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns history of NFT by type.',
+				description: 'Returns NFT history by type.',
 				schema: {
 					$ref: '#/definitions/NFTHistoryWithEnvelope',
 				},
