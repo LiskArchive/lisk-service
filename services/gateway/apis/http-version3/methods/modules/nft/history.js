@@ -28,6 +28,12 @@ module.exports = {
 		type: { optional: false, type: 'string', pattern: regex.TYPE },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
+		sort: {
+			optional: true,
+			type: 'string',
+			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
+			default: 'height:desc',
+		},
 	},
 	get schema() {
 		const nftSchema = {};

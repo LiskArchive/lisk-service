@@ -55,13 +55,13 @@ const getNFTConstants = async () => {
 	return constants;
 };
 
-const getNFTHistory = async () => {
+const getNFTHistory = async (params) => {
 	const history = {
 		data: [],
 		meta: {},
 	};
 
-	const response = await dataService.getNFTHistory();
+	const response = await dataService.getNFTHistory(params);
 	if (response.data) history.data = response.data;
 	if (response.meta) history.meta = response.meta;
 
