@@ -2,7 +2,7 @@ MYSQL_PORT = 3306
 LISK_CORE_WS_PORT = 7887;
 
 def checkOpenPort(nPort) {
-	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
+	def result = sh script: "nc -z 127.0.0.1 ${nPort}", returnStatus: true
 	return (result == 0)
 }
 
@@ -111,7 +111,7 @@ pipeline {
 						}
 					}
 					sleep(120)
-					waitForHttp('http://localhost:9901/api/ready')
+					waitForHttp('http://127.0.0.1:9901/api/ready')
 				}
 			}
 		}

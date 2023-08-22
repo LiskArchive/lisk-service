@@ -1,46 +1,46 @@
 {
-  "name": "lisk-service-fee-estimator",
-  "version": "0.7.0-beta.3",
-  "description": "Lisk Service Fee Estimator",
-  "keywords": [
-    "lisk",
-    "blockchain"
-  ],
-  "homepage": "https://github.com/LiskHQ/lisk-service",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:LiskHQ/lisk-service.git"
-  },
-  "bugs": {
-    "url": "https://github.com/LiskHQ/lisk-service/issues"
-  },
-  "private": true,
-  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
-  "license": "Apache-2.0",
-  "main": "app.js",
-  "engines": {
-    "node": ">=18.16 <=18",
-    "npm": ">=8.5.0"
-  },
-  "scripts": {
-    "start": "node app.js",
-    "clean": "rm -rf ./node_modules",
-    "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
-    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
-  },
-  "dependencies": {
-    "@liskhq/lisk-codec": "0.3.0-beta.4",
-    "@liskhq/lisk-cryptography": "4.0.0-beta.3",
-    "@liskhq/lisk-transactions": "6.0.0-beta.4",
-    "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz"
-  },
-  "devDependencies": {
-    "@babel/preset-env": "^7.14.0",
-    "babel-jest": "^27.3.0",
-    "jest": "^27.3.0",
-    "jest-when": "^3.5.1",
-    "mocker-data-generator": "^2.12.0"
-  }
+	"name": "lisk-service-fee-estimator",
+	"version": "0.7.0-beta.4",
+	"description": "Lisk Service Fee Estimator",
+	"keywords": [
+		"lisk",
+		"blockchain"
+	],
+	"homepage": "https://github.com/LiskHQ/lisk-service",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:LiskHQ/lisk-service.git"
+	},
+	"bugs": {
+		"url": "https://github.com/LiskHQ/lisk-service/issues"
+	},
+	"private": true,
+	"author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+	"license": "Apache-2.0",
+	"main": "app.js",
+	"engines": {
+		"node": ">=18.16 <=18",
+		"npm": ">=8.5.0"
+	},
+	"scripts": {
+		"start": "node app.js",
+		"clean": "rm -rf ./node_modules",
+		"test": "npm run test:unit",
+		"test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+		"test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
+	},
+	"dependencies": {
+		"@liskhq/lisk-codec": "0.3.0-beta.5",
+		"@liskhq/lisk-cryptography": "4.0.0-beta.4",
+		"@liskhq/lisk-transactions": "6.0.0-beta.5",
+		"bluebird": "^3.7.2",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz"
+	},
+	"devDependencies": {
+		"@babel/preset-env": "^7.14.0",
+		"babel-jest": "^27.3.0",
+		"jest": "^27.3.0",
+		"jest-when": "^3.5.1",
+		"mocker-data-generator": "^2.12.0"
+	}
 }
