@@ -13,27 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const nftHistory = require('./mappings/nft');
+const { LENGTH_CHAIN_ID, LENGTH_COLLECTION_ID } = require('../constants');
+
+const getNFTInfo = (nftID) => ({
+	chainID: nftID.substring(0, LENGTH_CHAIN_ID),
+	collectionID: nftID.substring(LENGTH_CHAIN_ID, LENGTH_COLLECTION_ID),
+	index: Buffer.from(nftID.substring(LENGTH_CHAIN_ID + LENGTH_COLLECTION_ID)).readBigInt64BE(),
+});
 
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.nft.history',
-	params: {
-		nftID: '=,string',
-		type: '=,string',
-		limit: '=,number',
-		offset: '=,number',
-		sort: '=,string',
-	},
-	definition: {
-		data: ['data', nftHistory],
-		meta: {
-			id: '=,string',
-			nft: {
-				chainID: '=,string',
-				collectionID: '=,string',
-				index: '=,number',
-			},
-		},
-	},
+	getNFTInfo,
 };

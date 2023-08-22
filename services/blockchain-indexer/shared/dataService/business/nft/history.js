@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const {
 	DB: {
 		MySQL: { getTableInstance },
@@ -22,8 +20,10 @@ const {
 } = require('lisk-service-framework');
 
 const transactionsTableSchema = require('../../../database/schema/transactions');
+
 const config = require('../../../../config');
 const { MODULE, COMMAND } = require('../../../constants');
+const { getNFTInfo } = require('../../../utils/nft');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -43,48 +43,45 @@ const getNFTHistory = async (params) => {
 	};
 
 	let total;
+	const { nftID, type, ...remParams } = params;
 
-	if (params.type === NFT_HISTORY_TYPE.TRANSFER) {
+	if (type === NFT_HISTORY_TYPE.TRANSFER) {
 		const searchParams = {
-			tokenID: params.nftID,
+			...remParams,
+			tokenID: nftID,
 			moduleCommand: `${MODULE.NFT}:${COMMAND.TRANSFER}`,
 			andWhere: { moduleCommand: `${MODULE.NFT}:${COMMAND.TRANSFER_CROSS_CHAIN}` },
-			sort: 'heigth:desc',
 		};
 
-		const response = await transactionsTable.find(searchParams);
+		const transactionsInfo = await transactionsTable.find(
+			searchParams,
+			['id', 'senderAddress', 'recipientAddress', 'blockID', 'height', 'timestamp'],
+		);
+
 		total = await transactionsTable.count(searchParams);
 
-		history.data = await BluebirdPromise.map(
-			response,
-			async transaction => {
-				const owner = {
-					old: transaction.senderAddress,
-					new: transaction.recipientAddress,
-				};
-				const transactionID = transaction.id;
-				const block = {
-					id: transaction.blockID,
-					height: transaction.height,
-					timestamp: transaction.timestamp,
-				};
-
-				return {
-					owner,
-					transactionID,
-					block,
-				};
+		history.data = await transactionsInfo.map(async transaction => ({
+			owner: {
+				old: transaction.senderAddress,
+				new: transaction.recipientAddress,
 			},
-			{ concurrency: response.length },
-		);
-	} else if (params.type === NFT_HISTORY_TYPE.ATTRIBUTE) {
-
+			transactionID: transaction.id,
+			block: {
+				id: transaction.blockID,
+				height: transaction.height,
+				timestamp: transaction.timestamp,
+			},
+		}));
 	}
+	// else if (type === NFT_HISTORY_TYPE.ATTRIBUTE) {
+	// TODO: Implement NFT history by attribute https://github.com/LiskHQ/lisk-service/issues/1816
+	// }
 
 	history.meta = {
-		nftID: params.nftID,
+		id: nftID,
+		nft: getNFTInfo(nftID),
 		count: history.data.length,
-		offset: params.offset,
+		offset: remParams.offset,
 		total,
 	};
 

@@ -157,6 +157,7 @@ const LENGTH_NETWORK_ID = 1 * 2; // Each byte is represented with 2 nibbles
 const LENGTH_BYTE_SIGNATURE = 64;
 const LENGTH_BYTE_ID = 32;
 const DEFAULT_NUM_OF_SIGNATURES = 1;
+const LENGTH_COLLECTION_ID = 4 * 2; // Each byte is represented with 2 nibbles
 
 const MAX_COMMISSION = BigInt('10000');
 
@@ -218,4 +219,5 @@ module.exports = {
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
+	LENGTH_COLLECTION_ID,
 };
