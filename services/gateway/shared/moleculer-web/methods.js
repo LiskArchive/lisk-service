@@ -6,9 +6,15 @@
  * MIT Licensed
  */
 const util = require('util');
-const { MoleculerError, MoleculerServerError } = require('moleculer').Errors;
+const {
+	MoleculerError,
+	MoleculerServerError,
+} = require('moleculer').Errors;
 const _ = require('lodash');
 const kleur = require('kleur');
+const {
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
 
 module.exports = {
 	methods: {
@@ -46,7 +52,7 @@ module.exports = {
 					const reqParams = Object.fromEntries(
 						new Map(Object.entries(req.$params).filter(([, v]) => v)),
 					);
-					if (err && err.name !== 'ValidationException') this.logger.error(
+					if (err && !(err instanceof ValidationException)) this.logger.error(
 						`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${
 							err.message
 						} \n${err.stack} \nData: \nRequest params: ${util.inspect(
@@ -55,7 +61,7 @@ module.exports = {
 					);
 				}
 
-				if (err && err.name === 'ValidationException') {
+				if (err instanceof ValidationException) {
 					const molecularError = new MoleculerError(err.message, 400);
 					this.sendError(req, res, molecularError);
 				} else {
