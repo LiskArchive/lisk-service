@@ -15,10 +15,12 @@
  */
 const { getNFTs } = require('./nft');
 const { getNFTConstants } = require('./constants');
+const { getNFTEscrowed } = require('./nftEscrowed');
 const { getSupportedNFTs } = require('./supported');
 
 module.exports = {
 	getNFTs,
 	getNFTConstants,
+	getNFTEscrowed,
 	getSupportedNFTs,
 };

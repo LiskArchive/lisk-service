@@ -13,14 +13,28 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
-const { getNFTEscrowed } = require('./nftEscrowed');
-const { getSupportedNFTs } = require('./supported');
+
+const { Logger } = require('lisk-service-framework');
+const { requestConnector } = require('../../../utils/request');
+
+const logger = Logger();
+
+const getNFTEscrowed = async () => {
+	try {
+		const escrowedNFTs = await requestConnector('getNFTEscrowed');
+
+		return {
+			data: escrowedNFTs,
+			meta: {},
+		};
+	} catch (err) {
+		const errMessage = `Unable to fetch escrowed NFTs from connector due to: ${err.message}.`;
+		logger.warn(errMessage);
+		logger.trace(err.stack);
+		throw new Error(errMessage);
+	}
+};
 
 module.exports = {
-	getNFTs,
-	getNFTConstants,
 	getNFTEscrowed,
-	getSupportedNFTs,
 };

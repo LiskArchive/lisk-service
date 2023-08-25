@@ -60,6 +60,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [Non-fungible Token (NFT)](#nft)
     - [NFT constants](#nft-constants)
     - [NFT search](#nft-search)
+    - [NFT escrowed](#nft-escrowed)
     - [NFT supported](#nft-supported)
   - [Legacy](#legacy)
     - [Legacy Account Details](#legacy-account-details)
@@ -2115,6 +2116,59 @@ Get all NFTs
 https://service.lisk.com/api/v3/nft
 ```
 
+### NFT escrowed
+
+Retrieves NFTs based on criteria defined by params.
+
+_Supports pagination._
+
+
+#### Endpoints
+
+- HTTP GET `/api/v3/nft/escrowed`
+- RPC `get.nft.escrowed`
+
+#### Request parameters
+
+| Parameter | Type | Validation | Default | Comment |
+| --------- | ---- | ---------- | ------- | ------- |
+| escrowedChainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* |  |
+| limit | Number | `[1,100]` | 10 |  |
+| offset | Number | `[0,Inf)` | 0 |  |
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+    "data": [{
+       "escrowedChainID": "04000001",
+       "id": "0000000000000000000000000000000000",
+       "nft":{
+         "chainID": "00000000",
+         "collectionID": "10000000",
+         "index": 1,
+       },
+    }],
+    "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+Get all escrowed NFTs
+```
+https://service.lisk.com/api/v3/nft/escrowed
+```
 
 
 ### NFT supported

@@ -117,10 +117,7 @@ const {
 const { cacheCleanup } = require('./cache');
 const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
-const {
-	getNFTConstants,
-	getSupportedNFTs,
-} = require('./nft');
+const { getNFTConstants, getNFTEscrowed, getSupportedNFTs, updateNFTInfo } = require('./nft');
 
 const init = async () => {
 	// Initialize the local cache
@@ -128,6 +125,7 @@ const init = async () => {
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 	await updateTokenInfo();
+	await updateNFTInfo();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());
@@ -249,5 +247,6 @@ module.exports = {
 
 	// NFT
 	getNFTConstants,
+	getNFTEscrowed,
 	getSupportedNFTs,
 };

@@ -80,6 +80,51 @@
             }
         }
     },
+    "NFTEscrowed": {
+        "type": "object",
+        "required": [
+            "escrowedChainID",
+            "id",
+            "nft"
+        ],
+        "properties": {
+            "escrowedChainID": {
+                "type": "string",
+                "description": "Chain ID to which the NFT is escrowed.",
+                "example": "04000002"
+            },
+            "id": {
+                "type": "string",
+                "description": "Universal identifier of the NFT.",
+                "example": "00000000100000001"
+            },
+            "nft": {
+                "type": "object",
+                "required": [
+                    "chainID",
+                    "collectionID",
+                    "index"
+                ],
+                "properties": {
+                    "chainID": {
+                        "type": "string",
+                        "description": "Chain ID on which the NFT was created.",
+                        "example": "00000000"
+                    },
+                    "collectionID": {
+                        "type": "string",
+                        "description": "Collection ID of the NFT.",
+                        "example": "10000000"
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index of NFT within the collection.",
+                        "example": 1
+                    }
+                }
+            }
+        }
+    },
     "NFTsWithEnvelope": {
         "type": "object",
         "required": [
@@ -97,6 +142,23 @@
             "meta": {
                 "$ref": "#/definitions/pagination"
             }
+        }
+    },
+    "NFTEscrowedWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of NFTs.",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/NFTEscrowed"
+                }
+            },
+            "meta": {}
         }
     },
     "nftConstantsWithEnvelope": {

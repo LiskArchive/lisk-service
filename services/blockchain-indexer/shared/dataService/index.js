@@ -70,10 +70,6 @@ const {
 } = require('./token');
 
 const {
-	getNFTs,
-} = require('./nft');
-
-const {
 	getTransactions,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
@@ -108,7 +104,9 @@ const { getGenerators } = require('./generators');
 const { invokeEndpoint } = require('./invoke');
 
 const {
+	getNFTs,
 	getNFTConstants,
+	getNFTEscrowed,
 	getSupportedNFTs,
 } = require('./nft');
 
@@ -133,6 +131,9 @@ module.exports = {
 
 	// NFTs
 	getNFTs,
+	getNFTEscrowed,
+	getNFTConstants,
+	getSupportedNFTs,
 
 	// Token
 	tokenHasUserAccount,
@@ -213,8 +214,4 @@ module.exports = {
 	resolveMainchainServiceURL,
 
 	invokeEndpoint,
-
-	// NFT
-	getNFTConstants,
-	getSupportedNFTs,
 };

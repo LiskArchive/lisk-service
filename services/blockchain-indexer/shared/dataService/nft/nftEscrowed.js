@@ -13,22 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTConstants, getNFTEscrowed, getSupportedNFTs } = require('../shared/sdk');
+const business = require('../business');
 
-module.exports = [
-	{
-		name: 'getNFTConstants',
-		controller: async () => getNFTConstants(),
-		params: {},
-	},
-	{
-		name: 'getNFTEscrowed',
-		controller: async () => getNFTEscrowed(),
-		params: {},
-	},
-	{
-		name: 'getSupportedNFTs',
-		controller: async () => getSupportedNFTs(),
-		params: {},
-	},
-];
+const getNFTEscrowed = async (params) => business.getNFTEscrowed(params);
+
+module.exports = {
+	getNFTEscrowed,
+};
