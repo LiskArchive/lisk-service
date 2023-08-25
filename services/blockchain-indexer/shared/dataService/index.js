@@ -70,13 +70,6 @@ const {
 } = require('./token');
 
 const {
-	getNFTs,
-	getNFTConstants,
-	getNFTHistory,
-	getSupportedNFTs,
-} = require('./nft');
-
-const {
 	getTransactions,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
@@ -110,6 +103,14 @@ const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
 const { invokeEndpoint } = require('./invoke');
 
+const {
+	getNFTs,
+	getNFTConstants,
+	getNFTEscrowed,
+	getSupportedNFTs,
+	getNFTHistory,
+} = require('./nft');
+
 module.exports = {
 	// Blocks
 	getBlocks,
@@ -128,6 +129,13 @@ module.exports = {
 	getStakes,
 	getStakers,
 	getPosClaimableRewards,
+
+	// NFTs
+	getNFTs,
+	getNFTEscrowed,
+	getNFTConstants,
+	getSupportedNFTs,
+	getNFTHistory,
 
 	// Token
 	tokenHasUserAccount,
@@ -208,10 +216,4 @@ module.exports = {
 	resolveMainchainServiceURL,
 
 	invokeEndpoint,
-
-	// NFT
-	getNFTs,
-	getNFTConstants,
-	getNFTHistory,
-	getSupportedNFTs,
 };

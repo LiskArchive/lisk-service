@@ -80,6 +80,51 @@
             }
         }
     },
+    "NFTEscrowed": {
+        "type": "object",
+        "required": [
+            "escrowedChainID",
+            "id",
+            "nft"
+        ],
+        "properties": {
+            "escrowedChainID": {
+                "type": "string",
+                "description": "Chain ID to which the NFT is escrowed.",
+                "example": "04000002"
+            },
+            "id": {
+                "type": "string",
+                "description": "Universal identifier of the NFT.",
+                "example": "00000000100000001"
+            },
+            "nft": {
+                "type": "object",
+                "required": [
+                    "chainID",
+                    "collectionID",
+                    "index"
+                ],
+                "properties": {
+                    "chainID": {
+                        "type": "string",
+                        "description": "Chain ID on which the NFT was created.",
+                        "example": "00000000"
+                    },
+                    "collectionID": {
+                        "type": "string",
+                        "description": "Collection ID of the NFT.",
+                        "example": "10000000"
+                    },
+                    "index": {
+                        "type": "number",
+                        "description": "Index of NFT within the collection.",
+                        "example": 1
+                    }
+                }
+            }
+        }
+    },
     "NFTsWithEnvelope": {
         "type": "object",
         "required": [
@@ -97,6 +142,23 @@
             "meta": {
                 "$ref": "#/definitions/pagination"
             }
+        }
+    },
+    "NFTEscrowedWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of NFTs.",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/NFTEscrowed"
+                }
+            },
+            "meta": {}
         }
     },
     "nftConstantsWithEnvelope": {
@@ -149,34 +211,34 @@
                         "description": "Old owner of the NFT.",
                         "example": "lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad"
                     }
-                },
-                "transactionID": {
-                    "type": "string",
-                    "description": "Unique identifier of the transaction.\nDerived from the transaction signature.",
-                    "example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b"
-                },
-                "block": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string",
-                            "format": "id",
-                            "minLength": 1,
-                            "maxLength": 64,
-                            "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                            "description": "Unique identifier of the block.\nDerived from the block signature."
-                        },
-                        "height": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "example": 8350681,
-                            "description": "The height of the network, at the moment where this transaction was included in the blockchain."
-                        },
-                        "timestamp": {
-                            "type": "integer",
-                            "example": 1613323667,
-                            "description": "UNIX Timestamp"
-                        }
+                }
+            },
+            "transactionID": {
+                "type": "string",
+                "description": "Unique identifier of the transaction.\nDerived from the transaction signature.",
+                "example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b"
+            },
+            "block": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+                        "description": "Unique identifier of the block.\nDerived from the block signature."
+                    },
+                    "height": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 8350681,
+                        "description": "The height of the network, at the moment where this transaction was included in the blockchain."
+                    },
+                    "timestamp": {
+                        "type": "integer",
+                        "example": 1613323667,
+                        "description": "UNIX Timestamp"
                     }
                 }
             }

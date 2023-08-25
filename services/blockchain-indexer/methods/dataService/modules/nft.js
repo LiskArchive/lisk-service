@@ -16,6 +16,7 @@
 const {
 	getNFTs,
 	getNFTConstants,
+	getNFTEscrowed,
 	getNFTHistory,
 	getSupportedNFTs,
 } = require('../controllers/nft');
@@ -31,6 +32,15 @@ module.exports = [
 			index: { optional: true, type: 'number' },
 			owner: { optional: true, type: 'string' },
 			escrowChainID: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'nft.escrowed',
+		controller: getNFTEscrowed,
+		params: {
+			escrowedChainID: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
