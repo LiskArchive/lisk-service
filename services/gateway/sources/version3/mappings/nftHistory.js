@@ -13,16 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
-const { getNFTEscrowed } = require('./nftEscrowed');
-const { getNFTHistory } = require('./history');
-const { getSupportedNFTs } = require('./supported');
-
 module.exports = {
-	getNFTs,
-	getNFTConstants,
-	getNFTEscrowed,
-	getNFTHistory,
-	getSupportedNFTs,
+	owner: {
+		old: '=,string',
+		new: '=,string',
+	},
+	attribute: {
+		module: '=,string',
+		old: '=,string',
+		new: '=,string',
+	},
+	transactionID: '=,string',
+	block: {
+		id: '=,string',
+		height: '=,number',
+		timestamp: '=,number',
+	},
 };

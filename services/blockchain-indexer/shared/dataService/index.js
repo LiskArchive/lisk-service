@@ -108,6 +108,7 @@ const {
 	getNFTConstants,
 	getNFTEscrowed,
 	getSupportedNFTs,
+	getNFTHistory,
 } = require('./nft');
 
 module.exports = {
@@ -134,6 +135,7 @@ module.exports = {
 	getNFTEscrowed,
 	getNFTConstants,
 	getSupportedNFTs,
+	getNFTHistory,
 
 	// Token
 	tokenHasUserAccount,

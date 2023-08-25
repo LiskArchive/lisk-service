@@ -13,16 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
-const { getNFTEscrowed } = require('./nftEscrowed');
-const { getNFTHistory } = require('./history');
-const { getSupportedNFTs } = require('./supported');
+const nftHistory = require('./mappings/nft');
 
 module.exports = {
-	getNFTs,
-	getNFTConstants,
-	getNFTEscrowed,
-	getNFTHistory,
-	getSupportedNFTs,
+	type: 'moleculer',
+	method: 'indexer.nft.history',
+	params: {
+		nftID: '=,string',
+		type: '=,string',
+		limit: '=,number',
+		offset: '=,number',
+		sort: '=,string',
+	},
+	definition: {
+		data: ['data', nftHistory],
+		meta: {
+			id: '=,string',
+			nft: {
+				chainID: '=,string',
+				collectionID: '=,string',
+				index: '=,number',
+			},
+		},
+	},
 };

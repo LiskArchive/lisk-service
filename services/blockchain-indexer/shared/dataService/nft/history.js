@@ -13,16 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
-const { getNFTEscrowed } = require('./nftEscrowed');
-const { getNFTHistory } = require('./history');
-const { getSupportedNFTs } = require('./supported');
+const business = require('../business');
+
+const getNFTHistory = async (params) => business.getNFTHistory(params);
 
 module.exports = {
-	getNFTs,
-	getNFTConstants,
-	getNFTEscrowed,
 	getNFTHistory,
-	getSupportedNFTs,
 };
