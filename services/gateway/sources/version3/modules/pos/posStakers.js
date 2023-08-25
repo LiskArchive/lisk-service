@@ -13,22 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posUnlock = require('./mappings/posUnlock');
+const posStaker = require('../../mappings/posStaker');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.unlocks',
+	method: 'indexer.pos.stakers',
 	params: {
 		address: '=,string',
-		name: '=,string',
 		publicKey: '=,string',
-		isLocked: '=,boolean',
+		name: '=,string',
+		search: '=,string',
 		limit: '=,number',
 		offset: '=,number',
 	},
 	definition: {
-		data: posUnlock,
+		data: {
+			stakers: ['data.stakers', posStaker],
+		},
 		meta: {
+			validator: {
+				address: '=,string',
+				publicKey: '=,string',
+				name: '=,string',
+			},
 			count: '=,number',
 			offset: '=,number',
 			total: '=,number',

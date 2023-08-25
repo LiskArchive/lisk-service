@@ -117,7 +117,10 @@ const {
 const { cacheCleanup } = require('./cache');
 const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
-const { getNFTConstants } = require('./nft');
+const {
+	getNFTConstants,
+	getSupportedNFTs,
+} = require('./nft');
 
 const init = async () => {
 	// Initialize the local cache
@@ -246,4 +249,5 @@ module.exports = {
 
 	// NFT
 	getNFTConstants,
+	getSupportedNFTs,
 };

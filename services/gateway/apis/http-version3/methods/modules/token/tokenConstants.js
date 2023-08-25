@@ -14,7 +14,7 @@
  *
  */
 
-const tokenConstantsSource = require('../../../../../sources/version3/tokenConstants');
+const tokenConstantsSource = require('../../../../../sources/version3/modules/token/tokenConstants');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { response, getSwaggerDescription } = require('../../../../../shared/utils');
 

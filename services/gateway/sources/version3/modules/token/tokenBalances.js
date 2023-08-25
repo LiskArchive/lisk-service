@@ -13,21 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posRewardLocked = require('./mappings/posRewardsLocked');
+const token = require('../../mappings/token');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.rewards.locked',
+	method: 'indexer.token.balances',
 	params: {
 		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-		limit: '=,number',
+		tokenID: '=,string',
 		offset: '=,number',
+		limit: '=,number',
 	},
 	definition: {
-		data: ['data', posRewardLocked],
+		data: ['data', token],
 		meta: {
+			address: '=,string',
 			count: '=,number',
 			offset: '=,number',
 			total: '=,number',

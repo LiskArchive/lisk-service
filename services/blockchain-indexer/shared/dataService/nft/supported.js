@@ -13,12 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
-const { getSupportedNFTs } = require('./supported');
+const business = require('../business');
+
+const getSupportedNFTs = async () => business.getSupportedNFTs();
 
 module.exports = {
-	getNFTs,
-	getNFTConstants,
 	getSupportedNFTs,
 };

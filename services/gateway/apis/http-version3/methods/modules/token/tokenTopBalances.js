@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenTopBalancesSource = require('../../../../../sources/version3/tokenTopBalances');
+const tokenTopBalancesSource = require('../../../../../sources/version3/modules/token/tokenTopBalances');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../../../shared/regex');
 const { transformParams, getSwaggerDescription } = require('../../../../../shared/utils');

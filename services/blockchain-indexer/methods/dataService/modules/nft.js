@@ -16,6 +16,7 @@
 const {
 	getNFTs,
 	getNFTConstants,
+	getSupportedNFTs,
 } = require('../controllers/nft');
 
 module.exports = [
@@ -36,6 +37,11 @@ module.exports = [
 	{
 		name: 'nft.constants',
 		controller: getNFTConstants,
+		params: {},
+	},
+	{
+		name: 'nft.supported',
+		controller: getSupportedNFTs,
 		params: {},
 	},
 ];

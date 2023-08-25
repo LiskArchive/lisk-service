@@ -13,21 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posClaimableReward = require('./mappings/posClaimableReward');
-const meta = require('./mappings/meta');
+const posUnlock = require('../../mappings/posUnlock');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.rewards.claimable',
+	method: 'indexer.pos.unlocks',
 	params: {
 		address: '=,string',
-		publicKey: '=,string',
 		name: '=,string',
+		publicKey: '=,string',
+		isLocked: '=,boolean',
 		limit: '=,number',
 		offset: '=,number',
 	},
 	definition: {
-		data: ['data', posClaimableReward],
-		meta,
+		data: posUnlock,
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
 	},
 };
