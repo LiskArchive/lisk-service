@@ -13,14 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const posConstants = require('./mappings/posConstants');
+const validator = require('../../mappings/validator');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.constants',
-	params: {},
+	method: 'indexer.validator',
+	params: {
+		address: '=,string',
+	},
 	definition: {
-		data: posConstants,
-		meta: {},
+		data: validator,
+		meta: {
+			address: '=,string',
+			publicKey: '=,string',
+			name: '=,string',
+		},
 	},
 };

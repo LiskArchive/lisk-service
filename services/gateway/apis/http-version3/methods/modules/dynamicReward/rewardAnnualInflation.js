@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const rewardAnnualInflationSource = require('../../../../../sources/version3/rewardAnnualInflation');
+const rewardAnnualInflationSource = require('../../../../../sources/version3/modules/dynamicReward/rewardAnnualInflation');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const { response, getSwaggerDescription, transformParams } = require('../../../../../shared/utils');
 

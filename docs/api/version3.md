@@ -57,13 +57,12 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Module Constants](#module-constants-2)
     - [Default Reward](#default-reward)
     - [Annual Inflation](#annual-inflation)
-  - [NFT](#nft)
+  - [Non-fungible Token (NFT)](#nft)
     - [NFT constants](#nft-constants)
     - [NFT search](#nft-search)
+    - [NFT supported](#nft-supported)
   - [Legacy](#legacy)
     - [Legacy Account Details](#legacy-account-details)
-  - [Non-fungible Token](#non-fungible-token)
-    - [Module Constants](#module-constants-3)
   - [Network](#network)
     - [Network peers](#network-peers)
     - [Network status](#network-status)
@@ -2116,6 +2115,54 @@ Get all NFTs
 https://service.lisk.com/api/v3/nft
 ```
 
+
+
+### NFT supported
+
+Retrieves supported collection IDs information from the NFT module.
+
+#### Endpoints
+
+- HTTP GET `/api/v3/nft/supported`
+- RPC `get.nft.supported`
+
+#### Request parameters
+
+No parameters are required.
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": {
+    "isSupportAllNFTs": false,
+    "patternCollectionIDs": [
+        "00000000********",
+        "00000001********"
+    ],
+    "exactCollectionIDs": [
+      "0000000210000000",
+      "0000000220000000"
+    ]
+  },
+  "meta": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/nft/supported
+```
 
 ## Legacy
 

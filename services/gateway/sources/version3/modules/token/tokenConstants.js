@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2023 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,27 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const validator = require('./mappings/posValidator');
+const tokenConstants = require('../../mappings/tokenConstants');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.pos.validators',
-	params: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-		status: '=,string',
-		search: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-		sort: '=,string',
-	},
+	method: 'indexer.token.constants',
+	params: {},
 	definition: {
-		data: ['data', validator],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
+		data: tokenConstants,
+		meta: {},
 	},
 };

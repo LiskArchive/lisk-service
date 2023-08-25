@@ -17,6 +17,7 @@ const {
 	getNFTs,
 	getNFTConstants,
 	getNFTHistory,
+	getSupportedNFTs,
 } = require('../controllers/nft');
 
 module.exports = [
@@ -49,5 +50,10 @@ module.exports = [
 			offset: { optional: true, type: 'number' },
 			sort: { optional: true, type: 'string' },
 		},
+	},
+	{
+		name: 'nft.supported',
+		controller: getSupportedNFTs,
+		params: {},
 	},
 ];

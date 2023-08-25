@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2023 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,14 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenConstants = require('./mappings/tokenConstants');
+const auth = require('../../mappings/auth');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.token.constants',
-	params: {},
+	method: 'indexer.auth',
+	params: {
+		address: '=,string',
+	},
 	definition: {
-		data: tokenConstants,
-		meta: {},
+		data: auth,
+		meta: {
+			address: '=,string',
+			publicKey: '=,string',
+			name: '=,string',
+		},
 	},
 };

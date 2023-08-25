@@ -17,7 +17,7 @@ const {
 	escrowedAmount,
 	supportedToken,
 	totalSupplyByToken,
-} = require('./mappings/tokenSummary');
+} = require('../../mappings/tokenSummary');
 
 module.exports = {
 	type: 'moleculer',

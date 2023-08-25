@@ -63,6 +63,7 @@ const {
 	getNFTs,
 	getNFTConstants,
 	getNFTHistory,
+	getSupportedNFTs,
 } = require('./nft');
 
 const {
@@ -159,10 +160,11 @@ module.exports = {
 	getTokenConstants,
 	getTokenTopBalances,
 
-	// NFTs
+	// NFT
 	getNFTs,
 	getNFTConstants,
 	getNFTHistory,
+	getSupportedNFTs,
 
 	// PoS
 	getPosValidators,

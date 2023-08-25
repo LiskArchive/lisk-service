@@ -20,6 +20,8 @@ const logger = Logger();
 
 let moduleConstants;
 
+let supportedNFTsInfo;
+
 const getNFTConstants = async () => {
 	try {
 		if (!moduleConstants) {
@@ -37,6 +39,25 @@ const getNFTConstants = async () => {
 	}
 };
 
+const getSupportedNFTs = async () => {
+	try {
+		if (!supportedNFTsInfo) {
+			// TODO: Invoke SDK endpoint once available. related SDK issue: https://github.com/LiskHQ/lisk-sdk/issues/8886
+			// supportedNFTsInfo = await invokeEndpoint('nft_getSupportedNFTs');
+			supportedNFTsInfo = ['00000000********', '00000001********', '0000000210000000', '0000000220000000'];
+		}
+
+		return supportedNFTsInfo;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getSupportedNFTs\'.');
+		}
+		logger.warn(`Error returned when invoking 'nft_getSupportedNFTs'.\n${err.stack}`);
+		throw err;
+	}
+};
+
 module.exports = {
 	getNFTConstants,
+	getSupportedNFTs,
 };

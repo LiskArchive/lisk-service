@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const validatorSource = require('../../../../../sources/version3/validator');
+const validatorSource = require('../../../../../sources/version3/modules/validator/validator');
 const regex = require('../../../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
 

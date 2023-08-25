@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tokenAccountExistsSource = require('../../../../../sources/version3/tokenAccountExists');
+const tokenAccountExistsSource = require('../../../../../sources/version3/modules/token/tokenAccountExists');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
