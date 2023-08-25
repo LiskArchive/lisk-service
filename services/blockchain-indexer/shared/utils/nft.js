@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNFTs } = require('./nft');
-const { getNFTConstants } = require('./constants');
-const { getNFTHistory } = require('./history');
-const { getSupportedNFTs } = require('./supported');
+const { LENGTH_CHAIN_ID, LENGTH_COLLECTION_ID } = require('../constants');
+
+const getNFTInfo = (nftID) => ({
+	chainID: nftID.substring(0, LENGTH_CHAIN_ID),
+	collectionID: nftID.substring(LENGTH_CHAIN_ID, LENGTH_COLLECTION_ID),
+	index: Buffer.from(nftID.substring(LENGTH_CHAIN_ID + LENGTH_COLLECTION_ID)).readBigInt64BE(),
+});
 
 module.exports = {
-	getNFTs,
-	getNFTConstants,
-	getNFTHistory,
-	getSupportedNFTs,
+	getNFTInfo,
 };

@@ -125,6 +125,114 @@
             }
         }
     },
+    "NFTHistory": {
+        "type": "object",
+        "required": [
+            "transactionID",
+            "block"
+        ],
+        "properties": {
+            "owner": {
+                "type": "object",
+                "required": [
+                    "new",
+                    "old"
+                ],
+                "properties": {
+                    "new": {
+                        "type": "string",
+                        "description": "New owner of the NFT.",
+                        "example": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo"
+                    },
+                    "old": {
+                        "type": "string",
+                        "description": "Old owner of the NFT.",
+                        "example": "lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad"
+                    }
+                },
+                "transactionID": {
+                    "type": "string",
+                    "description": "Unique identifier of the transaction.\nDerived from the transaction signature.",
+                    "example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b"
+                },
+                "block": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "format": "id",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+                            "description": "Unique identifier of the block.\nDerived from the block signature."
+                        },
+                        "height": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 8350681,
+                            "description": "The height of the network, at the moment where this transaction was included in the blockchain."
+                        },
+                        "timestamp": {
+                            "type": "integer",
+                            "example": 1613323667,
+                            "description": "UNIX Timestamp"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "NFTHistoryWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "NFT history by type. Based on type, only one of 'transfer' or 'attribute' entries will be present in the response",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/NFTHistory"
+                }
+            },
+            "meta": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Universal identifier of the NFT.",
+                        "example": "0000000010000000000000000000000000"
+                    },
+                    "nft": {
+                        "type": "object",
+                        "required": [
+                            "chainID",
+                            "collectionID",
+                            "index"
+                        ],
+                        "properties": {
+                            "chainID": {
+                                "type": "string",
+                                "description": "Chain ID on which the NFT was created.",
+                                "example": "00000000"
+                            },
+                            "collectionID": {
+                                "type": "string",
+                                "description": "Collection ID of the NFT.",
+                                "example": "10000000"
+                            },
+                            "index": {
+                                "type": "number",
+                                "description": "Index of NFT within the collection.",
+                                "example": 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "nftSupportedWithEnvelope": {
         "type": "object",
         "required": [

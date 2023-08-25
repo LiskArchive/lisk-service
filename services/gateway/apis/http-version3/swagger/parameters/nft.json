@@ -55,5 +55,13 @@
         "minLength": 8,
         "maxLength": 8,
         "pattern": "^[a-fA-F0-9]{8}$"
+    },
+    "type": {
+        "name": "type",
+        "in": "query",
+        "description": "Query NFT history by type. \nAccepted values: transfer, attribute.",
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^\b(?:transfer|attribute|,)\b$"
     }
 }
