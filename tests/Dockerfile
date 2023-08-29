@@ -9,9 +9,8 @@ RUN adduser -D builder && \
 USER builder
 WORKDIR /home/builder/build
 
-COPY ./package-lock.json ./package.json .babelrc ./
-RUN npm ci
-
+COPY ./yarn.lock ./package.json .babelrc ./
+RUN yarn install --frozen-lockfile --ignore-engines
 
 ##### Stage 2
 

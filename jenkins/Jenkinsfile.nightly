@@ -69,6 +69,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
+						dir('./') { sh 'npm i -g yarn' }
 						dir('./') { sh 'make build-local' }
 					}
 				}
@@ -129,7 +130,7 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								sh 'npm run eslint'
+								sh 'yarn run eslint'
 							}
 						}
 					}
@@ -139,14 +140,14 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								// dir('./framework') { sh "npm run test:functional" }
-								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								// dir('./services/blockchain-connector') { sh "npm run test:functional" }
-								dir('./services/blockchain-indexer') { sh "npm run test:functional" }
-								dir('./services/fee-estimator') { sh "npm run test:functional" }
-								dir('./services/market') { sh "npm run test:functional" }
-								dir('./services/transaction-statistics') { sh "npm run test:functional" }
-								// dir('./tests') { sh "npm run test:functional" }
+								// dir('./framework') { sh "yarn run test:functional" }
+								dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
+								// dir('./services/blockchain-connector') { sh "yarn run test:functional" }
+								dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
+								dir('./services/fee-estimator') { sh "yarn run test:functional" }
+								dir('./services/market') { sh "yarn run test:functional" }
+								dir('./services/transaction-statistics') { sh "yarn run test:functional" }
+								// dir('./tests') { sh "yarn run test:functional" }
 							}
 						}
 					}
@@ -156,7 +157,7 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./tests') { sh 'npm run test:integration:APIv3:SDKv6' }
+								dir('./tests') { sh 'yarn run test:integration:APIv3:SDKv6' }
 							}
 						}
 					}

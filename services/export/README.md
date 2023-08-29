@@ -15,7 +15,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/export # move into export microservice directory
-npm ci # install required Node.js dependencies
+yarn install --frozen-lockfile --ignore-engines # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -45,7 +45,7 @@ A list of the most commonly used environment variables is presented below:
 
 ```bash
 cd lisk-service/services/export # move into the root directory of the export microservice
-npm start # start the microservice
+yarn start # start the microservice
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.

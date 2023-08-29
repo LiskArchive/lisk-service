@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/blockchain-connector # move into blockchain-connector microservice directory
-npm ci # install required Node.js dependencies
+yarn install --frozen-lockfile --ignore-engines # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -62,7 +62,7 @@ node app.js
 
 ```bash
 cd lisk-service/services/blockchain-connector # move into the root directory of the blockchain-connector microservice
-npm start # start the microservice with running nodes locally
+yarn start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.

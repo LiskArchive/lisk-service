@@ -306,7 +306,7 @@ To reset the database of Lisk Service, drop the respective MySQL and Redis datab
 . Stop Lisk Service
 +
 ----
-npm stop
+yarn stop
 ----
 
 . Login to MySQL with the `lisk` user.
