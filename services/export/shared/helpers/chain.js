@@ -24,6 +24,7 @@ const getNetworkStatus = async () => {
 	}
 	return networkStatus;
 };
+
 const getCurrentChainID = async () => {
 	const status = await getNetworkStatus();
 	const { chainID } = status.data;
@@ -35,8 +36,20 @@ const resolveReceivingChainID = (tx, currentChainID) => tx
 	? tx.params.receivingChainID
 	: currentChainID;
 
+const getUniqueChainIDs = async (txs) => {
+	const chainIDs = [];
+
+	txs.forEach(tx => {
+		if (tx.sendingChainID) chainIDs.push(tx.sendingChainID);
+		if (tx.receivingChainID) chainIDs.push(tx.receivingChainID);
+	});
+
+	return Array.from(new Set(chainIDs));
+};
+
 module.exports = {
 	getCurrentChainID,
 	resolveReceivingChainID,
 	getNetworkStatus,
+	getUniqueChainIDs,
 };
