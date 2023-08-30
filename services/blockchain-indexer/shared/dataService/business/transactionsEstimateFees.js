@@ -279,7 +279,10 @@ const estimateTransactionFees = async params => {
 		&& params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
 	) {
 		// Calculate message fee
-		const ccmBuffer = await getCcmBuffer(formattedTransaction);
+		const ccmBuffer = await getCcmBuffer({
+			...formattedTransaction,
+			fee: formattedTransaction.minFee,
+		});
 		const ccmLength = ccmBuffer.length;
 		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
 
