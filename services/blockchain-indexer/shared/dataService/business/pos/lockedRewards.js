@@ -39,10 +39,13 @@ const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_E
 const getPosLockedRewards = async params => {
 	const response = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
-	// TODO: Simplify these checks once validParamPairings related issue is resolved
 	// Params must contain either address or name or publicKey
 	if (!Object.keys(params).some(param => ['address', 'name', 'publicKey'].includes(param))) {
 		throw new InvalidParamsException('One of the params (address, name or publicKey) is required.');
