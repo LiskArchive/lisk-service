@@ -15,7 +15,7 @@
  */
 const marketPricesSource = require('../../../sources/version3/marketPrices');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -43,8 +43,13 @@ module.exports = {
 					$ref: '#/definitions/MarketPricesWithEnvelope',
 				},
 			},
+			503: {
+				description: 'Service Unavailable',
+				schema: {
+					$ref: '#/definitions/serviceUnavailable',
+				},
+			},
 		};
-		Object.assign(marketPricesSchema[this.swaggerApiPath].get.responses, response);
 		return marketPricesSchema;
 	},
 	source: marketPricesSource,

@@ -89,7 +89,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/blockchainAppStatus',
 				},
 				{
-					$ref: '#/parameters/blockchainAppSearch',
+					$ref: '#/parameters/searchByChainName',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -604,10 +604,10 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/MarketPricesWithEnvelope',
 					},
 				},
-				400: {
-					description: 'Bad request',
+				503: {
+					description: 'Service Unavailable',
 					schema: {
-						$ref: '#/definitions/badRequest',
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},
@@ -684,6 +684,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/NetworkStatistics',
 					},
 				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
+					},
+				},
 			},
 		},
 	},
@@ -722,7 +728,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/senderAddress',
 				},
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/senderAndRecipientAddress',
 				},
 				{
 					$ref: '#/parameters/recipientAddress',
