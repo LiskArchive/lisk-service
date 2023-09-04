@@ -6295,7 +6295,7 @@ Returns transaction history
 
 #### Endpoints
 
-- HTTP GET `/api/v3/export/download/`
+- HTTP GET `/api/v3/export/download`
 - RPC `Not Applicable`
 
 #### Request parameters
