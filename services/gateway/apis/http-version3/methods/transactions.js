@@ -24,12 +24,12 @@ module.exports = {
 	rpcMethod: 'get.transactions',
 	tags: ['Transactions'],
 	params: {
-		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
-		moduleCommand: { optional: true, type: 'string', min: 1.0, pattern: regex.MODULE_COMMAND },
-		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
-		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
-		recipientAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_LISK32 },
-		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
+		transactionID: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.HASH_SHA256 },
+		moduleCommand: { optional: true, type: 'string', min: 1, pattern: regex.MODULE_COMMAND },
+		senderAddress: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32 },
+		address: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32, altSwaggerKey: 'senderAndRecipientAddress' },
+		recipientAddress: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32 },
+		blockID: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.HASH_SHA256 },
 		height: { optional: true, type: 'string', min: 1, pattern: regex.HEIGHT_RANGE },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
 		executionStatus: {

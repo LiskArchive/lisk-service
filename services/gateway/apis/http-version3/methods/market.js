@@ -43,6 +43,12 @@ module.exports = {
 					$ref: '#/definitions/MarketPricesWithEnvelope',
 				},
 			},
+			503: {
+				description: 'Service Unavailable',
+				schema: {
+					$ref: '#/definitions/serviceUnavailable',
+				},
+			},
 		};
 		Object.assign(marketPricesSchema[this.swaggerApiPath].get.responses, response);
 		return marketPricesSchema;
