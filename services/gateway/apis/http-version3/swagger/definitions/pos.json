@@ -296,7 +296,7 @@
 						"validatorAddress": {
 							"type": "string",
 							"example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-							"description": "Address of the validator against whom the stake was made."
+							"description": "Address of the validator against which the stake was made."
 						},
 						"amount": {
 							"type": "string",
@@ -326,7 +326,7 @@
 						"isLocked": {
 							"type": "boolean",
 							"example": true,
-							"description": "A boolean flag indicating if the corresponding (previously) un-staked amount is available to be unlocked. When `isLocked: false`, the amount be unlocked with a `pos:unlock` transaction."
+							"description": "A boolean flag indicating if the corresponding (previously) un-staked amount is available to be unlocked. When `isLocked: false`, the amount can be unlocked with a `pos:unlock` transaction."
 						}
 					}
 				}
