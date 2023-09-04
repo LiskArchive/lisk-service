@@ -77,8 +77,7 @@ const getBlockchainAppsMetaList = async (params) => {
 		}];
 	}
 
-	let { offset } = params;
-	let { limit } = params;
+	let { offset, limit } = params;
 	const defaultApps = await applicationMetadataTable.find(
 		{ ...params, isDefault: true },
 		['network', 'chainID', 'chainName'],
@@ -87,11 +86,11 @@ const getBlockchainAppsMetaList = async (params) => {
 	if (defaultApps.length < limit) {
 		// Update offset and limit
 		limit -= defaultApps.length;
-		offset -= await applicationMetadataTable.count(
+		const totalDefaultAppsCount = await applicationMetadataTable.count(
 			{ ...params, isDefault: true },
 		);
 
-		if (offset < 0) offset = 0;
+		offset = Math.max(offset - totalDefaultAppsCount, 0);
 
 		const nonDefaultApps = await applicationMetadataTable.find(
 			{ ...params, limit, offset, isDefault: false },
