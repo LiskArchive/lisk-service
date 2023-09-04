@@ -6215,6 +6215,16 @@ No parameters are required.
 }
 ```
 
+400 Bad Request
+
+_Invalid parameter_
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
 503 Service Unavailable
 ```
 {

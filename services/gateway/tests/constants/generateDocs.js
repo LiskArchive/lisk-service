@@ -604,6 +604,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/MarketPricesWithEnvelope',
 					},
 				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
 				503: {
 					description: 'Service Unavailable',
 					schema: {
