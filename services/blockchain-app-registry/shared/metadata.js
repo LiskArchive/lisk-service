@@ -77,15 +77,24 @@ const getBlockchainAppsMetaList = async (params) => {
 		}];
 	}
 
-	const { limit, offset, ...remParams } = params;
+	let { offset } = params;
+	let { limit } = params;
 	const defaultApps = await applicationMetadataTable.find(
-		{ ...remParams, isDefault: true },
+		{ ...params, isDefault: true },
 		['network', 'chainID', 'chainName'],
 	);
 
-	if (defaultApps.length < offset + limit) {
+	if (defaultApps.length < limit) {
+		// Update offset and limit
+		limit -= defaultApps.length;
+		offset -= await applicationMetadataTable.count(
+			{ ...params, isDefault: true },
+		);
+
+		if (offset < 0) offset = 0;
+
 		const nonDefaultApps = await applicationMetadataTable.find(
-			{ ...remParams, isDefault: false },
+			{ ...params, limit, offset, isDefault: false },
 			['network', 'chainID', 'chainName'],
 		);
 
@@ -94,14 +103,11 @@ const getBlockchainAppsMetaList = async (params) => {
 		blockchainAppsMetaList.data = defaultApps;
 	}
 
-	blockchainAppsMetaList.data = blockchainAppsMetaList.data
-		.slice(offset, offset + limit);
-
 	const total = await applicationMetadataTable.count(params);
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,
-		offset,
+		offset: params.offset,
 		total,
 	};
 
@@ -356,36 +362,35 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 	const processedChainIDs = new Set();
 	const resultTokenIDsSet = new Set(tokenInfoFromDB.map(tokenInfo => tokenInfo.tokenID));
 
-	// eslint-disable-next-line no-restricted-syntax
+	/* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
 	for (const entry of tokenInfoFromDB) {
 		const chainID = entry.tokenID.substring(0, LENGTH_CHAIN_ID);
 
-		if (!processedChainIDs.has(chainID)) {
-			processedChainIDs.add(chainID);
+		// Avoid reading same token metadata file multiple times
+		if (processedChainIDs.has(chainID)) {
+			continue;
+		}
 
-			// eslint-disable-next-line no-await-in-loop
-			const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['appDirName']);
+		processedChainIDs.add(chainID);
+		const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['appDirName']);
+		const parsedTokenMeta = await readMetadataFromClonedRepo(
+			entry.network,
+			requestedAppInfo.appDirName,
+			config.FILENAME.NATIVETOKENS_JSON,
+		);
 
-			// eslint-disable-next-line no-await-in-loop
-			const parsedTokenMeta = await readMetadataFromClonedRepo(
-				entry.network,
-				requestedAppInfo.appDirName,
-				config.FILENAME.NATIVETOKENS_JSON,
-			);
-
-			// eslint-disable-next-line no-restricted-syntax
-			for (const token of parsedTokenMeta.tokens) {
-				if (resultTokenIDsSet.has(token.tokenID)) {
-					tokensMeta.push({
-						...token,
-						chainID,
-						chainName: entry.chainName,
-						network: entry.network,
-					});
-				}
+		for (const token of parsedTokenMeta.tokens) {
+			if (resultTokenIDsSet.has(token.tokenID)) {
+				tokensMeta.push({
+					...token,
+					chainID,
+					chainName: entry.chainName,
+					network: entry.network,
+				});
 			}
 		}
 	}
+	/* eslint-enable no-restricted-syntax, no-await-in-loop */
 
 	return tokensMeta;
 };

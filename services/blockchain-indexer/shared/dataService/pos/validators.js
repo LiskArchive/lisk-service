@@ -170,7 +170,11 @@ const getAllValidators = async () => {
 const getPosValidators = async params => {
 	const validators = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	const addressSet = new Set();
