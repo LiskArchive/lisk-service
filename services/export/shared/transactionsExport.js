@@ -301,16 +301,16 @@ const getPartialFilenameFromParams = async (params, day) => {
 	return filename;
 };
 
-const getExcelFilenameFromParams = async (params) => {
+const getExcelFilenameFromParams = async (params, chainID) => {
 	const address = getAddressFromParams(params);
 	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
 
-	const filename = `transactions_${address}_${from}_${to}.xlsx`;
+	const filename = `transactions_${chainID}_${address}_${from}_${to}.xlsx`;
 	return filename;
 };
 
-const getExcelFileUrlFromParams = async (params) => {
-	const filename = await getExcelFilenameFromParams(params);
+const getExcelFileUrlFromParams = async (params, chainID) => {
+	const filename = await getExcelFilenameFromParams(params, chainID);
 	const url = `${config.excel.baseURL}?filename=${filename}`;
 	return url;
 };
@@ -438,7 +438,8 @@ const exportTransactions = async (job) => {
 		}
 	}
 
-	const excelFilename = await getExcelFilenameFromParams(params);
+	const currentChainID = await getCurrentChainID();
+	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 
 	// Add duplicate entry with zero fees for self token transfer transactions
 	allTransactions.forEach((tx, i, arr) => {
@@ -447,7 +448,6 @@ const exportTransactions = async (job) => {
 		}
 	});
 
-	const currentChainID = await getCurrentChainID();
 	const normalizedTransactions = await Promise.all(allTransactions
 		.map((t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
 	const metadata = await getMetadata(params, currentChainID);
@@ -494,10 +494,11 @@ const scheduleTransactionHistoryExport = async (params) => {
 	exportResponse.data.publicKey = publicKey;
 	exportResponse.data.interval = await standardizeIntervalFromParams(params);
 
-	const excelFilename = await getExcelFilenameFromParams(params);
+	const currentChainID = await getCurrentChainID();
+	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 	if (await staticFiles.fileExists(excelFilename)) {
 		exportResponse.data.fileName = excelFilename;
-		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params);
+		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params, currentChainID);
 		exportResponse.meta.ready = true;
 	} else {
 		await scheduleTransactionExportQueue.add({ params: { ...params, address } });
