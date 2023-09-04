@@ -222,7 +222,7 @@ const getFeeTokenID = async () => {
 
 const getMetadata = async (params, chainID, currentChainID) => ({
 	...await getChainInfo(chainID),
-	note: currentChainID,
+	note: `Current Chain ID: ${currentChainID}`,
 	openingBalance: await getOpeningBalance(params.address),
 });
 
