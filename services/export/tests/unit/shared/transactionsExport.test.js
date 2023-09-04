@@ -67,65 +67,8 @@ beforeEach(() => jest.resetModules());
 const address = 'lskpg7qukha2nmu9483huwk8oty7q3pyevh3bohr4';
 const publicKey = '86cbecb2a176934e454f63e7ffa05783be6960d90002c5558dfd31397cd8f020';
 const chainID = '04000000';
+const txFeeTokenID = '0400000000000000';
 const partialFilenameExtension = '.json';
-
-describe('Test getConversionFactor method', () => {
-	const validChainID = '04000000';
-	const invalidChainID = 'invalid';
-
-	it('should return conversion factor when called with valid chainID', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestAppRegistry() {
-					return {
-						data: [{
-							displayDenom: 'lsk',
-							baseDenom: 'beddows',
-							denomUnits: [
-								{
-									denom: 'beddows',
-									decimals: 0,
-									aliases: [
-										'Beddows',
-									],
-								},
-								{
-									denom: 'lsk',
-									decimals: 8,
-									aliases: [
-										'Lisk',
-									],
-								},
-							],
-						}],
-					};
-				},
-			};
-		});
-
-		const { getConversionFactor } = require('../../../shared/transactionsExport');
-
-		const conversionFactor = await getConversionFactor(validChainID);
-		expect(conversionFactor).toEqual(8);
-	});
-
-	it('should throw error when called with invalid chainID', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestAppRegistry() {
-					return undefined;
-				},
-			};
-		});
-
-		const { getConversionFactor } = require('../../../shared/transactionsExport');
-		expect(getConversionFactor(invalidChainID)).rejects.toThrow();
-	});
-});
 
 describe('Test getOpeningBalance method', () => {
 	it('should return opening balance when called with valid address', async () => {
@@ -180,55 +123,6 @@ describe('Test getOpeningBalance method', () => {
 
 		const { getOpeningBalance } = require('../../../shared/transactionsExport');
 		expect(getOpeningBalance(undefined)).rejects.toThrow();
-	});
-});
-
-describe('Test getLegacyBalance method', () => {
-	it('should return legacy balance when called with valid publicKey', async () => {
-		const mockLegacySubstore = [{
-			address: '06cbc1b95358dd27',
-			balance: '100000000000000',
-		}];
-		jest.mock(mockedRequestAllFilePath, () => {
-			const actual = jest.requireActual(mockedRequestAllFilePath);
-			return {
-				...actual,
-				requestAllCustom() {
-					return { accounts: mockLegacySubstore };
-				},
-			};
-		});
-
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestConnector() {
-					return { legacy: { accounts: mockLegacySubstore } };
-				},
-			};
-		});
-
-		const { getLegacyBalance } = require('../../../shared/transactionsExport');
-
-		const legacyBalance = await getLegacyBalance(publicKey);
-
-		expect(legacyBalance).toEqual(mockLegacySubstore[0].balance);
-	});
-
-	it('should throw error when called with undefined', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestConnector() {
-					return undefined;
-				},
-			};
-		});
-
-		const { getLegacyBalance } = require('../../../shared/transactionsExport');
-		expect(getLegacyBalance(undefined)).rejects.toThrow();
 	});
 });
 
@@ -455,10 +349,11 @@ describe('Test getToday method', () => {
 
 describe('Test normalizeTransaction method', () => {
 	it('should return a transaction normalized', async () => {
-		const normalizedTx = normalizeTransaction(
+		const normalizedTx = await normalizeTransaction(
 			tokenTransfer.toOther.sender,
 			tokenTransfer.toOther.transaction,
 			chainID,
+			txFeeTokenID,
 		);
 		const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.key);
 		expect(Object.keys(normalizedTx)).toEqual(expect.arrayContaining(expectedFields));

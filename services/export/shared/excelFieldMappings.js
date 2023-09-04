@@ -20,6 +20,7 @@ const transactionMappings = [
 	{ header: 'Transaction ID', key: 'transactionID' },
 	{ header: 'Module:Command', key: 'moduleCommand' },
 	{ header: 'Transaction Fee', key: 'fee' },
+	{ header: 'Transaction Fee Token ID', key: 'txFeeTokenID' },
 	{ header: 'Amount', key: 'amount' },
 	{ header: 'Amount Token ID', key: 'amountTokenID' },
 	{ header: 'Message Fee', key: 'messageFee' },
@@ -28,22 +29,18 @@ const transactionMappings = [
 	{ header: 'Sender Public Key', key: 'senderPublicKey' },
 	{ header: 'Recipient Address', key: 'recipientAddress' },
 	{ header: 'Recipient Public Key', key: 'recipientPublicKey' },
-	// TODO: Verify if needed
-	{ header: 'Reward Token ID', key: 'rewardTokenID' },
 	{ header: 'Reward Amount', key: 'rewardAmount' },
+	{ header: 'Reward Token ID', key: 'rewardTokenID' },
 	{ header: 'Note', key: 'note' },
 	{ header: 'Sending Chain ID', key: 'sendingChainID' },
 	{ header: 'Receiving Chain ID', key: 'receivingChainID' },
 ];
 
 const metadataMappings = [
-	{ header: 'Current Chain ID', key: 'currentChainID' },
-	{ header: 'Fee Token ID', key: 'feeTokenID' },
-	{ header: 'Conversion Factor', key: 'conversionFactor' },
-	{ header: 'Date Format', key: 'dateFormat' },
-	{ header: 'Time Format', key: 'timeFormat' },
+	{ header: 'Chain ID', key: 'chainID' },
+	{ header: 'Chain Name', key: 'chainName' },
 	{ header: 'Opening Balance', key: 'openingBalance' },
-	{ header: 'Legacy Balance', key: 'legacyBalance' },
+	{ header: 'Note', key: 'note' },
 ];
 
 module.exports = {

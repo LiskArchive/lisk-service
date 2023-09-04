@@ -24,6 +24,7 @@ const {
 	getCurrentChainID,
 	resolveReceivingChainID,
 	getNetworkStatus,
+	getUniqueChainIDs,
 } = require('./chain');
 
 const {
@@ -73,6 +74,7 @@ module.exports = {
 	getCurrentChainID,
 	resolveReceivingChainID,
 	getNetworkStatus,
+	getUniqueChainIDs,
 
 	MODULE,
 	COMMAND,

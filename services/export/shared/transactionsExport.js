@@ -32,7 +32,6 @@ const {
 
 const {
 	getLisk32AddressFromPublicKey,
-	getLegacyAddress,
 	getCurrentChainID,
 	resolveReceivingChainID,
 	getNetworkStatus,
@@ -49,6 +48,7 @@ const {
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
+	getUniqueChainIDs,
 } = require('./helpers');
 
 const config = require('../config');
@@ -64,11 +64,9 @@ const staticFiles = FilesystemCache(config.cache.exports);
 const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.excel.dateFormat;
-const TIME_FORMAT = config.excel.timeFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
 
 let tokenModuleData;
-let legacyModuleData;
 let feeTokenID;
 let defaultStartDate;
 
@@ -173,28 +171,21 @@ const getRewardAssignedInfo = async (params) => {
 	return transactions;
 };
 
-const getBlockchainAppsTokenMeta = async (chainID) => {
+const getBlockchainAppsMeta = async (chainID) => {
 	try {
-		const { data: [tokenMetadata] } = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID });
-		return tokenMetadata;
+		const { data: [appMetadata] } = await requestAppRegistry('blockchain.apps.meta', { chainID });
+		return appMetadata;
 	} catch (error) {
 		// Redirect call to the mainchain service
 		const serviceURL = await requestIndexer('resolveMainchainServiceURL');
-		const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/meta/tokens`;
-		const { data: tokenMetadata } = await HTTP.get(blockchainAppsStatsEndpoint, { chainID });
-		return tokenMetadata;
+		const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/meta`;
+		const { data: appMetadata } = await HTTP.get(blockchainAppsStatsEndpoint, { chainID });
+		return appMetadata;
 	}
 };
-const getConversionFactor = async (chainID) => {
-	const tokenMetadata = await getBlockchainAppsTokenMeta(chainID);
-
-	const displayDenom = tokenMetadata.denomUnits
-		.find(denomUnit => denomUnit.denom === tokenMetadata.displayDenom);
-	const baseDenom = tokenMetadata.denomUnits
-		.find(denomUnit => denomUnit.denom === tokenMetadata.baseDenom);
-
-	const conversionFactor = displayDenom.decimals - baseDenom.decimals;
-	return conversionFactor;
+const getChainInfo = async (chainID) => {
+	const { chainName } = await getBlockchainAppsMeta(chainID);
+	return { chainID, chainName };
 };
 
 const getOpeningBalance = async (address) => {
@@ -221,27 +212,6 @@ const getOpeningBalance = async (address) => {
 	return openingBalance;
 };
 
-const getLegacyBalance = async (publicKey) => {
-	if (!legacyModuleData) {
-		const genesisBlockAssetsLength = await requestConnector(
-			'getGenesisAssetsLength',
-			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
-		);
-		const totalAccounts = genesisBlockAssetsLength[MODULE.LEGACY][MODULE_SUB_STORE.LEGACY.ACCOUNTS];
-
-		legacyModuleData = (await requestAllCustom(
-			requestConnector,
-			'getGenesisAssetByModule',
-			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
-			totalAccounts,
-		)).accounts;
-	}
-
-	const legacyAddress = getLegacyAddress(publicKey);
-	const filteredAccount = legacyModuleData.find(e => e.address === legacyAddress);
-	return filteredAccount.balance;
-};
-
 const getFeeTokenID = async () => {
 	if (!feeTokenID) {
 		feeTokenID = requestConnector('getFeeTokenID');
@@ -250,14 +220,10 @@ const getFeeTokenID = async () => {
 	return feeTokenID;
 };
 
-const getMetadata = async (params, chainID) => ({
-	currentChainID: chainID,
-	feeTokenID: await getFeeTokenID(),
-	dateFormat: DATE_FORMAT,
-	timeFormat: TIME_FORMAT,
-	conversionFactor: await getConversionFactor(chainID),
+const getMetadata = async (params, chainID, currentChainID) => ({
+	...await getChainInfo(chainID),
+	note: currentChainID,
 	openingBalance: await getOpeningBalance(params.address),
-	legacyBalance: params.publicKey ? await getLegacyBalance(params.publicKey) : null,
 });
 
 const validateIfAccountHasTransactions = async (address) => {
@@ -330,7 +296,7 @@ const resolveChainIDs = (tx, currentChainID) => {
 	return {};
 };
 
-const normalizeTransaction = (address, tx, currentChainID) => {
+const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
 	const {
 		moduleCommand,
 		senderPublicKey,
@@ -358,6 +324,7 @@ const normalizeTransaction = (address, tx, currentChainID) => {
 		time,
 		amount,
 		fee,
+		txFeeTokenID,
 		amountTokenID,
 		moduleCommand,
 		senderAddress,
@@ -439,6 +406,7 @@ const exportTransactions = async (job) => {
 	}
 
 	const currentChainID = await getCurrentChainID();
+	const txFeeTokenID = await getFeeTokenID();
 	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 
 	// Add duplicate entry with zero fees for self token transfer transactions
@@ -448,9 +416,19 @@ const exportTransactions = async (job) => {
 		}
 	});
 
-	const normalizedTransactions = await Promise.all(allTransactions
-		.map((t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
-	const metadata = await getMetadata(params, currentChainID);
+	const normalizedTransactions = await Promise.all(allTransactions.map((t) => normalizeTransaction(
+		getAddressFromParams(params),
+		t,
+		currentChainID,
+		txFeeTokenID,
+	)));
+
+	const uniqueChainIDs = await getUniqueChainIDs(normalizedTransactions);
+	const metadata = await Promise.all(uniqueChainIDs.map(async (chainID) => getMetadata(
+		params,
+		chainID,
+		currentChainID,
+	)));
 
 	const workBook = new excelJS.Workbook();
 	const transactionExportSheet = workBook.addWorksheet(config.excel.sheets.TRANSACTION_HISTORY);
@@ -548,9 +526,7 @@ module.exports = {
 	getExcelFileUrlFromParams,
 	getCrossChainTransferTransactionInfo,
 	getRewardAssignedInfo,
-	getConversionFactor,
 	getOpeningBalance,
-	getLegacyBalance,
 	getMetadata,
 	resolveChainIDs,
 };
