@@ -130,18 +130,9 @@ const hasEscrowAccount = async ({ tokenID, escrowChainID }) => {
 };
 
 const updateTokenInfo = async () => {
-	const updateTokenInfoListener = async () => {
-		try {
-			escrowedAmounts = await getEscrowedAmounts(true);
-			supportedTokens = await getSupportedTokens(true);
-			totalSupply = await getTotalSupply(true);
-		} catch (err) {
-			logger.error(`Error occurred when caching token information:\n${err.stack}`);
-		}
-	};
-
-	Signals.get('chain_newBlock').add(updateTokenInfoListener);
-	Signals.get('chain_deleteBlock').add(updateTokenInfoListener);
+	escrowedAmounts = await getEscrowedAmounts(true);
+	supportedTokens = await getSupportedTokens(true);
+	totalSupply = await getTotalSupply(true);
 };
 
 module.exports = {
