@@ -54,7 +54,7 @@ const subscribeToAllRegisteredEvents = async () => {
 				// Force update necessary caches on new chain events
 				if (event.startsWith('chain_')) {
 					await getNodeInfo(true).catch(err => logError('getNodeInfo', err));
-					await updateTokenInfo(true).catch(err => logError('updateTokenInfo', err));
+					await updateTokenInfo().catch(err => logError('updateTokenInfo', err));
 				}
 
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
