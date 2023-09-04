@@ -6265,7 +6265,7 @@ The file is ready to export
     "address": "lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt",
     "interval": "2021-03-16:2021-12-06",
     "fileName": "transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv",
-    "fileUrl": "/api/v3/exports/transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv"
+    "fileUrl": "/api/v3/exports/transactions_00000000_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv"
   },
   "meta": {
     "ready": true
