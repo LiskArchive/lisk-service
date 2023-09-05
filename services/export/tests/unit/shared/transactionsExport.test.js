@@ -27,6 +27,8 @@ const {
 	transactions,
 } = require('../../constants/transaction');
 
+const { blocks } = require('../../constants/blocks');
+
 const config = require('../../../config');
 const fieldMappings = require('../../../shared/excelFieldMappings');
 const { PARTIAL_FILENAME } = require('../../../shared/regex');
@@ -37,7 +39,13 @@ const {
 	normalizeTransaction,
 	getPartialFilenameFromParams,
 	resolveChainIDs,
+	normalizeBlocks,
 } = require('../../../shared/transactionsExport');
+
+const {
+	dateFromTimestamp,
+	timeFromTimestamp,
+} = require('../../../shared/helpers/time');
 
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
 const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/requestAll`);
@@ -67,65 +75,8 @@ beforeEach(() => jest.resetModules());
 const address = 'lskpg7qukha2nmu9483huwk8oty7q3pyevh3bohr4';
 const publicKey = '86cbecb2a176934e454f63e7ffa05783be6960d90002c5558dfd31397cd8f020';
 const chainID = '04000000';
+const txFeeTokenID = '0400000000000000';
 const partialFilenameExtension = '.json';
-
-describe('Test getConversionFactor method', () => {
-	const validChainID = '04000000';
-	const invalidChainID = 'invalid';
-
-	it('should return conversion factor when called with valid chainID', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestAppRegistry() {
-					return {
-						data: [{
-							displayDenom: 'lsk',
-							baseDenom: 'beddows',
-							denomUnits: [
-								{
-									denom: 'beddows',
-									decimals: 0,
-									aliases: [
-										'Beddows',
-									],
-								},
-								{
-									denom: 'lsk',
-									decimals: 8,
-									aliases: [
-										'Lisk',
-									],
-								},
-							],
-						}],
-					};
-				},
-			};
-		});
-
-		const { getConversionFactor } = require('../../../shared/transactionsExport');
-
-		const conversionFactor = await getConversionFactor(validChainID);
-		expect(conversionFactor).toEqual(8);
-	});
-
-	it('should throw error when called with invalid chainID', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestAppRegistry() {
-					return undefined;
-				},
-			};
-		});
-
-		const { getConversionFactor } = require('../../../shared/transactionsExport');
-		expect(getConversionFactor(invalidChainID)).rejects.toThrow();
-	});
-});
 
 describe('Test getOpeningBalance method', () => {
 	it('should return opening balance when called with valid address', async () => {
@@ -180,55 +131,6 @@ describe('Test getOpeningBalance method', () => {
 
 		const { getOpeningBalance } = require('../../../shared/transactionsExport');
 		expect(getOpeningBalance(undefined)).rejects.toThrow();
-	});
-});
-
-describe('Test getLegacyBalance method', () => {
-	it('should return legacy balance when called with valid publicKey', async () => {
-		const mockLegacySubstore = [{
-			address: '06cbc1b95358dd27',
-			balance: '100000000000000',
-		}];
-		jest.mock(mockedRequestAllFilePath, () => {
-			const actual = jest.requireActual(mockedRequestAllFilePath);
-			return {
-				...actual,
-				requestAllCustom() {
-					return { accounts: mockLegacySubstore };
-				},
-			};
-		});
-
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestConnector() {
-					return { legacy: { accounts: mockLegacySubstore } };
-				},
-			};
-		});
-
-		const { getLegacyBalance } = require('../../../shared/transactionsExport');
-
-		const legacyBalance = await getLegacyBalance(publicKey);
-
-		expect(legacyBalance).toEqual(mockLegacySubstore[0].balance);
-	});
-
-	it('should throw error when called with undefined', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestConnector() {
-					return undefined;
-				},
-			};
-		});
-
-		const { getLegacyBalance } = require('../../../shared/transactionsExport');
-		expect(getLegacyBalance(undefined)).rejects.toThrow();
 	});
 });
 
@@ -455,13 +357,17 @@ describe('Test getToday method', () => {
 
 describe('Test normalizeTransaction method', () => {
 	it('should return a transaction normalized', async () => {
-		const normalizedTx = normalizeTransaction(
+		const normalizedTx = await normalizeTransaction(
 			tokenTransfer.toOther.sender,
 			tokenTransfer.toOther.transaction,
 			chainID,
+			txFeeTokenID,
 		);
-		const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.key);
-		expect(Object.keys(normalizedTx)).toEqual(expect.arrayContaining(expectedFields));
+		const expectedFields = Object
+			.values(fieldMappings.transactionMappings)
+			.map((v) => v.key !== 'blockReward' ? v.key : undefined);
+		expect(Object.keys(normalizedTx))
+			.toEqual(expect.arrayContaining(expectedFields.filter(e => e)));
 	});
 });
 
@@ -505,5 +411,34 @@ describe('Test resolveChainIDs method', () => {
 	it('should return empty object when called with non-token transferCrossChain transaction', async () => {
 		const response = resolveChainIDs(transactions.stake, chainID);
 		expect(Object.getOwnPropertyNames(response).length).toBe(0);
+	});
+});
+
+describe('Test normalizeBlocks method', () => {
+	it('should return a blocks normalized when called with valid blocks', async () => {
+		const normalizedBlocks = await normalizeBlocks(blocks);
+		const expectedResponse = [
+			{
+				blockHeight: blocks[0].height,
+				blockReward: blocks[0].reward,
+				date: dateFromTimestamp(blocks[0].timestamp),
+				time: timeFromTimestamp(blocks[0].timestamp),
+			},
+			{
+				blockHeight: blocks[1].height,
+				blockReward: blocks[1].reward,
+				date: dateFromTimestamp(blocks[1].timestamp),
+				time: timeFromTimestamp(blocks[1].timestamp),
+			},
+		];
+		expect(normalizedBlocks).toEqual(expectedResponse);
+	});
+
+	it('should throw error when called with null', async () => {
+		expect(normalizeBlocks(null)).rejects.toThrow();
+	});
+
+	it('should throw error when called with undefined', async () => {
+		expect(normalizeBlocks(undefined)).rejects.toThrow();
 	});
 });

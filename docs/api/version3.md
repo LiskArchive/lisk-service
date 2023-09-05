@@ -6285,7 +6285,7 @@ The file is ready to export
     "address": "lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw",
     "interval": "2023-08-30:2023-08-30",
     "fileName": "transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx",
-    "fileUrl": "/api/v3/exports/transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx"
+    "fileUrl": "/api/v3/exports/transactions_00000000_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx"
   },
   "meta": {
     "ready": true
@@ -6321,14 +6321,14 @@ Returns transaction history
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| filename   | String          | `/^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/` | *(empty)*      |                                        |
+| filename   | String          | `/^\btransactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))\.xlsx\b$/` | *(empty)*      |                                        |
 
 #### Response example
 Schedule transaction export
 
 200 OK
 ```
-[CSV file]
+[EXCEL file]
 ```
 
 
@@ -6345,5 +6345,5 @@ _Invalid parameter_
 #### Examples
 
 ```
-https://service.lisk.com/api/v3/export/download?filename=transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx
+https://service.lisk.com/api/v3/export/download?filename=transactions_00000000_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx
 ```
