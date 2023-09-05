@@ -37,14 +37,12 @@ const resolveReceivingChainID = (tx, currentChainID) => tx
 	: currentChainID;
 
 const getUniqueChainIDs = async (txs) => {
-	const chainIDs = [];
-
+	const chainIDs = new Set();
 	txs.forEach(tx => {
-		if (tx.sendingChainID) chainIDs.push(tx.sendingChainID);
-		if (tx.receivingChainID) chainIDs.push(tx.receivingChainID);
+		if (tx.sendingChainID) chainIDs.add(tx.sendingChainID);
+		if (tx.receivingChainID) chainIDs.add(tx.receivingChainID);
 	});
-
-	return Array.from(new Set(chainIDs));
+	return Array.from(chainIDs);
 };
 
 module.exports = {

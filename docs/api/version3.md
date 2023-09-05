@@ -6312,14 +6312,14 @@ Returns transaction history
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| filename   | String          | `/^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/` | *(empty)*      |                                        |
+| filename   | String          | `/^\btransactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))\.xlsx\b$/` | *(empty)*      |                                        |
 
 #### Response example
 Schedule transaction export
 
 200 OK
 ```
-[CSV file]
+[EXCEL file]
 ```
 
 

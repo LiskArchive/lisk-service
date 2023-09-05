@@ -18,6 +18,7 @@ const transactionMappings = [
 	{ header: 'Time', key: 'time' },
 	{ header: 'Block Height', key: 'blockHeight' },
 	{ header: 'Block Reward', key: 'blockReward' },
+	{ header: 'Block Reward Token ID', key: 'rewardTokenID' },
 	{ header: 'Transaction ID', key: 'transactionID' },
 	{ header: 'Module:Command', key: 'moduleCommand' },
 	{ header: 'Transaction Fee', key: 'fee' },

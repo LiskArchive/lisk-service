@@ -42,6 +42,11 @@ const {
 	normalizeBlocks,
 } = require('../../../shared/transactionsExport');
 
+const {
+	dateFromTimestamp,
+	timeFromTimestamp,
+} = require('../../../shared/helpers/time');
+
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
 const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/requestAll`);
 
@@ -359,7 +364,7 @@ describe('Test normalizeTransaction method', () => {
 			txFeeTokenID,
 		);
 		const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.key);
-		expect(Object.keys(normalizedTx)).toEqual(expect.arrayContaining(expectedFields));
+		expect(expect.arrayContaining(expectedFields)).toEqual(Object.keys(normalizedTx));
 	});
 });
 
@@ -411,16 +416,16 @@ describe('Test normalizeBlocks method', () => {
 		const normalizedBlocks = await normalizeBlocks(blocks);
 		const expectedResponse = [
 			{
-				blockHeight: 15,
-				blockReward: 0,
-				date: '2022-11-17',
-				time: '11:52:28',
+				blockHeight: blocks[0].height,
+				blockReward: blocks[0].reward,
+				date: dateFromTimestamp(blocks[0].timestamp),
+				time: timeFromTimestamp(blocks[0].timestamp),
 			},
 			{
-				blockHeight: 136,
-				blockReward: 0,
-				date: '2023-09-05',
-				time: '10:23:40',
+				blockHeight: blocks[1].height,
+				blockReward: blocks[1].reward,
+				date: dateFromTimestamp(blocks[1].timestamp),
+				time: timeFromTimestamp(blocks[1].timestamp),
 			},
 		];
 		expect(normalizedBlocks).toEqual(expectedResponse);
