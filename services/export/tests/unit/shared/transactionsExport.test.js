@@ -27,6 +27,8 @@ const {
 	transactions,
 } = require('../../constants/transaction');
 
+const { blocks } = require('../../constants/blocks');
+
 const config = require('../../../config');
 const fieldMappings = require('../../../shared/excelFieldMappings');
 const { PARTIAL_FILENAME } = require('../../../shared/regex');
@@ -37,6 +39,7 @@ const {
 	normalizeTransaction,
 	getPartialFilenameFromParams,
 	resolveChainIDs,
+	normalizeBlocks,
 } = require('../../../shared/transactionsExport');
 
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
@@ -400,5 +403,34 @@ describe('Test resolveChainIDs method', () => {
 	it('should return empty object when called with non-token transferCrossChain transaction', async () => {
 		const response = resolveChainIDs(transactions.stake, chainID);
 		expect(Object.getOwnPropertyNames(response).length).toBe(0);
+	});
+});
+
+describe('Test normalizeBlocks method', () => {
+	it('should return a blocks normalized when called with valid blocks', async () => {
+		const normalizedBlocks = await normalizeBlocks(blocks);
+		const expectedResponse = [
+			{
+				blockHeight: 15,
+				blockReward: 0,
+				date: '2022-11-17',
+				time: '11:52:28',
+			},
+			{
+				blockHeight: 136,
+				blockReward: 0,
+				date: '2023-09-05',
+				time: '10:23:40',
+			},
+		];
+		expect(normalizedBlocks).toEqual(expectedResponse);
+	});
+
+	it('should throw error when called with null', async () => {
+		expect(normalizeBlocks(null)).rejects.toThrow();
+	});
+
+	it('should throw error when called with undefined', async () => {
+		expect(normalizeBlocks(undefined)).rejects.toThrow();
 	});
 });

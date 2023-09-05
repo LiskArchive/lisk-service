@@ -565,4 +565,5 @@ module.exports = {
 	getOpeningBalance,
 	getMetadata,
 	resolveChainIDs,
+	normalizeBlocks,
 };
