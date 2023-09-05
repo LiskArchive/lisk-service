@@ -71,6 +71,7 @@ let feeTokenID;
 let defaultStartDate;
 
 const getTransactions = async (params) => requestIndexer('transactions', params);
+const getBlocks = async (params) => requestIndexer('blocks', params);
 
 const getGenesisBlock = async (height) => requestIndexer(
 	'blocks',
@@ -169,6 +170,33 @@ const getRewardAssignedInfo = async (params) => {
 	}
 
 	return transactions;
+};
+
+const getBlocksInAsc = async (params) => {
+	const totalBlocks = (await getBlocks({
+		generatorAddress: params.address,
+		timestamp: params.timestamp,
+		limit: 1,
+	})).meta.total;
+
+	const blocks = await requestAllStandard(getBlocks, {
+		generatorAddress: params.address,
+		timestamp: params.timestamp,
+		sort: 'timestamp:desc',
+	}, totalBlocks);
+
+	return blocks;
+};
+
+const normalizeBlocks = async (blocks) => {
+	const normalizedBlocks = blocks.map(block => ({
+		blockHeight: block.height,
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockReward: block.reward,
+	}));
+
+	return normalizedBlocks;
 };
 
 const getBlockchainAppsMeta = async (chainID) => {
@@ -347,6 +375,7 @@ const exportTransactions = async (job) => {
 	const { params } = job.data;
 
 	const allTransactions = [];
+	const allBlocks = [];
 
 	// Validate if account has transactions
 	const isAccountHasTransactions = await validateIfAccountHasTransactions(params.address);
@@ -378,6 +407,11 @@ const exportTransactions = async (job) => {
 					...params,
 					timestamp: timestampRange,
 				});
+
+				const blocks = await getBlocksInAsc({
+					...params, timestamp: timestampRange,
+				});
+				allBlocks.push(...blocks);
 
 				const rewardAssignedInfo = await getRewardAssignedInfo({
 					...params,
@@ -423,6 +457,8 @@ const exportTransactions = async (job) => {
 		txFeeTokenID,
 	)));
 
+	const normalizedBlocks = await normalizeBlocks(allBlocks);
+
 	const uniqueChainIDs = await getUniqueChainIDs(normalizedTransactions);
 	const metadata = await Promise.all(uniqueChainIDs.map(async (chainID) => getMetadata(
 		params,
@@ -436,8 +472,8 @@ const exportTransactions = async (job) => {
 	transactionExportSheet.columns = fields.transactionMappings;
 	metadataSheet.columns = fields.metadataMappings;
 
-	transactionExportSheet.addRows(normalizedTransactions);
-	metadataSheet.addRows([metadata]);
+	transactionExportSheet.addRows([...normalizedTransactions, ...normalizedBlocks]);
+	metadataSheet.addRows(metadata);
 
 	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
 };
