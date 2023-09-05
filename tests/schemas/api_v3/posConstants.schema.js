@@ -28,7 +28,8 @@ const constantsSchema = {
 	maxNumberPendingUnlocks: Joi.number().min(0).required(),
 	failSafeMissedBlocks: Joi.number().min(0).required(),
 	failSafeInactiveWindow: Joi.number().min(0).required(),
-	punishmentWindow: Joi.number().min(0).required(),
+	punishmentWindowStaking: Joi.number().min(0).required(),
+	punishmentWindowSelfStaking: Joi.number().min(0).required(),
 	roundLength: Joi.number().min(0).required(),
 	minWeightStandby: Joi.string().pattern(regex.DIGITS).required(),
 	numberActiveValidators: Joi.number().min(0).required(),
@@ -37,6 +38,13 @@ const constantsSchema = {
 	maxBFTWeightCap: Joi.number().min(0).required(),
 	commissionIncreasePeriod: Joi.number().min(0).required(),
 	maxCommissionIncreaseRate: Joi.number().min(0).required(),
+	useInvalidBLSKey: Joi.bool().required(),
+	baseStakeAmount: Joi.string().pattern(regex.DIGITS).required(),
+	lockingPeriodStaking: Joi.number().min(0).required(),
+	lockingPeriodSelfStaking: Joi.number().min(0).required(),
+	reportMisbehaviorReward: Joi.string().pattern(regex.DIGITS).required(),
+	reportMisbehaviorLimitBanned: Joi.number().min(0).required(),
+	weightScaleFactor: Joi.string().pattern(regex.DIGITS).required(),
 	extraCommandFees: Joi.object(extraCommandFeesSchema).required(),
 };
 
