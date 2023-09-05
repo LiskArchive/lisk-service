@@ -48,14 +48,14 @@
     "chainName": {
         "name": "chainName",
         "in": "query",
-        "description": "Chain name to query.",
+        "description": "Chain name to query. Supports case-insensitive chain name.",
         "type": "string",
         "minLength": 3
     },
     "displayName": {
         "name": "displayName",
         "in": "query",
-        "description": "Display name to query.",
+        "description": "Display name to query. Supports case-insensitive display name.",
         "type": "string",
         "minLength": 3
     },

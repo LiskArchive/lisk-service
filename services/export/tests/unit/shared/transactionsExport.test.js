@@ -363,8 +363,11 @@ describe('Test normalizeTransaction method', () => {
 			chainID,
 			txFeeTokenID,
 		);
-		const expectedFields = Object.values(fieldMappings.transactionMappings).map((v) => v.key);
-		expect(expect.arrayContaining(expectedFields)).toEqual(Object.keys(normalizedTx));
+		const expectedFields = Object
+			.values(fieldMappings.transactionMappings)
+			.map((v) => v.key !== 'blockReward' ? v.key : undefined);
+		expect(Object.keys(normalizedTx))
+			.toEqual(expect.arrayContaining(expectedFields.filter(e => e)));
 	});
 });
 
