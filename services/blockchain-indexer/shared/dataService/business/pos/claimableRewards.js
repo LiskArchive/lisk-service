@@ -21,7 +21,11 @@ const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 const getPosClaimableRewards = async params => {
 	const claimableRewards = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	if (!params.address && params.name) {

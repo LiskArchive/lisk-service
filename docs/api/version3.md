@@ -1562,15 +1562,23 @@ No parameters are required.
     "maxNumberPendingUnlocks": 20,
     "failSafeMissedBlocks": 50,
     "failSafeInactiveWindow": 260000,
-    "punishmentWindow": 780000,
-    "roundLength": 10,
+    "punishmentWindowStaking": 241920,
+    "punishmentWindowSelfStaking": 725760,
+    "roundLength": 103,
     "minWeightStandby": "100000000000",
     "numberActiveValidators": 101,
-    "numberStandbyDelegates": 2,
+    "numberStandbyValidators": 2,
     "posTokenID": "0000000000000000",
     "maxBFTWeightCap": 500,
     "commissionIncreasePeriod": 260000,
     "maxCommissionIncreaseRate": 500,
+    "useInvalidBLSKey": false,
+    "baseStakeAmount": "1000000000",
+    "lockingPeriodStaking": 26000,
+    "lockingPeriodSelfStaking": 260000,
+    "reportMisbehaviorReward": "100000000",
+    "reportMisbehaviorLimitBanned": 5,
+    "weightScaleFactor": "100000000000",
     "extraCommandFees": {
       "validatorRegistrationFee": "1000000000"
     }
@@ -5630,7 +5638,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
 | status | String | `/^\b(?:registered\|activated\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5886,12 +5894,12 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc | When sorting, default chains will be prioritized at the top of the list. |
 
 #### Response example
 
@@ -5943,15 +5951,16 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
+| displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive display name. |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name or display name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc | When sorting, unless isDefault is explicitly specified, default chains will be prioritized at the top of the list. |
+
 #### Response example
 
 200 OK
@@ -6035,9 +6044,9 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
-| tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* |  |
+| tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* | Supports case-insensitive token name. |
 | tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
@@ -6276,7 +6285,7 @@ The file is ready to export
     "address": "lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw",
     "interval": "2023-08-30:2023-08-30",
     "fileName": "transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx",
-    "fileUrl": "/api/v3/exports/transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx"
+    "fileUrl": "/api/v3/exports/transactions_00000000_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx"
   },
   "meta": {
     "ready": true
@@ -6312,14 +6321,14 @@ Returns transaction history
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| filename   | String          | `/^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/` | *(empty)*      |                                        |
+| filename   | String          | `/^\btransactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))\.xlsx\b$/` | *(empty)*      |                                        |
 
 #### Response example
 Schedule transaction export
 
 200 OK
 ```
-[CSV file]
+[EXCEL file]
 ```
 
 
@@ -6336,5 +6345,5 @@ _Invalid parameter_
 #### Examples
 
 ```
-https://service.lisk.com/api/v3/export/download?filename=transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx
+https://service.lisk.com/api/v3/export/download?filename=transactions_00000000_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx
 ```
