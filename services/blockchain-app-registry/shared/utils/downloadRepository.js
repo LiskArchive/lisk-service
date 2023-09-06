@@ -281,6 +281,7 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 		// Skip if there is no new commit
 		if (lastSyncedCommitHash === latestCommitHash) {
 			logger.info('Database is already up-to-date.');
+			if (isCustomDBTrx) await commitDBTransaction(dbTrx);
 			return;
 		}
 
@@ -400,12 +401,10 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 	}
 };
 
-const downloadRepositoryToFS = async () => {
+const downloadRepositoryToFS = async (dbTrx) => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
 
-	const dbConnection = await getDBConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDBTransaction(dbConnection);
 	const lastSyncedCommitHash = await keyValueTable.get(
 		KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC,
 		dbTrx,
@@ -413,9 +412,7 @@ const downloadRepositoryToFS = async () => {
 
 	if (lastSyncedCommitHash && await exists(appDirPath)) {
 		logger.trace('Synchronizing with the remote repository.');
-		await syncWithRemoteRepo(dbTrx)
-			.then(() => commitDBTransaction(dbTrx))
-			.catch(() => rollbackDBTransaction(dbTrx));
+		await syncWithRemoteRepo(dbTrx);
 		logger.info('Finished synchronizing with the remote repository successfully.');
 	} else {
 		if (!(await exists(dataDirectory))) {
@@ -434,8 +431,7 @@ const downloadRepositoryToFS = async () => {
 		await mv(oldDir, appDirPath);
 
 		const latestCommitHash = await getLatestCommitHash();
-		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx)
-			.then(() => commitDBTransaction(dbTrx));
+		await keyValueTable.set(KV_STORE_KEY.COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash, dbTrx);
 	}
 };
 
