@@ -149,14 +149,20 @@ const getEvents = async (params) => {
 		const { blockID, ...remParams } = params;
 		params = remParams;
 		const [block] = await blocksTable.find({ id: blockID }, ['height']);
+		if (!block || !block.height) {
+			throw new NotFoundException(`Invalid blockID: ${blockID}`);
+		}
 		if ('height' in params && params.height !== block.height) {
 			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 		}
 		params.height = block.height;
 	}
 
+	const { order, sort, ...remParams } = params;
+	const [sortColumn, sortDirection] = sort.split(':');
+	const [orderColumn, orderDirection] = order.split(':');
 	const response = await eventTopicsTable.find(
-		{ ...params, distinct: 'eventID' },
+		{ ...remParams, groupBy: 'eventID', orderByRaw: [`MAX(\`${sortColumn}\`) ${sortDirection}`, `MAX(\`${orderColumn}\`) ${orderDirection}`] },
 		['eventID'],
 	);
 
@@ -192,7 +198,10 @@ const getEvents = async (params) => {
 		{ concurrency: eventsInfo.length },
 	);
 
-	const total = await eventTopicsTable.count({ ...params, distinct: 'eventID' });
+	const total = await eventTopicsTable.count(
+		{ ...remParams, groupBy: 'eventID', orderByRaw: [`MAX(\`${sortColumn}\`) ${sortDirection}`, `MAX(\`${orderColumn}\`) ${orderDirection}`] },
+		['eventID'],
+	);
 
 	events.meta = {
 		count: events.data.length,
