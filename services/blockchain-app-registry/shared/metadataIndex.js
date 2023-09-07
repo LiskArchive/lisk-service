@@ -24,10 +24,6 @@ const {
 	DB: {
 		MySQL: {
 			getTableInstance,
-			getDBConnection,
-			startDBTransaction,
-			commitDBTransaction,
-			rollbackDBTransaction,
 		},
 	},
 } = require('lisk-service-framework');
@@ -182,7 +178,7 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 	logger.info(`Finished deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
 };
 
-const indexAllBlockchainAppsMeta = async () => {
+const indexAllBlockchainAppsMeta = async (dbTrx) => {
 	const dataDirectory = config.dataDir;
 	const repo = config.gitHub.appRegistryRepoName;
 	const repoPath = path.join(dataDirectory, repo);
@@ -205,18 +201,7 @@ const indexAllBlockchainAppsMeta = async () => {
 							const filename = file.split('/').pop();
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
-								const connection = await getDBConnection(MYSQL_ENDPOINT);
-								const dbTrx = await startDBTransaction(connection);
-
-								try {
-									logger.debug('Created new MySQL transaction to index blockchain metadata information.');
-									await indexMetadataFromFile(file, dbTrx);
-									await commitDBTransaction(dbTrx);
-									logger.debug('Committed MySQL transaction to index blockchain metadata information.');
-								} catch (error) {
-									await rollbackDBTransaction(dbTrx);
-									logger.debug(`Rolled back MySQL transaction to index blockchain metadata information.\nError: ${error}`);
-								}
+								await indexMetadataFromFile(file, dbTrx);
 							}
 						},
 						{ concurrency: allFilesFromApp.length },

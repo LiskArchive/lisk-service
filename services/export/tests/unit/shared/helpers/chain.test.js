@@ -15,6 +15,7 @@
  */
 const {
 	resolveReceivingChainID,
+	getUniqueChainIDs,
 } = require('../../../../shared/helpers/chain');
 
 const {
@@ -43,5 +44,25 @@ describe('Test chain utils', () => {
 
 	it('should throw error when called with null', async () => {
 		expect(async () => resolveReceivingChainID(null)).rejects.toThrow(TypeError);
+	});
+});
+
+describe('Test getUniqueChainIDs', () => {
+	it('should return unique chainIDs', async () => {
+		const txs = [
+			{ sendingChainID: '04000000', receivingChainID: '04000001' },
+			{ sendingChainID: '04000000', receivingChainID: '04000002' },
+		];
+		const expectedResponse = ['04000000', '04000001', '04000002'];
+		const uniqueChainIDs = await getUniqueChainIDs(txs);
+		expect(uniqueChainIDs).toEqual(expectedResponse);
+	});
+
+	it('should throw error when called with null', async () => {
+		expect(getUniqueChainIDs(null)).rejects.toThrow();
+	});
+
+	it('should throw error when called with undefined', async () => {
+		expect(getUniqueChainIDs(undefined)).rejects.toThrow();
 	});
 });

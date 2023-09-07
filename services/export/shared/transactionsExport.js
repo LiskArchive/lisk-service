@@ -32,7 +32,6 @@ const {
 
 const {
 	getLisk32AddressFromPublicKey,
-	getLegacyAddress,
 	getCurrentChainID,
 	resolveReceivingChainID,
 	getNetworkStatus,
@@ -49,6 +48,7 @@ const {
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
+	getUniqueChainIDs,
 } = require('./helpers');
 
 const config = require('../config');
@@ -64,15 +64,14 @@ const staticFiles = FilesystemCache(config.cache.exports);
 const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.excel.dateFormat;
-const TIME_FORMAT = config.excel.timeFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
 
 let tokenModuleData;
-let legacyModuleData;
 let feeTokenID;
 let defaultStartDate;
 
 const getTransactions = async (params) => requestIndexer('transactions', params);
+const getBlocks = async (params) => requestIndexer('blocks', params);
 
 const getGenesisBlock = async (height) => requestIndexer(
 	'blocks',
@@ -173,28 +172,48 @@ const getRewardAssignedInfo = async (params) => {
 	return transactions;
 };
 
-const getBlockchainAppsTokenMeta = async (chainID) => {
+const getBlocksInAsc = async (params) => {
+	const totalBlocks = (await getBlocks({
+		generatorAddress: params.address,
+		timestamp: params.timestamp,
+		limit: 1,
+	})).meta.total;
+
+	const blocks = await requestAllStandard(getBlocks, {
+		generatorAddress: params.address,
+		timestamp: params.timestamp,
+		sort: 'timestamp:desc',
+	}, totalBlocks);
+
+	return blocks;
+};
+
+const normalizeBlocks = async (blocks) => {
+	const normalizedBlocks = blocks.map(block => ({
+		blockHeight: block.height,
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockReward: block.reward,
+	}));
+
+	return normalizedBlocks;
+};
+
+const getBlockchainAppsMeta = async (chainID) => {
 	try {
-		const { data: [tokenMetadata] } = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID });
-		return tokenMetadata;
+		const { data: [appMetadata] } = await requestAppRegistry('blockchain.apps.meta', { chainID });
+		return appMetadata;
 	} catch (error) {
 		// Redirect call to the mainchain service
 		const serviceURL = await requestIndexer('resolveMainchainServiceURL');
-		const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/meta/tokens`;
-		const { data: tokenMetadata } = await HTTP.get(blockchainAppsStatsEndpoint, { chainID });
-		return tokenMetadata;
+		const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/meta`;
+		const { data: appMetadata } = await HTTP.get(blockchainAppsStatsEndpoint, { chainID });
+		return appMetadata;
 	}
 };
-const getConversionFactor = async (chainID) => {
-	const tokenMetadata = await getBlockchainAppsTokenMeta(chainID);
-
-	const displayDenom = tokenMetadata.denomUnits
-		.find(denomUnit => denomUnit.denom === tokenMetadata.displayDenom);
-	const baseDenom = tokenMetadata.denomUnits
-		.find(denomUnit => denomUnit.denom === tokenMetadata.baseDenom);
-
-	const conversionFactor = displayDenom.decimals - baseDenom.decimals;
-	return conversionFactor;
+const getChainInfo = async (chainID) => {
+	const { chainName } = await getBlockchainAppsMeta(chainID);
+	return { chainID, chainName };
 };
 
 const getOpeningBalance = async (address) => {
@@ -221,27 +240,6 @@ const getOpeningBalance = async (address) => {
 	return openingBalance;
 };
 
-const getLegacyBalance = async (publicKey) => {
-	if (!legacyModuleData) {
-		const genesisBlockAssetsLength = await requestConnector(
-			'getGenesisAssetsLength',
-			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
-		);
-		const totalAccounts = genesisBlockAssetsLength[MODULE.LEGACY][MODULE_SUB_STORE.LEGACY.ACCOUNTS];
-
-		legacyModuleData = (await requestAllCustom(
-			requestConnector,
-			'getGenesisAssetByModule',
-			{ module: MODULE.LEGACY, subStore: MODULE_SUB_STORE.LEGACY.ACCOUNTS },
-			totalAccounts,
-		)).accounts;
-	}
-
-	const legacyAddress = getLegacyAddress(publicKey);
-	const filteredAccount = legacyModuleData.find(e => e.address === legacyAddress);
-	return filteredAccount.balance;
-};
-
 const getFeeTokenID = async () => {
 	if (!feeTokenID) {
 		feeTokenID = requestConnector('getFeeTokenID');
@@ -250,14 +248,10 @@ const getFeeTokenID = async () => {
 	return feeTokenID;
 };
 
-const getMetadata = async (params, chainID) => ({
-	currentChainID: chainID,
-	feeTokenID: await getFeeTokenID(),
-	dateFormat: DATE_FORMAT,
-	timeFormat: TIME_FORMAT,
-	conversionFactor: await getConversionFactor(chainID),
+const getMetadata = async (params, chainID, currentChainID) => ({
+	...await getChainInfo(chainID),
+	note: `Current Chain ID: ${currentChainID}`,
 	openingBalance: await getOpeningBalance(params.address),
-	legacyBalance: params.publicKey ? await getLegacyBalance(params.publicKey) : null,
 });
 
 const validateIfAccountHasTransactions = async (address) => {
@@ -301,16 +295,16 @@ const getPartialFilenameFromParams = async (params, day) => {
 	return filename;
 };
 
-const getExcelFilenameFromParams = async (params) => {
+const getExcelFilenameFromParams = async (params, chainID) => {
 	const address = getAddressFromParams(params);
 	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
 
-	const filename = `transactions_${address}_${from}_${to}.xlsx`;
+	const filename = `transactions_${chainID}_${address}_${from}_${to}.xlsx`;
 	return filename;
 };
 
-const getExcelFileUrlFromParams = async (params) => {
-	const filename = await getExcelFilenameFromParams(params);
+const getExcelFileUrlFromParams = async (params, chainID) => {
+	const filename = await getExcelFilenameFromParams(params, chainID);
 	const url = `${config.excel.baseURL}?filename=${filename}`;
 	return url;
 };
@@ -330,7 +324,7 @@ const resolveChainIDs = (tx, currentChainID) => {
 	return {};
 };
 
-const normalizeTransaction = (address, tx, currentChainID) => {
+const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
 	const {
 		moduleCommand,
 		senderPublicKey,
@@ -358,6 +352,7 @@ const normalizeTransaction = (address, tx, currentChainID) => {
 		time,
 		amount,
 		fee,
+		txFeeTokenID,
 		amountTokenID,
 		moduleCommand,
 		senderAddress,
@@ -380,6 +375,7 @@ const exportTransactions = async (job) => {
 	const { params } = job.data;
 
 	const allTransactions = [];
+	const allBlocks = [];
 
 	// Validate if account has transactions
 	const isAccountHasTransactions = await validateIfAccountHasTransactions(params.address);
@@ -412,6 +408,11 @@ const exportTransactions = async (job) => {
 					timestamp: timestampRange,
 				});
 
+				const blocks = await getBlocksInAsc({
+					...params, timestamp: timestampRange,
+				});
+				allBlocks.push(...blocks);
+
 				const rewardAssignedInfo = await getRewardAssignedInfo({
 					...params,
 					timestamp: timestampRange,
@@ -438,7 +439,9 @@ const exportTransactions = async (job) => {
 		}
 	}
 
-	const excelFilename = await getExcelFilenameFromParams(params);
+	const currentChainID = await getCurrentChainID();
+	const txFeeTokenID = await getFeeTokenID();
+	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 
 	// Add duplicate entry with zero fees for self token transfer transactions
 	allTransactions.forEach((tx, i, arr) => {
@@ -447,10 +450,21 @@ const exportTransactions = async (job) => {
 		}
 	});
 
-	const currentChainID = await getCurrentChainID();
-	const normalizedTransactions = await Promise.all(allTransactions
-		.map((t) => normalizeTransaction(getAddressFromParams(params), t, currentChainID)));
-	const metadata = await getMetadata(params, currentChainID);
+	const normalizedTransactions = await Promise.all(allTransactions.map((t) => normalizeTransaction(
+		getAddressFromParams(params),
+		t,
+		currentChainID,
+		txFeeTokenID,
+	)));
+
+	const normalizedBlocks = await normalizeBlocks(allBlocks);
+
+	const uniqueChainIDs = await getUniqueChainIDs(normalizedTransactions);
+	const metadata = await Promise.all(uniqueChainIDs.map(async (chainID) => getMetadata(
+		params,
+		chainID,
+		currentChainID,
+	)));
 
 	const workBook = new excelJS.Workbook();
 	const transactionExportSheet = workBook.addWorksheet(config.excel.sheets.TRANSACTION_HISTORY);
@@ -458,8 +472,8 @@ const exportTransactions = async (job) => {
 	transactionExportSheet.columns = fields.transactionMappings;
 	metadataSheet.columns = fields.metadataMappings;
 
-	transactionExportSheet.addRows(normalizedTransactions);
-	metadataSheet.addRows([metadata]);
+	transactionExportSheet.addRows([...normalizedTransactions, ...normalizedBlocks]);
+	metadataSheet.addRows(metadata);
 
 	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
 };
@@ -494,10 +508,11 @@ const scheduleTransactionHistoryExport = async (params) => {
 	exportResponse.data.publicKey = publicKey;
 	exportResponse.data.interval = await standardizeIntervalFromParams(params);
 
-	const excelFilename = await getExcelFilenameFromParams(params);
+	const currentChainID = await getCurrentChainID();
+	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 	if (await staticFiles.fileExists(excelFilename)) {
 		exportResponse.data.fileName = excelFilename;
-		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params);
+		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params, currentChainID);
 		exportResponse.meta.ready = true;
 	} else {
 		await scheduleTransactionExportQueue.add({ params: { ...params, address } });
@@ -547,9 +562,8 @@ module.exports = {
 	getExcelFileUrlFromParams,
 	getCrossChainTransferTransactionInfo,
 	getRewardAssignedInfo,
-	getConversionFactor,
 	getOpeningBalance,
-	getLegacyBalance,
 	getMetadata,
 	resolveChainIDs,
+	normalizeBlocks,
 };

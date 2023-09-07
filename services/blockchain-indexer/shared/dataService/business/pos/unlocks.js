@@ -25,11 +25,19 @@ const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 const getPosUnlocks = async params => {
 	const unlocks = {
 		data: {},
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	if (params.name) params.address = await getAddressByName(params.name);
 	if (params.publicKey) params.address = await getLisk32AddressFromPublicKey(params.publicKey);
+
+	if (!params.address) {
+		return unlocks;
+	}
 
 	const { pendingUnlocks = [] } = await requestConnector(
 		'getPosPendingUnlocks',

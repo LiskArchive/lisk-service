@@ -338,7 +338,7 @@ Now it is possible to start Lisk Service.
 
 .Start Lisk Service from Source code
 ----
-npm run start
+yarn run start
 ----
 
 The default configuration in `ecosystem.config.js` should suffice in most of the cases. If necessary, please modify the file to configure the necessary environment variables for each microservice as per your requirements.

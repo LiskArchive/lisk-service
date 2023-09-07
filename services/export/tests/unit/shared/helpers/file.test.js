@@ -98,6 +98,13 @@ describe('Test filesystem interface', () => {
 		expect(await isFile(filePath)).toBe(true);
 	});
 
+	it('should throw error when calling purge() method when path is null', async () => {
+		const files = await list(dirPath);
+		expect(files.length).toBe(3);
+
+		await expect(purge(null, 0)).rejects.toThrow();
+	});
+
 	it('should remove all files in a directory when calling purge() method', async () => {
 		let files = await list(dirPath);
 		expect(files.length).toBe(3);

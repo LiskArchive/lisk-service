@@ -25,7 +25,7 @@
 	"scripts": {
 		"start": "node app.js",
 		"clean": "rm -rf ./node_modules",
-		"test": "npm run test:unit",
+		"test": "yarn run test:unit",
 		"test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
 		"test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit",
 		"watch": "supervisor -w . -i ./node_modules app.js"
@@ -36,7 +36,7 @@
 		"bull": "^3.29.2",
 		"exceljs": "^4.3.0",
 		"json2csv": "^5.0.6",
-		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/b030e37574e0c3bde7048c54d29b349a49ac560d/framework/dist/lisk-service-framework-1.4.23.tgz",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/b3646b1215a5abcca3e75f6b36074438ae42b238/framework/dist/lisk-service-framework-1.4.23.tgz",
 		"minio": "^7.0.21",
 		"moment": "^2.29.4",
 		"moment-range": "^4.0.2",

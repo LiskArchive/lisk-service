@@ -32,7 +32,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'npm run test:regression:mainnet' }
+						dir('./tests') { sh 'yarn run test:regression:mainnet' }
 					}
 				}
 			}

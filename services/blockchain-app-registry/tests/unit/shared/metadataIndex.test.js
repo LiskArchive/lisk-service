@@ -322,7 +322,9 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 				DB: {
 					...actualLiskServiceFramework.DB,
 					MySQL: {
-						getTableInstance: jest.fn(),
+						getTableInstance: () => ({
+							upsert: jest.fn(),
+						}),
 						getDBConnection: jest.fn(),
 						startDBTransaction: jest.fn(),
 						commitDBTransaction: jest.fn(),

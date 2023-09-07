@@ -19,7 +19,7 @@ const MessageQueue = require('bull');
 const config = require('../config');
 
 const eventsQueue = new MessageQueue(
-	config.queue.events.name,
+	config.queue.event.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
@@ -35,7 +35,7 @@ const scheduleDeleteBlock = async (payload) => {
 };
 
 const scheduleUpdatesOnNewRound = async (payload) => {
-	const { validators } = payload;
+	const { nextValidators: validators } = payload;
 	await eventsQueue.add({ validators, isNewRound: true });
 };
 
