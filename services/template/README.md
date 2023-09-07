@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/template # move into template microservice directory
-npm ci # install required Node.js dependencies
+yarn install --frozen-lockfile # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -31,7 +31,7 @@ The template service does not use any of them by default.
 
 ```bash
 cd lisk-service/services/template # move into the root directory of the template microservice
-npm start # start the microservice
+yarn start # start the microservice
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.

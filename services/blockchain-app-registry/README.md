@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/blockchain-app-registry # move into blockchain-app-registry microservice directory
-npm ci # install required Node.js dependencies
+yarn install --frozen-lockfile # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -43,7 +43,7 @@ A list of the most commonly used environment variables is presented below:
 
 ```bash
 cd lisk-service/services/blockchain-app-registry # move into the root directory of the blockchain-app-registry microservice
-npm start # start the microservice
+yarn start # start the microservice
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
