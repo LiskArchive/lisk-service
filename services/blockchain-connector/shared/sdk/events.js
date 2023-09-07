@@ -21,8 +21,11 @@ const { getApiClient, instantiateClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
 const { getEscrowedAmounts } = require('./token');
+const config = require('../../config');
 
 const logger = Logger();
+
+const { numOfBlocksReset, numOfBlocksVerify } = config.verifyClientConnection;
 
 const EVENT_CHAIN_FORK = 'chain_forked';
 const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
@@ -73,13 +76,13 @@ const getEventsByHeightFormatted = async (height) => {
 };
 
 const verifyClientConnection = async () => {
-	setInterval(() => isClientConnected = false, BLOCK_TIME * 12);
+	setInterval(() => isClientConnected = false, BLOCK_TIME * numOfBlocksReset);
 	setInterval(async () => {
 		if (!isClientConnected) {
 			logger.info('Re-instantiating API client.');
 			await instantiateClient(true);
 		}
-	}, BLOCK_TIME * 10);
+	}, BLOCK_TIME * numOfBlocksVerify);
 };
 
 module.exports = {
