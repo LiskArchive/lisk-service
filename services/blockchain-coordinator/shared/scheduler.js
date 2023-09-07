@@ -38,6 +38,7 @@ const {
 	getAllPosValidators,
 } = require('./sources/connector');
 
+const delay = require('./utils/delay');
 const config = require('../config');
 
 const blockMessageQueue = new MessageQueue(
@@ -70,27 +71,17 @@ const getLiveIndexingJobCount = async () => {
 
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
-const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
-	if (!resolve) resolve = res;
-	if (intervalID) {
-		clearInterval(intervalID);
-		intervalID = null;
+const waitForJobCountToFallBelowThreshold = async () => {
+	const { skipThreshold } = config.job.indexMissingBlocks;
+	/* eslint-disable no-await-in-loop */
+	while (true) {
+		const count = await getLiveIndexingJobCount();
+		if (count < skipThreshold) return;
+		logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
+		await delay(REFRESH_INTERVAL);
 	}
-
-	return getLiveIndexingJobCount()
-		.then((count) => {
-			const { skipThreshold } = config.job.indexMissingBlocks;
-			return count < skipThreshold
-				? resolve(true)
-				: (() => {
-					logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
-					intervalID = setInterval(
-						waitForJobCountToFallBelowThreshold.bind(null, resolve),
-						REFRESH_INTERVAL,
-					);
-				})();
-		});
-});
+	/* eslint-enable no-await-in-loop */
+};
 
 const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 	if (!resolve) resolve = res;
