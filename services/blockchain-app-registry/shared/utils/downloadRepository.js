@@ -73,7 +73,7 @@ const GITHUB_FILE_STATUS = Object.freeze({
 });
 
 const getRepoInfoFromURL = (url = '') => {
-	const [owner, repo] = url.split('/').slice(-2);
+	const [, , , owner, repo] = url.split('/');
 	return { owner, repo };
 };
 
