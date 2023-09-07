@@ -9,22 +9,20 @@ propose changes to this document in a pull request.
 
 #### Table Of Contents
 
-- [Contributing to Lisk Service](#contributing-to-lisk-service)
-			- [Table Of Contents](#table-of-contents)
-	- [Code of Conduct](#code-of-conduct)
-	- [Project License](#project-license)
-	- [Help! I don’t want to read this whole thing, I just have a question. :mag\_right:](#help-i-dont-want-to-read-this-whole-thing-i-just-have-a-question-mag_right)
-	- [How Can I Contribute?](#how-can-i-contribute)
-		- [`master` is unsafe for production use](#master-is-unsafe-for-production-use)
-		- [Pull Requests](#pull-requests)
-		- [Reporting Bugs](#reporting-bugs)
-			- [Before Submitting A Bug Report](#before-submitting-a-bug-report)
-			- [How Do I Submit A (Good) Bug Report?](#how-do-i-submit-a-good-bug-report)
-		- [Suggesting Enhancements](#suggesting-enhancements)
-			- [How Do I Submit A (Good) Enhancement Suggestion?](#how-do-i-submit-a-good-enhancement-suggestion)
-	- [Styleguides](#styleguides)
-		- [Git Commit Messages](#git-commit-messages)
-		- [JavaScript Styleguide](#javascript-styleguide)
+1. [Code of Conduct](#code-of-conduct)
+2. [Project License](#project-license)
+3. [Help! I don’t want to read this whole thing, I just have a question. :mag_right:](#help-i-dont-want-to-read-this-whole-thing-i-just-have-a-question-mag_right)
+4. [How Can I Contribute?](#how-can-i-contribute)
+    1. [Pull Requests](#pull-requests)
+    2. [Reporting Bugs](#reporting-bugs)
+       1. [Before Submitting A Bug Report](#before-submitting-a-bug-report)
+       2. [How Do I Submit A (Good) Bug Report?](#how-do-i-submit-a-good-bug-report)
+    3. [Suggesting Enhancements](#suggesting-enhancements)
+       1. [How Do I Submit A (Good) Enhancement Suggestion?](#how-do-i-submit-a-good-enhancement-suggestion)
+5. [Styleguides](#styleguides)
+    1. [Git Commit Messages](#git-commit-messages)
+    2. [JavaScript Styleguide](#javascript-styleguide)
+    3. [Code Documentation Styleguide](#code-documentation-styleguide)
 
 ## Code of Conduct
 
