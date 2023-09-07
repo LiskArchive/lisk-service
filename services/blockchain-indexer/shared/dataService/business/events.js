@@ -161,8 +161,11 @@ const getEvents = async (params) => {
 	const { order, sort, ...remParams } = params;
 	const [sortColumn, sortDirection] = sort.split(':');
 	const [orderColumn, orderDirection] = order.split(':');
+
+	const orderByRawQuery = [`MAX(\`${sortColumn}\`) ${sortDirection}`, `MAX(\`${orderColumn}\`) ${orderDirection}`];
+
 	const response = await eventTopicsTable.find(
-		{ ...remParams, groupBy: 'eventID', orderByRaw: [`MAX(\`${sortColumn}\`) ${sortDirection}`, `MAX(\`${orderColumn}\`) ${orderDirection}`] },
+		{ ...remParams, groupBy: 'eventID', orderByRaw: orderByRawQuery },
 		['eventID'],
 	);
 
@@ -199,7 +202,7 @@ const getEvents = async (params) => {
 	);
 
 	const total = await eventTopicsTable.count(
-		{ ...remParams, groupBy: 'eventID', orderByRaw: [`MAX(\`${sortColumn}\`) ${sortDirection}`, `MAX(\`${orderColumn}\`) ${orderDirection}`] },
+		{ ...remParams, groupBy: 'eventID', orderByRaw: orderByRawQuery },
 		['eventID'],
 	);
 
