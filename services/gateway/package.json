@@ -33,7 +33,7 @@
     "bluebird": "^3.7.2",
     "fastest-validator": "^1.10.1",
     "ioredis": "^4.27.1",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/b030e37574e0c3bde7048c54d29b349a49ac560d/framework/dist/lisk-service-framework-1.4.23.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/57f72a7d333fae47d43fd62b8bc46cc72683085c/framework/dist/lisk-service-framework-1.4.23.tgz",
     "moleculer": "^0.14.13",
     "moment": "^2.29.4",
     "rate-limiter-flexible": "^2.2.4",
