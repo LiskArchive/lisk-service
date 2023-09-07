@@ -32,14 +32,14 @@ const config = require('../config');
 
 const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
-const blockIndexQueue = new MessageQueue(
-	config.queue.blocks.name,
+const blockMessageQueue = new MessageQueue(
+	config.queue.block.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const accountIndexQueue = new MessageQueue(
-	config.queue.accounts.name,
+const accountMessageQueue = new MessageQueue(
+	config.queue.account.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
@@ -57,12 +57,12 @@ const queueStatus = async (queueInstance) => {
 };
 
 const initQueueStatus = async () => {
-	await queueStatus(blockIndexQueue);
-	await queueStatus(accountIndexQueue);
+	await queueStatus(blockMessageQueue);
+	await queueStatus(accountMessageQueue);
 };
 
 const initProcess = async () => {
-	blockIndexQueue.process(async (job) => {
+	blockMessageQueue.process(async (job) => {
 		logger.debug('Subscribed to block index message queue');
 		const { height } = job.data;
 
@@ -70,7 +70,7 @@ const initProcess = async () => {
 		await addBlockToQueue(height);
 	});
 
-	accountIndexQueue.process(async (job) => {
+	accountMessageQueue.process(async (job) => {
 		logger.debug('Subscribed to account index message queue');
 		const { account } = job.data;
 		logger.debug(`Scheduling indexing for account with address: ${account.address}`);

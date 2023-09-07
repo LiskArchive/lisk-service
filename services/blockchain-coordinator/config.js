@@ -56,20 +56,16 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
  * Message queue options
  */
 config.queue = {
-	accounts: {
-		name: 'Accounts',
-	},
-	blocks: {
-		name: 'Blocks',
-	},
-	events: {
-		name: 'Events',
-	},
 	defaultJobOptions: {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // millisecs
 		removeOnComplete: true,
 	},
+
+	// Inter-microservice message queues
+	account: { name: 'Account' },
+	block: { name: 'Block' },
+	event: { name: 'Event' },
 };
 
 config.job = {
@@ -77,6 +73,7 @@ config.job = {
 	indexMissingBlocks: {
 		interval: process.env.JOB_INTERVAL_INDEX_MISSING_BLOCKS || 0,
 		schedule: process.env.JOB_SCHEDULE_INDEX_MISSING_BLOCKS || '*/15 * * * *',
+		skipThreshold: process.env.INDEX_MISSING_BLOCKS_SKIP_THRESHOLD || 1000,
 	},
 };
 
