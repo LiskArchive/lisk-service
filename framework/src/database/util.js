@@ -28,7 +28,7 @@ const escapeUserInput = input => {
 };
 
 const loadSchema = async (knex, tableName, tableConfig) => {
-	const { primaryKey, charset, schema, indexes } = tableConfig;
+	const { primaryKey, charset, schema, indexes, compositeIndexes } = tableConfig;
 
 	if (await knex.schema.hasTable(tableName)) return knex;
 
@@ -49,6 +49,18 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			if (err.message.includes(`Table '${tableName}' already exists`)) return;
 			throw err;
 		});
+
+	// eslint-disable-next-line no-restricted-syntax, guard-for-in
+	for (const key in compositeIndexes) {
+		const directions = compositeIndexes[key];
+		const indexName = `${tableName}_index_${key}`;
+		const indexColumns = directions.map(dir => `\`${dir.key}\` ${dir.direction}`).join(', ');
+
+		const sqlStatement = `ALTER TABLE ${tableName} ADD INDEX ${indexName} (${indexColumns})`;
+
+		// eslint-disable-next-line no-await-in-loop
+		await knex.raw(sqlStatement);
+	}
 
 	return knex;
 };
