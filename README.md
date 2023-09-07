@@ -152,7 +152,7 @@ Assuming lisk-service is running on the `127.0.0.1:9901`, and you are in the roo
 
 ```bash
 cd tests
-LISK_SERVICE_URL=http://127.0.0.1:9901 npm run benchmark
+LISK_SERVICE_URL=http://127.0.0.1:9901 yarn run benchmark
 ```
 
 ## Further development

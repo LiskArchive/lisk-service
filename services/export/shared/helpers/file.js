@@ -75,8 +75,6 @@ const purge = async (dirPath, days) => {
 			},
 			{ concurrency: files.length },
 		);
-
-		return;
 	} catch (err) {
 		logger.error(err);
 		throw err;

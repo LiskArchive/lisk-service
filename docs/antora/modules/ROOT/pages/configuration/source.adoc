@@ -38,7 +38,7 @@ Once customized, you can start Lisk Service with the custom ecosystem file by ex
 pm2 start ecosystem.custom.config.js
 ----
 
-Finally, if you want to use `npm start` and `npm stop` to start and stop Lisk Service with the custom configuration, don't forget to update the `scripts` in `package.json`:
+Finally, if you want to use `yarn start` and `yarn stop` to start and stop Lisk Service with the custom configuration, don't forget to update the `scripts` in `package.json`:
 
 .Working directory: ./lisk-service/
 [source,json]
