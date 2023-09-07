@@ -158,14 +158,8 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const { order, sort, ...remParams } = params;
-	const [sortColumn, sortDirection] = sort.split(':');
-	const [orderColumn, orderDirection] = order.split(':');
-
-	const orderByRawQuery = [`MAX(\`${sortColumn}\`) ${sortDirection}`, `MAX(\`${orderColumn}\`) ${orderDirection}`];
-
 	const response = await eventTopicsTable.find(
-		{ ...remParams, groupBy: 'eventID', orderByRaw: orderByRawQuery },
+		{ ...params, distinct: 'eventID' },
 		['eventID'],
 	);
 
@@ -201,10 +195,18 @@ const getEvents = async (params) => {
 		{ concurrency: eventsInfo.length },
 	);
 
-	const total = await eventTopicsTable.count(
-		{ ...remParams, groupBy: 'eventID', orderByRaw: orderByRawQuery },
-		['eventID'],
-	);
+	let total;
+	const { order, sort, ...remParams } = params;
+	if (params.topic || params.index || params.timestamp) {
+		total = await eventTopicsTable.count(
+			{ ...remParams, groupBy: 'eventID' },
+			['eventID'],
+		);
+	} else {
+		// If params dosent contain event_topics specific column data
+		// then count all rows of event table for query optimization.
+		total = await eventsTable.count(remParams, ['id']);
+	}
 
 	events.meta = {
 		count: events.data.length,

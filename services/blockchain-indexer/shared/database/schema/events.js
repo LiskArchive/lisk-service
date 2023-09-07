@@ -28,6 +28,7 @@ module.exports = {
 	indexes: {
 		height: { type: 'range' },
 		blockID: { type: 'key' },
+		index: { type: 'key' },
 	},
 	purge: {},
 };
