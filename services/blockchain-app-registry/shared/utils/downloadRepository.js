@@ -281,7 +281,7 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 		// Skip if there is no new commit
 		if (lastSyncedCommitHash === latestCommitHash) {
 			logger.info('Database is already up-to-date.');
-			if (isCustomDBTrx) await commitDBTransaction(dbTrx);
+			if (isCustomDBTrx) await rollbackDBTransaction(dbTrx);
 			return;
 		}
 
