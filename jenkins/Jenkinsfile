@@ -15,19 +15,19 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
 					dir('./') { sh 'npm i -g yarn' }
-					dir('./') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./framework') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/blockchain-app-registry') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/blockchain-connector') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/blockchain-indexer') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/blockchain-coordinator') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/fee-estimator') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/market') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/export') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/gateway') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/template') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./services/transaction-statistics') { sh 'yarn install --frozen-lockfile --ignore-engines' }
-					dir('./tests') { sh 'yarn install --frozen-lockfile --ignore-engines' }
+					dir('./') { sh 'yarn install --frozen-lockfile' }
+					dir('./framework') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-app-registry') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-connector') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-indexer') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-coordinator') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/fee-estimator') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/market') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/export') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/gateway') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/template') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/transaction-statistics') { sh 'yarn install --frozen-lockfile' }
+					dir('./tests') { sh 'yarn install --frozen-lockfile' }
 				}
 			}
 		}

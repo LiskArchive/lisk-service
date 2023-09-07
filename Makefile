@@ -108,19 +108,19 @@ build-tests:
 	cd ./tests && docker buildx build --tag=lisk/service_tests ./
 
 build-local:
-	yarn install --frozen-lockfile --ignore-engines
-	cd ./framework && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/blockchain-app-registry && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/blockchain-connector && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/blockchain-coordinator && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/blockchain-indexer && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/transaction-statistics && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/fee-estimator && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/market && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/gateway && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/export && yarn install --frozen-lockfile --ignore-engines
-	cd ./services/template && yarn install --frozen-lockfile --ignore-engines
-	cd ./tests && yarn install --frozen-lockfile --ignore-engines
+	yarn install --frozen-lockfile
+	cd ./framework && yarn install --frozen-lockfile
+	cd ./services/blockchain-app-registry && yarn install --frozen-lockfile
+	cd ./services/blockchain-connector && yarn install --frozen-lockfile
+	cd ./services/blockchain-coordinator && yarn install --frozen-lockfile
+	cd ./services/blockchain-indexer && yarn install --frozen-lockfile
+	cd ./services/transaction-statistics && yarn install --frozen-lockfile
+	cd ./services/fee-estimator && yarn install --frozen-lockfile
+	cd ./services/market && yarn install --frozen-lockfile
+	cd ./services/gateway && yarn install --frozen-lockfile
+	cd ./services/export && yarn install --frozen-lockfile
+	cd ./services/template && yarn install --frozen-lockfile
+	cd ./tests && yarn install --frozen-lockfile
 clean: clean-local clean-images
 
 clean-local:

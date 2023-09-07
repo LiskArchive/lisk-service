@@ -10,7 +10,7 @@ USER builder
 WORKDIR /home/builder/build
 
 COPY ./yarn.lock ./package.json ./
-RUN yarn install --frozen-lockfile --ignore-engines && \
+RUN yarn install --frozen-lockfile && \
     # generate build timestamp as described in https://github.com/LiskHQ/lisk-service/issues/385
     node -e 'console.log(JSON.stringify({ timestamp: new Date().toISOString() }));' > ./build.json
 
