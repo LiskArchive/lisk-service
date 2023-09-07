@@ -148,7 +148,7 @@ const getEvents = async (params) => {
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
 		params = remParams;
-		const [block] = await blocksTable.find({ id: blockID, limit: 1  }, ['height']);
+		const [block] = await blocksTable.find({ id: blockID, limit: 1 }, ['height']);
 		if (!block || !block.height) {
 			throw new NotFoundException(`Invalid blockID: ${blockID}`);
 		}
