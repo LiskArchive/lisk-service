@@ -40,20 +40,18 @@ let isInstantiating = false;
 const checkIsClientAlive = () => clientCache && clientCache._channel.isAlive;
 
 // eslint-disable-next-line consistent-return
-const instantiateClient = async () => {
+const instantiateClient = async (isForceUpdate = false) => {
 	try {
-		if (!isInstantiating) {
+		if (!isInstantiating || isForceUpdate) {
 			// TODO: Verify and enable the code
 			if (!checkIsClientAlive()) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				// if (clientCache) await clientCache.disconnect();
 
-				if (config.isUseLiskIPCClient) {
-					clientCache = await createIPCClient(config.liskAppDataPath);
-				} else {
-					clientCache = await createWSClient(`${liskAddress}/rpc-ws`);
-				}
+				clientCache = config.isUseLiskIPCClient
+					? await createIPCClient(config.liskAppDataPath)
+					: await createWSClient(`${liskAddress}/rpc-ws`);
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
@@ -112,4 +110,5 @@ module.exports = {
 
 	getApiClient,
 	invokeEndpoint,
+	instantiateClient,
 };

@@ -17,7 +17,7 @@ const util = require('util');
 
 const { Logger, Signals } = require('lisk-service-framework');
 
-const { getApiClient } = require('./client');
+const { getApiClient, instantiateClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
 const { getEscrowedAmounts } = require('./token');
@@ -29,6 +29,7 @@ const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
 const EVENT_CHAIN_BLOCK_DELETE = 'chain_deleteBlock';
 const EVENT_CHAIN_VALIDATORS_CHANGE = 'chain_validatorsChanged';
 const EVENT_TX_POOL_TRANSACTION_NEW = 'txpool_newTransaction';
+const BLOCK_TIME = 10000; // ms
 
 const events = [
 	EVENT_CHAIN_FORK,
@@ -37,6 +38,8 @@ const events = [
 	EVENT_CHAIN_VALIDATORS_CHANGE,
 	EVENT_TX_POOL_TRANSACTION_NEW,
 ];
+
+let isClientConnected = false;
 
 const subscribeToAllRegisteredEvents = async () => {
 	const apiClient = await getApiClient();
@@ -54,6 +57,7 @@ const subscribeToAllRegisteredEvents = async () => {
 						.catch(err => logger.warn(`Invocation for 'getEscrowedAmounts' failed with error: ${err.message}.`));
 				}
 
+				isClientConnected = true;
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);
 			},
@@ -68,8 +72,19 @@ const getEventsByHeightFormatted = async (height) => {
 	return formattedEvents;
 };
 
+const verifyClientConnection = async () => {
+	setInterval(() => isClientConnected = false, BLOCK_TIME * 12);
+	setInterval(async () => {
+		if (!isClientConnected) {
+			logger.info('Re-instantiating API client.');
+			await instantiateClient(true);
+		}
+	}, BLOCK_TIME * 10);
+};
+
 module.exports = {
 	events,
+	verifyClientConnection,
 
 	subscribeToAllRegisteredEvents,
 	getEventsByHeight: getEventsByHeightFormatted,
