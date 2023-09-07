@@ -16,7 +16,7 @@ All modules can be easily replaced by other libraries when needed.
 Set the target URL to the desired tarball distribution permalink.
 
 ```
-npm install https://github.com/LiskHQ/lisk-service/raw/2fbc65f49ae5c5aaa3689667051dbd4082b8c25a/framework/dist/lisk-service-framework-1.4.10.tgz
+yarn install https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz
 ```
 
 ## Quick Start

@@ -358,8 +358,8 @@ Lisk Testnet::
 // ----
 // node --version
 // # v16.20.0
-// npm i socket.io-client #<1>
-// npm i jsome #<2>
+// yarn i socket.io-client #<1>
+// yarn i jsome #<2>
 // ----
 
 // <1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
@@ -424,7 +424,7 @@ Lisk Testnet::
 
 // [source,bash]
 // ----
-// npm i socket.io-client
+// yarn i socket.io-client
 
 // ----
 
