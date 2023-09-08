@@ -67,7 +67,7 @@
 					"id": {
 						"type": "string",
 						"format": "id",
-						"minLength": 1,
+						"minLength": 64,
 						"maxLength": 64,
 						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
 						"description": "Unique identifier of the block.\nDerived from the block signature."

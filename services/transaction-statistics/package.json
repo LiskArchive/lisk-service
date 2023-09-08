@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-transaction-statistics",
-  "version": "0.7.0-beta.4",
+  "version": "0.7.0-rc.0",
   "description": "Lisk Service Transaction Statistics",
   "keywords": [
     "lisk",
@@ -25,14 +25,14 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
-    "test": "npm run test:unit",
+    "test": "yarn run test:unit",
     "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
     "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/b3646b1215a5abcca3e75f6b36074438ae42b238/framework/dist/lisk-service-framework-1.4.23.tgz",
     "moment": "^2.29.4"
   },
   "devDependencies": {

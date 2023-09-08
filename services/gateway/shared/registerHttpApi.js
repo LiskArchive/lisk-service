@@ -17,7 +17,6 @@ const path = require('path');
 const {
 	Utils,
 	HTTP: { StatusCodes },
-	Constants: { HTTP: { INVALID_REQUEST } },
 	Exceptions: { ValidationException },
 	Logger,
 } = require('lisk-service-framework');
@@ -105,39 +104,27 @@ const buildAPIConfig = (configPath, config, aliases, whitelist, methodPaths, eTa
 
 	etag: (typeof eTag === 'function') ? eTag() : eTag,
 
+	// eslint-disable-next-line no-unused-vars
 	async onBeforeCall(ctx, route, req, res) {
-		const sendResponse = (code, message) => {
-			res.setHeader('Content-Type', 'application/json');
-			res.writeHead(code || 400);
-			res.end(JSON.stringify({
-				error: true,
-				message,
-			}));
-		};
-
 		const routeAlias = `${req.method.toUpperCase()} ${req.$alias.path}`;
 		const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
 		if (paramReport.missing.length > 0) {
-			sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join('; ')}`);
-			throw new ValidationException('Request param validation error.');
+			throw new ValidationException(`Missing parameter(s): ${paramReport.missing.join('; ')}`);
 		}
 
 		const unknownList = Object.keys(paramReport.unknown);
 		if (unknownList.length > 0) {
-			sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join('; ')}`);
-			throw new ValidationException('Request param validation error.');
+			throw new ValidationException(`Unknown input parameter(s): ${unknownList.join('; ')}`);
 		}
 
 		if (paramReport.required.length) {
-			sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join('; ')}`);
-			throw new ValidationException('Request param validation error.');
+			throw new ValidationException(`Require one of the following parameter combination(s): ${paramReport.required.join('; ')}`);
 		}
 
 		const invalidList = paramReport.invalid;
 		if (invalidList.length > 0) {
-			sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join('; ')}`);
-			throw new ValidationException('Request param validation error.');
+			throw new ValidationException(`Invalid input: ${invalidList.map(o => o.message).join('; ')}`);
 		}
 
 		const params = transformRequest(methodPaths[routeAlias], dropEmptyProps(paramReport.valid));

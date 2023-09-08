@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-gateway",
-  "version": "0.7.0-beta.4",
+  "version": "0.7.0-rc.0",
   "description": "Lisk Service Gateway",
   "keywords": [
     "lisk",
@@ -21,7 +21,7 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
-    "test": "npm run test:unit",
+    "test": "yarn run test:unit",
     "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
@@ -33,7 +33,7 @@
     "bluebird": "^3.7.2",
     "fastest-validator": "^1.10.1",
     "ioredis": "^4.27.1",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/b3646b1215a5abcca3e75f6b36074438ae42b238/framework/dist/lisk-service-framework-1.4.23.tgz",
     "moleculer": "^0.14.13",
     "moment": "^2.29.4",
     "rate-limiter-flexible": "^2.2.4",

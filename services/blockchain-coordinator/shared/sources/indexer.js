@@ -17,14 +17,13 @@ const { requestIndexer } = require('../utils/request');
 
 let isGenesisBlockIndexedFlag = false;
 
-const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', {
-	from,
-	to,
-});
-
 const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
 
 const getGenesisHeight = async () => requestIndexer('getGenesisHeight');
+
+const getMissingBlocks = async (from, to) => requestIndexer(
+	'getMissingBlocks', { from, to },
+);
 
 const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
 

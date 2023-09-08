@@ -16,7 +16,7 @@
 			"chainID": {
 				"type": "string",
 				"format": "id",
-				"minLength": 1,
+				"minLength": 8,
 				"example": "00000000",
 				"description": "Chain ID of the blockchain application."
 			},
@@ -206,7 +206,7 @@
 			},
 			"title": {
 				"type": "string",
-				"example": "Lisk blockchain application"
+				"example": "Lisk blockchain application."
 			},
 			"status": {
 				"type": "string",
@@ -220,21 +220,22 @@
 			"networkType": {
 				"type": "string",
 				"example": "mainnet",
-				"description": "Network for which this configuration is specified. Must be one of 'mainnet', 'testnet' or 'betanet'"
+				"description": "Network for which this configuration is specified. Must be one of 'mainnet', 'testnet', 'devnet' or 'betanet'."
 			},
 			"isDefault": {
 				"type": "boolean",
-				"example": "true"
+				"example": "true",
+				"description": "A boolean indicator to filter default blockchain applications."
 			},
 			"genesisURL": {
 				"type": "string",
 				"example": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
-				"description": "URI to the network genesis block"
+				"description": "URI to the network genesis block."
 			},
 			"projectPage": {
 				"type": "string",
 				"example": "https://lisk.com",
-				"description": "URL to the project's homepage"
+				"description": "URL to the project's homepage."
 			},
 			"serviceURLs": {
 				"type": "array",

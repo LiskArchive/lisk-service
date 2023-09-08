@@ -14,19 +14,20 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
-					dir('./') { sh 'npm ci' }
-					dir('./framework') { sh 'npm ci' }
-					dir('./services/blockchain-app-registry') { sh 'npm ci' }
-					dir('./services/blockchain-connector') { sh 'npm ci' }
-					dir('./services/blockchain-indexer') { sh 'npm ci' }
-					dir('./services/blockchain-coordinator') { sh 'npm ci' }
-					dir('./services/fee-estimator') { sh 'npm ci' }
-					dir('./services/market') { sh 'npm ci' }
-					dir('./services/export') { sh 'npm ci' }
-					dir('./services/gateway') { sh 'npm ci' }
-					dir('./services/template') { sh 'npm ci' }
-					dir('./services/transaction-statistics') { sh 'npm ci' }
-					dir('./tests') { sh 'npm ci' }
+					dir('./') { sh 'npm i -g yarn' }
+					dir('./') { sh 'yarn install --frozen-lockfile' }
+					dir('./framework') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-app-registry') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-connector') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-indexer') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-coordinator') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/fee-estimator') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/market') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/export') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/gateway') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/template') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/transaction-statistics') { sh 'yarn install --frozen-lockfile' }
+					dir('./tests') { sh 'yarn install --frozen-lockfile' }
 				}
 			}
 		}
@@ -34,7 +35,7 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
-					sh 'npm run eslint'
+					sh 'yarn run eslint'
 				}
 			}
 		}
@@ -42,14 +43,14 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
-					dir('./framework') { sh "npm run test:unit" }
-					dir('./services/blockchain-app-registry') { sh "npm run test:unit" }
-					dir('./services/blockchain-connector') { sh "npm run test:unit" }
-					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
-					dir('./services/fee-estimator') { sh "npm run test:unit" }
-					dir('./services/market') { sh "npm run test:unit" }
-					dir('./services/export') { sh "npm run test:unit" }
-					dir('./services/gateway') { sh "npm run test:unit" }
+					dir('./framework') { sh "yarn run test:unit" }
+					dir('./services/blockchain-app-registry') { sh "yarn run test:unit" }
+					dir('./services/blockchain-connector') { sh "yarn run test:unit" }
+					dir('./services/blockchain-indexer') { sh "yarn run test:unit" }
+					dir('./services/fee-estimator') { sh "yarn run test:unit" }
+					dir('./services/market') { sh "yarn run test:unit" }
+					dir('./services/export') { sh "yarn run test:unit" }
+					dir('./services/gateway') { sh "yarn run test:unit" }
 				}
 			}
 		}

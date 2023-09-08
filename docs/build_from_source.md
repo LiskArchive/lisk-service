@@ -34,9 +34,10 @@ Where `x.y.z` is the latest release version, ex. 1.0.1
 
 ## Installation
 
-Install all npm dependencies from the root directory.
+Install all yarn dependencies from the root directory.
 
 ```bash
+npm i -g yarn
 make build-local
 ```
 
@@ -53,7 +54,7 @@ pm2 start ecosystem.config.js
 
 # or
 
-npm start
+yarn start
 ```
 
 To check the service status, navigate to the URL <http://127.0.0.1:9901/api/status>. If it is running on a remote system, change the host IP from `127.0.0.1` to the external IP address of your machine.
@@ -86,7 +87,7 @@ pm2 delete ecosystem.config.js
 
 # or
 
-npm stop
+yarn stop
 ```
 
 ### Clean all run-time files with dependencies
@@ -105,28 +106,28 @@ Unit tests are implemented in the framework and every microservice of the projec
 
 ```bash
 cd framework
-npm npm run test:unit
+yarn run test:unit
 
 cd ../services/blockchain-app-registry
-npm run test:unit
+yarn run test:unit
 
 cd ../services/blockchain-connector
-npm run test:unit
+yarn run test:unit
 
 cd ../services/blockchain-indexer
-npm run test:unit
+yarn run test:unit
 
 cd ../services/fee-estimator
-npm run test:unit
+yarn run test:unit
 
 cd ../services/market
-npm run test:unit
+yarn run test:unit
 
 cd ../services/export
-npm run test:unit
+yarn run test:unit
 
 cd ../services/gateway
-npm run test:unit
+yarn run test:unit
 ```
 
 ### Functional tests
@@ -135,28 +136,28 @@ Functional tests ensure that a project build on the top of the framework is able
 
 ```bash
 cd framework
-npm run test:functional
+yarn run test:functional
 
 cd ../services/blockchain-app-registry
-npm run test:functional
+yarn run test:functional
 
 cd ../services/blockchain-connector
-npm run test:functional
+yarn run test:functional
 
 cd ../services/blockchain-indexer
-npm run test:functional
+yarn run test:functional
 
 cd ../services/fee-estimator
-npm run test:functional
+yarn run test:functional
 
 cd ../services/market
-npm run test:functional
+yarn run test:functional
 
 cd ../services/export
-npm run test:functional
+yarn run test:functional
 
 cd ../services/gateway
-npm run test:functional
+yarn run test:functional
 ```
 
 ### Integration tests
@@ -177,7 +178,7 @@ pm2 start ecosystem.config.js
 To run the integration tests:
 ```bash
 cd tests
-npm run test
+yarn run test
 ```
 
 ## Next steps

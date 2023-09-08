@@ -321,7 +321,7 @@ _Supports pagination._
 | height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
 | timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |
 | executionStatus | String | `/^\b(?:pending\|successful\|failed\|,){0,5}\b$/` | *(empty)* | Can be expressed as a CSV. |
-| nonce | Number | `/^\d+$/` | *(empty)* |  |
+| nonce | Number | `/^\d+$/` | *(empty)* | Nonce is only allowed if senderAddress is supplied as a parameter. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 | sort | Enum | `["height:asc", "height:desc", "timestamp:asc", "timestamp:desc"]` | height:desc |  |
@@ -418,9 +418,9 @@ Request payload:
 
 ```jsonc
 {
-  "skipDecode": false,
-  "skipVerify": false,
-  "strict": false,
+  "skipDecode": false,      // A boolean indicator to skip the auto-decoding of the event data. Default: false
+  "skipVerify": false,      // A boolean indicator to skip the transaction verification. Default: false
+  "strict": false,          // A boolean indicator to enable strict mode. When set false, it skips the nonce and signature checks. Default: false
   "transaction": {
     "module": "token",
     "command": "transfer",
@@ -444,9 +444,9 @@ or
 
 ```jsonc
 {
-  "skipDecode": false,
-  "skipVerify": false,
-  "strict": false,
+  "skipDecode": false,      // A boolean indicator to skip the auto-decoding of the event data. Default: false
+  "skipVerify": false,      // A boolean indicator to skip the transaction verification. Default: false
+  "strict": false,          // A boolean indicator to enable strict mode. When set false, it skips the nonce and signature checks. Default: false
   "transaction": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b"
 }
 ```
@@ -1567,15 +1567,23 @@ No parameters are required.
     "maxNumberPendingUnlocks": 20,
     "failSafeMissedBlocks": 50,
     "failSafeInactiveWindow": 260000,
-    "punishmentWindow": 780000,
-    "roundLength": 10,
+    "punishmentWindowStaking": 241920,
+    "punishmentWindowSelfStaking": 725760,
+    "roundLength": 103,
     "minWeightStandby": "100000000000",
     "numberActiveValidators": 101,
-    "numberStandbyDelegates": 2,
+    "numberStandbyValidators": 2,
     "posTokenID": "0000000000000000",
     "maxBFTWeightCap": 500,
     "commissionIncreasePeriod": 260000,
     "maxCommissionIncreaseRate": 500,
+    "useInvalidBLSKey": false,
+    "baseStakeAmount": "1000000000",
+    "lockingPeriodStaking": 26000,
+    "lockingPeriodSelfStaking": 260000,
+    "reportMisbehaviorReward": "100000000",
+    "reportMisbehaviorLimitBanned": 5,
+    "weightScaleFactor": "100000000000",
     "extraCommandFees": {
       "validatorRegistrationFee": "1000000000"
     }
@@ -5891,7 +5899,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
 | status | String | `/^\b(?:registered\|activated\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -6147,12 +6155,12 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc | When sorting, default chains will be prioritized at the top of the list. |
 
 #### Response example
 
@@ -6204,15 +6212,16 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
-| displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
+| displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive display name. |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name or display name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
-| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc |  |
+| sort | Enum | `[chainName:asc, chainName:desc, chainID:asc, chainID:desc]` | chainName:asc | When sorting, unless isDefault is explicitly specified, default chains will be prioritized at the top of the list. |
+
 #### Response example
 
 200 OK
@@ -6296,11 +6305,11 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
-| tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* |  |
+| tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* | Supports case-insensitive token name. |
 | tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |
-| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
+| network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -6476,6 +6485,16 @@ No parameters are required.
 }
 ```
 
+400 Bad Request
+
+_Invalid parameter_
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
 503 Service Unavailable
 ```
 {
@@ -6486,20 +6505,21 @@ No parameters are required.
 
 ## Account History Export
 
+### Export transactions
 Returns transaction history export scheduling information
 
 #### Endpoints
 
-- HTTP GET `/api/v3/transactions/export`
-- RPC `get.transactions.export`
+- HTTP GET `/api/v3/export/transactions`
+- RPC `get.export.transactions`
 
 #### Request parameters
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |  One of address or publicKey required. |
-| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
-| interval  | String           |                                                            | *(empty)*      |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$/`                                 | *(empty)*      |  One of address or publicKey required. |
+| publicKey | String           | `/^\b(?:[A-Fa-f0-9]){64}\b$/`                                 | *(empty)*      |
+| interval  | String           | `/^\b(?:(?:\d{4})-(?:(?:1[012])|(?:0?[1-9]))-(?:(?:[012][1-9])|(?:[123]0)|31))(?::(?:(?:\d{4})-(?:(?:1[012])|(?:0?[1-9]))-(?:(?:[012][1-9])|(?:[123]0)|31)))?\b$/`                                                           | *(empty)*      |
 
 #### Response example
 Schedule transaction export
@@ -6508,8 +6528,8 @@ Schedule transaction export
 ```jsonc
 {
   "data": {
-    "address": "lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt",
-    "interval": "2021-03-16:2021-12-06",
+    "address": "lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw",
+    "interval": "2023-08-30:2023-08-30",
   },
   "meta": {
     "ready": false
@@ -6523,10 +6543,10 @@ The file is ready to export
 ```jsonc
 {
   "data": {
-    "address": "lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt",
-    "interval": "2021-03-16:2021-12-06",
-    "fileName": "transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv",
-    "fileUrl": "/api/v3/exports/transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv"
+    "address": "lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw",
+    "interval": "2023-08-30:2023-08-30",
+    "fileName": "transactions_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx",
+    "fileUrl": "/api/v3/exports/transactions_00000000_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx"
   },
   "meta": {
     "ready": true
@@ -6544,23 +6564,47 @@ _Invalid parameter_
 }
 ```
 
-File retrieval
+#### Examples
+
+```
+https://service.lisk.com/api/v3/export/transactions?address=lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw
+```
+
+### File retrieval
+Returns transaction history
 
 #### Endpoints
 
-- HTTP GET `/api/v3/exports/{filename}`
+- HTTP GET `/api/v3/export/download`
 - RPC `Not Applicable`
 
 #### Request parameters
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| filename   | String          |                                                            | *(empty)*      |                                        |
+| filename   | String          | `/^\btransactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))_((\d{4})-((1[012])\|(0?[1-9]))-(([012][1-9])\|([123]0)\|31))\.xlsx\b$/` | *(empty)*      |                                        |
 
 #### Response example
 Schedule transaction export
 
 200 OK
 ```
-[CSV file]
+[EXCEL file]
+```
+
+
+400 Bad Request
+
+_Invalid parameter_
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.com/api/v3/export/download?filename=transactions_00000000_lskkje69szpgmfaefmbf7zvw7ghc6mamdvf9z3cpw_2023-08-30_2023-08-30.xlsx
 ```
