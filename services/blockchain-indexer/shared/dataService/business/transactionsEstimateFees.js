@@ -248,19 +248,12 @@ const validateTransactionParams = params => {
 	const {
 		tokenID,
 		recipientAddress,
+		receivingChainID,
+		sendingChainID,
+		messageFeeTokenID,
 		blsKey,
 		proofOfPossession,
 		generatorKey } = params.transaction.params;
-
-	if (params.module === MODULE.TOKEN) {
-		if (!tokenID || !recipientAddress) {
-			throw new ValidationException(`tokenID and recipient address are required in transaction params for ${MODULE.TOKEN} transaction.`);
-		}
-	} else if (params.module === MODULE.POS && params.command === COMMAND.REGISTER_VALIDATOR) {
-		if (!blsKey || !proofOfPossession || !generatorKey) {
-			throw new ValidationException(`BlsKey, proofOfPossession and generatorKey are required in transaction params for ${MODULE.POS}:${COMMAND.REGISTER_VALIDATOR} transaction.`);
-		}
-	}
 
 	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
 		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
@@ -280,6 +273,18 @@ const validateTransactionParams = params => {
 
 	if (generatorKey && !regex.PUBLIC_KEY.test(generatorKey)) {
 		throw new ValidationException('Incorrect \'generatorKey\' specified in transaction params.');
+	}
+
+	if (receivingChainID && !regex.CHAIN_ID.test(receivingChainID)) {
+		throw new ValidationException('Incorrect \'chainID\' specified in transaction params.');
+	}
+
+	if (sendingChainID && !regex.CHAIN_ID.test(sendingChainID)) {
+		throw new ValidationException('Incorrect \'sendingChainID\' specified in transaction params.');
+	}
+
+	if (messageFeeTokenID && !regex.TOKEN_ID.test(messageFeeTokenID)) {
+		throw new ValidationException('Incorrect \'messageFeeTokenID\' specified in transaction params.');
 	}
 };
 
@@ -419,4 +424,5 @@ module.exports = {
 	calcAdditionalFees,
 	filterOptionalProps,
 	getNumberOfSignatures,
+	validateTransactionParams,
 };

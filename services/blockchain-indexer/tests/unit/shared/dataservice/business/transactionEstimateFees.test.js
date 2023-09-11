@@ -696,3 +696,153 @@ describe('Test transaction fees estimates', () => {
 		});
 	});
 });
+
+describe('validateTransactionParams', () => {
+	const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+	it('should validate a valid token and register validator transaction', () => {
+		expect(() => validateTransactionParams(mockTransferCrossChainTxRequest)).not.toThrow();
+		expect(() => validateTransactionParams(mockRegisterValidatorTxrequestConnector)).not.toThrow();
+	});
+
+	it('should throw an error for incorrect tokenID in token transaction', () => {
+		const {
+			tokenID,
+			recipientAddress,
+			...remParams
+		} = mockTransferCrossChainTxRequest.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockTransferCrossChainTxRequest,
+			transaction: {
+				...mockTransferCrossChainTxRequest.transaction,
+				params: {
+					...remParams,
+					tokenID: 'invalidTokenID',
+					recipientAddress,
+				},
+			},
+		})).toThrow();
+	});
+
+	it('should throw an error for incorrect recipientAddress in token transaction', () => {
+		const {
+			tokenID,
+			recipientAddress,
+			...remParams
+		} = mockTransferCrossChainTxRequest.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockTransferCrossChainTxRequest,
+			transaction: {
+				...mockTransferCrossChainTxRequest.transaction,
+				params: {
+					...remParams,
+					tokenID,
+					recipientAddress: 'invalidRecipientAddress',
+				},
+			},
+		})).toThrow();
+	});
+
+	it('should throw an error for incorrect blsKey in register validator transaction', () => {
+		const {
+			blsKey,
+			proofOfPossession,
+			generatorKey,
+			...remParams
+		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockRegisterValidatorTxrequestConnector,
+			transaction: {
+				...mockRegisterValidatorTxrequestConnector.transaction,
+				params: {
+					...remParams,
+					blsKey: 'invalidBLSKey',
+					proofOfPossession,
+					generatorKey,
+				},
+			},
+		})).toThrow();
+	});
+
+	it('should throw an error for incorrect proofOfPossession in register validator transaction', () => {
+		const { blsKey,
+			proofOfPossession,
+			generatorKey,
+			...remParams
+		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockRegisterValidatorTxrequestConnector,
+			transaction: {
+				...mockRegisterValidatorTxrequestConnector.transaction,
+				params: {
+					...remParams,
+					blsKey,
+					proofOfPossession: 'invalidProofOfPossession',
+					generatorKey,
+				},
+			},
+		})).toThrow();
+	});
+
+	it('should throw an error for incorrect generatorKey in register validator transaction', () => {
+		const {
+			blsKey,
+			proofOfPossession,
+			generatorKey,
+			...remParams
+		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockRegisterValidatorTxrequestConnector,
+			transaction: {
+				...mockRegisterValidatorTxrequestConnector.transaction,
+				params: {
+					...remParams,
+					blsKey,
+					proofOfPossession,
+					generatorKey: 'invalidGeneratorKey',
+				},
+			},
+		})).toThrow();
+	});
+
+	it('should throw an error for incorrect sendingChainID in cross chain update transaction', () => {
+		const {
+			sendingChainID,
+			...remParams
+		} = mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
+			transaction: {
+				...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
+				params: {
+					...remParams,
+					sendingChainID: 'invalidSendingChainID',
+				},
+			},
+		})).toThrow();
+	});
+
+	it('should throw an error for incorrect receivingChainID in cross chain update transaction', () => {
+		const {
+			receivingChainID,
+			...remParams
+		} = mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
+			transaction: {
+				...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
+				params: {
+					...remParams,
+					receivingChainID: 'invalidReceivingChainID',
+				},
+			},
+		})).toThrow();
+	});
+});
