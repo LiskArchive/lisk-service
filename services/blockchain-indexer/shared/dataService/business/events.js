@@ -108,6 +108,8 @@ const getEvents = async (params) => {
 		meta: {},
 	};
 
+	const isTopicInQuery = !!params.topic;
+
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
 		params = normalizeRangeParam(params, 'height');
 	}
@@ -158,18 +160,14 @@ const getEvents = async (params) => {
 		params.height = block.height;
 	}
 
-	const response = await eventTopicsTable.find(
-		{ ...params, distinct: 'eventID' },
-		['eventID'],
-	);
+	params.leftOuterJoin = {
+		targetTable: eventsTableSchema.tableName,
+		leftColumn: `${eventsTableSchema.tableName}.id`,
+		rightColumn: `${eventTopicsTableSchema.tableName}.eventID`,
+	};
 
-	const eventIDs = response.map(entry => entry.eventID);
-	const eventsInfo = await eventsTable.find(
-		{
-			whereIn: { property: 'id', values: eventIDs },
-			order: params.order,
-			sort: params.sort.replace('timestamp', 'height'),
-		},
+	const eventsInfo = await eventTopicsTable.find(
+		{ ...params, distinct: 'eventID' },
 		['eventStr', 'height', 'index'],
 	);
 
@@ -197,7 +195,8 @@ const getEvents = async (params) => {
 
 	let total;
 	const { order, sort, ...remParams } = params;
-	if (params.topic || params.index || params.timestamp) {
+
+	if (isTopicInQuery) {
 		total = await eventTopicsTable.count(
 			{ ...remParams, groupBy: 'eventID' },
 			['eventID'],
@@ -205,7 +204,8 @@ const getEvents = async (params) => {
 	} else {
 		// If params dosent contain event_topics specific column data
 		// then count all rows of event table for query optimization.
-		total = await eventsTable.count(remParams, ['id']);
+		const { leftOuterJoin, ...remParamsWithoutJoin } = remParams;
+		total = await eventsTable.count(remParamsWithoutJoin, ['id']);
 	}
 
 	events.meta = {

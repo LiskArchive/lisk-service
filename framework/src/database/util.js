@@ -78,9 +78,9 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
-		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
-		'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
+		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'whereNot',
+		'whereIn', 'whereNotIn', 'orWhereIn', 'whereBetween', 'whereJsonSupersetOf', 'search', 'aggregate',
+		'distinct', 'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
 		'innerJoin', 'groupBy', 'orderByRaw',
 	];
 	const queryParams = Object.keys(params)
@@ -250,6 +250,21 @@ const getTableInstance = (tableConfig, knex) => {
 					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
+		}
+
+		if (params.whereNotIn) {
+			const { column, values } = params.whereNotIn;
+			query.whereNotIn(column, values);
+		}
+
+		if (params.whereNot) {
+			const { column, value } = params.whereNot;
+			query.whereNot(column, value);
+		}
+
+		if (params.whereBetween) {
+			const { column, values } = params.whereBetween;
+			query.whereBetween(column, values);
 		}
 
 		if (params.andWhere) {

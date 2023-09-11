@@ -250,6 +250,45 @@ describe('Test MySQL', () => {
 			expect(result).toBe(2);
 		});
 
+		it('should get row count using whereNot', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNot: {
+					column: 'id',
+					value: emptyBlock.id,
+				},
+			};
+			const result = await blocksTable.count(params);
+			expect(result).toBe(1);
+		});
+
+		it('should get row count using whereNotIn', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNotIn: {
+					column: 'id',
+					values: [emptyBlock.id, nonEmptyBlock.id],
+				},
+			};
+			const result = await blocksTable.count(params);
+			expect(result).toBe(0);
+		});
+
+		it('should get row count using whereBetween', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereBetween: {
+					column: 'id',
+					values: [
+						Math.min(emptyBlock.id, nonEmptyBlock.id),
+						Math.max(emptyBlock.id, nonEmptyBlock.id),
+					],
+				},
+			};
+			const result = await blocksTable.count(params);
+			expect(result).toBe(2);
+		});
+
 		it('should get row count using whereIn and whereNull', async () => {
 			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
 			const params = {
