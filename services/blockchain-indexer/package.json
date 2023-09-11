@@ -38,7 +38,7 @@
 		"bull": "^4.8.1",
 		"camelcase": "^6.3.0",
 		"ioredis": "^4.28.5",
-		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/57f72a7d333fae47d43fd62b8bc46cc72683085c/framework/dist/lisk-service-framework-1.4.23.tgz",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/8eb70b4eb11972cbd65eb9911991e8a4f8e0725d/framework/dist/lisk-service-framework-1.5.0.tgz",
 		"lodash": "^4.17.21",
 		"require-all": "^3.0.0"
 	},
