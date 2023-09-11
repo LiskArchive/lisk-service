@@ -19,6 +19,7 @@ let feeEstimates = {
 	low: 0,
 	med: 0,
 	high: 0,
+	minFeePerByte: 1000,
 };
 
 const setFeeEstimates = async (payload) => {
