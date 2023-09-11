@@ -244,6 +244,45 @@ const calcAdditionalFees = async (transaction) => {
 	return additionalFees;
 };
 
+const validateTransactionParams = params => {
+	const {
+		tokenID,
+		recipientAddress,
+		blsKey,
+		proofOfPossession,
+		generatorKey } = params.transaction.params;
+
+	if (params.module === MODULE.TOKEN) {
+		if (!tokenID || !recipientAddress) {
+			throw new ValidationException(`tokenID and recipient address are required in transaction params for ${MODULE.TOKEN} transaction.`);
+		}
+	} else if (params.module === MODULE.POS && params.command === COMMAND.REGISTER_VALIDATOR) {
+		if (!blsKey || !proofOfPossession || !generatorKey) {
+			throw new ValidationException(`BlsKey, proofOfPossession and generatorKey are required in transaction params for ${MODULE.POS}:${COMMAND.REGISTER_VALIDATOR} transaction.`);
+		}
+	}
+
+	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
+		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
+	}
+
+	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
+		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
+	}
+
+	if (blsKey && !regex.BLS_KEY.test(blsKey)) {
+		throw new ValidationException('Incorrect \'blsKey\' specified in transaction params.');
+	}
+
+	if (proofOfPossession && !regex.PROOF_OF_POSSESSION.test(proofOfPossession)) {
+		throw new ValidationException('Incorrect \'proofOfPossession\' specified in transaction params.');
+	}
+
+	if (generatorKey && !regex.PUBLIC_KEY.test(generatorKey)) {
+		throw new ValidationException('Incorrect \'generatorKey\' specified in transaction params.');
+	}
+};
+
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
 		data: {
@@ -252,15 +291,7 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	// Test all regex
-	const { tokenID, recipientAddress } = params.transaction.params;
-	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
-		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
-	}
-
-	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
-		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
-	}
+	validateTransactionParams(params);
 
 	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
 	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
