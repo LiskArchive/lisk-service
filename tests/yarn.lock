@@ -1255,7 +1255,7 @@
     ws "8.11.0"
     zeromq "6.0.0-beta.6"
 
-"@liskhq/lisk-client@^6.0.0-beta.6":
+"@liskhq/lisk-client@^6.0.0-rc.0":
   version "6.0.0-rc.0"
   resolved "https://registry.npmjs.org/@liskhq/lisk-client/-/lisk-client-6.0.0-rc.0.tgz#d756a4ee40142551242413656280ffaa88b41636"
   integrity sha512-fMt/YWL+ZlIf3wMIQTiVKU6w2TsnCodFUKjo/WvrJP7ocbAcM9jp/x55iF1MymEXhv8fGOfG1CeHZBolgZLf/g==
@@ -1270,14 +1270,6 @@
     "@liskhq/lisk-validator" "^0.8.0-rc.0"
     buffer "6.0.3"
 
-"@liskhq/lisk-codec@^0.3.0-beta.5":
-  version "0.3.0-rc.0"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-codec/-/lisk-codec-0.3.0-rc.0.tgz#f1dea15920c7f26cb83b5663bfecbe7d4293a5ef"
-  integrity sha512-nJmUtlc+yEWFCVJd2okGnfYzOMqw+LC7cTEoEfDHfEOnMYc0p5UkHKK8uXBKPZ2iYd/uJfv3kYEMDbprl25Ikw==
-  dependencies:
-    "@liskhq/lisk-utils" "^0.3.0-rc.0"
-    "@liskhq/lisk-validator" "^0.7.0-rc.0"
-
 "@liskhq/lisk-codec@^0.4.0-rc.0":
   version "0.4.0-rc.0"
   resolved "https://registry.npmjs.org/@liskhq/lisk-codec/-/lisk-codec-0.4.0-rc.0.tgz#4de4a40968a9019855d648b675f89e7cb93c05dc"
@@ -1287,19 +1279,7 @@
     "@liskhq/lisk-utils" "^0.4.0-rc.0"
     "@liskhq/lisk-validator" "^0.8.0-rc.0"
 
-"@liskhq/lisk-cryptography@^3.3.0-rc.0":
-  version "3.3.0-rc.0"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-cryptography/-/lisk-cryptography-3.3.0-rc.0.tgz#6f5db59ebf1ed78a13f0ec0d7aaf431d7ee36cd6"
-  integrity sha512-tRt+yAP9szWKrbPsegX3IXKle1yxZcwLFvCku6hNILaaOqJHWuNhrW+FuKucO5g9m+HoAajA7O6k4uNty9fv9A==
-  dependencies:
-    buffer-reverse "1.0.1"
-    ed2curve "0.3.0"
-    tweetnacl "1.0.3"
-    varuint-bitcoin "1.1.2"
-  optionalDependencies:
-    sodium-native "3.2.1"
-
-"@liskhq/lisk-cryptography@^4.0.0-beta.4", "@liskhq/lisk-cryptography@^4.0.0-rc.0":
+"@liskhq/lisk-cryptography@^4.0.0-rc.0":
   version "4.0.0-rc.0"
   resolved "https://registry.npmjs.org/@liskhq/lisk-cryptography/-/lisk-cryptography-4.0.0-rc.0.tgz#0cf5e1b8f67116c8ff258e62d5da3d23a5cef185"
   integrity sha512-OIqxD9oNcY2OlFNkI+Ay3Mex+EEt3AcmDFKpkshGBieuMvZzgfOAupPfaB3L36q6pMxGHpRc9Nzz6VQt0vNCYQ==
@@ -1333,31 +1313,12 @@
     "@liskhq/lisk-cryptography" "^4.0.0-rc.0"
     "@liskhq/lisk-utils" "^0.4.0-rc.0"
 
-"@liskhq/lisk-utils@^0.3.0-rc.0":
-  version "0.3.0-rc.0"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-utils/-/lisk-utils-0.3.0-rc.0.tgz#64af69f4f629fcd14dd5e56fcbb51160c6698ce2"
-  integrity sha512-+If9OyH+QD6rYZ7YepNnZYqe83upaPzcPEn8bXN5uKs/07dwYMnFdk2Braqk5hfpPeEYTJOWQFkFsftXB7G4Pg==
-  dependencies:
-    lodash.clonedeep "4.5.0"
-
 "@liskhq/lisk-utils@^0.4.0-rc.0":
   version "0.4.0-rc.0"
   resolved "https://registry.npmjs.org/@liskhq/lisk-utils/-/lisk-utils-0.4.0-rc.0.tgz#6337e1d7e8ca766bbc7ea07408eaf34b2e51bd93"
   integrity sha512-oMTRwkWWBNqZABXQTFxvo6L/vyAeYka9MlNGNZE7ObaAO8JjxHRukQDZAX36+NcrvREsp1yNQF8YW1xFs+XIvg==
   dependencies:
     lodash.clonedeep "4.5.0"
-
-"@liskhq/lisk-validator@^0.7.0-beta.5", "@liskhq/lisk-validator@^0.7.0-rc.0":
-  version "0.7.0-rc.0"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-validator/-/lisk-validator-0.7.0-rc.0.tgz#9946a7ed3a6f72096a719eb6fa14a1e37f1ee81e"
-  integrity sha512-JCFHhP2lcJPXc/JMYrS271i80pw+73x0RKfS01GnldK17dG5kyAKcA575qanc65MHQjgyBVCJntetCPC19tD6w==
-  dependencies:
-    "@liskhq/lisk-cryptography" "^3.3.0-rc.0"
-    ajv "8.1.0"
-    ajv-formats "2.0.2"
-    debug "4.3.4"
-    semver "7.3.5"
-    validator "13.7.0"
 
 "@liskhq/lisk-validator@^0.8.0-rc.0":
   version "0.8.0-rc.0"
@@ -1659,13 +1620,6 @@ agentkeepalive@^4.1.4:
   integrity sha512-5GG/5IbQQpC9FpkRGsSvZI5QYeSCzlJHdpBQntCsuTOxhKD8lqKhrleg2Yi7yvMIf82Ycmmqln9U8V9qwEiJew==
   dependencies:
     humanize-ms "^1.2.1"
-
-ajv-formats@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/ajv-formats/-/ajv-formats-2.0.2.tgz#69875cb99d76c74be46e9c7a4444bc232354eba0"
-  integrity sha512-Brah4Uo5/U8v76c6euTwtjVFFaVishwnJrQBYpev1JRh4vjA1F4HY3UzQez41YUCszUCXKagG8v6eVRBHV1gkw==
-  dependencies:
-    ajv "^8.0.0"
 
 ajv-formats@2.1.1:
   version "2.1.1"
@@ -2865,13 +2819,6 @@ duplexer3@^0.1.4:
   resolved "https://registry.npmjs.org/duplexer3/-/duplexer3-0.1.5.tgz#0b5e4d7bad5de8901ea4440624c8e1d20099217e"
   integrity sha512-1A8za6ws41LQgv9HrE/66jyC5yuSjQ3L/KOpFtoBilsAK2iA2wuS5rTt1OCzIvtS2V7nVmedsUU+DGRcjBmOYA==
 
-ed2curve@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/ed2curve/-/ed2curve-0.3.0.tgz#322b575152a45305429d546b071823a93129a05d"
-  integrity sha512-8w2fmmq3hv9rCrcI7g9hms2pMunQr1JINfcjwR9tAyZqhtyaMN991lF/ZfHfr5tzZQ8c7y7aBgZbjfbd0fjFwQ==
-  dependencies:
-    tweetnacl "1.x.x"
-
 electron-to-chromium@^1.4.477:
   version "1.4.513"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.513.tgz#41a50bf749aa7d8058ffbf7a131fc3327a7b1675"
@@ -3652,7 +3599,7 @@ inherits@2, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, inherits@~2.0.3:
   resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-ini@^1.3.4, ini@^1.3.5, ini@~1.3.0:
+ini@^1.3.4, ini@~1.3.0:
   version "1.3.8"
   resolved "https://registry.npmjs.org/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
@@ -5017,7 +4964,7 @@ nice-try@^1.0.4:
   resolved "https://registry.npmjs.org/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-node-gyp-build@^4.1.0, node-gyp-build@^4.2.0:
+node-gyp-build@^4.1.0:
   version "4.6.1"
   resolved "https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.6.1.tgz#24b6d075e5e391b8d5539d98c7fc5c210cac8a3e"
   integrity sha512-24vnklJmyRS8ViBNI8KbtK/r/DmXQMRiOMXTNz2nrTnAYUwjmEEbnnpB/+kt+yWRv73bPsSPRFddrcIbAxSiMQ==
@@ -5777,7 +5724,7 @@ rsvp@^4.8.4:
   resolved "https://registry.npmjs.org/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
-safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@^5.2.0, safe-buffer@~5.2.0:
+safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.2, safe-buffer@^5.2.0, safe-buffer@~5.2.0:
   version "5.2.1"
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
   integrity sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==
@@ -5832,13 +5779,6 @@ semver-diff@^2.0.0:
   version "5.7.2"
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"
   integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
-
-semver@7.3.5:
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
-  integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
-  dependencies:
-    lru-cache "^6.0.0"
 
 semver@7.5.2:
   version "7.5.2"
@@ -6029,14 +5969,6 @@ socketio-wildcard@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/socketio-wildcard/-/socketio-wildcard-2.0.0.tgz#2466e832276b19163563bee772388747f912475b"
   integrity sha512-Bf3ioZq15Z2yhFLDasRvbYitg82rwm+5AuER5kQvEQHhNFf4R4K5o/h57nEpN7A59T9FyRtTj34HZfMWAruw/A==
-
-sodium-native@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/sodium-native/-/sodium-native-3.2.1.tgz#91cd6a175d4b58b038eeccc7078ebc33202328be"
-  integrity sha512-EgDZ/Z7PxL2kCasKk7wnRkV8W9kvwuIlHuHXAxkQm3FF0MgVsjyLBXGjSRGhjE6u7rhSpk3KaMfFM23bfMysIQ==
-  dependencies:
-    ini "^1.3.5"
-    node-gyp-build "^4.2.0"
 
 source-map-resolve@^0.5.0:
   version "0.5.3"
@@ -6432,7 +6364,7 @@ try-require@^1.2.1:
   resolved "https://registry.npmjs.org/try-require/-/try-require-1.2.1.tgz#34489a2cac0c09c1cc10ed91ba011594d4333be2"
   integrity sha512-aMzrGUIA/R2LwUgvsOusx+GTy8ERyNjpBzbWgS1Qx4oTFlXCMxY3PyyXbPE1pvrvK/CXpO+BBREEqrTkNroC+A==
 
-tweetnacl@1.0.3, tweetnacl@1.x.x:
+tweetnacl@1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
@@ -6636,13 +6568,6 @@ validator@13.7.0:
   version "13.7.0"
   resolved "https://registry.npmjs.org/validator/-/validator-13.7.0.tgz#4f9658ba13ba8f3d82ee881d3516489ea85c0857"
   integrity sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==
-
-varuint-bitcoin@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/varuint-bitcoin/-/varuint-bitcoin-1.1.2.tgz#e76c138249d06138b480d4c5b40ef53693e24e92"
-  integrity sha512-4EVb+w4rx+YfVM32HQX42AbbT7/1f5zwAYhIujKXKk8NQK+JfRVl3pqT3hjNn/L+RstigmGGKVwHA/P0wgITZw==
-  dependencies:
-    safe-buffer "^5.1.1"
 
 vary@^1:
   version "1.1.2"

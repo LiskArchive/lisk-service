@@ -100,6 +100,19 @@ make build
 
 > This step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub. The installation script chooses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use the `make clean` command to remove all locally built docker images.
 
+### System requirements
+
+The following system requirements are recommended to start Lisk Service:
+
+#### Memory
+
+- Machines with a minimum of 8 GB RAM for the Mainnet.
+- Machines with a minimum of 8 GB RAM for the Testnet.
+
+#### Storage
+
+- Machines with a minimum of 40 GB HDD.
+
 ## Configuration
 
 The default configuration is sufficient to run Lisk Service against the local node.
