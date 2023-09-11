@@ -63,7 +63,8 @@ const resolveChannelInfo = async (inputChainID) => {
 	}
 
 	try {
-		if (await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID)) {
+		if ((await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID))
+			|| (!await isMainchain() && regex.MAINCHAIN_ID.test(inputChainID))) {
 			const channelInfo = await requestConnector('getChannel', { chainID: inputChainID });
 			return channelInfo;
 		}
