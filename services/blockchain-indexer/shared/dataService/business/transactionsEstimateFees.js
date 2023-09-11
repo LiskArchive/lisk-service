@@ -18,9 +18,12 @@ const {
 	utils: { getRandomBytes },
 } = require('@liskhq/lisk-cryptography');
 
+const { validator } = require('@liskhq/lisk-validator');
+const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
+
 const {
 	HTTP,
-	Exceptions: { ValidationException },
+	Exceptions: { ValidationException, InvalidParamsException },
 	Logger,
 } = require('lisk-service-framework');
 
@@ -35,6 +38,7 @@ const {
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
+	getSystemMetadata,
 } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
@@ -45,7 +49,6 @@ const config = require('../../../config');
 const { getPosConstants } = require('./pos/constants');
 const { getInteroperabilityConstants } = require('./interoperability/constants');
 const { getFeeEstimates } = require('./feeEstimates');
-const regex = require('../../regex');
 
 const logger = Logger();
 
@@ -244,48 +247,61 @@ const calcAdditionalFees = async (transaction) => {
 	return additionalFees;
 };
 
-const validateTransactionParams = params => {
-	const {
-		tokenID,
-		recipientAddress,
-		receivingChainID,
-		sendingChainID,
-		messageFeeTokenID,
-		blsKey,
-		proofOfPossession,
-		generatorKey,
-	} = params.transaction.params;
+const getTransactionParamsSchema = (transaction, metadata) => {
+	const moduleMetadata = metadata.modules.find(m => m.name === transaction.module);
+	const { params: schema } = moduleMetadata.commands.find(c => c.name === transaction.command);
+	return schema;
+};
 
-	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
-		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
+const parseInputBySchema = (input, schema) => {
+	const { type: schemaType, dataType: schemaDataType, items: schemaItemsSchema } = schema;
+
+	if (typeof input !== 'object') {
+		if (schemaDataType === 'string') return String(input);
+		if (schemaDataType === 'boolean') return Boolean(input);
+		if (schemaDataType === 'bytes') {
+			if (schema.format === 'lisk32' && input.startsWith('lsk')) {
+				return getAddressFromLisk32Address(input);
+			}
+			return Buffer.from(input, 'hex');
+		}
+		if (schemaDataType === 'uint32' || schemaDataType === 'sint32') return Number(input);
+		if (schemaDataType === 'uint64' || schemaDataType === 'sint64') return BigInt(input);
+		return input;
 	}
 
-	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
-		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
+	if (schemaType === 'object') {
+		const formattedObj = Object.keys(input).reduce((acc, key) => {
+			const { type, dataType, items: itemsSchema, format } = schema.properties[key] || {};
+			const currValue = input[key];
+			if (type === 'array') {
+				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
+			} else {
+				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType, format };
+				acc[key] = parseInputBySchema(currValue, innerSchema);
+			}
+			return acc;
+		}, {});
+		return formattedObj;
+	} if (schemaType === 'array') {
+		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
+		return formattedArray;
 	}
 
-	if (blsKey && !regex.BLS_KEY.test(blsKey)) {
-		throw new ValidationException('Incorrect \'blsKey\' specified in transaction params.');
-	}
+	// For situations where the schema for a property states 'bytes'
+	// but has already been de-serialized into object, e.g. tx.asset
+	return input;
+};
 
-	if (proofOfPossession && !regex.PROOF_OF_POSSESSION.test(proofOfPossession)) {
-		throw new ValidationException('Incorrect \'proofOfPossession\' specified in transaction params.');
-	}
+const validateTransactionParams = async transaction => {
+	const metadata = await getSystemMetadata();
+	const txParamsSchema = getTransactionParamsSchema(transaction, metadata);
+	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
 
-	if (generatorKey && !regex.PUBLIC_KEY.test(generatorKey)) {
-		throw new ValidationException('Incorrect \'generatorKey\' specified in transaction params.');
-	}
-
-	if (receivingChainID && !regex.CHAIN_ID.test(receivingChainID)) {
-		throw new ValidationException('Incorrect \'receivingChainID\' specified in transaction params.');
-	}
-
-	if (sendingChainID && !regex.CHAIN_ID.test(sendingChainID)) {
-		throw new ValidationException('Incorrect \'sendingChainID\' specified in transaction params.');
-	}
-
-	if (messageFeeTokenID && !regex.TOKEN_ID.test(messageFeeTokenID)) {
-		throw new ValidationException('Incorrect \'messageFeeTokenID\' specified in transaction params.');
+	try {
+		validator.validate(txParamsSchema, parsedTxParams);
+	} catch (err) {
+		throw new InvalidParamsException(err);
 	}
 };
 
@@ -297,7 +313,7 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	validateTransactionParams(params);
+	await validateTransactionParams(params.transaction);
 
 	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
 	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
