@@ -109,16 +109,10 @@ jest.mock('lisk-service-framework', () => {
 	};
 });
 
-jest.mock('../../../../../shared/constants', () => {
-	const { registeredEndpoints, engineEndpoints, allRegisteredEndpoints } = require('../../../../constants/endpoints');
-	const { metadata } = require('../../../../constants/metadata');
-	const actual = jest.requireActual('../../../../../shared/constants');
+jest.mock('../../../../../shared/dataService/business/schemas', () => {
+	const { schemas } = require('../../../../constants/schemas');
 	return {
-		...actual,
-		getAllRegisteredEndpoints() { return allRegisteredEndpoints; },
-		getRegisteredEndpoints() { return registeredEndpoints; },
-		getEngineEndpoints() { return engineEndpoints; },
-		getSystemMetadata() { return metadata; },
+		getSchemas() { return schemas; },
 	};
 });
 

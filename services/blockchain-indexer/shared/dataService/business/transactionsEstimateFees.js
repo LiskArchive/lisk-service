@@ -29,6 +29,7 @@ const {
 const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
+const { getSchemas } = require('./schemas');
 
 const {
 	MODULE,
@@ -37,7 +38,6 @@ const {
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
-	getSystemMetadata,
 } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
@@ -246,12 +246,6 @@ const calcAdditionalFees = async (transaction) => {
 	return additionalFees;
 };
 
-const getTransactionParamsSchema = (transaction, metadata) => {
-	const moduleMetadata = metadata.modules.find(m => m.name === transaction.module);
-	const { params: schema } = moduleMetadata.commands.find(c => c.name === transaction.command);
-	return schema;
-};
-
 const validateTransactionParams = async transaction => {
 	// Mock optional values if not present before schema validation.
 	if (transaction.module === MODULE.TOKEN
@@ -265,8 +259,8 @@ const validateTransactionParams = async transaction => {
 		}
 	}
 
-	const metadata = await getSystemMetadata();
-	const txParamsSchema = getTransactionParamsSchema(transaction, metadata);
+	const allSchemas = await getSchemas();
+	const { schema: txParamsSchema } = allSchemas.data.commands.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`);
 	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
 
 	try {
