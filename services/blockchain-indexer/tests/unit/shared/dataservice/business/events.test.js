@@ -216,7 +216,7 @@ describe('getEvents', () => {
 								};
 							} if (schema.tableName === mockEventTopicsTableSchema.tableName) {
 								return {
-									find: jest.fn(() => mockEventTopics),
+									find: jest.fn(() => mockEventsForEventTopics),
 									count: jest.fn(() => 10),
 								};
 							}
