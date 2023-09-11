@@ -253,7 +253,8 @@ const validateTransactionParams = params => {
 		messageFeeTokenID,
 		blsKey,
 		proofOfPossession,
-		generatorKey } = params.transaction.params;
+		generatorKey,
+	} = params.transaction.params;
 
 	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
 		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
@@ -276,7 +277,7 @@ const validateTransactionParams = params => {
 	}
 
 	if (receivingChainID && !regex.CHAIN_ID.test(receivingChainID)) {
-		throw new ValidationException('Incorrect \'chainID\' specified in transaction params.');
+		throw new ValidationException('Incorrect \'receivingChainID\' specified in transaction params.');
 	}
 
 	if (sendingChainID && !regex.CHAIN_ID.test(sendingChainID)) {
