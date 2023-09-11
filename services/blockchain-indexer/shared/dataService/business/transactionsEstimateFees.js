@@ -19,7 +19,6 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const { validator } = require('@liskhq/lisk-validator');
-const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
 
 const {
 	HTTP,
@@ -42,7 +41,7 @@ const {
 } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
-const { parseToJSONCompatObj } = require('../../utils/parser');
+const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
 const { requestConnector } = require('../../utils/request');
 const config = require('../../../config');
 
@@ -253,47 +252,19 @@ const getTransactionParamsSchema = (transaction, metadata) => {
 	return schema;
 };
 
-const parseInputBySchema = (input, schema) => {
-	const { type: schemaType, dataType: schemaDataType, items: schemaItemsSchema } = schema;
-
-	if (typeof input !== 'object') {
-		if (schemaDataType === 'string') return String(input);
-		if (schemaDataType === 'boolean') return Boolean(input);
-		if (schemaDataType === 'bytes') {
-			if (schema.format === 'lisk32' && input.startsWith('lsk')) {
-				return getAddressFromLisk32Address(input);
-			}
-			return Buffer.from(input, 'hex');
-		}
-		if (schemaDataType === 'uint32' || schemaDataType === 'sint32') return Number(input);
-		if (schemaDataType === 'uint64' || schemaDataType === 'sint64') return BigInt(input);
-		return input;
-	}
-
-	if (schemaType === 'object') {
-		const formattedObj = Object.keys(input).reduce((acc, key) => {
-			const { type, dataType, items: itemsSchema, format } = schema.properties[key] || {};
-			const currValue = input[key];
-			if (type === 'array') {
-				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
-			} else {
-				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType, format };
-				acc[key] = parseInputBySchema(currValue, innerSchema);
-			}
-			return acc;
-		}, {});
-		return formattedObj;
-	} if (schemaType === 'array') {
-		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
-		return formattedArray;
-	}
-
-	// For situations where the schema for a property states 'bytes'
-	// but has already been de-serialized into object, e.g. tx.asset
-	return input;
-};
-
 const validateTransactionParams = async transaction => {
+	// Mock optional values if not present before schema validation.
+	if (transaction.module === MODULE.TOKEN
+		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+		if (!('messageFee' in transaction.params)) {
+			transaction.params.messageFee = '10000000';
+		}
+
+		if (!('messageFeeTokenID' in transaction.params)) {
+			transaction.params.messageFeeTokenID = '0000000000000000';
+		}
+	}
+
 	const metadata = await getSystemMetadata();
 	const txParamsSchema = getTransactionParamsSchema(transaction, metadata);
 	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
