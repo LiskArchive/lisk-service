@@ -62,6 +62,7 @@ module.exports = [
 					await validateValidatorCache();
 				} catch (err) {
 					logger.warn(`Validating validators cache failed due to: ${err.message}.`);
+					logger.debug(err.stack);
 				}
 			}
 		},

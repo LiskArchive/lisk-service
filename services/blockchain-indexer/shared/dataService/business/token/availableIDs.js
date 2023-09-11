@@ -34,7 +34,8 @@ const getAvailableTokenIDs = async (params) => {
 	const accountBalancesTable = await getAccountBalancesTable();
 
 	const tokenInfos = await accountBalancesTable.find(
-		{ ...params, distinct: 'tokenID' }, ['tokenID'],
+		{ ...params, distinct: 'tokenID' },
+		['tokenID'],
 	);
 
 	response.data.tokenIDs = tokenInfos.map(tokenInfo => tokenInfo.tokenID);

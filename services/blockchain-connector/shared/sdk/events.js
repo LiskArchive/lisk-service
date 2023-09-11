@@ -20,8 +20,8 @@ const { Logger, Signals } = require('lisk-service-framework');
 const { getApiClient, instantiateClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
-const { getEscrowedAmounts } = require('./token');
 const config = require('../../config');
+const { updateTokenInfo } = require('./token');
 
 const logger = Logger();
 
@@ -43,6 +43,10 @@ const events = [
 ];
 
 let isClientConnected = false;
+const logError = (method, err) => {
+	logger.warn(`Invocation for ${method} failed with error: ${err.message}.`);
+	logger.debug(err.stack);
+};
 
 const subscribeToAllRegisteredEvents = async () => {
 	const apiClient = await getApiClient();
@@ -54,10 +58,8 @@ const subscribeToAllRegisteredEvents = async () => {
 			async payload => {
 				// Force update necessary caches on new chain events
 				if (event.startsWith('chain_')) {
-					await getNodeInfo(true)
-						.catch(err => logger.warn(`Invocation for 'getNodeInfo' failed with error: ${err.message}.`));
-					await getEscrowedAmounts(true)
-						.catch(err => logger.warn(`Invocation for 'getEscrowedAmounts' failed with error: ${err.message}.`));
+					await getNodeInfo(true).catch(err => logError('getNodeInfo', err));
+					await updateTokenInfo().catch(err => logError('updateTokenInfo', err));
 				}
 
 				isClientConnected = true;

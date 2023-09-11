@@ -38,16 +38,17 @@ const {
 	getAllPosValidators,
 } = require('./sources/connector');
 
+const delay = require('./utils/delay');
 const config = require('../config');
 
-const blockIndexQueue = new MessageQueue(
-	config.queue.blocks.name,
+const blockMessageQueue = new MessageQueue(
+	config.queue.block.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const accountIndexQueue = new MessageQueue(
-	config.queue.accounts.name,
+const accountMessageQueue = new MessageQueue(
+	config.queue.account.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
@@ -63,12 +64,24 @@ const getInProgressJobCount = async (queue) => {
 };
 
 const getLiveIndexingJobCount = async () => {
-	const messageQueueJobCount = await getInProgressJobCount(blockIndexQueue);
+	const messageQueueJobCount = await getInProgressJobCount(blockMessageQueue);
 	const indexerLiveIndexingJobCount = await getLiveIndexingJobCountFromIndexer();
 	return messageQueueJobCount + indexerLiveIndexingJobCount;
 };
 
 const getRegisteredModuleAssets = () => registeredLiskModules;
+
+const waitForJobCountToFallBelowThreshold = async () => {
+	const { skipThreshold } = config.job.indexMissingBlocks;
+	/* eslint-disable no-await-in-loop */
+	while (true) {
+		const count = await getLiveIndexingJobCount();
+		if (count < skipThreshold) return;
+		logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
+		await delay(REFRESH_INTERVAL);
+	}
+	/* eslint-enable no-await-in-loop */
+};
 
 const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 	if (!resolve) resolve = res;
@@ -120,19 +133,20 @@ const scheduleBlocksIndexing = async (heights) => {
 		// eslint-disable-next-line no-restricted-syntax
 		for (const height of blockHeightsBatch) {
 			logger.trace(`Scheduling indexing for block at height: ${height}.`);
-			await blockIndexQueue.add({ height });
+			await blockMessageQueue.add({ height });
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
-		/* eslint-enable no-await-in-loop */
 
-		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
+		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches} (Heights: ${blockHeightsBatch.at(0)} - ${blockHeightsBatch.at(-1)}, ${blockHeightsBatch.length} blocks).`);
+		await waitForJobCountToFallBelowThreshold();
+		/* eslint-enable no-await-in-loop */
 	}
 };
 
 const scheduleValidatorsIndexing = async (validators) => {
 	await BluebirdPromise.map(
 		validators,
-		async validator => accountIndexQueue.add({
+		async validator => accountMessageQueue.add({
 			account: {
 				...validator,
 				isValidator: true,

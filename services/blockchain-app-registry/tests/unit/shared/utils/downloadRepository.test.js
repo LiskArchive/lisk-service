@@ -85,12 +85,8 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('should return proper response when url is null', async () => {
-		const response = getRepoInfoFromURL(null);
-		expect(response).toMatchObject({
-			owner: undefined,
-			repo: undefined,
-		});
+	it('should throw error when url is null', async () => {
+		expect(async () => getRepoInfoFromURL(null)).rejects.toThrow();
 	});
 });
 
