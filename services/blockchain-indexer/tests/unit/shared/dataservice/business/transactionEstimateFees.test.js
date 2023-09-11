@@ -133,6 +133,23 @@ describe('validateTransactionParams', () => {
 		).not.toThrow();
 	});
 
+	it('should validate a valid token cross chain transfer transaction if passed without optional params', () => {
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		const {
+			messageFee,
+			messageFeeTokenID,
+			...remParams
+		} = mockTransferCrossChainTxRequest.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockTransferCrossChainTxRequest.transaction,
+			params: {
+				...remParams,
+			},
+		})).not.toThrow();
+	});
+
 	it('should throw an error for incorrect tokenID in token transaction', () => {
 		const {
 			tokenID,
