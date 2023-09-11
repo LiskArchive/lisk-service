@@ -15,10 +15,10 @@
  */
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
-const config = require('../../../../../config');
+const config = require('../../../../../../config');
 
-const mockedFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
-const dataServicePath = resolve(`${__dirname}/../../../../../shared/dataService`);
+const mockedFilePath = resolve(`${__dirname}/../../../../../../shared/dataService/business/network`);
+const dataServicePath = resolve(`${__dirname}/../../../../../../shared/dataService`);
 
 beforeEach(() => {
 	jest.resetModules();

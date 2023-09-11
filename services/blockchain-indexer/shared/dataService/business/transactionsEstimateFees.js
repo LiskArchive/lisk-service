@@ -24,7 +24,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain');
+const { resolveMainchainServiceURL, resolveChannelInfo } = require('./interoperability');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 

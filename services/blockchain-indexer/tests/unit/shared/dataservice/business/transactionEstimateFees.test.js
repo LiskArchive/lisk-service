@@ -18,7 +18,7 @@ const { resolve } = require('path');
 
 const { inputTransaction, inputMultisigTransaction } = require('../../../../constants/transactions');
 
-const mockedMainchainFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/mainchain`);
+const mockedMainchainFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/interoperability/interoperability`);
 const mockedTransactionFeeEstimatesFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/transactionsEstimateFees`);
 const mockedAuthFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/auth`);
 const mockedAccountFilePath = resolve(`${__dirname}/../../../../../shared/utils/account`);

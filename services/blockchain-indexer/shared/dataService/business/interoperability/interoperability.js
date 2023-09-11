@@ -18,11 +18,11 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { getNetworkStatus } = require('./network');
-const regex = require('../../regex');
-const config = require('../../../config');
-const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../constants');
-const { requestConnector } = require('../../utils/request');
+const { getNetworkStatus } = require('../network');
+const regex = require('../../../regex');
+const config = require('../../../../config');
+const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../../constants');
+const { requestConnector } = require('../../../utils/request');
 
 let chainID;
 
@@ -32,6 +32,14 @@ const isMainchain = async () => {
 		chainID = networkStatus.chainID;
 	}
 	return regex.MAINCHAIN_ID.test(chainID);
+};
+
+const getCurrentChainID = async () => {
+	if (!chainID) {
+		const networkStatus = (await getNetworkStatus()).data;
+		chainID = networkStatus.chainID;
+	}
+	return chainID;
 };
 
 const resolveMainchainServiceURL = async () => {
@@ -50,6 +58,10 @@ const resolveMainchainServiceURL = async () => {
 };
 
 const resolveChannelInfo = async (inputChainID) => {
+	if (inputChainID === await getCurrentChainID()) {
+		throw new ValidationException('Channel info cannot be determined when receivingChainID and currentChainID are same.');
+	}
+
 	try {
 		if (await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID)) {
 			const channelInfo = await requestConnector('getChannel', { chainID: inputChainID });
