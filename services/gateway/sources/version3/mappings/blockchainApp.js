@@ -20,7 +20,7 @@ module.exports = {
 	address: '=,string',
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
-	depositedLsk: '=,string',
+	escrowedLsk: '=,string',
 	escrow: ['escrow', {
 		tokenID: '=,string',
 		amount: '=,string',

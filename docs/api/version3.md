@@ -5658,7 +5658,7 @@ _Supports pagination._
       "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
       "lastCertificateHeight": 160,
       "lastUpdated": 1616008148,
-      "depositedLsk": "50000000000",
+      "escrowedLsk": "50000000000",
       "escrow": [
         {
           "tokenID": "0000000000000000",

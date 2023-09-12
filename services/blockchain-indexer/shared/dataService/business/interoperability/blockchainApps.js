@@ -94,11 +94,11 @@ const getBlockchainApps = async (params) => {
 			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
 
 			const escrowedAmountForTokenID = escrow.find(item => item.tokenID === lskTokenID);
-			const depositedLsk = escrowedAmountForTokenID ? escrowedAmountForTokenID.amount : '0';
+			const escrowedLsk = escrowedAmountForTokenID ? escrowedAmountForTokenID.amount : '0';
 
 			return {
 				...blockchainAppInfo,
-				depositedLsk,
+				escrowedLsk,
 				escrow: escrow.length ? escrow : [{
 					tokenID: chainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0'),
 					amount: '0',
