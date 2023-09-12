@@ -220,7 +220,7 @@ describe('getBlockchainApps', () => {
 	});
 });
 
-describe('getTokenIDLSK', () => {
+describe('getLSKTokenID', () => {
 	beforeEach(() => {
 		jest.resetModules();
 		jest.clearAllMocks();
@@ -231,8 +231,8 @@ describe('getTokenIDLSK', () => {
 			getMainchainID: jest.fn(() => mockedMainchainID),
 		}));
 
-		const { getTokenIDLSK } = require(mockBlockchainAppsPath);
-		await expect(getTokenIDLSK()).resolves.not.toThrow();
+		const { getLSKTokenID } = require(mockBlockchainAppsPath);
+		await expect(getLSKTokenID()).resolves.not.toThrow();
 	});
 
 	it('should throw an error if MainchainID is not found', async () => {
@@ -242,7 +242,7 @@ describe('getTokenIDLSK', () => {
 			}),
 		}));
 
-		const { getTokenIDLSK } = require(mockBlockchainAppsPath);
-		await expect(getTokenIDLSK()).rejects.toThrow();
+		const { getLSKTokenID } = require(mockBlockchainAppsPath);
+		await expect(getLSKTokenID()).rejects.toThrow();
 	});
 });

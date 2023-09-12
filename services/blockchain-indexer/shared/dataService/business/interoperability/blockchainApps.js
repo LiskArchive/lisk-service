@@ -28,8 +28,7 @@ const { getMainchainID } = require('./mainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
-// use mainchain
-const getTokenIDLSK = async () => {
+const getLSKTokenID = async () => {
 	const mainchainID = await getMainchainID();
 	return mainchainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0');
 };
@@ -86,7 +85,7 @@ const getBlockchainApps = async (params) => {
 	const { data: { chainID } } = await getNetworkStatus();
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 
-	const lskTokenID = await getTokenIDLSK();
+	const lskTokenID = await getLSKTokenID();
 
 	blockchainAppsInfo.data = await BluebirdPromise.map(
 		dbBlockchainApps,
@@ -121,5 +120,5 @@ module.exports = {
 	getBlockchainApps,
 
 	// Testing
-	getTokenIDLSK,
+	getLSKTokenID,
 };
