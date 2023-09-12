@@ -22,6 +22,7 @@ module.exports = {
 	},
 	indexes: {
 		eventID: { type: 'key' },
+		topic: { type: 'key' },
 	},
 	purge: {},
 };
