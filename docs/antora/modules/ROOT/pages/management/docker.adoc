@@ -196,6 +196,27 @@ make up
 NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
 This can be quite time-consuming when the chain is long, spanning over hours.
 
+== MySQL snapshot
+
+Configurations to sync Lisk Service from an existing snapshot, to speed up the sync process.
+To enable the MySQL snapshot to be imported automatically, please ensure to set the following parameters before starting the service.
+//TODO: Once the new Add backups page for Lisk Sevice is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
+
+[source,bash]
+----
+# Enable or disable apply snapshot feature
+ENABLE_APPLY_SNAPSHOT=true
+
+# Custom snapshot url (Expected to end with sql.gz)
+INDEX_SNAPSHOT_URL='https://snapshots.lisk.io/mainnet/service.sql.gz'
+
+# Allow insecure HTTP connections. By default this is disabled.
+ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP=false
+
+----
+NOTE: The `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
+It is recommended to use alphanumeric characters and the commonly accepted special characters.
+
 == Logging
 
 To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
