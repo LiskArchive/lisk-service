@@ -266,7 +266,7 @@ pm2 delete ecosystem.config.js
 == MySQL snapshot
 
 Configurations to sync Lisk Service from an existing snapshot, to speed up the sync process.
-To enable the MySQL snapshot automatically the following 3 params will need to be set before starting the database.
+To enable the MySQL snapshot automatically, kindly ensure to set the following parameters before starting the service.
 
 
 [source,bash]
