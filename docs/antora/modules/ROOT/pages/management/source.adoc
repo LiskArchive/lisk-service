@@ -9,7 +9,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
-
+//TODO: add in link to new Backups page for importing the DB snapshot manually
 
 On this page, you'll find the most relevant PM2 commands for running a source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
@@ -266,7 +266,8 @@ pm2 delete ecosystem.config.js
 == MySQL snapshot
 
 Configurations to sync Lisk Service from an existing snapshot, to speed up the sync process.
-To enable the MySQL snapshot automatically, please ensure to set the following parameters before starting the service.
+To enable the MySQL snapshot to be imported automatically, please ensure to set the following parameters before starting the service.
+//TODO: Once the new Add backups page for Lisk Sevice is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
 
 [source,bash]
 ----
