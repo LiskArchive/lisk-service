@@ -109,6 +109,159 @@ jest.mock('lisk-service-framework', () => {
 	};
 });
 
+jest.mock('../../../../../shared/dataService/business/schemas', () => {
+	const { schemas } = require('../../../../constants/schemas');
+	return {
+		getSchemas() { return schemas; },
+	};
+});
+
+describe('validateTransactionParams', () => {
+	it('should validate a valid token and register validator transaction', () => {
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams(mockTransferCrossChainTxRequest.transaction),
+		).not.toThrow();
+
+		expect(() => validateTransactionParams(mockRegisterValidatorTxrequestConnector.transaction),
+		).not.toThrow();
+	});
+
+	it('should validate a valid token cross chain transfer transaction if passed without optional params', () => {
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		const {
+			messageFee,
+			messageFeeTokenID,
+			...remParams
+		} = mockTransferCrossChainTxRequest.transaction.params;
+
+		expect(() => validateTransactionParams({
+			...mockTransferCrossChainTxRequest.transaction,
+			params: {
+				...remParams,
+			},
+		})).not.toThrow();
+	});
+
+	it('should throw an error for incorrect tokenID in token transaction', () => {
+		const {
+			tokenID,
+			recipientAddress,
+			...remParams
+		} = mockTransferCrossChainTxRequest.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams({
+			...mockTransferCrossChainTxRequest.transaction,
+			params: {
+				...remParams,
+				tokenID: 'invalidTokenID',
+				recipientAddress,
+			},
+		})).rejects.toThrow();
+	});
+
+	it('should throw an error for incorrect recipientAddress in token transaction', () => {
+		const {
+			tokenID,
+			recipientAddress,
+			...remParams
+		} = mockTransferCrossChainTxRequest.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams({
+			...mockTransferCrossChainTxRequest.transaction,
+			params: {
+				...remParams,
+				tokenID,
+				recipientAddress: 'invalidRecipientAddress',
+			},
+		})).rejects.toThrow();
+	});
+
+	it('should throw an error for incorrect blsKey in register validator transaction', () => {
+		const {
+			blsKey,
+			proofOfPossession,
+			generatorKey,
+			...remParams
+		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams({
+			...mockRegisterValidatorTxrequestConnector.transaction,
+			params: {
+				...remParams,
+				blsKey: 'invalidBLSKey',
+				proofOfPossession,
+				generatorKey,
+			},
+		})).rejects.toThrow();
+	});
+
+	it('should throw an error for incorrect proofOfPossession in register validator transaction', () => {
+		const { blsKey,
+			proofOfPossession,
+			generatorKey,
+			...remParams
+		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams({
+			...mockRegisterValidatorTxrequestConnector.transaction,
+			params: {
+				...remParams,
+				blsKey,
+				proofOfPossession: 'invalidProofOfPossession',
+				generatorKey,
+			},
+		})).rejects.toThrow();
+	});
+
+	it('should throw an error for incorrect generatorKey in register validator transaction', () => {
+		const {
+			blsKey,
+			proofOfPossession,
+			generatorKey,
+			...remParams
+		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams({
+			...mockRegisterValidatorTxrequestConnector.transaction,
+			params: {
+				...remParams,
+				blsKey,
+				proofOfPossession,
+				generatorKey: 'invalidGeneratorKey',
+			},
+		})).rejects.toThrow();
+	});
+
+	it('should throw an error for incorrect sendingChainID in cross chain update transaction', () => {
+		const {
+			sendingChainID,
+			...remParams
+		} = mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() => validateTransactionParams({
+			...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
+			params: {
+				...remParams,
+				sendingChainID: 'invalidSendingChainID',
+			},
+		})).rejects.toThrow();
+	});
+});
+
 describe('Test transaction fees estimates', () => {
 	jest.mock(mockedMainchainFilePath, () => {
 		const actual = jest.requireActual(mockedMainchainFilePath);
