@@ -18,38 +18,16 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { getNetworkStatus } = require('../network');
+const { getCurrentChainID, isMainchain } = require('./chain');
 const regex = require('../../../regex');
 const config = require('../../../../config');
 const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../../constants');
 const { requestConnector } = require('../../../utils/request');
 
-let chainID;
-
-const isMainchain = async () => {
-	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-	return regex.MAINCHAIN_ID.test(chainID);
-};
-
-const getCurrentChainID = async () => {
-	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-	return chainID;
-};
-
 const resolveMainchainServiceURL = async () => {
 	if (config.endpoints.mainchainServiceUrl) return config.endpoints.mainchainServiceUrl;
 
-	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-
+	const chainID = await getCurrentChainID();
 	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
 	const mainchainID = networkID.padEnd(LENGTH_CHAIN_ID, '0');
 	const [{ serviceURL } = {}] = config.networks.LISK
@@ -87,10 +65,6 @@ const resolveChannelInfo = async (inputChainID) => {
 };
 
 module.exports = {
-	isMainchain,
 	resolveMainchainServiceURL,
 	resolveChannelInfo,
-
-	// For unit testing
-	getCurrentChainID,
 };

@@ -18,7 +18,7 @@ const { resolve } = require('path');
 
 const { inputTransaction, inputMultisigTransaction } = require('../../../../constants/transactions');
 
-const mockedMainchainFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/interoperability/interoperability`);
+const mockedChannelFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/interoperability/channel`);
 const mockedTransactionFeeEstimatesFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/transactionsEstimateFees`);
 const mockedAuthFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/auth`);
 const mockedAccountFilePath = resolve(`${__dirname}/../../../../../shared/utils/account`);
@@ -110,8 +110,8 @@ jest.mock('lisk-service-framework', () => {
 });
 
 describe('Test transaction fees estimates', () => {
-	jest.mock(mockedMainchainFilePath, () => {
-		const actual = jest.requireActual(mockedMainchainFilePath);
+	jest.mock(mockedChannelFilePath, () => {
+		const actual = jest.requireActual(mockedChannelFilePath);
 		return {
 			...actual,
 			resolveChannelInfo() {
