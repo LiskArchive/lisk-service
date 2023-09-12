@@ -266,7 +266,7 @@ const validateTransactionParams = async transaction => {
 	const txCommand = allSchemas.data.commands.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`);
 
 	if (!txCommand || !txCommand.schema) {
-		throw new InvalidParamsException(`${transaction.module}:${transaction.command} is not a valid transaction.`);
+		throw new ValidationException(`${transaction.module}:${transaction.command} is not a valid transaction.`);
 	}
 
 	const txParamsSchema = txCommand.schema;
