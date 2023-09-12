@@ -105,10 +105,12 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
+const resetApiClientListener = () => instantiateClient(true);
+Signals.get('resetApiClient').add(resetApiClientListener);
+
 module.exports = {
 	timeoutMessage,
 
 	getApiClient,
 	invokeEndpoint,
-	instantiateClient,
 };

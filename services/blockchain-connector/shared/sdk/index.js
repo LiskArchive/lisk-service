@@ -102,7 +102,7 @@ const {
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
-const { getEventsByHeight, verifyClientConnection } = require('./events');
+const { getEventsByHeight } = require('./events');
 const { invokeEndpointProxy } = require('./invoke');
 const { setSchemas, setMetadata } = require('./schema');
 const { getValidator, validateBLSKey } = require('./validators');
@@ -124,8 +124,6 @@ const init = async () => {
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 	await updateTokenInfo();
-
-	await verifyClientConnection();
 
 	// Cache all the schemas
 	setSchemas(await getSchemas());

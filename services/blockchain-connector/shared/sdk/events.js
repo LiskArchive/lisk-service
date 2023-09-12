@@ -17,7 +17,7 @@ const util = require('util');
 
 const { Logger, Signals } = require('lisk-service-framework');
 
-const { getApiClient, instantiateClient } = require('./client');
+const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
 const config = require('../../config');
@@ -25,14 +25,11 @@ const { updateTokenInfo } = require('./token');
 
 const logger = Logger();
 
-const { numOfBlocksReset, numOfBlocksVerify } = config.verifyClientConnection;
-
 const EVENT_CHAIN_FORK = 'chain_forked';
 const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
 const EVENT_CHAIN_BLOCK_DELETE = 'chain_deleteBlock';
 const EVENT_CHAIN_VALIDATORS_CHANGE = 'chain_validatorsChanged';
 const EVENT_TX_POOL_TRANSACTION_NEW = 'txpool_newTransaction';
-const BLOCK_TIME = 10000; // ms
 
 const events = [
 	EVENT_CHAIN_FORK,
@@ -42,13 +39,17 @@ const events = [
 	EVENT_TX_POOL_TRANSACTION_NEW,
 ];
 
-let isClientConnected = false;
+let eventsCounter;
+
 const logError = (method, err) => {
 	logger.warn(`Invocation for ${method} failed with error: ${err.message}.`);
 	logger.debug(err.stack);
 };
 
 const subscribeToAllRegisteredEvents = async () => {
+	// Reset eventsCounter first
+	eventsCounter = 0;
+
 	const apiClient = await getApiClient();
 	const registeredEvents = await getRegisteredEvents();
 	const allEvents = registeredEvents.concat(events);
@@ -58,11 +59,12 @@ const subscribeToAllRegisteredEvents = async () => {
 			async payload => {
 				// Force update necessary caches on new chain events
 				if (event.startsWith('chain_')) {
+					eventsCounter++; // Increase counter with every newBlock/deleteBlock
+
 					await getNodeInfo(true).catch(err => logError('getNodeInfo', err));
 					await updateTokenInfo().catch(err => logError('updateTokenInfo', err));
 				}
 
-				isClientConnected = true;
 				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);
 			},
@@ -71,25 +73,25 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
+// To ensure API Client is alive and receiving chain events
+getNodeInfo().then(nodeInfo => {
+	setInterval(() => {
+		if (eventsCounter === 0) {
+			Signals.get('resetApiClient').dispatch();
+		} else {
+			eventsCounter = 0;
+		}
+	}, config.connectionVerifyBlockInterval.numOfBlocksConnectionVerify * nodeInfo.genesis.blockTime * 1000);
+});
+
 const getEventsByHeightFormatted = async (height) => {
 	const chainEvents = await getEventsByHeight(height);
 	const formattedEvents = chainEvents.map((event) => formatEvent(event));
 	return formattedEvents;
 };
 
-const verifyClientConnection = async () => {
-	setInterval(() => isClientConnected = false, BLOCK_TIME * numOfBlocksReset);
-	setInterval(async () => {
-		if (!isClientConnected) {
-			logger.info('Re-instantiating API client.');
-			await instantiateClient(true);
-		}
-	}, BLOCK_TIME * numOfBlocksVerify);
-};
-
 module.exports = {
 	events,
-	verifyClientConnection,
 
 	subscribeToAllRegisteredEvents,
 	getEventsByHeight: getEventsByHeightFormatted,
