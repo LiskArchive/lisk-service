@@ -15,6 +15,8 @@
  */
 const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
 
+const LISK_ADDRESS_FORMAT = 'lisk32';
+
 const parseToJSONCompatObj = obj => {
 	if (typeof obj === 'boolean' || !obj) return obj;
 
@@ -41,7 +43,7 @@ const parseInputBySchema = (input, schema) => {
 		if (schemaDataType === 'string') return String(input);
 		if (schemaDataType === 'boolean') return Boolean(input);
 		if (schemaDataType === 'bytes') {
-			if (schema.format === 'lisk32') {
+			if (schema.format === LISK_ADDRESS_FORMAT) {
 				return getAddressFromLisk32Address(input);
 			}
 			return Buffer.from(input, 'hex');

@@ -49,6 +49,9 @@ const { getPosConstants } = require('./pos/constants');
 const { getInteroperabilityConstants } = require('./interoperability/constants');
 const { getFeeEstimates } = require('./feeEstimates');
 
+const DEFAULT_MESSAGE_FEE = '10000000';
+const DEFAULT_MESSAGE_FEE_TOKEN_ID = '0000000000000000';
+
 const logger = Logger();
 
 const { bufferBytesLength: BUFFER_BYTES_LENGTH } = config.estimateFees;
@@ -251,16 +254,22 @@ const validateTransactionParams = async transaction => {
 	if (transaction.module === MODULE.TOKEN
 		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
 		if (!('messageFee' in transaction.params)) {
-			transaction.params.messageFee = '10000000';
+			transaction.params.messageFee = DEFAULT_MESSAGE_FEE;
 		}
 
 		if (!('messageFeeTokenID' in transaction.params)) {
-			transaction.params.messageFeeTokenID = '0000000000000000';
+			transaction.params.messageFeeTokenID = DEFAULT_MESSAGE_FEE_TOKEN_ID;
 		}
 	}
 
 	const allSchemas = await getSchemas();
-	const { schema: txParamsSchema } = allSchemas.data.commands.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`);
+	const txCommand = allSchemas.data.commands.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`);
+
+	if (!txCommand || !txCommand.schema) {
+		throw new InvalidParamsException(`${transaction.module}:${transaction.command} is not a valid transaction.`);
+	}
+
+	const txParamsSchema = txCommand.schema;
 	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
 
 	try {
