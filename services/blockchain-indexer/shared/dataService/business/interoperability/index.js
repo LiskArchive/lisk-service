@@ -17,7 +17,12 @@ const { getBlockchainApps } = require('./blockchainApps');
 const { getChainAccount } = require('./chainAccount');
 const { getMainchainID } = require('./mainchain');
 const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
-const { isMainchain, resolveMainchainServiceURL, resolveChannelInfo } = require('./interoperability');
+const {
+	isMainchain,
+	resolveMainchainServiceURL,
+	resolveChannelInfo,
+	getCurrentChainID,
+} = require('./interoperability');
 
 module.exports = {
 	getBlockchainApps,
@@ -28,4 +33,5 @@ module.exports = {
 	isMainchain,
 	resolveMainchainServiceURL,
 	resolveChannelInfo,
+	getCurrentChainID,
 };

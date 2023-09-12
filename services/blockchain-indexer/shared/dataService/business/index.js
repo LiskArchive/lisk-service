@@ -51,6 +51,7 @@ const {
 	isMainchain,
 	resolveMainchainServiceURL,
 	resolveChannelInfo,
+	getCurrentChainID,
 } = require('./interoperability');
 
 const {
@@ -149,6 +150,7 @@ module.exports = {
 	isMainchain,
 	resolveMainchainServiceURL,
 	resolveChannelInfo,
+	getCurrentChainID,
 
 	// Token
 	tokenHasUserAccount,

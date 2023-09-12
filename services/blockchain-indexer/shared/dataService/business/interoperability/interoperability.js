@@ -90,4 +90,7 @@ module.exports = {
 	isMainchain,
 	resolveMainchainServiceURL,
 	resolveChannelInfo,
+
+	// For unit testing
+	getCurrentChainID,
 };
