@@ -119,4 +119,7 @@ const getBlockchainApps = async (params) => {
 
 module.exports = {
 	getBlockchainApps,
+
+	// Testing
+	getTokenIDLSK,
 };
