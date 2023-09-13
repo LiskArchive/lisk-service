@@ -22,6 +22,11 @@ const mockedEvents = eventsIncludingTokenModule;
 
 const mockEventsFilePath = path.resolve(`${__dirname}/../../../../../shared/dataService/business/events`);
 
+const mockBlocksTableSchema = require('../../../../../shared/database/schema/blocks');
+const mockEventsTableSchema = require('../../../../../shared/database/schema/events');
+const mockEventTopicsTableSchema = require('../../../../../shared/database/schema/eventTopics');
+const { mockEventTopics, mockEventsForEventTopics, getEventsResult } = require('../../constants/events');
+
 describe('getEventsByBlockID', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -172,5 +177,157 @@ describe('cacheEventsByBlockID', () => {
 
 		const { cacheEventsByBlockID } = require(mockEventsFilePath);
 		expect(() => cacheEventsByBlockID(mockedBlockID, mockedEvents)).rejects.toThrow();
+	});
+});
+
+describe('getEvents', () => {
+	beforeEach(() => {
+		jest.resetAllMocks();
+		jest.resetModules();
+	});
+
+	it('should retrieve events successfully', async () => {
+		jest.mock('../../../../../config', () => {
+			const actual = jest.requireActual('../../../../../config');
+			return {
+				...actual,
+				db: {
+					...actual.db,
+					isPersistEvents: true,
+				},
+			};
+		});
+
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn((schema) => {
+							if (schema.tableName === mockBlocksTableSchema.tableName) {
+								return {
+									find: jest.fn(() => []),
+								};
+							} if (schema.tableName === mockEventsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventsForEventTopics),
+									count: jest.fn(() => 10),
+								};
+							} if (schema.tableName === mockEventTopicsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventsForEventTopics),
+									count: jest.fn(() => 10),
+								};
+							}
+							throw new Error();
+						}),
+					},
+				},
+			};
+		});
+
+		const params = {
+			sort: 'timestamp:desc',
+			order: 'index:asc',
+			limit: 10,
+			offset: 0,
+		};
+
+		const { getEvents } = require(mockEventsFilePath);
+		const result = await getEvents(params);
+
+		expect(result).toEqual(getEventsResult);
+	});
+
+	it('should throw a NotFoundException when an invalid blockID is provided', async () => {
+		const mockInvalidBlockID = 'valid-block-id';
+
+		const {
+			Exceptions: { NotFoundException },
+		} = require('lisk-service-framework');
+
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn((schema) => {
+							if (schema.tableName === mockBlocksTableSchema.tableName) {
+								return {
+									find: jest.fn((params) => {
+										expect(params.id).toEqual(mockInvalidBlockID);
+										return [];
+									}),
+								};
+							} if (schema.tableName === mockEventsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventsForEventTopics),
+									count: jest.fn(() => 10),
+								};
+							} if (schema.tableName === mockEventTopicsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventTopics),
+									count: jest.fn(() => 10),
+								};
+							}
+							throw new Error();
+						}),
+					},
+				},
+			};
+		});
+
+		const { getEvents } = require(mockEventsFilePath);
+		await expect(getEvents({
+			blockID: mockInvalidBlockID,
+		})).rejects.toThrow(NotFoundException);
+	});
+
+	it('should throw a NotFoundException for an invalid combination of blockID and height', async () => {
+		const mockValidBlockID = 'valid-block-id';
+
+		const {
+			Exceptions: { NotFoundException },
+		} = require('lisk-service-framework');
+
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn((schema) => {
+							if (schema.tableName === mockBlocksTableSchema.tableName) {
+								return {
+									find: jest.fn((queryParams) => {
+										expect(queryParams.id).toEqual(mockValidBlockID);
+										return [{ height: 123 }];
+									}),
+								};
+							} if (schema.tableName === mockEventsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventsForEventTopics),
+									count: jest.fn(() => 10),
+								};
+							} if (schema.tableName === mockEventTopicsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventTopics),
+									count: jest.fn(() => 10),
+								};
+							}
+							throw new Error();
+						}),
+					},
+				},
+			};
+		});
+
+		const { getEvents } = require(mockEventsFilePath);
+		await expect(getEvents({
+			blockID: mockValidBlockID,
+			height: 456,
+		})).rejects.toThrow(NotFoundException);
 	});
 });

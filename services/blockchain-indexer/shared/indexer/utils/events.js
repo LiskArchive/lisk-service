@@ -58,6 +58,7 @@ const getEventsInfoToIndex = async (block, events) => {
 			height: block.height,
 			index: event.index,
 			blockID: block.id,
+			timestamp: block.timestamp,
 		};
 
 		// Store whole event when persistence is enabled or block is not finalized yet
@@ -71,11 +72,6 @@ const getEventsInfoToIndex = async (block, events) => {
 		event.topics.forEach(topic => {
 			const eventTopicInfo = {
 				eventID: event.id,
-				height: block.height,
-				name: event.name,
-				module: event.module,
-				index: event.index,
-				timestamp: block.timestamp,
 				topic,
 			};
 			eventsInfoToIndex.eventTopicsInfo.push(eventTopicInfo);
