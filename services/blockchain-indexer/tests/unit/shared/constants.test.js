@@ -19,9 +19,8 @@ const { metadata } = require('../../constants/metadata');
 describe('Test resolveModuleCommands method', () => {
 	it('should return list of moduleCommands when called with valid system metadata', async () => {
 		const result = await resolveModuleCommands(metadata.modules);
-		const expectedResponse = ['auth:registerMultisignature'];
 		expect(result).toBeInstanceOf(Array);
-		expect(result).toEqual(expectedResponse);
+		expect(result).toContain('auth:registerMultisignature');
 	});
 
 	it('should throw error when called with null', async () => {

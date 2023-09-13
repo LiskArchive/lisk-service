@@ -18,15 +18,18 @@ const {
 	utils: { getRandomBytes },
 } = require('@liskhq/lisk-cryptography');
 
+const { validator } = require('@liskhq/lisk-validator');
+
 const {
 	HTTP,
-	Exceptions: { ValidationException },
+	Exceptions: { ValidationException, InvalidParamsException },
 	Logger,
 } = require('lisk-service-framework');
 
 const { resolveMainchainServiceURL, resolveChannelInfo } = require('./mainchain');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
+const { getSchemas } = require('./schemas');
 
 const {
 	MODULE,
@@ -38,14 +41,16 @@ const {
 } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
-const { parseToJSONCompatObj } = require('../../utils/parser');
+const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
 const { requestConnector } = require('../../utils/request');
 const config = require('../../../config');
 
 const { getPosConstants } = require('./pos/constants');
 const { getInteroperabilityConstants } = require('./interoperability/constants');
 const { getFeeEstimates } = require('./feeEstimates');
-const regex = require('../../regex');
+
+const DEFAULT_MESSAGE_FEE = '10000000';
+const DEFAULT_MESSAGE_FEE_TOKEN_ID = '0000000000000000';
 
 const logger = Logger();
 
@@ -244,6 +249,36 @@ const calcAdditionalFees = async (transaction) => {
 	return additionalFees;
 };
 
+const validateTransactionParams = async transaction => {
+	// Mock optional values if not present before schema validation.
+	if (transaction.module === MODULE.TOKEN
+		&& transaction.command === COMMAND.TRANSFER_CROSS_CHAIN) {
+		if (!('messageFee' in transaction.params)) {
+			transaction.params.messageFee = DEFAULT_MESSAGE_FEE;
+		}
+
+		if (!('messageFeeTokenID' in transaction.params)) {
+			transaction.params.messageFeeTokenID = DEFAULT_MESSAGE_FEE_TOKEN_ID;
+		}
+	}
+
+	const allSchemas = await getSchemas();
+	const txCommand = allSchemas.data.commands.find(e => e.moduleCommand === `${transaction.module}:${transaction.command}`);
+
+	if (!txCommand || !txCommand.schema) {
+		throw new ValidationException(`${transaction.module}:${transaction.command} is not a valid transaction.`);
+	}
+
+	const txParamsSchema = txCommand.schema;
+	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
+
+	try {
+		validator.validate(txParamsSchema, parsedTxParams);
+	} catch (err) {
+		throw new InvalidParamsException(err);
+	}
+};
+
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
 		data: {
@@ -252,15 +287,7 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
-	// Test all regex
-	const { tokenID, recipientAddress } = params.transaction.params;
-	if (tokenID && !regex.TOKEN_ID.test(tokenID)) {
-		throw new ValidationException('Incorrect \'tokenID\' specified in transaction params.');
-	}
-
-	if (recipientAddress && !regex.ADDRESS_LISK32.test(recipientAddress)) {
-		throw new ValidationException('Incorrect \'recipientAddress\' specified in transaction params.');
-	}
+	await validateTransactionParams(params.transaction);
 
 	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
 	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
@@ -388,4 +415,5 @@ module.exports = {
 	calcAdditionalFees,
 	filterOptionalProps,
 	getNumberOfSignatures,
+	validateTransactionParams,
 };
