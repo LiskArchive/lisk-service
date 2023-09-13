@@ -41,9 +41,8 @@ const getChainAccount = async (chainID) => {
 
 const getMainchainID = async () => {
 	try {
-		const { chainID } = await getNodeInfo();
-
 		if (!mainchainID) {
+			const { chainID } = await getNodeInfo();
 			const response = await invokeEndpoint('interoperability_getMainchainID', { chainID });
 			mainchainID = response.error && response.error.message.includes('not registered to bus')
 				? chainID

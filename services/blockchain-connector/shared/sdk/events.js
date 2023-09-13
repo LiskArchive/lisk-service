@@ -73,6 +73,12 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
+const getEventsByHeightFormatted = async (height) => {
+	const chainEvents = await getEventsByHeight(height);
+	const formattedEvents = chainEvents.map((event) => formatEvent(event));
+	return formattedEvents;
+};
+
 // To ensure API Client is alive and receiving chain events
 getNodeInfo().then(nodeInfo => {
 	setInterval(() => {
@@ -83,12 +89,6 @@ getNodeInfo().then(nodeInfo => {
 		}
 	}, config.connectionVerifyBlockInterval * nodeInfo.genesis.blockTime * 1000);
 });
-
-const getEventsByHeightFormatted = async (height) => {
-	const chainEvents = await getEventsByHeight(height);
-	const formattedEvents = chainEvents.map((event) => formatEvent(event));
-	return formattedEvents;
-};
 
 module.exports = {
 	events,
