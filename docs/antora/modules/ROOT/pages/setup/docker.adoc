@@ -49,6 +49,26 @@ It is strongly recommended to synchronize your blockchain node with the network 
 
 === Prerequisites
 
+==== Requirements
+
+Supported Platforms::
+* Ubuntu 20.04 (LTS) x86_64
+* Ubuntu 22.04 (LTS) x86_64
+* MacOS x86_64
+
+Node.js::
+* 18
+
+The following system requirements are recommended:
+
+Memory::
+* Machines with a minimum of 8 GB RAM for the Mainnet.
+
+* Machines with a minimum of 8 GB RAM for the Testnet.
+
+Storage::
+* Machines with a minimum of 40 GB HDD.
+
 The following dependencies are required to install and run Lisk Service with Docker.
 
 ==== Development tools
