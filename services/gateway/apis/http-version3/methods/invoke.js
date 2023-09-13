@@ -49,6 +49,12 @@ module.exports = {
 					$ref: '#/definitions/badRequest',
 				},
 			},
+			503: {
+				description: 'Service Unavailable',
+				schema: {
+					$ref: '#/definitions/serviceUnavailable',
+				},
+			},
 		};
 		return invokeEndpointSchema;
 	},
