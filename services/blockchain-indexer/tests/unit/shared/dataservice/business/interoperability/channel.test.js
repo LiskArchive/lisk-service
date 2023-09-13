@@ -23,27 +23,25 @@ const mockedRequestFilePath = resolve(`${__dirname}/../../../../../../shared/uti
 
 const { mockChannelInfo } = require('../../../constants/transactionEstimateFees');
 
-beforeEach(() => {
-	jest.resetModules();
+jest.resetModules();
 
-	jest.mock('lisk-service-framework', () => {
-		const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
-		return {
-			...actualLiskServiceFramework,
-			DB: {
-				...actualLiskServiceFramework.DB,
-				MySQL: {
-					...actualLiskServiceFramework.DB.MySQL,
-					KVStore: {
-						...actualLiskServiceFramework.DB.MySQL.KVStore,
-						getKeyValueTable: jest.fn(),
-					},
+jest.mock('lisk-service-framework', () => {
+	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+	return {
+		...actualLiskServiceFramework,
+		DB: {
+			...actualLiskServiceFramework.DB,
+			MySQL: {
+				...actualLiskServiceFramework.DB.MySQL,
+				KVStore: {
+					...actualLiskServiceFramework.DB.MySQL.KVStore,
+					getKeyValueTable: jest.fn(),
 				},
 			},
-			CacheRedis: jest.fn(),
-			CacheLRU: jest.fn(),
-		};
-	});
+		},
+		CacheRedis: jest.fn(),
+		CacheLRU: jest.fn(),
+	};
 });
 
 describe('Test resolveMainchainServiceURL method', () => {

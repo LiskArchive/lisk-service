@@ -18,21 +18,17 @@ const regex = require('../../../regex');
 
 let chainID;
 
-const isMainchain = async () => {
-	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-	return regex.MAINCHAIN_ID.test(chainID);
-};
-
 const getCurrentChainID = async () => {
 	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
+		const networkStatus = await getNetworkStatus();
+		if (networkStatus.data && networkStatus.data.chainID) {
+			chainID = networkStatus.data.chainID;
+		}
 	}
 	return chainID;
 };
+
+const isMainchain = async () => regex.MAINCHAIN_ID.test(await getCurrentChainID());
 
 module.exports = {
 	isMainchain,

@@ -155,4 +155,20 @@ describe('Test getCurrentChainID method', () => {
 		const result = await getCurrentChainID();
 		expect(result).toEqual(currentChainID);
 	});
+
+	it('should throw error when getNetworkStatus throws an error', async () => {
+		const mockError = new Error('Some other error');
+		jest.mock(mockedFilePath, () => {
+			const actual = jest.requireActual(mockedFilePath);
+			return {
+				...actual,
+				getNetworkStatus() {
+					throw new Error(mockError);
+				},
+			};
+		});
+
+		const { getCurrentChainID } = require(dataServicePath);
+		expect(getCurrentChainID()).rejects.toThrow();
+	});
 });
