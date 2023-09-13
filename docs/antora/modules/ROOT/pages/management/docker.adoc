@@ -198,7 +198,11 @@ This can be quite time-consuming when the chain is long, spanning over hours.
 
 == MySQL snapshot
 
-Configurations to sync Lisk Service from an existing snapshot, to speed up the sync process.
+Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
+It is possible to enable or create a snapshot of the database, and the available xref:{snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
+To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
+
+
 To enable the MySQL snapshot to be imported automatically, please ensure to set the following parameters before starting the service.
 //TODO: Once the new Add backups page for Lisk Sevice is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
 
