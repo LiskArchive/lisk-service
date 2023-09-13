@@ -52,7 +52,10 @@ const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator
 const { indexAccountPublicKey } = require('./accountIndex');
 const { indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
-const { updateAccountBalancesFromTokenEvents } = require('./accountBalanceIndex');
+const {
+	getAddressesFromTokenEvents,
+	scheduleAddressesBalanceUpdate,
+} = require('./accountBalanceIndex');
 
 const { getFinalizedHeight, getGenesisHeight, EVENT, MODULE } = require('../constants');
 
@@ -79,73 +82,40 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = block => !!block && block.height >= 0;
 
-let lastPriorityRescheduledBlockHeight = -1;
-
 const indexBlock = async job => {
 	const { height: currentBlockHeight } = job.data;
 	let blockHeightToIndex = currentBlockHeight;
+	let addressesToUpdateBalance = [];
 
 	const blocksTable = await getBlocksTable();
 
-	const genesisHeight = await getGenesisHeight();
-	if (currentBlockHeight > genesisHeight) {
-		const [lastIndexedBlock = {}] = await blocksTable.find(
-			{
-				propBetweens: [
-					{
-						property: 'height',
-						lowerThan: currentBlockHeight,
-					},
-				],
-				sort: 'height:desc',
-				limit: 1,
-			},
-			['height', 'isFinal'],
-		);
+	const [lastIndexedBlock = {}] = await blocksTable.find(
+		{
+			sort: 'height:desc',
+			limit: 1,
+		},
+		['height'],
+	);
 
-		const { height: lastIndexedHeight, isFinal: isLastIndexedHeightFinal } = lastIndexedBlock;
+	const { height: lastIndexedHeight } = lastIndexedBlock;
 
-		// Skip if lastIndexedHeight is greater than currentBlockHeight and finalized
-		if (lastIndexedHeight >= currentBlockHeight && isLastIndexedHeightFinal) {
-			return;
-		}
+	// Index last indexed block height + 1 if there is a gap
+	if (lastIndexedHeight && lastIndexedHeight < currentBlockHeight - 1) {
+		blockHeightToIndex = lastIndexedHeight + 1;
+		// eslint-disable-next-line no-use-before-define
+		await addHeightToIndexBlocksQueue(blockHeightToIndex + 1, true);
+	}
 
-		// Check if the parent block is indexed
-		// If not, schedule all the previous blocks with (medium) priority
-		// And, continue with next expected block (lastIndexedHeight + 1) instead of currentBlockHeight
-		if (lastIndexedHeight < currentBlockHeight - 1) {
-			// Skip if already priority scheduled
-			if (currentBlockHeight <= lastPriorityRescheduledBlockHeight) return;
-
-			blockHeightToIndex = lastIndexedHeight + 1;
-			const heightsToIndex = range(
-				Math.max(blockHeightToIndex || genesisHeight, lastPriorityRescheduledBlockHeight) + 1,
-				currentBlockHeight + 1, // '+ 1' as 'to' is non-inclusive
-				1,
-			);
-
-			if (heightsToIndex.length) {
-				logger.trace(
-					`Current block height: ${currentBlockHeight}. Attempting priority scheduling for heights ${heightsToIndex.at(
-						0,
-					)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} block(s)).`,
-				);
-				await BluebirdPromise.map(
-					heightsToIndex,
-					async height => {
-						// eslint-disable-next-line no-use-before-define
-						await addHeightToIndexBlocksQueue(height);
-						lastPriorityRescheduledBlockHeight = height;
-					},
-					{ concurrency: 1 },
-				);
-				logger.debug(
-					`Current block height: ${currentBlockHeight}. Successfully priority scheduled for heights ${heightsToIndex.at(
-						0,
-					)} - ${heightsToIndex.at(-1)} (${heightsToIndex.length} block(s)).`,
-				);
-			}
-		}
+	// Verify current block does not exits. return if already indexed
+	const [currentBlockInDB = {}] = await blocksTable.find(
+		{
+			where: { height: currentBlockHeight },
+			limit: 1,
+		},
+		['height'],
+	);
+	if (Object.keys(currentBlockInDB).length) {
+		return;
 	}
 
 	const block = await getBlockByHeight(blockHeightToIndex);
@@ -294,7 +264,7 @@ const indexBlock = async job => {
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
 			// Update address balance updates from token module events
-			await updateAccountBalancesFromTokenEvents(events, dbTrx);
+			addressesToUpdateBalance = await getAddressesFromTokenEvents(events, dbTrx);
 		}
 
 		const blockToIndex = {
@@ -306,6 +276,8 @@ const indexBlock = async job => {
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
 		await commitDBTransaction(dbTrx);
+		// Only schedule address balance updates if the block is indexed successfully
+		await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
 		logger.debug(
 			`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`,
 		);
@@ -319,7 +291,7 @@ const indexBlock = async job => {
 			['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e),
 			)
 		) {
-			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later.`;
+			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later. sql:${error.sql}`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
@@ -333,6 +305,7 @@ const indexBlock = async job => {
 };
 
 const deleteIndexedBlocks = async job => {
+	let addressesToUpdateBalance = [];
 	const { blocks } = job.data;
 	const blockIDs = blocks.map(b => b.id).join(', ');
 
@@ -476,7 +449,7 @@ const deleteIndexedBlocks = async job => {
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
 					// Update address balance updates from token module events
-					await updateAccountBalancesFromTokenEvents(events, dbTrx);
+					addressesToUpdateBalance = await getAddressesFromTokenEvents(events, dbTrx);
 				}
 
 				// Invalidate cached events for this block
@@ -488,6 +461,8 @@ const deleteIndexedBlocks = async job => {
 
 		await blocksTable.deleteByPrimaryKey(blockIDs, dbTrx);
 		await commitDBTransaction(dbTrx);
+		// Only schedule address balance updates if the block is deleted successfully
+		await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
 	} catch (error) {
 		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
@@ -506,11 +481,30 @@ const deleteIndexedBlocks = async job => {
 	}
 };
 
+let isIndexingRunning = false;
+
+const indexBlockAtomicWrapper = async (job) => {
+	if (isIndexingRunning) {
+		logger.warn('Already indexing another block!');
+		return;
+	}
+
+	isIndexingRunning = true;
+
+	try {
+		await indexBlock(job);
+	} catch (err) {
+		logger.error(`Catched error in indexing. error: ${err}`);
+	}
+
+	isIndexingRunning = false;
+};
+
 // Initialize queues
 const indexBlocksQueue = Queue(
 	config.endpoints.cache,
 	config.queue.indexBlocks.name,
-	indexBlock,
+	indexBlockAtomicWrapper,
 	config.queue.indexBlocks.concurrency,
 );
 
@@ -556,7 +550,7 @@ const indexNewBlock = async block => {
 			updates: { isFinal: true },
 		});
 
-		if (blockInfo && blockInfo.id !== block.id) {
+		if (blockInfo && blockInfo.id !== block.id) { // PRIOJEET: should we schedule deletion of blocks before scheding indexing? because indexing new block may overwrite some information?
 			// Fork detected
 			const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, [
 				'height',
@@ -566,8 +560,8 @@ const indexNewBlock = async block => {
 					propBetweens: [
 						{
 							property: 'height',
-							from: block.height + 1,
-							to: highestIndexedBlock.height,
+							from: block.height + 1, // PRIOJEET: shouldn't we delete current block as well? this could end up keeping mismatching information
+							to: highestIndexedBlock.height, // PRIOJEET: do we need the to condition here?
 						},
 					],
 					sort: 'height:desc',
@@ -575,7 +569,7 @@ const indexNewBlock = async block => {
 				},
 				['id'],
 			);
-			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
+			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove }); // PRIOJEET: we can prioritise the deletion of deleted blocks
 		}
 	}
 };

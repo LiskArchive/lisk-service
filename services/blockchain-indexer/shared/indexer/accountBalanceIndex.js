@@ -13,21 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
+const Redis = require('ioredis');
 const {
 	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
+const logger = require('lisk-service-framework/src/logger');
 const config = require('../../config');
 const { MODULE } = require('../constants');
 const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
+const redis = new Redis(config.endpoints.cache);
+
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const ACCOUNTS_BALANCE_UPDATE_SET_NAME = 'AccountsBalanceUpdate';
+const MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION = 1000; // 1e3
 
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
-const updateAccountBalances = async (address, dbTrx = null) => {
+const updateAccountBalances = async (address) => {
 	const accountBalancesTable = await getAccountBalancesTable();
 	const { data: balanceInfos } = await getTokenBalances({ address });
 
@@ -38,32 +44,58 @@ const updateAccountBalances = async (address, dbTrx = null) => {
 	}));
 
 	// Update all token balances of the address
-	await accountBalancesTable.upsert(updatedTokenBalances, dbTrx);
+	await accountBalancesTable.upsert(updatedTokenBalances);
 };
 
-const updateAccountBalancesFromTokenEvents = async (events, dbTrx = null) => BluebirdPromise.map(
-	events,
-	async event => {
-		// Skip non token module events
-		if (event.module !== MODULE.TOKEN) return;
+const scheduleAddressesBalanceUpdate = async (addresses) => {
+	if (addresses.length) {
+		redis.sadd(
+			ACCOUNTS_BALANCE_UPDATE_SET_NAME,
+			addresses,
+		);
+	}
+};
 
+const getAddressesFromTokenEvents = (events) => {
+	const addressesToUpdate = [];
+	const tokenModuleEvents = events.filter(event => event.module === MODULE.TOKEN);
+
+	// eslint-disable-next-line no-restricted-syntax
+	for (const event of tokenModuleEvents) {
 		const { data: eventData = {} } = event;
 		const eventDataKeys = Object.keys(eventData);
-		await BluebirdPromise.map(
-			eventDataKeys,
-			async key => {
-				if (key.toLowerCase().includes('address')) {
-					const address = eventData[key];
-					await updateAccountBalances(address, dbTrx);
-				}
-			},
-			{ concurrency: eventDataKeys.length },
-		);
-	},
-	{ concurrency: events.length },
-);
+		// eslint-disable-next-line no-restricted-syntax
+		for (const key of eventDataKeys) {
+			if (key.toLowerCase().includes('address')) {
+				const address = eventData[key];
+				addressesToUpdate.push(address);
+			}
+		}
+	}
+
+	return addressesToUpdate;
+};
+
+const triggerAccountsBalanceUpdate = async () => {
+	const addresses = await redis.spop(
+		ACCOUNTS_BALANCE_UPDATE_SET_NAME,
+		MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION,
+	);
+
+	// eslint-disable-next-line no-restricted-syntax
+	for (const address of addresses) {
+		// eslint-disable-next-line no-await-in-loop
+		await updateAccountBalances(address);
+	}
+
+	if (addresses.length) {
+		logger.info(`Updated account balance for ${addresses.length} account(s).`);
+	}
+};
 
 module.exports = {
 	updateAccountBalances,
-	updateAccountBalancesFromTokenEvents,
+	getAddressesFromTokenEvents,
+	triggerAccountsBalanceUpdate,
+	scheduleAddressesBalanceUpdate,
 };

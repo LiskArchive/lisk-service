@@ -47,12 +47,14 @@ const accountMessageQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
+// Missing blocks
 const blockMessageQueue = new MessageQueue(
 	config.queue.block.name,
 	config.endpoints.messageQueue,
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
+// Newly mined blocks
 const eventMessageQueue = new MessageQueue(
 	config.queue.event.name,
 	config.endpoints.messageQueue,

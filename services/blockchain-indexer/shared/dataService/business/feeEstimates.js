@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const logger = require('lisk-service-framework').Logger();
+
 const { requestFeeEstimator } = require('../../utils/request');
 
 let feeEstimates = {
@@ -30,8 +32,12 @@ const setFeeEstimates = async (payload) => {
 const getFeeEstimates = () => feeEstimates;
 
 const getFeeEstimatesFromFeeEstimator = async () => {
-	const response = await requestFeeEstimator('estimates');
-	setFeeEstimates(response);
+	try {
+		const response = await requestFeeEstimator('estimates');
+		setFeeEstimates(response);
+	} catch (err) {
+		logger.warn(`Failed to fetch fee estimates from fee-estimator. Error:${err.message}`);
+	}
 
 	return getFeeEstimates();
 };
