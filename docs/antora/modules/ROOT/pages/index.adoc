@@ -146,7 +146,7 @@ The objective of the Template service is to reduce code duplication and increase
 * The default installation method is based on Docker.
 * Please note that certain token conversion rates in the Market service require their API keys.
 * For the events information to be always available in the API, please set the `system.keepEventsForHeights: -1` in the Lisk application node config.
-* It is highly recommended to *NOT* enable any plugins on the Lisk application node when running Lisk Service against it.
+* It is highly recommended *NOT* to enable any plugins on the Lisk application node when running Lisk Service against it.
 ====
 
 The following diagram below depicts an overview of the microservice architecture.
