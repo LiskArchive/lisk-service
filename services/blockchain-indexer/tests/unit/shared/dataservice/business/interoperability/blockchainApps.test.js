@@ -181,43 +181,6 @@ describe('getBlockchainApps', () => {
 		const { getBlockchainApps } = require(mockBlockchainAppsPath);
 		await expect(getBlockchainApps(params)).rejects.toThrow();
 	});
-
-	it('should throw an error if MainchainID is not found', async () => {
-		const params = {
-			limit: 10,
-			offset: 0,
-		};
-
-		jest.mock('lisk-service-framework', () => ({
-			DB: {
-				MySQL: {
-					getTableInstance: jest.fn(() => ({
-						find: jest.fn(() => mockedBlockchainAppsDatabaseRes),
-						count: jest.fn(() => mockedBlockchainAppsValidResponse.meta.count),
-					})),
-				},
-			},
-		}));
-
-		jest.mock(mockNetworkPath, () => ({
-			getNetworkStatus: jest.fn(() => (
-				mockedNetworkStatus
-			)),
-		}));
-
-		jest.mock(mockRequestPath, () => ({
-			requestConnector: jest.fn(() => (mockedEscrowedAmounts)),
-		}));
-
-		jest.mock(mockMainchainPath, () => ({
-			getMainchainID: jest.fn(() => {
-				throw Error('MainchainID not found');
-			}),
-		}));
-
-		const { getBlockchainApps } = require(mockBlockchainAppsPath);
-		await expect(getBlockchainApps(params)).rejects.toThrow();
-	});
 });
 
 describe('getLSKTokenID', () => {

@@ -91,15 +91,14 @@ const getBlockchainApps = async (params) => {
 	const { data: { chainID } } = await getNetworkStatus();
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 
-	lskTokenID = await getLSKTokenID();
-
 	blockchainAppsInfo.data = await BluebirdPromise.map(
 		dbBlockchainApps,
 		async blockchainAppInfo => {
 			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
 
-			const escrowedAmountForTokenID = escrow.find(item => item.tokenID === lskTokenID);
-			const escrowedLSK = escrowedAmountForTokenID ? escrowedAmountForTokenID.amount : '0';
+			const escrowEntryForLSKTokenID = escrow
+				.find(async item => item.tokenID === await getLSKTokenID());
+			const escrowedLSK = escrowEntryForLSKTokenID ? escrowEntryForLSKTokenID.amount : '0';
 
 			return {
 				...blockchainAppInfo,
