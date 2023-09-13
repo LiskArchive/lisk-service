@@ -15,6 +15,8 @@
  */
 const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
 
+const LISK_ADDRESS_FORMAT = 'lisk32';
+
 const parseToJSONCompatObj = obj => {
 	if (typeof obj === 'boolean' || !obj) return obj;
 
@@ -41,7 +43,9 @@ const parseInputBySchema = (input, schema) => {
 		if (schemaDataType === 'string') return String(input);
 		if (schemaDataType === 'boolean') return Boolean(input);
 		if (schemaDataType === 'bytes') {
-			if (schema.format === 'lisk32') { return getAddressFromLisk32Address(input); }
+			if (schema.format === LISK_ADDRESS_FORMAT) {
+				return getAddressFromLisk32Address(input);
+			}
 			return Buffer.from(input, 'hex');
 		}
 		if (schemaDataType === 'uint32' || schemaDataType === 'sint32') return Number(input);
@@ -51,12 +55,12 @@ const parseInputBySchema = (input, schema) => {
 
 	if (schemaType === 'object') {
 		const formattedObj = Object.keys(input).reduce((acc, key) => {
-			const { type, dataType, items: itemsSchema } = schema.properties[key] || {};
+			const { type, dataType, items: itemsSchema, format } = schema.properties[key] || {};
 			const currValue = input[key];
 			if (type === 'array') {
 				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
 			} else {
-				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType };
+				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType, format };
 				acc[key] = parseInputBySchema(currValue, innerSchema);
 			}
 			return acc;

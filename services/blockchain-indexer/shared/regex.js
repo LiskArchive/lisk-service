@@ -21,6 +21,7 @@ const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const NAME = /^[\w!@$&.]{3,20}$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const MAINCHAIN_ID = /^[a-fA-F0-9]{2}000000$/;
+const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 
 module.exports = {
 	ADDRESS_LISK32,
@@ -30,4 +31,5 @@ module.exports = {
 	NAME,
 	TOKEN_ID,
 	MAINCHAIN_ID,
+	CHAIN_ID,
 };

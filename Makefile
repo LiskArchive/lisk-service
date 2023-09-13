@@ -121,6 +121,7 @@ build-local:
 	cd ./services/export && yarn install --frozen-lockfile
 	cd ./services/template && yarn install --frozen-lockfile
 	cd ./tests && yarn install --frozen-lockfile
+
 clean: clean-local clean-images
 
 clean-local:
