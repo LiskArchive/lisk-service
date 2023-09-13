@@ -266,24 +266,12 @@ pm2 delete ecosystem.config.js
 == MySQL snapshot
 
 Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
-It is possible to enable or create a snapshot of the database, and the available xref:{snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
+It is possible to enable or create a snapshot of the MySQL database, and the available xref:{snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
 To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
 
-To enable the MySQL snapshot to be imported automatically, please ensure to set the following parameters before starting the service.
+To enable the MySQL snapshot to be imported automatically, please ensure to set the aforementioned parameters above before starting the service.
 //TODO: Once the new Add backups page for Lisk Service is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
 
-[source,bash]
-----
-# Enable or disable apply snapshot feature
-ENABLE_APPLY_SNAPSHOT=true
-
-# Custom snapshot url (Expected to end with sql.gz)
-INDEX_SNAPSHOT_URL='https://snapshots.lisk.io/mainnet/service.sql.gz'
-
-# Allow insecure HTTP connections. By default this is disabled.
-ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP=false
-
-----
 NOTE: The `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
 It is recommended to use alphanumeric characters and the commonly accepted special characters.
 
