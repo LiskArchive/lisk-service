@@ -6,6 +6,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :idprefix:
 :imagesdir: ../assets/images
 :source-language: bash
+:url_snapshot_config: configuration/index.adoc
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
@@ -266,7 +267,7 @@ pm2 delete ecosystem.config.js
 == MySQL snapshot
 
 Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
-It is possible to enable or create a snapshot of the MySQL database, and the available xref:{snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
+It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
 To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
 
 To enable the MySQL snapshot to be imported automatically, please ensure to set the aforementioned parameters above before starting the service.
