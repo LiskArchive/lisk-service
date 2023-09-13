@@ -81,7 +81,7 @@ getNodeInfo().then(nodeInfo => {
 		} else {
 			eventsCounter = 0;
 		}
-	}, config.connectionVerifyBlockInterval.numOfBlocksConnectionVerify * nodeInfo.genesis.blockTime * 1000);
+	}, config.connectionVerifyBlockInterval * nodeInfo.genesis.blockTime * 1000);
 });
 
 const getEventsByHeightFormatted = async (height) => {

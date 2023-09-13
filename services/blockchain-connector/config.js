@@ -112,9 +112,7 @@ config.job = {
 	},
 };
 
-config.connectionVerifyBlockInterval = {
-	// Every n number of blocks, verify if client connection is alive
-	numOfBlocksConnectionVerify: process.env.NUM_BLOCKS_CONNECTION_VERIFY || 10,
-};
+// Every n number of blocks, verify if client connection is alive
+config.connectionVerifyBlockInterval = process.env.CONN_VERIFY_BLOCK_INTERVAL || 10;
 
 module.exports = config;
