@@ -26,6 +26,7 @@ const mockedRequestFilePath = resolve(`${__dirname}/../../../../../shared/utils/
 const mockedPOSConstantsFilePath = resolve(`${__dirname}/../../../../../shared/dataService/pos/constants`);
 const mockedFeeEstimateFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/feeEstimates`);
 const mockedRTransactionsDryRunFilePath = resolve(`${__dirname}../../../../../../shared/dataService/business/transactionsDryRun`);
+const mockedNetworkFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
 
 const {
 	mockTxRequest,
@@ -528,6 +529,7 @@ describe('Test transaction fees estimates', () => {
 		const { getPosConstants } = require(mockedPOSConstantsFilePath);
 		const { getFeeEstimates } = require(mockedFeeEstimateFilePath);
 		const { dryRunTransactions } = require(mockedRTransactionsDryRunFilePath);
+		const { getNetworkStatus } = require(mockedNetworkFilePath);
 
 		jest.mock(mockedRTransactionsDryRunFilePath, () => ({
 			dryRunTransactions: jest.fn(),
@@ -568,6 +570,10 @@ describe('Test transaction fees estimates', () => {
 			getPosConstants: jest.fn(),
 		}));
 
+		jest.mock(mockedNetworkFilePath, () => ({
+			getNetworkStatus: jest.fn(),
+		}));
+
 		it('should calculate transaction fees correctly', async () => {
 			// Mock the return values of the functions
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
@@ -596,11 +602,13 @@ describe('Test transaction fees estimates', () => {
 				.mockReturnValueOnce(mockAuthAccountInfo)
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
 				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
-				.mockReturnValueOnce('encoded CCM Object');
+				.mockReturnValueOnce('encoded CCM Object')
+				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector);
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
+			getNetworkStatus.mockResolvedValue({ data: { chainID: '02000000' } });
 
 			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
 
@@ -614,12 +622,13 @@ describe('Test transaction fees estimates', () => {
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
-				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValueOnce(mockAuthAccountInfo)
 				.mockReturnValue({ validatorRegistrationFee: '1', minFee: '130000', size: 160 });
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
+			getNetworkStatus.mockResolvedValue({ data: { chainID: '04000000' } });
 
 			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
 

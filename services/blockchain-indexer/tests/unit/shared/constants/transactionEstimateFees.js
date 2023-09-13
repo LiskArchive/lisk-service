@@ -182,7 +182,7 @@ const mockTransferCrossChainTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '130000',
+				minimum: '166000',
 			},
 			params: {
 				messageFee: {
@@ -196,7 +196,7 @@ const mockTransferCrossChainTxResult = {
 		breakdown: {
 			fee: {
 				minimum: {
-					byteFee: '160000',
+					byteFee: '167000',
 					additionalFees: {},
 				},
 			},
