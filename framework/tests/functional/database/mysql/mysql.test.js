@@ -195,6 +195,22 @@ describe('Test MySQL', () => {
 			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
 		});
 
+		it('should order the rows in ascending order based on their height using raw query', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await blocksTable.find({ orderByRaw: ['height asc'] });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[1].height).toBeGreaterThanOrEqual(result[0].height);
+		});
+
+		it('should order the rows in descending order based on their height using raw query', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await blocksTable.find({ orderByRaw: ['height desc'] });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
+		});
+
 		it('should get row count', async () => {
 			const count = await blocksTable.count();
 			expect(count).toBe(2);
@@ -229,6 +245,45 @@ describe('Test MySQL', () => {
 			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
 			const params = {
 				whereNull: ['isFinal'],
+			};
+			const result = await blocksTable.count(params);
+			expect(result).toBe(2);
+		});
+
+		it('should get row count using whereNot', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNot: {
+					column: 'id',
+					value: emptyBlock.id,
+				},
+			};
+			const result = await blocksTable.count(params);
+			expect(result).toBe(1);
+		});
+
+		it('should get row count using whereNotIn', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereNotIn: {
+					column: 'id',
+					values: [emptyBlock.id, nonEmptyBlock.id],
+				},
+			};
+			const result = await blocksTable.count(params);
+			expect(result).toBe(0);
+		});
+
+		it('should get row count using whereBetween', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+			const params = {
+				whereBetween: {
+					column: 'id',
+					values: [
+						Math.min(emptyBlock.id, nonEmptyBlock.id),
+						Math.max(emptyBlock.id, nonEmptyBlock.id),
+					],
+				},
 			};
 			const result = await blocksTable.count(params);
 			expect(result).toBe(2);
@@ -333,6 +388,13 @@ describe('Test MySQL', () => {
 			const result = await blocksTable.find();
 			const distinctResult = await blocksTable.find({ distinct: 'id' }, 'id');
 			expect(result.length).toBeGreaterThan(distinctResult.length);
+		});
+
+		it('should execute group by query', async () => {
+			await blocksTable.upsert([emptyBlock, { ...nonEmptyBlock, id: emptyBlock.id }]);
+			const result = await blocksTable.find();
+			const groupByResult = await blocksTable.find({ groupBy: 'id' }, 'id');
+			expect(result.length).toBeGreaterThan(groupByResult.length);
 		});
 
 		it('should execute update method', async () => {
@@ -807,6 +869,30 @@ describe('Test MySQL', () => {
 			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
 		});
 
+		it('should order the rows in ascending order based on their height using orderByRaw query', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await blocksTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await blocksTable.find({ orderByRaw: ['height asc'] });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[1].height).toBeGreaterThanOrEqual(result[0].height);
+		});
+
+		it('should order the rows in descending order based on their height', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await blocksTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await commitDBTransaction(trx);
+
+			const result = await blocksTable.find({ orderByRaw: ['height desc'] });
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(2);
+			expect(result[0].height).toBeGreaterThanOrEqual(result[1].height);
+		});
+
 		it('should get row count', async () => {
 			const count = await blocksTable.count();
 			expect(count).toBe(2);
@@ -966,6 +1052,16 @@ describe('Test MySQL', () => {
 			const result = await blocksTable.find();
 			const distinctResult = await blocksTable.find({ distinct: 'id' }, 'id');
 			expect(result.length).toBeGreaterThan(distinctResult.length);
+		});
+
+		it('should perform group by query', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await blocksTable.upsert([emptyBlock, { ...nonEmptyBlock, id: emptyBlock.id }], trx);
+			await commitDBTransaction(trx);
+			const result = await blocksTable.find();
+			const groupByResult = await blocksTable.find({ groupBy: 'id' }, 'id');
+			expect(result.length).toBeGreaterThan(groupByResult.length);
 		});
 
 		it('should perform update method', async () => {

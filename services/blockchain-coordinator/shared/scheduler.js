@@ -73,14 +73,14 @@ const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const waitForJobCountToFallBelowThreshold = async () => {
 	const { skipThreshold } = config.job.indexMissingBlocks;
-	/* eslint-disable no-await-in-loop */
+	/* eslint-disable no-await-in-loop, no-constant-condition */
 	while (true) {
 		const count = await getLiveIndexingJobCount();
 		if (count < skipThreshold) return;
 		logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
 		await delay(REFRESH_INTERVAL);
 	}
-	/* eslint-enable no-await-in-loop */
+	/* eslint-enable no-await-in-loop, no-constant-condition */
 };
 
 const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
