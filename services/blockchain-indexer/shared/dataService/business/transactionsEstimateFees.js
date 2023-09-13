@@ -26,7 +26,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { resolveMainchainServiceURL, resolveChannelInfo } = require('./interoperability');
+const { resolveMainchainServiceURL, resolveChannelInfo, getCurrentChainID } = require('./interoperability');
 const { dryRunTransactions } = require('./transactionsDryRun');
 const { tokenHasUserAccount, getTokenConstants } = require('./token');
 const { getSchemas } = require('./schemas');
@@ -207,13 +207,16 @@ const calcAdditionalFees = async (transaction) => {
 			const { data: tokenConstantsResponse } = await HTTP.get(`${receivingServiceURL}/api/v3/token/constants`);
 			const { data: { extraCommandFees } } = tokenConstantsResponse;
 
-			// Check if escrow account exists
-			const { exists: escrowAccountExists } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
-			if (!escrowAccountExists) {
-				additionalFees.fee = {
-					escrowAccountInitializationFee: extraCommandFees.escrowAccountInitializationFee,
-				};
-				additionalFees.total += BigInt(extraCommandFees.escrowAccountInitializationFee);
+			// Check if escrow account exists only when tokenID specified in the params is a native token
+			const currentChainID = await getCurrentChainID();
+			if (tokenID.startsWith(currentChainID)) {
+				const { exists: escrowAccountExists } = await requestConnector('tokenHasEscrowAccount', { tokenID, escrowChainID: transaction.params.receivingChainID });
+				if (!escrowAccountExists) {
+					additionalFees.fee = {
+						escrowAccountInitializationFee: extraCommandFees.escrowAccountInitializationFee,
+					};
+					additionalFees.total += BigInt(extraCommandFees.escrowAccountInitializationFee);
+				}
 			}
 
 			// Check if user account exists on the receiving chain
