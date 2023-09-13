@@ -28,9 +28,15 @@ const { getMainchainID } = require('./mainchain');
 
 const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
+let lskTokenID;
+
 const getLSKTokenID = async () => {
-	const mainchainID = await getMainchainID();
-	return mainchainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0');
+	if (!lskTokenID) {
+		const mainchainID = await getMainchainID();
+		lskTokenID = mainchainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0');
+	}
+
+	return lskTokenID;
 };
 
 const getBlockchainApps = async (params) => {
@@ -85,7 +91,7 @@ const getBlockchainApps = async (params) => {
 	const { data: { chainID } } = await getNetworkStatus();
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 
-	const lskTokenID = await getLSKTokenID();
+	lskTokenID = await getLSKTokenID();
 
 	blockchainAppsInfo.data = await BluebirdPromise.map(
 		dbBlockchainApps,
@@ -93,11 +99,11 @@ const getBlockchainApps = async (params) => {
 			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
 
 			const escrowedAmountForTokenID = escrow.find(item => item.tokenID === lskTokenID);
-			const escrowedLsk = escrowedAmountForTokenID ? escrowedAmountForTokenID.amount : '0';
+			const escrowedLSK = escrowedAmountForTokenID ? escrowedAmountForTokenID.amount : '0';
 
 			return {
 				...blockchainAppInfo,
-				escrowedLsk,
+				escrowedLSK,
 				escrow: escrow.length ? escrow : [{
 					tokenID: chainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0'),
 					amount: '0',

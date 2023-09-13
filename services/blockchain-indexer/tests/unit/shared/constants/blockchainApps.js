@@ -36,7 +36,7 @@ const mockedBlockchainAppsValidResponse = {
 			address: 'lskmh468rxx5kra2xq6x35z9o5haunamm8m3svzup',
 			lastUpdated: '1694184350',
 			lastCertificateHeight: '5377',
-			escrowedLsk: '0',
+			escrowedLSK: '0',
 			escrow: [
 				{
 					escrowChainID: '04000001',

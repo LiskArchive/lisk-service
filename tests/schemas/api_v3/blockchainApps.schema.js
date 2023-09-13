@@ -47,7 +47,7 @@ const dataSchema = {
 	status: Joi.string().valid(...validStatuses).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	lastCertificateHeight: Joi.number().integer().min(0).required(),
-	escrowedLsk: Joi.string().pattern(regex.DIGITS).required(),
+	escrowedLSK: Joi.string().pattern(regex.DIGITS).required(),
 	lastUpdated: Joi.number()
 		.integer()
 		.positive()

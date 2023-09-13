@@ -42,7 +42,7 @@
 				"example": 1616008148,
 				"description": "timestamp"
 			},
-			"escrowedLsk": {
+			"escrowedLSK": {
 				"type": "string",
 				"example": "50000000000",
 				"description": "Number of LSK tokens escrowed to the sidechain."
