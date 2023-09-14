@@ -47,6 +47,9 @@ const httpStatus = {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
+const networkStatusEndpoint = `${baseUrlV3}/network/status`;
+
+let curChainID;
 
 // TODO: Enable tests once test blockchain is updated with transactions
 xdescribe('Export API', () => {
@@ -59,6 +62,9 @@ xdescribe('Export API', () => {
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrlV3}/transactions?limit=4`);
 		[refTransaction1, refTransaction2, refTransaction3, refTransaction4] = response.data;
+
+		const networkStatus = await api.get(networkStatusEndpoint);
+		curChainID = networkStatus.data.chainID;
 	});
 
 	describe('Schedule file export', () => {
@@ -151,13 +157,13 @@ xdescribe('Export API', () => {
 		const parseParams = { delimiter: exportConfig.csv.delimiter };
 
 		it('scheduled from account address -> 200 OK', async () => {
-			const validFileName = `transactions_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
+			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
 			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
 
 		it('scheduled from account publicKey -> 200 OK', async () => {
-			const validFileName = `transactions_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
+			const validFileName = `transactions_${curChainID}_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
 			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});

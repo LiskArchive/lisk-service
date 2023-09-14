@@ -10,7 +10,7 @@
 		"name": "body",
 		"in": "body",
 		"required": true,
-		"description": "The request body can contain only one property:\n- transaction (required): Binary payload",
+		"description": "The request body can contain only one property:\n- transaction (required): Binary payload.",
 		"schema": {
 			"$ref": "#/definitions/transactionParamEnvelope"
 		}
@@ -19,40 +19,48 @@
 		"name": "dryrunTransaction",
 		"in": "body",
 		"required": true,
-		"description": "The request body can contain three properties:\n- transaction (required): Binary payload or a transaction object\n- skipVerify (optional, default: false): A boolean indicator to skip the transaction verification\n- strict (optional, default: false): A boolean indicator to enable strict mode. When set false, it skips the nonce and signature checks\n- skipDecode (optional, default: false): A boolean indicator to skip the auto-decoding of the event data",
+		"description": "The request body can contain three properties:\n- transaction (required): Binary payload or a transaction object\n- skipVerify (optional, default: false): A boolean indicator to skip the transaction verification\n- strict (optional, default: false): A boolean indicator to enable strict mode. When set false, it skips the nonce and signature checks\n- skipDecode (optional, default: false): A boolean indicator to skip the auto-decoding of the event data.",
 		"schema": {
 			"$ref": "#/definitions/dryrunTransactionParamEnvelope"
 		}
 	},
+	"senderAndRecipientAddress": {
+		"name": "address",
+		"in": "query",
+		"description": "Resolves for both senderAddress and recipientAddress.",
+		"type": "string",
+		"minLength": 41,
+		"maxLength": 41
+	},
 	"recipientAddress": {
 		"name": "recipientAddress",
 		"in": "query",
-		"description": "Lisk account address",
+		"description": "Lisk account address.",
 		"type": "string",
-		"minLength": 3,
+		"minLength": 41,
 		"maxLength": 41
 	},
 	"senderAddress": {
 		"name": "senderAddress",
 		"in": "query",
-		"description": "Lisk account address",
+		"description": "Lisk account address.",
 		"type": "string",
-		"minLength": 3,
+		"minLength": 41,
 		"maxLength": 41
 	},
 	"transactionID": {
 		"name": "transactionID",
 		"in": "query",
-		"description": "Transaction ID to query",
+		"description": "Transaction ID to query.",
 		"type": "string",
 		"format": "id",
-		"minLength": 1,
+		"minLength": 64,
 		"maxLength": 64
 	},
 	"nonce": {
 		"name": "nonce",
 		"in": "query",
-		"description": "Query by nonce",
+		"description": "Query by nonce. Nonce is only allowed if senderAddress is supplied as a parameter.",
 		"type": "string",
 		"minLength": 1
 	},

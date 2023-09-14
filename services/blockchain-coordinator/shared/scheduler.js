@@ -39,6 +39,7 @@ const {
 	initNodeConstants,
 } = require('./constants');
 
+const delay = require('./utils/delay');
 const config = require('../config');
 
 const blockMessageQueue = new MessageQueue(
@@ -68,27 +69,17 @@ const getLiveIndexingJobCount = async () => {
 	return messageQueueJobCount + indexerLiveIndexingJobCount;
 };
 
-const waitForJobCountToFallBelowThreshold = (resolve) => new Promise((res) => {
-	if (!resolve) resolve = res;
-	if (intervalID) {
-		clearInterval(intervalID);
-		intervalID = null;
+const waitForJobCountToFallBelowThreshold = async () => {
+	const { skipThreshold } = config.job.indexMissingBlocks;
+	/* eslint-disable no-await-in-loop, no-constant-condition */
+	while (true) {
+		const count = await getLiveIndexingJobCount();
+		if (count < skipThreshold) return;
+		logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
+		await delay(REFRESH_INTERVAL);
 	}
-
-	return getLiveIndexingJobCount()
-		.then((count) => {
-			const { skipThreshold } = config.job.indexMissingBlocks;
-			return count < skipThreshold
-				? resolve(true)
-				: (() => {
-					logger.info(`In progress job count (${String(count).padStart(5, ' ')}) not yet below the threshold (${skipThreshold}). Waiting for ${REFRESH_INTERVAL}ms to re-check the job count before scheduling the next batch.`);
-					intervalID = setInterval(
-						waitForJobCountToFallBelowThreshold.bind(null, resolve),
-						REFRESH_INTERVAL,
-					);
-				})();
-		});
-});
+	/* eslint-enable no-await-in-loop, no-constant-condition */
+};
 
 const waitForGenesisBlockIndexing = (resolve) => new Promise((res) => {
 	if (!resolve) resolve = res;
@@ -144,7 +135,7 @@ const scheduleBlocksIndexing = async (heights) => {
 			logger.debug(`Scheduled indexing for block at height: ${height}.`);
 		}
 
-		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches}.`);
+		if (isMultiBatch) logger.info(`Finished scheduling batch ${i + 1}/${numBatches} (Heights: ${blockHeightsBatch.at(0)} - ${blockHeightsBatch.at(-1)}, ${blockHeightsBatch.length} blocks).`);
 		await waitForJobCountToFallBelowThreshold();
 		/* eslint-enable no-await-in-loop */
 	}

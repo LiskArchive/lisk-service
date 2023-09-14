@@ -19,17 +19,10 @@ module.exports = {
 	schema: {
 		eventID: { type: 'string' },
 		topic: { type: 'string' },
-		height: { type: 'integer' },
-		name: { type: 'string' },
-		module: { type: 'string' },
-		index: { type: 'integer' },
-		timestamp: { type: 'integer' },
 	},
 	indexes: {
+		eventID: { type: 'key' },
 		topic: { type: 'key' },
-		height: { type: 'range' },
-		name: { type: 'key' },
-		module: { type: 'key' },
 	},
 	purge: {},
 };

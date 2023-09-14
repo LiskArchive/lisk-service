@@ -140,12 +140,14 @@ It allows all services to share a similar interface and design pattern.
 The objective of the Template service is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 |===
 
-==== Remarks
-
+[NOTE]
+====
 * Lisk Service by default attempts to connect to a local node via WebSocket on port `7887` or IPC on `~/.lisk/lisk-core` by default.
 * The default installation method is based on Docker.
 * Please note that certain token conversion rates in the Market service require their API keys.
 * For the events information to be always available in the API, please set the `system.keepEventsForHeights: -1` in the Lisk application node config.
+* It is highly recommended *NOT* to enable any plugins on the Lisk application node when running Lisk Service against it.
+====
 
 The following diagram below depicts an overview of the microservice architecture.
 The inter-microservice communications are enabled with a message broker.
@@ -358,8 +360,8 @@ Lisk Testnet::
 // ----
 // node --version
 // # v16.20.0
-// npm i socket.io-client #<1>
-// npm i jsome #<2>
+// yarn i socket.io-client #<1>
+// yarn i jsome #<2>
 // ----
 
 // <1> Use the {url_npm_socketio_client}[socket.io-client^] to connect to the RPC API.
@@ -424,7 +426,7 @@ Lisk Testnet::
 
 // [source,bash]
 // ----
-// npm i socket.io-client
+// yarn i socket.io-client
 
 // ----
 

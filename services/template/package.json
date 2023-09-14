@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-template-moleculer",
-  "version": "0.7.0-beta.4",
+  "version": "0.7.0-rc.0",
   "description": "Lisk Service Template",
   "keywords": [
     "lisk",
@@ -30,7 +30,7 @@
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/8eb70b4eb11972cbd65eb9911991e8a4f8e0725d/framework/dist/lisk-service-framework-1.5.0.tgz",
     "node-cron": "=2.0.3"
   }
 }

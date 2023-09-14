@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies
         run: make build-local
       - name: Check test coverage
-        run: npm run test:coverage
+        run: yarn run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:

@@ -62,6 +62,7 @@ After installing nvm, navigate to the lisk-service repository and use the follow
 ```
 nvm install
 nvm alias default 18
+npm i -g yarn
 ```
 
 > Having Node.js installed makes it possible to install [npm](https://www.npmjs.com/) packages.

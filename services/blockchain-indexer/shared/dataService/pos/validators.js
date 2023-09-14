@@ -170,7 +170,11 @@ const getAllValidators = async () => {
 const getPosValidators = async params => {
 	const validators = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	const addressSet = new Set();
@@ -181,7 +185,7 @@ const getPosValidators = async params => {
 		const address = getLisk32AddressFromPublicKey(params.publicKey);
 
 		// Return empty response if user specified address and publicKey pair does not match
-		if (params.address && params.address.split(',').includes(address)) {
+		if (params.address && !params.address.split(',').includes(address)) {
 			return validators;
 		}
 		params.address = address;

@@ -91,7 +91,7 @@ config.queue = {
 		concurrency: 1,
 	},
 	deleteIndexedBlocks: {
-		name: 'DeleteIndexedBlocksQueue',
+		name: 'DeleteIndexedBlocks',
 		concurrency: 1,
 	},
 	indexBlocks: {

@@ -77,23 +77,30 @@ const getBlockchainAppsMetaList = async (params) => {
 		}];
 	}
 
-	const limit = params.limit * config.supportedNetworks.length;
+	let { offset, limit } = params;
 	const defaultApps = await applicationMetadataTable.find(
-		{ ...params, limit, isDefault: true },
+		{ ...params, isDefault: true },
 		['network', 'chainID', 'chainName'],
 	);
 
-	if (defaultApps.length < params.limit) {
+	if (defaultApps.length < limit) {
+		// Update offset and limit
+		limit -= defaultApps.length;
+		const totalDefaultAppsCount = await applicationMetadataTable.count(
+			{ ...params, isDefault: true },
+		);
+
+		offset = Math.max(offset - totalDefaultAppsCount, 0);
+
 		const nonDefaultApps = await applicationMetadataTable.find(
-			{ ...params, limit, isDefault: false },
+			{ ...params, limit, offset, isDefault: false },
 			['network', 'chainID', 'chainName'],
 		);
 
 		blockchainAppsMetaList.data = defaultApps.concat(nonDefaultApps);
+	} else {
+		blockchainAppsMetaList.data = defaultApps;
 	}
-
-	blockchainAppsMetaList.data = blockchainAppsMetaList.data
-		.slice(params.offset, params.offset + params.limit);
 
 	const total = await applicationMetadataTable.count(params);
 
@@ -352,43 +359,37 @@ const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
 
 	const tokensMeta = [];
 	const processedChainIDs = new Set();
-	const resultTokenIDsSet = tokenInfoFromDB.reduce(
-		(accSet, tokenInfo) => accSet.add(tokenInfo.tokenID),
-		new Set(),
-	);
+	const resultTokenIDsSet = new Set(tokenInfoFromDB.map(tokenInfo => tokenInfo.tokenID));
 
-	await BluebirdPromise.map(
-		tokenInfoFromDB,
-		async (entry) => {
-			const chainID = entry.tokenID.substring(0, LENGTH_CHAIN_ID);
+	/* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
+	for (const entry of tokenInfoFromDB) {
+		const chainID = entry.tokenID.substring(0, LENGTH_CHAIN_ID);
 
-			// Avoid reading same token metadata file multiple times
-			if (processedChainIDs.has(chainID)) return;
-			processedChainIDs.add(chainID);
+		// Avoid reading same token metadata file multiple times
+		if (processedChainIDs.has(chainID)) {
+			continue;
+		}
 
-			const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['appDirName']);
+		processedChainIDs.add(chainID);
+		const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['appDirName']);
+		const parsedTokenMeta = await readMetadataFromClonedRepo(
+			entry.network,
+			requestedAppInfo.appDirName,
+			config.FILENAME.NATIVETOKENS_JSON,
+		);
 
-			const parsedTokenMeta = await readMetadataFromClonedRepo(
-				entry.network,
-				requestedAppInfo.appDirName,
-				config.FILENAME.NATIVETOKENS_JSON,
-			);
-
-			// Loop over all tokens in the token metadata file
-			parsedTokenMeta.tokens.forEach(async token => {
-				// Only add filtered tokens info to the response
-				if (resultTokenIDsSet.has(token.tokenID)) {
-					tokensMeta.push({
-						...token,
-						chainID,
-						chainName: entry.chainName,
-						network: entry.network,
-					});
-				}
-			});
-		},
-		{ concurrency: tokenInfoFromDB.length },
-	);
+		for (const token of parsedTokenMeta.tokens) {
+			if (resultTokenIDsSet.has(token.tokenID)) {
+				tokensMeta.push({
+					...token,
+					chainID,
+					chainName: entry.chainName,
+					network: entry.network,
+				});
+			}
+		}
+	}
+	/* eslint-enable no-restricted-syntax, no-await-in-loop */
 
 	return tokensMeta;
 };

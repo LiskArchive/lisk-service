@@ -4,7 +4,7 @@
         "in": "query",
         "description": "Blockchain application name.",
         "type": "string",
-        "minLength": 1,
+        "minLength": 3,
         "maxLength": 20
     },
     "chainID": {
@@ -27,7 +27,7 @@
     "blockchainAppStatus": {
         "name": "status",
         "in": "query",
-        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'activated', 'terminated'.",
+        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'activated', 'terminated', 'unregistered'.",
         "type": "string"
     },
     "network": {
@@ -48,16 +48,16 @@
     "chainName": {
         "name": "chainName",
         "in": "query",
-        "description": "Chain name to query.",
+        "description": "Chain name to query. Supports case-insensitive chain name.",
         "type": "string",
-        "minLength": 1
+        "minLength": 3
     },
     "displayName": {
         "name": "displayName",
         "in": "query",
-        "description": "Display name to query.",
+        "description": "Display name to query. Supports case-insensitive display name.",
         "type": "string",
-        "minLength": 1
+        "minLength": 3
     },
     "searchByChainName": {
         "name": "search",

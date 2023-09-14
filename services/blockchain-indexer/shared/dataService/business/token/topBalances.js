@@ -61,7 +61,15 @@ const getTokenTopBalances = async (params) => {
 		}];
 	}
 
-	const tokenInfos = await accountBalancesTable.find(params, [`${accountBalancesTableSchema.tableName}.balance`, `${accountBalancesTableSchema.tableName}.address`, `${accountTableSchema.tableName}.publicKey`, `${accountTableSchema.tableName}.name`]);
+	const tokenInfos = await accountBalancesTable.find(
+		params,
+		[
+			`${accountBalancesTableSchema.tableName}.balance`,
+			`${accountBalancesTableSchema.tableName}.address`,
+			`${accountTableSchema.tableName}.publicKey`,
+			`${accountTableSchema.tableName}.name`,
+		],
+	);
 
 	const filteredTokenInfos = [];
 	// eslint-disable-next-line no-restricted-syntax

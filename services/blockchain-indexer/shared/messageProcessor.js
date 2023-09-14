@@ -135,6 +135,7 @@ const initMessageProcessors = async () => {
 	});
 
 	logger.info(`Registering job processor for ${eventMessageQueue.name} message queue.`);
+
 	eventMessageQueue.process(async (job) => {
 		logger.debug('Subscribed to the events from coordinator.');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;

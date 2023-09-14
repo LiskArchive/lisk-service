@@ -28,7 +28,7 @@ const escapeUserInput = input => {
 };
 
 const loadSchema = async (knex, tableName, tableConfig) => {
-	const { primaryKey, charset, schema, indexes } = tableConfig;
+	const { primaryKey, charset, schema, indexes, compositeIndexes } = tableConfig;
 
 	if (await knex.schema.hasTable(tableName)) return knex;
 
@@ -50,6 +50,18 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			throw err;
 		});
 
+	// eslint-disable-next-line no-restricted-syntax, guard-for-in
+	for (const key in compositeIndexes) {
+		const directions = compositeIndexes[key];
+		const indexName = `${tableName}_index_${key}`;
+		const indexColumns = directions.map(dir => `\`${dir.key}\` ${dir.direction}`).join(', ');
+
+		const sqlStatement = `ALTER TABLE ${tableName} ADD INDEX ${indexName} (${indexColumns})`;
+
+		// eslint-disable-next-line no-await-in-loop
+		await knex.raw(sqlStatement);
+	}
+
 	return knex;
 };
 
@@ -66,10 +78,10 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
-		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith',
-		'whereIn', 'orWhereIn', 'whereJsonSupersetOf', 'search', 'aggregate', 'distinct',
-		'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
-		'innerJoin',
+		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'whereNot',
+		'whereIn', 'whereNotIn', 'orWhereIn', 'whereBetween', 'whereJsonSupersetOf', 'search', 'aggregate',
+		'distinct', 'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
+		'innerJoin', 'groupBy', 'orderByRaw',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -163,6 +175,10 @@ const getTableInstance = (tableConfig, knex) => {
 				query.distinct(distinctParams);
 			}
 
+			if (params.groupBy) {
+				query.groupBy(params.groupBy);
+			}
+
 			if (params.sort) {
 				const [sortColumn, sortDirection] = params.sort.split(':');
 				query.whereNotNull(sortColumn);
@@ -173,6 +189,14 @@ const getTableInstance = (tableConfig, knex) => {
 				const [orderColumn, orderDirection] = params.order.split(':');
 				query.whereNotNull(orderColumn);
 				query.select(orderColumn).orderBy(orderColumn, orderDirection);
+			}
+
+			if (params.orderByRaw) {
+				params.orderByRaw.forEach(
+					orderBy => {
+						const [col] = orderBy.split(' ');
+						query.select(knex.raw(col)).orderByRaw(orderBy);
+					});
 			}
 
 			if (params.aggregate) {
@@ -226,6 +250,21 @@ const getTableInstance = (tableConfig, knex) => {
 					this.whereJsonSupersetOf(property, [value]);
 				}));
 			});
+		}
+
+		if (params.whereNotIn) {
+			const { column, values } = params.whereNotIn;
+			query.whereNotIn(column, values);
+		}
+
+		if (params.whereNot) {
+			const { column, value } = params.whereNot;
+			query.whereNot(column, value);
+		}
+
+		if (params.whereBetween) {
+			const { column, values } = params.whereBetween;
+			query.whereBetween(column, values);
 		}
 
 		if (params.andWhere) {

@@ -46,7 +46,7 @@ const getGeneratorsInfo = async () => {
 };
 
 const getNumberOfGenerators = async () => {
-	const constants = await getPosConstants();
+	const { data: constants } = await getPosConstants();
 	return constants.numberActiveValidators + constants.numberStandbyValidators;
 };
 

@@ -1,6 +1,6 @@
 {
 	"name": "lisk-service-export",
-	"version": "0.7.0-beta.4",
+	"version": "0.7.0-rc.0",
 	"description": "Lisk Service Export",
 	"keywords": [
 		"lisk",
@@ -25,18 +25,18 @@
 	"scripts": {
 		"start": "node app.js",
 		"clean": "rm -rf ./node_modules",
-		"test": "npm run test:unit",
+		"test": "yarn run test:unit",
 		"test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
 		"test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit",
 		"watch": "supervisor -w . -i ./node_modules app.js"
 	},
 	"dependencies": {
-		"@liskhq/lisk-cryptography": "4.0.0-beta.4",
+		"@liskhq/lisk-cryptography": "4.0.0-rc.0",
 		"bluebird": "^3.7.2",
 		"bull": "^3.29.2",
 		"exceljs": "^4.3.0",
 		"json2csv": "^5.0.6",
-		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/8eb70b4eb11972cbd65eb9911991e8a4f8e0725d/framework/dist/lisk-service-framework-1.5.0.tgz",
 		"minio": "^7.0.21",
 		"moment": "^2.29.4",
 		"moment-range": "^4.0.2",

@@ -107,7 +107,7 @@ module.exports = {
 				socket.$service = this;
 				this.logger.debug(`(nsp:'${nsp}') Client connected:`, socket.id);
 				if (item.packetMiddlewares) {
-					// socketmiddlewares
+					// socket middlewares
 					for (const middleware of item.packetMiddlewares) {
 						socket.use(middleware.bind(this));
 					}
@@ -277,7 +277,7 @@ module.exports = {
 			opts = opts || this.settings.io.options || {};
 			srv = srv || this.server || (this.settings.server ? this.settings.port : undefined);
 
-			// comptability flag to support v2.x
+			// Compatibility flag to support v2.x
 			opts.allowEIO3 = true;
 
 			if (this.settings.cors && this.settings.cors.origin && !opts.origins) {
