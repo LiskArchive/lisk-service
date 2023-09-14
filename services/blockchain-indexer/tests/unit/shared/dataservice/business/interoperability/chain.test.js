@@ -15,10 +15,9 @@
  */
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
-const config = require('../../../../../config');
 
-const mockedFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
-const dataServicePath = resolve(`${__dirname}/../../../../../shared/dataService`);
+const mockedFilePath = resolve(`${__dirname}/../../../../../../shared/dataService/business/network`);
+const dataServicePath = resolve(`${__dirname}/../../../../../../shared/dataService`);
 
 beforeEach(() => {
 	jest.resetModules();
@@ -139,58 +138,37 @@ describe('Test isMainchain method', () => {
 	});
 });
 
-describe('Test resolveMainchainServiceURL method', () => {
-	it('should return devnet mainchain URL when devnet mainchain chainID is valid', async () => {
-		const chainID = '04000000';
+describe('Test getCurrentChainID method', () => {
+	it('should return current chainID', async () => {
+		const currentChainID = '04000000';
 		jest.mock(mockedFilePath, () => {
 			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
-					return { data: { chainID } };
+					return { data: { chainID: currentChainID } };
 				},
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require(dataServicePath);
-		const result = await resolveMainchainServiceURL();
-
-		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
-		expect(result).toBe(serviceURL);
+		const { getCurrentChainID } = require(dataServicePath);
+		const result = await getCurrentChainID();
+		expect(result).toEqual(currentChainID);
 	});
 
-	it('should return betanet mainchain URL when betanet mainchain chainID is valid', async () => {
-		const chainID = '02000000';
+	it('should throw error when getNetworkStatus throws an error', async () => {
+		const mockError = new Error('Some other error');
 		jest.mock(mockedFilePath, () => {
 			const actual = jest.requireActual(mockedFilePath);
 			return {
 				...actual,
 				getNetworkStatus() {
-					return { data: { chainID } };
+					throw new Error(mockError);
 				},
 			};
 		});
 
-		const { resolveMainchainServiceURL } = require(dataServicePath);
-		const result = await resolveMainchainServiceURL();
-
-		const { serviceURL } = config.networks.LISK.find(c => chainID === c.chainID);
-		expect(result).toBe(serviceURL);
-	});
-
-	it('should return undefined when chainID is invalid', async () => {
-		jest.mock(mockedFilePath, () => {
-			const actual = jest.requireActual(mockedFilePath);
-			return {
-				...actual,
-				getNetworkStatus() {
-					return { data: { chainID: 'invalid' } };
-				},
-			};
-		});
-
-		const { resolveMainchainServiceURL } = require(dataServicePath);
-		const result = await resolveMainchainServiceURL();
-		expect(result).toBe(undefined);
+		const { getCurrentChainID } = require(dataServicePath);
+		expect(getCurrentChainID()).rejects.toThrow();
 	});
 });

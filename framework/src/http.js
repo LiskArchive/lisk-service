@@ -96,6 +96,8 @@ const request = async (url, params = {}) => {
 			response = { data, headers, status, statusText };
 
 			if (key) cache.set(key, response, params.cacheTTL);
+		} else {
+			response = httpResponse;
 		}
 	}
 

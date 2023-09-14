@@ -18,30 +18,16 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { getNetworkStatus } = require('./network');
-const regex = require('../../regex');
-const config = require('../../../config');
-const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../constants');
-const { requestConnector } = require('../../utils/request');
-
-let chainID;
-
-const isMainchain = async () => {
-	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-	return regex.MAINCHAIN_ID.test(chainID);
-};
+const { getCurrentChainID, isMainchain } = require('./chain');
+const regex = require('../../../regex');
+const config = require('../../../../config');
+const { LENGTH_CHAIN_ID, LENGTH_NETWORK_ID } = require('../../../constants');
+const { requestConnector } = require('../../../utils/request');
 
 const resolveMainchainServiceURL = async () => {
 	if (config.endpoints.mainchainServiceUrl) return config.endpoints.mainchainServiceUrl;
 
-	if (!chainID) {
-		const networkStatus = (await getNetworkStatus()).data;
-		chainID = networkStatus.chainID;
-	}
-
+	const chainID = await getCurrentChainID();
 	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
 	const mainchainID = networkID.padEnd(LENGTH_CHAIN_ID, '0');
 	const [{ serviceURL } = {}] = config.networks.LISK
@@ -50,8 +36,13 @@ const resolveMainchainServiceURL = async () => {
 };
 
 const resolveChannelInfo = async (inputChainID) => {
+	if (inputChainID === await getCurrentChainID()) {
+		throw new ValidationException('Channel info cannot be determined when receivingChainID and currentChainID are same.');
+	}
+
 	try {
-		if (await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID)) {
+		if ((await isMainchain() && !regex.MAINCHAIN_ID.test(inputChainID))
+			|| (!await isMainchain() && regex.MAINCHAIN_ID.test(inputChainID))) {
 			const channelInfo = await requestConnector('getChannel', { chainID: inputChainID });
 			return channelInfo;
 		}
@@ -59,7 +50,7 @@ const resolveChannelInfo = async (inputChainID) => {
 		// Redirect call to the mainchain service
 		const serviceURL = await resolveMainchainServiceURL();
 		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
-		const { data: { data: channelInfo } } = await HTTP.post(
+		const { data: response } = await HTTP.post(
 			invokeEndpoint,
 			{
 				endpoint: 'interoperability_getChannel',
@@ -67,6 +58,11 @@ const resolveChannelInfo = async (inputChainID) => {
 			},
 		);
 
+		if (response.error) {
+			throw new ValidationException(`Channel info is not available for the chain: ${inputChainID}.`);
+		}
+
+		const { data: channelInfo } = response;
 		return channelInfo;
 	} catch (error) {
 		throw new ValidationException(`Error while retrieving channel info for the chain: ${inputChainID}.\nError: ${error}`);
@@ -74,7 +70,6 @@ const resolveChannelInfo = async (inputChainID) => {
 };
 
 module.exports = {
-	isMainchain,
 	resolveMainchainServiceURL,
 	resolveChannelInfo,
 };
