@@ -48,6 +48,10 @@ const {
 	getChainAccount,
 	getMainchainID,
 	reloadBlockchainAppsStats,
+	isMainchain,
+	resolveMainchainServiceURL,
+	resolveChannelInfo,
+	getCurrentChainID,
 } = require('./interoperability');
 
 const {
@@ -99,7 +103,6 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 const { estimateTransactionFees } = require('./transactionsEstimateFees');
-const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
 const { invokeEndpoint } = require('./invoke');
 
 const { setFeeEstimates, getFeeEstimates } = require('./feeEstimates');
@@ -144,6 +147,10 @@ module.exports = {
 	getMainchainID,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
+	isMainchain,
+	resolveMainchainServiceURL,
+	resolveChannelInfo,
+	getCurrentChainID,
 
 	// Token
 	tokenHasUserAccount,
@@ -193,9 +200,6 @@ module.exports = {
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
-
-	isMainchain,
-	resolveMainchainServiceURL,
 
 	invokeEndpoint,
 };

@@ -31,6 +31,8 @@ const {
 	deleteEventsFromCache,
 	isMainchain,
 	resolveMainchainServiceURL,
+	getCurrentChainID,
+	resolveChannelInfo,
 } = require('./business');
 
 const {
@@ -145,6 +147,8 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	reloadBlockchainAppsStats,
+	getCurrentChainID,
+	resolveChannelInfo,
 
 	// Events
 	getEvents,
