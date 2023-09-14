@@ -1,6 +1,6 @@
-= Docker commands
-Mona Bärenfänger <mona@lightcurve.io>
-:description: Describes how to manage Lisk Service with Docker.
+= Update Docker commands
+Mona Bärenfänger <mona@lightcurve.io> Chris Braithwaite <christopher.braithwaite@lightcurve.io>
+:description: Describes how to manage Lisk Service v0.7.0 with Docker.
 :toc:
 :idseparator: -
 :idprefix:
