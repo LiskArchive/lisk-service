@@ -37,6 +37,7 @@ module.exports = {
 		Data: require('./src/data'),
 		fs: require('./src/fs'),
 		...(require('./src/data')),
+		...(require('./src/delay')),
 	},
 	Constants: {
 		...require('./constants/ErrorCodes'),

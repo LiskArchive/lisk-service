@@ -15,4 +15,6 @@
  */
 const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve, ms, val));
 
-module.exports = delay;
+module.exports = {
+	delay,
+};

@@ -66,7 +66,7 @@ const indexTokenModuleAssets = async (dbTrx) => {
 
 		// Index account balance
 		// eslint-disable-next-line no-await-in-loop
-		await updateAccountBalances(userInfo.address, dbTrx);
+		await updateAccountBalances(userInfo.address);
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);

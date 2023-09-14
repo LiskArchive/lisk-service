@@ -264,7 +264,7 @@ const indexBlock = async job => {
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
 			// Update address balance updates from token module events
-			addressesToUpdateBalance = await getAddressesFromTokenEvents(events, dbTrx);
+			addressesToUpdateBalance = getAddressesFromTokenEvents(events);
 		}
 
 		const blockToIndex = {
@@ -449,7 +449,7 @@ const deleteIndexedBlocks = async job => {
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
 					// Update address balance updates from token module events
-					addressesToUpdateBalance = await getAddressesFromTokenEvents(events, dbTrx);
+					addressesToUpdateBalance = getAddressesFromTokenEvents(events);
 				}
 
 				// Invalidate cached events for this block
@@ -482,10 +482,17 @@ const deleteIndexedBlocks = async job => {
 };
 
 let isIndexingRunning = false;
+const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
+
+// TODO: Temporary. Use the one from framework
+const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve, ms, val));
 
 const indexBlockAtomicWrapper = async (job) => {
 	if (isIndexingRunning) {
-		logger.warn('Already indexing another block!');
+		logger.trace('Already indexing another block!');
+		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
+		// eslint-disable-next-line no-use-before-define
+		await addHeightToIndexBlocksQueue(job.data.height);
 		return;
 	}
 
@@ -494,7 +501,7 @@ const indexBlockAtomicWrapper = async (job) => {
 	try {
 		await indexBlock(job);
 	} catch (err) {
-		logger.error(`Catched error in indexing. error: ${err}`);
+		logger.error(`Error occurred during block. error: ${err}`);
 	}
 
 	isIndexingRunning = false;
