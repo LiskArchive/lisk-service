@@ -50,7 +50,7 @@ const resolveChannelInfo = async (inputChainID) => {
 		// Redirect call to the mainchain service
 		const serviceURL = await resolveMainchainServiceURL();
 		const invokeEndpoint = `${serviceURL}/api/v3/invoke`;
-		const { data: { data: channelInfo } } = await HTTP.post(
+		const { data: response } = await HTTP.post(
 			invokeEndpoint,
 			{
 				endpoint: 'interoperability_getChannel',
@@ -58,6 +58,11 @@ const resolveChannelInfo = async (inputChainID) => {
 			},
 		);
 
+		if (response.error) {
+			throw new ValidationException(`Channel info is not available for the chain: ${inputChainID}.`);
+		}
+
+		const { data: channelInfo } = response;
 		return channelInfo;
 	} catch (error) {
 		throw new ValidationException(`Error while retrieving channel info for the chain: ${inputChainID}.\nError: ${error}`);
