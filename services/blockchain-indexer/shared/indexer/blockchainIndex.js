@@ -263,7 +263,7 @@ const indexBlock = async job => {
 			});
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
-			// Update address balance updates from token module events
+			// Get addresses to schedule account balance updates from token module events
 			addressesToUpdateBalance = getAddressesFromTokenEvents(events);
 		}
 
@@ -329,7 +329,7 @@ const deleteIndexedBlocks = async job => {
 				// Reschedule job if not deleted block is not indexed
 				if (!deletedBlockFromDB) {
 					// eslint-disable-next-line no-use-before-define
-					await deleteBlock(block);
+					await scheduleBlockDeletion(block);
 					return;
 				}
 				// If deleted block is indexed, check for the blockID
@@ -448,7 +448,7 @@ const deleteIndexedBlocks = async job => {
 					});
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
-					// Update address balance updates from token module events
+					// Get addresses to schedule account balance updates from token module events
 					addressesToUpdateBalance = getAddressesFromTokenEvents(events);
 				}
 
@@ -529,7 +529,7 @@ const getLiveIndexingJobCount = async () => {
 	return count;
 };
 
-const deleteBlock = async block => deleteIndexedBlocksQueue.add({ blocks: [block] });
+const scheduleBlockDeletion = async block => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
 const indexNewBlock = async block => {
 	const blocksTable = await getBlocksTable();
@@ -668,7 +668,7 @@ module.exports = {
 	indexNewBlock,
 	addHeightToIndexBlocksQueue,
 	getMissingBlocks,
-	deleteBlock,
+	scheduleBlockDeletion,
 	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,

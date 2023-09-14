@@ -27,7 +27,11 @@ const logger = Logger();
 const { initNodeConstants } = require('./constants');
 
 const { addAccountToDirectUpdateQueue } = require('./indexer/accountIndex');
-const { addHeightToIndexBlocksQueue, deleteBlock, indexNewBlock } = require('./indexer/blockchainIndex');
+const {
+	addHeightToIndexBlocksQueue,
+	scheduleBlockDeletion,
+	indexNewBlock,
+} = require('./indexer/blockchainIndex');
 
 const {
 	getBlocks,
@@ -95,7 +99,7 @@ const deleteBlockProcessor = async (block) => {
 	try {
 		logger.debug(`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`);
 		response = await getBlocks({ blockID: block.id });
-		await deleteBlock(block);
+		await scheduleBlockDeletion(block);
 	} catch (error) {
 		const normalizedBlocks = await normalizeBlocks([{
 			header: block,
