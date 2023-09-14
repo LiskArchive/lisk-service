@@ -43,11 +43,10 @@ const checkIsClientAlive = () => clientCache && clientCache._channel.isAlive;
 const instantiateClient = async (isForceUpdate = false) => {
 	try {
 		if (!isInstantiating || isForceUpdate) {
-			// TODO: Verify and enable the code
 			if (!checkIsClientAlive() || isForceUpdate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
-				// if (clientCache) await clientCache.disconnect();
+				if (clientCache) await clientCache.disconnect();
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
