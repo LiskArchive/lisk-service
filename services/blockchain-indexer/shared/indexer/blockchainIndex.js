@@ -103,7 +103,7 @@ const indexBlock = async job => {
 	if (lastIndexedHeight && lastIndexedHeight < currentBlockHeight - 1) {
 		blockHeightToIndex = lastIndexedHeight + 1;
 		// eslint-disable-next-line no-use-before-define
-		await addHeightToIndexBlocksQueue(blockHeightToIndex + 1, true);
+		await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
 	}
 
 	// Verify current block does not exits. return if already indexed
@@ -550,7 +550,7 @@ const indexNewBlock = async block => {
 			updates: { isFinal: true },
 		});
 
-		if (blockInfo && blockInfo.id !== block.id) { // PRIOJEET: should we schedule deletion of blocks before scheding indexing? because indexing new block may overwrite some information?
+		if (blockInfo && blockInfo.id !== block.id) {
 			// Fork detected
 			const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, [
 				'height',
@@ -560,8 +560,8 @@ const indexNewBlock = async block => {
 					propBetweens: [
 						{
 							property: 'height',
-							from: block.height + 1, // PRIOJEET: shouldn't we delete current block as well? this could end up keeping mismatching information
-							to: highestIndexedBlock.height, // PRIOJEET: do we need the to condition here?
+							from: block.height + 1,
+							to: highestIndexedBlock.height,
 						},
 					],
 					sort: 'height:desc',
@@ -569,7 +569,7 @@ const indexNewBlock = async block => {
 				},
 				['id'],
 			);
-			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove }); // PRIOJEET: we can prioritise the deletion of deleted blocks
+			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 		}
 	}
 };
@@ -640,8 +640,8 @@ const getMissingBlocks = async params => {
 	return listOfMissingBlocks;
 };
 
-const addHeightToIndexBlocksQueue = async (height, isPriority) => isPriority === true
-	? indexBlocksQueue.add({ height }, { priority: 1 })
+const addHeightToIndexBlocksQueue = async (height, priority) => priority
+	? indexBlocksQueue.add({ height }, { priority })
 	: indexBlocksQueue.add({ height });
 
 const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
