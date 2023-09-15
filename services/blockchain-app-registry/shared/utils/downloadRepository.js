@@ -128,18 +128,24 @@ const getRepoDownloadURL = async () => {
 	}
 };
 
-const getFileDownloadURL = async (file) => {
+const getFileDownloadURLAndHeaders = async (file) => {
 	try {
-		const result = await octokit.request(
-			`GET /repos/${owner}/${repo}/contents/${file}`,
-			{
-				owner,
-				repo,
-				ref: `${config.gitHub.branch}`,
-			},
-		);
+		const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`;
 
-		return result.data.download_url;
+		// Additional headers for repositories
+		const headers = {
+			'User-Agent': 'GitHub-File-Downloader',
+		};
+
+		// Add Authorization header if you're accessing a private repo
+		if (config.gitHub.accessToken) {
+			headers.Authorization = `token ${config.gitHub.accessToken}`;
+		}
+
+		return {
+			url,
+			headers,
+		};
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
@@ -320,6 +326,7 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 						for (const modifiedFile of appFiles) {
 							/* eslint-disable no-await-in-loop */
 							const remoteFilePath = modifiedFile.filename;
+
 							const localFilePath = path.join(appDirPath, remoteFilePath);
 
 							// Delete indexed information if a meta file is updated/deleted
@@ -341,9 +348,9 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 							const dirPath = path.dirname(tempFilePath);
 							await mkdir(dirPath, { recursive: true });
 
-							const fileDownloadUrl = await getFileDownloadURL(remoteFilePath);
-							await downloadFile(fileDownloadUrl, tempFilePath);
-							logger.debug(`Successfully downloaded: ${tempFilePath}.`);
+							const { url, headers } = await getFileDownloadURLAndHeaders(remoteFilePath);
+							await downloadFile(url, headers, tempFilePath);
+							logger.info(`Successfully downloaded: ${tempFilePath}.`);
 
 							// Update DB with latest metadata file information
 							await indexMetadataFromFile(tempFilePath, dbTrx);
@@ -447,7 +454,7 @@ module.exports = {
 	getCommitInfo,
 	getUniqueNetworkAppDirPairs,
 	filterMetaConfigFilesByNetwork,
-	getFileDownloadURL,
+	getFileDownloadURLAndHeaders,
 	getDiff,
 	buildEventPayload,
 	getModifiedFileNames,
