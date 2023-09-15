@@ -52,6 +52,8 @@ const instantiateClient = async (isForceUpdate = false) => {
 					? await createIPCClient(config.liskAppDataPath)
 					: await createWSClient(`${liskAddress}/rpc-ws`);
 
+				if (isForceUpdate) logger.info('Re-instantiated the API client forcefully.');
+
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
 
