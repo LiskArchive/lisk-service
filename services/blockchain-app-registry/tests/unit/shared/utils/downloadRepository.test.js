@@ -20,6 +20,7 @@ const {
 	filterMetaConfigFilesByNetwork,
 	getModifiedFileNames,
 	isMetadataFile,
+	getFileDownloadURLAndHeaders,
 } = require('../../../../shared/utils/downloadRepository');
 const {
 	getModifiedFileNamesInput,
@@ -42,6 +43,27 @@ jest.mock('lisk-service-framework', () => {
 			},
 		},
 	};
+});
+
+describe('getFileDownloadURLAndHeaders', () => {
+	const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+	const file = 'testFile';
+
+	it('it should return the correct URL and headers for a public repository', async () => {
+		const result = await getFileDownloadURLAndHeaders(file);
+		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
+		expect(result.headers).toHaveProperty('User-Agent');
+	});
+
+	it('it should return the correct URL and headers for a private repository with access token', async () => {
+		config.gitHub.accessToken = 'testToken';
+
+		const result = await getFileDownloadURLAndHeaders(file);
+		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
+		expect(result.headers).toHaveProperty('User-Agent');
+		expect(result.headers).toHaveProperty('Authorization');
+		expect(result.headers.Authorization).toEqual('token testToken');
+	});
 });
 
 describe('Test getRepoInfoFromURL method', () => {

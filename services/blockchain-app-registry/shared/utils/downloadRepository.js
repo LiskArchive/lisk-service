@@ -131,13 +131,11 @@ const getRepoDownloadURL = async () => {
 const getFileDownloadURLAndHeaders = async (file) => {
 	try {
 		const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`;
-
-		// Additional headers for repositories
 		const headers = {
 			'User-Agent': 'GitHub-File-Downloader',
 		};
 
-		// Add Authorization header if you're accessing a private repo
+		// Add Authorization header if accessing a private repo
 		if (config.gitHub.accessToken) {
 			headers.Authorization = `token ${config.gitHub.accessToken}`;
 		}
@@ -326,7 +324,6 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 						for (const modifiedFile of appFiles) {
 							/* eslint-disable no-await-in-loop */
 							const remoteFilePath = modifiedFile.filename;
-
 							const localFilePath = path.join(appDirPath, remoteFilePath);
 
 							// Delete indexed information if a meta file is updated/deleted
@@ -350,7 +347,7 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 
 							const { url, headers } = await getFileDownloadURLAndHeaders(remoteFilePath);
 							await downloadFile(url, headers, tempFilePath);
-							logger.info(`Successfully downloaded: ${tempFilePath}.`);
+							logger.debug(`Successfully downloaded: ${tempFilePath}.`);
 
 							// Update DB with latest metadata file information
 							await indexMetadataFromFile(tempFilePath, dbTrx);
