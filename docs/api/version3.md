@@ -5657,7 +5657,14 @@ _Supports pagination._
       "status": "activated",
       "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
       "lastCertificateHeight": 160,
-      "lastUpdated": 1616008148
+      "lastUpdated": 1616008148,
+      "escrowedLSK": "50000000000",
+      "escrow": [
+        {
+          "tokenID": "0000000000000000",
+          "amount": "50000000000"
+        }
+      ]
     }
   ],
   "meta": {
