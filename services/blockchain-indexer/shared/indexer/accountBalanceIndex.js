@@ -16,13 +16,15 @@
 const Redis = require('ioredis');
 const {
 	DB: { MySQL: { getTableInstance } },
+	Logger,
 } = require('lisk-service-framework');
 
-const logger = require('lisk-service-framework/src/logger');
 const config = require('../../config');
 const { MODULE } = require('../constants');
 const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
+
+const logger = Logger();
 
 const redis = new Redis(config.endpoints.cache);
 
@@ -82,10 +84,15 @@ const triggerAccountsBalanceUpdate = async () => {
 		MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION,
 	);
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const address of addresses) {
-		// eslint-disable-next-line no-await-in-loop
-		await updateAccountBalances(address);
+	try {
+		// eslint-disable-next-line no-restricted-syntax
+		for (const address of addresses) {
+			// eslint-disable-next-line no-await-in-loop
+			await updateAccountBalances(address);
+		}
+	} catch (err) {
+		// Reschedule accounts balance update on error
+		await scheduleAddressesBalanceUpdate(addresses);
 	}
 
 	if (addresses.length) {
