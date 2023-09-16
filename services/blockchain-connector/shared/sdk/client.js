@@ -40,20 +40,19 @@ let isInstantiating = false;
 const checkIsClientAlive = () => clientCache && clientCache._channel.isAlive;
 
 // eslint-disable-next-line consistent-return
-const instantiateClient = async () => {
+const instantiateClient = async (isForceUpdate = false) => {
 	try {
-		if (!isInstantiating) {
-			// TODO: Verify and enable the code
-			if (!checkIsClientAlive()) {
+		if (!isInstantiating || isForceUpdate) {
+			if (!checkIsClientAlive() || isForceUpdate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
-				// if (clientCache) await clientCache.disconnect();
+				if (clientCache) await clientCache.disconnect();
 
-				if (config.isUseLiskIPCClient) {
-					clientCache = await createIPCClient(config.liskAppDataPath);
-				} else {
-					clientCache = await createWSClient(`${liskAddress}/rpc-ws`);
-				}
+				clientCache = config.isUseLiskIPCClient
+					? await createIPCClient(config.liskAppDataPath)
+					: await createWSClient(`${liskAddress}/rpc-ws`);
+
+				if (isForceUpdate) logger.info('Re-instantiated the API client forcefully.');
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
@@ -106,6 +105,9 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 		/* eslint-enable no-await-in-loop */
 	} while (retries--);
 };
+
+const resetApiClientListener = () => instantiateClient(true);
+Signals.get('resetApiClient').add(resetApiClientListener);
 
 module.exports = {
 	timeoutMessage,
