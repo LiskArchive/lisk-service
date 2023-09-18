@@ -106,7 +106,6 @@ const indexBlock = async job => {
 		await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
 	}
 
-	// Verify current block does not exits. return if already indexed
 	const [currentBlockInDB = {}] = await blocksTable.find(
 		{
 			where: { height: currentBlockHeight },
@@ -114,8 +113,10 @@ const indexBlock = async job => {
 		},
 		['height'],
 	);
+
+	// If current block is already indexed, then index the highest indexed block height + 1
 	if (Object.keys(currentBlockInDB).length) {
-		return;
+		blockHeightToIndex = lastIndexedHeight + 1;
 	}
 
 	const block = await getBlockByHeight(blockHeightToIndex);
@@ -283,6 +284,11 @@ const indexBlock = async job => {
 		);
 	} catch (error) {
 		await rollbackDBTransaction(dbTrx);
+
+		// Reschedule the block for indexing
+		// eslint-disable-next-line no-use-before-define
+		await addHeightToIndexBlocksQueue(blockHeightToIndex);
+
 		logger.debug(
 			`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`,
 		);
@@ -489,7 +495,8 @@ const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve, ms, 
 
 const indexBlockAtomicWrapper = async (job) => {
 	if (isIndexingRunning) {
-		logger.trace('Already indexing another block!');
+		// TODO: make this trace before merge
+		logger.warn('Already indexing another block!');
 		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
 		// eslint-disable-next-line no-use-before-define
 		await addHeightToIndexBlocksQueue(job.data.height);
@@ -501,7 +508,7 @@ const indexBlockAtomicWrapper = async (job) => {
 	try {
 		await indexBlock(job);
 	} catch (err) {
-		logger.error(`Error occurred during block. error: ${err}`);
+		logger.error(`Error occurred during indexing block. Error: ${err.message}`);
 	}
 
 	isIndexingRunning = false;
