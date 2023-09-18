@@ -9,6 +9,7 @@ Mona Bärenfänger <mona@lightcurve.io> Chris Braithwaite <christopher.braithwai
 :source-language: bash
 :url_config: configuration/docker.adoc
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
+:url_docker_example: https://github.com/LiskHQ/lisk-service/blob/v0.7.0-rc.0/docker/example.env
 
 == Start
 
@@ -23,9 +24,8 @@ In case a different node or network shall be used, xref:{url_config}[configure] 
 
 [NOTE]
 ====
-It is recommended to copy the docker/example.env. to `env` before running the `make up` command.
+It is recommended to copy the xref:{url_docker_example][docker/example.env.] to `env` before running the `make up` command:
 
-example.env
 ----
 Common Docker configuration
 
@@ -211,9 +211,9 @@ This can be quite time-consuming when the chain is long, spanning over hours.
 
 == Logging
 
-// User has the option the use the Docker container otr the make logs....
+The possibility exists here to either use the `docker` commands or the `make` commands to check the logs, and both options are listed here below.
 
-To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
+For `docker`, to check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
@@ -221,38 +221,27 @@ For example, to see the logs for the Gateway microservice, execute the following
 docker container logs lisk-service_gateway_1
 ----
 
-We can also use make commands to check logs..
+To check the logs for different microservices using the `make` commands, the following commands listed below can be used:
 
-
-
+----
 make logs
-Display logs for all the microservices logged so far and exist automatically.
+----
+The above command, displays the logs for all the microservices that have been logged so far, and that are currently existing.
+----
 make logs-live
-Displays logs for all the microservices logged so far and continues to display the new ones as well.
+----
+The above command displays the logs for all the microservices currently logged so far, and also continues to display the latest logs.
+----
 make logs-blockchain-connector
-Similar to make logs but only displays logs for the specified microservice. Eg: only for blockchain-connector in the above example
+----
+The above command is similar to the `make logs` command, but only displays the appropriate logs for the specified microservice.
+For example, in this case only for the `blockchain-connector`.
+----
 make logs-live-blockchain-connector
-Similar to make logs-live but only displays logs for the specified microservice. Eg: only for blockchain-connector in the above example
-Replace blockchain-connector with the relevant service
+----
+Finally, the above command is similar to the `make logs-live` command, but only displays the logs for the specified microservice.
+For example, in this case also only for blockchain-connector here.
+
+Replace the `blockchain-connector` with the specifc service name required.
 
 
-
-
-
-
-
-
-
-
-
-=== make logs
-ffff
-
-=== make logs-live
-
-
-===  make logs-blockchain-connector
-
-=== make logs-live-blockchain-connector
-
-Replace blockchain-connector with the relevant service name for which the user needs to check the logs (edited)
