@@ -1372,7 +1372,7 @@ The MySQL snapshot relevant properties can be seen in the table below:
 
 |`ENABLE_APPLY_SNAPSHOT`
 |boolean
-|Enable or display apply snapshot feature. By default, the value is ...
+|Enable or display apply snapshot feature. By default, the value is false.
 |true
 
 |`INDEX_SNAPSHOT_URL`
