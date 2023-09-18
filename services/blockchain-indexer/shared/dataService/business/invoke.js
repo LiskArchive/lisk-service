@@ -16,7 +16,7 @@
 const util = require('util');
 const { validator } = require('@liskhq/lisk-validator');
 
-const { Exceptions: { ValidationException } } = require('lisk-service-framework');
+const { Exceptions: { ValidationException, ServiceUnavailableException } } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
 const {
@@ -63,6 +63,11 @@ const validateEndpointParams = async (invokeEndpointParams) => {
 };
 
 const invokeEndpoint = async params => {
+	const invokeEndpointRes = {
+		data: {},
+		meta: {},
+	};
+
 	const isRegisteredEndpoint = await checkIfEndpointRegistered(params.endpoint);
 	if (!isRegisteredEndpoint) {
 		throw new ValidationException(`Endpoint '${params.endpoint}' is not registered.`);
@@ -72,10 +77,12 @@ const invokeEndpoint = async params => {
 		throw new ValidationException(`Invalid params supplied for endpoint '${params.endpoint}': \n${util.inspect(params.params)}.\nError: ${error}`);
 	});
 
-	const invokeEndpointRes = {
-		data: await requestConnector('invokeEndpoint', params),
-		meta: params,
-	};
+	try {
+		invokeEndpointRes.data = await requestConnector('invokeEndpoint', params);
+		invokeEndpointRes.meta = params;
+	} catch (err) {
+		throw new ServiceUnavailableException('Node is not reachable at the moment.');
+	}
 
 	return invokeEndpointRes;
 };
