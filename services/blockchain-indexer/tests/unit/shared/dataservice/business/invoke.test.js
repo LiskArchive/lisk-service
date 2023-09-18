@@ -118,3 +118,75 @@ describe('Test validateEndpointParams method', () => {
 		expect(validateEndpointParams(null)).rejects.toThrow();
 	});
 });
+
+describe('invokeEndpoint', () => {
+	beforeEach(() => {
+		jest.clearAllMocks(); // Clear mocks after each test
+		jest.resetModules();
+	});
+
+	const mockBlockByHeightRes = {
+		header: {
+			version: 2,
+			id: '4e7165d67f94791c88ba6f9b57fffa80f2633731acccfe2098ca600168e7d385',
+		},
+		transactions: [],
+		assets: [
+			{
+				module: 'random',
+				data: '0a10fec83d15d4abfcfdcf36579e7d1de665',
+			},
+		],
+	};
+
+	it('should invoke the endpoint and return data and meta', async () => {
+		jest.mock('../../../../../shared/utils/request', () => ({
+			requestConnector: jest.fn(() => mockBlockByHeightRes),
+		}));
+
+		const params = {
+			endpoint: 'chain_getBlockByHeight',
+			params: {
+				height: 10,
+			},
+		};
+
+		const { invokeEndpoint } = require('../../../../../shared/dataService/business/invoke');
+		const result = await invokeEndpoint(params);
+		expect(result).toEqual({
+			data: mockBlockByHeightRes,
+			meta: params,
+		});
+	});
+
+	it('should throw error when node is not reachable', async () => {
+		jest.mock('../../../../../shared/utils/request', () => ({
+			requestConnector: jest.fn(() => {
+				throw new Error('Timeout error.');
+			}),
+		}));
+
+		const params = {
+			endpoint: 'chain_getBlockByHeight',
+			params: {
+				height: 10,
+			},
+		};
+
+		const { invokeEndpoint } = require('../../../../../shared/dataService/business/invoke');
+		await expect(invokeEndpoint(params)).rejects.toThrow();
+	});
+
+	it('should throw error when invalid endpoint is supplied', async () => {
+		jest.mock('../../../../../shared/utils/request', () => ({
+			requestConnector: jest.fn(() => mockBlockByHeightRes),
+		}));
+
+		const params = {
+			endpoint: 'invalidEndpoint',
+		};
+
+		const { invokeEndpoint } = require('../../../../../shared/dataService/business/invoke');
+		await expect(invokeEndpoint(params)).rejects.toThrow();
+	});
+});

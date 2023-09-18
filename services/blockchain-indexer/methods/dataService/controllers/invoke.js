@@ -15,7 +15,7 @@
  */
 const {
 	HTTP,
-	Exceptions: { ValidationException },
+	Exceptions: { ValidationException, ServiceUnavailableException },
 } = require('lisk-service-framework');
 
 const { StatusCodes: { BAD_REQUEST } } = HTTP;
@@ -35,6 +35,7 @@ const invokeEndpoint = async params => {
 		return invokeEndpointRes;
 	} catch (err) {
 		let status;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
 		if (err instanceof ValidationException) status = BAD_REQUEST;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
