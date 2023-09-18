@@ -21,6 +21,19 @@ This will start Lisk Service with the default configuration, which in turn will 
 
 In case a different node or network shall be used, xref:{url_config}[configure] Lisk Service accordingly.
 
+[NOTE]
+====
+It is recommended to copy the docker/example.env. to `env` before running the `make up` command.
+
+example.env
+----
+Common Docker configuration
+
+Service broker
+SERVICE_BROKER_TIMEOUT=10
+----
+====
+
 == Stop
 
 .Inside the lisk-service root folder
@@ -198,6 +211,8 @@ This can be quite time-consuming when the chain is long, spanning over hours.
 
 == Logging
 
+// User has the option the use the Docker container otr the make logs....
+
 To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
@@ -205,3 +220,39 @@ For example, to see the logs for the Gateway microservice, execute the following
 ----
 docker container logs lisk-service_gateway_1
 ----
+
+We can also use make commands to check logs..
+
+
+
+make logs
+Display logs for all the microservices logged so far and exist automatically.
+make logs-live
+Displays logs for all the microservices logged so far and continues to display the new ones as well.
+make logs-blockchain-connector
+Similar to make logs but only displays logs for the specified microservice. Eg: only for blockchain-connector in the above example
+make logs-live-blockchain-connector
+Similar to make logs-live but only displays logs for the specified microservice. Eg: only for blockchain-connector in the above example
+Replace blockchain-connector with the relevant service
+
+
+
+
+
+
+
+
+
+
+
+=== make logs
+ffff
+
+=== make logs-live
+
+
+===  make logs-blockchain-connector
+
+=== make logs-live-blockchain-connector
+
+Replace blockchain-connector with the relevant service name for which the user needs to check the logs (edited)
