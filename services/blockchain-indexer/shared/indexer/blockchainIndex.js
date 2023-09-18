@@ -508,7 +508,9 @@ const indexBlockAtomicWrapper = async (job) => {
 	try {
 		await indexBlock(job);
 	} catch (err) {
-		logger.error(`Error occurred during indexing block. Error: ${err.message}`);
+		isIndexingRunning = false;
+		logger.error(`Error occurred during indexing block.\nError: ${err.message}`);
+		throw new Error(err);
 	}
 
 	isIndexingRunning = false;
