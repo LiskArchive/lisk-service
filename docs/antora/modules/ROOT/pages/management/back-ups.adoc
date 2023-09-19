@@ -1,4 +1,4 @@
-= Making backups
+= Taking backups
 Chris Braithwaite <christopher.braithwaite@lightcurve.io>
 :description: Describes how to perform Lisk Service back-ups
 :toc:
@@ -9,13 +9,12 @@ Chris Braithwaite <christopher.braithwaite@lightcurve.io>
 :source-language: bash
 :url_snapshot_config: configuration/index.adoc
 
-If you wish to take backups for both Docker and Source
-
+If you wish to take backups for both your Docker and Source based installation, which are very similar this is covered in the following sections below.
 
 
 == Taking backups using Docker
 
-Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
+With regard to perfoming back ups for the Docker installation, the configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
 It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
 To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
 
@@ -28,7 +27,7 @@ It is recommended to use alphanumeric characters and the commonly accepted speci
 
 == Taking backups using Source
 
-The same scenario applies, with regard to using Source, and the Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
+Virtually the same scenario applies with regard to the Source based installation, and the configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
 It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
 To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
 

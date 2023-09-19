@@ -266,7 +266,9 @@ pm2 delete ecosystem.config.js
 ----
 ====
 
-If you wish to take a backup of the source logs the details can be found on the xref:{url_backups}[backups] page.
+== Taking Backups
+
+If you wish to take a backup of your source based installation, the details can be found here on the xref:{url_backups}[Backups] page.
 
 // == MySQL snapshot
 
