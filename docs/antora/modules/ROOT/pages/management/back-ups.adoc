@@ -27,6 +27,6 @@ It is recommended to use alphanumeric characters and the commonly accepted speci
 
 == Applying snapshots using Source
 
-The same instructions are applicable with regard to the Source based installation, as listed above in the Docker section
+The same instructions are applicable with regard to the Source based installation, as listed above in the Docker section.
 
 
