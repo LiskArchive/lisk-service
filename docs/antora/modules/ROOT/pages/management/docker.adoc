@@ -10,7 +10,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_config: configuration/docker.adoc
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_snapshot_config: configuration/index.adoc
-
+:url_backups: management/back-ups.adoc
 == Start
 
 .Inside the lisk-service root folder
