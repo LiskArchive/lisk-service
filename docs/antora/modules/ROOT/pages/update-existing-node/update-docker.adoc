@@ -242,6 +242,6 @@ make logs-live-blockchain-connector
 Finally, the above command is similar to the `make logs-live` command, but only displays the logs for the specified microservice.
 For example, in this case also only for blockchain-connector here.
 
-Replace the `blockchain-connector` with the specifc service name required.
+Replace the `blockchain-connector` with the specific service name required.
 
 
