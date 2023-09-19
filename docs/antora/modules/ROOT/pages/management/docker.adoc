@@ -197,17 +197,18 @@ make up
 NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
 This can be quite time-consuming when the chain is long, spanning over hours.
 
-== MySQL snapshot
+// == MySQL snapshot
+If you wish to take a backup of the docker container logs the details can be found on the xref:{url_back_up}[back-ups] page.
 
-Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
-It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
-To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
+// Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
+// It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
+// To change the configuration setting or to create a mySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true`.
 
-To enable the MySQL snapshot to be imported automatically, please ensure to set the aforementioned parameters above before starting the service.
+// To enable the MySQL snapshot to be imported automatically, please ensure to set the aforementioned parameters above before starting the service.
 //TODO: Once the new Add backups page for Lisk Service is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
 
-NOTE: The `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
-It is recommended to use alphanumeric characters and the commonly accepted special characters.
+/ NOTE: The `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
+// It is recommended to use alphanumeric characters and the commonly accepted special characters.
 
 == Logging
 
