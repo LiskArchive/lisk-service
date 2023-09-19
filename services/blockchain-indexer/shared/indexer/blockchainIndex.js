@@ -57,7 +57,13 @@ const {
 	scheduleAddressesBalanceUpdate,
 } = require('./accountBalanceIndex');
 
-const { getFinalizedHeight, getGenesisHeight, EVENT, MODULE } = require('../constants');
+const {
+	getFinalizedHeight,
+	getGenesisHeight,
+	EVENT,
+	MODULE,
+	getCurrentHeight,
+} = require('../constants');
 
 const config = require('../../config');
 
@@ -83,8 +89,8 @@ const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 const validateBlock = block => !!block && block.height >= 0;
 
 const indexBlock = async job => {
-	const { height: currentBlockHeight } = job.data;
-	let blockHeightToIndex = currentBlockHeight;
+	const { height: blockHeightFromJobData } = job.data;
+	let blockHeightToIndex = blockHeightFromJobData;
 	let addressesToUpdateBalance = [];
 
 	const blocksTable = await getBlocksTable();
@@ -99,8 +105,8 @@ const indexBlock = async job => {
 
 	const { height: lastIndexedHeight } = lastIndexedBlock;
 
-	// Index last indexed block height + 1 if there is a gap
-	if (lastIndexedHeight && lastIndexedHeight < currentBlockHeight - 1) {
+	// Index last indexed block height + 1 and schedule the next block if there is a gap
+	if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
 		blockHeightToIndex = lastIndexedHeight + 1;
 		// eslint-disable-next-line no-use-before-define
 		await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
@@ -108,7 +114,7 @@ const indexBlock = async job => {
 
 	const [currentBlockInDB = {}] = await blocksTable.find(
 		{
-			where: { height: currentBlockHeight },
+			where: { height: blockHeightFromJobData },
 			limit: 1,
 		},
 		['height'],
@@ -116,6 +122,10 @@ const indexBlock = async job => {
 
 	// If current block is already indexed, then index the highest indexed block height + 1
 	if (Object.keys(currentBlockInDB).length) {
+		// Skip indexing if the blockchain is fully indexed.
+		const currentBlockchainHeight = await getCurrentHeight();
+		if (lastIndexedHeight >= currentBlockchainHeight) return;
+
 		blockHeightToIndex = lastIndexedHeight + 1;
 	}
 
@@ -124,6 +134,7 @@ const indexBlock = async job => {
 		throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 	}
 
+	// Create DB transaction. Queries from here sees a snapshot of the database
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDBTransaction(connection);
 	logger.debug(
