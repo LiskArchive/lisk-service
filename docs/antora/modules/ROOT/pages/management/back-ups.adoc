@@ -1,4 +1,4 @@
-= Making back-ups
+= Making backups
 Chris Braithwaite <christopher.braithwaite@lightcurve.io>
 :description: Describes how to perform Lisk Service back-ups
 :toc:
@@ -9,11 +9,11 @@ Chris Braithwaite <christopher.braithwaite@lightcurve.io>
 :source-language: bash
 :url_snapshot_config: configuration/index.adoc
 
-If you wish to take back ups for both Docker and Source
+If you wish to take backups for both Docker and Source
 
 
 
-== Taking back up using Docker
+== Taking backups using Docker
 
 Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
 It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
@@ -26,7 +26,7 @@ With regard to the MariaDB the configurations will be the same as the MySQL DB.
 NOTE: The `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
 It is recommended to use alphanumeric characters and the commonly accepted special characters.
 
-== Taking back ups using Source
+== Taking backups using Source
 
 The same scenario applies, with regard to using Source, and the Configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
 It is possible to enable or create a snapshot of the MySQL database, and the available xref:{url_snapshot_config}[MySQL snapshot configurations] can be found in the Lisk Service configuration reference page.
