@@ -29,6 +29,9 @@ const {
 			KVStore: { getKeyValueTable },
 		},
 	},
+	Utils: {
+		delay,
+	},
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
@@ -114,7 +117,7 @@ const indexBlock = async job => {
 
 	const [currentBlockInDB = {}] = await blocksTable.find(
 		{
-			where: { height: blockHeightFromJobData },
+			where: { height: blockHeightToIndex },
 			limit: 1,
 		},
 		['height'],
@@ -500,9 +503,6 @@ const deleteIndexedBlocks = async job => {
 
 let isIndexingRunning = false;
 const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
-
-// TODO: Temporary. Use the one from framework
-const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve, ms, val));
 
 const indexBlockAtomicWrapper = async (job) => {
 	if (isIndexingRunning) {
