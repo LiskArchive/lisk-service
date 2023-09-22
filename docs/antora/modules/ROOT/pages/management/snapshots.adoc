@@ -1,6 +1,6 @@
 = Applying DB Snapshots
 Chris Braithwaite <christopher.braithwaite@lightcurve.io>
-:description: Describes how to perform Lisk Service back-ups
+:description: Describes how to perform Lisk Service snapshots
 :toc:
 :idseparator: -
 :idprefix:
