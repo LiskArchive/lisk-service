@@ -268,7 +268,7 @@ pm2 delete ecosystem.config.js
 
 == Taking Snapshots
 
-If you wish to take a snapshot of your source based installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
+If you wish to take a snapshot of your Source-based installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
 
 // == MySQL snapshot
 
