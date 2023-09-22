@@ -19,7 +19,6 @@ It is possible to enable or create a snapshot of the MySQL and Maria database, a
 To create either a MariaDB or a MySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true` in the Lisk Service configuration.
 
 To enable the relevant snapshot to be imported automatically, please ensure to set the aforementioned parameters above before starting the service.
-//TODO: Once the new Add backups page for Lisk Service is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
 With regard to the MariaDB the configurations will be the same as the MySQL DB.
 
 NOTE:  The `MARIADB_ROOT_PASSWORD`/`MYSQL_ROOT_PASSWORD` and `MARIADB_PASSWORD`/`MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
