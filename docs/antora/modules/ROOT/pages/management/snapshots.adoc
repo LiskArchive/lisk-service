@@ -9,8 +9,8 @@ Chris Braithwaite <christopher.braithwaite@lightcurve.io>
 :source-language: bash
 :url_snapshot_config: configuration/index.adoc
 
-If you wish to apply database snapshots for both your Docker and Source-based installation, which are very similar this is covered in the following sections below.
-
+You can create a snapshot of the database in your Docker or Source-based installation.
+The process is quite similar for both and is explained in the following sections below.
 
 == Applying snapshots using Docker
 
