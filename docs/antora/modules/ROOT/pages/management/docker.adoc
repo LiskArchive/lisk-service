@@ -200,7 +200,7 @@ This can be quite time-consuming when the chain is long, spanning over hours.
 
 == Taking Snapshots
 
-If you wish to take a snapshot of your Docker installation, the details can be found here on the xref:{url_back_up}[Snapshots] page.
+If you wish to take a snapshot of your Docker installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
 
 == Logging
 
