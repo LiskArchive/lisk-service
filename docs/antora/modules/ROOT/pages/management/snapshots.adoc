@@ -22,8 +22,7 @@ To enable the relevant snapshot to be imported automatically, please ensure to s
 //TODO: Once the new Add backups page for Lisk Service is completed, add the following: If you wish to import the database manually, please refer to the xref:{add_backups.adoc}[Import Snapshot] section.
 With regard to the MariaDB the configurations will be the same as the MySQL DB.
 
-NOTE: The `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
-It is recommended to use alphanumeric characters and the commonly accepted special characters.
+NOTE:  The `MARIADB_ROOT_PASSWORD`/`MYSQL_ROOT_PASSWORD` and `MARIADB_PASSWORD`/`MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
 
 == Applying snapshots using Source
 
