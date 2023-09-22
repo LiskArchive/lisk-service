@@ -506,8 +506,7 @@ const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
 
 const indexBlockAtomicWrapper = async (job) => {
 	if (isIndexingRunning) {
-		// TODO: make this trace before merge
-		logger.warn('Already indexing another block!');
+		logger.trace('Already indexing another block!');
 		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
 		// eslint-disable-next-line no-use-before-define
 		await addHeightToIndexBlocksQueue(job.data.height);
