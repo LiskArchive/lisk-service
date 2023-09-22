@@ -47,4 +47,7 @@ module.exports = {
 	setFeeEstimates,
 	getFeeEstimates,
 	getFeeEstimatesFromFeeEstimator,
+
+	// for testing
+	defaultFeeEstimates: feeEstimates,
 };
