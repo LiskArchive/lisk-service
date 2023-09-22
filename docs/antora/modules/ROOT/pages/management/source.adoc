@@ -10,7 +10,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
-:url_backups: management/back-ups.adoc
+:url_backups: management/snapshots.adoc
 
 //TODO: add in link to new Backups page for importing the DB snapshot manually
 
@@ -266,9 +266,9 @@ pm2 delete ecosystem.config.js
 ----
 ====
 
-== Taking Backups
+== Taking Snapshots
 
-If you wish to take a backup of your source based installation, the details can be found here on the xref:{url_backups}[Backups] page.
+If you wish to take a snapshot of your source based installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
 
 // == MySQL snapshot
 
