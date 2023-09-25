@@ -551,10 +551,10 @@
   dependencies:
     ioredis "^5.3.2"
 
-"@liskhq/lisk-cryptography@4.0.0-rc.0":
-  version "4.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@liskhq/lisk-cryptography/-/lisk-cryptography-4.0.0-rc.0.tgz#0cf5e1b8f67116c8ff258e62d5da3d23a5cef185"
-  integrity sha512-OIqxD9oNcY2OlFNkI+Ay3Mex+EEt3AcmDFKpkshGBieuMvZzgfOAupPfaB3L36q6pMxGHpRc9Nzz6VQt0vNCYQ==
+"@liskhq/lisk-cryptography@4.0.0-rc.1":
+  version "4.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-cryptography/-/lisk-cryptography-4.0.0-rc.1.tgz#b8df408aa1a94362091eda06b0a38577e4db5ead"
+  integrity sha512-e9ubCGSi8OzOJ21i8Mlc7Zsu+b2ofMGsC0QegzhQSf9Vf5+qAk2CHUR0X/+kT8wvSIpN6krfbz81sfzDPq/PBQ==
   dependencies:
     "@liskhq/lisk-passphrase" "^4.0.0-rc.0"
     buffer-reverse "1.0.1"

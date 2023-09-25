@@ -1255,7 +1255,7 @@
     ws "8.11.0"
     zeromq "6.0.0-beta.6"
 
-"@liskhq/lisk-client@^6.0.0-rc.0":
+"@liskhq/lisk-client@^6.0.0-rc.1":
   version "6.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@liskhq/lisk-client/-/lisk-client-6.0.0-rc.1.tgz#ae987f5103efb12e215b784d86e0fa1aa8013de6"
   integrity sha512-5viBohsL+0JWtVuCyTFmwzLlzmxBUWamq0YZk7c8cDPNk/Yt+mQ/WPnKRqr8FLejLYOipArP+U4YnOyLMQVDuA==
@@ -1270,7 +1270,7 @@
     "@liskhq/lisk-validator" "^0.8.0-rc.1"
     buffer "6.0.3"
 
-"@liskhq/lisk-codec@^0.4.0-rc.0", "@liskhq/lisk-codec@^0.4.0-rc.1":
+"@liskhq/lisk-codec@^0.4.0-rc.1":
   version "0.4.0-rc.1"
   resolved "https://registry.yarnpkg.com/@liskhq/lisk-codec/-/lisk-codec-0.4.0-rc.1.tgz#fbffec74bd54efb820758cc00ca9737d913b452e"
   integrity sha512-o5vPFhh2siETT9lDWu+ZJo/Ni5/EYtvUoi3k1kWaJ/X6YF03J4L2GZoRVzZKnXPMPuUDJyT131gUjM0Z3BPgSA==
@@ -1279,7 +1279,7 @@
     "@liskhq/lisk-utils" "^0.4.0-rc.0"
     "@liskhq/lisk-validator" "^0.8.0-rc.1"
 
-"@liskhq/lisk-cryptography@^4.0.0-rc.0", "@liskhq/lisk-cryptography@^4.0.0-rc.1":
+"@liskhq/lisk-cryptography@^4.0.0-rc.1":
   version "4.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@liskhq/lisk-cryptography/-/lisk-cryptography-4.0.0-rc.1.tgz#b8df408aa1a94362091eda06b0a38577e4db5ead"
   integrity sha512-e9ubCGSi8OzOJ21i8Mlc7Zsu+b2ofMGsC0QegzhQSf9Vf5+qAk2CHUR0X/+kT8wvSIpN6krfbz81sfzDPq/PBQ==
@@ -1320,7 +1320,7 @@
   dependencies:
     lodash.clonedeep "4.5.0"
 
-"@liskhq/lisk-validator@^0.8.0-rc.0", "@liskhq/lisk-validator@^0.8.0-rc.1":
+"@liskhq/lisk-validator@^0.8.0-rc.1":
   version "0.8.0-rc.1"
   resolved "https://registry.yarnpkg.com/@liskhq/lisk-validator/-/lisk-validator-0.8.0-rc.1.tgz#f723bd1667e61c4c5bec680343342c1f8191ff67"
   integrity sha512-gLFa+5scCVPWc6cZEx5cALx6gRmF51xH/Szg7YeWi6uJkcQBSlT3ephvAUEVOWcRQ4SL7XadM/vWE0wXvoqqeA==
