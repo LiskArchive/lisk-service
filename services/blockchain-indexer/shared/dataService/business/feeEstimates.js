@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestFeeEstimator } = require('../../utils/request');
+const { requestFeeEstimator, requestConnector } = require('../../utils/request');
 
 let feeEstimates = {
 	low: 0,
@@ -32,7 +32,12 @@ const getFeeEstimates = () => feeEstimates;
 
 const getFeeEstimatesFromFeeEstimator = async () => {
 	const response = await requestFeeEstimator('estimates');
-	setFeeEstimates(response);
+
+	if (response.data && !response.data.error) {
+		setFeeEstimates(response);
+	} else if (!feeEstimates.feeTokenID) {
+		feeEstimates.feeTokenID = await requestConnector('getFeeTokenID');
+	}
 
 	return getFeeEstimates();
 };
