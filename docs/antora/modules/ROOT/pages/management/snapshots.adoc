@@ -10,7 +10,7 @@ Chris Braithwaite <christopher.braithwaite@lightcurve.io>
 :url_snapshot_config: configuration/index.adoc#database-snapshot-configuration
 
 You can create a snapshot of the database in your Docker or Source-based installation.
-The process is quite similar for both and is explained in the following sections below.
+The process is quite similar for both and is explained in the following sections.
 
 == Applying snapshots using Docker
 
