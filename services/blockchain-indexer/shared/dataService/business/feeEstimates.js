@@ -32,17 +32,18 @@ const getFeeEstimates = () => feeEstimates;
 
 const getFeeEstimatesFromFeeEstimator = async () => {
 	const response = await requestFeeEstimator('estimates');
-
-	if (response.data && !response.data.error) {
-		setFeeEstimates(response);
-	} else if (!feeEstimates.feeTokenID) {
-		feeEstimates.feeTokenID = await requestConnector('getFeeTokenID');
-	}
+	setFeeEstimates(response);
 
 	return getFeeEstimates();
 };
 
+const initFeeEstimates = async () => {
+	feeEstimates.feeTokenID = await requestConnector('getFeeTokenID');
+	feeEstimates.minFeePerByte = await requestConnector('getMinFeePerByte');
+};
+
 module.exports = {
+	initFeeEstimates,
 	setFeeEstimates,
 	getFeeEstimates,
 	getFeeEstimatesFromFeeEstimator,

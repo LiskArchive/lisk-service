@@ -33,6 +33,7 @@ const {
 	resolveMainchainServiceURL,
 	getCurrentChainID,
 	resolveChannelInfo,
+	initFeeEstimates,
 } = require('./business');
 
 const {
@@ -180,6 +181,9 @@ module.exports = {
 	// Generators
 	reloadGeneratorsCache,
 	getGenerators,
+
+	// Fee estimates
+	initFeeEstimates,
 
 	isPosModuleRegistered,
 	getNumberOfGenerators,
