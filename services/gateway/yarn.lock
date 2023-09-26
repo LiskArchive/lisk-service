@@ -2728,9 +2728,9 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/5a99ede3b94447cb8f6fec5a9ebc8d61bd21da60/framework/dist/lisk-service-framework-1.6.0.tgz":
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/55dede525e8d968d2c6f19202cc789fc6d013311/framework/dist/lisk-service-framework-1.6.0.tgz":
   version "1.6.0"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/5a99ede3b94447cb8f6fec5a9ebc8d61bd21da60/framework/dist/lisk-service-framework-1.6.0.tgz#f27129fac534220bb29b79760408dbc2d0cc977e"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/55dede525e8d968d2c6f19202cc789fc6d013311/framework/dist/lisk-service-framework-1.6.0.tgz#f27129fac534220bb29b79760408dbc2d0cc977e"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
