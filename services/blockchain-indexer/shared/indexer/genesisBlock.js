@@ -25,7 +25,7 @@ const {
 	updateTotalSelfStake,
 } = require('./transactionProcessor/pos/stake');
 const { requestConnector } = require('../utils/request');
-const { updateAccountBalances } = require('./accountBalanceIndex');
+const { accountBalanceIndexQueue } = require('./accountBalanceIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
@@ -66,7 +66,7 @@ const indexTokenModuleAssets = async (dbTrx) => {
 
 		// Index account balance
 		// eslint-disable-next-line no-await-in-loop
-		await updateAccountBalances(userInfo.address);
+		await accountBalanceIndexQueue.add({ address: userInfo.address });
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
