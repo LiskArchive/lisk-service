@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { delay } = require('../../src/delay');
+const delay = require('../../src/delay');
 
 describe('isProperObject()', () => {
 	const delayTime = 20;
