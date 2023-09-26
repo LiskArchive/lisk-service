@@ -722,7 +722,7 @@ By default, it is set to `0`.
 
 ==== Database snapshot configuration
 
-The MySQL/MariaDB snapshot relevant properties can be seen in the table below:
+The MySQL/MariaDB snapshot related properties are part of the Lisk indexer service, and the relevant configurations can be seen in the table below.
 
 [cols="2,1,~,~m",options="header",stripes="hover"]
 
