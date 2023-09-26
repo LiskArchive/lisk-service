@@ -1375,9 +1375,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/node@*", "@types/node@>=10.0.0":
-  version "20.6.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.6.5.tgz#4c6a79adf59a8e8193ac87a0e522605b16587258"
-  integrity sha512-2qGq5LAOTh9izcc0+F+dToFigBWiK1phKPt7rNhOqJSr35y8rlIBjDwGtFSgAI6MGIhjwOVNSQZVdJsZJ2uR1w==
+  version "20.7.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.7.0.tgz#c03de4572f114a940bc2ca909a33ddb2b925e470"
+  integrity sha512-zI22/pJW2wUZOVyguFaUL1HABdmSVxpXrzIqkjsHmyUjNhPoWM1CKfvVuXfetHhIok4RY573cqS0mZ1SJEnoTg==
 
 "@types/node@11.11.6":
   version "11.11.6"
@@ -2217,9 +2217,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.526:
-  version "1.4.528"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.528.tgz#7c900fd73d9d2e8bb0dab0e301f25f0f4776ef2c"
-  integrity sha512-UdREXMXzLkREF4jA8t89FQjA8WHI6ssP38PMY4/4KhXFQbtImnghh4GkCgrtiZwLKUKVD2iTVXvDVQjfomEQuA==
+  version "1.4.529"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.529.tgz#8c3377a05e5737f899770d14524dd8e2e4cb2351"
+  integrity sha512-6uyPyXTo8lkv8SWAmjKFbG42U073TXlzD4R8rW3EzuznhFS2olCIAfjjQtV2dV2ar/vRF55KUd3zQYnCB0dd3A==
 
 emittery@^0.8.1:
   version "0.8.1"
@@ -3640,7 +3640,7 @@ lines-and-columns@^1.1.6:
 
 "lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/55dede525e8d968d2c6f19202cc789fc6d013311/framework/dist/lisk-service-framework-1.6.0.tgz":
   version "1.6.0"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/55dede525e8d968d2c6f19202cc789fc6d013311/framework/dist/lisk-service-framework-1.6.0.tgz#f27129fac534220bb29b79760408dbc2d0cc977e"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/55dede525e8d968d2c6f19202cc789fc6d013311/framework/dist/lisk-service-framework-1.6.0.tgz#c9221dcf6203896f7f9ff4974b281ea1bb782478"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
