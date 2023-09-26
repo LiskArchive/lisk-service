@@ -42,13 +42,12 @@ const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL
 const COMMAND_NAME = 'registerValidator';
 
 const getCommissionIndexingInfo = async (blockHeader, tx) => {
-	// TODO: Enable this to fetch default commission value from node once SDK fixes https://github.com/LiskHQ/lisk-sdk/issues/8856
-	// const posConstants = await getPosConstants();
-	// const defaultComission = posConstants.defaultCommission;
+	const posConstants = await getPosConstants();
+	const { defaultCommission } = posConstants.data;
 
 	const newCommissionEntry = {
 		address: tx.senderAddress,
-		commission: 10000,
+		commission: defaultCommission,
 		height: blockHeader.height,
 	};
 
