@@ -720,6 +720,35 @@ By default, it is set to `0`.
 
 |===
 
+==== Database snapshot configuration
+
+The MySQL/MariaDB snapshot relevant properties can be seen in the table below:
+
+[cols="2,1,~,~m",options="header",stripes="hover"]
+
+|===
+|Environment variable
+|Datatype
+|Description
+|Sample
+
+|`ENABLE_APPLY_SNAPSHOT`
+|boolean
+|Enable or display apply snapshot feature. By default, the value is false.
+|false
+
+|`INDEX_SNAPSHOT_URL`
+|string
+|Custom snapshot url (Expected to end with sql.gz)
+|https://snapshots.lisk.io/mainnet/service.sql.gz
+
+|`ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
+|boolean
+|Allow insecure HTTP connections. By default, this is disabled.
+|false
+|===
+
+
 .Sample Configurations
 [%collapsible]
 ====
@@ -1358,30 +1387,4 @@ module.exports = {
 ----
 ====
 
-=== Database snapshot configuration
 
-The MySQL/MariaDB snapshot relevant properties can be seen in the table below:
-
-[cols="2,1,~,~m",options="header",stripes="hover"]
-
-|===
-|Environment variable
-|Datatype
-|Description
-|Sample
-
-|`ENABLE_APPLY_SNAPSHOT`
-|boolean
-|Enable or display apply snapshot feature. By default, the value is false.
-|false
-
-|`INDEX_SNAPSHOT_URL`
-|string
-|Custom snapshot url (Expected to end with sql.gz)
-|https://snapshots.lisk.io/mainnet/service.sql.gz
-
-|`ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
-|boolean
-|Allow insecure HTTP connections. By default, this is disabled.
-|false
-|===
