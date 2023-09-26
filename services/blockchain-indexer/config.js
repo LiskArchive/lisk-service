@@ -193,7 +193,7 @@ config.job = {
 	},
 	triggerAccountBalanceUpdates: {
 		interval: process.env.JOB_INTERVAL_TRIGGER_ACCOUNT_BALANCE_UPDATES || 10,
-		schedule: process.env.JOB_INTERVAL_TRIGGER_ACCOUNT_BALANCE_UPDATES || '',
+		schedule: process.env.JOB_SCHEDULE_TRIGGER_ACCOUNT_BALANCE_UPDATES || '',
 	},
 };
 

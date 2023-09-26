@@ -38,7 +38,7 @@ module.exports = [
 	},
 	{
 		name: 'trigger.account.balance.updates',
-		description: 'Triggers the queued account balance updates.',
+		description: 'Triggers balance updates for queued accounts.',
 		interval: config.job.triggerAccountBalanceUpdates.interval,
 		schedule: config.job.triggerAccountBalanceUpdates.schedule,
 		controller: async () => {
