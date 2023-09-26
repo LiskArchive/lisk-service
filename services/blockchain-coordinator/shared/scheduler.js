@@ -241,7 +241,6 @@ const scheduleMissingBlocksIndexing = async () => {
 		// Batch into smaller ranges to avoid microservice/DB query timeouts
 		for (let i = 0; i < NUM_BATCHES; i++) {
 			/* eslint-disable no-await-in-loop */
-
 			const batchStartHeight = blockIndexLowerRange + i * MAX_QUERY_RANGE;
 			const batchEndHeight = Math.min(batchStartHeight + MAX_QUERY_RANGE, blockIndexHigherRange);
 			const result = await getMissingBlocks(batchStartHeight, batchEndHeight);
