@@ -1,6 +1,6 @@
-FROM node:16.15.0-alpine AS builder
+FROM node:18-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk python2 git libtool autoconf automake
+RUN apk add --no-cache alpine-sdk python3 git libtool autoconf automake
 RUN adduser -D builder
 
 USER builder
@@ -11,7 +11,7 @@ COPY ./package-lock.json ./package.json ./.npmrc ./
 RUN npm ci
 
 
-FROM node:16.15.0-alpine
+FROM node:18-alpine
 
 RUN apk add --no-cache curl mysql-client
 RUN adduser -D lisk
