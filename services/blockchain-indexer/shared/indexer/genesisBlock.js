@@ -150,15 +150,13 @@ const indexTokenBalances = async () => {
 	isTokensBalanceIndexed = true;
 };
 
-(() => {
-	const indexTokenBalancesListener = async () => {
-		const indexStatus = await getIndexStats();
-		if (Number(indexStatus.percentage) === 100 && !isTokensBalanceIndexed) {
-			indexTokenBalances();
-		}
-	};
-	Signals.get('chainNewBlock').add(indexTokenBalancesListener);
-})();
+const indexTokenBalancesListener = async () => {
+	const indexStatus = await getIndexStats();
+	if (Number(indexStatus.percentage) === 100 && !isTokensBalanceIndexed) {
+		indexTokenBalances();
+	}
+};
+Signals.get('chainNewBlock').add(indexTokenBalancesListener);
 
 module.exports = {
 	indexGenesisBlockAssets,

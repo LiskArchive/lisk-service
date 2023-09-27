@@ -106,9 +106,7 @@ const formatBlock = (block) => {
 				: asset.data;
 
 			if (!blockAssetDataSchema) {
-				// TODO: Remove this after all asset schemas are exposed (before tagging rc.0)
-				console.error(`Block asset schema missing for module ${assetModule}.`);
-				logger.error(`Unable to decode asset data. Block assnet schema missing for module ${assetModule}.`);
+				logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
 			}
 
 			const formattedBlockAsset = {
