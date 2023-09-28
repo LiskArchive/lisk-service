@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { DB: { MySQL: { getTableInstance } } } = require('lisk-service-framework');
+const {
+	DB: { MySQL: { getTableInstance } },
+	Signals,
+} = require('lisk-service-framework');
 
 const {
 	MODULE,
@@ -25,16 +28,20 @@ const {
 	updateTotalSelfStake,
 } = require('./transactionProcessor/pos/stake');
 const { requestConnector } = require('../utils/request');
-const { updateAccountBalances } = require('./accountBalanceIndex');
+const { accountBalanceIndexQueue } = require('./accountBalanceIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const commissionsTableSchema = require('../database/schema/commissions');
+const { getIndexStats } = require('./indexStatus');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
+
+const allAccountsAddresses = [];
+let isTokensBalanceIndexed = false;
 
 const indexTokenModuleAssets = async (dbTrx) => {
 	const genesisBlockAssetsLength = await requestConnector(
@@ -66,7 +73,7 @@ const indexTokenModuleAssets = async (dbTrx) => {
 
 		// Index account balance
 		// eslint-disable-next-line no-await-in-loop
-		await updateAccountBalances(userInfo.address);
+		allAccountsAddresses.push(userInfo.address);
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
@@ -137,6 +144,19 @@ const indexGenesisBlockAssets = async (dbTrx) => {
 	await indexTokenModuleAssets(dbTrx);
 	await indexPosModuleAssets(dbTrx);
 };
+
+const indexTokenBalances = async () => {
+	allAccountsAddresses.forEach(async address => accountBalanceIndexQueue.add({ address }));
+	isTokensBalanceIndexed = true;
+};
+
+const indexTokenBalancesListener = async () => {
+	const indexStatus = await getIndexStats();
+	if (Number(indexStatus.percentage) === 100 && !isTokensBalanceIndexed) {
+		indexTokenBalances();
+	}
+};
+Signals.get('chainNewBlock').add(indexTokenBalancesListener);
 
 module.exports = {
 	indexGenesisBlockAssets,

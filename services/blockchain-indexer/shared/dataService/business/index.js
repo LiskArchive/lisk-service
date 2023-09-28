@@ -106,7 +106,7 @@ const {
 const { estimateTransactionFees } = require('./transactionsEstimateFees');
 const { invokeEndpoint } = require('./invoke');
 
-const { setFeeEstimates, getFeeEstimates } = require('./feeEstimates');
+const { setFeeEstimates, getFeeEstimates, initFeeEstimates } = require('./feeEstimates');
 
 module.exports = {
 	// Generators
@@ -193,6 +193,7 @@ module.exports = {
 	getRewardConstants,
 
 	// Fee estimates
+	initFeeEstimates,
 	setFeeEstimates,
 	getFeeEstimates,
 
