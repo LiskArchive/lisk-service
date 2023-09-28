@@ -9,6 +9,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
+:url_pm2_management: https://pm2.keymetrics.io/docs/usage/log-management/
 
 On this page, you'll find the most relevant PM2 commands for running a source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
@@ -98,7 +99,7 @@ To check the logs for the different microservices of Lisk Service, use the comma
 Alternatively, it is also possible to check the logs for a specific PM2 process based on its process ID.
 For example, `pm2 logs 0` can be used to check the Lisk Service Gateway logs.
 
-TIP: The process ID of each PM2-managed process can be seen by executing the <<list>> command.
+TIP: The process ID of each PM2-managed process can be seen by executing the <<list>> command. To learn more about PM2 log management please refer the xref:{url_pm2_management}[PM2 logs documentation].
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
