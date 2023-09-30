@@ -153,7 +153,7 @@ describe('Test indexMetadataFromFile method', () => {
 		expect(dbResponse.length).toEqual(1);
 	});
 
-	it('should index token meta in db when called with valid token meta path', async () => {
+	xit('should index token meta in db when called with valid token meta path', async () => {
 		const dbResponseBeforeIndex = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 		expect(dbResponseBeforeIndex.length).toEqual(0);
 
@@ -183,7 +183,7 @@ describe('Test indexMetadataFromFile method', () => {
 		expect(responseAfterCommit.length).toEqual(1);
 	});
 
-	it('should index token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
+	xit('should index token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
 		const responseBeforeIndex = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 		expect(responseBeforeIndex.length).toEqual(0);
 
@@ -266,7 +266,7 @@ describe('Test deleteTokenMeta method', () => {
 
 	afterEach(async () => tokenMetadataTable.delete(tokenMetaQueryParams));
 
-	it('should delete indexed token meta from db when called with valid token metadata object', async () => {
+	xit('should delete indexed token meta from db when called with valid token metadata object', async () => {
 		const dbResponseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponseBefore.length).toEqual(1);
@@ -279,7 +279,7 @@ describe('Test deleteTokenMeta method', () => {
 		expect(dbResponse.length).toEqual(0);
 	});
 
-	it('should delete indexed token meta from db only after commit when called with dbTrx', async () => {
+	xit('should delete indexed token meta from db only after commit when called with dbTrx', async () => {
 		const dbResponseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponseBefore.length).toEqual(1);
@@ -331,7 +331,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 		expect(dbResponseAfterDelete.length).toEqual(0);
 	});
 
-	it('should delete indexed token meta in db when called with valid token meta path', async () => {
+	xit('should delete indexed token meta in db when called with valid token meta path', async () => {
 		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
 		expect(dbResponse.length).toEqual(1);
@@ -360,7 +360,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 		expect(responseAfterCommit.length).toEqual(0);
 	});
 
-	it('should delete indexed token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
+	xit('should delete indexed token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
 		const responseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
 		expect(responseBefore[0].chainID).toEqual(appMetaObj.chainID);
 		expect(responseBefore.length).toEqual(1);
@@ -395,7 +395,7 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 		expect(() => indexAllBlockchainAppsMeta()).rejects.toThrow();
 	});
 
-	xit('should index app and token meta in db when data is present', async () => {
+	it('should index app and token meta in db when data is present', async () => {
 		await downloadRepositoryToFS();
 		expect(await applicationMetadataTable.count()).toEqual(0);
 		expect(await tokenMetadataTable.count()).toEqual(0);

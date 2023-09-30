@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
 const BluebirdPromise = require('bluebird');
 const {
 	DB: {
@@ -23,7 +24,7 @@ const {
 
 const config = require('../../config');
 const { MODULE } = require('../constants');
-const { getTokenBalances } = require('../dataService');
+const { getTokenBalances } = require('../dataService/token');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;

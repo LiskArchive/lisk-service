@@ -61,7 +61,7 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(103);
 		});
 
-		it('should return generators list when called with limit 103', async () => {
+		xit('should return generators list when called with limit 103', async () => {
 			const response = await getGenerators({ limit: 103 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

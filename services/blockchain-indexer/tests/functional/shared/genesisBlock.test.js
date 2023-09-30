@@ -27,6 +27,56 @@ const {
 } = require('lisk-service-framework');
 const { ServiceBroker } = require('moleculer');
 
+// Need to mock KVStore since Mysql has issue with Jest: https://github.com/sidorares/node-mysql2/issues/489
+jest.mock('lisk-service-framework', () => {
+	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+	return {
+		...actualLiskServiceFramework,
+		DB: {
+			...actualLiskServiceFramework.DB,
+			MySQL: {
+				...actualLiskServiceFramework.DB.MySQL,
+				KVStore: {
+					...actualLiskServiceFramework.DB.MySQL.KVStore,
+					getKeyValueTable: jest.fn(() => {
+						const keyValueMap = new Map();
+
+						const set = async (key, value) => {
+							keyValueMap.set(key, value);
+						};
+
+						const get = async (key) => keyValueMap.get(key);
+						const getByPattern = async (pattern) => {
+							const matchingEntries = Array
+								.from(keyValueMap.entries())
+								.filter(([key]) => key.startsWith(pattern));
+
+							const result = {};
+							/* eslint-disable-next-line no-restricted-syntax */
+							for (const [key, value] of matchingEntries) {
+								result[key] = value;
+							}
+
+							return result;
+						};
+
+						const deleteKey = async (key) => {
+							keyValueMap.delete(key);
+						};
+
+						return {
+							set,
+							get,
+							getByPattern,
+							delete: deleteKey,
+						};
+					}),
+				},
+			},
+		},
+	};
+});
+
 const { KV_STORE_KEY } = require('../../../shared/constants');
 
 const request = require('../../../shared/utils/request');

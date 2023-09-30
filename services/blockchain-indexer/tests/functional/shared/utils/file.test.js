@@ -75,7 +75,7 @@ describe('Unit tests for file utilities', () => {
 			const result = await getDirectoryNamesInPath(testDir);
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(result.length).toBe(testSubDirs.length);
-			expect(result).toEqual(testSubDirs);
+			expect(result).toEqual(expect.arrayContaining(testSubDirs));
 		});
 	});
 

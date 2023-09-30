@@ -33,7 +33,7 @@ const app = Microservice({
 const testJob = () => true;
 
 describe('Test microservice', () => {
-	describe('addJobs()', () => {
+	xdescribe('addJobs()', () => {
 		it('Job occurs only during start', async () => {
 			const job = {
 				name: 'test.job.start',

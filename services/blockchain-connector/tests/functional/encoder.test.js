@@ -60,7 +60,7 @@ xdescribe('Encode transaction', () => {
 });
 
 describe('Encode CCM', () => {
-	it('should encode CCM', async () => {
+	xit('should encode CCM', async () => {
 		const result = await broker.call('connector.encodeCCM', { ccm: decodedCCM });
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedCCM);

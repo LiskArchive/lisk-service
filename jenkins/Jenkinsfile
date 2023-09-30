@@ -1,3 +1,33 @@
+MYSQL_PORT = 3306;
+REDIS_PORT = 6379;
+LISK_CORE_WS_PORT = 7887;
+
+def checkOpenPort(nPort) {
+	def result = sh script: "nc -z 127.0.0.1 ${nPort}", returnStatus: true
+	return (result == 0)
+}
+
+def runServiceIfMissing(svcName, path, nPort, startCommand = 'make up', logsCommand= 'make logs') {
+    if (checkOpenPort(nPort) == false) {
+        echo "${svcName} is not running, starting a new instance on port ${nPort}"
+        dir(path) { sh startCommand }
+        if (checkOpenPort(nPort) == false) {
+            dir(path) { sh logsCommand }
+            currentBuild.result = 'FAILURE'
+            throw new Exception("Failed to run ${svcName} instance")
+        }
+    }
+}
+
+def checkHttp(url) {
+	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
+	return (result == 0)
+}
+
+def waitForHttp(url) {
+	waitUntil { script { return (checkHttp(url) == true) } }
+}
+
 def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 	echo msg
@@ -6,66 +36,138 @@ def echoBanner(msg) {
 
 pipeline {
 	agent { node { label 'lisk-service' } }
+	triggers {
+		cron('0 23 * * *')
+	}
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
+	environment {
+		ENABLE_HTTP_API='http-version3,http-status'
+		ENABLE_WS_API='rpc-v3,blockchain'
+		LISK_APP_WS='ws://host.docker.internal:7887'
+		ENABLE_TESTING_MODE='true'
+    }
 	stages {
-		stage ('Build dependencies') {
+		stage('Checkout SCM') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(readFile('.nvmrc').trim()) {
-					dir('./') { sh 'npm i -g yarn' }
-					dir('./') { sh 'yarn install --frozen-lockfile' }
-					dir('./framework') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/blockchain-app-registry') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/blockchain-connector') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/blockchain-indexer') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/blockchain-coordinator') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/fee-estimator') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/market') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/export') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/gateway') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/template') { sh 'yarn install --frozen-lockfile' }
-					dir('./services/transaction-statistics') { sh 'yarn install --frozen-lockfile' }
-					dir('./tests') { sh 'yarn install --frozen-lockfile' }
+				cleanWs()
+				dir('lisk-service') {
+					checkout scm
+				}
+			}
+		}
+		stage ('Install dependancies') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh '''
+						make build-local
+						make build
+						make down
+						'''
+					}
 				}
 			}
 		}
 		stage ('Check linting') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(readFile('.nvmrc').trim()) {
-					sh 'yarn run eslint'
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh 'yarn run eslint'
+					}
 				}
 			}
 		}
-		stage('Perform unit tests') {
+		stage('Start Mysql and redis') {
+			steps {
+				dir('lisk-service') {
+					script {
+						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+					}
+					sleep(10)
+				}
+			}
+		}
+		stage('Run functional tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(readFile('.nvmrc').trim()) {
-					dir('./framework') { sh "yarn run test:unit" }
-					dir('./services/blockchain-app-registry') { sh "yarn run test:unit" }
-					dir('./services/blockchain-connector') { sh "yarn run test:unit" }
-					dir('./services/blockchain-indexer') { sh "yarn run test:unit" }
-					dir('./services/fee-estimator') { sh "yarn run test:unit" }
-					dir('./services/market') { sh "yarn run test:unit" }
-					dir('./services/export') { sh "yarn run test:unit" }
-					dir('./services/gateway') { sh "yarn run test:unit" }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						dir('./framework') { sh "yarn run test:functional" }
+						dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
+						dir('./services/blockchain-connector') { sh "yarn run test:functional" }
+						dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
+						dir('./services/fee-estimator') { sh "yarn run test:functional" }
+						dir('./services/market') { sh "yarn run test:functional" }
+						dir('./services/transaction-statistics') { sh "yarn run test:functional" }
+					}
+				}
+			}
+		}
+		stage('Start Lisk core and service') {
+			parallel {
+				stage('Start Lisk core') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile('.nvmrc').trim()) {
+								sh '''
+									# lisk-core
+									npm i -g lisk-core
+									npm i -g pm2
+									pm2 kill
+									pm2 flush
+									rm -rf ~/.lisk/
+									LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
+									'''
+							}
+						}
+					}
+				}
+				stage('Start Lisk service') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile('.nvmrc').trim()) {
+								sh '''
+									cp -f docker/example.env .env
+									echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
+									make up
+									'''
+							}
+
+							sleep(120)
+						}
+					}
+				}
+			}
+		}
+		stage('Run integration tests') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						dir('./tests') { sh 'yarn run test:integration:APIv3:SDKv6' }
+					}
 				}
 			}
 		}
 	}
 	post {
-		failure {
-			script { echoBanner('Failed to run the pipeline') }
-		}
 		cleanup {
 			script { 
-				echoBanner('Cleaning up...') 
-				nvm(readFile('.nvmrc').trim()) {
-					echoBanner('Removing dependencies') 
-					sh 'make clean-local'
+				dir('lisk-service') {
+					sh '''
+						docker kill $(docker ps -q)
+						docker rm $(docker ps -a -q)
+					'''
 				}
+				cleanWs()
 			}
 		}
 	}

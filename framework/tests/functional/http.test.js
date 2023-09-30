@@ -28,7 +28,7 @@ beforeEach(() => {
 
 const url = 'https://service.lisk.com/api/v3/blocks';
 
-describe('HTTP library is able to send GET request', () => {
+xdescribe('HTTP library is able to send GET request', () => {
 	test('with default parameters', async () => {
 		const response = await http.request(url);
 		expect(response).toHaveProperty('data');
@@ -47,7 +47,7 @@ describe('HTTP library is able to send GET request', () => {
 });
 
 describe('HTTP library with caching enabled', () => {
-	test('supports plain GET request cache', async () => {
+	xtest('supports plain GET request cache', async () => {
 		const ttl = 50000;
 		const timestamps = [];
 

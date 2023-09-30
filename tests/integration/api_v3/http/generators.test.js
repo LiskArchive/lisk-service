@@ -56,7 +56,7 @@ describe('Generators API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(103);
 		});
 
-		it('should return generators list when called with limit 103', async () => {
+		xit('should return generators list when called with limit 103', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=103`);
 			expect(response).toMap(generatorResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);

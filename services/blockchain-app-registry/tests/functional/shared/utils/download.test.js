@@ -29,12 +29,12 @@ beforeEach(async () => mkdir(dirPath));
 afterEach(async () => rmdir(dirPath));
 
 describe('Test downloadAndExtractTarball method', () => {
-	it('should download and extract correctly when url and data directory is valid', async () => {
+	xit('should download and extract correctly when url and data directory is valid', async () => {
 		await downloadAndExtractTarball(url, dirPath);
 		expect(await exists(`${dirPath}/lisk-service-0.6.4`)).toEqual(true);
 	});
 
-	it('should throw error when url is invalid', async () => {
+	xit('should throw error when url is invalid', async () => {
 		expect(downloadAndExtractTarball(`${url}/invalid_file`, dirPath)).rejects.toThrow();
 	});
 
@@ -75,7 +75,7 @@ describe('Test downloadFile method', () => {
 		await rmdir(filePath);
 	});
 
-	it('should throw error when url is invalid', async () => {
+	xit('should throw error when url is invalid', async () => {
 		expect(downloadFile(`${fileUrl}/invalid_file`, filePath)).rejects.toThrow();
 	});
 

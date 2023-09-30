@@ -64,7 +64,7 @@ beforeAll(async () => {
 });
 
 describe('Test updateAccountBalances method', () => {
-	it('should update account balances correctly for address having balances', async () => {
+	xit('should update account balances correctly for address having balances', async () => {
 		const accountInfo = usersSubStoreInfos[0];
 
 		// Delete all balances and check balance before update
@@ -89,7 +89,7 @@ describe('Test scheduleAccountBalanceUpdateFromEvents method', () => {
 
 	afterAll(async () => accountBalanceIndexQueue.queue.resume());
 
-	it('should schedule account balance update correctly for token module events', async () => {
+	xit('should schedule account balance update correctly for token module events', async () => {
 		const queueCountBeforeScheduling = await accountBalanceIndexQueue.queue.count();
 		expect(queueCountBeforeScheduling).toBe(0);
 

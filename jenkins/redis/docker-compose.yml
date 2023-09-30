@@ -6,7 +6,7 @@ services:
     volumes:
       - ./redis.volatile.conf:/etc/redis/redis.conf:ro
     ports:
-      - "6381:6379"
+      - "6379:6379"
     restart: always
     command: redis-server /etc/redis/redis.conf
     healthcheck:

@@ -1,0 +1,7 @@
+{
+    "name": "lisk-core",
+    "script": "lisk-core start --network=devnet --api-ws --api-host=0.0.0.0 --overwrite-config",
+    "env": {
+      "LISK_NETWORK": "devnet"
+    }
+  }

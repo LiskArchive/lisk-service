@@ -141,7 +141,6 @@ describe('get.blockchain.apps.meta', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(3);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const business = require('../business');
+const business = require('../business/token');
 
 const tokenHasUserAccount = async (params) => business.tokenHasUserAccount(params);
 
