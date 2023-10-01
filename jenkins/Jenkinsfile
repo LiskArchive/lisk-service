@@ -89,7 +89,7 @@ pipeline {
 						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
 						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 					}
-					sleep(10)
+					sleep(60)
 				}
 			}
 		}
@@ -98,13 +98,13 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
-						dir('./framework') { sh "yarn run test:functional" }
 						dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
 						dir('./services/blockchain-connector') { sh "yarn run test:functional" }
 						dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
 						dir('./services/fee-estimator') { sh "yarn run test:functional" }
 						dir('./services/market') { sh "yarn run test:functional" }
 						dir('./services/transaction-statistics') { sh "yarn run test:functional" }
+						dir('./framework') { sh "yarn run test:functional" }
 					}
 				}
 			}
@@ -165,6 +165,8 @@ pipeline {
 					sh '''
 						docker kill $(docker ps -q)
 						docker rm $(docker ps -a -q)
+						docker volume rm $(docker volume ls -q)
+						docker system prune -a
 					'''
 				}
 				cleanWs()
