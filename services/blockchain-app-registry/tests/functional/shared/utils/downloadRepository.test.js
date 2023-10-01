@@ -34,7 +34,7 @@ const {
 	getRepoDownloadURL,
 	getLatestCommitHash,
 	getCommitInfo,
-	getFileDownloadURL,
+	getFileDownloadURLAndHeaders,
 	getDiff,
 	buildEventPayload,
 	syncWithRemoteRepo,
@@ -88,7 +88,7 @@ xdescribe('Test getRepoDownloadURL method', () => {
 	});
 });
 
-xdescribe('Test getFileDownloadURL method', () => {
+xdescribe('Test getFileDownloadURLAndHeaders method', () => {
 	it('should return correct file download info when file is valid', async () => {
 		const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 		const fileName = 'devnet/Enevti/app.json';
@@ -97,22 +97,22 @@ xdescribe('Test getFileDownloadURL method', () => {
 		const repoSafe = _.escapeRegExp(repo);
 		const branchSafe = _.escapeRegExp(config.gitHub.branch);
 		const fileNameSafe = _.escapeRegExp(fileName);
-		const fileUrlRegexStr = `^https://raw.githubusercontent.com/${ownerSafe}/${repoSafe}/${branchSafe}/${fileNameSafe}(?:\\?token=\\w+)?$`;
-		const fileUrlRegex = new RegExp(fileUrlRegexStr);
-		const response = await getFileDownloadURL(fileName);
-		expect(response).toMatch(fileUrlRegex);
+		const fileUrl = `https://api.github.com/repos/${ownerSafe}/${repoSafe}/contents/${fileNameSafe}?ref=${branchSafe}`;
+
+		const response = await getFileDownloadURLAndHeaders(fileName);
+		expect(response.url).toEqual(fileUrl);
 	});
 
 	it('should throw error when file is invalid', async () => {
-		expect(async () => getFileDownloadURL('devnet/Enevti/invalid_file')).rejects.toThrow();
+		expect(async () => getFileDownloadURLAndHeaders('devnet/Enevti/invalid_file')).rejects.toThrow();
 	});
 
 	it('should throw error when file is undefined', async () => {
-		expect(async () => getFileDownloadURL(undefined)).rejects.toThrow();
+		expect(async () => getFileDownloadURLAndHeaders(undefined)).rejects.toThrow();
 	});
 
 	it('should throw error when file is null', async () => {
-		expect(async () => getFileDownloadURL(null)).rejects.toThrow();
+		expect(async () => getFileDownloadURLAndHeaders(null)).rejects.toThrow();
 	});
 });
 
