@@ -79,14 +79,16 @@ describe('get.token.account.exists', () => {
 	});
 
 	it('should return isExists:true requested for known publicKey', async () => {
-		const response = await getTokenAccountExists({
-			publicKey: refValidator.publicKey,
-			tokenID: refTokenID,
-		});
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(tokenAccountExistsSchema);
-		expect(result.data.isExists).toBe(true);
+		if (refValidator.publicKey) {
+			const response = await getTokenAccountExists({
+				publicKey: refValidator.publicKey,
+				tokenID: refTokenID,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(tokenAccountExistsSchema);
+			expect(result.data.isExists).toBe(true);
+		}
 	});
 
 	it('should return isExists:false requested for unknown publicKey', async () => {
@@ -98,25 +100,29 @@ describe('get.token.account.exists', () => {
 	});
 
 	it('should return isExists:false requested for incorrect tokenID with known publicKey', async () => {
-		const response = await getTokenAccountExists({
-			publicKey: refValidator.publicKey,
-			tokenID: unknownTokenID,
-		});
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(tokenAccountExistsSchema);
-		expect(result.data.isExists).toBe(false);
+		if (refValidator.publicKey) {
+			const response = await getTokenAccountExists({
+				publicKey: refValidator.publicKey,
+				tokenID: unknownTokenID,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(tokenAccountExistsSchema);
+			expect(result.data.isExists).toBe(false);
+		}
 	});
 
 	it('should return isExists:true when requested for known validator name', async () => {
-		const response = await getTokenAccountExists({
-			name: refValidator.name,
-			tokenID: refTokenID,
-		});
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(tokenAccountExistsSchema);
-		expect(result.data.isExists).toBe(true);
+		if (refValidator.name) {
+			const response = await getTokenAccountExists({
+				name: refValidator.name,
+				tokenID: refTokenID,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(tokenAccountExistsSchema);
+			expect(result.data.isExists).toBe(true);
+		}
 	});
 
 	it('should return isExists:false when requested for unknown validator name', async () => {

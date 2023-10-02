@@ -58,6 +58,14 @@ pipeline {
 				}
 			}
 		}
+		stage('Checkout Lisk core') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-core') {
+					checkout([$class: 'GitSCM', branches: [[name: '*/development']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/liskhq/lisk-core.git']]])
+				}
+			}
+		}
 		stage ('Install dependancies') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
@@ -67,6 +75,13 @@ pipeline {
 						make build-local
 						make build
 						make down
+						'''
+					}
+				}
+				dir('lisk-core') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh '''
+						make build-local
 						'''
 					}
 				}
@@ -114,16 +129,16 @@ pipeline {
 				stage('Start Lisk core') {
 					steps {
 						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
+						dir('lisk-core') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
 									# lisk-core
-									npm i -g lisk-core
-									npm i -g pm2
-									pm2 kill
-									pm2 flush
-									rm -rf ~/.lisk/
-									LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
+									rm -rf ~/.lisk
+									export LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json
+									export LISK_PORT=9000
+									export LISK_API_PORT=9001
+									./bin/run blockchain:import $PWD/../lisk-service/jenkins/lisk-core/snapshots/blockchain.tar.gz
+									nohup ./bin/run start --network=devnet --api-ws --api-host=0.0.0.0 --config $PWD/../lisk-service/jenkins/lisk-core/config/config.json &
 									'''
 							}
 						}
@@ -140,7 +155,6 @@ pipeline {
 									make up
 									'''
 							}
-
 							sleep(120)
 						}
 					}
@@ -167,6 +181,8 @@ pipeline {
 						docker rm $(docker ps -a -q)
 						docker volume rm $(docker volume ls -q)
 						docker system prune -a
+						kill -9 $(lsof -t -i:9000)
+						kill -9 $(lsof -t -i:9001)
 					'''
 				}
 				cleanWs()

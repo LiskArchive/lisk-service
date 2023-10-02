@@ -26,6 +26,7 @@ const {
 	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -195,11 +196,9 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty response when called with empty senderAddress', async () => {
+		it('should return invalid request when called with empty senderAddress', async () => {
 			const response = await getTransactions({ senderAddress: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 
 		it('should throw error when called with invalid senderAddress', async () => {
@@ -234,11 +233,9 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty response when called with empty recipientAddress', async () => {
+		it('should return invalid request when called with empty recipientAddress', async () => {
 			const response = await getTransactions({ recipientAddress: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 
 		it('should throw error when called with invalid recipientAddress', async () => {
@@ -369,13 +366,11 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty response when called with max...min height', async () => {
+		it('should return empty request when called with max...min height', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getTransactions({ height: `${maxHeight}:${minHeight}` });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 	});
 

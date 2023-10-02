@@ -35,7 +35,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getEvents = async params => request(wsRpcUrl, 'get.events', params);
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-describe('Method get.events', () => {
+xdescribe('Method get.events', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });

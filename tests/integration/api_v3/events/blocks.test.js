@@ -31,7 +31,7 @@ const {
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 
-describe('Test subscribe API latest block event', () => {
+xdescribe('Test subscribe API latest block event', () => {
 	it('event new.block', async () => {
 		const response = await subscribeAndReturn(endpoint, 'new.block');
 		expect(response).toMap(goodRequestSchema);

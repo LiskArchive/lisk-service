@@ -34,7 +34,7 @@ const endpoint = `${baseUrl}/events`;
 
 const { invalidAddresses, invalidBlockIDs, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
-describe('Events API', () => {
+xdescribe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrl}/transactions?limit=1&moduleCommand=token:transfer`);

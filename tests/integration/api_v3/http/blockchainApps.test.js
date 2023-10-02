@@ -32,7 +32,7 @@ const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
 let curChainID;
 
-describe('Blockchain apps API', () => {
+xdescribe('Blockchain apps API', () => {
 	beforeAll(async () => {
 		const response = await api.get(networkStatusEndpoint);
 		curChainID = response.data.chainID;

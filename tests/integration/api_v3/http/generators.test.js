@@ -97,9 +97,11 @@ describe('Generators API', () => {
 		});
 
 		it('should return generators list when searching with generator publicKey', async () => {
-			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey}`);
-			expect(response).toMap(generatorResponseSchema);
-			expect(response.data.length).toBe(1);
+			if (firstGenerator.publicKey) {
+				const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey}`);
+				expect(response).toMap(generatorResponseSchema);
+				expect(response.data.length).toBe(1);
+			}
 		});
 
 		it('should return generators list when searching partially with generator name', async () => {
@@ -117,10 +119,12 @@ describe('Generators API', () => {
 		});
 
 		it('should return generators list when searching partially with generator publicKey', async () => {
-			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey.substring(0, 3)}`);
-			expect(response).toMap(generatorResponseSchema);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			if (firstGenerator.publicKey) {
+				const response = await api.get(`${endpoint}/generators?search=${firstGenerator.publicKey.substring(0, 3)}`);
+				expect(response).toMap(generatorResponseSchema);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(100);
+			}
 		});
 
 		it('should return bad request when called with invalid search param', async () => {

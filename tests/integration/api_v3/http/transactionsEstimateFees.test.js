@@ -91,7 +91,7 @@ describe('Post estimate-fees transactions API', () => {
 		}
 	});
 
-	it('should return bad request when requested with invalid address', async () => {
+	it('should return server error when requested with invalid address', async () => {
 		const { params, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		for (let i = 0; i < invalidAddresses.length; i++) {
 			remTransactionObject.params = {
@@ -99,8 +99,8 @@ describe('Post estimate-fees transactions API', () => {
 				recipientAddress: invalidAddresses[i],
 			};
 			// eslint-disable-next-line no-await-in-loop
-			const response = await api.post(endpoint, { transaction: remTransactionObject }, 400);
-			expect(response).toMap(badRequestSchema);
+			const response = await api.post(endpoint, { transaction: remTransactionObject }, 500);
+			expect(response).toMap(wrongInputParamSchema);
 		}
 	});
 

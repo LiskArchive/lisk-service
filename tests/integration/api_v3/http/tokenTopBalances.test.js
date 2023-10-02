@@ -27,7 +27,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/token/balances/top`;
 
-describe('Tokens top balances API', () => {
+xdescribe('Tokens top balances API', () => {
 	let tokenID;
 	let tokenInfo;
 

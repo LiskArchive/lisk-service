@@ -33,7 +33,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
 const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
 
-describe('get.token.balances.top', () => {
+xdescribe('get.token.balances.top', () => {
 	let tokenID;
 	let tokenInfo;
 

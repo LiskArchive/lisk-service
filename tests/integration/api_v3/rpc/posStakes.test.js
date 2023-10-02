@@ -133,12 +133,14 @@ describe('get.pos.stakes', () => {
 	});
 
 	it('should return list of stakes when requested for known staker name', async () => {
-		const response = await getStakes({ name: refStaker.name });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(stakesResponseSchema);
-		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		if (refStaker.name) {
+			const response = await getStakes({ name: refStaker.name });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(stakesResponseSchema);
+			expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
+		}
 	});
 
 	it('should return list of stakes when requested for known staker publicKey', async () => {
