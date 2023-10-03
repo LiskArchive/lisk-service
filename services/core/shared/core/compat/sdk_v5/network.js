@@ -14,7 +14,7 @@
  *
  */
 const coreApi = require('./coreApi');
-const { resolvemoduleAssets } = require('../common/constants');
+const { resolveModuleAssets } = require('../common/constants');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const requestApi = coreApi.requestRetry;
@@ -63,7 +63,7 @@ const getNetworkStatus = async () => {
 		status.data.height,
 		status.data.genesisConfig.rewards,
 	);
-	status.data.moduleAssets = resolvemoduleAssets(status.data.registeredModules);
+	status.data.moduleAssets = resolveModuleAssets(status.data.registeredModules);
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
 
 	status.data.lastUpdate = Math.floor(Date.now() / 1000);

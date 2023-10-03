@@ -38,9 +38,9 @@ const networkFeeConstants = {
 	baseFeeByModuleAssetName: {},
 };
 
-const setRegisteredmoduleAssets = moduleAssets => registeredLiskModuleAssets = moduleAssets;
+const setRegisteredModuleAssets = moduleAssets => registeredLiskModuleAssets = moduleAssets;
 
-const resolvemoduleAssets = (data) => {
+const resolveModuleAssets = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -79,7 +79,7 @@ const getNetworkConstants = async (forceUpdate = false) => {
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();
 				const info = await apiClient.node.getNodeInfo();
-				info.moduleAssets = resolvemoduleAssets(info.registeredModules);
+				info.moduleAssets = resolveModuleAssets(info.registeredModules);
 				result = { data: info };
 
 				resolveBaseFees(result);
@@ -122,8 +122,8 @@ module.exports = {
 	setReadyStatus,
 	getReadyStatus,
 	getRegisteredModuleAssets,
-	setRegisteredmoduleAssets,
-	resolvemoduleAssets,
+	setRegisteredModuleAssets,
+	resolveModuleAssets,
 	getNetworkFeeConstants,
 	setIsSyncFullBlockchain,
 	getIsSyncFullBlockchain,

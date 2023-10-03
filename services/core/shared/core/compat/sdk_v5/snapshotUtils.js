@@ -96,7 +96,7 @@ const initSnapshot = async () => {
 		return;
 	}
 
-	logger.info('Initialising the automatic index snapshot application process');
+	logger.info('Initializing the automatic index snapshot application process');
 	const cachedNetworkConstants = await constantsCache.get('networkConstants');
 	const {
 		data: { networkIdentifier },
