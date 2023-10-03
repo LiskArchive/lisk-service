@@ -38,9 +38,9 @@ const networkFeeConstants = {
 	baseFeeByModuleAssetName: {},
 };
 
-const setRegisteredModuleAssets = moduleAssets => registeredLiskModuleAssets = moduleAssets;
+const setRegisteredModuleAssets = moduleAssets => (registeredLiskModuleAssets = moduleAssets);
 
-const resolveModuleAssets = (data) => {
+const resolveModuleAssets = data => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -59,7 +59,7 @@ const resolveModuleAssets = (data) => {
 	return result;
 };
 
-const resolveBaseFees = (networkConstants) => {
+const resolveBaseFees = networkConstants => {
 	networkConstants.data.genesisConfig.baseFees.forEach(entry => {
 		const moduleAssetId = String(entry.moduleID).concat(':').concat(entry.assetID);
 		networkFeeConstants.baseFeeByModuleAssetId[moduleAssetId] = entry.baseFee;
@@ -75,7 +75,7 @@ const resolveBaseFees = (networkConstants) => {
 const getNetworkConstants = async (forceUpdate = false) => {
 	try {
 		if (!constants || forceUpdate) {
-			let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
+			let result = await http.get('/node/constants').catch(() => ({})); // Necessary to remove cyclic dependency
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();
 				const info = await apiClient.node.getNodeInfo();
@@ -96,11 +96,11 @@ const getNetworkConstants = async (forceUpdate = false) => {
 	}
 };
 
-const setCoreVersion = version => coreVersion = version;
+const setCoreVersion = version => (coreVersion = version);
 
 const getCoreVersion = () => coreVersion;
 
-const setReadyStatus = status => readyStatus = status;
+const setReadyStatus = status => (readyStatus = status);
 
 const getReadyStatus = () => readyStatus;
 
@@ -108,10 +108,10 @@ const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
 
 const getNetworkFeeConstants = () => networkFeeConstants;
 
-const setIsSyncFullBlockchain = isSync => isSyncFullBlockchain = isSync;
+const setIsSyncFullBlockchain = isSync => (isSyncFullBlockchain = isSync);
 
 const getIsSyncFullBlockchain = () => isSyncFullBlockchain;
-const setIndexReadyStatus = isReady => isIndexReady = isReady;
+const setIndexReadyStatus = isReady => (isIndexReady = isReady);
 
 const getIndexReadyStatus = () => isIndexReady;
 
