@@ -56,7 +56,7 @@ pm2 start ecosystem.core3.config.js
 npm start
 ```
 
-To check the service status, navigate to the URL <http://localhost:9901/api/status>. If it is running on a remote system, change the host name from `localhost` to the external IP Address of your machine.
+To check the service status, navigate to the URL <http://127.0.0.1:9901/api/status>. If it is running on a remote system, change the IP from `127.0.0.1` to the external IP Address of your machine.
 
 ### Lisk Service Status
 

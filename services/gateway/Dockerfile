@@ -27,4 +27,4 @@ USER lisk
 WORKDIR /home/lisk/lisk-service/gateway
 CMD ["node", "app.js"]
 EXPOSE 9901
-HEALTHCHECK CMD curl --fail http://localhost:9901/api/status
+HEALTHCHECK CMD curl --fail http://127.0.0.1:9901/api/status

@@ -38,7 +38,7 @@ const networkIdentifier = cryptography.getNetworkIdentifier(
 
 const currentTimestamp = () => Math.round((new Date()).getTime() / 1000);
 
-const client = new APIClient(['http://localhost:4000']);
+const client = new APIClient(['http://127.0.0.1:4000']);
 
 const sendTransaction = (async () => {
 	const getNonce = async (accountId) => (await client.accounts.get({ address: accountId }))

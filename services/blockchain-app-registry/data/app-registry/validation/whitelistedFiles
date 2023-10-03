@@ -1,0 +1,11 @@
+// System files
+.DS_Store
+.gitkeep
+
+// JSON files
+app.json
+nativetokens.json
+
+// Image files
+*.png
+*.svg

@@ -1,0 +1,89 @@
+{
+	"extends": [
+		"lisk-base"
+	],
+	"plugins": [
+		"import",
+		"mocha"
+	],
+	"globals": {
+		"ipc": true,
+		"PRODUCTION": true,
+		"TEST": true,
+		"BigInt": true
+	},
+	"env": {
+		"node": true,
+		"jest": true
+	},
+	"rules": {
+		"arrow-parens": "off",
+		"func-names": "off",
+		"global-require": "off",
+		"no-multiple-empty-lines": [
+			"error",
+			{
+				"max": 1,
+				"maxBOF": 0,
+				"maxEOF": 1
+			}
+		],
+		"max-len": [
+			"error",
+			{
+				"code": 150,
+				"tabWidth": 2,
+				"ignoreComments": true, //"comments": 80
+				"ignoreUrls": true,
+				"ignoreStrings": true,
+				"ignoreTemplateLiterals": true
+			}
+		],
+		"new-cap": [
+			"error",
+			{
+				"newIsCap": false,
+				"capIsNew": false,
+				"capIsNewExceptions": [
+					"When",
+					"Then",
+					"Given",
+					"After",
+					"Before"
+				]
+			}
+		],
+		"no-loop-func": "off",
+		"no-plusplus": "off",
+		"no-restricted-properties": "off",
+		"no-return-assign": "off",
+		"no-trailing-spaces": "error",
+		"no-underscore-dangle": "off",
+		"import/no-extraneous-dependencies": [
+			"error",
+			{
+				"devDependencies": true,
+				"optionalDependencies": false,
+				"peerDependencies": false
+			}
+		],
+		"no-param-reassign": "off",
+		"camelcase": [
+			"error",
+			{
+				"properties": "never"
+			}
+		],
+		"mocha/max-top-level-suites": [
+			"warn",
+			{
+				"limit": 6
+			}
+		],
+		"mocha/no-skipped-tests": "off",
+		"indent": [
+			"error",
+			"tab"
+		]
+	}
+}

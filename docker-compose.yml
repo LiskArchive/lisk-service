@@ -50,7 +50,7 @@ services:
           "CMD",
           "mysqladmin",
           "ping",
-          "-hlocalhost",
+          "-h127.0.0.1",
           "-ppassword"
         ]
       timeout: 20s

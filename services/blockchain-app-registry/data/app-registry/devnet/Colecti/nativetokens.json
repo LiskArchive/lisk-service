@@ -1,0 +1,29 @@
+{
+    "title": "Colecti - Devnet - Native tokens",
+    "tokens": [
+        {
+            "tokenID": "0400000200000000",
+            "tokenName": "Col",
+            "description": "Native Utility Token",
+            "denomUnits": [
+                {
+                    "denom": "lecti",
+                    "decimals": 0,
+                    "aliases": []
+                },
+                {
+                    "denom": "col",
+                    "decimals": 8,
+                    "aliases": []
+                }
+            ],
+            "baseDenom": "lecti",
+            "displayDenom": "col",
+            "symbol": "COL",
+            "logo": {
+                "png": "https://raw.githubusercontent.com/LiskHQ/app-registry/main/devnet/Colecti/images/tokens/colecti.png",
+                "svg": ""
+            }
+        }
+    ]
+}

@@ -4,7 +4,7 @@ const file = require('./fileUtils');
 const { redis, knex } = require('../shared/indexdb/mysql');
 
 const migrationDir = './knex_migrations';
-const redisEndpoint = 'redis://localhost:6379/10';
+const redisEndpoint = 'redis://127.0.0.1:6379/10';
 
 const benchmark = async (args) => {
 	const batchSizeStr = args[2] || '10000';

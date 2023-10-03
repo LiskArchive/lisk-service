@@ -43,7 +43,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 
 ## Installation
 
-The default port for REST API requests and Socket.io-based communication is `9901`, it is possible to access it through the URL http://localhost:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
+The default port for REST API requests and Socket.io-based communication is `9901`, it is possible to access it through the URL http://127.0.0.1:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
 
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
@@ -131,11 +131,11 @@ make down
 
 ## Benchmark
 
-Assuming lisk-service is running on the localhost:9901, and you are in the root of this repo, you can run the following:
+Assuming lisk-service is running on the 127.0.0.1:9901, and you are in the root of this repo, you can run the following:
 
 ```bash
 cd tests
-LISK_SERVICE_URL=http://localhost:9901 npm run benchmark
+LISK_SERVICE_URL=http://127.0.0.1:9901 npm run benchmark
 ```
 
 ## Further development

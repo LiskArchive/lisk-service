@@ -27,8 +27,8 @@ config.host = process.env.HOST || '0.0.0.0';
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
-config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/5';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://127.0.0.1:6379/5';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
@@ -49,7 +49,7 @@ config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTION
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';

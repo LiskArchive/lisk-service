@@ -1,0 +1,52 @@
+name: Pull Request Validation Workflow
+on: [pull_request]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Check if READ_ACCESS_TOKEN is present
+        id: checkAccessToken
+        run: |
+          if [ -z "${{ secrets.READ_ACCESS_TOKEN }}" ]; then
+            echo "READ_ACCESS_TOKEN is not present."
+            echo "::set-output name=isAccessTokenPresent::false"
+          else
+            echo "READ_ACCESS_TOKEN is present."
+            echo "::set-output name=isAccessTokenPresent::true"
+          fi
+      - name: Check user membership if READ_ACCESS_TOKEN is present
+        if: ${{ steps.checkAccessToken.outputs.isAccessTokenPresent == 'true' }}
+        uses: tspascoal/get-user-teams-membership@v2
+        id: checkUserMember
+        with:
+          username: ${{ github.actor }}
+          organization: 'LiskHQ'
+          team: 'platform'
+          GITHUB_TOKEN: ${{ secrets.READ_ACCESS_TOKEN }}
+      - name: Set TEAM_MEMBER_STATUS to false if READ_ACCESS_TOKEN is not present
+        if: ${{ steps.checkAccessToken.outputs.isAccessTokenPresent != 'true' }}
+        run: echo "TEAM_MEMBER_STATUS=false" >> $GITHUB_ENV
+      - name: Set TEAM_MEMBER_STATUS to checkUserMember output if READ_ACCESS_TOKEN is present
+        if: ${{ steps.checkAccessToken.outputs.isAccessTokenPresent == 'true' }}
+        run: echo "TEAM_MEMBER_STATUS=${{ steps.checkUserMember.outputs.isTeamMember }}" >> $GITHUB_ENV
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+      - name: Get changed directories
+        id: dirs
+        uses: tj-actions/changed-files@v35
+      - name: Install dependencies
+        run: |
+          cd validation && npm ci
+      - name: Lint code
+        run: |
+          cd validation && npm run lint
+      - name: Run tests
+        run: |
+          cd validation && npm test
+      - name: Run validation scripts
+        run: |
+          cd validation && npm run start -- ${{ env.TEAM_MEMBER_STATUS }} ${{ steps.dirs.outputs.all_changed_and_modified_files }}

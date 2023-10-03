@@ -1,0 +1,181 @@
+{
+    "$id": "",
+    "$schema": "",
+    "title": "Project title",
+    "description": "Project description.",
+    "type": "object",
+    "required": [
+        "chainName",
+        "chainID",
+        "genesisURL",
+        "networkType",
+        "projectPage",
+        "logo",
+        "backgroundColor",
+        "serviceURLs",
+        "explorers"
+    ],
+    "properties": {
+        "displayName": {
+            "type": "string",
+            "description": "Application display name for the wallets.",
+            "example": "Lisk"
+        },
+        "chainName": {
+            "type": "string",
+            "description": "Chain name as registered on the network.",
+            "example": "lisk_mainchain"
+        },
+        "chainID": {
+            "type": "string",
+            "description": "Chain ID as registered on the network.",
+            "example": "00000000"
+        },
+        "genesisURL": {
+            "type": "string",
+            "format": "uri-reference",
+            "description": "URI to the network genesis block.",
+            "example": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz"
+        },
+        "networkType": {
+            "type": "string",
+            "description": "Network for which this configuration is specified. Must be one of 'mainnet', 'testnet' or 'betanet'.",
+            "example": "mainnet"
+        },
+        "projectPage": {
+            "type": "string",
+            "format": "uri-reference",
+            "description": "URL to the project's homepage.",
+            "example": "https://lisk.com"
+        },
+        "appPage": {
+            "type": "string",
+            "format": "uri-reference",
+            "description": "URL to the blockchain application's frontend, if exists.",
+            "example": "https://lisk.com"
+        },
+        "logo": {
+            "$ref": "#/$defs/logoURI"
+        },
+        "backgroundColor": {
+            "type": "string",
+            "description": "Default background color to be used in the application management and exploration screens of the Lisk wallets. Must be of the format '#rrggbb' (hex values).",
+            "example": "#f7f9fb"
+        },
+        "serviceURLs": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/serviceURL"
+            }
+        },
+        "explorers": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/explorer"
+            }
+        },
+        "appNodes": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/appNode"
+            }
+        }
+    },
+    "$defs": {
+        "appNode": {
+            "type": "object",
+            "description": "Specifies endpoints to connect to the nodes. Please note, for the mainnet and testnet, the deployments need to be secured with TLS/SSL (i.e. https/wss) and the publicKey also needs to be specified. For the remaining networks, the deployments may or may not be secured.",
+            "required": [
+                "url",
+                "maintainer"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "URI to connect and query to the node directly.",
+                    "example": "ws://node.lisk.com:7887"
+                },
+                "apiCertificatePublicKey": {
+                    "type": "string",
+                    "description": "Public key corresponding to the SSL/TLS certificate for the API endpoints.",
+                    "example": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxd93uLDs8HTPqcSPpxZ\nrf0Dc29r3iPp0a8filjAyeX4RAH6lWm9qFt26CcE8ESYtmo1sVtswvs7VH4Bjg/F\nDlRpd+MnAlXuxChij8/vjyAwE71ucMrmZhxM8rOSfPML8fniZ8trr3I4R2o4xWh6\nno/xTUtZ02/yUEXbphw3DEuefzHEQnEF+quGji9pvGnPO6Krmnri9H4WPY0ysPQQ\nQd82bUZCk9XdhSZcW/am8wBulYokITRMVHlbRXqu1pOFmQMO5oSpyZU3pXbsx+Ox\nIOc4EDX0WMa9aH4+snt18WAXVGwF2B4fmBk7AtmkFzrTmbpmyVqA3KO2IjzMZPw0\nhQIDAQAB\n-----END PUBLIC KEY-----"
+                },
+                "maintainer": {
+                    "type": "string",
+                    "description": "Maintainer details of the node.",
+                    "example": "Lightcurve GmbH"
+                }
+            }
+        },
+        "explorer": {
+            "type": "object",
+            "required": [
+                "url",
+                "txnPage"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "URI endpoint to the explorer's homepage.",
+                    "example": "https://liskscan.com/"
+                },
+                "txnPage": {
+                    "type": "string",
+                    "description": "URI endpoint to the explorer's transactions page.",
+                    "example": "https://liskscan.com/transactions"
+                }
+            }
+        },
+        "logoURI": {
+            "type": "object",
+            "required": [
+                "png",
+                "svg"
+            ],
+            "properties": {
+                "png": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "URI to the PNG format of the application logo.",
+                    "example": "https://lisk.com/logo.png"
+                },
+                "svg": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "URI to the SVG format of the application logo.",
+                    "example": "https://lisk.com/logo.svg"
+                }
+            }
+        },
+        "serviceURL": {
+            "type": "object",
+            "description": "Specifies the HTTP(S) and WSS(S) endpoints to connect to the corresponding Lisk Service deployments. Please note, for the mainnet and testnet, the deployments need to be secured with TLS/SSL (i.e. https/wss) and the publicKey also needs to be specified. For the remaining networks, the deployments may or may not be secured.",
+            "required": [
+                "ws",
+                "http"
+            ],
+            "properties": {
+                "ws": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "WS(S) endpoint to access Lisk Service API against the blockchain application. In case of mainnet and testnet deployments, a WSS URL is required.",
+                    "example": "https://service.lisk.com"
+                },
+                "http": {
+                    "type": "string",
+                    "format": "uri-reference",
+                    "description": "HTTP(S) endpoint to access Lisk Service API against the blockchain application. In case of mainnet and testnet deployments, a HTTPS URL is required.",
+                    "example": "wss://service.lisk.com"
+                },
+                "apiCertificatePublicKey": {
+                    "type": "string",
+                    "description": "Public key corresponding to the SSL/TLS certificate for the API endpoints.",
+                    "example": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxd93uLDs8HTPqcSPpxZ\nrf0Dc29r3iPp0a8filjAyeX4RAH6lWm9qFt26CcE8ESYtmo1sVtswvs7VH4Bjg/F\nDlRpd+MnAlXuxChij8/vjyAwE71ucMrmZhxM8rOSfPML8fniZ8trr3I4R2o4xWh6\nno/xTUtZ02/yUEXbphw3DEuefzHEQnEF+quGji9pvGnPO6Krmnri9H4WPY0ysPQQ\nQd82bUZCk9XdhSZcW/am8wBulYokITRMVHlbRXqu1pOFmQMO5oSpyZU3pXbsx+Ox\nIOc4EDX0WMa9aH4+snt18WAXVGwF2B4fmBk7AtmkFzrTmbpmyVqA3KO2IjzMZPw0\nhQIDAQAB\n-----END PUBLIC KEY-----"
+                }
+            }
+        }
+        
+    }
+}

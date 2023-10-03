@@ -13,7 +13,7 @@ If the Docker environment is being used, only the required variable `LISK_CORE_W
 ```bash
 # Must be identical for all micro-serivces
 # Make sure that all micro-services are able to connect with the common Redis
-SERVICE_BROKER=redis://localhost:6379/0
+SERVICE_BROKER=redis://127.0.0.1:6379/0
 ```
 ### Log configuration
 
@@ -21,7 +21,7 @@ SERVICE_BROKER=redis://localhost:6379/0
 SERVICE_LOG_STDOUT=true   # Asynchronous console output (non-blocking, preferred)
 SERVICE_LOG_CONSOLE=false # console.log() output, only for debug
 SERVICE_LOG_FILE=false    # file path ex. ./logs/service.log
-SERVICE_LOG_GELF=false    # GELF output for remote logging ex. Graylog localhost:12201/udp
+SERVICE_LOG_GELF=false    # GELF output for remote logging ex. Graylog 127.0.0.1:12201/udp
 SERVICE_LOG_LEVEL=info    # Default log level
 ```
 
@@ -99,7 +99,7 @@ JSON_RPC_STRICT_MODE=false
 ### Node settings
 
 ```bash
-LISK_CORE_WS=ws://localhost:8080       # Lisk Core WebSocket RPC API
+LISK_CORE_WS=ws://127.0.0.1:8080       # Lisk Core WebSocket RPC API
 LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 ```
 
@@ -118,15 +118,15 @@ LISK_CORE_HTTP=https://mainnet.lisk.com # Lisk Core HTTP URL
 # Local Redis cache with persistency for Core microservice
 # Refer to the /docker/redis/redis.persistent.conf for more details
 # Note: SERVICE_BROKER uses a different DB
-SERVICE_CORE_REDIS=redis://localhost:6379/1
+SERVICE_CORE_REDIS=redis://127.0.0.1:6379/1
 
 # Local Redis LRU cache for Core microservice
 # This should be a separate instance in the production
 # Refer to the /docker/redis/redis.volatile.conf for more details
-SERVICE_CORE_REDIS_VOLATILE=redis://localhost:6379/2
+SERVICE_CORE_REDIS_VOLATILE=redis://127.0.0.1:6379/2
 
 # MySQL settings
-SERVICE_CORE_MYSQL=mysql://lisk:password@localhost:3306/lisk_service_core
+SERVICE_CORE_MYSQL=mysql://lisk:password@127.0.0.1:3306/lisk_service_core
 
 # MySQL install (for local Docker container)
 MYSQL_ROOT_PASSWORD=password
@@ -216,6 +216,6 @@ FEE_EST_WAVG_DECAY_PERCENTAGE=10
 
 ```bash
 # Required for exports to work properly
-SERVICE_EXPORT_REDIS=redis://localhost:6379/3
-SERVICE_EXPORT_REDIS_VOLATILE=redis://localhost:6379/4
+SERVICE_EXPORT_REDIS=redis://127.0.0.1:6379/3
+SERVICE_EXPORT_REDIS_VOLATILE=redis://127.0.0.1:6379/4
 ```
