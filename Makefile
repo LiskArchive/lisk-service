@@ -69,25 +69,25 @@ build: build-core build-market build-newsfeed build-gateway build-export
 build-all: build build-template build-tests
 
 build-core:
-	cd ./services/core && docker build --tag=lisk/service_core ./
+	cd ./services/core && docker buildx build --tag=lisk/service_core ./
 
 build-market:
-	cd ./services/market && docker build --tag=lisk/service_market ./
+	cd ./services/market && docker buildx build --tag=lisk/service_market ./
 	
 build-newsfeed:
-	cd ./services/newsfeed && docker build --tag=lisk/service_newsfeed ./
+	cd ./services/newsfeed && docker buildx build --tag=lisk/service_newsfeed ./
 
 build-export:
-	cd ./services/export && docker build --tag=lisk/service_export ./
+	cd ./services/export && docker buildx build --tag=lisk/service_export ./
 
 build-gateway:
-	cd ./services/gateway && docker build --tag=lisk/service_gateway ./
+	cd ./services/gateway && docker buildx build --tag=lisk/service_gateway ./
 
 build-template:
-	cd ./services/template && docker build --tag=lisk/service_template ./
+	cd ./services/template && docker buildx build --tag=lisk/service_template ./
 
 build-tests:
-	cd ./tests && docker build --tag=lisk/service_tests ./
+	cd ./tests && docker buildx build --tag=lisk/service_tests ./
 
 build-local:
 	npm ci
