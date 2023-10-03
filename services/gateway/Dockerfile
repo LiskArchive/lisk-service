@@ -1,6 +1,6 @@
 FROM node:18-alpine AS builder
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git alpine-sdk python3
 RUN adduser -D builder
 
 USER builder
