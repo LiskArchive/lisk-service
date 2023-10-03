@@ -49,96 +49,43 @@ pipeline {
 		ENABLE_TESTING_MODE='true'
     }
 	stages {
-		stage('Checkout SCM') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				cleanWs()
-				dir('lisk-service') {
-					checkout scm
-				}
-			}
-		}
-		stage('Checkout Lisk core') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-core') {
-					checkout([$class: 'GitSCM', branches: [[name: '*/development']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/liskhq/lisk-core.git']]])
-				}
-			}
-		}
-		stage ('Install dependancies') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh '''
-						make build-local
-						make build
-						make down
-						'''
-					}
-				}
-				dir('lisk-core') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh '''
-						make build-local
-						'''
-					}
-				}
-			}
-		}
-		stage ('Check linting') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh 'yarn run eslint'
-					}
-				}
-			}
-		}
-		stage('Start Mysql and redis') {
-			steps {
-				dir('lisk-service') {
-					script {
-						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
-					}
-					sleep(60)
-				}
-			}
-		}
-		stage('Run functional tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
-						dir('./services/blockchain-connector') { sh "yarn run test:functional" }
-						dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
-						dir('./services/fee-estimator') { sh "yarn run test:functional" }
-						dir('./services/market') { sh "yarn run test:functional" }
-						dir('./services/transaction-statistics') { sh "yarn run test:functional" }
-						dir('./framework') { sh "yarn run test:functional" }
-					}
-				}
-			}
-		}
+        stage('Checkout Projects') {
+            parallel {
+                stage('Checkout SCM') {
+                    steps {
+                        script { echoBanner(STAGE_NAME) }
+                        cleanWs()
+                        dir('lisk-service') {
+                            checkout scm
+                        }
+                    }
+                }
+                stage('Checkout Lisk core') {
+                    steps {
+                        script { echoBanner(STAGE_NAME) }
+                        dir('lisk-core') {
+                            checkout([$class: 'GitSCM', branches: [[name: '*/development']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/liskhq/lisk-core.git']]])
+                        }
+                    }
+                }
+            }
+        }
 		stage('Start Lisk core and service') {
 			parallel {
 				stage('Start Lisk core') {
 					steps {
 						script { echoBanner(STAGE_NAME) }
-						dir('lisk-core') {
+						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
 								sh '''
 									# lisk-core
-									rm -rf ~/.lisk
-									export LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json
-									export LISK_PORT=9000
-									export LISK_API_PORT=9001
-									./bin/run blockchain:import $PWD/../lisk-service/jenkins/lisk-core/snapshots/blockchain.tar.gz
-									nohup ./bin/run start --network=devnet --api-ws --api-host=0.0.0.0 --config $PWD/../lisk-service/jenkins/lisk-core/config/config.json &
+									npm i -g lisk-core@4.0.0-rc.3
+									npm i -g pm2
+									pm2 kill
+									pm2 flush
+									rm -rf ~/.lisk/
+									lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
+									LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
 									'''
 							}
 						}
@@ -152,11 +99,55 @@ pipeline {
 								sh '''
 									cp -f docker/example.env .env
 									echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
+									make build
 									make up
 									'''
 							}
-							sleep(120)
+
+							sleep(180)
+							sh '''
+								curl http://127.0.0.1:9901/api/v3/index/status
+								curl http://127.0.0.1:9901/api/v3/blocks
+							'''
 						}
+					}
+				}
+			}
+		}
+		stage('Run required services') {
+			steps {
+				dir('lisk-service') {
+					script {
+						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+					}
+				}
+			}	
+		}
+		stage('Run functional tests') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh 'make build-local'
+						sh 'make logs'
+						dir('./framework') { sh "yarn run test:functional" }
+						dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
+						dir('./services/blockchain-connector') { sh "yarn run test:functional" }
+						dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
+						dir('./services/fee-estimator') { sh "yarn run test:functional" }
+						dir('./services/market') { sh "yarn run test:functional" }
+						dir('./services/transaction-statistics') { sh "yarn run test:functional" }
+					}
+				}
+			}
+		}
+		stage ('Check linting') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh 'yarn run eslint'
 					}
 				}
 			}
