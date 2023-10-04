@@ -45,7 +45,7 @@ describe('Functional tests for download utility', () => {
 
 	describe('Test downloadAndExtractTarball method', () => {
 		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
-		xit('should download and extract tar file -> valid url', async () => {
+		it('should download and extract tar file -> valid url', async () => {
 			const filePath = `${testDir}/genesis_block.json`;
 			expect(exists(filePath)).resolves.toBe(false);
 			await downloadAndExtractTarball(genesisBlockUrl, testDir);
@@ -79,7 +79,7 @@ describe('Functional tests for download utility', () => {
 			expect(exists(filePath)).resolves.toBe(true);
 		});
 
-		xit('should throw error -> invalid url', async () => {
+		it('should throw error -> invalid url', async () => {
 			const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block.json';
 			const filePath = `${testDir}/genesis_block.json`;
 			expect(downloadJSONFile(url, filePath)).rejects.toThrow();

@@ -29,12 +29,12 @@ beforeEach(async () => mkdir(dirPath));
 afterEach(async () => rmdir(dirPath));
 
 describe('Test downloadAndExtractTarball method', () => {
-	xit('should download and extract correctly when url and data directory is valid', async () => {
+	it('should download and extract correctly when url and data directory is valid', async () => {
 		await downloadAndExtractTarball(url, dirPath);
 		expect(await exists(`${dirPath}/lisk-service-0.6.4`)).toEqual(true);
 	});
 
-	xit('should throw error when url is invalid', async () => {
+	it('should throw error when url is invalid', async () => {
 		expect(downloadAndExtractTarball(`${url}/invalid_file`, dirPath)).rejects.toThrow();
 	});
 

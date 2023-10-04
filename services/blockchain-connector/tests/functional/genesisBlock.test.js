@@ -34,7 +34,7 @@ const subStoreName = 'userSubstore';
 beforeAll(() => broker.start());
 afterAll(() => broker.stop());
 
-xdescribe('Genesis Block import tests', () => {
+describe('Genesis Block import tests', () => {
 	let genesisBlockFilePath;
 
 	xit('Verify if genesis block is downloaded successfully', async () => {

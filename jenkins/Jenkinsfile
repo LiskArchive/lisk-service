@@ -49,27 +49,15 @@ pipeline {
 		ENABLE_TESTING_MODE='true'
     }
 	stages {
-        stage('Checkout Projects') {
-            parallel {
-                stage('Checkout SCM') {
-                    steps {
-                        script { echoBanner(STAGE_NAME) }
-                        cleanWs()
-                        dir('lisk-service') {
-                            checkout scm
-                        }
-                    }
-                }
-                stage('Checkout Lisk core') {
-                    steps {
-                        script { echoBanner(STAGE_NAME) }
-                        dir('lisk-core') {
-                            checkout([$class: 'GitSCM', branches: [[name: '*/development']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/liskhq/lisk-core.git']]])
-                        }
-                    }
-                }
-            }
-        }
+        stage('Checkout SCM') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				cleanWs()
+				dir('lisk-service') {
+					checkout scm
+				}
+			}
+		}
 		stage('Start Lisk service') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
@@ -103,28 +91,60 @@ pipeline {
 							tail ~/.pm2/logs/lisk-core-error.log
 							'''
 					}
-					sleep(180)
-					sh '''
-						curl http://127.0.0.1:9901/api/v3/index/status
-						curl http://127.0.0.1:9901/api/v3/blocks
-					'''
+					sleep(5)
 				}
 			}
 		}
-		stage('Start required services') {
+		stage('Start external services') {
 			steps {
 				dir('lisk-service') {
 					script {
 						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
 						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 					}
-					sleep(180)
-					sh '''
-						curl http://127.0.0.1:9901/api/v3/index/status
-						curl http://127.0.0.1:9901/api/v3/blocks
-					'''
+					sleep(5)
 				}
 			}	
+		}
+		stage('Wait till Indexing is complete') {
+            steps {
+                script {
+                    // Define a timeout (in seconds) for waiting
+                    def timeout = 600 // You can adjust this value as needed
+
+                    // Define the URL to fetch the status
+                    def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
+
+                    // Wait for the percentageIndexed to reach 100 or until timeout
+                    timeout(time: 30, unit: 'MINUTES') {
+                        def percentageIndexed = 0
+                        while (percentageIndexed < 100) {
+                            def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
+                            if (response == 0) {
+                                def jsonData = readJSON text: sh(script: "curl -s $apiUrl", returnStdout: true)
+                                percentageIndexed = jsonData.data.percentageIndexed
+                            }
+                            else {
+                                error "Failed to fetch status"
+                            }
+							sh '''
+								curl http://127.0.0.1:9901/api/v3/index/status
+							'''
+                            sleep(10) // Adjust the sleep duration as needed
+                        }
+                    }
+                }
+            }
+		}
+		stage ('Check linting') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh 'yarn run eslint'
+					}
+				}
+			}
 		}
 		stage('Run functional tests') {
 			steps {
@@ -140,16 +160,6 @@ pipeline {
 						dir('./services/fee-estimator') { sh "yarn run test:functional" }
 						dir('./services/market') { sh "yarn run test:functional" }
 						dir('./services/transaction-statistics') { sh "yarn run test:functional" }
-					}
-				}
-			}
-		}
-		stage ('Check linting') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh 'yarn run eslint'
 					}
 				}
 			}

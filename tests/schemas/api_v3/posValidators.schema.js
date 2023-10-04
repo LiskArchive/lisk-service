@@ -33,7 +33,7 @@ const validatorSchema = {
 	validatorWeight: Joi.string().pattern(regex.POSITIVE_DIGITS).required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	lastGeneratedHeight: Joi.number().integer().min(0).required(),
-	status: Joi.string().pattern(regex.POS_VALIDATOR_STATUS).optional(),
+	status: Joi.string().pattern(regex.POS_VALIDATOR_STATUS).required(),
 	isBanned: Joi.boolean().required(),
 	reportMisbehaviorHeights: Joi.array().items(Joi.number().integer().min(0)).required(),
 	punishmentPeriods: Joi.array().items(punishmentPeriod).required(),
