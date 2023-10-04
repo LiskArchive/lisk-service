@@ -28,6 +28,7 @@ Each service is an independent part of the repository and is placed in a separat
 **Remarks**
 
 - Lisk Service is configured to connect a local node via WebSocket on port 8080 by default.
+- When running Lisk Service on Docker, please ensure that Lisk Core is started with `--api-ws-host 172.17.0.1` to let the Docker containers connect. You could also set it to `0.0.0.0` to ensure it is available on all the network interfaces. However, we discourage setting `0.0.0.0` as it can compromise security.
 - The default installation method is based on Docker.
 - Some token conversion rates in the market service require their own API keys.
 
@@ -43,7 +44,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 
 ## Installation
 
-The default port for REST API requests and Socket.io-based communication is `9901`, it is possible to access it through the URL http://localhost:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
+The default port for REST API requests and Socket.io-based communication is `9901`, it is possible to access it through the URL http://127.0.0.1:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
 
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
@@ -131,11 +132,11 @@ make down
 
 ## Benchmark
 
-Assuming lisk-service is running on the localhost:9901, and you are in the root of this repo, you can run the following:
+Assuming lisk-service is running on the 127.0.0.1:9901, and you are in the root of this repo, you can run the following:
 
 ```bash
 cd tests
-LISK_SERVICE_URL=http://localhost:9901 npm run benchmark
+LISK_SERVICE_URL=http://127.0.0.1:9901 npm run benchmark
 ```
 
 ## Further development

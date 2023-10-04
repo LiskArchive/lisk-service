@@ -19,7 +19,7 @@ const { newsfeedArticleSchema } = require('../schemas/newsfeedArticle.schema');
 const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.schema');
 
 const broker = new ServiceBroker({
-	transporter: 'redis://localhost:6379/0',
+	transporter: 'redis://127.0.0.1:6379/0',
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
 	logger: console,

@@ -20,7 +20,7 @@ const {
 	getEpochUnixTime,
 	getNetworkConstants,
 	setReadyStatus,
-	setRegisteredmoduleAssets,
+	setRegisteredModuleAssets,
 } = require('./core/compat/common');
 
 const waitForIt = require('./waitForIt');
@@ -47,7 +47,7 @@ const checkStatus = () => new Promise((resolve, reject) => {
 				logConnectStatus = false;
 			}
 			if (networkConstants.data.moduleAssets) {
-				setRegisteredmoduleAssets(networkConstants.data.moduleAssets);
+				setRegisteredModuleAssets(networkConstants.data.moduleAssets);
 			}
 			resolve(networkConstants.data);
 		} else {

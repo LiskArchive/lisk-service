@@ -16,15 +16,15 @@
  */
 /* eslint-disable no-console */
 
-const io = require('socket.io-client');
 const util = require('util');
+const io = require('socket.io-client');
 const colorize = require('json-colorizer');
 
 if (process.argv.length < 3) {
 	console.log('Usage: node socket_io_rpc_multirequest.js <endpoint>');
 	console.log('');
 	console.log('Examples:');
-	console.log('  node socket_io_rpc_multirequest.js ws://localhost:9901/rpc');
+	console.log('  node socket_io_rpc_multirequest.js ws://127.0.0.1:9901/rpc');
 	console.log('  node socket_io_rpc_multirequest.js wss://service.lisk.com/rpc');
 	process.exit(1);
 }

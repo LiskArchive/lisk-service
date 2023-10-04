@@ -32,7 +32,7 @@ const events = [
 const webSocket = {
 	// endpoint: `wss://testnet-service-staging.lisk.com/${cliEndpoint}`,
 	// endpoint: `ws://testnet-service-dev.liskdev.net/${cliEndpoint}`,
-	endpoint: `ws://localhost:9901/${cliEndpoint}`,
+	endpoint: `ws://127.0.0.1:9901/${cliEndpoint}`,
 };
 
 module.exports = {

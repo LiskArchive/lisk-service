@@ -1,6 +1,6 @@
-FROM node:16.15.0-alpine AS builder
+FROM node:18-alpine AS builder
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git alpine-sdk python3
 RUN adduser -D builder
 
 USER builder
@@ -14,7 +14,7 @@ RUN npm ci
 RUN node -e 'console.log(JSON.stringify({ timestamp: new Date().toISOString() }));' > ./build.json
 
 
-FROM node:16.15.0-alpine
+FROM node:18-alpine
 
 RUN apk add --no-cache curl
 RUN adduser -D lisk
@@ -27,4 +27,4 @@ USER lisk
 WORKDIR /home/lisk/lisk-service/gateway
 CMD ["node", "app.js"]
 EXPOSE 9901
-HEALTHCHECK CMD curl --fail http://localhost:9901/api/status
+HEALTHCHECK CMD curl --fail http://127.0.0.1:9901/api/status

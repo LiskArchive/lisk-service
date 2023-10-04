@@ -19,7 +19,7 @@ const config = {
 };
 
 // Moleculer broker config
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 // Logging
@@ -42,7 +42,7 @@ config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
 /*
  * Configurable outputs
  * log.file   - outputs to a file (ie. ./logs/app.log)
- * log.gelf   - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf   - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
@@ -56,16 +56,16 @@ config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_IO_API_KEY;
 
 // Expiry time for redis
 config.ttl = {
-	exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds,
-	binance: 15 * 60 * 1000, // miliseconds
-	bittrex: 15 * 60 * 1000, // miliseconds
-	kraken: 15 * 60 * 1000, // miliseconds
+	exchangeratesapi: 24 * 60 * 60 * 100, // milliseconds,
+	binance: 15 * 60 * 1000, // milliseconds
+	bittrex: 15 * 60 * 1000, // milliseconds
+	kraken: 15 * 60 * 1000, // milliseconds
 };
 
 /**
  * External endpoints
  */
-config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/6';
+config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://127.0.0.1:6379/6';
 
 /**
  * Market prices config
@@ -76,19 +76,19 @@ config.market.targetPairs = process.env.SERVICE_MARKET_TARGET_PAIRS || 'LSK_BTC,
 config.market.sources = {
 	binance: {
 		apiEndpoint: 'https://api.binance.com/api/v3',
-		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
+		allowRefreshAfter: 1 * 60 * 1000, // milliseconds
 	},
 	bittrex: {
 		apiEndpoint: 'https://api.bittrex.com/v3',
-		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
+		allowRefreshAfter: 1 * 60 * 1000, // milliseconds
 	},
 	exchangeratesapi: {
 		apiEndpoint: 'http://api.exchangeratesapi.io/v1',
-		allowRefreshAfter: 8 * 60 * 60 * 1000, // miliseconds
+		allowRefreshAfter: 8 * 60 * 60 * 1000, // milliseconds
 	},
 	kraken: {
 		apiEndpoint: 'https://api.kraken.com/0',
-		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
+		allowRefreshAfter: 1 * 60 * 1000, // milliseconds
 	},
 };
 

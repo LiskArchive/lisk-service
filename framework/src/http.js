@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const debug = require('debug')('http');
-const util = require('util');
 
 const delay = require('./delay');
 
@@ -83,8 +83,7 @@ const request = async (url, params = {}) => {
 
 	if (!httpParams.method) httpParams.method = 'get';
 
-	if (httpParams.method.toLowerCase() === 'get'
-		&& params.cacheTTL && params.cacheTTL > 0) {
+	if (httpParams.method.toLowerCase() === 'get' && params.cacheTTL && params.cacheTTL > 0) {
 		key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
 		response = await cache.get(key);
 	}
@@ -97,6 +96,8 @@ const request = async (url, params = {}) => {
 			response = { data, headers, status, statusText };
 
 			if (key) cache.set(key, response, params.cacheTTL);
+		} else {
+			response = httpResponse;
 		}
 	}
 
@@ -107,8 +108,8 @@ module.exports = {
 	request,
 	get: (url, params) => request(url, { ...params, method: 'get' }),
 	head: (url, params) => request(url, { ...params, method: 'head' }),
-	post: (url, params) => request(url, { ...params, method: 'post' }),
-	put: (url, params) => request(url, { ...params, method: 'put' }),
+	post: (url, params) => request(url, { data: { ...params }, method: 'post' }),
+	put: (url, params) => request(url, { data: { ...params }, method: 'put' }),
 	delete: (url, params) => request(url, { ...params, method: 'delete' }),
 	connect: (url, params) => request(url, { ...params, method: 'connect' }),
 	options: (url, params) => request(url, { ...params, method: 'options' }),

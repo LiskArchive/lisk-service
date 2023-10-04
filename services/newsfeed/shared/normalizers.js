@@ -13,13 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { mapper } = require('lisk-service-framework');
+const { mapper, Logger } = require('lisk-service-framework');
 const { convert } = require('html-to-text');
 const makeHash = require('object-hash');
 const moment = require('moment');
 const htmlEntities = require('html-entities');
 
 const config = require('../config');
+
+const logger = Logger();
 
 /*
  * Functions to convert original content
@@ -37,10 +39,7 @@ const shortenContent = content => content.slice(0, config.defaultNewsLength);
 
 const textifyForShort = content => shortenContent(textify(content));
 
-const convertTime = time => new Date(Date.parse(time))
-	.toISOString()
-	.slice(0, 19)
-	.replace('T', ' ');
+const convertTime = time => new Date(Date.parse(time)).toISOString().slice(0, 19).replace('T', ' ');
 
 const drupalDate = time => moment(time, 'MM/DD/YYYY - HH:mm') // '10/31/2019 - 09:28'
 	.toISOString()
@@ -49,7 +48,7 @@ const drupalDate = time => moment(time, 'MM/DD/YYYY - HH:mm') // '10/31/2019 - 0
 
 const htmlEntitiesDecode = content => htmlEntities.decode(content);
 
-const drupalContentParser = (content) => {
+const drupalContentParser = content => {
 	content = content
 		.replace(/\/\*.*\*\//g, '') // remove comments
 		.replace(/\*\//g, '') //  remove comment
@@ -65,7 +64,7 @@ const authorParser = author => (author === 'admin' ? 'Lisk' : author);
 
 const removePathFromUrl = url => url.split('/').slice(0, 3).join('/');
 
-const drupalDomainPrefixer = (url, source) => (`${removePathFromUrl(source.url)}${url}`);
+const drupalDomainPrefixer = (url, source) => `${removePathFromUrl(source.url)}${url}`;
 
 const drupalUnixTimestamp = date => moment(date, 'MM/DD/YYYY - HH:mm').unix();
 
@@ -88,45 +87,55 @@ const normalizeFunctions = {
 /**
  * normalizeData - Function to normalize source data to insert into the database
  * @param {array} customMapper -> Array that contain custom mappers for each data source.
- * Each array must have three items which are databse colum, function name,
+ * Each array must have three items which are database column, function name,
  * key in source data that is put as the function argument
  */
 const normalizeData = (source, data) => {
-	const customMapper = source[source.table].customMapper || [];
-	data = source.transformSourceData ? source.transformSourceData(data) : data;
+	try {
+		const customMapper = source[source.table].customMapper || [];
+		data = source.transformSourceData ? source.transformSourceData(data) : data;
 
-	const addCustomMapper = item => (
-		customMapper.reduce((acc, [targetKey, transformFnName, sourceKey]) => ({
-			...acc,
-			[targetKey]: normalizeFunctions[transformFnName](item[sourceKey], source),
-		}), {})
-	);
+		const addCustomMapper = item => customMapper.reduce(
+			(acc, [targetKey, transformFnName, sourceKey]) => ({
+				...acc,
+				[targetKey]: normalizeFunctions[transformFnName](item[sourceKey], source),
+			}),
+			{},
+		);
 
-	const hashKeys = source.hashKeys
-		? ['source', ...source.hashKeys]
-		: ['source', 'source_id', 'url'];
+		const hashKeys = source.hashKeys
+			? ['source', ...source.hashKeys]
+			: ['source', 'source_id', 'url'];
 
-	const getHash = item => (
-		makeHash(hashKeys.reduce((acc, key) => ({
-			...acc,
-			[key]: item[key],
-		}), {}))
-	);
+		const getHash = item => makeHash(
+			hashKeys.reduce(
+				(acc, key) => ({
+					...acc,
+					[key]: item[key],
+				}),
+				{},
+			),
+		);
 
-	data = data
-		.filter(source.filter || (() => true))
-		.map(item => ({
-			...item,
-			source: source.name,
-			...addCustomMapper(item),
-		}))
-		.map(item => mapper(item, source[source.table].mapper));
+		data = data
+			.filter(source.filter || (() => true))
+			.map(item => ({
+				...item,
+				source: source.name,
+				...addCustomMapper(item),
+			}))
+			.map(item => mapper(item, source[source.table].mapper));
 
-	data.forEach((item) => {
-		item.hash = getHash(item);
-	});
+		data.forEach(item => {
+			item.hash = getHash(item);
+		});
 
-	return data;
+		return data;
+	} catch (err) {
+		logger.error(`Unable to normalize data for ${source.name} due to: ${err.message}`);
+		logger.debug(`Data: ${JSON.stringify(data, null, '\t')}`);
+		return [];
+	}
 };
 
 module.exports = {

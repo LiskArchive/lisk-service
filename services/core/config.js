@@ -21,7 +21,7 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in seconds
 
@@ -30,11 +30,11 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
  */
 config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:8080')}/api`;
 config.endpoints.liskWs = process.env.LISK_CORE_WS || config.endpoints.liskHttp.replace('http', 'ws').replace('/api', '');
-config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:6379/1';
-config.endpoints.volatileRedis = process.env.SERVICE_CORE_REDIS_VOLATILE || 'redis://localhost:6379/2';
+config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://127.0.0.1:6379/1';
+config.endpoints.volatileRedis = process.env.SERVICE_CORE_REDIS_VOLATILE || 'redis://127.0.0.1:6379/2';
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json';
-config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';
 
 /**
  * Network-related settings
@@ -100,7 +100,7 @@ config.feeEstimates = {
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';

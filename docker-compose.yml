@@ -50,7 +50,7 @@ services:
           "CMD",
           "mysqladmin",
           "ping",
-          "-hlocalhost",
+          "-h127.0.0.1",
           "-ppassword"
         ]
       timeout: 20s
@@ -175,6 +175,11 @@ services:
 
 networks:
   services_network:
+    ipam:
+      config:
+      - subnet: 172.27.0.0/16
+        gateway: 172.27.0.1
+
 
 
 volumes:
