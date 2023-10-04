@@ -40,7 +40,7 @@ pipeline {
 		cron('0 23 * * *')
 	}
 	options {
-		timeout(time: 10, unit: 'MINUTES')
+		timeout(time: 45, unit: 'MINUTES')
 	}
 	environment {
 		ENABLE_HTTP_API='http-version3,http-status'
@@ -70,57 +70,59 @@ pipeline {
                 }
             }
         }
-		stage('Start Lisk core and service') {
-			parallel {
-				stage('Start Lisk core') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh '''
-									# lisk-core
-									npm i -g lisk-core@4.0.0-rc.3
-									npm i -g pm2
-									pm2 kill
-									pm2 flush
-									rm -rf ~/.lisk/
-									lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
-									LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
-									'''
-							}
-						}
-					}
-				}
-				stage('Start Lisk service') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh '''
-									cp -f docker/example.env .env
-									echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
-									make build
-									make up
-									'''
-							}
-
-							sleep(180)
-							sh '''
-								curl http://127.0.0.1:9901/api/v3/index/status
-								curl http://127.0.0.1:9901/api/v3/blocks
+		stage('Start Lisk service') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh '''
+							cp -f docker/example.env .env
+							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
+							make build
+							make up
 							'''
-						}
 					}
 				}
 			}
 		}
-		stage('Run required services') {
+		stage('Start Lisk core') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh '''
+							# lisk-core
+							npm i -g lisk-core@4.0.0-rc.3
+							npm i -g pm2
+							pm2 kill
+							pm2 flush
+							rm -rf ~/.lisk/
+							lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
+							LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
+							tail ~/.pm2/logs/lisk-core-out.log
+							tail ~/.pm2/logs/lisk-core-error.log
+							'''
+					}
+					sleep(180)
+					sh '''
+						curl http://127.0.0.1:9901/api/v3/index/status
+						curl http://127.0.0.1:9901/api/v3/blocks
+					'''
+				}
+			}
+		}
+		stage('Start required services') {
 			steps {
 				dir('lisk-service') {
 					script {
 						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
 						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 					}
+					sleep(180)
+					sh '''
+						curl http://127.0.0.1:9901/api/v3/index/status
+						curl http://127.0.0.1:9901/api/v3/blocks
+					'''
 				}
 			}	
 		}

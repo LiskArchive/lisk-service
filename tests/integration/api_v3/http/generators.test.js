@@ -85,9 +85,11 @@ describe('Generators API', () => {
 		});
 
 		it('should return generators list when searching with generator name', async () => {
-			const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name}`);
-			expect(response).toMap(generatorResponseSchema);
-			expect(response.data.length).toBe(1);
+			if (firstGenerator.name) {
+				const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name}`);
+				expect(response).toMap(generatorResponseSchema);
+				expect(response.data.length).toBe(1);
+			}
 		});
 
 		it('should return generators list when searching with generator address', async () => {

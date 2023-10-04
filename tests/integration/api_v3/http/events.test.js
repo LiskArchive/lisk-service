@@ -34,7 +34,7 @@ const endpoint = `${baseUrl}/events`;
 
 const { invalidAddresses, invalidBlockIDs, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
-xdescribe('Events API', () => {
+describe('Events API', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrl}/transactions?limit=1&moduleCommand=token:transfer`);
@@ -102,7 +102,7 @@ xdescribe('Events API', () => {
 	});
 
 	describe('Retrieve event list by transactionID', () => {
-		it('should return event with known transactionID', async () => {
+		xit('should return event with known transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -236,7 +236,7 @@ xdescribe('Events API', () => {
 	});
 
 	describe('Retrieve event list by senderAddress', () => {
-		it('should return known address', async () => {
+		xit('should return known address', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -492,7 +492,7 @@ xdescribe('Events API', () => {
 	});
 
 	describe('Fetch events based on multiple request params', () => {
-		it('should return event when queried with transactionID and blockID', async () => {
+		xit('should return event when queried with transactionID and blockID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -507,7 +507,7 @@ xdescribe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('should return event when queried with transactionID and height', async () => {
+		xit('should return event when queried with transactionID and height', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

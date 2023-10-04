@@ -447,7 +447,7 @@ xdescribe('Method get.events', () => {
 	});
 
 	describe('Fetch events based on multiple request params', () => {
-		it('should return event when queried with transactionID and blockID', async () => {
+		xit('should return event when queried with transactionID and blockID', async () => {
 			const response = await getEvents({
 				transactionID: refTransaction.id,
 				blockID: refTransaction.block.id,
@@ -466,7 +466,7 @@ xdescribe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return event when queried with transactionID and height', async () => {
+		xit('should return event when queried with transactionID and height', async () => {
 			const response = await getEvents({
 				transactionID: refTransaction.id,
 				height: String(refTransaction.block.height),

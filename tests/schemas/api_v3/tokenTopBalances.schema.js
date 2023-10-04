@@ -30,7 +30,7 @@ const knowledgeSchema = {
 
 const tokenTopBalancesSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null),
 	name: Joi.string().pattern(regex.NAME),
 	balance: Joi.string().required(),
 	knowledge: Joi.object(knowledgeSchema).required(),

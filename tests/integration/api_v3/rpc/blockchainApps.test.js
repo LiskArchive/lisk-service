@@ -36,7 +36,7 @@ const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status',
 let curChainID;
 
 // TODO: Update test when data is available in blockchain_apps table
-xdescribe('get.blockchain.apps', () => {
+describe('get.blockchain.apps', () => {
 	beforeAll(async () => {
 		const response = await getNetworkStatus();
 		curChainID = response.result.data.chainID;

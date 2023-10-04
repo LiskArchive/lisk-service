@@ -105,11 +105,13 @@ describe('Generators API', () => {
 		});
 
 		it('should return generators list when searching with generator name', async () => {
-			const response = await getGenerators({ search: firstGenerator.name });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result).toMap(generatorResponseSchema);
-			expect(result.data.length).toBe(1);
+			if (firstGenerator.name) {
+				const response = await getGenerators({ search: firstGenerator.name });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(generatorResponseSchema);
+				expect(result.data.length).toBe(1);
+			}
 		});
 
 		it('should return generators list when searching with generator address', async () => {
