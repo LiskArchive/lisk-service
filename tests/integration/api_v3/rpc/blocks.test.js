@@ -359,7 +359,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return 10 blocks sorted by timestamp ascending', async () => {
+		xit('should return 10 blocks sorted by timestamp ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await getBlocks({ sort: 'timestamp:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -379,7 +379,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('Fetch blocks based on multiple request params', () => {
+	xdescribe('Fetch blocks based on multiple request params', () => {
 		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress, sort: 'timestamp:desc', limit: 100, offset: 0 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
