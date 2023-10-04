@@ -28,6 +28,7 @@ Each service is an independent part of the repository and is placed in a separat
 **Remarks**
 
 - Lisk Service is configured to connect a local node via WebSocket on port 8080 by default.
+- When running Lisk Service on Docker, please ensure that Lisk Core is started with `--api-ws-host 172.17.0.1` to let the Docker containers connect. You could also set it to `0.0.0.0` to ensure it is available on all the network interfaces. However, we discourage setting `0.0.0.0` as it can compromise security.
 - The default installation method is based on Docker.
 - Some token conversion rates in the market service require their own API keys.
 
