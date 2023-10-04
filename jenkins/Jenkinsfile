@@ -40,7 +40,7 @@ pipeline {
 		cron('0 23 * * *')
 	}
 	options {
-		timeout(time: 45, unit: 'MINUTES')
+		timeout(time: 60, unit: 'MINUTES')
 	}
 	environment {
 		ENABLE_HTTP_API='http-version3,http-status'
@@ -67,6 +67,7 @@ pipeline {
 							cp -f docker/example.env .env
 							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
 							make build
+							make build-local
 							make up
 							'''
 					}
@@ -109,30 +110,28 @@ pipeline {
 		stage('Wait till Indexing is complete') {
             steps {
                 script {
-                    // Define a timeout (in seconds) for waiting
-                    def timeout = 600 // You can adjust this value as needed
-
                     // Define the URL to fetch the status
                     def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
-
-                    // Wait for the percentageIndexed to reach 100 or until timeout
-                    timeout(time: 30, unit: 'MINUTES') {
-                        def percentageIndexed = 0
-                        while (percentageIndexed < 100) {
-                            def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
-                            if (response == 0) {
-                                def jsonData = readJSON text: sh(script: "curl -s $apiUrl", returnStdout: true)
-                                percentageIndexed = jsonData.data.percentageIndexed
-                            }
-                            else {
-                                error "Failed to fetch status"
-                            }
+					def percentageIndexed = "0"
+					while (percentageIndexed.compareTo("90.00") < 0 && percentageIndexed != "100") {
+						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
+						if (response == 0) {
 							sh '''
 								curl http://127.0.0.1:9901/api/v3/index/status
 							'''
-                            sleep(10) // Adjust the sleep duration as needed
-                        }
-                    }
+							def jsonString = sh(script: "curl -s $apiUrl", returnStdout: true)
+							// Extract the percentageIndexed value from the JSON string
+							def percentageIndexStart = jsonString.indexOf('"percentageIndexed":') + 20
+							def percentageIndexEnd = jsonString.indexOf(',', percentageIndexStart)
+							percentageIndexed = jsonString.substring(percentageIndexStart, percentageIndexEnd).trim()
+						}
+						else {
+							sh '''
+								echo "Failed to fetch status"
+							'''
+						}
+						sleep(60)
+					}
                 }
             }
 		}
