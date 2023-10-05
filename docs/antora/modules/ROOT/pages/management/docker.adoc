@@ -10,6 +10,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_config: configuration/docker.adoc
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 
+NOTE: To upgrade Lisk Service to a desired version, please checkout the specific version with *`git checkout <tag>`*, run *make build* and then follow the existing process described below.
+
 == Start
 
 .Inside the lisk-service root folder
