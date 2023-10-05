@@ -21,6 +21,7 @@ module.exports = {
 	testEnvironment: 'node',
 	setupFilesAfterEnv: [
 		'jest-extended',
+		'<rootDir>/jestConfig.js',
 		'<rootDir>/helpers/setupCustomMatchers.js',
 	],
 	watchPlugins: [
