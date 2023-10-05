@@ -64,11 +64,6 @@ pipeline {
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
-							docker kill $(docker ps -q)
-							docker rm $(docker ps -a -q)
-							docker volume rm $(docker volume ls -q)
-							docker system prune -a
-							
 							cp -f docker/example.env .env
 							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
 							make build

@@ -42,7 +42,30 @@ const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 describe('Method get.blocks', () => {
 	let refBlock;
 	beforeAll(async () => {
-		[refBlock] = (await getBlocks({ limit: 1, offset: 5 })).result.data;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				[refBlock] = (await getBlocks({ limit: 1, offset: 5 })).result.data;
+
+				if (refBlock) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching blocks. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch blocks after 5 retries');
+		}
 	});
 
 	describe('is able to retireve block lists', () => {
