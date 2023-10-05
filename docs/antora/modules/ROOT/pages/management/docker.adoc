@@ -10,9 +10,22 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_config: configuration/docker.adoc
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 
+NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and then follow the existing process described below.
+
+== Build Docker image
+
+.Inside the lisk-service root folder
+----
+make build
+----
+This creates the necessary Docker images to start Lisk Service in the containers.
+
 == Start
 
 .Inside the lisk-service root folder
+----
+cp ./docker/example.env .env
+----
 ----
 make up
 ----
@@ -198,10 +211,35 @@ This can be quite time-consuming when the chain is long, spanning over hours.
 
 == Logging
 
-To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
+The possibility exists here to either use the `docker` commands or the `make` commands to check the logs, and both options are listed here below.
+
+For `docker`, to check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
 ----
 docker container logs lisk-service_gateway_1
 ----
+
+To check the logs for different microservices using the `make` commands, the following commands listed below can be used:
+
+----
+make logs
+----
+The above command, displays the logs for all the microservices that have been logged so far, and that are currently existing.
+----
+make logs-live
+----
+The above command displays the logs for all the microservices currently logged so far, and also continues to display the latest logs.
+----
+make logs-blockchain-connector
+----
+The above command is similar to the `make logs` command, but only displays the appropriate logs for the specified microservice.
+For example, in this case only for the `blockchain-connector`.
+----
+make logs-live-blockchain-connector
+----
+Finally, the above command is similar to the `make logs-live` command, but only displays the logs for the specified microservice.
+For example, in this case also only for blockchain-connector here.
+
+Replace the `blockchain-connector` with the specific service name required.
