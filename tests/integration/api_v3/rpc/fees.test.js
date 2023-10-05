@@ -31,7 +31,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestFeeEstimate = async () => request(wsRpcUrl, 'get.fees');
 
 describe('get.fees', () => {
-	xit('should return fees estimate', async () => {
+	it('should return fees estimate', async () => {
 		const response = await requestFeeEstimate();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;

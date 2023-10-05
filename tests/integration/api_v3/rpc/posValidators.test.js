@@ -116,7 +116,7 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator public key)', async () => {
 			if (refGenerators[0] && refGenerators[0].publicKey) {
-				const searchParam = refGenerators[0].publicKey;
+				const searchParam = refGenerators[0].publicKey.substring(0, 3);
 				const response = await getValidators({ search: searchParam });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
@@ -150,7 +150,7 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator public key) and offset=1', async () => {
 			if (refGenerators[0] && refGenerators[0].publicKey) {
-				const searchParam = refGenerators[0].publicKey;
+				const searchParam = refGenerators[0].publicKey.substring(0, 3);
 				const response = await getValidators({ search: searchParam, offset: 1 });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
@@ -226,7 +226,7 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator public key), offset=1 and limit=5', async () => {
 			if (refGenerators[0] && refGenerators[0].publicKey) {
-				const searchParam = refGenerators[0].publicKey;
+				const searchParam = refGenerators[0].publicKey.substring(0, 3);
 				const response = await getValidators({
 					search: searchParam,
 					offset: 1,
@@ -288,11 +288,11 @@ describe('pos/validators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(5);
 		});
 
-		xit('should return list of validators when requested for known validator publicKey', async () => {
-			const { publicKey = null } = refGenerators.find(generator => generator.publicKey);
+		it('should return list of validators when requested for known validator publicKey', async () => {
+			const generatorWithPubKey = refGenerators.find(generator => generator.publicKey);
 
-			if (publicKey) {
-				const response = await getValidators({ publicKey });
+			if (generatorWithPubKey && generatorWithPubKey.publicKey) {
+				const response = await getValidators({ publicKey: generatorWithPubKey.publicKey });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result).toMap(validatorsResponseSchema);
