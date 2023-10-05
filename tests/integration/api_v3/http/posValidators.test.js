@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.retryTimes(3);
-
 const {
 	address: {
 		getAddressFromLisk32Address,

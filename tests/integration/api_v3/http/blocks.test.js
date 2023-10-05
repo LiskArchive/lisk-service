@@ -16,8 +16,6 @@
 import moment from 'moment';
 import { invalidAddresses, invalidLimits, invalidBlockIDs, invalidOffsets } from '../constants/invalidInputs';
 
-jest.retryTimes(3);
-
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 

@@ -28,6 +28,7 @@ module.exports = {
 		'jest-extended',
 		'<rootDir>/helpers/setupCustomMatchers.js',
 		'<rootDir>/setup.js',
+		'<rootDir>/jestConfig.js',
 	],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],
