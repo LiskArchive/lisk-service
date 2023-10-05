@@ -113,7 +113,7 @@ pipeline {
                     // Define the URL to fetch the status
                     def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
 					def percentageIndexed = "0"
-					while (percentageIndexed.compareTo("90.00") < 0 && percentageIndexed != "100") {
+					while (percentageIndexed != "100") {
 						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
 						if (response == 0) {
 							sh '''

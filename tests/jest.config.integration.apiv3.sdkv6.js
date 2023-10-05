@@ -26,9 +26,9 @@ module.exports = {
 	maxWorkers: 1,
 	setupFilesAfterEnv: [
 		'jest-extended',
+		'<rootDir>/jestConfig.js',
 		'<rootDir>/helpers/setupCustomMatchers.js',
 		'<rootDir>/setup.js',
-		'<rootDir>/jestConfig.js',
 	],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],

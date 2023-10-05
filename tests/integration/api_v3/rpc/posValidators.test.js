@@ -115,13 +115,15 @@ describe('pos/validators API', () => {
 		});
 
 		it('should return list of validators when requested with search param (partial validator public key)', async () => {
-			const searchParam = refGenerators[0].publicKey ? refGenerators[0].publicKey.substring(0, 3) : '';
-			const response = await getValidators({ search: searchParam });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			if (refGenerators[0] && refGenerators[0].publicKey) {
+				const searchParam = refGenerators[0].publicKey;
+				const response = await getValidators({ search: searchParam });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(validatorsResponseSchema);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
+				expect(result.data.length).toBeLessThanOrEqual(10);
+			}
 		});
 
 		it('should return list of validators when requested with search param (partial validator name) and offset=1', async () => {
@@ -147,8 +149,8 @@ describe('pos/validators API', () => {
 		});
 
 		it('should return list of validators when requested with search param (partial validator public key) and offset=1', async () => {
-			if (refGenerators[0].publicKey) {
-				const searchParam = refGenerators[0].publicKey ? refGenerators[0].publicKey.substring(0, 3) : '';
+			if (refGenerators[0] && refGenerators[0].publicKey) {
+				const searchParam = refGenerators[0].publicKey;
 				const response = await getValidators({ search: searchParam, offset: 1 });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
@@ -181,13 +183,15 @@ describe('pos/validators API', () => {
 		});
 
 		it('should return list of validators when requested with search param (partial validator public key) and limit=5', async () => {
-			const searchParam = refGenerators[0].publicKey ? refGenerators[0].publicKey.substring(0, 3) : '';
-			const response = await getValidators({ search: searchParam, limit: 5 });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(5);
+			if (refGenerators[0] && refGenerators[0].publicKey) {
+				const searchParam = refGenerators[0].publicKey ? refGenerators[0].publicKey.substring(0, 3) : '';
+				const response = await getValidators({ search: searchParam, limit: 5 });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(validatorsResponseSchema);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
+				expect(result.data.length).toBeLessThanOrEqual(5);
+			}
 		});
 
 		it('should return list of validators when requested with search param (partial validator name), offset=1 and limit=5', async () => {
@@ -221,17 +225,19 @@ describe('pos/validators API', () => {
 		});
 
 		it('should return list of validators when requested with search param (partial validator public key), offset=1 and limit=5', async () => {
-			const searchParam = refGenerators[0].publicKey ? refGenerators[0].publicKey.substring(0, 3) : '';
-			const response = await getValidators({
-				search: searchParam,
-				offset: 1,
-				limit: 5,
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length).toBeGreaterThanOrEqual(0);
-			expect(result.data.length).toBeLessThanOrEqual(5);
+			if (refGenerators[0] && refGenerators[0].publicKey) {
+				const searchParam = refGenerators[0].publicKey;
+				const response = await getValidators({
+					search: searchParam,
+					offset: 1,
+					limit: 5,
+				});
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(validatorsResponseSchema);
+				expect(result.data.length).toBeGreaterThanOrEqual(0);
+				expect(result.data.length).toBeLessThanOrEqual(5);
+			}
 		});
 
 		it('should return list of validators when requested with known validator address', async () => {

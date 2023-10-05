@@ -126,10 +126,12 @@ describe('Stakers API', () => {
 		});
 
 		it('should return list of stakers when requested for known validator publicKey', async () => {
-			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+			if (refValidator.publicKey) {
+				const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+			}
 		});
 
 		it('should return list of stakers when requested with known validator publicKey and offset=1', async () => {

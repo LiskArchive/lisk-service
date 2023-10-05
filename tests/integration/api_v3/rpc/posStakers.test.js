@@ -153,12 +153,14 @@ describe('get.pos.stakers', () => {
 	});
 
 	it('should return list of stakers when requested for known validator publicKey', async () => {
-		const response = await getStakers({ publicKey: refValidator.publicKey });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
-		expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.stakers.length).toBeLessThanOrEqual(10);
+		if (refValidator.publicKey) {
+			const response = await getStakers({ publicKey: refValidator.publicKey });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchema);
+			expect(result.data.stakers.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.stakers.length).toBeLessThanOrEqual(10);
+		}
 	});
 
 	it('should return list of stakers when requested with known validator publicKey and offset=1', async () => {

@@ -53,8 +53,8 @@ let curChainID;
 
 // TODO: Enable tests once test blockchain is updated with transactions
 xdescribe('Export API', () => {
-	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
-	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
+	const startDate = moment('2021-01-10').format(exportConfig.excel.dateFormat);
+	const endDate = moment('2021-11-30').format(exportConfig.excel.dateFormat);
 	let refTransaction1;
 	let refTransaction2;
 	let refTransaction3;
@@ -154,7 +154,7 @@ xdescribe('Export API', () => {
 	});
 
 	describe('Download csv file -> returns 200 OK', () => {
-		const parseParams = { delimiter: exportConfig.csv.delimiter };
+		const parseParams = { delimiter: exportConfig.excel.delimiter };
 
 		it('scheduled from account address -> 200 OK', async () => {
 			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;

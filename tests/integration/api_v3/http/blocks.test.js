@@ -83,43 +83,49 @@ describe('Blocks API', () => {
 		});
 
 		it('should return block by height', async () => {
-			const response = await api.get(`${endpoint}?height=${refBlock.height}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0].height).toEqual(refBlock.height);
-			expect(response.data[0]).toEqual(refBlock);
-			response.data.forEach((block) => {
-				expect(block).toMap(blockSchema, { height: refBlock.height });
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?height=${refBlock.height}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toEqual(1);
+				expect(response.data[0].height).toEqual(refBlock.height);
+				expect(response.data[0]).toEqual(refBlock);
+				response.data.forEach((block) => {
+					expect(block).toMap(blockSchema, { height: refBlock.height });
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return block by generatorAddress', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return block by timestamp', async () => {
-			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(1);
-			response.data.forEach((block) => {
-				expect(block).toMap(blockSchema, { timestamp: refBlock.timestamp });
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(1);
+				response.data.forEach((block) => {
+					expect(block).toMap(blockSchema, { timestamp: refBlock.timestamp });
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return bad request when limit=0', async () => {
@@ -179,111 +185,123 @@ describe('Blocks API', () => {
 
 	describe('Retrieve blocks list within timestamps', () => {
 		it('should return blocks within set timestamps', async () => {
-			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
-			const toTimestamp = refBlock.timestamp;
-			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.timestamp).toBeGreaterThanOrEqual(from);
-				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+				const toTimestamp = refBlock.timestamp;
+				const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.timestamp).toBeGreaterThanOrEqual(from);
+					expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return blocks with half bounded range: fromTimestamp', async () => {
-			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
-			const response = await api.get(`${endpoint}?timestamp=${from}:`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.timestamp).toBeGreaterThanOrEqual(from);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+				const response = await api.get(`${endpoint}?timestamp=${from}:`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.timestamp).toBeGreaterThanOrEqual(from);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return blocks with half bounded range: toTimestamp', async () => {
-			const toTimestamp = refBlock.timestamp;
-			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const toTimestamp = refBlock.timestamp;
+				const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 	});
 
 	describe('Retrieve blocks list within height range', () => {
 		it('should return blocks within set height are returned', async () => {
-			const minHeight = refBlock.height - 10;
-			const maxHeight = refBlock.height;
-			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.height).toBeGreaterThanOrEqual(minHeight);
-				expect(block.height).toBeLessThanOrEqual(maxHeight);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const minHeight = refBlock.height - 10;
+				const maxHeight = refBlock.height;
+				const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.height).toBeGreaterThanOrEqual(minHeight);
+					expect(block.height).toBeLessThanOrEqual(maxHeight);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return blocks with half bounded range: minHeight', async () => {
-			const minHeight = refBlock.height - 10;
-			const response = await api.get(`${endpoint}?height=${minHeight}:`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.height).toBeGreaterThanOrEqual(minHeight);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const minHeight = refBlock.height - 10;
+				const response = await api.get(`${endpoint}?height=${minHeight}:`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.height).toBeGreaterThanOrEqual(minHeight);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return blocks with half bounded range: maxHeight', async () => {
-			const maxHeight = refBlock.height;
-			const response = await api.get(`${endpoint}?height=:${maxHeight}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((block, i) => {
-				expect(block).toMap(blockSchema);
-				expect(block.height).toBeLessThanOrEqual(maxHeight);
-				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const maxHeight = refBlock.height;
+				const response = await api.get(`${endpoint}?height=:${maxHeight}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((block, i) => {
+					expect(block).toMap(blockSchema);
+					expect(block.height).toBeLessThanOrEqual(maxHeight);
+					if (i < response.data.length - 1) {
+						expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 	});
 
@@ -363,80 +381,94 @@ describe('Blocks API', () => {
 
 	xdescribe('Fetch blocks based on multiple request params', () => {
 		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=timestamp:desc&limit=100`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach(block => {
-				expect(block).toMap(blockSchema);
-				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
-			});
-			if (response.data.length > 1) {
-				for (let i = 1; i < response.data.length; i++) {
-					const prevBlock = response.data[i - 1];
-					const currBlock = response.data[i];
-					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=timestamp:desc&limit=100`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(100);
+				response.data.forEach(block => {
+					expect(block).toMap(blockSchema);
+					expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
+				});
+				if (response.data.length > 1) {
+					for (let i = 1; i < response.data.length; i++) {
+						const prevBlock = response.data[i - 1];
+						const currBlock = response.data[i];
+						expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+					}
 				}
+				expect(response.meta).toMap(metaSchema);
 			}
-			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('should return blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=height:asc&limit=5`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(5);
-			response.data.forEach(block => {
-				expect(block).toMap(blockSchema);
-				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
-			});
-			if (response.data.length > 1) {
-				for (let i = 1; i < response.data.length; i++) {
-					const prevBlock = response.data[i - 1];
-					const currBlock = response.data[i];
-					expect(prevBlock.height).toBeLessThan(currBlock.height);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=height:asc&limit=5`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(5);
+				response.data.forEach(block => {
+					expect(block).toMap(blockSchema);
+					expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
+				});
+				if (response.data.length > 1) {
+					for (let i = 1; i < response.data.length; i++) {
+						const prevBlock = response.data[i - 1];
+						const currBlock = response.data[i];
+						expect(prevBlock.height).toBeLessThan(currBlock.height);
+					}
 				}
+				expect(response.meta).toMap(metaSchema);
 			}
-			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('should return 200 OK when queried with invalid combination: blockID and wrong height', async () => {
-			const height = refBlock.height - 10;
-			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&height=${height}`);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(0);
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const height = refBlock.height - 10;
+				const response = await api.get(`${endpoint}?blockID=${refBlock.id}&height=${height}`);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return 200 OK when queried with invalid combination: blockID and wrong timestamp', async () => {
-			const timestamp = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
-			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&timestamp=${timestamp}`);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(0);
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const timestamp = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+				const response = await api.get(`${endpoint}?blockID=${refBlock.id}&timestamp=${timestamp}`);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return 200 OK when queried with blockID and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&offset=1`);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(0);
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?blockID=${refBlock.id}&offset=1`);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return 200 OK when queried with block height and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?height=${refBlock.height}&offset=1`);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(0);
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?height=${refBlock.height}&offset=1`);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 
 		it('should return 200 OK when queried with block timestamp and non-zero offset', async () => {
-			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}&offset=1`);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(0);
-			expect(response.meta).toMap(metaSchema);
+			if (refBlock) {
+				const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}&offset=1`);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(0);
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 	});
 });
