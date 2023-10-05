@@ -10,11 +10,22 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_config: configuration/docker.adoc
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 
-NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, run *make build* and then follow the existing process described below.
+NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and then follow the existing process described below.
+
+== Build Docker image
+
+.Inside the lisk-service root folder
+----
+make build
+----
+This creates the necessary Docker images to start Lisk Service in the containers.
 
 == Start
 
 .Inside the lisk-service root folder
+----
+cp ./docker/example.env .env
+----
 ----
 make up
 ----
