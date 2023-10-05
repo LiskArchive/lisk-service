@@ -18,7 +18,7 @@ Moreover, we'll also talk about the steps to reset a Lisk Service node.
 
 TIP: The process ID of each PM2-managed process can be seen by executing the <<list>> command. To learn more about PM2 log management please refer the {url_pm2_management}[PM2 logs documentation].
 
-NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`* and follow the existing process.
+NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and follow the existing process.
 
 == Various PM2 commands
 
