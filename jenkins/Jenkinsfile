@@ -88,8 +88,6 @@ pipeline {
 							rm -rf ~/.lisk/
 							lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
 							LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
-							tail ~/.pm2/logs/lisk-core-out.log
-							tail ~/.pm2/logs/lisk-core-error.log
 							'''
 					}
 					sleep(5)
@@ -110,16 +108,13 @@ pipeline {
 		stage('Wait till Indexing is complete') {
             steps {
                 script {
-                    // Define the URL to fetch the status
                     def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
 					def percentageIndexed = "0"
 					while (percentageIndexed != "100") {
 						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
 						if (response == 0) {
-							sh '''
-								curl http://127.0.0.1:9901/api/v3/index/status
-							'''
 							def jsonString = sh(script: "curl -s $apiUrl", returnStdout: true)
+							
 							// Extract the percentageIndexed value from the JSON string
 							def percentageIndexStart = jsonString.indexOf('"percentageIndexed":') + 20
 							def percentageIndexEnd = jsonString.indexOf(',', percentageIndexStart)
@@ -130,45 +125,49 @@ pipeline {
 								echo "Failed to fetch status"
 							'''
 						}
-						sleep(60)
+						sleep(30)
 					}
                 }
             }
 		}
-		stage ('Check linting') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh 'yarn run eslint'
+		stage('Run tests') {
+			parallel {
+				stage ('Check linting') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile('.nvmrc').trim()) {
+								sh 'yarn run eslint'
+							}
+						}
 					}
 				}
-			}
-		}
-		stage('Run functional tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh 'make build-local'
-						sh 'make logs'
-						dir('./framework') { sh "yarn run test:functional" }
-						dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
-						dir('./services/blockchain-connector') { sh "yarn run test:functional" }
-						dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
-						dir('./services/fee-estimator') { sh "yarn run test:functional" }
-						dir('./services/market') { sh "yarn run test:functional" }
-						dir('./services/transaction-statistics') { sh "yarn run test:functional" }
+				stage('Run functional tests') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile('.nvmrc').trim()) {
+								sh 'make build-local'
+								sh 'make logs'
+								dir('./framework') { sh "yarn run test:functional" }
+								dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
+								dir('./services/blockchain-connector') { sh "yarn run test:functional" }
+								dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
+								dir('./services/fee-estimator') { sh "yarn run test:functional" }
+								dir('./services/market') { sh "yarn run test:functional" }
+								dir('./services/transaction-statistics') { sh "yarn run test:functional" }
+							}
+						}
 					}
 				}
-			}
-		}
-		stage('Run integration tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						dir('./tests') { sh 'yarn run test:integration:APIv3:SDKv6' }
+				stage('Run integration tests') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile('.nvmrc').trim()) {
+								dir('./tests') { sh 'yarn run test:integration:APIv3:SDKv6' }
+							}
+						}
 					}
 				}
 			}
@@ -179,6 +178,8 @@ pipeline {
 			script { 
 				dir('lisk-service') {
 					sh '''
+						pm2 kill
+						pm2 flush
 						docker kill $(docker ps -q)
 						docker rm $(docker ps -a -q)
 						docker volume rm $(docker volume ls -q)
