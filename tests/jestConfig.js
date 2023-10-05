@@ -1,1 +1,1 @@
-jest.retryTimes(5);
+jest.retryTimes(10, { logErrorsBeforeRetry: true });

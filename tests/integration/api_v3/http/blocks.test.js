@@ -133,7 +133,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('should return success when requested with non existant height', async () => {
+		it('should return success when requested with non existant height', async () => {
 			const response = await api.get(`${endpoint}?height=2000000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
@@ -360,7 +360,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('should return 10 blocks sorted by timestamp ascending', async () => {
+		it('should return 10 blocks sorted by timestamp ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await api.get(`${endpoint}?sort=timestamp:asc&offset=1`);
 			expect(response).toMap(goodRequestSchema);

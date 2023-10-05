@@ -95,7 +95,7 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator address)', async () => {
 			if (refGenerators.address) {
-				const searchParam = refGenerators.address ? refGenerators.address.substring(0, 3) : '';
+				const searchParam = refGenerators.address.substring(0, 3);
 				const response = await api.get(`${endpoint}?search=${searchParam}`);
 				expect(response).toMap(validatorsResponseSchema);
 				expect(response.data.length).toBeGreaterThanOrEqual(1);

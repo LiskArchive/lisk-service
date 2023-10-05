@@ -359,7 +359,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('should return 10 blocks sorted by timestamp ascending', async () => {
+		it('should return 10 blocks sorted by timestamp ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await getBlocks({ sort: 'timestamp:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);

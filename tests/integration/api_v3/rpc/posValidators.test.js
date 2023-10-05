@@ -184,7 +184,7 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator public key) and limit=5', async () => {
 			if (refGenerators[0] && refGenerators[0].publicKey) {
-				const searchParam = refGenerators[0].publicKey ? refGenerators[0].publicKey.substring(0, 3) : '';
+				const searchParam = refGenerators[0].publicKey.substring(0, 3);
 				const response = await getValidators({ search: searchParam, limit: 5 });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;

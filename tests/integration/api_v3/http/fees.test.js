@@ -31,7 +31,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/fees`;
 
 describe('Fee estimates API', () => {
-	xit('should return fees estimate', async () => {
+	it('should return fees estimate', async () => {
 		const response = await api.get(`${endpoint}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(feeEstimateSchema);
