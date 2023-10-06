@@ -321,7 +321,6 @@ const getEventsResult = {
 };
 
 const mockEventTopicsQueryParams = {
-	height: 123,
 	sort: 'timestamp:desc',
 	order: 'index:asc',
 	limit: 10,
@@ -338,12 +337,23 @@ const mockEventTopicsQueryParams = {
 			to: 1000000000,
 		},
 	],
+	whereIn: {
+		property: 'topic',
+		values: [
+			'03',
+		],
+	},
+	height: 123,
 	leftOuterJoin: {
 		targetTable: 'events',
 		leftColumn: 'events.id',
 		rightColumn: 'event_topics.eventID',
 	},
-	distinct: 'eventID' };
+	andWhere: {
+		topic: 'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
+	},
+	distinct: 'eventID',
+};
 
 module.exports = {
 	mockEventTopics,
