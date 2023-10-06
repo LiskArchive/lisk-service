@@ -26,7 +26,6 @@ const logger = Logger();
 
 const { initNodeConstants } = require('./constants');
 
-const { addAccountToDirectUpdateQueue } = require('./indexer/accountIndex');
 const {
 	addHeightToIndexBlocksQueue,
 	scheduleBlockDeletion,
@@ -42,6 +41,7 @@ const {
 	getNumberOfGenerators,
 	normalizeBlocks,
 } = require('./dataService');
+const { accountAddrUpdateQueue } = require('./indexer/accountIndex');
 
 const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
@@ -126,7 +126,7 @@ const initMessageProcessors = async () => {
 	accountMessageQueue.process(async (job) => {
 		const { account } = job.data;
 		logger.debug(`Scheduling indexing for account with address: ${account.address}.`);
-		await addAccountToDirectUpdateQueue(account);
+		await accountAddrUpdateQueue.add(account);
 	});
 
 	logger.info(`Registering job processor for ${blockMessageQueue.name} message queue.`);
