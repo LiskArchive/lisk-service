@@ -320,8 +320,34 @@ const getEventsResult = {
 	},
 };
 
+const mockEventTopicsQueryParams = {
+	height: 123,
+	sort: 'timestamp:desc',
+	order: 'index:asc',
+	limit: 10,
+	offset: 0,
+	propBetweens: [
+		{
+			property: 'height',
+			from: 1,
+			to: 1000,
+		},
+		{
+			property: 'timestamp',
+			from: 1,
+			to: 1000000000,
+		},
+	],
+	leftOuterJoin: {
+		targetTable: 'events',
+		leftColumn: 'events.id',
+		rightColumn: 'event_topics.eventID',
+	},
+	distinct: 'eventID' };
+
 module.exports = {
 	mockEventTopics,
 	mockEventsForEventTopics,
 	getEventsResult,
+	mockEventTopicsQueryParams,
 };

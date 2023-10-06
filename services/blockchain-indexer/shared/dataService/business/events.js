@@ -160,7 +160,18 @@ const getEvents = async (params) => {
 			throw new NotFoundException(`Invalid blockID: ${blockID}`);
 		}
 		if ('height' in params && Number(params.height) !== block.height) {
-			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+			let heightLowerBound = Number(params.height);
+			let heightHigherBound = Number(params.height);
+
+			if (typeof params.height === 'string' && params.height.includes(':')) {
+				const [fromStr, toStr] = params.height.split(':');
+				heightLowerBound = Number(fromStr);
+				heightHigherBound = Number(toStr);
+			}
+
+			if (block.height < heightLowerBound || block.height > heightHigherBound) {
+				throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+			}
 		}
 		queryParams.height = block.height;
 	}
