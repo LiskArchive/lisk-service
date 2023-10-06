@@ -30,6 +30,6 @@ describe('Test delay method', () => {
 		await delay(delayMs);
 		const endTime = Date.now();
 		const millisDifference = endTime - startTime;
-		expect(millisDifference).toBeGreaterThanOrEqual(delayMs * 0.98);
+		expect(millisDifference).toBeGreaterThanOrEqual(delayMs - 1);
 	});
 });
