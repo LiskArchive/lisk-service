@@ -68,6 +68,7 @@ pipeline {
 							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
 							make build
 							make build-local
+							make down
 							make up
 							'''
 					}
@@ -187,8 +188,6 @@ pipeline {
 							docker rm $(docker ps -a -q)
 							docker volume rm $(docker volume ls -q)
 							docker system prune -a
-							kill -9 $(lsof -t -i:9000)
-							kill -9 $(lsof -t -i:9001)
 							pm2 kill
 							pm2 flush
 						'''

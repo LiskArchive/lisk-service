@@ -30,8 +30,11 @@ describe('get.pos.stakers', () => {
 
 	beforeAll(async () => {
 		let refValidatorAddress;
+		let retries = 10;
+		let success = false;
+
+		/* eslint-disable no-await-in-loop */
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const response1 = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'pos:stake', limit: 1 });
 			const { data: [stakeTx] = [] } = response1.result;
 			if (stakeTx) {
@@ -41,8 +44,29 @@ describe('get.pos.stakers', () => {
 				refValidatorAddress = stake.validatorAddress;
 			}
 		} while (!refValidatorAddress);
-		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
-		[refValidator] = validatorsResponse.result.data;
+
+		while (retries > 0 && !success) {
+			try {
+				const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
+				[refValidator] = validatorsResponse.result.data;
+
+				if (refValidator) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching validators. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch validator addresss after 5 retries');
+		}
+
+		/* eslint-enable no-await-in-loop */
 	});
 
 	it('should return list of stakers when requested for known validator address', async () => {

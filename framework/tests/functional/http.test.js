@@ -29,7 +29,7 @@ beforeEach(() => {
 const url = 'https://testnet-service.lisk.com/api/v3/blocks';
 
 describe('HTTP library is able to send GET request', () => {
-	test('with default parameters', async () => {
+	it('should have default parameters', async () => {
 		const response = await http.request(url);
 		expect(response).toHaveProperty('data');
 		expect(response.data).toHaveProperty('data');
@@ -37,7 +37,7 @@ describe('HTTP library is able to send GET request', () => {
 		// expect(response.data).toHaveProperty('links');
 	});
 
-	test('by explicitly defining get', async () => {
+	it('should be able to send GET request by explicitly defining get', async () => {
 		const response = await http.get(url);
 		expect(response).toHaveProperty('data');
 		expect(response.data).toHaveProperty('data');
@@ -47,7 +47,7 @@ describe('HTTP library is able to send GET request', () => {
 });
 
 describe('HTTP library with caching enabled', () => {
-	test('supports plain GET request cache', async () => {
+	it('should support plain GET request cache', async () => {
 		const ttl = 50000;
 		const timestamps = [];
 
@@ -66,7 +66,7 @@ describe('HTTP library with caching enabled', () => {
 		expect(timestamps[2] - timestamps[1]).toBeLessThanOrEqual(7);
 	});
 
-	xtest('handles expire time properly', async () => {
+	it('should handle expire time properly', async () => {
 		const FIXED_DATA = 'fixed';
 		const ttl = 50;
 		const timestamps = [];
@@ -85,7 +85,9 @@ describe('HTTP library with caching enabled', () => {
 		});
 		timestamps.push(getTimestamp());
 
-		// console.log(timestamps.map(t => t - timestamps[0]));
+		// Remove 'x-request-id' field
+		delete originalResponse.headers['x-request-id'];
+		delete secondResponse.headers['x-request-id'];
 
 		originalResponse.headers.date = FIXED_DATA;
 		secondResponse.headers.date = FIXED_DATA;

@@ -402,7 +402,7 @@ describe('Blocks API', () => {
 		});
 	});
 
-	xdescribe('Fetch blocks based on multiple request params', () => {
+	describe('Fetch blocks based on multiple request params', () => {
 		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
 			if (refBlock) {
 				const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=timestamp:desc&limit=100`);

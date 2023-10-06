@@ -402,7 +402,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	xdescribe('Fetch blocks based on multiple request params', () => {
+	describe('Fetch blocks based on multiple request params', () => {
 		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress, sort: 'timestamp:desc', limit: 100, offset: 0 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);

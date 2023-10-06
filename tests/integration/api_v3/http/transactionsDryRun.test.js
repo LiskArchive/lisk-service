@@ -59,7 +59,7 @@ describe('Post dryrun transactions API', () => {
 		}
 	});
 
-	xit('should return proper response (pending) when transaction object has less than required fee', async () => {
+	it('should return proper response (pending) when transaction object has less than required fee', async () => {
 		if (isDevnet) {
 			const response = await api.post(endpoint, { transaction: TRANSACTION_OBJECT_PENDING });
 			expect(response).toMap(goodRequestSchemaForTransactionsDryRun);

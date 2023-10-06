@@ -33,17 +33,17 @@ const app = Microservice({
 const testJob = () => true;
 
 describe('Test microservice', () => {
-	xdescribe('addJobs()', () => {
-		it('Job occurs only during start', async () => {
+	describe('scheduleJob()', () => {
+		it('should occur only during start', async () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
 				init: () => testJob(),
 			};
-			expect(app.addJob(job)).toBe(true);
+			expect(await app.scheduleJob(job)).toBe(true);
 		});
 
-		it('Job occurs based on interval', async () => {
+		it('should occur based on interval', async () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
@@ -51,10 +51,10 @@ describe('Test microservice', () => {
 				init: () => testJob(),
 				controller: () => testJob(),
 			};
-			expect(app.addJob(job)).toBe(true);
+			expect(await app.scheduleJob(job)).toBe(true);
 		});
 
-		it('Job occurs based on cron', async () => {
+		it('should occur based on cron', async () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
@@ -62,50 +62,50 @@ describe('Test microservice', () => {
 				init: () => testJob(),
 				controller: () => testJob(),
 			};
-			expect(app.addJob(job)).toBe(true);
+			expect(await app.scheduleJob(job)).toBe(true);
 		});
 
-		it('Return false when no init or controller defined', async () => {
+		it('should return false when no init or controller defined', async () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
 				schedule: '* * * * *',
 			};
-			expect(app.addJob(job)).toBe(false);
+			expect(await app.scheduleJob(job)).toBe(false);
 		});
 
-		it('Return false when no schedule or interval defined with controller', async () => {
+		it('should return false when no schedule or interval defined with controller', async () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
 				init: () => testJob(),
 				controller: () => testJob(),
 			};
-			expect(app.addJob(job)).toBe(false);
+			expect(await app.scheduleJob(job)).toBe(false);
 		});
 
-		it('Return false when no controller defined with interval/schedule', async () => {
+		it('should return false when no controller defined with interval/schedule', async () => {
 			const job = {
 				name: 'test.job.start',
 				description: 'Return true',
 				interval: 5, // seconds
 				init: () => testJob(),
 			};
-			expect(app.addJob(job)).toBe(false);
+			expect(await app.scheduleJob(job)).toBe(false);
 		});
 	});
 
 	describe('addMethods()', () => {
-		it('Return true when method is registered', async () => {
+		it('should return true when method is registered', async () => {
 			const testMethod = {
 				name: 'test.method',
 				description: 'Return true',
 				controller: async () => true,
 			};
-			expect(app.addMethod(testMethod)).toBe(true);
+			expect(await app.addMethod(testMethod)).toBe(true);
 		});
 
-		it('Return false when when no controller defined', async () => {
+		it('should return false when no controller defined', async () => {
 			const testMethod = {
 				name: 'test.method',
 				description: 'Return false',
@@ -115,7 +115,7 @@ describe('Test microservice', () => {
 	});
 
 	describe('addEvents()', () => {
-		it('Return true when event is registered', async () => {
+		it('should return true when event is registered', async () => {
 			const testEvent = {
 				name: 'test.event',
 				description: 'Return true',
@@ -124,7 +124,7 @@ describe('Test microservice', () => {
 			expect(app.addEvent(testEvent)).toBe(true);
 		});
 
-		it('Return false when when no controller defined', async () => {
+		it('should return false when no controller defined', async () => {
 			const testEvent = {
 				name: 'test.event',
 				description: 'Return false',
@@ -134,7 +134,7 @@ describe('Test microservice', () => {
 	});
 
 	describe('requestRpc()', () => {
-		it('Return result when call with registered method name', async () => {
+		it('should return result when called with registered method name', async () => {
 			const testData = {
 				address: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
 				balance: '95589969000000',
@@ -155,7 +155,7 @@ describe('Test microservice', () => {
 			expect(result).toMatchObject(testData);
 		});
 
-		it('Throw error when method is not registered', async () => {
+		it('should throw an error when method is not registered', async () => {
 			expect(app.requestRpc('test-service.unregistered.method', {})).rejects.toThrow();
 		});
 	});

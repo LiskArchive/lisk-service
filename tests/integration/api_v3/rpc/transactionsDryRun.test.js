@@ -79,7 +79,7 @@ describe('Method post.transactions.dryrun', () => {
 		}
 	});
 
-	xit('should return proper response (pending) when transaction object has less than required fee', async () => {
+	it('should return proper response (pending) when transaction object has less than required fee', async () => {
 		if (isDevnet) {
 			const response = await postDryrunTransaction({ transaction: TRANSACTION_OBJECT_PENDING });
 			expect(response).toMap(jsonRpcEnvelopeSchema);

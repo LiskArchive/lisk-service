@@ -31,18 +31,44 @@ describe('Stakers API', () => {
 
 	beforeAll(async () => {
 		let refValidatorAddress;
+		let retries = 10;
+		let success = false;
+
+		/* eslint-disable no-await-in-loop */
 		do {
-			// eslint-disable-next-line no-await-in-loop
-			const { data: [stakeTx] = [] } = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+			const response1 = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+			const { data: [stakeTx] = [] } = response1;
 			if (stakeTx) {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { stakes: [stake] } } = stakeTx;
 				refStaker = stakeTx.sender;
 				refValidatorAddress = stake.validatorAddress;
 			}
-		} while (!refValidatorAddress);
-		const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
-		[refValidator] = validatorsResponse.data;
+		}
+		while (!refValidatorAddress);
+
+		while (retries > 0 && !success) {
+			try {
+				const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
+				[refValidator] = validatorsResponse.data;
+
+				if (refValidator) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching validators. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch validator addresss after 5 retries');
+		}
+
+		/* eslint-enable no-await-in-loop */
 	});
 
 	describe(`GET ${endpoint}`, () => {
