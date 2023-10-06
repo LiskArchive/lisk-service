@@ -30,6 +30,10 @@ module.exports = {
 		'<rootDir>/helpers/setupCustomMatchers.js',
 		'<rootDir>/setup.js',
 	],
+	reporters: [
+		'default',
+		'<rootDir>/jestReporter.js',
+	],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],
 		['jest-watch-toggle-config', { setting: 'bail' }],

@@ -71,7 +71,7 @@ describe('Functional tests for download utility', () => {
 	});
 
 	describe('Test downloadJSONFile method', () => {
-		xit('should download JSON file -> valid url', async () => {
+		it('should download JSON file -> valid url', async () => {
 			const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 			const filePath = `${testDir}/apiJson.json`;
 			expect(exists(filePath)).resolves.toBe(false);
@@ -80,8 +80,8 @@ describe('Functional tests for download utility', () => {
 		});
 
 		it('should throw error -> invalid url', async () => {
-			const url = 'https://invalid-url.com';
-			const filePath = `${testDir}/genesis_block.json`;
+			const url = 'invalid-url';
+			const filePath = `${testDir}/block.json`;
 			expect(downloadJSONFile(url, filePath)).rejects.toThrow();
 		});
 
@@ -102,7 +102,7 @@ describe('Functional tests for download utility', () => {
 	});
 
 	describe('Test downloadAndUnzipFile method', () => {
-		xit('should download and unzip file -> valid url', async () => {
+		it('should download and unzip file -> valid url', async () => {
 			const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
 			const filePath = `${testDir}/genesis_block.json`;
 			expect(exists(filePath)).resolves.toBe(false);

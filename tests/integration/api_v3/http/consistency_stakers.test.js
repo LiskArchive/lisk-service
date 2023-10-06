@@ -25,7 +25,7 @@ for (let i = 1; i < baseUrls.length; i++) {
 	const baseUrl0 = baseUrls[0];
 	const baseUrl1 = baseUrls[i];
 
-	xdescribe('Votes Received', () => {
+	describe('Votes Received', () => {
 		const endpoint0 = `${baseUrl0}/api/v3`;
 		const endpoint1 = `${baseUrl1}/api/v3`;
 		const generatorsEndpoint0 = `${endpoint0}/pos/validators?limit=103`;

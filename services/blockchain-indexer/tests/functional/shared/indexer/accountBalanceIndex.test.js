@@ -31,6 +31,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
+	nodeID: 'accountBalanceIndex',
 	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
@@ -64,7 +65,7 @@ beforeAll(async () => {
 });
 
 describe('Test updateAccountBalances method', () => {
-	xit('should update account balances correctly for address having balances', async () => {
+	it('should update account balances correctly for address having balances', async () => {
 		const accountInfo = usersSubStoreInfos[0];
 
 		// Delete all balances and check balance before update
@@ -89,7 +90,7 @@ describe('Test scheduleAccountBalanceUpdateFromEvents method', () => {
 
 	afterAll(async () => accountBalanceIndexQueue.queue.resume());
 
-	xit('should schedule account balance update correctly for token module events', async () => {
+	it('should schedule account balance update correctly for token module events', async () => {
 		const queueCountBeforeScheduling = await accountBalanceIndexQueue.queue.count();
 		expect(queueCountBeforeScheduling).toBe(0);
 

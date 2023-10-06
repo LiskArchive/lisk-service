@@ -24,7 +24,7 @@ const baseUrls = [config.SERVICE_ENDPOINT];
 for (let i = 0; i < baseUrls.length; i++) {
 	const baseUrl = baseUrls[i];
 
-	xdescribe(`Generators API on baseUrl: ${baseUrl}`, () => {
+	describe(`Generators API on baseUrl: ${baseUrl}`, () => {
 		const endpoint = `${baseUrl}/api/v3`;
 		const generatorEndpoint = `${endpoint}/generators?limit=103`;
 		const blockEndpoint = `${endpoint}/blocks?limit=1`;

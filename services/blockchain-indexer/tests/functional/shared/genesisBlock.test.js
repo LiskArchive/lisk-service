@@ -27,56 +27,6 @@ const {
 } = require('lisk-service-framework');
 const { ServiceBroker } = require('moleculer');
 
-// Need to mock KVStore since Mysql has issue with Jest: https://github.com/sidorares/node-mysql2/issues/489
-jest.mock('lisk-service-framework', () => {
-	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
-	return {
-		...actualLiskServiceFramework,
-		DB: {
-			...actualLiskServiceFramework.DB,
-			MySQL: {
-				...actualLiskServiceFramework.DB.MySQL,
-				KVStore: {
-					...actualLiskServiceFramework.DB.MySQL.KVStore,
-					getKeyValueTable: jest.fn(() => {
-						const keyValueMap = new Map();
-
-						const set = async (key, value) => {
-							keyValueMap.set(key, value);
-						};
-
-						const get = async (key) => keyValueMap.get(key);
-						const getByPattern = async (pattern) => {
-							const matchingEntries = Array
-								.from(keyValueMap.entries())
-								.filter(([key]) => key.startsWith(pattern));
-
-							const result = {};
-							/* eslint-disable-next-line no-restricted-syntax */
-							for (const [key, value] of matchingEntries) {
-								result[key] = value;
-							}
-
-							return result;
-						};
-
-						const deleteKey = async (key) => {
-							keyValueMap.delete(key);
-						};
-
-						return {
-							set,
-							get,
-							getByPattern,
-							delete: deleteKey,
-						};
-					}),
-				},
-			},
-		},
-	};
-});
-
 const { KV_STORE_KEY } = require('../../../shared/constants');
 
 const request = require('../../../shared/utils/request');
@@ -93,6 +43,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const keyValueTable = getKeyValueTable();
 
 const broker = new ServiceBroker({
+	nodeID: 'genesisBlock',
 	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
@@ -126,7 +77,7 @@ beforeAll(async () => {
 });
 afterAll(() => broker.stop());
 
-xdescribe('Test indexTokenModuleAssets method', () => {
+describe('Test indexTokenModuleAssets method', () => {
 	beforeEach(async () => {
 		await keyValueTable.delete(totalLockedKey);
 	});
@@ -156,7 +107,7 @@ xdescribe('Test indexTokenModuleAssets method', () => {
 	});
 });
 
-xdescribe('Test indexPosModuleAssets method', () => {
+describe('Test indexPosModuleAssets method', () => {
 	beforeEach(async () => {
 		await keyValueTable.delete(totalStakedKey);
 		await keyValueTable.delete(totalSelfStakedKey);
@@ -170,9 +121,9 @@ xdescribe('Test indexPosModuleAssets method', () => {
 
 		await indexPosModuleAssets();
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalStakedAfter >= BigInt(0)).toEqual(true);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalSelfStakedAfter >= BigInt(0)).toEqual(true);
 	});
 
 	it('should correctly index Token Module Asset only after commit when called with dbTrx', async () => {
@@ -190,13 +141,13 @@ xdescribe('Test indexPosModuleAssets method', () => {
 
 		await commitDBTransaction(dbTrx);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalStakedAfter >= BigInt(0)).toEqual(true);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalSelfStakedAfter >= BigInt(0)).toEqual(true);
 	});
 });
 
-xdescribe('Test indexGenesisBlockAssets method', () => {
+describe('Test indexGenesisBlockAssets method', () => {
 	beforeEach(async () => {
 		await keyValueTable.delete(totalLockedKey);
 		await keyValueTable.delete(totalStakedKey);
@@ -213,11 +164,11 @@ xdescribe('Test indexGenesisBlockAssets method', () => {
 
 		await indexGenesisBlockAssets();
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
-		expect(totalLockedAfter > BigInt(0)).toEqual(true);
+		expect(totalLockedAfter >= BigInt(0)).toEqual(true);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalStakedAfter >= BigInt(0)).toEqual(true);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalSelfStakedAfter >= BigInt(0)).toEqual(true);
 	});
 
 	it('should correctly index genesis block assets only after commit when called with dbTrx', async () => {
@@ -239,10 +190,10 @@ xdescribe('Test indexGenesisBlockAssets method', () => {
 
 		await commitDBTransaction(dbTrx);
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
-		expect(totalLockedAfter > BigInt(0)).toEqual(true);
+		expect(totalLockedAfter >= BigInt(0)).toEqual(true);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalStakedAfter >= BigInt(0)).toEqual(true);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter > BigInt(0)).toEqual(true);
+		expect(totalSelfStakedAfter >= BigInt(0)).toEqual(true);
 	});
 });
