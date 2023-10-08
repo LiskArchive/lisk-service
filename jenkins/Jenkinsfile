@@ -1,33 +1,3 @@
-MYSQL_PORT = 3306;
-REDIS_PORT = 6381;
-LISK_CORE_WS_PORT = 7887;
-
-def checkOpenPort(nPort) {
-	def result = sh script: "nc -z 127.0.0.1 ${nPort}", returnStatus: true
-	return (result == 0)
-}
-
-def runServiceIfMissing(svcName, path, nPort, startCommand = 'make up', logsCommand= 'make logs') {
-    if (checkOpenPort(nPort) == false) {
-        echo "${svcName} is not running, starting a new instance on port ${nPort}"
-        dir(path) { sh startCommand }
-        if (checkOpenPort(nPort) == false) {
-            dir(path) { sh logsCommand }
-            currentBuild.result = 'FAILURE'
-            throw new Exception("Failed to run ${svcName} instance")
-        }
-    }
-}
-
-def checkHttp(url) {
-	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
-	return (result == 0)
-}
-
-def waitForHttp(url) {
-	waitUntil { script { return (checkHttp(url) == true) } }
-}
-
 def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 	echo msg
@@ -36,164 +6,66 @@ def echoBanner(msg) {
 
 pipeline {
 	agent { node { label 'lisk-service' } }
-	triggers {
-		cron('0 23 * * *')
-	}
 	options {
-		timeout(time: 60, unit: 'MINUTES')
+		timeout(time: 10, unit: 'MINUTES')
 	}
-	environment {
-		ENABLE_HTTP_API='http-version3,http-status'
-		ENABLE_WS_API='rpc-v3,blockchain'
-		LISK_APP_WS='ws://host.docker.internal:7887'
-		ENABLE_TESTING_MODE='true'
-    }
 	stages {
-        stage('Checkout SCM') {
+		stage ('Build dependencies') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				cleanWs()
-				dir('lisk-service') {
-					checkout scm
+				nvm(readFile('.nvmrc').trim()) {
+					dir('./') { sh 'npm i -g yarn' }
+					dir('./') { sh 'yarn install --frozen-lockfile' }
+					dir('./framework') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-app-registry') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-connector') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-indexer') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/blockchain-coordinator') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/fee-estimator') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/market') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/export') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/gateway') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/template') { sh 'yarn install --frozen-lockfile' }
+					dir('./services/transaction-statistics') { sh 'yarn install --frozen-lockfile' }
+					dir('./tests') { sh 'yarn install --frozen-lockfile' }
 				}
 			}
 		}
-		stage('Start Lisk service') {
+		stage ('Check linting') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh '''
-							cp -f docker/example.env .env
-							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
-							make build
-							make build-local
-							make down
-							make up
-							'''
-					}
+				nvm(readFile('.nvmrc').trim()) {
+					sh 'yarn run eslint'
 				}
 			}
 		}
-		stage('Start Lisk core') {
+		stage('Perform unit tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh '''
-							# lisk-core
-							npm i -g lisk-core@4.0.0-rc.3
-							npm i -g pm2
-							pm2 kill
-							pm2 flush
-							rm -rf ~/.lisk/
-							lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
-							LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
-							'''
-					}
-					sleep(5)
-				}
-			}
-		}
-		stage('Start external services') {
-			steps {
-				dir('lisk-service') {
-					script {
-						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
-					}
-					sleep(5)
-				}
-			}	
-		}
-		stage('Wait till Indexing is complete') {
-            steps {
-                script {
-                    def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
-					def percentageIndexed = "0"
-					while (percentageIndexed != "100") {
-						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
-						if (response == 0) {
-							sh '''
-								curl http://127.0.0.1:9901/api/v3/index/status
-							'''
-
-							def jsonString = sh(script: "curl -s $apiUrl", returnStdout: true)
-							
-							// Extract the percentageIndexed value from the JSON string
-							def percentageIndexStart = jsonString.indexOf('"percentageIndexed":') + 20
-							def percentageIndexEnd = jsonString.indexOf(',', percentageIndexStart)
-							percentageIndexed = jsonString.substring(percentageIndexStart, percentageIndexEnd).trim()
-						}
-						else {
-							sh '''
-								echo "Failed to fetch status"
-							'''
-						}
-						sleep(30)
-					}
-                }
-            }
-		}
-		stage('Run tests') {
-			parallel {
-				stage ('Check linting') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh 'yarn run eslint'
-							}
-						}
-					}
-				}
-				stage('Run functional tests') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								sh 'make build-local'
-								sh 'docker ps'
-								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://localhost:4222' npm run test:functional" }
-								dir('./services/blockchain-indexer') { sh "SERVICE_BROKER='nats://localhost:4222' SERVICE_INDEXER_CACHE_REDIS='redis://localhost:6381/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://localhost:6381/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://localhost:6381/4' npm run test:functional" }
-								dir('./services/fee-estimator') { sh "npm run test:functional" }
-								dir('./services/market') { sh "SERVICE_BROKER='nats://localhost:4222' SERVICE_MARKET_REDIS='redis://localhost:6381/10' npm run test:functional" }
-								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://localhost:4222' npm run test:functional" }
-							    dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:6381/0' npm run test:functional" }
-							}
-						}
-					}
-				}
-				stage('Run integration tests') {
-					steps {
-						script { echoBanner(STAGE_NAME) }
-						dir('lisk-service') {
-							nvm(readFile('.nvmrc').trim()) {
-								dir('./tests') { sh 'node runIntegrationTestsWithRetry.js' }
-							}
-						}
-					}
+				nvm(readFile('.nvmrc').trim()) {
+					dir('./framework') { sh "yarn run test:unit" }
+					dir('./services/blockchain-app-registry') { sh "yarn run test:unit" }
+					dir('./services/blockchain-connector') { sh "yarn run test:unit" }
+					dir('./services/blockchain-indexer') { sh "yarn run test:unit" }
+					dir('./services/fee-estimator') { sh "yarn run test:unit" }
+					dir('./services/market') { sh "yarn run test:unit" }
+					dir('./services/export') { sh "yarn run test:unit" }
+					dir('./services/gateway') { sh "yarn run test:unit" }
 				}
 			}
 		}
 	}
 	post {
+		failure {
+			script { echoBanner('Failed to run the pipeline') }
+		}
 		cleanup {
 			script { 
-				dir('lisk-service') {
-					nvm(readFile('.nvmrc').trim()) {
-						sh '''
-							docker kill $(docker ps -q)
-							docker rm $(docker ps -a -q)
-							docker volume rm $(docker volume ls -q)
-							docker system prune -a
-							pm2 kill
-							pm2 flush
-						'''
-					}
+				echoBanner('Cleaning up...') 
+				nvm(readFile('.nvmrc').trim()) {
+					echoBanner('Removing dependencies') 
+					sh 'make clean-local'
 				}
-				cleanWs()
 			}
 		}
 	}
