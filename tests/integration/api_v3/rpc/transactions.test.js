@@ -40,9 +40,33 @@ const getTransactions = async params => request(wsRpcUrl, 'get.transactions', pa
 
 describe('Method get.transactions', () => {
 	let refTransaction;
+
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
-		[refTransaction] = response.result.data;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
+				[refTransaction] = response.result.data;
+
+				if (refTransaction) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching transactions. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch transactions after 10 retries');
+		}
 	});
 
 	describe('Retrieve transactions', () => {

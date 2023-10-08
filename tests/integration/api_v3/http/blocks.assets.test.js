@@ -37,9 +37,33 @@ const {
 describe('Blocks Assets API', () => {
 	let refBlockAssets;
 	let refAsset;
+
 	beforeAll(async () => {
-		[refBlockAssets] = (await api.get(`${endpoint}?height=0`)).data;
-		[refAsset] = refBlockAssets.assets;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				[refBlockAssets] = (await api.get(`${endpoint}?height=0`)).data;
+				[refAsset] = refBlockAssets.assets;
+
+				if (refAsset) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching transactions. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch block assets after 10 retries');
+		}
 	});
 
 	describe('GET /blocks/assets', () => {

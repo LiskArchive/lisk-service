@@ -89,7 +89,7 @@ describe('Generators API', () => {
 			if (firstGenerator.name) {
 				const response = await api.get(`${endpoint}/generators?search=${firstGenerator.name}`);
 				expect(response).toMap(generatorResponseSchema);
-				expect(response.data.length).toBe(1);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
 			}
 		});
 

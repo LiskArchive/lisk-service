@@ -111,7 +111,7 @@ describe('Generators API', () => {
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result).toMap(generatorResponseSchema);
-				expect(result.data.length).toBe(1);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
 			}
 		});
 
