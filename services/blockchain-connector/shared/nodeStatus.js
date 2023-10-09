@@ -19,6 +19,7 @@ const { getNodeInfo } = require('./sdk/endpoints');
 
 const config = require('../config');
 const waitForIt = require('./utils/waitForIt');
+const { timeoutMessage } = require('./sdk/client');
 
 const logger = Logger();
 
@@ -62,6 +63,9 @@ const waitForNodeToFinishSync = (resolve) => new Promise((res) => {
 					logger.info('Node is fully synchronized with the network.');
 					return resolve(isNodeSyncComplete);
 				})();
+		}).catch(error => {
+			if (error.message.includes(timeoutMessage)) waitForNodeToFinishSync.bind(null, resolve);
+			else throw error;
 		});
 });
 
