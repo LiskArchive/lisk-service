@@ -25,7 +25,7 @@ const mockEventsFilePath = path.resolve(`${__dirname}/../../../../../shared/data
 const mockBlocksTableSchema = require('../../../../../shared/database/schema/blocks');
 const mockEventsTableSchema = require('../../../../../shared/database/schema/events');
 const mockEventTopicsTableSchema = require('../../../../../shared/database/schema/eventTopics');
-const { mockEventTopics, mockEventsForEventTopics, getEventsResult } = require('../../constants/events');
+const { mockEventTopics, mockEventsForEventTopics, getEventsResult, mockEventTopicsQueryParams } = require('../../constants/events');
 
 describe('getEventsByBlockID', () => {
 	beforeEach(() => {
@@ -187,6 +187,8 @@ describe('getEvents', () => {
 	});
 
 	it('should retrieve events successfully', async () => {
+		const blockID = '793acee22acea7f4f474e2f8e9e24cb9220da2fc2405026214b5d72a152cb55d';
+
 		jest.mock('../../../../../config', () => {
 			const actual = jest.requireActual('../../../../../config');
 			return {
@@ -207,7 +209,16 @@ describe('getEvents', () => {
 						getTableInstance: jest.fn((schema) => {
 							if (schema.tableName === mockBlocksTableSchema.tableName) {
 								return {
-									find: jest.fn(() => []),
+									find: jest.fn((queryParams) => {
+										if (queryParams.id) {
+											expect(queryParams.id).toBe(blockID);
+										}
+
+										return [{
+											blockID,
+											height: 123,
+										}];
+									}),
 								};
 							} if (schema.tableName === mockEventsTableSchema.tableName) {
 								return {
@@ -216,7 +227,10 @@ describe('getEvents', () => {
 								};
 							} if (schema.tableName === mockEventTopicsTableSchema.tableName) {
 								return {
-									find: jest.fn(() => mockEventsForEventTopics),
+									find: jest.fn((queryParams) => {
+										expect(queryParams).toEqual(mockEventTopicsQueryParams);
+										return mockEventsForEventTopics;
+									}),
 									count: jest.fn(() => 10),
 								};
 							}
@@ -228,6 +242,11 @@ describe('getEvents', () => {
 		});
 
 		const params = {
+			blockID,
+			topic: '03',
+			senderAddress: 'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
+			timestamp: '1:1000000000',
+			height: '1:1000',
 			sort: 'timestamp:desc',
 			order: 'index:asc',
 			limit: 10,
