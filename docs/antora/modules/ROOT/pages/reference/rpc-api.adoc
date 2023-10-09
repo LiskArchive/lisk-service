@@ -2,12 +2,12 @@
 :toc:
 
 == Access paths and compatibility
-The RPC WebSocket API can be accessed by the `ws://127.0.0.1:9901/rpc-v2`.
+The RPC WebSocket API can be accessed by the `ws://127.0.0.1:9901/rpc-v3`.
 
 === Access paths and compatibility
-The WebSocket API can be accessed by the `wss://service.lisk.com/rpc-v2`.
+The WebSocket API can be accessed by the `wss://service.lisk.com/rpc-v3`.
 
-The testnet network can also be accessed by `wss://testnet-service.lisk.com/rpc-v2`.
+The testnet network can also be accessed by `wss://testnet-service.lisk.com/rpc-v3`.
 
 The Lisk Service WebSocket API uses the `socket.io` library and is compatible with the JSON-RPC 2.0 standard.
 The specification below contains numerous examples how to use the API in practice.
