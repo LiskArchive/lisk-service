@@ -40,7 +40,7 @@ describe('Test microservice', () => {
 				description: 'Return true',
 				init: () => testJob(),
 			};
-			expect(await app.scheduleJob(job)).toBe(true);
+			expect(app.scheduleJob(job)).resolves.toBe(true);
 		});
 
 		it('should occur based on interval', async () => {
@@ -51,7 +51,7 @@ describe('Test microservice', () => {
 				init: () => testJob(),
 				controller: () => testJob(),
 			};
-			expect(await app.scheduleJob(job)).toBe(true);
+			expect(app.scheduleJob(job)).resolves.toBe(true);
 		});
 
 		it('should occur based on cron', async () => {
@@ -62,7 +62,7 @@ describe('Test microservice', () => {
 				init: () => testJob(),
 				controller: () => testJob(),
 			};
-			expect(await app.scheduleJob(job)).toBe(true);
+			expect(app.scheduleJob(job)).resolves.toBe(true);
 		});
 
 		it('should return false when no init or controller defined', async () => {
@@ -71,7 +71,7 @@ describe('Test microservice', () => {
 				description: 'Return true',
 				schedule: '* * * * *',
 			};
-			expect(await app.scheduleJob(job)).toBe(false);
+			expect(app.scheduleJob(job)).resolves.toBe(false);
 		});
 
 		it('should return false when no schedule or interval defined with controller', async () => {
@@ -81,7 +81,7 @@ describe('Test microservice', () => {
 				init: () => testJob(),
 				controller: () => testJob(),
 			};
-			expect(await app.scheduleJob(job)).toBe(false);
+			expect(app.scheduleJob(job)).resolves.toBe(false);
 		});
 
 		it('should return false when no controller defined with interval/schedule', async () => {
@@ -91,7 +91,7 @@ describe('Test microservice', () => {
 				interval: 5, // seconds
 				init: () => testJob(),
 			};
-			expect(await app.scheduleJob(job)).toBe(false);
+			expect(app.scheduleJob(job)).resolves.toBe(false);
 		});
 	});
 
@@ -102,7 +102,7 @@ describe('Test microservice', () => {
 				description: 'Return true',
 				controller: async () => true,
 			};
-			expect(await app.addMethod(testMethod)).toBe(true);
+			expect(app.addMethod(testMethod)).toBe(true);
 		});
 
 		it('should return false when no controller defined', async () => {
@@ -156,7 +156,7 @@ describe('Test microservice', () => {
 		});
 
 		it('should throw an error when method is not registered', async () => {
-			expect(app.requestRpc('test-service.unregistered.method', {})).rejects.toThrow();
+			expect(() => app.requestRpc('test-service.unregistered.method', {})).rejects.toThrow();
 		});
 	});
 });

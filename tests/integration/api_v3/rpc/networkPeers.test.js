@@ -34,7 +34,7 @@ const requestPeers = async params => request(wsRpcUrl, 'get.network.peers', para
 
 describe('Peers API', () => {
 	describe('get.peers', () => {
-		it('Should return peers without request params', async () => {
+		it('should return peers without request params', async () => {
 			const response = await requestPeers({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -45,7 +45,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers with empty IP', async () => {
+		it('should return peers with empty IP', async () => {
 			const response = await requestPeers({ ip: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -56,12 +56,12 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return a bad request for invalid IP', async () => {
+		it('should return a bad request for invalid IP', async () => {
 			const response = await requestPeers({ ip: '0' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('Should return peers with valid networkVersion', async () => {
+		it('should return peers with valid networkVersion', async () => {
 			const response = await requestPeers({ networkVersion: '2.0' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -72,7 +72,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers with empty networkVersion', async () => {
+		it('should return peers with empty networkVersion', async () => {
 			const response = await requestPeers({ networkVersion: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -83,17 +83,17 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return an empty response for non-existent networkVersion', async () => {
+		it('should return an empty response for non-existent networkVersion', async () => {
 			const error = await requestPeers({ networkVersion: '9.99.0' });
 			expect(error).toMap(emptyResponseSchema);
 		});
 
-		it('Should return a bad request for an invalid networkVersion', async () => {
+		it('should return a bad request for an invalid networkVersion', async () => {
 			const error = await requestPeers({ networkVersion: 'v3.0' });
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		it('Should return peers in the "connected" state', async () => {
+		it('should return peers in the "connected" state', async () => {
 			const response = await requestPeers({ state: 'connected' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -104,7 +104,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers in the "disconnected" state', async () => {
+		it('should return peers in the "disconnected" state', async () => {
 			const response = await requestPeers({ state: 'disconnected' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -115,7 +115,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers in the "any" state', async () => {
+		it('should return peers in the "any" state', async () => {
 			const response = await requestPeers({ state: 'any' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -126,7 +126,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers with empty state', async () => {
+		it('should return peers with empty state', async () => {
 			const response = await requestPeers({ state: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -137,17 +137,17 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return a bad request for an invalid state 1', async () => {
+		it('should return a bad request for an invalid state 1', async () => {
 			const error = await requestPeers({ state: 'invalid' });
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		it('Should return a bad request for an invalid state 2', async () => {
+		it('should return a bad request for an invalid state 2', async () => {
 			const error = await requestPeers({ state: 1 });
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		it('Should return peers with empty height', async () => {
+		it('should return peers with empty height', async () => {
 			const response = await requestPeers({ height: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -158,17 +158,17 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return an empty response for a non-existent height', async () => {
+		it('should return an empty response for a non-existent height', async () => {
 			const error = await requestPeers({ height: 1000000000 });
 			expect(error).toMap(emptyResponseSchema);
 		});
 
-		it('Should return a bad request for an invalid height', async () => {
+		it('should return a bad request for an invalid height', async () => {
 			const error = await requestPeers({ height: -10 });
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		it('Should return up to 100 peers with limit=100', async () => {
+		it('should return up to 100 peers with limit=100', async () => {
 			const response = await requestPeers({ limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -179,7 +179,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers with empty limit', async () => {
+		it('should return peers with empty limit', async () => {
 			const response = await requestPeers({ limit: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -190,7 +190,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return peers with empty offset', async () => {
+		it('should return peers with empty offset', async () => {
 			const response = await requestPeers({ offset: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -201,12 +201,12 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return an empty response for a too big offset', async () => {
+		it('should return an empty response for a too big offset', async () => {
 			const response = await requestPeers({ offset: 1000000 });
 			expect(response).toMap(emptyResponseSchema);
 		});
 
-		it('Should return peers with empty sort', async () => {
+		it('should return peers with empty sort', async () => {
 			const response = await requestPeers({ sort: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -217,24 +217,24 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return a bad request for a wrong sort', async () => {
+		it('should return a bad request for a wrong sort', async () => {
 			const response = await requestPeers({ sort: 'height:ascc' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('Should return a bad request for an invalid request param', async () => {
+		it('should return a bad request for an invalid request param', async () => {
 			const response = await requestPeers({ invalidParam: 'invalid' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('Should return an invalid request for a wrong URL', async () => {
+		it('should return an invalid request for a wrong URL', async () => {
 			const response = await request(wsRpcUrl, 'get.peers.connected', {});
 			expect(response).toMap(wrongMethodSchema);
 		});
 	});
 
 	describe('Peers sorted by height', () => {
-		it('Should return 10 peers sorted by height descending', async () => {
+		it('should return 10 peers sorted by height descending', async () => {
 			const response = await requestPeers({ sort: 'height:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -252,7 +252,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return 10 peers sorted by height ascending', async () => {
+		it('should return 10 peers sorted by height ascending', async () => {
 			const response = await requestPeers({ sort: 'height:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -272,7 +272,7 @@ describe('Peers API', () => {
 	});
 
 	describe('Peers sorted by networkVersion', () => {
-		it('Should return 10 peers sorted by networkVersion descending', async () => {
+		it('should return 10 peers sorted by networkVersion descending', async () => {
 			const response = await requestPeers({ sort: 'networkVersion:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -293,7 +293,7 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Should return 10 peers sorted by networkVersion ascending', async () => {
+		it('should return 10 peers sorted by networkVersion ascending', async () => {
 			const response = await requestPeers({ sort: 'networkVersion:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

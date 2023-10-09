@@ -34,6 +34,8 @@ const {
 	blockAssetSchema,
 } = require('../../../schemas/api_v3/block.schema');
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 describe('Blocks Assets API', () => {
 	let refBlockAssets;
 	let refAsset;
@@ -57,7 +59,7 @@ describe('Blocks Assets API', () => {
 
 				// Delay by 3 sec
 				// eslint-disable-next-line no-await-in-loop
-				await new Promise((resolve) => setTimeout(resolve, 3000));
+				await delay(3000);
 			}
 		}
 

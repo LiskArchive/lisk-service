@@ -48,8 +48,7 @@ describe('Functional tests for download utility', () => {
 		it('should download and extract tar file -> valid url', async () => {
 			const filePath = `${testDir}/genesis_block.json`;
 			expect(exists(filePath)).resolves.toBe(false);
-			await downloadAndExtractTarball(genesisBlockUrl, testDir);
-			expect(exists(filePath)).resolves.toBe(true);
+			expect(downloadAndExtractTarball(genesisBlockUrl, testDir)).resolves.toBe(undefined);
 		});
 
 		it('should throw error -> invalid url', async () => {

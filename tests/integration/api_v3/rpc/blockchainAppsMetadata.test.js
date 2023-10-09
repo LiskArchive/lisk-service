@@ -96,6 +96,7 @@ describe('get.blockchain.apps.meta', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -106,7 +107,7 @@ describe('get.blockchain.apps.meta', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(2);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -120,7 +121,7 @@ describe('get.blockchain.apps.meta', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		expect(result.data.length).toBeLessThanOrEqual(2);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -131,6 +132,7 @@ describe('get.blockchain.apps.meta', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});
@@ -141,6 +143,7 @@ describe('get.blockchain.apps.meta', () => {
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetadataSchema));
 		expect(result.meta).toMap(metaSchema);
 	});

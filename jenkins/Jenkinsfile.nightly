@@ -114,10 +114,6 @@ pipeline {
 					while (percentageIndexed != "100") {
 						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
 						if (response == 0) {
-							sh '''
-								curl http://127.0.0.1:9901/api/v3/index/status
-							'''
-
 							def jsonString = sh(script: "curl -s $apiUrl", returnStdout: true)
 							
 							// Extract the percentageIndexed value from the JSON string

@@ -102,7 +102,7 @@ describe('Events API', () => {
 	});
 
 	describe('Retrieve event list by transactionID', () => {
-		xit('should return event with known transactionID', async () => {
+		it('should return event with known transactionID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -236,7 +236,7 @@ describe('Events API', () => {
 	});
 
 	describe('Retrieve event list by senderAddress', () => {
-		xit('should return known address', async () => {
+		it('should return known address', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -492,7 +492,7 @@ describe('Events API', () => {
 	});
 
 	describe('Fetch events based on multiple request params', () => {
-		xit('should return event when queried with transactionID and blockID', async () => {
+		it('should return event when queried with transactionID and blockID', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -507,7 +507,7 @@ describe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('should return event when queried with transactionID and height', async () => {
+		it('should return event when queried with transactionID and height', async () => {
 			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

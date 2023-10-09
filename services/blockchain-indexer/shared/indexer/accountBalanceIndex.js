@@ -23,7 +23,7 @@ const {
 
 const config = require('../../config');
 const { MODULE } = require('../constants');
-const { getTokenBalances } = require('../dataService/token');
+const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;

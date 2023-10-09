@@ -35,6 +35,8 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlocksAssets = async params => request(wsRpcUrl, 'get.blocks.assets', params);
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 describe('Method get.blocks.assets', () => {
 	let refBlockAssets;
 	let refAsset;
@@ -58,7 +60,7 @@ describe('Method get.blocks.assets', () => {
 
 				// Delay by 3 sec
 				// eslint-disable-next-line no-await-in-loop
-				await new Promise((resolve) => setTimeout(resolve, 3000));
+				await delay(3000);
 			}
 		}
 

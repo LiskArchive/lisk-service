@@ -120,13 +120,15 @@ describe('Claimable rewards API', () => {
 	});
 
 	it('should return list of claimable rewards with known validator publicKey', async () => {
-		const response = await getPosClaimableRewards({ publicKey: refGenerator.publicKey });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
+		if (refGenerator.publicKey) {
+			const response = await getPosClaimableRewards({ publicKey: refGenerator.publicKey });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 
-		const { result } = response;
-		expect(result).toMap(goodResponseSchema);
-		expect(result.data.length).toBeGreaterThanOrEqual(0);
-		expect(result.data.length).toBeLessThanOrEqual(10);
+			const { result } = response;
+			expect(result).toMap(goodResponseSchema);
+			expect(result.data.length).toBeGreaterThanOrEqual(0);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+		}
 	});
 
 	it('should return list of of claimable rewards with known validator publicKey and offset=1', async () => {

@@ -1,6 +1,6 @@
 {
 	"name": "lisk-core",
-	"script": "lisk-core start --network=devnet --api-ws --api-ipc --api-host=0.0.0.0",
+	"script": "lisk-core start --network=devnet --api-ws --api-host=127.0.0.1",
 	"env": {
 		"LISK_NETWORK": "devnet"
 	}
