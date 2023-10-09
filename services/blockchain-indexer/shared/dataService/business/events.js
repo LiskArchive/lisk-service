@@ -14,6 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const _ = require('lodash');
 
 const {
 	CacheLRU,
@@ -99,6 +100,8 @@ const cacheEventsByBlockID = async (blockID, events) => {
 const deleteEventsFromCache = async (height) => eventCache.delete(height);
 
 const getEvents = async (params) => {
+	let queryParams = _.cloneDeep(params);
+
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
 	const eventTopicsTable = await getEventTopicsTable();
@@ -108,66 +111,81 @@ const getEvents = async (params) => {
 		meta: {},
 	};
 
-	const isTopicInQuery = !!params.topic;
-
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		params = normalizeRangeParam(params, 'height');
+		queryParams = normalizeRangeParam(queryParams, 'height');
 	}
 
 	if (params.timestamp && params.timestamp.includes(':')) {
-		params = normalizeRangeParam(params, 'timestamp');
+		queryParams = normalizeRangeParam(queryParams, 'timestamp');
 	}
 
 	if (params.topic) {
-		const { topic, ...remParams } = params;
-		params = remParams;
-		params.whereIn = {
+		const { topic, ...remQueryParams } = queryParams;
+		queryParams = remQueryParams;
+
+		queryParams.whereIn = {
 			property: 'topic',
 			values: topic.split(','),
 		};
 	}
 
 	if (params.transactionID) {
-		const { transactionID, topic, ...remParams } = params;
-		params = remParams;
-		if (!topic) {
-			params.topic = transactionID;
+		const { transactionID, ...remQueryParams } = queryParams;
+		queryParams = remQueryParams;
+
+		if (!params.topic) {
+			queryParams.topic = transactionID;
 		} else {
-			params.andWhere = { topic: transactionID };
+			queryParams.andWhere = { topic: transactionID };
 		}
 	}
 
 	if (params.senderAddress) {
-		const { senderAddress, topic, ...remParams } = params;
-		params = remParams;
-		if (!topic) {
-			params.topic = senderAddress;
+		const { senderAddress, ...remQueryParams } = queryParams;
+		queryParams = remQueryParams;
+
+		if (!params.topic) {
+			queryParams.topic = senderAddress;
 		} else {
-			params.andWhere = { topic: senderAddress };
+			queryParams.andWhere = { topic: senderAddress };
 		}
 	}
 
 	if (params.blockID) {
-		const { blockID, ...remParams } = params;
-		params = remParams;
+		const { blockID, ...remQueryParams } = queryParams;
+		queryParams = remQueryParams;
+
 		const [block] = await blocksTable.find({ id: blockID, limit: 1 }, ['height']);
 		if (!block || !block.height) {
 			throw new NotFoundException(`Invalid blockID: ${blockID}`);
 		}
-		if ('height' in params && params.height !== block.height) {
-			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+		if ('height' in params && Number(params.height) !== block.height) {
+			let heightLowerBound = Number(params.height);
+			let heightHigherBound = Number(params.height);
+
+			if (typeof params.height === 'string' && params.height.includes(':')) {
+				const [fromStr, toStr] = params.height.split(':');
+				heightLowerBound = Number(fromStr);
+				heightHigherBound = Number(toStr);
+			}
+
+			if (block.height < heightLowerBound || block.height > heightHigherBound) {
+				throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+			}
 		}
-		params.height = block.height;
+		queryParams.height = block.height;
 	}
 
-	params.leftOuterJoin = {
+	const isTopicInQuery = !!params.topic || !!queryParams.topic;
+
+	queryParams.leftOuterJoin = {
 		targetTable: eventsTableSchema.tableName,
 		leftColumn: `${eventsTableSchema.tableName}.id`,
 		rightColumn: `${eventTopicsTableSchema.tableName}.eventID`,
 	};
 
 	const eventsInfo = await eventTopicsTable.find(
-		{ ...params, distinct: 'eventID' },
+		{ ...queryParams, distinct: 'eventID' },
 		['eventStr', 'height', 'index'],
 	);
 
@@ -194,17 +212,17 @@ const getEvents = async (params) => {
 	);
 
 	let total;
-	const { order, sort, ...remParams } = params;
+	const { order, sort, ...remQueryParams } = queryParams;
 
 	if (isTopicInQuery) {
 		total = await eventTopicsTable.count(
-			{ ...remParams, groupBy: 'eventID' },
+			{ ...remQueryParams, distinct: 'eventID' },
 			['eventID'],
 		);
 	} else {
-		// If params dosent contain event_topics specific column data
+		// If params doesn't contain event_topics specific column data
 		// then count all rows of event table for query optimization.
-		const { leftOuterJoin, ...remParamsWithoutJoin } = remParams;
+		const { leftOuterJoin, ...remParamsWithoutJoin } = remQueryParams;
 		total = await eventsTable.count(remParamsWithoutJoin, ['id']);
 	}
 

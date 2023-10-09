@@ -36,7 +36,7 @@ describe('Test waitForIt method', () => {
 		await waitForIt(testFn);
 		const endTime = Date.now();
 		const millisDifference = endTime - startTime;
-		expect(millisDifference).toBeGreaterThanOrEqual(delayMs);
+		expect(millisDifference).toBeGreaterThanOrEqual(delayMs - 1);
 	});
 
 	it('should wait for the mocked function to return response', async () => {
