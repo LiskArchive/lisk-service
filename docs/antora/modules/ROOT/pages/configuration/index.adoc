@@ -603,7 +603,7 @@ Must match the value supplied for the `coordinator` microservice.
 
 | `ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
 | boolean
-| Boolean flag to enable downloading the snapshot from an (unsecured) HTTP URL.
+| Boolean flag to enable downloading the snapshot from an (unsecured) HTTP URL. By default, the value is false.
 | false
 
 | `LISK_STATIC`
