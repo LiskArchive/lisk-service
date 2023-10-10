@@ -707,7 +707,7 @@ By default, it is set to `0`.
 
 ==== Database snapshot configuration
 
-The MySQL/MariaDB snapshot related properties are part of the Lisk indexer service, and the relevant configurations can be seen in the table below.
+To accelerate the indexing process, the blockchain-indexer microservice also supports automatic download and application of snapshot to the MySQL/MariaDB databases. The following environment variables can be used to configure the same.
 
 [cols="2,1,~,~m",options="header",stripes="hover"]
 
