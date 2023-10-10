@@ -707,7 +707,7 @@ By default, it is set to `0`.
 
 ==== Database snapshot configuration
 
-To accelerate the indexing process, the blockchain-indexer microservice also supports automatic download and application of snapshot to the MySQL/MariaDB databases. The following environment variables can be used to configure the same.
+To accelerate the indexing process, the blockchain-indexer microservice also supports automatic download and an application of a snapshot to the MySQL/MariaDB databases. The following environment variables in the table below can be used to configure the same.
 
 [cols="2,1,~,~m",options="header",stripes="hover"]
 
