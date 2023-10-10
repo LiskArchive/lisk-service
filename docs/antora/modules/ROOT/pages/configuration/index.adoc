@@ -724,7 +724,7 @@ The MySQL/MariaDB snapshot related properties are part of the Lisk indexer servi
 
 |`INDEX_SNAPSHOT_URL`
 |string
-|Custom snapshot url (Expected to end with sql.gz)
+|Custom snapshot download URL (expected to end with sql.gz).
 |https://snapshots.lisk.io/mainnet/service.sql.gz
 
 |`ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
