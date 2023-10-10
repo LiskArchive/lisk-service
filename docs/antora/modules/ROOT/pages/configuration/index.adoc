@@ -719,7 +719,7 @@ The MySQL/MariaDB snapshot related properties are part of the Lisk indexer servi
 
 |`ENABLE_APPLY_SNAPSHOT`
 |boolean
-|Enable or display apply snapshot feature. By default, the value is false.
+|Enable or disable auto-apply snapshot feature. By default, the value is false.
 |false
 
 |`INDEX_SNAPSHOT_URL`
