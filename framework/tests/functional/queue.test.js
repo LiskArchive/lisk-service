@@ -37,7 +37,7 @@ describe('Test queue', () => {
 		expect(queue.queue.client.options.port).toEqual(port);
 	});
 
-	it('Should add a job to the queue', async () => {
+	it('should add a job to the queue', async () => {
 		const data = { a: 1, b: 2 };
 		await queue.add(data).then(job => {
 			expect(job.id).not.toBe(undefined);

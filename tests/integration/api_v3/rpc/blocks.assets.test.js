@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 
@@ -34,8 +35,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlocksAssets = async params => request(wsRpcUrl, 'get.blocks.assets', params);
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
 
 describe('Method get.blocks.assets', () => {
 	let refBlockAssets;
@@ -48,7 +48,11 @@ describe('Method get.blocks.assets', () => {
 		while (retries > 0 && !success) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				[refBlockAssets] = (await getBlocksAssets({ height: '0' })).result.data;
+				const invokeRes = await invoke({ endpoint: 'system_getNodeInfo' });
+				const { genesisHeight } = invokeRes.result.data;
+
+				// eslint-disable-next-line no-await-in-loop
+				[refBlockAssets] = (await getBlocksAssets({ height: String(genesisHeight) })).result.data;
 				[refAsset] = refBlockAssets.assets;
 
 				if (refAsset) {
@@ -60,7 +64,7 @@ describe('Method get.blocks.assets', () => {
 
 				// Delay by 3 sec
 				// eslint-disable-next-line no-await-in-loop
-				await delay(3000);
+				await waitMs(3000);
 			}
 		}
 

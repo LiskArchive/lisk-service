@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const util = require('util');
 
@@ -59,7 +60,7 @@ describe('Method get.blocks', () => {
 
 				// Delay by 3 sec
 				// eslint-disable-next-line no-await-in-loop
-				await new Promise((resolve) => setTimeout(resolve, 3000));
+				await waitMs(3000);
 			}
 		}
 

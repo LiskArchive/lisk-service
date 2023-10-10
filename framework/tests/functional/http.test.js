@@ -67,7 +67,6 @@ describe('HTTP library with caching enabled', () => {
 	});
 
 	it('should handle expire time properly', async () => {
-		const FIXED_DATA = 'fixed';
 		const ttl = 50;
 		const timestamps = [];
 
@@ -89,11 +88,11 @@ describe('HTTP library with caching enabled', () => {
 		delete originalResponse.headers['x-request-id'];
 		delete secondResponse.headers['x-request-id'];
 
-		originalResponse.headers.date = FIXED_DATA;
-		secondResponse.headers.date = FIXED_DATA;
+		delete originalResponse.headers.date;
+		delete secondResponse.headers.date;
 
-		expect(timestamps[1] - timestamps[0]).toBeGreaterThanOrEqual(50);
-		expect(timestamps[3] - timestamps[2]).toBeGreaterThanOrEqual(50);
+		expect(timestamps[1] - timestamps[0]).toBeGreaterThanOrEqual(ttl);
+		expect(timestamps[3] - timestamps[2]).toBeGreaterThanOrEqual(ttl);
 		expect(secondResponse).toEqual(originalResponse);
 	});
 });

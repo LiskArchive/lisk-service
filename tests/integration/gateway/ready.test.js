@@ -30,7 +30,7 @@ const endpoint = `${baseUrl}/api/ready`;
 
 describe('Ready API', () => {
 	describe(`GET ${endpoint}`, () => {
-		xit('Report readiness -> 200 OK', async () => {
+		it('Report readiness -> 200 OK', async () => {
 			try {
 				const response = await api.get(endpoint);
 				expect(response).toMap(readySchema);

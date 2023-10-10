@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -22,6 +23,7 @@ const { api } = require('../../../helpers/api');
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blocks/assets`;
+const invokeEndpoint = `${baseUrlV3}/invoke`;
 
 const {
 	goodRequestSchema,
@@ -34,8 +36,6 @@ const {
 	blockAssetSchema,
 } = require('../../../schemas/api_v3/block.schema');
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 describe('Blocks Assets API', () => {
 	let refBlockAssets;
 	let refAsset;
@@ -47,7 +47,11 @@ describe('Blocks Assets API', () => {
 		while (retries > 0 && !success) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				[refBlockAssets] = (await api.get(`${endpoint}?height=0`)).data;
+				const invokeRes = await api.post(invokeEndpoint, { endpoint: 'system_getNodeInfo' });
+				const { genesisHeight } = invokeRes.data;
+
+				// eslint-disable-next-line no-await-in-loop
+				[refBlockAssets] = (await api.get(`${endpoint}?height=${genesisHeight}`)).data;
 				[refAsset] = refBlockAssets.assets;
 
 				if (refAsset) {
@@ -59,7 +63,7 @@ describe('Blocks Assets API', () => {
 
 				// Delay by 3 sec
 				// eslint-disable-next-line no-await-in-loop
-				await delay(3000);
+				await waitMs(3000);
 			}
 		}
 

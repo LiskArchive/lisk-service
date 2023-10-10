@@ -19,6 +19,7 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const { invalidParamsSchema, invalidRequestSchema, jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
 const { goodRequestSchema } = require('../../../schemas/api_v3/staker.schema');
 const { invalidNames, invalidPublicKeys, invalidAddresses, invalidPartialSearches, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
+const { waitMs } = require('../../../helpers/utils');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -58,7 +59,7 @@ describe('get.pos.stakers', () => {
 				retries--;
 
 				// Delay by 3 sec
-				await new Promise((resolve) => setTimeout(resolve, 3000));
+				await waitMs(3000);
 			}
 		}
 

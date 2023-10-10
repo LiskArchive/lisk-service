@@ -31,6 +31,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestPeers = async params => request(wsRpcUrl, 'get.network.peers', params);
+const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
 
 describe('Peers API', () => {
 	describe('get.peers', () => {
@@ -62,7 +63,10 @@ describe('Peers API', () => {
 		});
 
 		it('should return peers with valid networkVersion', async () => {
-			const response = await requestPeers({ networkVersion: '2.0' });
+			const invokeRes = await invoke({ endpoint: 'system_getNodeInfo' });
+			const { networkVersion } = invokeRes.result.data;
+
+			const response = await requestPeers({ networkVersion });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -159,7 +163,7 @@ describe('Peers API', () => {
 		});
 
 		it('should return an empty response for a non-existent height', async () => {
-			const error = await requestPeers({ height: 1000000000 });
+			const error = await requestPeers({ height: Number.MAX_SAFE_INTEGER });
 			expect(error).toMap(emptyResponseSchema);
 		});
 

@@ -31,6 +31,7 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/network/peers`;
+const invokeEndpoint = `${baseUrlV3}/invoke`;
 
 describe('Peers API', () => {
 	describe('GET /peers', () => {
@@ -60,7 +61,10 @@ describe('Peers API', () => {
 		});
 
 		it('should work with a valid networkVersion', async () => {
-			const response = await api.get(`${endpoint}?networkVersion=2.0`);
+			const invokeRes = await api.post(invokeEndpoint, { endpoint: 'system_getNodeInfo' });
+			const { networkVersion } = invokeRes.data;
+
+			const response = await api.get(`${endpoint}?networkVersion=${networkVersion}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(0);
@@ -152,7 +156,7 @@ describe('Peers API', () => {
 		});
 
 		it('should return no peers for a non-existent height', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000`);
+			const response = await api.get(`${endpoint}?height=${Number.MAX_SAFE_INTEGER}`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);

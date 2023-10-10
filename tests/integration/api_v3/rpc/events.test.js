@@ -35,7 +35,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getEvents = async params => request(wsRpcUrl, 'get.events', params);
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-xdescribe('Method get.events', () => {
+describe('Method get.events', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
@@ -89,19 +89,19 @@ xdescribe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return bad request for invalid limit', async () => {
+		it('should return invalid params for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ limit: invalidLimits[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 
-		it('should return bad request for invalid offset', async () => {
+		it('should return invalid params for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ offset: invalidOffsets[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 	});
@@ -148,16 +148,16 @@ xdescribe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return server error for empty blockID', async () => {
+		xit('should return server error for empty blockID', async () => {
 			const response = await getEvents({ blockID: '' });
 			expect(response).toMap(serverErrorSchema);
 		});
 
-		it('should return bad request for invalid block ID', async () => {
+		it('should return invalid params for invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ blockID: invalidBlockIDs[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 	});
@@ -196,11 +196,11 @@ xdescribe('Method get.events', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('should return bad request for invalid senderAddress', async () => {
+		it('should return invalid params for invalid senderAddress', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ senderAddress: invalidAddresses[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 	});
@@ -529,7 +529,7 @@ xdescribe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty topic', async () => {
+		xit('should return invalid params for empty topic', async () => {
 			const response = await getEvents({ topic: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

@@ -22,6 +22,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 const { goodRequestSchema } = require('../../../schemas/api_v3/staker.schema');
 const { invalidOffsets, invalidLimits, invalidNames, invalidPublicKeys, invalidAddresses, invalidPartialSearches } = require('../constants/invalidInputs');
+const { waitMs } = require('../../../helpers/utils');
 
 const endpoint = `${baseUrlV3}/pos/stakers`;
 
@@ -44,8 +45,7 @@ describe('Stakers API', () => {
 				refStaker = stakeTx.sender;
 				refValidatorAddress = stake.validatorAddress;
 			}
-		}
-		while (!refValidatorAddress);
+		} while (!refValidatorAddress);
 
 		while (retries > 0 && !success) {
 			try {
@@ -60,7 +60,7 @@ describe('Stakers API', () => {
 				retries--;
 
 				// Delay by 3 sec
-				await new Promise((resolve) => setTimeout(resolve, 3000));
+				await waitMs(3000);
 			}
 		}
 

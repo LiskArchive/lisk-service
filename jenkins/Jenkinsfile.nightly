@@ -40,16 +40,23 @@ pipeline {
 		cron('0 23 * * *')
 	}
 	options {
-		timeout(time: 60, unit: 'MINUTES')
+		timeout(time: 30, unit: 'MINUTES')
 	}
 	environment {
-		ENABLE_HTTP_API='http-version3,http-status'
+		ENABLE_HTTP_API='http-test,http-status,http-version2,http-version3,http-exports'
 		ENABLE_WS_API='rpc-v3,blockchain'
-		LISK_APP_WS='ws://host.docker.internal:7887'
+		LISK_APP_WS='ws://host.docker.internal:9001'
 		ENABLE_TESTING_MODE='true'
     }
 	stages {
         stage('Checkout SCM') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				cleanWs()
@@ -58,7 +65,14 @@ pipeline {
 				}
 			}
 		}
-		stage('Start Lisk service') {
+		stage('Start Lisk Service') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
@@ -66,36 +80,53 @@ pipeline {
 						sh '''
 							cp -f docker/example.env .env
 							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
+							echo ENABLE_HTTP_API=http-test,http-status,http-version2,http-version3,http-exports >> .env
+							echo ENABLE_TESTING_MODE=true >> .env
+
 							make build
 							make build-local
 							make down
 							make up
-							'''
+						'''
 					}
 				}
 			}
 		}
-		stage('Start Lisk core') {
+		stage('Start Lisk Core') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
 							# lisk-core
-							npm i -g lisk-core@4.0.0-rc.3
+							npm i -g lisk-core@^4.0.0-rc.3
 							npm i -g pm2
 							pm2 kill
 							pm2 flush
 							rm -rf ~/.lisk/
 							lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
 							LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json LISK_PORT=9000 LISK_API_PORT=9001 pm2 start jenkins/lisk-core/pm2.config.json
-							'''
+						'''
 					}
 					sleep(5)
 				}
 			}
 		}
 		stage('Start external services') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
 			steps {
 				dir('lisk-service') {
 					script {
@@ -106,7 +137,14 @@ pipeline {
 				}
 			}	
 		}
-		stage('Wait till Indexing is complete') {
+		stage('Wait till indexing is complete') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
             steps {
                 script {
                     def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
@@ -128,10 +166,17 @@ pipeline {
 						}
 						sleep(30)
 					}
-                }
-            }
+				}
+			}
 		}
 		stage('Run tests') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
 			parallel {
 				stage ('Check linting') {
 					steps {
@@ -148,15 +193,13 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								sh 'make build-local'
-								sh 'docker ps'
 								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://localhost:4222' npm run test:functional" }
-								dir('./services/blockchain-indexer') { sh "SERVICE_BROKER='nats://localhost:4222' SERVICE_INDEXER_CACHE_REDIS='redis://localhost:6381/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://localhost:6381/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://localhost:6381/4' npm run test:functional" }
+								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
+								dir('./services/blockchain-indexer') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' SERVICE_INDEXER_CACHE_REDIS='redis://127.0.0.1:6381/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://127.0.0.1:6381/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://127.0.0.1:6381/4' npm run test:functional" }
 								dir('./services/fee-estimator') { sh "npm run test:functional" }
-								dir('./services/market') { sh "SERVICE_BROKER='nats://localhost:4222' SERVICE_MARKET_REDIS='redis://localhost:6381/10' npm run test:functional" }
-								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://localhost:4222' npm run test:functional" }
-							    dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:6381/0' npm run test:functional" }
+								dir('./services/market') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' SERVICE_MARKET_REDIS='redis://127.0.0.1:6381/10' npm run test:functional" }
+								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
+							   	dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:6381/0' npm run test:functional" }
 							}
 						}
 					}
@@ -175,6 +218,31 @@ pipeline {
 		}
 	}
 	post {
+		failure {
+			emailext(
+				to: 'service-dev@lisk.com',
+				subject: "[JENKINS] ${currentBuild.fullDisplayName} - ${currentBuild.result}",
+				body: """
+					Hello Team,<br><br>
+					
+					Build <b>${currentBuild.fullDisplayName}</b> for <b>Lisk Service</b> needs your attention. Please find all the necessary details below:
+					
+					<p>
+						<ul>
+							<li>Job <b>${currentBuild.fullDisplayName}</b> finished with result - <b>${currentBuild.result}</b></li>
+							<li>Total time taken: ${currentBuild.durationString}</li>
+							<li>The job logs are available at: <a href='${currentBuild.absoluteUrl}'>${currentBuild.fullDisplayName}</a></li>
+						</ul>
+					</p>
+
+					- Lisk Service Team!
+				""",
+				mimeType: 'text/html'
+			)
+			script { 
+				echoBanner('Failed to run the pipeline') 
+			}
+		}
 		cleanup {
 			script { 
 				dir('lisk-service') {
