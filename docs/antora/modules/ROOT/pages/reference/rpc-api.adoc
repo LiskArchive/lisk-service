@@ -1155,7 +1155,7 @@ Retrieves current market prices.
 
 ==== Endpoints
 
-- HTTP `/api/v3/market/prices`
+- HTTP `/api/v2/market/prices`
 - RPC `get.market.prices`
 
 ==== Request parameters
@@ -1203,7 +1203,7 @@ _Supports pagination._
 
 ==== Endpoints
 
-* HTTP: `/api/v3/newsfeed`
+* HTTP: `/api/v2/newsfeed`
 * RPC: `get.newsfeed`
 
 ==== Request parameters
