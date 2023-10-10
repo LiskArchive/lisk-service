@@ -729,7 +729,7 @@ The MySQL/MariaDB snapshot related properties are part of the Lisk indexer servi
 
 |`ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`
 |boolean
-|Allow insecure HTTP connections. By default, this is set to false.
+|Boolean flag to enable downloading the snapshot from an (unsecured) HTTP URL. By default, this is set to false.
 |false
 |===
 
