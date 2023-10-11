@@ -23,7 +23,7 @@ const EVENT_NAME = /^[\w!@$&. ]+$/;
 const NAME = /^[\w!@$&.]{1,20}$/;
 const DATE_INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/;
 const FILE_NAME = /^\btransactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
-const FILE_URL = /^\/api\/v3\/exports\/transactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/;
+const FILE_URL = /^\/api\/v3\/export\/download\?filename=transactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})\.xlsx$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet|devnet){1}\b$/;
 const MODULE = /^[0-9a-zA-Z]{1,32}$/;
 const MODULE_COMMAND = /^[0-9a-zA-Z]{1,32}:[0-9a-zA-Z]{1,32}$/;

@@ -19,8 +19,10 @@ const waitForSuccess = (fn, successValidator, intervalMs = 500) => new Promise((
 	const intervalId = setInterval(
 		() => fn()
 			.then(result => {
-				clearInterval(intervalId);
-				if (!successValidator || successValidator(result)) resolve(result);
+				if (!successValidator || successValidator(result)) {
+					clearInterval(intervalId);
+					resolve(result);
+				}
 			})
 			.catch(),
 		intervalMs,

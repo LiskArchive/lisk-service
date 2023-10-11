@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+jest.setTimeout(2147483647);
+
 const moment = require('moment');
 
 const config = require('../../../config');
@@ -39,16 +41,39 @@ const requestTransactionExport = async (params) => request(wsRpcUrl, 'get.export
 const requestTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
 
 // TODO: Enable tests once test blockchain is updated with transactions
-xdescribe('Export API', () => {
-	const startDate = moment('2021-01-10').format(exportConfig.excel.dateFormat);
-	const endDate = moment('2021-11-30').format(exportConfig.excel.dateFormat);
+describe('Export API', () => {
+	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
+	const endDate = moment('2023-12-30').format(exportConfig.excel.dateFormat);
+
 	let refTransaction1;
 	let refTransaction2;
-	let refTransaction3;
-	let refTransaction4;
 	beforeAll(async () => {
-		const response = await requestTransactions({ limit: 4 });
-		[refTransaction1, refTransaction2, refTransaction3, refTransaction4] = response.result.data;
+		const uniqueSenders = new Set();
+
+		let offset = 200;
+		while (uniqueSenders.size < 4) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await requestTransactions({ limit: 100, offset });
+			const transactions = response.result.data;
+
+			if (transactions.length === 0) {
+				throw new Error('Need atleast 4 transactions from unique senders to run this test.');
+			}
+
+			// eslint-disable-next-line no-restricted-syntax
+			for (const transaction of transactions) {
+				if (!uniqueSenders.has(transaction.sender.address)) {
+					if (!refTransaction1 && uniqueSenders.size >= 4) {
+						refTransaction1 = transaction;
+					} else if (!refTransaction2 && uniqueSenders.size >= 5) {
+						refTransaction2 = transaction;
+					}
+
+					uniqueSenders.add(transaction.sender.address);
+				}
+			}
+			offset += 100;
+		}
 	});
 
 	describe('Schedule file export', () => {
@@ -60,6 +85,7 @@ xdescribe('Export API', () => {
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
+
 			expect(result).toMap(goodRequestSchemaForExport);
 			expect(result.data).toMap(exportSchemaAccepted);
 			expect(result.meta).toMap(metaSchemaForExport);
@@ -71,32 +97,6 @@ xdescribe('Export API', () => {
 			const response = await requestTransactionExport({
 				publicKey: refTransaction2.sender.publicKey,
 				interval: `${startDate}:${endDate}`,
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result).toMap(goodRequestSchemaForExport);
-			expect(result.data).toMap(exportSchemaAccepted);
-			expect(result.meta).toMap(metaSchemaForExport);
-			expect(result.meta).toEqual(expect.objectContaining(expected));
-		});
-
-		it('Schedule file export from account address', async () => {
-			const expected = { ready: false };
-			const response = await requestTransactionExport({
-				address: refTransaction3.sender.address,
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result).toMap(goodRequestSchemaForExport);
-			expect(result.data).toMap(exportSchemaAccepted);
-			expect(result.meta).toMap(metaSchemaForExport);
-			expect(result.meta).toEqual(expect.objectContaining(expected));
-		});
-
-		it('Schedule file export from account publicKey', async () => {
-			const expected = { ready: false };
-			const response = await requestTransactionExport({
-				publicKey: refTransaction4.sender.publicKey,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

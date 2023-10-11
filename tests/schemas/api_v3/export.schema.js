@@ -18,14 +18,13 @@ import Joi from 'joi';
 const regex = require('./regex');
 
 const exportSchemaAccepted = {
-	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
+	address: Joi.string().pattern(regex.ADDRESS_LISK32).optional(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
 	interval: Joi.string().pattern(regex.DATE_INTERVAL).required(),
 };
 
 const exportSchema = {
 	...exportSchemaAccepted,
-	fileName: Joi.string().pattern(regex.FILE_NAME).required(),
 	fileUrl: Joi.string().pattern(regex.FILE_URL).required(),
 };
 

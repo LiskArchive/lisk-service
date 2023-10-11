@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
 const moment = require('moment');
 const config = require('../../../config');
 const exportConfig = require('../../../../services/export/config');
@@ -52,16 +53,47 @@ const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 let curChainID;
 
 // TODO: Enable tests once test blockchain is updated with transactions
-xdescribe('Export API', () => {
-	const startDate = moment('2021-01-10').format(exportConfig.excel.dateFormat);
-	const endDate = moment('2021-11-30').format(exportConfig.excel.dateFormat);
+describe('Export API', () => {
+	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
+	const endDate = moment('2023-11-30').format(exportConfig.excel.dateFormat);
 	let refTransaction1;
 	let refTransaction2;
 	let refTransaction3;
 	let refTransaction4;
+
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=4`);
-		[refTransaction1, refTransaction2, refTransaction3, refTransaction4] = response.data;
+		const uniqueSenders = new Set();
+
+		let offset = 0;
+		while (uniqueSenders.size < 4) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${baseUrlV3}/transactions?limit=100&offset=${offset}`);
+			const transactions = response.data;
+
+			if (transactions.length === 0) {
+				throw new Error('Need atleast 4 transactions from unique senders to run this test.');
+			}
+
+			// eslint-disable-next-line no-restricted-syntax
+			for (const transaction of transactions) {
+				if (!uniqueSenders.has(transaction.sender.address)) {
+					if (!refTransaction1) {
+						refTransaction1 = transaction;
+						uniqueSenders.add(transaction.sender.address);
+					} else if (!refTransaction2) {
+						refTransaction2 = transaction;
+						uniqueSenders.add(transaction.sender.address);
+					} else if (!refTransaction3) {
+						refTransaction3 = transaction;
+						uniqueSenders.add(transaction.sender.address);
+					} else if (!refTransaction4) {
+						refTransaction4 = transaction;
+						uniqueSenders.add(transaction.sender.address);
+					}
+				}
+			}
+			offset += 100;
+		}
 
 		const networkStatus = await api.get(networkStatusEndpoint);
 		curChainID = networkStatus.data.chainID;
@@ -122,13 +154,14 @@ xdescribe('Export API', () => {
 	});
 
 	describe('File is ready to export', () => {
+		const successValidator = (response) => response.meta.ready;
+
 		it('scheduled from account address -> return 200 OK', async () => {
-			const scheduleExport = async () => api
-				.get(
-					`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
-					httpStatus.OK,
-				);
-			const response = await waitForSuccess(scheduleExport);
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				httpStatus.OK,
+			);
+			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchemaForExport);
 			expect(response.data).toBeInstanceOf(Object);
@@ -138,12 +171,11 @@ xdescribe('Export API', () => {
 		});
 
 		it('scheduled from account from publicKey -> return 200 OK', async () => {
-			const scheduleExport = async () => api
-				.get(
-					`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
-					httpStatus.OK,
-				);
-			const response = await waitForSuccess(scheduleExport);
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				httpStatus.OK,
+			);
+			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchemaForExport);
 			expect(response.data).toBeInstanceOf(Object);
@@ -155,15 +187,28 @@ xdescribe('Export API', () => {
 
 	describe('Download csv file -> returns 200 OK', () => {
 		const parseParams = { delimiter: exportConfig.excel.delimiter };
+		const successValidator = (response) => response.meta.ready;
 
 		it('scheduled from account address -> 200 OK', async () => {
-			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				httpStatus.OK,
+			);
+			await waitForSuccess(scheduleExport, successValidator);
+
+			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.xlsx`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
 			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
 
 		it('scheduled from account publicKey -> 200 OK', async () => {
-			const validFileName = `transactions_${curChainID}_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				httpStatus.OK,
+			);
+			await waitForSuccess(scheduleExport, successValidator);
+
+			const validFileName = `transactions_${curChainID}_${refTransaction2.sender.address}_${startDate}_${endDate}.xlsx`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
 			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
@@ -225,9 +270,9 @@ xdescribe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('File not exists -> 404 NOT_FOUND', async () => {
+		it('File not exists -> 404 BAD_REQUEST', async () => {
 			const invalidFile = 'invalid.csv';
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${invalidFile}`, httpStatus.NOT_FOUND);
+			const response = await api.get(`${baseUrlV3}/export/download?filename=${invalidFile}`, httpStatus.BAD_REQUEST);
 			expect(response).toMap(notFoundSchema);
 		});
 	});
