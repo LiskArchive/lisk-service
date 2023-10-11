@@ -26,6 +26,8 @@ const { getGenesisHeight } = require('./genesisBlock');
 
 const logger = Logger();
 
+let posModuleConstants;
+
 const getPosValidator = async (address) => {
 	try {
 		const validator = await invokeEndpoint('pos_getValidator', { address });
@@ -66,17 +68,22 @@ const getPosValidatorsByStake = async (limit) => {
 };
 
 const getPosConstants = async () => {
-	try {
-		const response = await invokeEndpoint('pos_getConstants');
-		if (response.error) throw new Error(response.error);
-		return response;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPosConstants\'.');
+	if (typeof posModuleConstants === 'undefined') {
+		try {
+			const response = await invokeEndpoint('pos_getConstants');
+
+			if (response.error) throw new Error(response.error);
+			posModuleConstants = response;
+		} catch (err) {
+			if (err.message.includes(timeoutMessage)) {
+				throw new TimeoutException('Request timed out when calling \'getPosConstants\'.');
+			}
+			logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
+			throw err;
 		}
-		logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
-		throw err;
 	}
+
+	return posModuleConstants;
 };
 
 const getPosPendingUnlocks = async (address) => {

@@ -16,7 +16,7 @@
 const { Utils } = require('lisk-service-framework');
 
 const requestAll = async (fn, method, params, limit) => {
-	const maxAmount = limit || 1e9;
+	const maxAmount = limit || Number.MAX_SAFE_INTEGER;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn(method,
 		{
