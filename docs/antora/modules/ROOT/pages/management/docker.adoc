@@ -9,6 +9,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :source-language: bash
 :url_config: configuration/docker.adoc
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
+:url_snapshot_config: configuration/index.adoc
+:url_backups: management/snapshots.adoc
 
 == Start
 
@@ -195,6 +197,10 @@ make up
 
 NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
 This can be quite time-consuming when the chain is long, spanning over hours.
+
+== Taking Snapshots
+
+If you wish to take a snapshot of your Docker installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
 
 == Logging
 
