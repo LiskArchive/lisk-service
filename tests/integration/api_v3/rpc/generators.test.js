@@ -28,25 +28,24 @@ const { invalidPartialSearches, invalidOffsets, invalidLimits } = require('../co
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
-// const getPoSConstants = async () => request(wsRpcUrl, 'get.pos.constants');
+const getPoSConstants = async () => request(wsRpcUrl, 'get.pos.constants');
 
-// const STATUS = {
-// 	ACTIVE: 'active',
-// 	STANDBY: 'standby',
-// };
+const STATUS = {
+	ACTIVE: 'active',
+	STANDBY: 'standby',
+};
 
 describe('Generators API', () => {
-	// let numberActiveValidators;
-	// let numberStandbyValidators;
-	// beforeAll(async () => {
-	// 	const response = await getPoSConstants();
-	// 	const constants = response.result.data;
-	// 	numberActiveValidators = constants.numberActiveValidators;
-	// 	numberStandbyValidators = constants.numberStandbyValidators;
-	// });
-
+	let numberActiveValidators;
+	let numberStandbyValidators;
 	let selectedGenerator;
+
 	beforeAll(async () => {
+		const response = await getPoSConstants();
+		const constants = response.result.data;
+		numberActiveValidators = constants.numberActiveValidators;
+		numberStandbyValidators = constants.numberStandbyValidators;
+
 		const { result } = await getGenerators();
 		[selectedGenerator] = result.data;
 
@@ -69,7 +68,7 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeLessThanOrEqual(103);
 		});
 
-		xit('should return generators list when called with limit 103', async () => {
+		it('should return generators list when called with limit 103', async () => {
 			const response = await getGenerators({ limit: 103 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -77,13 +76,14 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
 
-			// TODO: Validate logic to fetch all 103 generators
-			// const activeGenerators = response.data
-			// 	.filter(generator => generator.status === STATUS.ACTIVE);
-			// const standbyGenerators = response.data
-			// 	.filter(generator => generator.status === STATUS.STANDBY);
-			// expect(activeGenerators.length).toEqual(numberActiveValidators);
-			// expect(standbyGenerators.length).toEqual(numberStandbyValidators);
+			const activeGenerators = result.data
+				.filter(generator => generator.status === STATUS.ACTIVE);
+			const standbyGenerators = result.data
+				.filter(generator => generator.status === STATUS.STANDBY);
+			expect(activeGenerators.length).toBeGreaterThanOrEqual(1);
+			expect(activeGenerators.length).toBeLessThanOrEqual(numberActiveValidators);
+			expect(standbyGenerators.length).toBeGreaterThanOrEqual(0);
+			expect(standbyGenerators.length).toBeLessThanOrEqual(numberStandbyValidators);
 		});
 
 		it('should return generators list when called with limit=100', async () => {
