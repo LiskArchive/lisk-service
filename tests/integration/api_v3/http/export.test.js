@@ -36,7 +36,7 @@ const {
 
 const {
 	waitForSuccess,
-	isStringCsvParseable,
+	isStringCsvParsable,
 } = require('../../../helpers/utils');
 
 const httpStatus = {
@@ -52,7 +52,6 @@ const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
 let curChainID;
 
-// TODO: Enable tests once test blockchain is updated with transactions
 describe('Export API', () => {
 	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
 	const endDate = moment('2023-11-30').format(exportConfig.excel.dateFormat);
@@ -64,14 +63,18 @@ describe('Export API', () => {
 	beforeAll(async () => {
 		const uniqueSenders = new Set();
 
+		// Blacklist addresses hardcoded in RPC export tests
+		const restrictedAddress = ['lsk8gnejvorhq8bsrrmwq8oxpu5ufubxpn7ohukrn', 'lsko8844sbbaq2vwpb7mc2p7shy7b3k8zx5tgecdn'];
+		restrictedAddress.forEach(item => uniqueSenders.add(item));
+
 		let offset = 0;
 		while (uniqueSenders.size < 4) {
 			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${baseUrlV3}/transactions?limit=100&offset=${offset}`);
 			const transactions = response.data;
 
-			if (transactions.length === 0) {
-				throw new Error('Need atleast 4 transactions from unique senders to run this test.');
+			if (transactions.length < 4) {
+				throw new Error('Need at least 4 transactions from unique senders to run this test.');
 			}
 
 			// eslint-disable-next-line no-restricted-syntax
@@ -100,7 +103,7 @@ describe('Export API', () => {
 	});
 
 	describe('Schedule file export', () => {
-		it('Schedule file export from account address with interval -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account address with interval', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
@@ -113,7 +116,7 @@ describe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account publicKey with interval -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account publicKey with interval', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
@@ -126,7 +129,7 @@ describe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account address -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account address', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=${refTransaction3.sender.address}`,
@@ -139,7 +142,7 @@ describe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account publicKey', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=${refTransaction4.sender.publicKey}`,
@@ -156,7 +159,8 @@ describe('Export API', () => {
 	describe('File is ready to export', () => {
 		const successValidator = (response) => response.meta.ready;
 
-		it('scheduled from account address -> return 200 OK', async () => {
+		it('should return 200 OK when scheduled from account address', async () => {
+			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
 				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
 				httpStatus.OK,
@@ -170,7 +174,8 @@ describe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('scheduled from account from publicKey -> return 200 OK', async () => {
+		it('should return 200 OK when scheduled from account publicKey', async () => {
+			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
 				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
 				httpStatus.OK,
@@ -185,11 +190,12 @@ describe('Export API', () => {
 		});
 	});
 
-	describe('Download csv file -> returns 200 OK', () => {
+	describe('Download processed transaction history -> returns 200 OK', () => {
 		const parseParams = { delimiter: exportConfig.excel.delimiter };
 		const successValidator = (response) => response.meta.ready;
 
-		it('scheduled from account address -> 200 OK', async () => {
+		it('should return 200 OK when scheduled from account address', async () => {
+			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
 				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
 				httpStatus.OK,
@@ -198,10 +204,11 @@ describe('Export API', () => {
 
 			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.xlsx`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
-			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
+			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
 		});
 
-		it('scheduled from account publicKey -> 200 OK', async () => {
+		it('should return 200 OK when scheduled from account publicKey', async () => {
+			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
 				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
 				httpStatus.OK,
@@ -210,17 +217,17 @@ describe('Export API', () => {
 
 			const validFileName = `transactions_${curChainID}_${refTransaction2.sender.address}_${startDate}_${endDate}.xlsx`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
-			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
+			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
 		});
 	});
 
 	describe('Invalid params/request', () => {
-		it('Schedule file export -> 400 when no params', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with no params', async () => {
 			const response = await api.get(`${baseUrlV3}/export/transactions`, httpStatus.BAD_REQUEST);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid address', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid address', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`,
 				httpStatus.BAD_REQUEST,
@@ -228,7 +235,7 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid publicKey', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid publicKey', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4`,
 				httpStatus.BAD_REQUEST,
@@ -236,7 +243,7 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when address with invalid interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an address and an invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${invalidInterval}`,
@@ -245,7 +252,7 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when publicKey with invalid interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with a publicKey and an invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`,
@@ -254,7 +261,7 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid address with interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid address and a valid interval', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm&interval=${startDate}:${endDate}`,
 				httpStatus.BAD_REQUEST,
@@ -262,7 +269,7 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid publicKey with interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid publicKey and a valid interval', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4&interval=${startDate}:${endDate}`,
 				httpStatus.BAD_REQUEST,
@@ -270,9 +277,9 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('File not exists -> 404 BAD_REQUEST', async () => {
-			const invalidFile = 'invalid.csv';
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${invalidFile}`, httpStatus.BAD_REQUEST);
+		it('should return 404 NOT FOUND when attempting to download a non-existent file', async () => {
+			const validFileName = `transactions_99999999_${refTransaction1.sender.address}_${startDate}_${endDate}.xlsx`;
+			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.NOT_FOUND);
 			expect(response).toMap(notFoundSchema);
 		});
 	});

@@ -1,6 +1,7 @@
 MYSQL_PORT = 3306;
 REDIS_PORT = 6381;
 LISK_CORE_WS_PORT = 7887;
+SERVICE_BROKER_PORT = 4222;
 
 def checkOpenPort(nPort) {
 	def result = sh script: "nc -z 127.0.0.1 ${nPort}", returnStatus: true
@@ -43,8 +44,8 @@ pipeline {
 		timeout(time: 45, unit: 'MINUTES')
 	}
 	environment {
-		ENABLE_HTTP_API='http-test,http-status,http-version2,http-version3,http-exports'
-		ENABLE_WS_API='rpc-v3,blockchain'
+		ENABLE_HTTP_API='http-test,http-status,http-version3,http-exports'
+		ENABLE_WS_API='rpc-v3,rpc-test,blockchain'
 		LISK_APP_WS='ws://host.docker.internal:7887'
 		ENABLE_TESTING_MODE='true'
     }
@@ -78,11 +79,6 @@ pipeline {
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
-							cp -f docker/example.env .env
-							echo LISK_APP_WS=ws://host.docker.internal:7887 >> .env
-							echo ENABLE_HTTP_API=http-test,http-status,http-version2,http-version3,http-exports >> .env
-							echo ENABLE_TESTING_MODE=true >> .env
-
 							make build
 							make build-local
 							make down
@@ -106,7 +102,7 @@ pipeline {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
 							# lisk-core
-							npm i -g lisk-core@^4.0.0-rc.3
+							npm i -g lisk-core@^4.0.0-rc.6
 							npm i -g pm2
 							pm2 kill
 							pm2 flush
@@ -134,10 +130,6 @@ pipeline {
 						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 					}
 					sleep(5)
-					sh '''
-						docker ps
-						make logs
-					'''
 				}
 			}	
 		}
@@ -194,12 +186,16 @@ pipeline {
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
 								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								dir('./services/blockchain-indexer') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' SERVICE_INDEXER_CACHE_REDIS='redis://127.0.0.1:6381/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://127.0.0.1:6381/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://127.0.0.1:6381/4' npm run test:functional" }
+								dir('./services/blockchain-indexer') { 
+									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_INDEXER_CACHE_REDIS='redis://127.0.0.1:${REDIS_PORT}/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://127.0.0.1:${REDIS_PORT}/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://127.0.0.1:${REDIS_PORT}/4' npm run test:functional"
+								}
 								dir('./services/fee-estimator') { sh "npm run test:functional" }
-								dir('./services/market') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' SERVICE_MARKET_REDIS='redis://127.0.0.1:6381/10' npm run test:functional" }
-								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
-							   	dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:6381/0' npm run test:functional" }
-								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
+								dir('./services/market') { 
+									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_MARKET_REDIS='redis://127.0.0.1:${REDIS_PORT}/10' npm run test:functional"
+								}
+								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' npm run test:functional" }
+								dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:${REDIS_PORT}/0' npm run test:functional" }
+								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' npm run test:functional" }
 							}
 						}
 					}
@@ -209,7 +205,7 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./tests') { sh "./node_modules/.bin/jest --config=jest.config.integration.apiv3.sdkv6.js --testRunner='jest-circus/runner'" }
+								dir('./tests') { sh "./node_modules/.bin/jest --config=jest.config.integration.apiv3.js --testRunner='jest-circus/runner'" }
 							}
 						}
 					}
@@ -248,13 +244,12 @@ pipeline {
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
-							docker kill $(docker ps -q)
-							docker rm $(docker ps -a -q)
-							docker volume rm $(docker volume ls -q)
-							docker system prune -a
-							pm2 kill
+							make down
+							pm2 stop
 							pm2 flush
 						'''
+						dir('./jenkins/mysql') { sh "make down" }
+						dir('./jenkins/redis') { sh "make down" }
 					}
 				}
 				cleanWs()

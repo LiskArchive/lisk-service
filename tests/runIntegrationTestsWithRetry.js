@@ -1,6 +1,6 @@
 // run_tests_with_retries.js
 const { runCLI } = require('jest');
-const jestIntegrationTestsConfig = require('./jest.config.integration.apiv3.sdkv6');
+const jestIntegrationTestsConfig = require('./jest.config.integration.apiv3');
 
 const NUM_RETRIES = 20;
 

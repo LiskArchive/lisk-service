@@ -29,8 +29,8 @@ const handleError = (error, expectedStatusCode) => {
 
 const handleResponse = (response, expectedStatusCode = 200) => {
 	if (response.status === expectedStatusCode) return response.data;
-	throw new Error(`Status code: ${response.response.status}
-	\n${JSON.stringify(response.response.data, null, 2)}`);
+	throw new Error(`Status code: ${response.status}
+	\n${JSON.stringify(response.data, null, 2)}`);
 };
 
 const api = {

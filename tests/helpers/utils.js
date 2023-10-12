@@ -15,7 +15,7 @@
  */
 const { parse } = require('csv-parse');
 
-const waitForSuccess = (fn, successValidator, intervalMs = 500) => new Promise((resolve) => {
+const waitForSuccess = (fn, successValidator, intervalMs = 2000) => new Promise((resolve) => {
 	const intervalId = setInterval(
 		() => fn()
 			.then(result => {
@@ -29,7 +29,7 @@ const waitForSuccess = (fn, successValidator, intervalMs = 500) => new Promise((
 	);
 });
 
-const isStringCsvParseable = (string, params) => parse(
+const isStringCsvParsable = (string, params) => parse(
 	string,
 	params,
 	(err) => !err,
@@ -43,6 +43,6 @@ const waitMs = (n) => new Promise((resolve) => {
 
 module.exports = {
 	waitForSuccess,
-	isStringCsvParseable,
+	isStringCsvParsable,
 	waitMs,
 };

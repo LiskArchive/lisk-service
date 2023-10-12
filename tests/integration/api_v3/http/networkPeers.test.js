@@ -224,7 +224,7 @@ describe('Peers API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('should return 200 OK for a wrong URL', async () => {
+		it('should return 404 NOT FOUND for a wrong URL', async () => {
 			const response = await api.get(`${endpoint}/112`, 404);
 			expect(response).toMap(urlNotFoundSchema);
 		});
