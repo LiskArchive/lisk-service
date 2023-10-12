@@ -95,58 +95,60 @@ const indexBlock = async job => {
 	const { height: blockHeightFromJobData } = job.data;
 	let blockHeightToIndex = blockHeightFromJobData;
 	let addressesToUpdateBalance = [];
-
-	const blocksTable = await getBlocksTable();
-
-	const [lastIndexedBlock = {}] = await blocksTable.find(
-		{
-			sort: 'height:desc',
-			limit: 1,
-		},
-		['height'],
-	);
-
-	const { height: lastIndexedHeight } = lastIndexedBlock;
-
-	// Index last indexed block height + 1 and schedule the next block if there is a gap
-	if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
-		blockHeightToIndex = lastIndexedHeight + 1;
-		// eslint-disable-next-line no-use-before-define
-		await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
-	}
-
-	const [currentBlockInDB = {}] = await blocksTable.find(
-		{
-			where: { height: blockHeightToIndex },
-			limit: 1,
-		},
-		['height'],
-	);
-
-	// If current block is already indexed, then index the highest indexed block height + 1
-	if (Object.keys(currentBlockInDB).length) {
-		// Skip indexing if the blockchain is fully indexed.
-		const currentBlockchainHeight = await getCurrentHeight();
-		if (lastIndexedHeight >= currentBlockchainHeight) return;
-
-		blockHeightToIndex = lastIndexedHeight + 1;
-	}
-
-	const block = await getBlockByHeight(blockHeightToIndex);
-	if (!validateBlock(block)) {
-		throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
-	}
-
-	// Create DB transaction. Queries from here sees a snapshot of the database
-	const connection = await getDBConnection(MYSQL_ENDPOINT);
-	const dbTrx = await startDBTransaction(connection);
-	logger.debug(
-		`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`,
-	);
-
-	let blockReward = BigInt('0');
+	let dbTrx;
+	let block;
 
 	try {
+		const blocksTable = await getBlocksTable();
+
+		const [lastIndexedBlock = {}] = await blocksTable.find(
+			{
+				sort: 'height:desc',
+				limit: 1,
+			},
+			['height'],
+		);
+
+		const { height: lastIndexedHeight } = lastIndexedBlock;
+
+		// Index last indexed block height + 1 and schedule the next block if there is a gap
+		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
+			blockHeightToIndex = lastIndexedHeight + 1;
+			// eslint-disable-next-line no-use-before-define
+			await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
+		}
+
+		const [currentBlockInDB = {}] = await blocksTable.find(
+			{
+				where: { height: blockHeightToIndex },
+				limit: 1,
+			},
+			['height'],
+		);
+
+		// If current block is already indexed, then index the highest indexed block height + 1
+		if (Object.keys(currentBlockInDB).length) {
+			// Skip indexing if the blockchain is fully indexed.
+			const currentBlockchainHeight = await getCurrentHeight();
+			if (lastIndexedHeight >= currentBlockchainHeight) return;
+
+			blockHeightToIndex = lastIndexedHeight + 1;
+		}
+
+		block = await getBlockByHeight(blockHeightToIndex);
+		if (!validateBlock(block)) {
+			throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
+		}
+
+		// Create DB transaction. Queries from here sees a snapshot of the database
+		const connection = await getDBConnection(MYSQL_ENDPOINT);
+		dbTrx = await startDBTransaction(connection);
+		logger.debug(
+			`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`,
+		);
+
+		let blockReward = BigInt('0');
+
 		if (block.height === (await getGenesisHeight())) {
 			await indexGenesisBlockAssets(dbTrx);
 		}
@@ -297,27 +299,35 @@ const indexBlock = async job => {
 			`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`,
 		);
 	} catch (error) {
-		await rollbackDBTransaction(dbTrx);
-
 		// Reschedule the block for indexing
 		// eslint-disable-next-line no-use-before-define
 		await addHeightToIndexBlocksQueue(blockHeightToIndex);
 
-		logger.debug(
-			`Rolled back MySQL transaction to index block ${block.id} at height ${block.height}.`,
-		);
+		// Block may not have been initialized when error occurred
+		const failedBlockInfo = {
+			id: typeof block === 'undefined' ? undefined : block.id,
+			height: typeof block === 'undefined' ? blockHeightToIndex : block.height,
+		};
+
+		// Processing may fail before a transaction is created
+		if (dbTrx) {
+			await rollbackDBTransaction(dbTrx);
+			logger.debug(
+				`Rolled back MySQL transaction to index block ${failedBlockInfo.id} at height ${failedBlockInfo.height}.`,
+			);
+		}
 
 		if (
 			['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e),
 			)
 		) {
-			const errMessage = `Deadlock encountered while indexing block ${block.id} at height ${block.height}. Will retry later. sql:${error.sql}`;
+			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later. sql:${error.sql}`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
 
 		logger.warn(
-			`Error occurred while indexing block ${block.id} at height ${block.height}. Will retry later.`,
+			`Error occurred while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later.`,
 		);
 		logger.warn(error.stack);
 		throw error;
@@ -519,7 +529,7 @@ const indexBlockAtomicWrapper = async (job) => {
 		await indexBlock(job);
 	} catch (err) {
 		isIndexingRunning = false;
-		logger.error(`Error occurred during indexing block.\nError: ${err.message}`);
+		logger.error(`Error occurred during indexing block.\nError: ${err.message}\nStack:${err.stack}`);
 		throw new Error(err);
 	}
 
