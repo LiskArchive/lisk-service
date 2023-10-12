@@ -56,6 +56,7 @@ const accountMessageQueue = new MessageQueue(
 
 let intervalID;
 const REFRESH_INTERVAL = 30000;
+const MAX_BLOCKS_TO_SCHEDULE = 10000;
 
 const getInProgressJobCount = async (queue) => {
 	const jobCount = await queue.getJobCounts();
@@ -230,8 +231,11 @@ const scheduleMissingBlocksIndexing = async () => {
 	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
 
 	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = currentHeight;
 	const blockIndexLowerRange = lastVerifiedHeight;
+	const blockIndexHigherRange = Math.min(
+		blockIndexLowerRange + MAX_BLOCKS_TO_SCHEDULE,
+		currentHeight,
+	);
 
 	try {
 		const missingBlocksByHeight = [];
