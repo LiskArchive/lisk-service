@@ -61,9 +61,10 @@ const init = async () => {
 		if (config.operations.isIndexingModeEnabled) {
 			await messageProcessor.init();
 		}
-	} catch (error) {
-		logger.error(`Unable to initialize due to: ${error.message}. Try restarting the application.`);
-		logger.trace(error.stack);
+	} catch (err) {
+		logger.error(`Unable to initialize due to: ${err.message}. Try restarting the application.`);
+		logger.trace(err.stack);
+		throw err;
 	}
 };
 

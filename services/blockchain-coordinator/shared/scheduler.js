@@ -287,6 +287,7 @@ const init = async () => {
 	} catch (err) {
 		logger.error(`Unable to initialize coordinator due to: ${err.message}.`);
 		logger.trace(err.stack);
+		throw err;
 	}
 };
 
