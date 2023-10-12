@@ -40,12 +40,12 @@ pipeline {
 		cron('0 23 * * *')
 	}
 	options {
-		timeout(time: 30, unit: 'MINUTES')
+		timeout(time: 45, unit: 'MINUTES')
 	}
 	environment {
 		ENABLE_HTTP_API='http-test,http-status,http-version2,http-version3,http-exports'
 		ENABLE_WS_API='rpc-v3,blockchain'
-		LISK_APP_WS='ws://host.docker.internal:9001'
+		LISK_APP_WS='ws://host.docker.internal:7887'
 		ENABLE_TESTING_MODE='true'
     }
 	stages {
@@ -79,7 +79,7 @@ pipeline {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
 							cp -f docker/example.env .env
-							echo LISK_APP_WS=ws://host.docker.internal:9001 >> .env
+							echo LISK_APP_WS=ws://host.docker.internal:7887 >> .env
 							echo ENABLE_HTTP_API=http-test,http-status,http-version2,http-version3,http-exports >> .env
 							echo ENABLE_TESTING_MODE=true >> .env
 
@@ -134,6 +134,10 @@ pipeline {
 						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 					}
 					sleep(5)
+					sh '''
+						docker ps
+						make logs
+					'''
 				}
 			}	
 		}
@@ -145,19 +149,15 @@ pipeline {
 					branch 'feature/**'
 				}
 			}
-            steps {
-                script {
-                    def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
+			steps {
+				script {
+					def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
 					def percentageIndexed = "0"
 					while (percentageIndexed != "100") {
 						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
 						if (response == 0) {
-							def jsonString = sh(script: "curl -s $apiUrl", returnStdout: true)
-							
-							// Extract the percentageIndexed value from the JSON string
-							def percentageIndexStart = jsonString.indexOf('"percentageIndexed":') + 20
-							def percentageIndexEnd = jsonString.indexOf(',', percentageIndexStart)
-							percentageIndexed = jsonString.substring(percentageIndexStart, percentageIndexEnd).trim()
+							def jsonString = sh(script: "curl -s $apiUrl | jq -r '.data.percentageIndexed'", returnStdout: true).trim()
+                    		percentageIndexed = jsonString
 						}
 						else {
 							sh '''
@@ -194,12 +194,12 @@ pipeline {
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
 								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
-								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
 								dir('./services/blockchain-indexer') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' SERVICE_INDEXER_CACHE_REDIS='redis://127.0.0.1:6381/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://127.0.0.1:6381/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://127.0.0.1:6381/4' npm run test:functional" }
 								dir('./services/fee-estimator') { sh "npm run test:functional" }
 								dir('./services/market') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' SERVICE_MARKET_REDIS='redis://127.0.0.1:6381/10' npm run test:functional" }
 								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
 							   	dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:6381/0' npm run test:functional" }
+								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:4222' npm run test:functional" }
 							}
 						}
 					}
@@ -209,7 +209,7 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./tests') { sh 'node runIntegrationTestsWithRetry.js' }
+								dir('./tests') { sh "./node_modules/.bin/jest --config=jest.config.integration.apiv3.sdkv6.js --testRunner='jest-circus/runner'" }
 							}
 						}
 					}

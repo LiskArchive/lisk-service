@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.setTimeout(2147483647);
-
 const {
 	getTableInstance,
 	startDBTransaction,

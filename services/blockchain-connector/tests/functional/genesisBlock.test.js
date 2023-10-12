@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 const { ServiceBroker } = require('moleculer');
+
+const { exists } = require('../../shared/utils/fs');
 const config = require('../../config');
 
 const broker = new ServiceBroker({
@@ -28,6 +33,36 @@ const subStoreName = 'userSubstore';
 
 beforeAll(() => broker.start());
 afterAll(() => broker.stop());
+
+describe('Genesis Block import tests', () => {
+	let genesisBlockFilePath;
+
+	xit('Verify if genesis block is downloaded successfully', async () => {
+		const { chainID } = await broker.call('connector.getNetworkStatus');
+		genesisBlockFilePath = path.resolve(`${__dirname}/../../data/${chainID}/genesis_block.json.tar.gz`);
+
+		const isExists = await exists(genesisBlockFilePath);
+		expect(isExists).toBe(true);
+	});
+
+	xit('Validate genesis block', async () => {
+		const genesisBlockSHAFilePath = genesisBlockFilePath.concat('.SHA256');
+		const isExists = await exists(genesisBlockSHAFilePath);
+		expect(isExists).toBe(true);
+
+		const expectedHash = (fs.readFileSync(genesisBlockSHAFilePath, 'utf8')).split(' ')[0];
+
+		const fileStream = fs.createReadStream(genesisBlockFilePath);
+		const dataHash = crypto.createHash('sha256');
+
+		const fileHash = await new Promise(resolve => {
+			fileStream.on('data', (data) => { dataHash.update(data); });
+			fileStream.on('end', () => { resolve(dataHash.digest().toString('hex')); });
+		});
+
+		expect(expectedHash).toEqual(fileHash);
+	});
+});
 
 describe('Test getGenesisAssets method', () => {
 	it('should return token module data when called with module:token', async () => {
