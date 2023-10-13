@@ -223,23 +223,28 @@ docker container logs lisk-service_gateway_1
 
 To check the logs for different microservices using the `make` commands, the following commands listed below can be used:
 
+.Displays the logs for all the microservices that have been logged so far, and that are currently existing
 ----
 make logs
 ----
-The above command, displays the logs for all the microservices that have been logged so far, and that are currently existing.
+
+.Displays the latest logs for all the microservices
 ----
 make logs-live
 ----
-The above command displays the logs for all the microservices currently logged so far, and also continues to display the latest logs.
+
+.Displays the logs for the specified microservice.
 ----
 make logs-blockchain-connector
 ----
-The above command is similar to the `make logs` command, but only displays the appropriate logs for the specified microservice.
-For example, in this case only for the `blockchain-connector`.
+In the above example, it will display logs only for the `blockchain-connector` microservice.
+
+.Displays the latest logs for the specified microservice.
 ----
 make logs-live-blockchain-connector
 ----
-Finally, the above command is similar to the `make logs-live` command, but only displays the logs for the specified microservice.
+In the above example, it will display latest logs only for the `blockchain-connector` microservice.
+
 For example, in this case also only for blockchain-connector here.
 
 Replace the `blockchain-connector` with the specific service name required.
