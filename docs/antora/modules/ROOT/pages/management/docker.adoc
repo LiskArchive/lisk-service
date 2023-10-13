@@ -12,7 +12,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_snapshot_config: configuration/index.adoc
 :url_backups: management/snapshots.adoc
 
-NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and then follow the existing process described below.
+NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and then create the Docker image, followed by starting Lisk Service as shown in the commands below.
 
 == Build Docker image
 
