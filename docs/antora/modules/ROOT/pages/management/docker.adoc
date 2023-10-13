@@ -245,6 +245,5 @@ make logs-live-blockchain-connector
 ----
 In the above example, it will display latest logs only for the `blockchain-connector` microservice.
 
-For example, in this case also only for blockchain-connector here.
 
 Replace the `blockchain-connector` with the specific service name required.
