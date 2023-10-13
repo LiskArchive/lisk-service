@@ -26,7 +26,6 @@ const getNetworkStatus = async () => {
 
 	status.moduleCommands = await getAvailableModuleCommands();
 	status.registeredModules = await getRegisteredModules();
-	status.constants = { chainID: status.chainID };
 
 	return {
 		data: status,
@@ -91,7 +90,7 @@ const getNetworkPeers = async params => {
 	const meta = {
 		count: sortedPeers.length,
 		offset: params.offset,
-		total: peers.length,
+		total: filteredPeers.length,
 	};
 
 	return {

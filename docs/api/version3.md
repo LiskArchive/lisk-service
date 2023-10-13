@@ -2075,7 +2075,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | ip   | String | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/` | *(empty)* |  |
-| networkVersion | String | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(.\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/` | *(empty)* |  |
+| networkVersion | String | `/^\d+\.\d+((\.\d+)?(?:-[a-zA-Z\d]+(?:\.\d+)?)?)?(?:\+[a-zA-Z\d]+)?$/` | *(empty)* |  |
 | state | String | `["connected", "disconnected", "any"]` | any |  |
 | height | Number | `[0,Inf)` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5657,7 +5657,14 @@ _Supports pagination._
       "status": "activated",
       "address": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
       "lastCertificateHeight": 160,
-      "lastUpdated": 1616008148
+      "lastUpdated": 1616008148,
+      "escrowedLSK": "50000000000",
+      "escrow": [
+        {
+          "tokenID": "0000000000000000",
+          "amount": "50000000000"
+        }
+      ]
     }
   ],
   "meta": {
@@ -5866,6 +5873,13 @@ Proxy request to directly invoke application endpoint. Returns endpoint response
   "message": "Unknown input parameter(s): <param_name>"
 }
 ```
+
+503 Service Unavailable
+```jsonc
+{
+  "error": true,
+  "message": "Service is not ready yet."
+}
 
 #### Examples
 

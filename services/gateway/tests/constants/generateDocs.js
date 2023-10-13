@@ -505,6 +505,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/FeeEstimateEnvelope',
 					},
 				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
+					},
+				},
 			},
 		},
 	},
@@ -582,6 +588,12 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
+					},
+				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},

@@ -39,6 +39,12 @@ module.exports = {
 					$ref: '#/definitions/FeeEstimateEnvelope',
 				},
 			},
+			503: {
+				description: 'Service Unavailable',
+				schema: {
+					$ref: '#/definitions/serviceUnavailable',
+				},
+			},
 		};
 		return feeEstimatePerByteSchema;
 	},

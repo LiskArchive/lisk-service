@@ -6,10 +6,14 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :idprefix:
 :imagesdir: ../assets/images
 :source-language: bash
+:url_snapshot_config: configuration/index.adoc
 // External URLs
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_pm2_management: https://pm2.keymetrics.io/docs/usage/log-management/
+:url_backups: management/snapshots.adoc
+
+//TODO: add in link to new Backups page for importing the DB snapshot manually
 
 On this page, you'll find the most relevant PM2 commands for running a source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
@@ -263,6 +267,10 @@ pm2 delete ecosystem.config.js
 [PM2][WARN] Current process list is not synchronized with saved list. App lisk-service-gateway lisk-service-blockchain-app-registry lisk-service-blockchain-connector lisk-service-blockchain-indexer lisk-service-blockchain-coordinator lisk-service-fee-estimator lisk-service-transaction-statistics lisk-service-market lisk-service-export differs. Type 'pm2 save' to synchronize.
 ----
 ====
+
+== Taking Snapshots
+
+If you wish to take a snapshot of your Source-based installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
 
 == Resetting Lisk Service
 

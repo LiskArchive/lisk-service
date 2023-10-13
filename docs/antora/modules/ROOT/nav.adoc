@@ -7,5 +7,6 @@
 ** xref:configuration/source.adoc[]
 
 * Management
+** xref:management/snapshots.adoc[]
 ** xref:management/docker.adoc[]
 ** xref:management/source.adoc[]

@@ -1,0 +1,30 @@
+= Applying database snapshots
+Chris Braithwaite <christopher.braithwaite@lightcurve.io>
+:description: Describes how to perform Lisk Service database snapshots
+:toc:
+:idseparator: -
+:idprefix:
+:experimental:
+:imagesdir: ../assets/images
+:source-language: bash
+:url_snapshot_config: configuration/index.adoc#database-snapshot-configuration
+
+You can create a snapshot of the database in your Docker or Source-based installation.
+The process is quite similar for both and is explained in the following sections.
+
+== Applying snapshots using Docker
+
+With regard to applying snapshots for the Docker installation, the configurations to sync Lisk Service from an existing snapshot can be used to speed up the sync process.
+It is possible to enable or create a snapshot of the MySQL and Maria database, and the available xref:{url_snapshot_config}[snapshot configurations] can be found in the Lisk Service configuration reference page.
+To create either a MariaDB or a MySQL snapshot, set the `ENABLE_APPLY_SNAPSHOT` to `true` in the Indexer Service configuration.
+
+To enable the relevant snapshot to be imported automatically, please ensure to set the aforementioned parameters above before starting the service.
+With regard to the MariaDB the configurations will be the same as the MySQL DB.
+
+NOTE:  The `MARIADB_ROOT_PASSWORD`/`MYSQL_ROOT_PASSWORD` and `MARIADB_PASSWORD`/`MYSQL_PASSWORD` must not contain any of the non-ASCII characters, for example, ¡, ¢, £, etc.
+
+== Applying snapshots using Source
+
+The same instructions are applicable with regard to the Source based installation, as listed above in the Docker section.
+
+
