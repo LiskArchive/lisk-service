@@ -52,7 +52,9 @@ describe('Method get.blocks.assets', () => {
 				const { genesisHeight } = invokeRes.result.data;
 
 				// eslint-disable-next-line no-await-in-loop
-				[refBlockAssets] = (await getBlocksAssets({ height: String(genesisHeight) })).result.data;
+				[refBlockAssets = {}] = (await getBlocksAssets({ height: String(genesisHeight) }))
+					.result.data;
+
 				[refAsset] = refBlockAssets.assets;
 
 				if (refAsset) {

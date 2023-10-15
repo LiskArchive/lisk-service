@@ -33,7 +33,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/network/peers`;
 const invokeEndpoint = `${baseUrlV3}/invoke`;
 
-describe('Peers API', () => {
+describe('Network peers API', () => {
 	describe('GET /peers', () => {
 		it('should work without request params', async () => {
 			const response = await api.get(`${endpoint}`);

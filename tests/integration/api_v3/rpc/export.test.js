@@ -43,8 +43,8 @@ describe('Export API', () => {
 	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
 	const endDate = moment('2023-12-30').format(exportConfig.excel.dateFormat);
 
-	const mockAddress = 'lsko8844sbbaq2vwpb7mc2p7shy7b3k8zx5tgecdn';
-	const mockPublicKey = 'f3d4f9afa564ad3c43b2f54144dbe413fd2111942f86d1591db9a5651883a357';
+	const mockAddress = 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad';
+	const mockPublicKey = '44e2b746594f74272d15b6f7d18dffbf83c749bbf1babc5f1d314bdbd08f8215';
 
 	describe('Schedule file export', () => {
 		it('should schedule file export from account address with interval', async () => {

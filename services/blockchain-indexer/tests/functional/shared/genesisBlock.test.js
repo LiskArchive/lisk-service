@@ -54,6 +54,8 @@ let totalLockedKey;
 let totalStakedKey;
 let totalSelfStakedKey;
 
+const bigIntZero = BigInt('0');
+
 beforeAll(async () => {
 	await broker.start();
 	await request.setAppContext({
@@ -89,7 +91,7 @@ describe('Test indexTokenModuleAssets method', () => {
 		await indexTokenModuleAssets();
 
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
-		expect(totalLockedAfter).toBeGreaterThan(BigInt('0'));
+		expect(totalLockedAfter).toBeGreaterThan(bigIntZero);
 	});
 
 	it('should correctly index Token Module Asset only after commit when called with dbTrx', async () => {
@@ -103,7 +105,7 @@ describe('Test indexTokenModuleAssets method', () => {
 
 		await commitDBTransaction(dbTrx);
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
-		expect(totalLockedAfter).toBeGreaterThan(BigInt('0'));
+		expect(totalLockedAfter).toBeGreaterThan(bigIntZero);
 	});
 });
 
@@ -121,9 +123,9 @@ describe('Test indexPosModuleAssets method', () => {
 
 		await indexPosModuleAssets();
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 	});
 
 	it('should correctly index Token Module Asset only after commit when called with dbTrx', async () => {
@@ -141,9 +143,9 @@ describe('Test indexPosModuleAssets method', () => {
 
 		await commitDBTransaction(dbTrx);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 	});
 });
 
@@ -164,11 +166,11 @@ describe('Test indexGenesisBlockAssets method', () => {
 
 		await indexGenesisBlockAssets();
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
-		expect(totalLockedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalLockedAfter).toBeGreaterThanOrEqual(bigIntZero);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 	});
 
 	it('should correctly index genesis block assets only after commit when called with dbTrx', async () => {
@@ -190,10 +192,10 @@ describe('Test indexGenesisBlockAssets method', () => {
 
 		await commitDBTransaction(dbTrx);
 		const totalLockedAfter = await keyValueTable.get(totalLockedKey);
-		expect(totalLockedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalLockedAfter).toBeGreaterThanOrEqual(bigIntZero);
 		const totalStakedAfter = await keyValueTable.get(totalStakedKey);
-		expect(totalStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 		const totalSelfStakedAfter = await keyValueTable.get(totalSelfStakedKey);
-		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(BigInt('0'));
+		expect(totalSelfStakedAfter).toBeGreaterThanOrEqual(bigIntZero);
 	});
 });

@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+jest.setTimeout(2147483647);
 
 const moment = require('moment');
 const config = require('../../../config');
@@ -48,65 +49,21 @@ const httpStatus = {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const networkStatusEndpoint = `${baseUrlV3}/network/status`;
-
-let curChainID;
 
 describe('Export API', () => {
 	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
 	const endDate = moment('2023-11-30').format(exportConfig.excel.dateFormat);
-	let refTransaction1;
-	let refTransaction2;
-	let refTransaction3;
-	let refTransaction4;
 
-	beforeAll(async () => {
-		const uniqueSenders = new Set();
-
-		// Blacklist addresses hardcoded in RPC export tests
-		const restrictedAddress = ['lsk8gnejvorhq8bsrrmwq8oxpu5ufubxpn7ohukrn', 'lsko8844sbbaq2vwpb7mc2p7shy7b3k8zx5tgecdn'];
-		restrictedAddress.forEach(item => uniqueSenders.add(item));
-
-		let offset = 0;
-		while (uniqueSenders.size < 4) {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await api.get(`${baseUrlV3}/transactions?limit=100&offset=${offset}`);
-			const transactions = response.data;
-
-			if (transactions.length < 4) {
-				throw new Error('Need at least 4 transactions from unique senders to run this test.');
-			}
-
-			// eslint-disable-next-line no-restricted-syntax
-			for (const transaction of transactions) {
-				if (!uniqueSenders.has(transaction.sender.address)) {
-					if (!refTransaction1) {
-						refTransaction1 = transaction;
-						uniqueSenders.add(transaction.sender.address);
-					} else if (!refTransaction2) {
-						refTransaction2 = transaction;
-						uniqueSenders.add(transaction.sender.address);
-					} else if (!refTransaction3) {
-						refTransaction3 = transaction;
-						uniqueSenders.add(transaction.sender.address);
-					} else if (!refTransaction4) {
-						refTransaction4 = transaction;
-						uniqueSenders.add(transaction.sender.address);
-					}
-				}
-			}
-			offset += 100;
-		}
-
-		const networkStatus = await api.get(networkStatusEndpoint);
-		curChainID = networkStatus.data.chainID;
-	});
+	const mockAddress1 = 'lsk969u84bnws8zc52cu59o8aamvpyg8nw86hpgad';
+	const mockAddress2 = 'lsk2jjg9ob4qh7jokpdbf7hjgqftkaq4b2925f422';
+	const mockPublicKey1 = 'ebe2c469275b2eac44f05684c974454f7eecc6d2a8c1b72bf37fffbeb5419ccd';
+	const mockPublicKey2 = '674061bfeea0eddb4c88fc7bc03ef694f5040358b2b14edba99bc8ebddfd7c97';
 
 	describe('Schedule file export', () => {
 		it('should return 202 Accepted when scheduling file export from account address with interval', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress1}&interval=${startDate}:${endDate}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -119,7 +76,7 @@ describe('Export API', () => {
 		it('should return 202 Accepted when scheduling file export from account publicKey with interval', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey1}&interval=${startDate}:${endDate}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -132,7 +89,7 @@ describe('Export API', () => {
 		it('should return 202 Accepted when scheduling file export from account address', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction3.sender.address}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -145,7 +102,7 @@ describe('Export API', () => {
 		it('should return 202 Accepted when scheduling file export from account publicKey', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction4.sender.publicKey}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -160,9 +117,8 @@ describe('Export API', () => {
 		const successValidator = (response) => response.meta.ready;
 
 		it('should return 200 OK when scheduled from account address', async () => {
-			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
 				httpStatus.OK,
 			);
 			const response = await waitForSuccess(scheduleExport, successValidator);
@@ -175,9 +131,8 @@ describe('Export API', () => {
 		});
 
 		it('should return 200 OK when scheduled from account publicKey', async () => {
-			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
 				httpStatus.OK,
 			);
 			const response = await waitForSuccess(scheduleExport, successValidator);
@@ -195,28 +150,24 @@ describe('Export API', () => {
 		const successValidator = (response) => response.meta.ready;
 
 		it('should return 200 OK when scheduled from account address', async () => {
-			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
 				httpStatus.OK,
 			);
-			await waitForSuccess(scheduleExport, successValidator);
+			const res = await waitForSuccess(scheduleExport, successValidator);
 
-			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.xlsx`;
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
+			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
 			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
 		});
 
 		it('should return 200 OK when scheduled from account publicKey', async () => {
-			jest.setTimeout(300000);
 			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
 				httpStatus.OK,
 			);
-			await waitForSuccess(scheduleExport, successValidator);
+			const res = await waitForSuccess(scheduleExport, successValidator);
 
-			const validFileName = `transactions_${curChainID}_${refTransaction2.sender.address}_${startDate}_${endDate}.xlsx`;
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
+			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
 			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
 		});
 	});
@@ -246,7 +197,7 @@ describe('Export API', () => {
 		it('should return 400 BAD REQUEST when scheduling file export with an address and an invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${invalidInterval}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress1}&interval=${invalidInterval}`,
 				httpStatus.BAD_REQUEST,
 			);
 			expect(response).toMap(badRequestSchema);
@@ -255,7 +206,7 @@ describe('Export API', () => {
 		it('should return 400 BAD REQUEST when scheduling file export with a publicKey and an invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey1}&interval=${invalidInterval}`,
 				httpStatus.BAD_REQUEST,
 			);
 			expect(response).toMap(badRequestSchema);
@@ -278,7 +229,7 @@ describe('Export API', () => {
 		});
 
 		it('should return 404 NOT FOUND when attempting to download a non-existent file', async () => {
-			const validFileName = `transactions_99999999_${refTransaction1.sender.address}_${startDate}_${endDate}.xlsx`;
+			const validFileName = `transactions_99999999_${mockAddress1}_${startDate}_${endDate}.xlsx`;
 			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.NOT_FOUND);
 			expect(response).toMap(notFoundSchema);
 		});

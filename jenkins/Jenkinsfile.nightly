@@ -44,7 +44,7 @@ pipeline {
 		timeout(time: 45, unit: 'MINUTES')
 	}
 	environment {
-		ENABLE_HTTP_API='http-test,http-status,http-version3,http-exports'
+		ENABLE_HTTP_API='http-status,http-version3,http-exports'
 		ENABLE_WS_API='rpc-v3,rpc-test,blockchain'
 		LISK_APP_WS='ws://host.docker.internal:7887'
 		ENABLE_TESTING_MODE='true'

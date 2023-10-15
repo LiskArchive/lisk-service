@@ -48,7 +48,7 @@ describe('Generators API', () => {
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const generator of response.data) {
-			if (generator.publicKey !== null && generator.publicKey !== undefined) {
+			if (![null, undefined].includes(generator.publicKey)) {
 				selectedGenerator = generator;
 				break;
 			}

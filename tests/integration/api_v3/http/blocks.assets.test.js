@@ -51,7 +51,7 @@ describe('Blocks Assets API', () => {
 				const { genesisHeight } = invokeRes.data;
 
 				// eslint-disable-next-line no-await-in-loop
-				[refBlockAssets] = (await api.get(`${endpoint}?height=${genesisHeight}`)).data;
+				[refBlockAssets = {}] = (await api.get(`${endpoint}?height=${genesisHeight}`)).data;
 				[refAsset] = refBlockAssets.assets;
 
 				if (refAsset) {
