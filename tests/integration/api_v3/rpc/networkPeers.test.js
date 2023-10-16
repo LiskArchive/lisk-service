@@ -33,7 +33,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestPeers = async params => request(wsRpcUrl, 'get.network.peers', params);
 const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
 
-describe('Peers API', () => {
+describe('Network peers API', () => {
 	describe('get.peers', () => {
 		it('should return peers without request params', async () => {
 			const response = await requestPeers({});

@@ -60,7 +60,7 @@ describe('Blocks API', () => {
 		}
 
 		if (!success) {
-			throw new Error('Failed to fetch blocks after 5 retries');
+			throw new Error('Failed to fetch blocks even after retrying.');
 		}
 	});
 

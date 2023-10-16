@@ -64,7 +64,7 @@ describe('get.pos.stakers', () => {
 		}
 
 		if (!success) {
-			throw new Error('Failed to fetch validator addresss after 5 retries');
+			throw new Error('Failed to fetch validator address even after retrying.');
 		}
 
 		/* eslint-enable no-await-in-loop */

@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.setTimeout(2147483647);
-
 const moment = require('moment');
 const config = require('../../../config');
 const exportConfig = require('../../../../services/export/config');
@@ -128,7 +126,7 @@ describe('Export API', () => {
 			expect(response.data).toMap(exportSchema);
 			expect(response.meta).toMap(metaSchemaForExport);
 			expect(response.meta).toEqual(expect.objectContaining(expected));
-		});
+		}, 2147483647);
 
 		it('should return 200 OK when scheduled from account publicKey', async () => {
 			const scheduleExport = async () => api.get(
@@ -142,7 +140,7 @@ describe('Export API', () => {
 			expect(response.data).toMap(exportSchema);
 			expect(response.meta).toMap(metaSchemaForExport);
 			expect(response.meta).toEqual(expect.objectContaining(expected));
-		});
+		}, 2147483647);
 	});
 
 	describe('Download processed transaction history -> returns 200 OK', () => {
@@ -158,7 +156,7 @@ describe('Export API', () => {
 
 			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
 			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
-		});
+		}, 2147483647);
 
 		it('should return 200 OK when scheduled from account publicKey', async () => {
 			const scheduleExport = async () => api.get(
@@ -169,7 +167,7 @@ describe('Export API', () => {
 
 			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
 			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
-		});
+		}, 2147483647);
 	});
 
 	describe('Invalid params/request', () => {

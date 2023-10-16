@@ -26,6 +26,7 @@ const waitMs = n => new Promise(resolve => {
 beforeEach(() => {
 });
 
+// TODO: Update to mainnet url after production
 const url = 'https://testnet-service.lisk.com/api/v3/blocks';
 
 describe('HTTP library is able to send GET request', () => {

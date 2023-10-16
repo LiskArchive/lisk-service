@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-jest.setTimeout(2147483647);
-
 const moment = require('moment');
 
 const config = require('../../../config');
@@ -93,7 +91,7 @@ describe('Export API', () => {
 			expect(result.data).toMap(exportSchema);
 			expect(result.meta).toMap(metaSchemaForExport);
 			expect(result.meta).toEqual(expect.objectContaining(expected));
-		});
+		}, 2147483647);
 
 		it('should schedule from account publicKey and confirm it is ready', async () => {
 			const scheduleExport = async () => requestTransactionExport({
@@ -108,7 +106,7 @@ describe('Export API', () => {
 			expect(result.data).toMap(exportSchema);
 			expect(result.meta).toMap(metaSchemaForExport);
 			expect(result.meta).toEqual(expect.objectContaining(expected));
-		});
+		}, 2147483647);
 	});
 
 	describe('Invalid params/request', () => {

@@ -148,6 +148,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
+		// TODO: Enable test after https://github.com/LiskHQ/lisk-service/issues/1873
 		xit('should return server error for empty blockID', async () => {
 			const response = await getEvents({ blockID: '' });
 			expect(response).toMap(serverErrorSchema);
@@ -529,6 +530,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
+		// TODO: Enable test after https://github.com/LiskHQ/lisk-service/issues/1873
 		xit('should return invalid params for empty topic', async () => {
 			const response = await getEvents({ topic: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
