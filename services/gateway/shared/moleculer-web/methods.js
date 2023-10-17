@@ -13,7 +13,7 @@ const {
 const _ = require('lodash');
 const kleur = require('kleur');
 const {
-	Exceptions: { ValidationException },
+	Exceptions: { ValidationException, NotFoundException },
 } = require('lisk-service-framework');
 
 module.exports = {
@@ -63,6 +63,9 @@ module.exports = {
 
 				if (err instanceof ValidationException) {
 					const molecularError = new MoleculerError(err.message, 400);
+					this.sendError(req, res, molecularError);
+				} else if (err instanceof NotFoundException) {
+					const molecularError = new MoleculerError(err.message, 404);
 					this.sendError(req, res, molecularError);
 				} else {
 					const errMessage = err && err.message ? err.message : 'Internal server error';

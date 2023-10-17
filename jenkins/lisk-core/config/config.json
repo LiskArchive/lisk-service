@@ -1,0 +1,12 @@
+{
+	"rpc": {
+		"modes": [
+			"ws"
+		],
+		"port": 7887,
+		"host": "0.0.0.0",
+		"allowedMethods": [
+			"*"
+		]
+	}
+}

@@ -55,15 +55,15 @@ const TRANSACTION_OBJECT_INVALID = {
 const TRANSACTION_OBJECT_PENDING = {
 	module: 'token',
 	command: 'transfer',
-	fee: '166000',
+	fee: '165000',
 	nonce: '1',
 	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
 	signatures: [
 		'ea97e1131adbd6059d8922b14c1dc15a9070d28dfa36d5b492a6850a22fde2407d1d95e73785057adec5631906e2639d5e0e5974537606c9f45ce5af2e2fab06',
 	],
 	params: {
-		amount: '1000000000000',
-		recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+		amount: '10000000000',
+		recipientAddress: 'e32913576c52e2b6b466d8fbd017f066778802b8',
 		data: '',
 		tokenID: '0400000000000000',
 	},

@@ -24,6 +24,9 @@ const logger = Logger();
 
 const liskAppAddress = config.endpoints.liskWs;
 const NODE_DISCOVERY_INTERVAL = 1 * 1000; // ms
+const NODE_SYNC_CHECK_INTERVAL = 15 * 1000; // in ms
+
+let intervalID;
 
 const checkStatus = () => new Promise((resolve, reject) => {
 	getNodeInfo()
@@ -36,6 +39,33 @@ const checkStatus = () => new Promise((resolve, reject) => {
 
 const waitForNode = () => waitForIt(checkStatus, NODE_DISCOVERY_INTERVAL);
 
+const waitForNodeToFinishSync = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return getNodeInfo(true)
+		.then((nodeInfo) => {
+			const { syncing } = nodeInfo;
+			const isNodeSyncComplete = !syncing;
+			return syncing
+				? (() => {
+					logger.info('Node synchronization in progress. Will wait for node to sync with the network before scheduling indexing.');
+					intervalID = setInterval(
+						waitForNodeToFinishSync.bind(null, resolve),
+						NODE_SYNC_CHECK_INTERVAL,
+					);
+				})()
+				: (() => {
+					logger.info('Node is fully synchronized with the network.');
+					return resolve(isNodeSyncComplete);
+				})();
+		});
+});
+
 module.exports = {
 	waitForNode,
+	waitForNodeToFinishSync,
 };

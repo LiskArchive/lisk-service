@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 
@@ -34,13 +35,44 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlocksAssets = async params => request(wsRpcUrl, 'get.blocks.assets', params);
+const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
 
 describe('Method get.blocks.assets', () => {
 	let refBlockAssets;
 	let refAsset;
+
 	beforeAll(async () => {
-		[refBlockAssets] = (await getBlocksAssets({ height: '0' })).result.data;
-		[refAsset] = refBlockAssets.assets;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const invokeRes = await invoke({ endpoint: 'system_getNodeInfo' });
+				const { genesisHeight } = invokeRes.result.data;
+
+				// eslint-disable-next-line no-await-in-loop
+				[refBlockAssets = {}] = (await getBlocksAssets({ height: String(genesisHeight) }))
+					.result.data;
+
+				[refAsset] = refBlockAssets.assets;
+
+				if (refAsset) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching transactions. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch block assets after 10 retries');
+		}
 	});
 
 	describe('is able to retireve block assets', () => {

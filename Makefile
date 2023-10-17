@@ -42,7 +42,7 @@ test-functional:
 	$(compose) exec -T tests yarn run test:functional
 
 test-integration:
-	$(compose) exec -T tests yarn run test:integration:APIv3:SDKv6
+	$(compose) exec -T tests yarn run test:integration:APIv3
 
 cli: cli-gateway
 

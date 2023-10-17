@@ -18,6 +18,7 @@ module.exports = {
 	testMatch: [
 		'<rootDir>/functional/**/*.test.js',
 	],
+	testTimeout: 120000,
 	testEnvironment: 'node',
 	setupFilesAfterEnv: [
 		'jest-extended',

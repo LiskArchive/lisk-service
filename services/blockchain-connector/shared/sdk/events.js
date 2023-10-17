@@ -84,7 +84,7 @@ getNodeInfo().then(nodeInfo => {
 	setInterval(() => {
 		if (eventsCounter === 0) {
 			Signals.get('resetApiClient').dispatch();
-		} else {
+		} else if (eventsCounter > 0) {
 			eventsCounter = 0;
 		}
 	}, config.connectionVerifyBlockInterval * nodeInfo.genesis.blockTime * 1000);

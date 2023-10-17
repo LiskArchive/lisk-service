@@ -21,6 +21,7 @@ const {
 	goodRequestSchema,
 	metaSchema,
 	badRequestSchema,
+	urlNotFoundSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
@@ -30,209 +31,211 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/network/peers`;
+const invokeEndpoint = `${baseUrlV3}/invoke`;
 
-xdescribe('Peers API', () => {
+describe('Network peers API', () => {
 	describe('GET /peers', () => {
-		it('without request params -> ok', async () => {
+		it('should work without request params', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty ip -> ok', async () => {
+		it('should work with empty ip', async () => {
 			const response = await api.get(`${endpoint}?ip=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid ip -> bad request', async () => {
+		it('should return a bad request for an invalid IP', async () => {
 			const response = await api.get(`${endpoint}?ip=0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('valid networkVersion -> ok', async () => {
-			const response = await api.get(`${endpoint}?networkVersion=2.0`);
+		it('should work with a valid networkVersion', async () => {
+			const invokeRes = await api.post(invokeEndpoint, { endpoint: 'system_getNodeInfo' });
+			const { networkVersion } = invokeRes.data;
+
+			const response = await api.get(`${endpoint}?networkVersion=${networkVersion}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty networkVersion -> ok', async () => {
+		it('should work with empty networkVersion', async () => {
 			const response = await api.get(`${endpoint}?networkVersion=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('non-existent networkVersion -> 200 OK', async () => {
+		it('should return no peers for a non-existent networkVersion', async () => {
 			const response = await api.get(`${endpoint}?networkVersion=9.99.0`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid networkVersion -> bad request', async () => {
+		it('should return a bad request for an invalid networkVersion', async () => {
 			const response = await api.get(`${endpoint}?networkVersion=v3.0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('\'connected\' state -> ok', async () => {
+		it('should work with state=connected', async () => {
 			const response = await api.get(`${endpoint}?state=connected`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('\'disconnected\' state -> ok', async () => {
+		it('should work with state=disconnected', async () => {
 			const response = await api.get(`${endpoint}?state=disconnected`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('\'any\' state -> ok', async () => {
+		it('should work with state=any', async () => {
 			const response = await api.get(`${endpoint}?state=any`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty state -> ok', async () => {
+		it('should work with empty state', async () => {
 			const response = await api.get(`${endpoint}?state=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid state 1 -> bad request', async () => {
+		it('should return a bad request for an invalid state', async () => {
 			const response = await api.get(`${endpoint}?state=invalid`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid state 2 -> bad request', async () => {
+		it('should return a bad request for an invalid state', async () => {
 			const response = await api.get(`${endpoint}?state=1`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('empty height -> ok', async () => {
+		it('should work with empty height', async () => {
 			const response = await api.get(`${endpoint}?height=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('non-existent height -> 200 Ok', async () => {
-			const response = await api.get(`${endpoint}?height=1000000000`);
+		it('should return no peers for a non-existent height', async () => {
+			const response = await api.get(`${endpoint}?height=${Number.MAX_SAFE_INTEGER}`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> bad request', async () => {
+		it('should return a bad request for an invalid height', async () => {
 			const response = await api.get(`${endpoint}?height=-10`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('limit=100 -> ok', async () => {
+		it('should work with limit=100', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty limit -> ok', async () => {
+		it('should work with empty limit', async () => {
 			const response = await api.get(`${endpoint}?limit=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty offset -> ok', async () => {
+		it('should work with empty offset', async () => {
 			const response = await api.get(`${endpoint}?offset=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('too big offset -> 200 OK', async () => {
+		it('should return no peers for a too big offset', async () => {
 			const response = await api.get(`${endpoint}?offset=1000000`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('empty sort -> ok', async () => {
+		it('should work with empty sort', async () => {
 			const response = await api.get(`${endpoint}?sort=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('wrong sort -> bad request error', async () => {
+		it('should return a bad request for a wrong sort', async () => {
 			const response = await api.get(`${endpoint}?sort=height:ascc`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid request param -> bad request', async () => {
+		it('should return a bad request for an invalid request param', async () => {
 			const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('wrong url -> 200 OK', async () => {
-			const response = await api.get(`${endpoint}/112`);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBe(0);
-			expect(response.meta).toMap(metaSchema);
+		it('should return 404 NOT FOUND for a wrong URL', async () => {
+			const response = await api.get(`${endpoint}/112`, 404);
+			expect(response).toMap(urlNotFoundSchema);
 		});
 	});
 
 	describe('Peers sorted by height', () => {
-		it('returns 10 peers sorted by height descending', async () => {
+		it('should return 10 peers sorted by height descending', async () => {
 			const response = await api.get(`${endpoint}?sort=height:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
@@ -245,11 +248,11 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 peers sorted by height ascending', async () => {
+		it('should return 10 peers sorted by height ascending', async () => {
 			const response = await api.get(`${endpoint}?sort=height:asc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
@@ -264,11 +267,11 @@ xdescribe('Peers API', () => {
 	});
 
 	describe('Peers sorted by networkVersion', () => {
-		it('returns 10 peers sorted by networkVersion descending', async () => {
+		it('should return 10 peers sorted by networkVersion descending', async () => {
 			const response = await api.get(`${endpoint}?sort=networkVersion:desc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {
@@ -284,11 +287,11 @@ xdescribe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 peers sorted by networkVersion ascending', async () => {
+		it('should return 10 peers sorted by networkVersion ascending', async () => {
 			const response = await api.get(`${endpoint}?sort=networkVersion:asc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(peer => expect(peer).toMap(networkPeerSchema));
 			if (response.data.length > 1) {

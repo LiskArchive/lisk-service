@@ -17,18 +17,30 @@
 const path = require('path');
 const _ = require('lodash');
 
-jest.setTimeout(15000);
-
 const {
 	Utils: {
-		fs: { rmdir, exists },
+		fs: { exists, mkdir, rmdir, write },
 	},
 	DB: {
 		MySQL: {
-			KVStore: { getKeyValueTable },
+			KVStore: { configureKeyValueTable, getKeyValueTable },
 		},
 	},
 } = require('lisk-service-framework');
+
+const {
+	appMetaObj,
+	tokenMetaObj,
+} = require('../../../constants/metadataIndex');
+
+const config = require('../../../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+configureKeyValueTable(MYSQL_ENDPOINT);
+
+const tempDir = `${__dirname}/temp/${appMetaObj.networkType}/${appMetaObj.chainName}`;
+const appMetaPath = `${tempDir}/${config.FILENAME.APP_JSON}`;
+const tokenMetaPath = `${tempDir}/${config.FILENAME.NATIVETOKENS_JSON}`;
 
 const {
 	getRepoDownloadURL,
@@ -43,15 +55,22 @@ const {
 } = require('../../../../shared/utils/downloadRepository');
 
 const { KV_STORE_KEY } = require('../../../../shared/constants');
-const config = require('../../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getKeyValueTableInstance = () => getKeyValueTable(MYSQL_ENDPOINT);
 
 const commitHashRegex = /^[a-f0-9]{40}$/;
 const enevtiAppFilePath = path.resolve(`${config.dataDir}/app-registry/devnet/Enevti/app.json`);
 
-xdescribe('Test getLatestCommitHash method', () => {
+beforeAll(async () => {
+	// Create metadata files in a temporary directory
+	await mkdir(tempDir);
+	await write(appMetaPath, JSON.stringify(appMetaObj));
+	await write(tokenMetaPath, JSON.stringify(tokenMetaObj));
+});
+
+afterAll(async () => rmdir(tempDir));
+
+describe('Test getLatestCommitHash method', () => {
 	it('should return correct latest commit hash info', async () => {
 		const response = await getLatestCommitHash();
 		expect(typeof response).toEqual('string');

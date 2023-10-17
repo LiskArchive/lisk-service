@@ -16,6 +16,7 @@
 import moment from 'moment';
 import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
 import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
@@ -26,6 +27,7 @@ const {
 	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -39,9 +41,33 @@ const getTransactions = async params => request(wsRpcUrl, 'get.transactions', pa
 
 describe('Method get.transactions', () => {
 	let refTransaction;
+
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
-		[refTransaction] = response.result.data;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
+				[refTransaction] = response.result.data;
+
+				if (refTransaction) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching transactions. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch transactions after 10 retries');
+		}
 	});
 
 	describe('Retrieve transactions', () => {
@@ -195,11 +221,9 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty response when called with empty senderAddress', async () => {
+		it('should return invalid request when called with empty senderAddress', async () => {
 			const response = await getTransactions({ senderAddress: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 
 		it('should throw error when called with invalid senderAddress', async () => {
@@ -234,11 +258,9 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty response when called with empty recipientAddress', async () => {
+		it('should return invalid request when called with empty recipientAddress', async () => {
 			const response = await getTransactions({ recipientAddress: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 
 		it('should throw error when called with invalid recipientAddress', async () => {
@@ -369,13 +391,11 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty response when called with max...min height', async () => {
+		it('should return empty request when called with max...min height', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getTransactions({ height: `${maxHeight}:${minHeight}` });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 	});
 

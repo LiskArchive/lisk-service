@@ -533,7 +533,7 @@ const downloadTransactionHistory = async ({ filename }) => {
 	}
 
 	const isFile = await staticFiles.isFile(filename);
-	if (!isFile) throw new ValidationException(`Requested file (${filename}) does not exist.`);
+	if (!isFile) throw new NotFoundException(`Requested file (${filename}) does not exist.`);
 
 	excelResponse.data = xlsx.build(xlsx.parse(`${config.cache.exports.dirPath}/${filename}`)).toString('hex');
 	excelResponse.meta.filename = filename;
