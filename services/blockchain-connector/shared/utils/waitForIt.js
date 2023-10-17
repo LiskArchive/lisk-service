@@ -17,18 +17,16 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
-	const checkIfReady = async (that) => {
+const waitForIt = (fn, intervalMs = 1000) => new Promise(resolve => {
+	const timeout = setInterval(async () => {
 		try {
 			const result = await fn();
-			clearInterval(that);
+			clearInterval(timeout);
 			if (result !== undefined) resolve(result);
 		} catch (err) {
 			logger.debug(`Waiting for ${intervalMs}ms ...`);
 		}
-	};
-	const hInterval = setInterval(checkIfReady, intervalMs, this);
-	checkIfReady(hInterval);
+	}, intervalMs);
 });
 
 module.exports = waitForIt;
