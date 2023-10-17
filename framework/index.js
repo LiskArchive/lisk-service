@@ -34,9 +34,10 @@ module.exports = {
 	},
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
+		waitForIt: require('./src/waitForIt'),
 		Data: require('./src/data'),
 		fs: require('./src/fs'),
-		...(require('./src/data')),
+		...require('./src/data'),
 	},
 	Constants: {
 		...require('./constants/ErrorCodes'),
