@@ -40,14 +40,19 @@ const blockWithTransaction = Object.freeze({
 		{
 			module: 'token',
 			command: 'transfer',
-			params: '0a0804000000000000001080c8afa0251a1402604d9e57a39772fa12f2a860ecf6c1e9cae91122075465737420747828c096b102',
-			nonce: '0',
 			fee: '100000000',
+			nonce: '1',
 			senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
 			signatures: [
-				'a7e332b49db6d36c1024a24afbfd6eec2451e41c1cf751a8c609863ffa3e529ef4b8a34cecff29e9fa4bf30de4ce26f58c5d8a06587582a9129a6765064d3404',
+				'c7fd1abf9a552fa9c91b4121c87ae2c97cb0fc0aecc87d0ee8b1aa742238eef4a6815ddba31e21144c9652a7bd5c05577ae1100eac34fba43da6fc4879b8f206',
 			],
-			id: '66870fa27b22c361094ff2d72a794b3d7e531c02a488271c38d02180c05e3c69',
+			params: {
+				amount: '1000000000000',
+				recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+				data: '',
+				tokenID: '0400000000000000',
+			},
+			id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 		},
 	],
 	assets: [
@@ -93,22 +98,21 @@ const decodedBlockWithTransaction = Object.freeze({
 		{
 			module: 'token',
 			command: 'transfer',
-			params: {
-				tokenID: '0400000000000000',
-				amount: '10000000000',
-				recipientAddress: 'lskz4upsnrwk75wmfurf6kbxsne2nkjqd3yzwdaup',
-				data: 'Test tx',
-				accountInitializationFee: '5000000',
-			},
-			nonce: '0',
 			fee: '100000000',
+			nonce: '1',
 			senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
 			signatures: [
-				'a7e332b49db6d36c1024a24afbfd6eec2451e41c1cf751a8c609863ffa3e529ef4b8a34cecff29e9fa4bf30de4ce26f58c5d8a06587582a9129a6765064d3404',
+				'c7fd1abf9a552fa9c91b4121c87ae2c97cb0fc0aecc87d0ee8b1aa742238eef4a6815ddba31e21144c9652a7bd5c05577ae1100eac34fba43da6fc4879b8f206',
 			],
-			id: '66870fa27b22c361094ff2d72a794b3d7e531c02a488271c38d02180c05e3c69',
-			size: 178,
-			minFee: '177000',
+			params: {
+				tokenID: '0400000000000000',
+				amount: '1000000000000',
+				recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+				data: '',
+			},
+			id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
+			size: 167,
+			minFee: '166000',
 		},
 	],
 });

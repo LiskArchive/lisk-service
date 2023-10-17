@@ -1,0 +1,7 @@
+{
+	"name": "lisk-core",
+	"script": "lisk-core start",
+	"env": {
+		"LISK_NETWORK": "devnet"
+	}
+}

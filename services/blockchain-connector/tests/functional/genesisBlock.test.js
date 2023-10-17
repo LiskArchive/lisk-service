@@ -64,7 +64,7 @@ describe('Genesis Block import tests', () => {
 	});
 });
 
-xdescribe('Test getGenesisAssets method', () => {
+describe('Test getGenesisAssets method', () => {
 	it('should return token module data when called with module:token', async () => {
 		const response = await broker.call('connector.getGenesisAssetByModule', { module: moduleName });
 		expect(Object.keys(response).length).toBe(4);
@@ -87,7 +87,7 @@ xdescribe('Test getGenesisAssets method', () => {
 	});
 });
 
-xdescribe('Test getGenesisAssetsLength method', () => {
+describe('Test getGenesisAssetsLength method', () => {
 	it('should return all modules when called without any params', async () => {
 		const response = await broker.call('connector.getGenesisAssetsLength');
 		expect(Object.keys(response).length).toBeGreaterThan(1);

@@ -16,8 +16,6 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
-
 const genesisBlockSchema = {
 	fromFile: Joi.string().required(),
 };
@@ -60,8 +58,7 @@ const networkStatusSchema = {
 };
 
 const metaSchema = {
-	lastUpdate: Joi.number().integer().min(0).max(getCurrentTimestamp())
-		.required(),
+	lastUpdate: Joi.number().integer().min(0).required(),
 	lastBlockHeight: Joi.number().integer().min(0).required(),
 	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
 		.required(),

@@ -129,6 +129,10 @@ const getRepoDownloadURL = async () => {
 };
 
 const getFileDownloadURLAndHeaders = async (file) => {
+	if (!file) {
+		throw new Error('getFileDownloadURLAndHeaders requires a filename as a parameter.');
+	}
+
 	try {
 		const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`;
 		const headers = {

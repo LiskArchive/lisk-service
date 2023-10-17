@@ -154,13 +154,13 @@ describe('Test indexMetadataFromFile method', () => {
 	});
 
 	it('should index token meta in db when called with valid token meta path', async () => {
-		const dbResponseBeforeIndex = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const dbResponseBeforeIndex = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(dbResponseBeforeIndex.length).toEqual(0);
 
 		await indexMetadataFromFile(tokenMetaPath);
 
-		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
+		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(dbResponse[0].chainName).toEqual(appMetaObj.chainName);
 		expect(dbResponse.length).toEqual(1);
 	});
 
@@ -184,18 +184,18 @@ describe('Test indexMetadataFromFile method', () => {
 	});
 
 	it('should index token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
-		const responseBeforeIndex = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const responseBeforeIndex = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(responseBeforeIndex.length).toEqual(0);
 
 		const dbTrx = await startDBTransaction(connection);
 		await indexMetadataFromFile(tokenMetaPath, dbTrx);
 
-		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(responseBeforeCommit.length).toEqual(0);
 
 		await commitDBTransaction(dbTrx);
 
-		const responseAfterCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const responseAfterCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(responseAfterCommit.length).toEqual(1);
 	});
 
@@ -267,21 +267,21 @@ describe('Test deleteTokenMeta method', () => {
 	afterEach(async () => tokenMetadataTable.delete(tokenMetaQueryParams));
 
 	it('should delete indexed token meta from db when called with valid token metadata object', async () => {
-		const dbResponseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
+		const dbResponseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(dbResponseBefore[0].chainName).toEqual(appMetaObj.chainName);
 		expect(dbResponseBefore.length).toEqual(1);
 
 		await deleteTokensMeta({
 			tokenIDs,
 		});
 
-		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(dbResponse.length).toEqual(0);
 	});
 
 	it('should delete indexed token meta from db only after commit when called with dbTrx', async () => {
-		const dbResponseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
+		const dbResponseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(dbResponseBefore[0].chainName).toEqual(appMetaObj.chainName);
 		expect(dbResponseBefore.length).toEqual(1);
 
 		const dbTrx = await startDBTransaction(connection);
@@ -292,13 +292,13 @@ describe('Test deleteTokenMeta method', () => {
 			dbTrx,
 		);
 
-		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(dbResponseBefore[0].chainID).toEqual(appMetaObj.chainID);
+		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(dbResponseBefore[0].chainName).toEqual(appMetaObj.chainName);
 		expect(responseBeforeCommit.length).toEqual(1);
 
 		await commitDBTransaction(dbTrx);
 
-		const responseAfterCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const responseAfterCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(responseAfterCommit.length).toEqual(0);
 	});
 
@@ -332,13 +332,13 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 	});
 
 	it('should delete indexed token meta in db when called with valid token meta path', async () => {
-		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(dbResponse[0].chainID).toEqual(appMetaObj.chainID);
+		const dbResponse = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(dbResponse[0].chainName).toEqual(appMetaObj.chainName);
 		expect(dbResponse.length).toEqual(1);
 
 		await deleteIndexedMetadataFromFile(tokenMetaPath);
 
-		const dbResponseAfterDelete = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const dbResponseAfterDelete = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(dbResponseAfterDelete.length).toEqual(0);
 	});
 
@@ -361,20 +361,20 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 	});
 
 	it('should delete indexed token meta in db only after commit when called with valid token meta path and dbTrx', async () => {
-		const responseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(responseBefore[0].chainID).toEqual(appMetaObj.chainID);
+		const responseBefore = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(responseBefore[0].chainName).toEqual(appMetaObj.chainName);
 		expect(responseBefore.length).toEqual(1);
 
 		const dbTrx = await startDBTransaction(connection);
 		await deleteIndexedMetadataFromFile(tokenMetaPath, dbTrx);
 
-		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
-		expect(responseBeforeCommit[0].chainID).toEqual(appMetaObj.chainID);
+		const responseBeforeCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
+		expect(responseBeforeCommit[0].chainName).toEqual(appMetaObj.chainName);
 		expect(responseBeforeCommit.length).toEqual(1);
 
 		await commitDBTransaction(dbTrx);
 
-		const responseAfterCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainID']);
+		const responseAfterCommit = await tokenMetadataTable.find(tokenMetaQueryParams, ['chainName']);
 		expect(responseAfterCommit.length).toEqual(0);
 	});
 
@@ -395,7 +395,7 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 		expect(() => indexAllBlockchainAppsMeta()).rejects.toThrow();
 	});
 
-	xit('should index app and token meta in db when data is present', async () => {
+	it('should index app and token meta in db when data is present', async () => {
 		await downloadRepositoryToFS();
 		expect(await applicationMetadataTable.count()).toEqual(0);
 		expect(await tokenMetadataTable.count()).toEqual(0);

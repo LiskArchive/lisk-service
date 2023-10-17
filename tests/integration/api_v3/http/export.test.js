@@ -35,7 +35,7 @@ const {
 
 const {
 	waitForSuccess,
-	isStringCsvParseable,
+	isStringCsvParsable,
 } = require('../../../helpers/utils');
 
 const httpStatus = {
@@ -47,31 +47,21 @@ const httpStatus = {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const networkStatusEndpoint = `${baseUrlV3}/network/status`;
 
-let curChainID;
+describe('Export API', () => {
+	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
+	const endDate = moment('2023-11-30').format(exportConfig.excel.dateFormat);
 
-// TODO: Enable tests once test blockchain is updated with transactions
-xdescribe('Export API', () => {
-	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
-	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
-	let refTransaction1;
-	let refTransaction2;
-	let refTransaction3;
-	let refTransaction4;
-	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=4`);
-		[refTransaction1, refTransaction2, refTransaction3, refTransaction4] = response.data;
-
-		const networkStatus = await api.get(networkStatusEndpoint);
-		curChainID = networkStatus.data.chainID;
-	});
+	const mockAddress1 = 'lsk969u84bnws8zc52cu59o8aamvpyg8nw86hpgad';
+	const mockAddress2 = 'lsk2jjg9ob4qh7jokpdbf7hjgqftkaq4b2925f422';
+	const mockPublicKey1 = 'ebe2c469275b2eac44f05684c974454f7eecc6d2a8c1b72bf37fffbeb5419ccd';
+	const mockPublicKey2 = '674061bfeea0eddb4c88fc7bc03ef694f5040358b2b14edba99bc8ebddfd7c97';
 
 	describe('Schedule file export', () => {
-		it('Schedule file export from account address with interval -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account address with interval', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress1}&interval=${startDate}:${endDate}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -81,10 +71,10 @@ xdescribe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account publicKey with interval -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account publicKey with interval', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey1}&interval=${startDate}:${endDate}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -94,10 +84,10 @@ xdescribe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account address -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account address', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction3.sender.address}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -107,10 +97,10 @@ xdescribe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+		it('should return 202 Accepted when scheduling file export from account publicKey', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction4.sender.publicKey}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -122,60 +112,71 @@ xdescribe('Export API', () => {
 	});
 
 	describe('File is ready to export', () => {
-		it('scheduled from account address -> return 200 OK', async () => {
-			const scheduleExport = async () => api
-				.get(
-					`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
-					httpStatus.OK,
-				);
-			const response = await waitForSuccess(scheduleExport);
-			const expected = { ready: true };
-			expect(response).toMap(goodRequestSchemaForExport);
-			expect(response.data).toBeInstanceOf(Object);
-			expect(response.data).toMap(exportSchema);
-			expect(response.meta).toMap(metaSchemaForExport);
-			expect(response.meta).toEqual(expect.objectContaining(expected));
-		});
+		const successValidator = (response) => response.meta.ready;
 
-		it('scheduled from account from publicKey -> return 200 OK', async () => {
-			const scheduleExport = async () => api
-				.get(
-					`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
-					httpStatus.OK,
-				);
-			const response = await waitForSuccess(scheduleExport);
+		it('should return 200 OK when scheduled from account address', async () => {
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
+				httpStatus.OK,
+			);
+			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchemaForExport);
 			expect(response.data).toBeInstanceOf(Object);
 			expect(response.data).toMap(exportSchema);
 			expect(response.meta).toMap(metaSchemaForExport);
 			expect(response.meta).toEqual(expect.objectContaining(expected));
-		});
+		}, 2147483647);
+
+		it('should return 200 OK when scheduled from account publicKey', async () => {
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
+				httpStatus.OK,
+			);
+			const response = await waitForSuccess(scheduleExport, successValidator);
+			const expected = { ready: true };
+			expect(response).toMap(goodRequestSchemaForExport);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchema);
+			expect(response.meta).toMap(metaSchemaForExport);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		}, 2147483647);
 	});
 
-	describe('Download csv file -> returns 200 OK', () => {
-		const parseParams = { delimiter: exportConfig.csv.delimiter };
+	describe('Download processed transaction history -> returns 200 OK', () => {
+		const parseParams = { delimiter: exportConfig.excel.delimiter };
+		const successValidator = (response) => response.meta.ready;
 
-		it('scheduled from account address -> 200 OK', async () => {
-			const validFileName = `transactions_${curChainID}_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
-			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
-		});
+		it('should return 200 OK when scheduled from account address', async () => {
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
+				httpStatus.OK,
+			);
+			const res = await waitForSuccess(scheduleExport, successValidator);
 
-		it('scheduled from account publicKey -> 200 OK', async () => {
-			const validFileName = `transactions_${curChainID}_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.OK);
-			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
-		});
+			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
+			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
+		}, 2147483647);
+
+		it('should return 200 OK when scheduled from account publicKey', async () => {
+			const scheduleExport = async () => api.get(
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
+				httpStatus.OK,
+			);
+			const res = await waitForSuccess(scheduleExport, successValidator);
+
+			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
+			expect(isStringCsvParsable(response, parseParams)).toBeTruthy();
+		}, 2147483647);
 	});
 
 	describe('Invalid params/request', () => {
-		it('Schedule file export -> 400 when no params', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with no params', async () => {
 			const response = await api.get(`${baseUrlV3}/export/transactions`, httpStatus.BAD_REQUEST);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid address', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid address', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`,
 				httpStatus.BAD_REQUEST,
@@ -183,7 +184,7 @@ xdescribe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid publicKey', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid publicKey', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4`,
 				httpStatus.BAD_REQUEST,
@@ -191,25 +192,25 @@ xdescribe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when address with invalid interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an address and an invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?address=${refTransaction1.sender.address}&interval=${invalidInterval}`,
+				`${baseUrlV3}/export/transactions?address=${mockAddress1}&interval=${invalidInterval}`,
 				httpStatus.BAD_REQUEST,
 			);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when publicKey with invalid interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with a publicKey and an invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`,
+				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey1}&interval=${invalidInterval}`,
 				httpStatus.BAD_REQUEST,
 			);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid address with interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid address and a valid interval', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm&interval=${startDate}:${endDate}`,
 				httpStatus.BAD_REQUEST,
@@ -217,7 +218,7 @@ xdescribe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid publicKey with interval', async () => {
+		it('should return 400 BAD REQUEST when scheduling file export with an invalid publicKey and a valid interval', async () => {
 			const response = await api.get(
 				`${baseUrlV3}/export/transactions?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4&interval=${startDate}:${endDate}`,
 				httpStatus.BAD_REQUEST,
@@ -225,9 +226,9 @@ xdescribe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('File not exists -> 404 NOT_FOUND', async () => {
-			const invalidFile = 'invalid.csv';
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${invalidFile}`, httpStatus.NOT_FOUND);
+		it('should return 404 NOT FOUND when attempting to download a non-existent file', async () => {
+			const validFileName = `transactions_99999999_${mockAddress1}_${startDate}_${endDate}.xlsx`;
+			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.NOT_FOUND);
 			expect(response).toMap(notFoundSchema);
 		});
 	});

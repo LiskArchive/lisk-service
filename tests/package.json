@@ -25,9 +25,8 @@
 	},
 	"scripts": {
 		"clean": "rm -rf ./node_modules",
-		"test": "yarn run test:integration:APIv3:SDKv6",
-		"test:integration:APIv3:SDKv6": "jest --config=jest.config.integration.apiv3.sdkv6.js",
-		"test:functional": "jest --config=jest.config.functional.js",
+		"test": "yarn run test:integration:APIv3",
+		"test:integration:APIv3": "jest --config=jest.config.integration.apiv3.js --runInBand --testRunner='jest-circus/runner'",
 		"test:regression": "jest --config=jest.config.regression.js",
 		"benchmark:RPC": "artillery run benchmark/socket_rpc_v3.yaml",
 		"benchmark:HTTP": "artillery run benchmark/http_v3.yaml",
@@ -59,7 +58,8 @@
 		"artillery": "^1.7.9",
 		"await-to-js": "=2.1.1",
 		"axios": "^0.21.4",
-		"jest": "^26.6.3",
+		"jest": "^29.7.0",
+		"jest-circus": "^29.7.0",
 		"jest-extended": "^0.11.5",
 		"joi": "^17.6.0",
 		"moment": "^2.29.4"

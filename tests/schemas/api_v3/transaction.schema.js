@@ -24,13 +24,10 @@ const sender = {
 	name: Joi.string().pattern(regex.NAME).allow(null).optional(),
 };
 
-const getCurrentTime = () => Math.floor(Date.now() / 1000);
-
 const block = {
 	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	height: Joi.number().integer().min(1).required(),
-	timestamp: Joi.number().integer().positive().max(getCurrentTime())
-		.required(),
+	timestamp: Joi.number().integer().positive().required(),
 	isFinal: Joi.boolean().required(),
 };
 

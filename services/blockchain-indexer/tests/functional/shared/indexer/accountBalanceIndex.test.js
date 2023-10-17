@@ -31,6 +31,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
+	nodeID: 'accountBalanceIndex',
 	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
