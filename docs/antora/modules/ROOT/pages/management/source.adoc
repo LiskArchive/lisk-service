@@ -379,12 +379,12 @@ You can start Lisk Service again with the <<start>> command.
 
 To upgrade Lisk Service to a desired version, please follow the steps listed below.
 
-1.Stop the existing running version of Lisk Service.
-
+. Stop the existing running version of Lisk Service.
++
 ----
 pm2 stop ecosystem.config.js
 ----
-
++
 .Response
 [%collapsible]
 ====
@@ -415,19 +415,25 @@ pm2 stop ecosystem.config.js
 └------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====
-2.Checkout the version with *`git checkout <tag>`*.
+
+. Checkout the version with *`git checkout <tag>`*.
++
 ----
 git checkout v0.7.0
 ----
-3.Update the npm dependencies by executing the following command.
+
+. Update the npm dependencies by executing the following command.
++
 ----
 make build-local
 ----
-4.Restart Lisk Service with the following command.
+
+. Restart Lisk Service with the following command.
++
 ----
 pm2 start ecosystem.config.js
 ----
-
++
 .Response
 [%collapsible]
 ====
