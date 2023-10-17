@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-blockchain-app-registry",
-  "version": "0.7.0-rc.0",
+  "version": "0.7.0-rc.1",
   "description": "Lisk Service Blockchain Application Registry",
   "keywords": [
     "lisk",
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/8eb70b4eb11972cbd65eb9911991e8a4f8e0725d/framework/dist/lisk-service-framework-1.5.0.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/bf8048b920f61a2b27d7c28535dfefed5bd679cb/framework/dist/lisk-service-framework-1.5.1.tgz",
     "lodash": "^4.17.21",
     "octokit": "^2.0.4",
     "tar": "^6.1.11"

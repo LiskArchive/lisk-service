@@ -35,10 +35,10 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
-		"@liskhq/lisk-client": "^6.0.0-rc.0",
-		"@liskhq/lisk-codec": "^0.4.0-rc.0",
-		"@liskhq/lisk-cryptography": "^4.0.0-rc.0",
-		"@liskhq/lisk-validator": "^0.8.0-rc.0",
+		"@liskhq/lisk-client": "^6.0.0-rc.1",
+		"@liskhq/lisk-codec": "^0.4.0-rc.1",
+		"@liskhq/lisk-cryptography": "^4.0.0-rc.1",
+		"@liskhq/lisk-validator": "^0.8.0-rc.1",
 		"async": "^3.2.3",
 		"chai": "^4.3.6",
 		"csv-parse": "^5.0.4",

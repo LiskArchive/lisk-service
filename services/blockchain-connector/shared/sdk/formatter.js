@@ -97,23 +97,25 @@ const formatBlock = (block) => {
 	const blockHeader = block.header;
 
 	const blockAssets = block.assets.map(asset => {
-		const assetModule = asset.module;
-		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
-		const formattedAssetData = blockAssetDataSchema
-			? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
-			: asset.data;
+		// Decode asset data in case of binary payload
+		if (typeof (asset.data) === 'string') {
+			const assetModule = asset.module;
+			const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
+			const formattedAssetData = blockAssetDataSchema
+				? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+				: asset.data;
 
-		if (!blockAssetDataSchema) {
-			// TODO: Remove this after all asset schemas are exposed (before tagging rc.0)
-			console.error(`Block asset schema missing for module ${assetModule}.`);
-			logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+			if (!blockAssetDataSchema) {
+				logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+			}
+
+			const formattedBlockAsset = {
+				module: assetModule,
+				data: formattedAssetData,
+			};
+			return formattedBlockAsset;
 		}
-
-		const formattedBlockAsset = {
-			module: assetModule,
-			data: formattedAssetData,
-		};
-		return formattedBlockAsset;
+		return asset;
 	});
 
 	const blockTransactions = block.transactions.map(t => formatTransaction(t));

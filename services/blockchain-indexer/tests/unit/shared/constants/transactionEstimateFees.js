@@ -182,7 +182,7 @@ const mockTransferCrossChainTxResult = {
 		transaction: {
 			fee: {
 				tokenID: '0400000000000000',
-				minimum: '130000',
+				minimum: '166000',
 			},
 			params: {
 				messageFee: {
@@ -196,7 +196,7 @@ const mockTransferCrossChainTxResult = {
 		breakdown: {
 			fee: {
 				minimum: {
-					byteFee: '160000',
+					byteFee: '167000',
 					additionalFees: {},
 				},
 			},
@@ -373,6 +373,27 @@ const mockAuthInfoForMultisigAccount = {
 	],
 };
 
+const mockChannelInfo = {
+	messageFeeTokenID: '0400000000000000',
+	outbox: {
+		appendPath: [
+			'20706b5f7117b283f7be38aa12dc9623fd1d07a91425fa6c087830008b145075',
+			'9f87b56843694d5b90eb528793fd16cf8613f606a106b7d70bea2ffa1ef20c2d',
+		],
+		root: '4855a43e751c5df45ea0e963fa204bf0236a01f773b5b0cc19ff8e6edaee0204',
+		size: 12,
+	},
+	inbox: {
+		appendPath: [
+			'3e168e2181b08e53e656ee112abe15fd456a0598717241a1beeaada2983a1350',
+		],
+		root: '3e168e2181b08e53e656ee112abe15fd456a0598717241a1beeaada2983a1350',
+		size: 2,
+	},
+	partnerChainOutboxRoot: '3e168e2181b08e53e656ee112abe15fd456a0598717241a1beeaada2983a1350',
+	minReturnFeePerByte: '1000',
+};
+
 module.exports = {
 	mockTxRequest,
 	mockTransferCrossChainTxRequest,
@@ -394,4 +415,6 @@ module.exports = {
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxResult,
 	mockInteroperabilityRegisterSidechainTxRequest,
 	mockInteroperabilityRegisterSidechainTxResult,
+
+	mockChannelInfo,
 };

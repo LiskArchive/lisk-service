@@ -31,6 +31,9 @@ const {
 	deleteEventsFromCache,
 	isMainchain,
 	resolveMainchainServiceURL,
+	getCurrentChainID,
+	resolveChannelInfo,
+	initFeeEstimates,
 } = require('./business');
 
 const {
@@ -145,6 +148,8 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	reloadBlockchainAppsStats,
+	getCurrentChainID,
+	resolveChannelInfo,
 
 	// Events
 	getEvents,
@@ -176,6 +181,9 @@ module.exports = {
 	// Generators
 	reloadGeneratorsCache,
 	getGenerators,
+
+	// Fee estimates
+	initFeeEstimates,
 
 	isPosModuleRegistered,
 	getNumberOfGenerators,

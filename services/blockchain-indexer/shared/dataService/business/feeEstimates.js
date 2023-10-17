@@ -13,12 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestFeeEstimator } = require('../../utils/request');
+const { requestFeeEstimator, requestConnector } = require('../../utils/request');
 
 let feeEstimates = {
 	low: 0,
 	med: 0,
 	high: 0,
+	minFeePerByte: 1000,
 };
 
 const setFeeEstimates = async (payload) => {
@@ -36,7 +37,13 @@ const getFeeEstimatesFromFeeEstimator = async () => {
 	return getFeeEstimates();
 };
 
+const initFeeEstimates = async () => {
+	feeEstimates.feeTokenID = await requestConnector('getFeeTokenID');
+	feeEstimates.minFeePerByte = await requestConnector('getMinFeePerByte');
+};
+
 module.exports = {
+	initFeeEstimates,
 	setFeeEstimates,
 	getFeeEstimates,
 	getFeeEstimatesFromFeeEstimator,

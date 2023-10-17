@@ -19,7 +19,12 @@ const {
 
 const config = require('../config');
 
-const { getTokenConstants, getRewardConstants, getPosConstants } = require('./dataService');
+const {
+	getTokenConstants,
+	getRewardConstants,
+	getPosConstants,
+	initFeeEstimates,
+} = require('./dataService');
 const { getFeeEstimatesFromFeeEstimator } = require('./dataService/business/feeEstimates');
 const indexStatus = require('./indexer/indexStatus');
 const processor = require('./processor');
@@ -33,6 +38,8 @@ const init = async () => {
 		await getPosConstants();
 		await getTokenConstants();
 		await getRewardConstants();
+
+		await initFeeEstimates();
 
 		if (config.snapshot.enable) {
 			logger.info('Initializing the automatic index snapshot application process.');
