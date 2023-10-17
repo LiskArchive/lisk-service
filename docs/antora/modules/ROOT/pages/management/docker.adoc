@@ -11,8 +11,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_snapshot_config: configuration/index.adoc
 :url_backups: management/snapshots.adoc
+:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases/
 
-NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and then create the Docker image, followed by starting Lisk Service as shown in the commands below.
 
 == Build Docker image
 
@@ -253,3 +253,88 @@ In the above example, it will display latest logs only for the `blockchain-conne
 
 
 Replace the `blockchain-connector` with the specific service name required.
+
+
+== Upgrade Lisk Service
+
+To upgrade the Docker container to a desired version, please follow one of the two options below.
+
+==== Option A - Download pre-built images from DockerHub
+
+1.Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. Update the `0.7.0` tag against the specified images with the desired version.
+
+----
+blockchain-app-registry:
+    image: lisk/service_blockchain_app_registry:0.7.0
+    ...
+
+  blockchain-connector:
+    image: lisk/service_blockchain_connector:0.7.0
+    ...
+
+  blockchain-indexer:
+    image: lisk/service_blockchain_indexer:0.7.0
+    ...
+
+  blockchain-coordinator:
+    image: lisk/service_blockchain_coordinator:0.7.0
+    ...
+
+  transaction-statistics:
+    image: lisk/service_transaction_statistics:0.7.0
+    ...
+
+  fee-estimator:
+    image: lisk/service_fee_estimator:0.7.0
+    ...
+
+  gateway:
+    image: lisk/service_gateway:0.7.0
+    ...
+
+  market:
+    image: lisk/service_market:0.7.0
+    ...
+
+  export:
+    image: lisk/service_export:0.7.0
+
+----
+
+2.Stop Lisk Service
+----
+make stop
+----
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+
+
+3.Start Lisk Service in the containers.
+
+----
+make up
+----
+
+
+==== Option B - Build images locally
+
+Build the images locally using the following steps.
+Navigate inside the lisk-service root folder, and execute the following commands.
+
+1.Stop Lisk Service
+----
+make stop
+----
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+
+2.Build the required updated Docker images.
+----
+make build
+----
+
+3.Start Lisk Service in the containers.
+
+----
+make up
+----
+
+To verify the microservice logs, please refer to the <<Logging>> section.
