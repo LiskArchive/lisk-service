@@ -108,19 +108,19 @@ build-tests:
 	cd ./tests && docker buildx build --tag=lisk/service_tests ./
 
 build-local:
-	yarn install --frozen-lockfile
-	cd ./framework && yarn install --frozen-lockfile
-	cd ./services/blockchain-app-registry && yarn install --frozen-lockfile
-	cd ./services/blockchain-connector && yarn install --frozen-lockfile
-	cd ./services/blockchain-coordinator && yarn install --frozen-lockfile
-	cd ./services/blockchain-indexer && yarn install --frozen-lockfile
-	cd ./services/transaction-statistics && yarn install --frozen-lockfile
-	cd ./services/fee-estimator && yarn install --frozen-lockfile
-	cd ./services/market && yarn install --frozen-lockfile
-	cd ./services/gateway && yarn install --frozen-lockfile
-	cd ./services/export && yarn install --frozen-lockfile
-	cd ./services/template && yarn install --frozen-lockfile
-	cd ./tests && yarn install --frozen-lockfile
+	yarn install
+	cd ./framework && yarn install
+	cd ./services/blockchain-app-registry && yarn install
+	cd ./services/blockchain-connector && yarn install
+	cd ./services/blockchain-coordinator && yarn install
+	cd ./services/blockchain-indexer && yarn install
+	cd ./services/transaction-statistics && yarn install
+	cd ./services/fee-estimator && yarn install
+	cd ./services/market && yarn install
+	cd ./services/gateway && yarn install
+	cd ./services/export && yarn install
+	cd ./services/template && yarn install
+	cd ./tests && yarn install
 
 clean: clean-local clean-images
 
