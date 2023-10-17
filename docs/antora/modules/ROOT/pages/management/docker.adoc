@@ -261,8 +261,8 @@ To upgrade the Docker container to a desired version, please follow one of the t
 
 ==== Option A - Download pre-built images from DockerHub
 
-1.Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. Update the `0.7.0` tag against the specified images with the desired version.
-
+. Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. Update the `0.7.0` tag against the specified images with the desired version.
++
 ----
 blockchain-app-registry:
     image: lisk/service_blockchain_app_registry:0.7.0
@@ -301,15 +301,15 @@ blockchain-app-registry:
 
 ----
 
-2.Stop Lisk Service
+. Stop Lisk Service
++
 ----
 make stop
 ----
 NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
 
-
-3.Start Lisk Service in the containers.
-
+. Start Lisk Service in the containers.
++
 ----
 make up
 ----
@@ -320,19 +320,21 @@ make up
 Build the images locally using the following steps.
 Navigate inside the lisk-service root folder, and execute the following commands.
 
-1.Stop Lisk Service
+. Stop Lisk Service
++
 ----
 make stop
 ----
 NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
 
-2.Build the required updated Docker images.
+. Build the required updated Docker images.
++
 ----
 make build
 ----
 
-3.Start Lisk Service in the containers.
-
+. Start Lisk Service in the containers.
++
 ----
 make up
 ----
