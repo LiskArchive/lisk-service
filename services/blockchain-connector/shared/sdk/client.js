@@ -13,15 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
 const {
-	createWSClient,
-	createIPCClient,
-} = require('@liskhq/lisk-api-client');
+	Logger,
+	Signals,
+	Utils: { waitForIt },
+} = require('lisk-service-framework');
+const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
 const delay = require('../utils/delay');
-const waitForIt = require('../utils/waitForIt');
 
 const logger = Logger();
 
@@ -62,7 +62,7 @@ const instantiateClient = async (isForceUpdate = false) => {
 			return clientCache;
 		}
 
-		if ((Date.now() - instantiationBeginTime) > MAX_INSTANTIATION_WAIT_TIME) {
+		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
 			// Waited too long, reset the flag to re-attempt client instantiation
 			isInstantiating = false;
 		}
@@ -76,7 +76,8 @@ const instantiateClient = async (isForceUpdate = false) => {
 
 		logger.error(errMessage);
 		logger.error(err.message);
-		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node.');
+		if (err.code === 'ECONNREFUSED')
+			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 
 		return {
 			data: { error: 'Action not supported' },
