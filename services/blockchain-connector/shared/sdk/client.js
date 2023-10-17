@@ -70,7 +70,11 @@ const instantiateClient = async (isForceUpdate = false) => {
 		// Nullify the apiClient cache, so that it can be re-instantiated properly
 		clientCache = null;
 
-		logger.error(`Error instantiating WS client to ${liskAddress}.`);
+		const errMessage = config.isUseLiskIPCClient
+			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
+			: `Error instantiating WS client to ${liskAddress}.`;
+
+		logger.error(errMessage);
 		logger.error(err.message);
 		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node.');
 
