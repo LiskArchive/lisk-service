@@ -65,7 +65,7 @@ describe('Stakers API', () => {
 		}
 
 		if (!success) {
-			throw new Error('Failed to fetch validator addresss even after retrying.');
+			throw new Error('Failed to fetch validator address even after retrying.');
 		}
 
 		/* eslint-enable no-await-in-loop */
