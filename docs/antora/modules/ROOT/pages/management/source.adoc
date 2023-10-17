@@ -10,6 +10,7 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_pm2_management: https://pm2.keymetrics.io/docs/usage/log-management/
+:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases/
 
 On this page, you'll find the most relevant PM2 commands for running a source-based Lisk Service installation.
 For more details about PM2, see {url_pm2_docs}[PM2 docs].
@@ -18,7 +19,6 @@ Moreover, we'll also talk about the steps to reset a Lisk Service node.
 
 TIP: The process ID of each PM2-managed process can be seen by executing the <<list>> command. To learn more about PM2 log management please refer the {url_pm2_management}[PM2 logs documentation].
 
-NOTE: To upgrade Lisk Service to a desired version, please check out the specific version with *`git checkout <tag>`*, and then start Lisk Service as shown in the list of commands below.
 
 == Various PM2 commands
 
@@ -364,3 +364,104 @@ redis-cli -n <db_number> flushdb
 ====
 
 You can start Lisk Service again with the <<start>> command.
+
+
+== Upgrade Lisk Service
+
+To upgrade Lisk Service to a desired version, please follow the steps listed below.
+
+1. Stop the existing running version of Lisk Service with the command listed below.
+
+----
+pm2 stop ecosystem.config.js
+----
+
+.Response
+[%collapsible]
+====
+.Example output
+[source,bash]
+----
+[PM2] [lisk-service-blockchain-app-registry](1) ✓
+[PM2] [lisk-service-gateway](0) ✓
+[PM2] [lisk-service-blockchain-indexer](3) ✓
+[PM2] [lisk-service-blockchain-connector](2) ✓
+[PM2] [lisk-service-blockchain-coordinator](4) ✓
+[PM2] [lisk-service-fee-estimator](5) ✓
+[PM2] [lisk-service-transaction-statistics](6) ✓
+[PM2] [lisk-service-market](7) ✓
+[PM2] [lisk-service-export](8) ✓
+┌------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem  │ user     │ watching │
+├------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+└------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
+----
+====
+
+
+2. Checkout the specific version with *`git checkout <tag>`*.
+----
+git checkout v0.7.0
+----
+
+3. Update the npm dependencies by executing the following command.
+----
+make build-local
+----
+
+3. Restart Lisk Service with the following command.
+
+
+----
+pm2 start ecosystem.config.js
+----
+
+.Response
+[%collapsible]
+====
+.Example output
+----
+[PM2] Applying action restartProcessId on app [lisk-service-gateway](ids: [ 0 ])
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-app-registry](ids: [ 1 ])
+[PM2] [lisk-service-gateway](0) ✓
+[PM2] [lisk-service-blockchain-app-registry](1) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-connector](ids: [ 2 ])
+[PM2] [lisk-service-blockchain-connector](2) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-indexer](ids: [ 3 ])
+[PM2] [lisk-service-blockchain-indexer](3) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-blockchain-coordinator](ids: [ 4 ])
+[PM2] [lisk-service-blockchain-coordinator](4) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-fee-estimator](ids: [ 5 ])
+[PM2] [lisk-service-fee-estimator](5) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-transaction-statistics](ids: [ 6 ])
+[PM2] [lisk-service-transaction-statistics](6) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-market](ids: [ 7 ])
+[PM2] [lisk-service-market](7) ✓
+[PM2] Applying action restartProcessId on app [lisk-service-export](ids: [ 8 ])
+[PM2] [lisk-service-export](8) ✓
+┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
+│ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+└----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
+----
+====
+
+NOTE: Please check the :url_rel...release notes for the relevant version to see if the existing databases need to be flushed.
