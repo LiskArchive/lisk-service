@@ -14,14 +14,13 @@
  *
  */
 
-const waitForIt = require('../../../shared/waitForIt');
-
-const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve, ms, val));
+const waitForIt = require('../../src/waitForIt');
+const delay = require('../../src/delay');
 
 describe('Test waitForIt method', () => {
 	it('should wait for the function to return response', async () => {
 		let testValue = false;
-		const testFn = () => testValue = true;
+		const testFn = () => (testValue = true);
 
 		expect(testValue).toBe(false);
 		await waitForIt(testFn);
@@ -37,8 +36,8 @@ describe('Test waitForIt method', () => {
 		const startTime = Date.now();
 		await waitForIt(testFn);
 		const endTime = Date.now();
-		const millisDifference = endTime - startTime;
-		expect(millisDifference).toBeGreaterThanOrEqual(delayMs - 1);
+		const waitTimeInMillisecs = endTime - startTime;
+		expect(waitTimeInMillisecs).toBeGreaterThanOrEqual(delayMs - 1);
 	});
 
 	it('should wait for the mocked function to return response', async () => {

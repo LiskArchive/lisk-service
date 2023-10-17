@@ -13,15 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
 const {
-	createWSClient,
-	createIPCClient,
-} = require('@liskhq/lisk-api-client');
+	Logger,
+	Signals,
+	Utils: { waitForIt },
+} = require('lisk-service-framework');
+const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
 const delay = require('../utils/delay');
-const waitForIt = require('../utils/waitForIt');
 
 const logger = Logger();
 
