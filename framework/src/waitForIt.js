@@ -17,8 +17,7 @@ const Logger = require('./logger').get;
 
 const logger = Logger();
 
-const waitForIt = (fn, intervalMs = 1000) =>
-	new Promise(resolve => {
+const waitForIt = (fn, intervalMs = 1000) => new Promise(resolve => {
 		const timeout = setInterval(async () => {
 			try {
 				const result = await fn();

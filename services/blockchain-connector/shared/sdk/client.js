@@ -76,8 +76,7 @@ const instantiateClient = async (isForceUpdate = false) => {
 
 		logger.error(errMessage);
 		logger.error(err.message);
-		if (err.code === 'ECONNREFUSED')
-			throw new Error('ECONNREFUSED: Unable to reach a network node.');
+		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node.');
 
 		return {
 			data: { error: 'Action not supported' },
