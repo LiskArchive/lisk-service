@@ -62,7 +62,7 @@ const instantiateClient = async (isForceUpdate = false) => {
 			return clientCache;
 		}
 
-		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
+		if ((Date.now() - instantiationBeginTime) > MAX_INSTANTIATION_WAIT_TIME) {
 			// Waited too long, reset the flag to re-attempt client instantiation
 			isInstantiating = false;
 		}
