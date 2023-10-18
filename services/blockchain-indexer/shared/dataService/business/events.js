@@ -173,7 +173,6 @@ const getEvents = async (params) => {
 		const response = await eventTopicsTable.find(
 			{
 				whereIn: { property: 'topic', values: topic.split(',') },
-				distinct: 'eventID',
 				groupBy: 'eventID',
 				havingRaw: `COUNT(DISTINCT topic) = ${topic.split(',').length}`,
 			},
@@ -211,7 +210,7 @@ const getEvents = async (params) => {
 	);
 
 	const { order, sort, ...queryParamsWithoutOrderAndSort } = queryParams;
-	const total = await eventsTable.count({ ...queryParamsWithoutOrderAndSort, distinct: 'id' });
+	const total = await eventsTable.count({ ...queryParamsWithoutOrderAndSort });
 
 	events.meta = {
 		count: events.data.length,

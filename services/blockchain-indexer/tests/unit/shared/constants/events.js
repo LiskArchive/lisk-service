@@ -330,7 +330,6 @@ const mockEventTopicsQueryParams = {
 	},
 	groupBy: 'eventID',
 	havingRaw: 'COUNT(DISTINCT topic) = 2',
-	distinct: 'eventID',
 };
 
 module.exports = {
