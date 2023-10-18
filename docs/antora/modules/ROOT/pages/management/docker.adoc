@@ -257,7 +257,7 @@ Replace the `blockchain-connector` with the specific service name required.
 
 == Upgrade Lisk Service
 
-To upgrade the Docker container to a desired version, please follow one of the two options below.
+To upgrade the Docker container to a desired version, please follow one of the two options below. To find all the tagged versions for Lisk Service, please check the available tags (https://github.com/LiskHQ/lisk-service/tags) on GitHub.
 
 ==== Option A - Download pre-built images from DockerHub
 
