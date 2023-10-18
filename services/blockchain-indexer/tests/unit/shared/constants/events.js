@@ -321,37 +321,15 @@ const getEventsResult = {
 };
 
 const mockEventTopicsQueryParams = {
-	sort: 'timestamp:desc',
-	order: 'index:asc',
-	limit: 10,
-	offset: 0,
-	propBetweens: [
-		{
-			property: 'height',
-			from: 1,
-			to: 1000,
-		},
-		{
-			property: 'timestamp',
-			from: 1,
-			to: 1000000000,
-		},
-	],
 	whereIn: {
 		property: 'topic',
 		values: [
 			'03',
+			'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
 		],
 	},
-	height: 123,
-	leftOuterJoin: {
-		targetTable: 'events',
-		leftColumn: 'events.id',
-		rightColumn: 'event_topics.eventID',
-	},
-	andWhere: {
-		topic: 'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
-	},
+	groupBy: 'eventID',
+	havingRaw: 'COUNT(DISTINCT topic) = 2',
 	distinct: 'eventID',
 };
 

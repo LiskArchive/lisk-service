@@ -272,10 +272,9 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (params.andWhere) {
-			params.andWhere = Array.isArray(params.andWhere) ? params.andWhere : [params.andWhere];
-
-			params.andWhere.forEach(andWhere => {
-				query.where(andWhere);
+			const { andWhere } = params;
+			query.where(function () {
+				this.where(andWhere);
 			});
 		}
 
