@@ -530,7 +530,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return empty topic', async () => {
+		it('should return invalid params for empty topic', async () => {
 			const response = await getEvents({ topic: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

@@ -17,6 +17,7 @@ jest.setTimeout(2147483647);
 
 const axios = require('axios');
 const config = require('../../config');
+const { waitMs } = require('../../helpers/utils');
 
 const windowResetTime = 11 * 1000;
 
@@ -31,8 +32,6 @@ const endpoints = [
 	`${baseUrlV3}/token/constants`,
 ];
 
-const delay = (ms = windowResetTime) => new Promise(resolve => setTimeout(resolve, ms));
-
 describe('Rate limit', () => {
 	let maxRequests;
 
@@ -40,11 +39,11 @@ describe('Rate limit', () => {
 		const response = await axios.get(endpoints[Math.floor(Math.random() * endpoints.length)]);
 		maxRequests = response.headers['x-rate-limit-limit'];
 
-		await delay();
+		await waitMs(windowResetTime);
 	});
 
 	afterEach(async () => {
-		await delay();
+		await waitMs(windowResetTime);
 	});
 
 	it('should decrease rate limit remaining after each API request', async () => {

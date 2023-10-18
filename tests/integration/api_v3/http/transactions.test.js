@@ -16,6 +16,7 @@
 import moment from 'moment';
 import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
 import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -37,9 +38,33 @@ const endpoint = `${baseUrl}/transactions`;
 
 describe('Transactions API', () => {
 	let refTransaction;
+
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
-		[refTransaction] = response.data;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
+				[refTransaction] = response.data;
+
+				if (refTransaction) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching transactions. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch transactions after 10 retries');
+		}
 	});
 
 	describe('Retrieve transaction lists', () => {

@@ -13,15 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
 const {
-	createWSClient,
-	createIPCClient,
-} = require('@liskhq/lisk-api-client');
+	Logger,
+	Signals,
+	Utils: { waitForIt },
+} = require('lisk-service-framework');
+const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
 const delay = require('../utils/delay');
-const waitForIt = require('../utils/waitForIt');
 
 const logger = Logger();
 
@@ -70,7 +70,11 @@ const instantiateClient = async (isForceUpdate = false) => {
 		// Nullify the apiClient cache, so that it can be re-instantiated properly
 		clientCache = null;
 
-		logger.error(`Error instantiating WS client to ${liskAddress}.`);
+		const errMessage = config.isUseLiskIPCClient
+			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
+			: `Error instantiating WS client to ${liskAddress}.`;
+
+		logger.error(errMessage);
 		logger.error(err.message);
 		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node.');
 

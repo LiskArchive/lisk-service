@@ -22,7 +22,7 @@ const { validator } = require('@liskhq/lisk-validator');
 
 const {
 	HTTP,
-	Exceptions: { ValidationException, InvalidParamsException },
+	Exceptions: { ValidationException },
 	Logger,
 } = require('lisk-service-framework');
 
@@ -272,13 +272,13 @@ const validateTransactionParams = async transaction => {
 		throw new ValidationException(`${transaction.module}:${transaction.command} is not a valid transaction.`);
 	}
 
-	const txParamsSchema = txCommand.schema;
-	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
-
 	try {
+		const txParamsSchema = txCommand.schema;
+		const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
+
 		validator.validate(txParamsSchema, parsedTxParams);
 	} catch (err) {
-		throw new InvalidParamsException(err);
+		throw new ValidationException(err);
 	}
 };
 

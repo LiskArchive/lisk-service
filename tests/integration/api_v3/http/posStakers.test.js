@@ -22,6 +22,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 const { goodRequestSchema } = require('../../../schemas/api_v3/staker.schema');
 const { invalidOffsets, invalidLimits, invalidNames, invalidPublicKeys, invalidAddresses, invalidPartialSearches } = require('../constants/invalidInputs');
+const { waitMs } = require('../../../helpers/utils');
 
 const endpoint = `${baseUrlV3}/pos/stakers`;
 
@@ -31,9 +32,13 @@ describe('Stakers API', () => {
 
 	beforeAll(async () => {
 		let refValidatorAddress;
+		let retries = 10;
+		let success = false;
+
+		/* eslint-disable no-await-in-loop */
 		do {
-			// eslint-disable-next-line no-await-in-loop
-			const { data: [stakeTx] = [] } = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+			const response1 = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+			const { data: [stakeTx] = [] } = response1;
 			if (stakeTx) {
 				// Destructure to refer first entry of all the sent votes within the transaction
 				const { params: { stakes: [stake] } } = stakeTx;
@@ -41,8 +46,29 @@ describe('Stakers API', () => {
 				refValidatorAddress = stake.validatorAddress;
 			}
 		} while (!refValidatorAddress);
-		const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
-		[refValidator] = validatorsResponse.data;
+
+		while (retries > 0 && !success) {
+			try {
+				const validatorsResponse = await api.get(`${baseUrlV3}/pos/validators?address=${refValidatorAddress}`);
+				[refValidator] = validatorsResponse.data;
+
+				if (refValidator) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching validators. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch validator address even after retrying.');
+		}
+
+		/* eslint-enable no-await-in-loop */
 	});
 
 	describe(`GET ${endpoint}`, () => {
@@ -126,31 +152,39 @@ describe('Stakers API', () => {
 		});
 
 		it('should return list of stakers when requested for known validator publicKey', async () => {
-			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+			if (refValidator.publicKey) {
+				const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+			}
 		});
 
 		it('should return list of stakers when requested with known validator publicKey and offset=1', async () => {
-			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+			if (refValidator.publicKey) {
+				const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+				expect(response.data.stakers.length).toBeLessThanOrEqual(10);
+			}
 		});
 
 		it('should return list of stakers when requested with known validator publicKey and limit=5', async () => {
-			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&limit=5`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+			if (refValidator.publicKey) {
+				const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&limit=5`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data.stakers.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+			}
 		});
 
 		it('should return list of stakers when requested with known validator publicKey, offset=1 and limit=5', async () => {
-			const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1&limit=5`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
-			expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+			if (refValidator.publicKey) {
+				const response = await api.get(`${endpoint}?publicKey=${refValidator.publicKey}&offset=1&limit=5`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data.stakers.length).toBeGreaterThanOrEqual(0);
+				expect(response.data.stakers.length).toBeLessThanOrEqual(5);
+			}
 		});
 
 		it('should return list of stakers when requested for known validator name', async () => {

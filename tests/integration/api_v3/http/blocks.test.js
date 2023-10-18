@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { invalidAddresses, invalidLimits, invalidBlockIDs, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -37,7 +38,30 @@ const {
 describe('Blocks API', () => {
 	let refBlock;
 	beforeAll(async () => {
-		[refBlock] = (await api.get(`${endpoint}?limit=1&offset=5`)).data;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				[refBlock] = (await api.get(`${endpoint}?limit=1&offset=5`)).data;
+
+				if (refBlock) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching blocks. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch blocks even after retrying.');
+		}
 	});
 
 	describe('GET /blocks', () => {

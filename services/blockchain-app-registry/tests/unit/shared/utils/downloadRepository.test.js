@@ -49,13 +49,13 @@ describe('getFileDownloadURLAndHeaders', () => {
 	const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 	const file = 'testFile';
 
-	it('it should return the correct URL and headers for a public repository', async () => {
+	it('should return the correct URL and headers for a public repository', async () => {
 		const result = await getFileDownloadURLAndHeaders(file);
 		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
 		expect(result.headers).toHaveProperty('User-Agent');
 	});
 
-	it('it should return the correct URL and headers for a private repository with access token', async () => {
+	it('should return the correct URL and headers for a private repository with access token', async () => {
 		config.gitHub.accessToken = 'testToken';
 
 		const result = await getFileDownloadURLAndHeaders(file);
@@ -63,6 +63,10 @@ describe('getFileDownloadURLAndHeaders', () => {
 		expect(result.headers).toHaveProperty('User-Agent');
 		expect(result.headers).toHaveProperty('Authorization');
 		expect(result.headers.Authorization).toEqual('token testToken');
+	});
+
+	it('should throw error if no params are supplied', async () => {
+		await expect(getFileDownloadURLAndHeaders()).rejects.toThrow();
 	});
 });
 

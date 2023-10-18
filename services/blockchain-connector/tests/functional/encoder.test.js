@@ -43,7 +43,7 @@ const broker = new ServiceBroker({
 beforeAll(() => broker.start());
 afterAll(() => broker.stop());
 
-xdescribe('Encode transaction', () => {
+describe('Encode transaction', () => {
 	it('should encode transaction', async () => {
 		const result = await broker.call('connector.encodeTransaction', { transaction: decodedTransaction });
 		expect(typeof result).toBe('string');

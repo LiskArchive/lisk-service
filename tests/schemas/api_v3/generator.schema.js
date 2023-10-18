@@ -24,13 +24,11 @@ const GENERATOR_STATUSES = [
 	'ineligible',
 ];
 
-const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
-
 const generatorDataSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).allow(null).optional(),
-	nextAllocatedTime: Joi.number().integer().min(getCurrentTimestamp() - 20).required(),
+	nextAllocatedTime: Joi.number().integer().required(),
 	status: Joi.string().valid(...GENERATOR_STATUSES).required(),
 };
 

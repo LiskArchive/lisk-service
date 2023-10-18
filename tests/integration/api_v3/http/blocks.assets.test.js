@@ -15,6 +15,7 @@
  */
 import moment from 'moment';
 import { invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -22,6 +23,7 @@ const { api } = require('../../../helpers/api');
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blocks/assets`;
+const invokeEndpoint = `${baseUrlV3}/invoke`;
 
 const {
 	goodRequestSchema,
@@ -37,9 +39,37 @@ const {
 describe('Blocks Assets API', () => {
 	let refBlockAssets;
 	let refAsset;
+
 	beforeAll(async () => {
-		[refBlockAssets] = (await api.get(`${endpoint}?height=0`)).data;
-		[refAsset] = refBlockAssets.assets;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const invokeRes = await api.post(invokeEndpoint, { endpoint: 'system_getNodeInfo' });
+				const { genesisHeight } = invokeRes.data;
+
+				// eslint-disable-next-line no-await-in-loop
+				[refBlockAssets = {}] = (await api.get(`${endpoint}?height=${genesisHeight}`)).data;
+				[refAsset] = refBlockAssets.assets;
+
+				if (refAsset) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching transactions. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch block assets after 10 retries');
+		}
 	});
 
 	describe('GET /blocks/assets', () => {

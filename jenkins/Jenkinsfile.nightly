@@ -1,21 +1,23 @@
-MYSQL_PORT = 3306
+MYSQL_PORT = 3306;
+REDIS_PORT = 6381;
 LISK_CORE_WS_PORT = 7887;
+SERVICE_BROKER_PORT = 4222;
 
 def checkOpenPort(nPort) {
 	def result = sh script: "nc -z 127.0.0.1 ${nPort}", returnStatus: true
 	return (result == 0)
 }
 
-def runServiceIfMissing(svcName, path, nPort) {
-	if (checkOpenPort(nPort) == false) {
-		echo "${svcName} is not running, starting a new instance on port ${nPort}"
-		dir(path) { sh 'make up' }
-		if (checkOpenPort(nPort) == false) {
-			dir(path) { sh 'make logs' }
-			currentBuild.result = 'FAILURE'
-			throw new Exception("Failed to run ${svcName} instance")
-		}
-	}
+def runServiceIfMissing(svcName, path, nPort, startCommand = 'make up', logsCommand= 'make logs') {
+    if (checkOpenPort(nPort) == false) {
+        echo "${svcName} is not running, starting a new instance on port ${nPort}"
+        dir(path) { sh startCommand }
+        if (checkOpenPort(nPort) == false) {
+            dir(path) { sh logsCommand }
+            currentBuild.result = 'FAILURE'
+            throw new Exception("Failed to run ${svcName} instance")
+        }
+    }
 }
 
 def checkHttp(url) {
@@ -39,16 +41,16 @@ pipeline {
 		cron('0 23 * * *')
 	}
 	options {
-		timeout(time: 10, unit: 'MINUTES')
+		timeout(time: 45, unit: 'MINUTES')
 	}
 	environment {
-		ENABLE_HTTP_API='http-version3,http-status'
-		ENABLE_WS_API='rpc-v3,blockchain'
+		ENABLE_HTTP_API='http-status,http-version3,http-exports'
+		ENABLE_WS_API='rpc-v3,rpc-test,blockchain'
 		LISK_APP_WS='ws://host.docker.internal:7887'
 		ENABLE_TESTING_MODE='true'
     }
 	stages {
-		stage('Checkout SCM') {
+        stage('Checkout SCM') {
 			when {
 				anyOf {
 					branch 'development'
@@ -64,18 +66,57 @@ pipeline {
 				}
 			}
 		}
-		stage ('Build dependencies') {
+		stage('Start Lisk Service') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
-						dir('./') { sh 'npm i -g yarn' }
-						dir('./') { sh 'make build-local' }
+						sh '''
+							make build
+							make build-local
+							make down
+							make up
+						'''
 					}
 				}
 			}
 		}
-		stage('Run required services') {
+		stage('Start Lisk Core') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'release/**'
+					branch 'feature/**'
+				}
+			}
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						sh '''
+							# lisk-core
+							npm i -g lisk-core@^4.0.0-rc.6
+							npm i -g pm2
+							pm2 stop jenkins/lisk-core/pm2.config.json
+							pm2 delete jenkins/lisk-core/pm2.config.json
+							pm2 flush
+							rm -rf ~/.lisk/
+							lisk-core blockchain:import jenkins/lisk-core/snapshots/blockchain.tar.gz
+							LISK_CONFIG_FILE=$PWD/jenkins/lisk-core/config/config.json pm2 start jenkins/lisk-core/pm2.config.json
+						'''
+					}
+					sleep(5)
+				}
+			}
+		}
+		stage('Start external services') {
 			when {
 				anyOf {
 					branch 'development'
@@ -87,12 +128,13 @@ pipeline {
 				dir('lisk-service') {
 					script {
 						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-						runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
+						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 					}
+					sleep(5)
 				}
 			}	
 		}
-		stage('Run microservices') {
+		stage('Wait till indexing is complete') {
 			when {
 				anyOf {
 					branch 'development'
@@ -101,22 +143,26 @@ pipeline {
 				}
 			}
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					ansiColor('xterm') {
-						dir('./') { 
+				script {
+					def apiUrl = 'http://127.0.0.1:9901/api/v3/index/status'
+					def percentageIndexed = "0"
+					while (percentageIndexed != "100") {
+						def response = sh(script: "curl -s $apiUrl", returnStatus: true, returnStdout: true)
+						if (response == 0) {
+							def jsonString = sh(script: "curl -s $apiUrl | jq -r '.data.percentageIndexed'", returnStdout: true).trim()
+                    		percentageIndexed = jsonString
+						}
+						else {
 							sh '''
-							make build
-							ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} LISK_APP_WS=${LISK_APP_WS} ENABLE_TESTING_MODE=${ENABLE_TESTING_MODE} make up
+								echo "Failed to fetch status"
 							'''
 						}
+						sleep(30)
 					}
-					sleep(120)
-					waitForHttp('http://127.0.0.1:9901/api/ready')
 				}
 			}
 		}
-		stage('Run Tests') {
+		stage('Run tests') {
 			when {
 				anyOf {
 					branch 'development'
@@ -140,14 +186,17 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./framework') { sh "yarn run test:functional" }
-								dir('./services/blockchain-app-registry') { sh "yarn run test:functional" }
-								dir('./services/blockchain-connector') { sh "yarn run test:functional" }
-								dir('./services/blockchain-indexer') { sh "yarn run test:functional" }
-								dir('./services/fee-estimator') { sh "yarn run test:functional" }
-								dir('./services/market') { sh "yarn run test:functional" }
-								dir('./services/transaction-statistics') { sh "yarn run test:functional" }
-								dir('./tests') { sh "yarn run test:functional" }
+								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
+								dir('./services/blockchain-indexer') { 
+									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_INDEXER_CACHE_REDIS='redis://127.0.0.1:${REDIS_PORT}/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://127.0.0.1:${REDIS_PORT}/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://127.0.0.1:${REDIS_PORT}/4' npm run test:functional"
+								}
+								dir('./services/fee-estimator') { sh "npm run test:functional" }
+								dir('./services/market') { 
+									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_MARKET_REDIS='redis://127.0.0.1:${REDIS_PORT}/10' npm run test:functional"
+								}
+								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' npm run test:functional" }
+								dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:${REDIS_PORT}/0' npm run test:functional" }
+								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' npm run test:functional" }
 							}
 						}
 					}
@@ -157,7 +206,7 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								dir('./tests') { sh 'yarn run test:integration:APIv3:SDKv6' }
+								dir('./tests') { sh "node runIntegrationTestsWithRetry.js" }
 							}
 						}
 					}
@@ -193,20 +242,19 @@ pipeline {
 		}
 		cleanup {
 			script { 
-				echoBanner('Cleaning up...')
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
-						echoBanner('Stopping MySQL')
-						dir('./jenkins/mysql') { sh "make down" }
-						echoBanner('Stopping Lisk Core')
-						dir('./jenkins/lisk-core') { sh "make down" }
-						echoBanner('Stopping all microservices and removing dependencies')
 						sh '''
 							make down
-							make clean
+							pm2 stop jenkins/lisk-core/pm2.config.json
+							pm2 delete jenkins/lisk-core/pm2.config.json
+							pm2 flush
 						'''
+						dir('./jenkins/mysql') { sh "make down" }
+						dir('./jenkins/redis') { sh "make down" }
 					}
 				}
+				cleanWs()
 			}
 		}
 	}

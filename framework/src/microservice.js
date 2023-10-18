@@ -240,6 +240,7 @@ const Microservice = (config = {}) => {
 		getBroker,
 		run,
 		requestRpc,
+		scheduleJob,
 	};
 };
 

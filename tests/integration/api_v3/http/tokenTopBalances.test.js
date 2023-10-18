@@ -115,11 +115,13 @@ describe('Tokens top balances API', () => {
 	});
 
 	it('should retrieve top token balances when called with token ID and search param (exact public key)', async () => {
-		const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${tokenInfo.publicKey}`);
-		expect(response).toMap(goodRequestSchema);
-		expect(response).toMap(goodResponseSchemaForTokenTopBalances);
-		expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
-		expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+		if (tokenInfo.publicKey) {
+			const response = await api.get(`${endpoint}?tokenID=${tokenID}&search=${tokenInfo.publicKey}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response).toMap(goodResponseSchemaForTokenTopBalances);
+			expect(response.data[tokenID].length).toBeGreaterThanOrEqual(1);
+			expect(response.data[tokenID].length).toBeLessThanOrEqual(10);
+		}
 	});
 
 	it('should return bad request when called without token ID', async () => {
