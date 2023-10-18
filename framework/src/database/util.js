@@ -81,7 +81,7 @@ const resolveQueryParams = params => {
 		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'whereNot',
 		'whereIn', 'whereNotIn', 'orWhereIn', 'whereBetween', 'whereJsonSupersetOf', 'search', 'aggregate',
 		'distinct', 'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
-		'innerJoin', 'groupBy', 'orderByRaw',
+		'innerJoin', 'groupBy', 'orderByRaw', 'havingRaw',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -199,6 +199,10 @@ const getTableInstance = (tableConfig, knex) => {
 					});
 			}
 
+			if (params.havingRaw) {
+				query.having(knex.raw(params.havingRaw));
+			}
+
 			if (params.aggregate) {
 				query.sum(`${params.aggregate} as total`);
 			}
@@ -268,9 +272,10 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (params.andWhere) {
-			const { andWhere } = params;
-			query.where(function () {
-				this.where(andWhere);
+			params.andWhere = Array.isArray(params.andWhere) ? params.andWhere : [params.andWhere];
+
+			params.andWhere.forEach(andWhere => {
+				query.where(andWhere);
 			});
 		}
 

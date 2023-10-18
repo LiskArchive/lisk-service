@@ -25,6 +25,7 @@ const {
 	invalidParamsSchema,
 	metaSchema,
 	serverErrorSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -89,19 +90,19 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return bad request for invalid limit', async () => {
+		it('should return invalid params for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ limit: invalidLimits[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 
-		it('should return bad request for invalid offset', async () => {
+		it('should return invalid params for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ offset: invalidOffsets[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 	});
@@ -148,16 +149,16 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('should return server error for empty blockID', async () => {
+		it('should return invalid request for empty blockID', async () => {
 			const response = await getEvents({ blockID: '' });
-			expect(response).toMap(serverErrorSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 
-		it('should return bad request for invalid block ID', async () => {
+		it('should return invalid params for invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ blockID: invalidBlockIDs[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 	});
@@ -196,11 +197,11 @@ describe('Method get.events', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('should return bad request for invalid senderAddress', async () => {
+		it('should return invalid params for invalid senderAddress', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
 				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ senderAddress: invalidAddresses[i] });
-				expect(response).toMap(serverErrorSchema);
+				expect(response).toMap(invalidParamsSchema);
 			}
 		});
 	});

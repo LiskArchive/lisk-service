@@ -711,6 +711,32 @@ describe('Test MySQL', () => {
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(0);
 		});
+
+		it('should apply HAVING clause with havingRaw', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+
+			const params = {
+				groupBy: 'height',
+				havingRaw: 'height > 50',
+			};
+
+			const result = await blocksTable.find(params, ['id', 'height']);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBeGreaterThan(1);
+		});
+
+		it('should apply complex HAVING clause with havingRaw', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
+
+			const params = {
+				groupBy: 'height',
+				havingRaw: 'SUM(height) > 50',
+			};
+
+			const result = await blocksTable.find(params, ['id', 'height']);
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBeGreaterThan(1);
+		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {

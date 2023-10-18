@@ -101,6 +101,7 @@ const deleteEventsFromCache = async (height) => eventCache.delete(height);
 
 const getEvents = async (params) => {
 	let queryParams = _.cloneDeep(params);
+	delete queryParams.topic;
 
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
@@ -119,24 +120,14 @@ const getEvents = async (params) => {
 		queryParams = normalizeRangeParam(queryParams, 'timestamp');
 	}
 
-	if (params.topic) {
-		const { topic, ...remQueryParams } = queryParams;
-		queryParams = remQueryParams;
-
-		queryParams.whereIn = {
-			property: 'topic',
-			values: topic.split(','),
-		};
-	}
-
 	if (params.transactionID) {
 		const { transactionID, ...remQueryParams } = queryParams;
 		queryParams = remQueryParams;
 
 		if (!params.topic) {
-			queryParams.topic = transactionID;
+			params.topic = transactionID;
 		} else {
-			queryParams.andWhere = { topic: transactionID };
+			params.topic = `${params.topic},${transactionID}`;
 		}
 	}
 
@@ -145,13 +136,13 @@ const getEvents = async (params) => {
 		queryParams = remQueryParams;
 
 		if (!params.topic) {
-			queryParams.topic = senderAddress;
+			params.topic = senderAddress;
 		} else {
-			queryParams.andWhere = { topic: senderAddress };
+			params.topic = `${params.topic},${senderAddress}`;
 		}
 	}
 
-	if (params.blockID) {
+	if ('blockID' in params) {
 		const { blockID, ...remQueryParams } = queryParams;
 		queryParams = remQueryParams;
 
@@ -176,16 +167,24 @@ const getEvents = async (params) => {
 		queryParams.height = block.height;
 	}
 
-	const isTopicInQuery = !!params.topic || !!queryParams.topic;
+	if (params.topic) {
+		const { topic } = params;
 
-	queryParams.leftOuterJoin = {
-		targetTable: eventsTableSchema.tableName,
-		leftColumn: `${eventsTableSchema.tableName}.id`,
-		rightColumn: `${eventTopicsTableSchema.tableName}.eventID`,
-	};
+		const response = await eventTopicsTable.find(
+			{
+				whereIn: { property: 'topic', values: topic.split(',') },
+				distinct: 'eventID',
+				groupBy: 'eventID',
+				havingRaw: `COUNT(DISTINCT topic) = ${topic.split(',').length}`,
+			},
+			['eventID'],
+		);
+		const eventIDs = response.map(entry => entry.eventID);
+		queryParams.whereIn = { property: 'id', values: eventIDs };
+	}
 
-	const eventsInfo = await eventTopicsTable.find(
-		{ ...queryParams, distinct: 'eventID' },
+	const eventsInfo = await eventsTable.find(
+		queryParams,
 		['eventStr', 'height', 'index'],
 	);
 
@@ -211,20 +210,8 @@ const getEvents = async (params) => {
 		{ concurrency: eventsInfo.length },
 	);
 
-	let total;
-	const { order, sort, ...remQueryParams } = queryParams;
-
-	if (isTopicInQuery) {
-		total = await eventTopicsTable.count(
-			{ ...remQueryParams, distinct: 'eventID' },
-			['eventID'],
-		);
-	} else {
-		// If params doesn't contain event_topics specific column data
-		// then count all rows of event table for query optimization.
-		const { leftOuterJoin, ...remParamsWithoutJoin } = remQueryParams;
-		total = await eventsTable.count(remParamsWithoutJoin, ['id']);
-	}
+	const { order, sort, ...queryParamsWithoutOrderAndSort } = queryParams;
+	const total = await eventsTable.count({ ...queryParamsWithoutOrderAndSort, distinct: 'id' });
 
 	events.meta = {
 		count: events.data.length,
