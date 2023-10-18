@@ -306,7 +306,7 @@ blockchain-app-registry:
 ----
 make stop
 ----
-NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[GitHub release notes] for the relevant version to verify if the existing databases need to be flushed.
 
 . Start Lisk Service in the containers.
 +
