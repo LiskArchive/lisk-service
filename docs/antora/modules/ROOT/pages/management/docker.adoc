@@ -330,13 +330,19 @@ make stop
 ----
 NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
 
-. Build the required updated Docker images.
+. Checkout the version with *`git checkout <tag>`*
++
+----
+git checkout v0.7.0
+----
+
+. Build the required updated Docker images
 +
 ----
 make build
 ----
 
-. Start Lisk Service in the containers.
+. Start Lisk Service in the containers
 +
 ----
 make up
