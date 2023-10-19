@@ -261,7 +261,8 @@ To upgrade the Docker container to a desired version, please follow one of the t
 
 ==== Option A - Download pre-built images from DockerHub
 
-. Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. Update the `0.7.0` tag against the specified images with the desired version.
+. Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. 
+Update specified images with the desired version, for example `0.7.0`.
 +
 .docker-compose.yml
 [source,yaml]
