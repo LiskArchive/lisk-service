@@ -11,8 +11,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_snapshot_config: configuration/index.adoc
 :url_backups: management/snapshots.adoc
-:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases/
-
+:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases
+:url_tags: https://github.com/LiskHQ/lisk-service/tags
 
 == Build Docker image
 
@@ -249,7 +249,7 @@ In the above example, it will display logs only for the `blockchain-connector` m
 ----
 make logs-live-blockchain-connector
 ----
-In the above example, it will display latest logs only for the `blockchain-connector` microservice.
+In the above example, it will display the latest logs only for the `blockchain-connector` microservice.
 
 
 Replace the `blockchain-connector` with the specific service name required.
@@ -257,17 +257,13 @@ Replace the `blockchain-connector` with the specific service name required.
 
 == Upgrade Lisk Service
 
-To upgrade the Docker container to a desired version, please follow one of the two options below. To find all the tagged versions for Lisk Service, please check the available tags (https://github.com/LiskHQ/lisk-service/tags) on GitHub.
+To upgrade the Docker container to a desired version, please follow one of the two options below. To find all the tagged versions for Lisk Service, please check the {url_tags}[available tags] on GitHub.
 
 [tabs]
 ====
-Option A - Build images locally ::
+Option A - Download pre-built images from DockerHub::
 +
 --
-
-Build the images locally using the following steps.
-Navigate inside the lisk-service root folder, and execute the following commands.
-
 . Stop Lisk Service
 +
 ----
@@ -281,21 +277,6 @@ NOTE: In case the database needs to be flushed please execute the `make down` co
 git checkout v0.7.0
 ----
 
-. Build the required updated Docker images
-+
-----
-make build
-----
-
-. Start Lisk Service in the containers
-+
-----
-make up
-----
---
-Option B - Download pre-built images from DockerHub::
-+
---
 . Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below.
 Update specified images with the desired version, for example `0.7.0`.
 +
@@ -339,18 +320,44 @@ blockchain-app-registry:
 
 ----
 
-. Stop Lisk Service
-+
-----
-make stop
-----
-NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[GitHub release notes] for the relevant version to verify if the existing databases need to be flushed.
-
 . Start Lisk Service in the containers.
 +
 ----
 make up
 ----
+--
+Option B - Build images locally ::
++
+--
+Build the images locally using the following steps.
+Navigate inside the lisk-service root folder, and execute the following commands.
+
+. Stop Lisk Service
++
+----
+make stop
+----
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+
+. Checkout the version with *`git checkout <tag>`*
++
+----
+git checkout v0.7.0
+----
+
+. Build the required updated Docker images
++
+----
+make build
+----
+
+. Start Lisk Service in the containers
++
+----
+make up
+----
+--
+
 ====
 
 To verify the microservice logs, please refer to the <<Logging>> section.
