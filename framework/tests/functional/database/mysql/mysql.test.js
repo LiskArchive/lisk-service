@@ -80,10 +80,8 @@ describe('Test MySQL', () => {
 	});
 
 	describe('With IMPLICIT DB transaction (auto-commit mode)', () => {
-		afterAll(() => blocksTable.rawQuery(`TRUNCATE ${tableName}`));
-
 		afterEach(async () => {
-			blocksTable.rawQuery(`DELETE FROM ${tableName}`);
+			await blocksTable.rawQuery(`TRUNCATE ${tableName}`);
 		});
 
 		it('should insert row', async () => {
@@ -217,6 +215,7 @@ describe('Test MySQL', () => {
 		});
 
 		it('should get row count', async () => {
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock]);
 			const count = await blocksTable.count();
 			expect(count).toBe(2);
 		});
@@ -749,10 +748,8 @@ describe('Test MySQL', () => {
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
-		afterAll(() => blocksTable.rawQuery(`TRUNCATE ${tableName}`));
-
 		afterEach(async () => {
-			blocksTable.rawQuery(`DELETE FROM ${tableName}`);
+			await blocksTable.rawQuery(`TRUNCATE ${tableName}`);
 		});
 
 		it('should insert row', async () => {
@@ -766,6 +763,11 @@ describe('Test MySQL', () => {
 		});
 
 		it('should get rows', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await blocksTable.upsert([emptyBlock], trx);
+			await commitDBTransaction(trx);
+
 			const result = await blocksTable.find({ id: emptyBlock.id }, ['id']);
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
@@ -933,6 +935,11 @@ describe('Test MySQL', () => {
 		});
 
 		it('should get row count', async () => {
+			const connection = await getDBConnection();
+			const trx = await startDBTransaction(connection);
+			await blocksTable.upsert([emptyBlock, nonEmptyBlock], trx);
+			await commitDBTransaction(trx);
+
 			const count = await blocksTable.count();
 			expect(count).toBe(2);
 		});
@@ -1401,7 +1408,7 @@ describe('Test MySQL', () => {
 
 	describe('Transactional atomicity guarantees (non-auto commit mode)', () => {
 		afterEach(async () => {
-			blocksTable.rawQuery(`DELETE FROM ${tableName}`);
+			await blocksTable.rawQuery(`TRUNCATE ${tableName}`);
 		});
 
 		it('should perform a successful transaction commit', async () => {
