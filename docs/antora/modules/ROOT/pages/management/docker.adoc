@@ -353,7 +353,4 @@ make up
 ----
 ====
 
-
-
-
 To verify the microservice logs, please refer to the <<Logging>> section.
