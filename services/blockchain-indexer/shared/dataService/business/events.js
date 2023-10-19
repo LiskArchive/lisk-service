@@ -14,7 +14,6 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const _ = require('lodash');
 
 const {
 	CacheLRU,
@@ -100,9 +99,6 @@ const cacheEventsByBlockID = async (blockID, events) => {
 const deleteEventsFromCache = async (height) => eventCache.delete(height);
 
 const getEvents = async (params) => {
-	let queryParams = _.cloneDeep(params);
-	delete queryParams.topic;
-
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
 	const eventTopicsTable = await getEventTopicsTable();
@@ -113,16 +109,16 @@ const getEvents = async (params) => {
 	};
 
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		queryParams = normalizeRangeParam(queryParams, 'height');
+		params = normalizeRangeParam(params, 'height');
 	}
 
 	if (params.timestamp && params.timestamp.includes(':')) {
-		queryParams = normalizeRangeParam(queryParams, 'timestamp');
+		params = normalizeRangeParam(params, 'timestamp');
 	}
 
 	if (params.transactionID) {
-		const { transactionID, ...remQueryParams } = queryParams;
-		queryParams = remQueryParams;
+		const { transactionID, ...remParams } = params;
+		params = remParams;
 
 		if (!params.topic) {
 			params.topic = transactionID;
@@ -132,8 +128,8 @@ const getEvents = async (params) => {
 	}
 
 	if (params.senderAddress) {
-		const { senderAddress, ...remQueryParams } = queryParams;
-		queryParams = remQueryParams;
+		const { senderAddress, ...remParams } = params;
+		params = remParams;
 
 		if (!params.topic) {
 			params.topic = senderAddress;
@@ -143,8 +139,8 @@ const getEvents = async (params) => {
 	}
 
 	if ('blockID' in params) {
-		const { blockID, ...remQueryParams } = queryParams;
-		queryParams = remQueryParams;
+		const { blockID, ...remParams } = params;
+		params = remParams;
 
 		const [block] = await blocksTable.find({ id: blockID, limit: 1 }, ['height']);
 		if (!block || !block.height) {
@@ -164,11 +160,12 @@ const getEvents = async (params) => {
 				throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 			}
 		}
-		queryParams.height = block.height;
+		params.height = block.height;
 	}
 
 	if (params.topic) {
-		const { topic } = params;
+		const { topic, ...remParams } = params;
+		params = remParams;
 
 		const response = await eventTopicsTable.find(
 			{
@@ -179,11 +176,11 @@ const getEvents = async (params) => {
 			['eventID'],
 		);
 		const eventIDs = response.map(entry => entry.eventID);
-		queryParams.whereIn = { property: 'id', values: eventIDs };
+		params.whereIn = { property: 'id', values: eventIDs };
 	}
 
 	const eventsInfo = await eventsTable.find(
-		queryParams,
+		params,
 		['eventStr', 'height', 'index'],
 	);
 
@@ -209,8 +206,8 @@ const getEvents = async (params) => {
 		{ concurrency: eventsInfo.length },
 	);
 
-	const { order, sort, ...queryParamsWithoutOrderAndSort } = queryParams;
-	const total = await eventsTable.count({ ...queryParamsWithoutOrderAndSort });
+	const { order, sort, ...remParamsWithoutOrderAndSort } = params;
+	const total = await eventsTable.count({ ...remParamsWithoutOrderAndSort });
 
 	events.meta = {
 		count: events.data.length,
