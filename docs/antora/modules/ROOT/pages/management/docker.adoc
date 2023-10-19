@@ -259,9 +259,44 @@ Replace the `blockchain-connector` with the specific service name required.
 
 To upgrade the Docker container to a desired version, please follow one of the two options below. To find all the tagged versions for Lisk Service, please check the available tags (https://github.com/LiskHQ/lisk-service/tags) on GitHub.
 
-==== Option A - Download pre-built images from DockerHub
+[tabs]
+====
+Option A - Build images locally ::
++
+--
 
-. Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. 
+Build the images locally using the following steps.
+Navigate inside the lisk-service root folder, and execute the following commands.
+
+. Stop Lisk Service
++
+----
+make stop
+----
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+
+. Checkout the version with *`git checkout <tag>`*
++
+----
+git checkout v0.7.0
+----
+
+. Build the required updated Docker images
++
+----
+make build
+----
+
+. Start Lisk Service in the containers
++
+----
+make up
+----
+--
+Option B - Download pre-built images from DockerHub::
++
+--
+. Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below.
 Update specified images with the desired version, for example `0.7.0`.
 +
 .docker-compose.yml
@@ -316,36 +351,9 @@ NOTE: In case the database needs to be flushed please execute the `make down` co
 ----
 make up
 ----
+====
 
 
-==== Option B - Build images locally
 
-Build the images locally using the following steps.
-Navigate inside the lisk-service root folder, and execute the following commands.
-
-. Stop Lisk Service
-+
-----
-make stop
-----
-NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
-
-. Checkout the version with *`git checkout <tag>`*
-+
-----
-git checkout v0.7.0
-----
-
-. Build the required updated Docker images
-+
-----
-make build
-----
-
-. Start Lisk Service in the containers
-+
-----
-make up
-----
 
 To verify the microservice logs, please refer to the <<Logging>> section.
