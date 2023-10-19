@@ -61,24 +61,24 @@ const createDBConnection = async (dbDataDir, tableName) => {
 	return knex;
 };
 
-const getDBConnection = async (tableName, dbDataDir) => {
-	if (!connectionPool[tableName]) {
+const getDBConnection = async (tableName, dbDataDir = DB_DATA_DIR) => {
+	if (!connectionPool[dbDataDir]) {
 		if (!(await exists(dbDataDir))) {
 			await mkdir(dbDataDir, { recursive: true });
 		}
-		connectionPool[tableName] = await createDBConnection(dbDataDir, tableName);
+		connectionPool[dbDataDir] = await createDBConnection(dbDataDir, tableName);
 	}
 
-	const knex = connectionPool[tableName];
+	const knex = connectionPool[dbDataDir];
 	return knex;
 };
 
-const createTableIfNotExists = async tableConfig => {
+const createTableIfNotExists = async (tableConfig, dbDataDir = DB_DATA_DIR) => {
 	const { tableName } = tableConfig;
 
 	if (!tablePool[tableName]) {
 		logger.info(`Creating schema for ${tableName}`);
-		const knex = await getDBConnection(tableName);
+		const knex = await getDBConnection(tableName, dbDataDir);
 		await util.loadSchema(knex, tableName, tableConfig);
 		tablePool[tableName] = true;
 	}
@@ -91,7 +91,7 @@ const getTableInstance = async (tableConfig, dbDataDir = DB_DATA_DIR) => {
 
 	const createDefaultTransaction = async connection => util.startDBTransaction(connection);
 
-	await createTableIfNotExists(tableConfig);
+	await createTableIfNotExists(tableConfig, dbDataDir);
 
 	const dbOperations = util.getTableInstance(tableConfig, knex);
 

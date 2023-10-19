@@ -269,7 +269,7 @@ describe('Test sqlite3 implementation', () => {
 		it('should insert row', async () => {
 			const preUpsertResult = await testTable.find();
 			expect(preUpsertResult.length).toBe(0);
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 			await testTable.upsert([blockWithoutTransaction.header], trx);
 			await commitDBTransaction(trx);
@@ -287,7 +287,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should update row', async () => {
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 			const { id } = blockWithTransaction.header;
 			await testTable.upsert([{ ...blockWithTransaction.header, height: 20 }], trx);
@@ -310,7 +310,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should increment column value', async () => {
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 			const { id } = blockWithoutTransaction.header;
 			await testTable.increment({
@@ -324,7 +324,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete row by primary key', async () => {
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
@@ -339,7 +339,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete rows', async () => {
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
@@ -357,7 +357,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete row', async () => {
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([blockWithoutTransaction.header]);
@@ -375,7 +375,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should insert rows in a batch', async () => {
-			const connection = await getDBConnection(tableName);
+			const connection = await getDBConnection(tableName, testDir);
 			const trx = await startDBTransaction(connection);
 			const preUpsertResult = await testTable.find();
 			expect(preUpsertResult.length).toBe(0);
