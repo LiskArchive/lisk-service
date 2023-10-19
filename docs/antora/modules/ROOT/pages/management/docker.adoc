@@ -263,6 +263,8 @@ To upgrade the Docker container to a desired version, please follow one of the t
 
 . Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below. Update the `0.7.0` tag against the specified images with the desired version.
 +
+.docker-compose.yml
+[source,yaml]
 ----
 blockchain-app-registry:
     image: lisk/service_blockchain_app_registry:0.7.0
