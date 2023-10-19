@@ -207,7 +207,7 @@ const getEvents = async (params) => {
 	);
 
 	const { order, sort, ...remParamsWithoutOrderAndSort } = params;
-	const total = await eventsTable.count({ ...remParamsWithoutOrderAndSort });
+	const total = await eventsTable.count(remParamsWithoutOrderAndSort);
 
 	events.meta = {
 		count: events.data.length,
