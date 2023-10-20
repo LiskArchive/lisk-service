@@ -50,7 +50,7 @@ const requestAllStandard = async (fn, params, limit) => {
 };
 
 const requestAllCustom = async (fn, method, params, limit) => {
-	const maxAmount = limit || 1e9;
+	const maxAmount = limit || Number.MAX_SAFE_INTEGER;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn(method,
 		{

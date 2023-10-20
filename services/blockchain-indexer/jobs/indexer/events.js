@@ -16,22 +16,33 @@
 const logger = require('lisk-service-framework').Logger();
 
 const { getFinalizedHeight } = require('../../shared/constants');
+const { getIndexStatus } = require('../../shared/dataService/indexStatus');
 const { deleteEventStrTillHeight } = require('../../shared/indexer/utils/events');
 const config = require('../../config');
 
 module.exports = [
 	{
 		name: 'delete.serializedEvents',
-		description: 'Delete the serialized events until finalized height.',
+		description: 'Delete the serialized events until the last indexed block or finalized height, whichever is lower.',
 		interval: config.job.deleteSerializedEvents.interval,
 		schedule: config.job.deleteSerializedEvents.schedule,
 		controller: async () => {
 			try {
 				if (!config.db.isPersistEvents) {
+					const {
+						data: { genesisHeight, lastIndexedBlockHeight } = {},
+					} = await getIndexStatus();
 					const finalizedHeight = await getFinalizedHeight();
-					logger.debug(`Deleting the serialized events until the finalized height: ${finalizedHeight}.`);
-					await deleteEventStrTillHeight(finalizedHeight);
-					logger.info(`Deleted the serialized events until the finalized height: ${finalizedHeight}.`);
+
+					// Default to 0, when getFinalizedHeight doesn't return response
+					const deleteTillHeight = Math.min(
+						lastIndexedBlockHeight || genesisHeight || 0,
+						finalizedHeight,
+					);
+
+					logger.debug(`Deleting the serialized events until the height: ${deleteTillHeight}.`);
+					await deleteEventStrTillHeight(deleteTillHeight);
+					logger.info(`Deleted the serialized events until the height: ${deleteTillHeight}.`);
 				}
 			} catch (err) {
 				logger.warn(`Deleting serialized events failed due to: ${err.message}`);

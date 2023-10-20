@@ -98,6 +98,8 @@ const cacheEventsByBlockID = async (blockID, events) => {
 
 const deleteEventsFromCache = async (height) => eventCache.delete(height);
 
+const deleteEventsFromCacheByBlockID = async (blockID) => eventCacheByBlockID.delete(blockID);
+
 const getEvents = async (params) => {
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
@@ -143,9 +145,11 @@ const getEvents = async (params) => {
 		params = remParams;
 
 		const [block] = await blocksTable.find({ id: blockID, limit: 1 }, ['height']);
+
 		if (!block || !block.height) {
 			throw new NotFoundException(`Invalid blockID: ${blockID}`);
 		}
+
 		if ('height' in params && Number(params.height) !== block.height) {
 			let heightLowerBound = Number(params.height);
 			let heightHigherBound = Number(params.height);
@@ -222,6 +226,7 @@ module.exports = {
 	getEvents,
 	getEventsByHeight,
 	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
 	getEventsByBlockID,
 	deleteEventsFromCache,
 };

@@ -17,7 +17,7 @@ const packageJson = require('./package.json');
 
 const config = {
 	endpoints: {},
-	jobs: {},
+	job: {},
 	log: {
 		name: packageJson.name,
 		version: packageJson.version,
@@ -78,10 +78,6 @@ config.queue = {
 	event: { name: 'Event' },
 
 	// Intra-microservice job queues
-	accountBalanceIndex: {
-		name: 'AccountBalanceIndex',
-		concurrency: 1,
-	},
 	accountQueueByAddress: {
 		name: 'AccountQueueByAddress',
 		concurrency: 1,
@@ -109,10 +105,6 @@ config.queue = {
 	indexAccountAddress: {
 		name: 'PendingAccountAddressUpdates',
 		concurrency: 64,
-	},
-	updateBlockIndex: {
-		name: 'UpdateBlockIndexQueue',
-		concurrency: 1,
 	},
 };
 
@@ -198,6 +190,10 @@ config.job = {
 	triggerAccountUpdates: {
 		interval: process.env.JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES || 0,
 		schedule: process.env.JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES || '*/15 * * * *',
+	},
+	triggerAccountBalanceUpdates: {
+		interval: process.env.JOB_INTERVAL_TRIGGER_ACCOUNT_BALANCE_UPDATES || 10,
+		schedule: process.env.JOB_SCHEDULE_TRIGGER_ACCOUNT_BALANCE_UPDATES || '',
 	},
 };
 

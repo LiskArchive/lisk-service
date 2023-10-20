@@ -27,6 +27,7 @@ const {
 	normalizeTransaction,
 	getEventsByHeight,
 	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
 	getEventsByBlockID,
 	deleteEventsFromCache,
 	isMainchain,
@@ -198,6 +199,7 @@ module.exports = {
 	getPosLockedRewards,
 	getEventsByHeight,
 	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
 	getEventsByBlockID,
 	deleteEventsFromCache,
 
