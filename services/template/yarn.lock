@@ -1022,9 +1022,9 @@ leven@2.1.0:
   resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
   integrity sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz":
-  version "1.6.1"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz#ca20b4aa4202b9500b1f6f0d9269601253908ea9"
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/19417a9e6e4eb07032aef25e8647f9f7536a5a40/framework/dist/lisk-service-framework-1.6.2.tgz":
+  version "1.6.2"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/19417a9e6e4eb07032aef25e8647f9f7536a5a40/framework/dist/lisk-service-framework-1.6.2.tgz#3a1c20e380a57bb188fc0d9f59bde18957655156"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
@@ -1052,9 +1052,9 @@ leven@2.1.0:
     socket.io-client "^4.0.1"
     stack-trace "0.0.10"
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/b29df9637584d43ce25b89843637c46ebbcbe628/framework/dist/lisk-service-framework-1.6.0.tgz":
-  version "1.6.0"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/b29df9637584d43ce25b89843637c46ebbcbe628/framework/dist/lisk-service-framework-1.6.0.tgz#22d99e35771f13c9e00d6a36b20dc453e83f799a"
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz":
+  version "1.6.1"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz#ca20b4aa4202b9500b1f6f0d9269601253908ea9"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"

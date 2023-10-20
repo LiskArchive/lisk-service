@@ -31,7 +31,7 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "bull": "^4.8.1",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz"
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/19417a9e6e4eb07032aef25e8647f9f7536a5a40/framework/dist/lisk-service-framework-1.6.2.tgz"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
