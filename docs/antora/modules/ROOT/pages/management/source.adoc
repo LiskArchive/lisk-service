@@ -11,9 +11,9 @@ Mona Bärenfänger <mona@lightcurve.io> Muhammad Talha <muhammad.talha@lightcurv
 :url_pm2_docs: https://pm2.keymetrics.io/docs/usage/quick-start/
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_pm2_management: https://pm2.keymetrics.io/docs/usage/log-management/
-:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases/
 :url_backups: management/snapshots.adoc
-:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases/
+:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases
+:url_tags: https://github.com/LiskHQ/lisk-service/tags
 
 
 //TODO: add in link to new Backups page for importing the DB snapshot manually
