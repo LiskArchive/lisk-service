@@ -25,6 +25,7 @@ const {
 	invalidParamsSchema,
 	metaSchema,
 	serverErrorSchema,
+	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -148,10 +149,9 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Enable test after https://github.com/LiskHQ/lisk-service/issues/1873
-		xit('should return server error for empty blockID', async () => {
+		it('should return invalid request for empty blockID', async () => {
 			const response = await getEvents({ blockID: '' });
-			expect(response).toMap(serverErrorSchema);
+			expect(response).toMap(invalidRequestSchema);
 		});
 
 		it('should return invalid params for invalid block ID', async () => {
@@ -530,8 +530,7 @@ describe('Method get.events', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Enable test after https://github.com/LiskHQ/lisk-service/issues/1873
-		xit('should return invalid params for empty topic', async () => {
+		it('should return invalid params for empty topic', async () => {
 			const response = await getEvents({ topic: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

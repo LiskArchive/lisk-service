@@ -1022,9 +1022,39 @@ leven@2.1.0:
   resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
   integrity sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/b29df9637584d43ce25b89843637c46ebbcbe628/framework/dist/lisk-service-framework-1.6.0.tgz":
-  version "1.6.0"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/b29df9637584d43ce25b89843637c46ebbcbe628/framework/dist/lisk-service-framework-1.6.0.tgz#22d99e35771f13c9e00d6a36b20dc453e83f799a"
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/c290db8943b1ad0ad7e6ec913bd43c2a3c36030e/framework/dist/lisk-service-framework-1.6.1.tgz":
+  version "1.6.1"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/c290db8943b1ad0ad7e6ec913bd43c2a3c36030e/framework/dist/lisk-service-framework-1.6.1.tgz#bf7089c595b9e1893ac55c64acf2f2163e154695"
+  dependencies:
+    "@keyv/redis" "^2.1.2"
+    "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
+    axios "^0.21.2"
+    better-sqlite3 "^8.5.0"
+    bull "^3.29.3"
+    debug "^4.3.1"
+    fastest-validator "^1.10.1"
+    http-status-codes "^1.4.0"
+    json-colorizer "^2.2.2"
+    keyv "^4.0.3"
+    keyv-lru "^3.0.4"
+    knex "^2.5.1"
+    log4js "^6.5.2"
+    moleculer "^0.14.21"
+    moleculer-web "^0.10.4"
+    moment "^2.29.4"
+    mysql2 "^3.5.2"
+    nats "^1.4.12"
+    node-cron "^2.0.3"
+    prettyjson "^1.2.1"
+    require-all "^3.0.0"
+    signals "^1.0.0"
+    socket.io "^4.4.1"
+    socket.io-client "^4.0.1"
+    stack-trace "0.0.10"
+
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/e72288dc2ee681198097c531aad9ec43edcfd86e/framework/dist/lisk-service-framework-1.6.1.tgz":
+  version "1.6.1"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/e72288dc2ee681198097c531aad9ec43edcfd86e/framework/dist/lisk-service-framework-1.6.1.tgz#730da995d0279f62f94e3285747424511537998d"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
