@@ -3158,9 +3158,15 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
+<<<<<<< HEAD
 "lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz":
   version "1.6.1"
   resolved "https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz#ca20b4aa4202b9500b1f6f0d9269601253908ea9"
+=======
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/c290db8943b1ad0ad7e6ec913bd43c2a3c36030e/framework/dist/lisk-service-framework-1.6.1.tgz":
+  version "1.6.1"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/c290db8943b1ad0ad7e6ec913bd43c2a3c36030e/framework/dist/lisk-service-framework-1.6.1.tgz#bf7089c595b9e1893ac55c64acf2f2163e154695"
+>>>>>>> release/0.7.0
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"

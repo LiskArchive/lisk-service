@@ -245,6 +245,7 @@ describe('getEvents', () => {
 			blockID,
 			topic: '03',
 			senderAddress: 'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
+			transactionID: 'c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
 			timestamp: '1:1000000000',
 			height: '1:1000',
 			sort: 'timestamp:desc',
