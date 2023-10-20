@@ -1,16 +1,16 @@
 html {
-  color: #222;
-  line-height: 1.4;
-  font-family: monospace;
-  font-size: 14pt;
+	color: #222;
+	line-height: 1.4;
+	font-family: monospace;
+	font-size: 14pt;
 }
 
 img {
-  width: 100%;
+	width: 100%;
 }
 
 div {
-  background-color: rgb(246, 248, 250);
-  min-height: 3em;
-  padding: 1em;
+	background-color: rgb(246, 248, 250);
+	min-height: 3em;
+	padding: 1em;
 }

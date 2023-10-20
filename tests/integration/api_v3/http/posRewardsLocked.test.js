@@ -19,14 +19,16 @@ const { api } = require('../../../helpers/api');
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
+const { goodResponseSchema } = require('../../../schemas/api_v3/posRewardsLocked.schema');
 const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/posRewardsLocked.schema');
-const { invalidOffsets, invalidLimits, invalidPublicKeys, invalidNames, invalidAddresses } = require('../constants/invalidInputs');
+	invalidOffsets,
+	invalidLimits,
+	invalidPublicKeys,
+	invalidNames,
+	invalidAddresses,
+} = require('../constants/invalidInputs');
 
 const endpoint = `${baseUrlV3}/pos/rewards/locked`;
 const stakesEndpoint = `${baseUrlV3}/pos/stakes`;
@@ -35,7 +37,9 @@ describe('Rewards Locked API', () => {
 	let refStaker;
 	beforeAll(async () => {
 		let refStakerAddress;
-		const stakeTransactionResponse = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
+		const stakeTransactionResponse = await api.get(
+			`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`,
+		);
 		const { data: stakeTxs = [] } = stakeTransactionResponse;
 		if (stakeTxs.length) {
 			refStakerAddress = stakeTxs[0].sender.address;
@@ -129,7 +133,9 @@ describe('Rewards Locked API', () => {
 
 	it('should return list of claimable rewards with known validator publicKey, limit=5 and offset=1', async () => {
 		if (refStaker.publicKey) {
-			const response = await api.get(`${endpoint}?publicKey=${refStaker.publicKey}&limit=5&offset=1`);
+			const response = await api.get(
+				`${endpoint}?publicKey=${refStaker.publicKey}&limit=5&offset=1`,
+			);
 			expect(response).toMap(goodResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(5);
@@ -168,7 +174,10 @@ describe('Rewards Locked API', () => {
 	it('should return bad request if requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
-			const response = await api.get(`${endpoint}?address=${refStaker.address}&limit=${invalidLimits[i]}`, 400);
+			const response = await api.get(
+				`${endpoint}?address=${refStaker.address}&limit=${invalidLimits[i]}`,
+				400,
+			);
 			expect(response).toMap(badRequestSchema);
 		}
 	});
@@ -176,7 +185,10 @@ describe('Rewards Locked API', () => {
 	it('should return bad request if requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
 			// eslint-disable-next-line no-await-in-loop
-			const response = await api.get(`${endpoint}?address=${refStaker.address}&offset=${invalidOffsets[i]}`, 400);
+			const response = await api.get(
+				`${endpoint}?address=${refStaker.address}&offset=${invalidOffsets[i]}`,
+				400,
+			);
 			expect(response).toMap(badRequestSchema);
 		}
 	});

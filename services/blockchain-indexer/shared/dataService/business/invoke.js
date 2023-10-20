@@ -16,7 +16,9 @@
 const util = require('util');
 const { validator } = require('@liskhq/lisk-validator');
 
-const { Exceptions: { ValidationException, ServiceUnavailableException } } = require('lisk-service-framework');
+const {
+	Exceptions: { ValidationException, ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const { requestConnector } = require('../../utils/request');
 const {
@@ -26,12 +28,12 @@ const {
 	getAllRegisteredEndpoints,
 } = require('../../constants');
 
-const checkIfEndpointRegistered = async (endpoint) => {
+const checkIfEndpointRegistered = async endpoint => {
 	const allRegisteredEndpoints = await getAllRegisteredEndpoints();
 	return allRegisteredEndpoints.includes(endpoint);
 };
 
-const validateEndpointParams = async (invokeEndpointParams) => {
+const validateEndpointParams = async invokeEndpointParams => {
 	let requestParamsSchema;
 
 	const registeredEndpoints = await getRegisteredEndpoints();
@@ -41,22 +43,25 @@ const validateEndpointParams = async (invokeEndpointParams) => {
 	if (registeredEndpoints.includes(invokeEndpointParams.endpoint)) {
 		const metadata = await getSystemMetadata();
 		const [moduleName, endpointName] = invokeEndpointParams.endpoint.split('_');
-		const endpointInfo = (metadata.modules
-			.find(module => module.name === moduleName)).endpoints
-			.find(endpoint => endpoint.name === endpointName);
+		const endpointInfo = metadata.modules
+			.find(module => module.name === moduleName)
+			.endpoints.find(endpoint => endpoint.name === endpointName);
 		requestParamsSchema = endpointInfo.request;
 	} else {
 		const engineEndpoints = await getEngineEndpoints();
 
-		const endpointInfo = engineEndpoints
-			.find(endpoint => endpoint.name === invokeEndpointParams.endpoint);
+		const endpointInfo = engineEndpoints.find(
+			endpoint => endpoint.name === invokeEndpointParams.endpoint,
+		);
 		requestParamsSchema = endpointInfo.request;
 	}
 
 	if (requestParamsSchema) {
 		validator.validate(requestParamsSchema, invokeEndpointParams.params);
-	} else if ('params' in invokeEndpointParams
-		&& Object.getOwnPropertyNames(invokeEndpointParams.params).length) {
+	} else if (
+		'params' in invokeEndpointParams &&
+		Object.getOwnPropertyNames(invokeEndpointParams.params).length
+	) {
 		// Throw error when params passed but requested endpoint doesn't support any params
 		throw new Error('Endpoint does not support request parameters.');
 	}
@@ -74,7 +79,11 @@ const invokeEndpoint = async params => {
 	}
 
 	await validateEndpointParams(params).catch(error => {
-		throw new ValidationException(`Invalid params supplied for endpoint '${params.endpoint}': \n${util.inspect(params.params)}.\nError: ${error}`);
+		throw new ValidationException(
+			`Invalid params supplied for endpoint '${params.endpoint}': \n${util.inspect(
+				params.params,
+			)}.\nError: ${error}`,
+		);
 	});
 
 	try {

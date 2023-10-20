@@ -24,12 +24,8 @@ const rootObj = {
 		],
 		supportedTokens: {
 			isSupportAllTokens: false,
-			exactTokenIDs: [
-				'0400000000000000',
-			],
-			patternTokenIDs: [
-
-			],
+			exactTokenIDs: ['0400000000000000'],
+			patternTokenIDs: [],
 		},
 		totalSupply: [
 			{
@@ -38,9 +34,7 @@ const rootObj = {
 			},
 		],
 	},
-	meta: {
-
-	},
+	meta: {},
 };
 
 const definitionObj = {
@@ -81,12 +75,8 @@ const mapObjectExpectedResponse = {
 		],
 		supportedTokens: {
 			isSupportAllTokens: false,
-			patternTokenIDs: [
-
-			],
-			exactTokenIDs: [
-				'0400000000000000',
-			],
+			patternTokenIDs: [],
+			exactTokenIDs: ['0400000000000000'],
 		},
 		totalSupply: [
 			{

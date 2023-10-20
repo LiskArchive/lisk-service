@@ -22,15 +22,21 @@ const allowedPeerStateNames = ['connected', 'disconnected', 'any'];
 
 const locationSchema = {
 	countryCode: Joi.string().length(2).optional(),
-	latitude: Joi.string().pattern(/^[0-9.-]+$/).optional(),
-	longitude: Joi.string().pattern(/^[0-9.-]+$/).optional(),
+	latitude: Joi.string()
+		.pattern(/^[0-9.-]+$/)
+		.optional(),
+	longitude: Joi.string()
+		.pattern(/^[0-9.-]+$/)
+		.optional(),
 };
 
 const networkPeerSchema = {
 	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).required(),
 	port: Joi.number().port().optional(),
 	networkVersion: Joi.string().required(),
-	state: Joi.string().valid(...allowedPeerStateNames).required(),
+	state: Joi.string()
+		.valid(...allowedPeerStateNames)
+		.required(),
 	height: Joi.number().positive().optional(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	location: Joi.object(locationSchema).optional(),

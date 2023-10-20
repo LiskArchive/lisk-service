@@ -20,7 +20,7 @@ describe('downloadFile', () => {
 	});
 
 	it('it should download a file successfully', async () => {
-		const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { });
+		const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockImplementation(() => {});
 
 		// Mock the HTTP response.
 		const mockHttpResponse = {
@@ -47,7 +47,11 @@ describe('downloadFile', () => {
 
 		await downloadFile(mockUrl, mockHeaders, mockFilePath);
 
-		expect(http.request).toHaveBeenCalledWith(mockUrl, { method: 'GET', headers: mockHeaders }, expect.any(Function));
+		expect(http.request).toHaveBeenCalledWith(
+			mockUrl,
+			{ method: 'GET', headers: mockHeaders },
+			expect.any(Function),
+		);
 		expect(writeFileSyncMock).toHaveBeenCalledWith(mockFilePath, 'Hello, World!');
 	});
 

@@ -19,9 +19,11 @@ module.exports = [
 		description: 'Generic hello function',
 		controller: async () => {
 			const response = {
-				data: [{
-					message: 'Hello World!',
-				}],
+				data: [
+					{
+						message: 'Hello World!',
+					},
+				],
 				meta: {
 					count: 1,
 				},
@@ -37,10 +39,12 @@ module.exports = [
 		},
 		controller: async param => {
 			const response = {
-				data: [{
-					message: 'Hello World!',
-					name: param.name,
-				}],
+				data: [
+					{
+						message: 'Hello World!',
+						name: param.name,
+					},
+				],
 				meta: {
 					count: 1,
 				},
@@ -52,14 +56,15 @@ module.exports = [
 		name: 'asynchronous.hello',
 		description: 'Hello function with asynchronous operations',
 		controller: () => {
-			const request = () => new Promise(resolve => {
-				setTimeout(() => {
-					resolve({
-						data: ['one', 'two', 'three'],
-						meta: { count: 3 },
-					});
-				}, 500);
-			});
+			const request = () =>
+				new Promise(resolve => {
+					setTimeout(() => {
+						resolve({
+							data: ['one', 'two', 'three'],
+							meta: { count: 3 },
+						});
+					}, 500);
+				});
 			return request();
 		},
 	},

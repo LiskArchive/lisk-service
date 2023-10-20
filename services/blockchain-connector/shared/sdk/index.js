@@ -83,16 +83,9 @@ const {
 	cacheRegisteredRewardModule,
 } = require('./dynamicReward');
 
-const {
-	getFeeTokenID,
-	getMinFeePerByte,
-	cacheFeeConstants,
-} = require('./fee');
+const { getFeeTokenID, getMinFeePerByte, cacheFeeConstants } = require('./fee');
 
-const {
-	getAuthAccount,
-	getAuthMultiSigRegMsgSchema,
-} = require('./auth');
+const { getAuthAccount, getAuthMultiSigRegMsgSchema } = require('./auth');
 
 const {
 	getChainAccount,

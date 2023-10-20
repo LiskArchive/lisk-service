@@ -16,14 +16,16 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
+const { blockchainAppsSchema } = require('../../../schemas/api_v3/blockchainApps.schema');
 const {
-	blockchainAppsSchema,
-} = require('../../../schemas/api_v3/blockchainApps.schema');
-const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidChainIDCSV, invalidNames } = require('../constants/invalidInputs');
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+	invalidChainIDCSV,
+	invalidNames,
+} = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

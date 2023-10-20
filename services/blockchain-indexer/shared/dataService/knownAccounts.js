@@ -27,13 +27,14 @@ const staticUrl = config.endpoints.liskStatic;
 
 let knowledge = {};
 
-const getAccountKnowledge = (address) => knowledge[address] ? knowledge[address] : {};
+const getAccountKnowledge = address => (knowledge[address] ? knowledge[address] : {});
 
-const resolveNetworkByChainID = (chainID) => {
+const resolveNetworkByChainID = chainID => {
 	const networkID = chainID.substring(0, LENGTH_NETWORK_ID);
 
-	const matchingNetwork = networkConfig.flatMap((network) => network)
-		.find((network) => network.chainID.startsWith(networkID));
+	const matchingNetwork = networkConfig
+		.flatMap(network => network)
+		.find(network => network.chainID.startsWith(networkID));
 
 	return matchingNetwork ? matchingNetwork.name : null;
 };
@@ -42,7 +43,9 @@ const reloadAccountKnowledge = async () => {
 	logger.debug('Reloading known accounts...');
 
 	try {
-		const { data: { chainID } } = await getNetworkStatus();
+		const {
+			data: { chainID },
+		} = await getNetworkStatus();
 		const networkName = resolveNetworkByChainID(chainID);
 
 		if (networkName) {
@@ -53,7 +56,9 @@ const reloadAccountKnowledge = async () => {
 
 				if (typeof knownAccounts === 'object') {
 					knowledge = knownAccounts;
-					logger.info(`Updated known accounts cache with ${Object.keys(knowledge).length} entries.`);
+					logger.info(
+						`Updated known accounts cache with ${Object.keys(knowledge).length} entries.`,
+					);
 				}
 			} else {
 				logger.warn('Lisk static URL did not respond with valid data.');

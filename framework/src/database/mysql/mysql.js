@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable operator-linebreak */
 const Logger = require('../../logger').get;
 
 const logger = Logger();
@@ -35,14 +36,23 @@ const createDBConnection = async connEndpoint => {
 			min: 2,
 		},
 		log: {
-			warn(message) { logger.warn(message); },
-			error(message) { logger.error(message); },
-			deprecate(message) { logger.warn(message); },
-			debug(message) { logger.debug(message); },
+			warn(message) {
+				logger.warn(message);
+			},
+			error(message) {
+				logger.error(message);
+			},
+			deprecate(message) {
+				logger.warn(message);
+			},
+			debug(message) {
+				logger.debug(message);
+			},
 		},
 	});
 
-	knex.select(1)
+	knex
+		.select(1)
 		.on('query-error', error => {
 			logger.error(error.message);
 		})
@@ -100,8 +110,12 @@ const createTableIfNotExists = async (tableConfig, connEndpoint = CONN_ENDPOINT_
 
 const getTableInstance = async (...tableParams) => {
 	const tableConfig = tableParams.find(item => typeof item === 'object');
-	const connEndpoint = tableParams.find(item => typeof item === 'string' && item.startsWith('mysql:')) || CONN_ENDPOINT_DEFAULT;
-	const tableName = tableParams.find(item => typeof item === 'string' && !item.startsWith('mysql:')) || tableConfig.tableName;
+	const connEndpoint =
+		tableParams.find(item => typeof item === 'string' && item.startsWith('mysql:')) ||
+		CONN_ENDPOINT_DEFAULT;
+	const tableName =
+		tableParams.find(item => typeof item === 'string' && !item.startsWith('mysql:')) ||
+		tableConfig.tableName;
 	tableConfig.tableName = tableName;
 
 	const knex = await getDBConnection(connEndpoint);

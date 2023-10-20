@@ -13,9 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { math: { q96 } } = require('@liskhq/lisk-utils');
 const {
-	DB: { MySQL: { getTableInstance } },
+	math: { q96 },
+} = require('@liskhq/lisk-utils');
+const {
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const config = require('../../../config');
@@ -34,14 +38,18 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 
 	const queryParams = {
 		address: generatorAddress,
-		propBetweens: [{
-			property: 'height',
-			lowerThan: blockHeight,
-		}],
+		propBetweens: [
+			{
+				property: 'height',
+				lowerThan: blockHeight,
+			},
+		],
 		sort: 'height:desc',
 		limit: 1,
 	};
-	const [{ commission } = { commission: 0 }] = await commissionsTable.find(queryParams, ['commission']);
+	const [{ commission } = { commission: 0 }] = await commissionsTable.find(queryParams, [
+		'commission',
+	]);
 
 	const blockRewardQ = q96(blockReward);
 	const currentCommissionQ = q96(BigInt(commission));
@@ -51,10 +59,10 @@ const calcCommissionAmount = async (generatorAddress, blockHeight, blockReward) 
 
 const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmount) => {
 	const stakesTable = await getStakesTable();
-	const stakerInfo = await stakesTable.find(
-		{ validatorAddress: generatorAddress },
-		['stakerAddress', 'amount'],
-	);
+	const stakerInfo = await stakesTable.find({ validatorAddress: generatorAddress }, [
+		'stakerAddress',
+		'amount',
+	]);
 
 	if (stakerInfo.length) {
 		const selfStakesInfo = stakerInfo.filter(stake => stake.stakerAddress === generatorAddress);

@@ -14,12 +14,7 @@
  *
  */
 const path = require('path');
-const {
-	Microservice,
-	Logger,
-	LoggerConfig,
-	Libs,
-} = require('lisk-service-framework');
+const { Microservice, Logger, LoggerConfig, Libs } = require('lisk-service-framework');
 
 const config = require('./config');
 
@@ -71,8 +66,8 @@ const tempApp = Microservice({
 tempApp.run().then(async () => {
 	// Prepare routes
 	const { modules: registeredModules } = await tempApp.requestRpc('connector.getSystemMetadata');
-	const registeredModuleNames = registeredModules.map(
-		module => module.name === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module.name,
+	const registeredModuleNames = registeredModules.map(module =>
+		module.name === MODULE.REWARD ? MODULE.DYNAMIC_REWARD : module.name,
 	);
 	await tempApp.getBroker().stop();
 	const httpRoutes = getHttpRoutes(registeredModuleNames);
@@ -105,10 +100,18 @@ tempApp.run().then(async () => {
 			}
 		},
 		actions: {
-			ready() { return getReady(); },
-			async spec(ctx) { return genDocs(ctx, registeredModuleNames); },
-			status() { return getStatus(this.broker); },
-			isBlockchainIndexReady() { return getIndexStatus(); },
+			ready() {
+				return getReady();
+			},
+			async spec(ctx) {
+				return genDocs(ctx, registeredModuleNames);
+			},
+			status() {
+				return getStatus(this.broker);
+			},
+			isBlockchainIndexReady() {
+				return getIndexStatus();
+			},
 		},
 		settings: {
 			host,
@@ -153,10 +156,12 @@ tempApp.run().then(async () => {
 			onError(req, res, err) {
 				res.setHeader('Content-Type', 'application/json');
 				res.writeHead(err.code || 500);
-				res.end(JSON.stringify({
-					error: true,
-					message: `Server error: ${err.message}`,
-				}));
+				res.end(
+					JSON.stringify({
+						error: true,
+						message: `Server error: ${err.message}`,
+					}),
+				);
 			},
 			io: {
 				namespaces: socketNamespaces,
@@ -164,27 +169,34 @@ tempApp.run().then(async () => {
 		},
 		methods,
 		events: {
-			'block.new': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
-			'transactions.new': (payload) => sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
-			'block.delete': (payload) => sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
-			'transactions.delete': (payload) => sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
-			'round.change': (payload) => sendSocketIoEvent('update.round', payload),
-			'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
-			'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
-			'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
+			'block.new': payload => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
+			'transactions.new': payload =>
+				sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
+			'block.delete': payload =>
+				sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
+			'transactions.delete': payload =>
+				sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
+			'round.change': payload => sendSocketIoEvent('update.round', payload),
+			'generators.change': payload =>
+				sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
+			'update.fee_estimates': payload =>
+				sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
+			'metadata.change': payload => sendSocketIoEvent('update.metadata', payload),
 		},
 		dependencies: config.brokerDependencies,
 	};
 
 	if (config.rateLimit.enable) {
-		logger.info(`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`);
+		logger.info(
+			`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`,
+		);
 
 		gatewayConfig.settings.rateLimit = {
 			window: (config.rateLimit.window || 10) * 1000,
 			limit: config.rateLimit.connectionLimit || 200,
 			headers: true,
 
-			key: (req) => {
+			key: req => {
 				if (config.rateLimit.enableXForwardedFor) {
 					const xForwardedFor = req.headers['x-forwarded-for'];
 					const { numKnownProxies } = config.rateLimit;
@@ -197,9 +209,11 @@ tempApp.run().then(async () => {
 					}
 				}
 
-				return req.connection.remoteAddress
-					|| req.socket.remoteAddress
-					|| req.connection.socket.remoteAddress;
+				return (
+					req.connection.remoteAddress ||
+					req.socket.remoteAddress ||
+					req.connection.socket.remoteAddress
+				);
 			},
 		};
 	}
@@ -208,12 +222,14 @@ tempApp.run().then(async () => {
 	app.addJobs(path.join(__dirname, 'jobs'));
 
 	// Run the application
-	app.run(gatewayConfig).then(() => {
-		logger.info(`Started Gateway API on ${host}:${port}.`);
-	}).catch(err => {
-		logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
-		logger.fatal(err.stack);
-		process.exit(1);
-	});
+	app
+		.run(gatewayConfig)
+		.then(() => {
+			logger.info(`Started Gateway API on ${host}:${port}.`);
+		})
+		.catch(err => {
+			logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
+			logger.fatal(err.stack);
+			process.exit(1);
+		});
 });
-

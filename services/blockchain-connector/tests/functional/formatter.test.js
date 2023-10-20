@@ -24,15 +24,9 @@ const {
 	invalidEncodedTransaction,
 } = require('../constants/blocks');
 
-const {
-	transaction,
-	decodedTransaction,
-} = require('../constants/transactions');
+const { transaction, decodedTransaction } = require('../constants/transactions');
 
-const {
-	decodedTransferEvent,
-	transferEventInput,
-} = require('../constants/events');
+const { decodedTransferEvent, transferEventInput } = require('../constants/events');
 
 const config = require('../../config');
 
@@ -63,10 +57,12 @@ describe('Functional tests for formatter', () => {
 
 		expect(result.transactions.length).toBe(1);
 		expect(Object.keys(result.header)).toEqual(Object.keys(decodedBlockWithTransaction.header));
-		expect(Object.keys(result.assets[0]))
-			.toEqual(Object.keys(decodedBlockWithTransaction.assets[0]));
-		expect(Object.keys(result.transactions[0]))
-			.toEqual(Object.keys(decodedBlockWithTransaction.transactions[0]));
+		expect(Object.keys(result.assets[0])).toEqual(
+			Object.keys(decodedBlockWithTransaction.assets[0]),
+		);
+		expect(Object.keys(result.transactions[0])).toEqual(
+			Object.keys(decodedBlockWithTransaction.transactions[0]),
+		);
 		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
@@ -78,8 +74,9 @@ describe('Functional tests for formatter', () => {
 			transactions: expect.any(Object),
 		});
 		expect(Object.keys(result.header)).toEqual(Object.keys(decodedBlockWithoutTransaction.header));
-		expect(Object.keys(result.assets[0]))
-			.toEqual(Object.keys(decodedBlockWithoutTransaction.assets[0]));
+		expect(Object.keys(result.assets[0])).toEqual(
+			Object.keys(decodedBlockWithoutTransaction.assets[0]),
+		);
 		expect(result.transactions.length).toBe(0);
 		expect(result).toMatchObject(decodedBlockWithoutTransaction);
 	});
@@ -124,7 +121,9 @@ describe('Functional tests for formatter', () => {
 	});
 
 	it('should throw error when decoding invalid encoded transaction', async () => {
-		expect(broker.call('connector.formatTransaction', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
+		expect(
+			broker.call('connector.formatTransaction', { encodedTransaction: invalidEncodedTransaction }),
+		).rejects.toThrow();
 	});
 
 	it('should throw error when decoding invalid encoded block', async () => {

@@ -1,27 +1,27 @@
 {
-    "blockID": {
-        "name": "blockID",
-        "in": "query",
-        "description": "Block ID to query",
-        "type": "string",
-        "format": "id",
-        "minLength": 64,
-        "maxLength": 64
-    },
-    "generatorAddress": {
-        "name": "generatorAddress",
-        "in": "query",
-        "description": "Lisk account address",
-        "type": "string",
-        "format": "address",
-        "minLength": 41,
-        "maxLength": 41
-    },
-    "module": {
-        "name": "module",
-        "in": "query",
-        "description": "Module name to query",
-        "type": "string",
-        "minLength": 1
-    }
+	"blockID": {
+		"name": "blockID",
+		"in": "query",
+		"description": "Block ID to query",
+		"type": "string",
+		"format": "id",
+		"minLength": 64,
+		"maxLength": 64
+	},
+	"generatorAddress": {
+		"name": "generatorAddress",
+		"in": "query",
+		"description": "Lisk account address",
+		"type": "string",
+		"format": "address",
+		"minLength": 41,
+		"maxLength": 41
+	},
+	"module": {
+		"name": "module",
+		"in": "query",
+		"description": "Module name to query",
+		"type": "string",
+		"minLength": 1
+	}
 }

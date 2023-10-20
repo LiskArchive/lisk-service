@@ -64,7 +64,8 @@ describe('Test downloadAndExtractTarball method', () => {
 });
 
 describe('Test downloadFile method', () => {
-	const fileUrl = 'https://api.github.com/repos/vardan10/app-registry-forked/contents/betanet/Enevti/nativetokens.json?ref=finalTestBranch';
+	const fileUrl =
+		'https://api.github.com/repos/vardan10/app-registry-forked/contents/betanet/Enevti/nativetokens.json?ref=finalTestBranch';
 	const headers = { 'User-Agent': 'GitHub-File-Downloader' };
 	const filePath = `${dirPath}/test.json`;
 

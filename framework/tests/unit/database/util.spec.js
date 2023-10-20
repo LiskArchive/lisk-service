@@ -16,16 +16,16 @@
 const { escapeUserInput } = require('../../../src/database/util');
 
 describe('Test escapeUserInput method', () => {
-    it('should return string with escaped character when called with valid input', async () => {
-        const validInput = '%test%string_';
-        const result = escapeUserInput(validInput);
-        const expectedResult = '\\%test\\%string\\_';
-        expect(result).toEqual(expectedResult);
-    });
+	it('should return string with escaped character when called with valid input', async () => {
+		const validInput = '%test%string_';
+		const result = escapeUserInput(validInput);
+		const expectedResult = '\\%test\\%string\\_';
+		expect(result).toEqual(expectedResult);
+	});
 
-    it('should return empty string when called with empty string', async () => {
-        const emptyString = '';
-        const result = escapeUserInput(emptyString);
-        expect(result).toEqual(emptyString);
-    });
+	it('should return empty string when called with empty string', async () => {
+		const emptyString = '';
+		const result = escapeUserInput(emptyString);
+		expect(result).toEqual(emptyString);
+	});
 });

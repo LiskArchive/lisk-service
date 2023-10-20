@@ -43,7 +43,9 @@ const AUTH_REGISTER_MULTI_SIGNATURE_TRANSACTION_OBJECT = {
 		numberOfSignatures: 1,
 		mandatoryKeys: [],
 		optionalKeys: [],
-		signatures: ['cd3e42528d47d63c643832297162e0786cfeabdf92b3adb8d33fdc40a65b1f367a93355b2a25c0abd74b26bba46c0fb47184fac2f49cd172c286836dd707af03'],
+		signatures: [
+			'cd3e42528d47d63c643832297162e0786cfeabdf92b3adb8d33fdc40a65b1f367a93355b2a25c0abd74b26bba46c0fb47184fac2f49cd172c286836dd707af03',
+		],
 	},
 };
 
@@ -53,8 +55,10 @@ const POS_REGISTER_VALIDATOR_TRANSACTION_OBJECT = {
 	command: 'registerValidator',
 	params: {
 		name: 'test_validator',
-		blsKey: '8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32',
-		proofOfPossession: 'abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996',
+		blsKey:
+			'8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32',
+		proofOfPossession:
+			'abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996',
 		generatorKey: '59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf',
 	},
 };
@@ -133,8 +137,10 @@ const LEGACY_REGISTER_KEYS_TRANSACTION_OBJECT = {
 	module: 'legacy',
 	command: 'registerKeys',
 	params: {
-		blsKey: '8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32',
-		proofOfPossession: 'abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996',
+		blsKey:
+			'8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32',
+		proofOfPossession:
+			'abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996',
 		generatorKey: '59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf',
 	},
 };

@@ -36,8 +36,8 @@ describe('Test indexTokensMeta method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							upsert: (dataArray) => expect(dataArray[0].tokenID)
-								.toEqual(mockTokenMetaObj.tokens[0].tokenID),
+							upsert: dataArray =>
+								expect(dataArray[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 						}),
 					},
 				},
@@ -65,7 +65,7 @@ describe('Test indexAppMeta method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
+							upsert: data => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 						}),
 					},
 				},
@@ -93,7 +93,7 @@ describe('Test indexMetadataFromFile method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							upsert: (data) => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
+							upsert: data => expect(data.chainID).toEqual(mockAppMetaObj.chainID),
 						}),
 					},
 				},
@@ -101,7 +101,7 @@ describe('Test indexMetadataFromFile method', () => {
 					...actual.Utils,
 					fs: {
 						...actual.Utils.fs,
-						read: (filePath) => {
+						read: filePath => {
 							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
 							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
 
@@ -127,7 +127,7 @@ describe('Test indexMetadataFromFile method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							upsert: (data) => expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
+							upsert: data => expect(data[0].tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 						}),
 						getDBConnection: jest.fn(),
 						startDbTransaction: jest.fn(),
@@ -139,7 +139,7 @@ describe('Test indexMetadataFromFile method', () => {
 					...actual.Utils,
 					fs: {
 						...actual.Utils.fs,
-						read: (filePath) => {
+						read: filePath => {
 							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
 							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
 
@@ -173,10 +173,11 @@ describe('Test deleteAppMeta method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							delete: (data) => expect(data).toEqual({
-								network: mockAppMetaObj.networkType,
-								chainName: mockAppMetaObj.chainName,
-							}),
+							delete: data =>
+								expect(data).toEqual({
+									network: mockAppMetaObj.networkType,
+									chainName: mockAppMetaObj.chainName,
+								}),
 						}),
 					},
 				},
@@ -205,7 +206,7 @@ describe('Test deleteTokensMeta method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
+							delete: data => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 						}),
 					},
 				},
@@ -233,10 +234,11 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							delete: (data) => expect(data).toEqual({
-								network: mockAppMetaObj.networkType,
-								chainName: mockAppMetaObj.chainName,
-							}),
+							delete: data =>
+								expect(data).toEqual({
+									network: mockAppMetaObj.networkType,
+									chainName: mockAppMetaObj.chainName,
+								}),
 						}),
 					},
 				},
@@ -244,7 +246,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 					...actual.Utils,
 					fs: {
 						...actual.Utils.fs,
-						read: (filePath) => {
+						read: filePath => {
 							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
 							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
 
@@ -270,7 +272,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 					MySQL: {
 						...actual.DB.MySQL,
 						getTableInstance: () => ({
-							delete: (data) => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
+							delete: data => expect(data.tokenID).toEqual(mockTokenMetaObj.tokens[0].tokenID),
 						}),
 						getDBConnection: jest.fn(),
 						startDbTransaction: jest.fn(),
@@ -282,7 +284,7 @@ describe('Test deleteIndexedMetadataFromFile method', () => {
 					...actual.Utils,
 					fs: {
 						...actual.Utils.fs,
-						read: (filePath) => {
+						read: filePath => {
 							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
 							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
 
@@ -336,11 +338,8 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 					fs: {
 						...actualLiskServiceFramework.Utils.fs,
 						getDirectories: () => ['Lisk'],
-						getFiles: () => [
-							mockAppMetaPath,
-							mockTokenMetaPath,
-						],
-						read: (filePath) => {
+						getFiles: () => [mockAppMetaPath, mockTokenMetaPath],
+						read: filePath => {
 							if (filePath === mockAppMetaPath) return JSON.stringify(mockAppMetaObj);
 							if (filePath === mockTokenMetaPath) return JSON.stringify(mockTokenMetaObj);
 
@@ -349,7 +348,6 @@ describe('Test indexAllBlockchainAppsMeta method', () => {
 						exists: () => true,
 					},
 				},
-
 			};
 		});
 

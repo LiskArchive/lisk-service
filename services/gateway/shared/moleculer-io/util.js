@@ -27,15 +27,16 @@ const safeTestRegex = (regex, action) => {
 };
 
 // eslint-disable-next-line array-callback-return
-const checkWhitelist = (action, whitelist) => whitelist.some(mask => {
-	if (typeof mask === 'string') {
-		return match(action, mask);
-	}
-	if (mask instanceof RegExp) {
-		return safeTestRegex(mask, action);
-	}
-	return false;
-});
+const checkWhitelist = (action, whitelist) =>
+	whitelist.some(mask => {
+		if (typeof mask === 'string') {
+			return match(action, mask);
+		}
+		if (mask instanceof RegExp) {
+			return safeTestRegex(mask, action);
+		}
+		return false;
+	});
 
 module.exports = {
 	checkWhitelist,

@@ -15,12 +15,18 @@
  */
 const { ServiceBroker } = require('moleculer');
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
 const accountBalancesTableSchema = require('../../../../shared/database/schema/accountBalances');
-const { updateAccountBalances, accountBalanceIndexQueue, scheduleAccountBalanceUpdateFromEvents } = require('../../../../shared/indexer/accountBalanceIndex');
+const {
+	updateAccountBalances,
+	accountBalanceIndexQueue,
+	scheduleAccountBalanceUpdateFromEvents,
+} = require('../../../../shared/indexer/accountBalanceIndex');
 const { MODULE_SUB_STORE } = require('../../../../shared/constants');
 const request = require('../../../../shared/utils/request');
 const { MODULE } = require('../../../../shared/constants');
@@ -44,23 +50,24 @@ let usersSubStoreInfos;
 beforeAll(async () => {
 	await broker.start();
 	await request.setAppContext({
-		requestRpc: (method, params) => new Promise((resolve, reject) => {
-			broker
-				.call(method, params)
-				.then(res => resolve(res))
-				.catch(err => {
-					console.error(`Error occurred! ${err.message}`);
-					reject(err);
-				});
-		}),
+		requestRpc: (method, params) =>
+			new Promise((resolve, reject) => {
+				broker
+					.call(method, params)
+					.then(res => resolve(res))
+					.catch(err => {
+						console.error(`Error occurred! ${err.message}`);
+						reject(err);
+					});
+			}),
 	});
 
 	accountBalancesTable = await getAccountBalancesTable();
 
-	const tokenModuleData = await request.requestConnector(
-		'getGenesisAssetByModule',
-		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-	);
+	const tokenModuleData = await request.requestConnector('getGenesisAssetByModule', {
+		module: MODULE.TOKEN,
+		subStore: MODULE_SUB_STORE.TOKEN.USER,
+	});
 	usersSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
 });
 
@@ -70,13 +77,19 @@ describe('Test updateAccountBalances method', () => {
 
 		// Delete all balances and check balance before update
 		await accountBalancesTable.delete({});
-		const balanceBeforeUpdate = await accountBalancesTable.find({ address: accountInfo.address, tokenID: accountInfo.tokenID }, ['balance']);
+		const balanceBeforeUpdate = await accountBalancesTable.find(
+			{ address: accountInfo.address, tokenID: accountInfo.tokenID },
+			['balance'],
+		);
 		expect(balanceBeforeUpdate.length).toBe(0);
 
 		await updateAccountBalances(accountInfo.address);
 
 		// Check balance after update
-		const balanceAfterUpdate = await accountBalancesTable.find({ address: accountInfo.address, tokenID: accountInfo.tokenID }, ['balance']);
+		const balanceAfterUpdate = await accountBalancesTable.find(
+			{ address: accountInfo.address, tokenID: accountInfo.tokenID },
+			['balance'],
+		);
 		expect(balanceAfterUpdate.length).toBe(1);
 		expect(balanceAfterUpdate[0].balance).toBeGreaterThanOrEqual(0);
 	});
@@ -97,7 +110,10 @@ describe('Test scheduleAccountBalanceUpdateFromEvents method', () => {
 		// Delete all balances and check balance before update
 		const accountInfo = usersSubStoreInfos[0];
 		await accountBalancesTable.delete({});
-		const balanceBeforeUpdate = await accountBalancesTable.find({ address: accountInfo.address, tokenID: accountInfo.tokenID }, ['balance']);
+		const balanceBeforeUpdate = await accountBalancesTable.find(
+			{ address: accountInfo.address, tokenID: accountInfo.tokenID },
+			['balance'],
+		);
 		expect(balanceBeforeUpdate.length).toBe(0);
 
 		await scheduleAccountBalanceUpdateFromEvents(eventsIncludingTokenModule);

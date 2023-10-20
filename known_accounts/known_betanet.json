@@ -1,6 +1,6 @@
 {
-    "address"             : { "owner" : "owner", "description" : "description" },
-    "9710347496489996585L": { "owner" : "Genesis Account", "description" : "Initial supply" },
-    "4434465033793042389L": { "owner" : "Faucet Account", "description" : "Disposable supply" },
-    "8816471194319848508L": { "owner" : "Origin Account", "description": "Initial supply"}
+	"address": { "owner": "owner", "description": "description" },
+	"9710347496489996585L": { "owner": "Genesis Account", "description": "Initial supply" },
+	"4434465033793042389L": { "owner": "Faucet Account", "description": "Disposable supply" },
+	"8816471194319848508L": { "owner": "Origin Account", "description": "Initial supply" }
 }

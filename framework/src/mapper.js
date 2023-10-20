@@ -23,33 +23,36 @@ const validate = obj => !(isEmptyObj(obj) || isEmptyArr(obj));
 const cast = {
 	number: input => Number(input),
 	string: input => String(input),
-	boolean: input => ((input === '0') ? false : !!input),
-	isodate: input => (new Date(input)).toISOString(),
+	boolean: input => (input === '0' ? false : !!input),
+	isodate: input => new Date(input).toISOString(),
 	epoch: input => Date.parse(input) / 1000,
 	datetime: input => moment(new Date(input)).utc().format('MM-DD-YYYY HH:mm:ss'),
-	hex: input => (input ? (Buffer.from(input)).toString('hex') : undefined),
-	base64: input => (input ? (Buffer.from(input)).toString('base64') : undefined),
+	hex: input => (input ? Buffer.from(input).toString('hex') : undefined),
+	base64: input => (input ? Buffer.from(input).toString('base64') : undefined),
 };
 
 const resolvePath = (obj, path) => {
 	try {
-		const test = (subObj, prop) => (subObj && subObj[prop] !== undefined);
+		const test = (subObj, prop) => subObj && subObj[prop] !== undefined;
 		return path.split('.').reduce((xs, x) => (test(xs, x) ? xs[x] : undefined), obj);
 	} catch (e) {
 		return undefined;
 	}
 };
 
-const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definition)
-	.reduce((acc, key) => {
+/* eslint-disable operator-linebreak,implicit-arrow-linebreak */
+// eslint-disable-next-line max-len
+const mapObject = (rootObj, definition, subObj = rootObj) =>
+	Object.keys(definition).reduce((acc, key) => {
 		if (definition[key] !== null && typeof definition[key] === 'string') {
 			const [path, type] = definition[key].split(',');
-			const val = (path === '=') ? subObj[key] : resolvePath(rootObj, path);
+			const val = path === '=' ? subObj[key] : resolvePath(rootObj, path);
 			acc[key] = val !== undefined && type ? cast[type](val) : val;
 		} else if (Array.isArray(definition[key])) {
 			if (definition[key].length === 2) {
 				const innerDef = definition[key][1];
-				const dataSource = (definition[key][0] === '') ? rootObj : resolvePath(rootObj, definition[key][0]);
+				const dataSource =
+					definition[key][0] === '' ? rootObj : resolvePath(rootObj, definition[key][0]);
 				if (Array.isArray(dataSource)) {
 					const tempArr = [];
 					dataSource.forEach(item => {
@@ -69,14 +72,17 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 		return acc;
 	}, {});
 
-const mapArray = (rootObj, definition) => definition.reduce((acc, item, i) => {
-	if (i === 0 && !isObject(item)) acc.push(item);
-	if (i === 0 && isObject(item)) acc.push(mapObject(rootObj, item));
-	if (i === 1 && isObject(item)) {
-		acc.push(mapObject(rootObj, { [acc[i - 1]]: Object.values(item)[0] }));
-	}
-	return acc;
-}, []);
+const mapArray = (rootObj, definition) =>
+	definition.reduce((acc, item, i) => {
+		if (i === 0 && !isObject(item)) acc.push(item);
+		if (i === 0 && isObject(item)) acc.push(mapObject(rootObj, item));
+		if (i === 1 && isObject(item)) {
+			acc.push(mapObject(rootObj, { [acc[i - 1]]: Object.values(item)[0] }));
+		}
+		return acc;
+	}, []);
+
+/* eslint-enable operator-linebreak,implicit-arrow-linebreak */
 
 /*
  * The Mapper always follows definition, which means

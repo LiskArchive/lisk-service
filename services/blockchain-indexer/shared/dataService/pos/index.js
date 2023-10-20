@@ -19,11 +19,7 @@ const { getPosUnlocks } = require('./unlocks');
 const { getPosConstants } = require('./constants');
 const { getPosLockedRewards } = require('./lockedRewards');
 const { getPosClaimableRewards } = require('./claimableRewards');
-const {
-	reloadValidatorCache,
-	getPosValidators,
-	getAllValidators,
-} = require('./validators');
+const { reloadValidatorCache, getPosValidators, getAllValidators } = require('./validators');
 
 module.exports = {
 	// Stakes

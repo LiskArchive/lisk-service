@@ -37,9 +37,10 @@ const peerStore = {
 	},
 };
 
-const get = (type = 'peers') => new Promise((resolve) => {
-	resolve(peerStore[type]);
-});
+const get = (type = 'peers') =>
+	new Promise(resolve => {
+		resolve(peerStore[type]);
+	});
 
 const refactorPeer = (orgPeer, state) => {
 	const { ipAddress, options: { height } = {}, ...peer } = orgPeer;
@@ -49,7 +50,7 @@ const refactorPeer = (orgPeer, state) => {
 	return peer;
 };
 
-const addLocation = async (ipAddress) => {
+const addLocation = async ipAddress => {
 	try {
 		const result = await GeoService.requestData(ipAddress);
 		return result;
@@ -60,23 +61,20 @@ const addLocation = async (ipAddress) => {
 
 const getNetworkPeers = async () => {
 	const connectedPeers = await endpoints.getNetworkConnectedPeers();
-	connectedPeers.data = connectedPeers
-		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
+	connectedPeers.data = connectedPeers.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
 
 	const disconnectedPeers = await endpoints.getNetworkDisconnectedPeers();
-	disconnectedPeers.data = disconnectedPeers
-		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
+	disconnectedPeers.data = disconnectedPeers.map(orgPeer =>
+		refactorPeer(orgPeer, peerStates.DISCONNECTED),
+	);
 
-	const data = [
-		...connectedPeers.data,
-		...disconnectedPeers.data,
-	];
-	const peersWithLocation = await Promise.all(data.map(
-		async peer => {
+	const data = [...connectedPeers.data, ...disconnectedPeers.data];
+	const peersWithLocation = await Promise.all(
+		data.map(async peer => {
 			peer.location = await addLocation(peer.ip);
 			return peer;
-		},
-	));
+		}),
+	);
 	return peersWithLocation;
 };
 
@@ -96,24 +94,31 @@ const refreshStatistics = async () => {
 	basicStats.disconnectedPeers = disconnected.length;
 
 	const heightArr = connected.map(elem => elem.height);
-	heightArr.forEach(elem => { if (elem) heightStats[elem] = (heightStats[elem] || 0) + 1; });
+	heightArr.forEach(elem => {
+		if (elem) heightStats[elem] = (heightStats[elem] || 0) + 1;
+	});
 
 	const coreVerArr = connected.map(elem => elem.version);
-	coreVerArr.forEach(elem => { if (elem) coreVerStats[elem] = (coreVerStats[elem] || 0) + 1; });
+	coreVerArr.forEach(elem => {
+		if (elem) coreVerStats[elem] = (coreVerStats[elem] || 0) + 1;
+	});
 
 	const networkVerArr = connected.map(elem => elem.networkVersion);
-	networkVerArr
-		.forEach(elem => { if (elem) networkVerStats[elem] = (networkVerStats[elem] || 0) + 1; });
+	networkVerArr.forEach(elem => {
+		if (elem) networkVerStats[elem] = (networkVerStats[elem] || 0) + 1;
+	});
 
 	const osArr = connected.map(elem => elem.os);
-	const mappedOs = osArr.map((elem) => {
+	const mappedOs = osArr.map(elem => {
 		if (typeof elem === 'string' && elem.match(/^linux(.*)/)) {
 			const splitOsString = elem.split('.');
 			elem = `${splitOsString[0]}.${splitOsString[1].split('-')[0]}`;
 		}
 		return elem;
 	});
-	mappedOs.forEach(elem => { if (elem) osStats[elem] = (osStats[elem] || 0) + 1; });
+	mappedOs.forEach(elem => {
+		if (elem) osStats[elem] = (osStats[elem] || 0) + 1;
+	});
 
 	return {
 		basic: basicStats,

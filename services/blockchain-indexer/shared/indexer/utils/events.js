@@ -22,9 +22,7 @@ const {
 			startDBTransaction,
 			commitDBTransaction,
 			rollbackDBTransaction,
-			KVStore: {
-				getKeyValueTable,
-			},
+			KVStore: { getKeyValueTable },
 		},
 	},
 } = require('lisk-service-framework');
@@ -50,7 +48,7 @@ const getEventsInfoToIndex = async (block, events) => {
 		eventTopicsInfo: [],
 	};
 
-	events.forEach((event) => {
+	events.forEach(event => {
 		const eventInfo = {
 			id: event.id,
 			name: event.name,
@@ -81,32 +79,40 @@ const getEventsInfoToIndex = async (block, events) => {
 	return eventsInfoToIndex;
 };
 
-const deleteEventStrTillHeight = async (toHeight) => {
+const deleteEventStrTillHeight = async toHeight => {
 	const eventsTable = await getEventsTable();
 
 	const fromHeight = await keyValueTable.get(LAST_DELETED_EVENTS_HEIGHT);
 
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
 	const dbTrx = await startDBTransaction(connection);
-	logger.debug(`Created new MySQL transaction to delete serialized events until height ${toHeight}.`);
+	logger.debug(
+		`Created new MySQL transaction to delete serialized events until height ${toHeight}.`,
+	);
 
 	try {
 		const queryParams = {
-			propBetweens: [{
-				property: 'height',
-				from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
-				to: toHeight,
-			}],
+			propBetweens: [
+				{
+					property: 'height',
+					from: fromHeight ? fromHeight + 1 : await getGenesisHeight(),
+					to: toHeight,
+				},
+			],
 		};
 
 		await eventsTable.update({ where: queryParams, updates: { eventStr: null } }, dbTrx);
 		await keyValueTable.set(LAST_DELETED_EVENTS_HEIGHT, toHeight, dbTrx);
 
 		await commitDBTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to delete serialized events until height ${toHeight}.`);
+		logger.debug(
+			`Committed MySQL transaction to delete serialized events until height ${toHeight}.`,
+		);
 	} catch (_) {
 		await rollbackDBTransaction(dbTrx);
-		logger.debug(`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`);
+		logger.debug(
+			`Rolled back MySQL transaction to delete serialized events until height ${toHeight}.`,
+		);
 	}
 };
 

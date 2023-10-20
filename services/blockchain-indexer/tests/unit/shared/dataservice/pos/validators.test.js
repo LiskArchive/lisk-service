@@ -16,7 +16,9 @@
 /* eslint-disable import/no-dynamic-require */
 const path = require('path');
 
-const posValidatorsPath = path.resolve(`${__dirname}/../../../../../shared/dataService/pos/validators`);
+const posValidatorsPath = path.resolve(
+	`${__dirname}/../../../../../shared/dataService/pos/validators`,
+);
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');

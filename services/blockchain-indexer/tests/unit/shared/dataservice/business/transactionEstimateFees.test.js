@@ -16,17 +16,32 @@
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
 
-const { inputTransaction, inputMultisigTransaction } = require('../../../../constants/transactions');
+const {
+	inputTransaction,
+	inputMultisigTransaction,
+} = require('../../../../constants/transactions');
 
-const mockedChannelFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/interoperability/channel`);
-const mockedTransactionFeeEstimatesFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/transactionsEstimateFees`);
+const mockedChannelFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/business/interoperability/channel`,
+);
+const mockedTransactionFeeEstimatesFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/business/transactionsEstimateFees`,
+);
 const mockedAuthFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/auth`);
 const mockedAccountFilePath = resolve(`${__dirname}/../../../../../shared/utils/account`);
 const mockedRequestFilePath = resolve(`${__dirname}/../../../../../shared/utils/request`);
-const mockedPOSConstantsFilePath = resolve(`${__dirname}/../../../../../shared/dataService/pos/constants`);
-const mockedFeeEstimateFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/feeEstimates`);
-const mockedRTransactionsDryRunFilePath = resolve(`${__dirname}../../../../../../shared/dataService/business/transactionsDryRun`);
-const mockedNetworkFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/network`);
+const mockedPOSConstantsFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/pos/constants`,
+);
+const mockedFeeEstimateFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/business/feeEstimates`,
+);
+const mockedRTransactionsDryRunFilePath = resolve(
+	`${__dirname}../../../../../../shared/dataService/business/transactionsDryRun`,
+);
+const mockedNetworkFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/business/network`,
+);
 
 const {
 	mockTxRequest,
@@ -65,29 +80,31 @@ jest.mock('lisk-service-framework', () => {
 			},
 		},
 		HTTP: {
-			get: jest.fn((url) => {
+			get: jest.fn(url => {
 				if (url.includes('/api/v3/blockchain/apps/meta')) {
 					return Promise.resolve({
 						data: {
-							data: [{
-								serviceURLs: [
-									{
-										http: 'http://mock-service.com',
-										ws: 'ws://mock-service.com',
-									},
-								],
-							}],
+							data: [
+								{
+									serviceURLs: [
+										{
+											http: 'http://mock-service.com',
+											ws: 'ws://mock-service.com',
+										},
+									],
+								},
+							],
 						},
-
 					});
-				} if (url.includes('/token/account/exists')) {
+				}
+				if (url.includes('/token/account/exists')) {
 					return Promise.resolve({
 						data: {
 							data: { isExists: false },
 						},
-
 					});
-				} if (url.includes('api/v3/token/constants')) {
+				}
+				if (url.includes('api/v3/token/constants')) {
 					return Promise.resolve({
 						data: {
 							data: {
@@ -95,10 +112,8 @@ jest.mock('lisk-service-framework', () => {
 									userAccountInitializationFee: '1',
 									escrowAccountInitializationFee: '1',
 								},
-
 							},
 						},
-
 					});
 				}
 
@@ -113,7 +128,9 @@ jest.mock('lisk-service-framework', () => {
 jest.mock('../../../../../shared/dataService/business/schemas', () => {
 	const { schemas } = require('../../../../constants/schemas');
 	return {
-		getSchemas() { return schemas; },
+		getSchemas() {
+			return schemas;
+		},
 	};
 });
 
@@ -121,145 +138,139 @@ describe('validateTransactionParams', () => {
 	it('should validate a valid token and register validator transaction', () => {
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams(mockTransferCrossChainTxRequest.transaction),
+		expect(() =>
+			validateTransactionParams(mockTransferCrossChainTxRequest.transaction),
 		).not.toThrow();
 
-		expect(() => validateTransactionParams(mockRegisterValidatorTxrequestConnector.transaction),
+		expect(() =>
+			validateTransactionParams(mockRegisterValidatorTxrequestConnector.transaction),
 		).not.toThrow();
 	});
 
 	it('should validate a valid token cross chain transfer transaction if passed without optional params', () => {
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		const {
-			messageFee,
-			messageFeeTokenID,
-			...remParams
-		} = mockTransferCrossChainTxRequest.transaction.params;
+		const { messageFee, messageFeeTokenID, ...remParams } =
+			mockTransferCrossChainTxRequest.transaction.params;
 
-		expect(() => validateTransactionParams({
-			...mockTransferCrossChainTxRequest.transaction,
-			params: {
-				...remParams,
-			},
-		})).not.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockTransferCrossChainTxRequest.transaction,
+				params: {
+					...remParams,
+				},
+			}),
+		).not.toThrow();
 	});
 
 	it('should throw an error for incorrect tokenID in token transaction', () => {
-		const {
-			tokenID,
-			recipientAddress,
-			...remParams
-		} = mockTransferCrossChainTxRequest.transaction.params;
+		const { tokenID, recipientAddress, ...remParams } =
+			mockTransferCrossChainTxRequest.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams({
-			...mockTransferCrossChainTxRequest.transaction,
-			params: {
-				...remParams,
-				tokenID: 'invalidTokenID',
-				recipientAddress,
-			},
-		})).rejects.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockTransferCrossChainTxRequest.transaction,
+				params: {
+					...remParams,
+					tokenID: 'invalidTokenID',
+					recipientAddress,
+				},
+			}),
+		).rejects.toThrow();
 	});
 
 	it('should throw an error for incorrect recipientAddress in token transaction', () => {
-		const {
-			tokenID,
-			recipientAddress,
-			...remParams
-		} = mockTransferCrossChainTxRequest.transaction.params;
+		const { tokenID, recipientAddress, ...remParams } =
+			mockTransferCrossChainTxRequest.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams({
-			...mockTransferCrossChainTxRequest.transaction,
-			params: {
-				...remParams,
-				tokenID,
-				recipientAddress: 'invalidRecipientAddress',
-			},
-		})).rejects.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockTransferCrossChainTxRequest.transaction,
+				params: {
+					...remParams,
+					tokenID,
+					recipientAddress: 'invalidRecipientAddress',
+				},
+			}),
+		).rejects.toThrow();
 	});
 
 	it('should throw an error for incorrect blsKey in register validator transaction', () => {
-		const {
-			blsKey,
-			proofOfPossession,
-			generatorKey,
-			...remParams
-		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+		const { blsKey, proofOfPossession, generatorKey, ...remParams } =
+			mockRegisterValidatorTxrequestConnector.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams({
-			...mockRegisterValidatorTxrequestConnector.transaction,
-			params: {
-				...remParams,
-				blsKey: 'invalidBLSKey',
-				proofOfPossession,
-				generatorKey,
-			},
-		})).rejects.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockRegisterValidatorTxrequestConnector.transaction,
+				params: {
+					...remParams,
+					blsKey: 'invalidBLSKey',
+					proofOfPossession,
+					generatorKey,
+				},
+			}),
+		).rejects.toThrow();
 	});
 
 	it('should throw an error for incorrect proofOfPossession in register validator transaction', () => {
-		const { blsKey,
-			proofOfPossession,
-			generatorKey,
-			...remParams
-		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+		const { blsKey, proofOfPossession, generatorKey, ...remParams } =
+			mockRegisterValidatorTxrequestConnector.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams({
-			...mockRegisterValidatorTxrequestConnector.transaction,
-			params: {
-				...remParams,
-				blsKey,
-				proofOfPossession: 'invalidProofOfPossession',
-				generatorKey,
-			},
-		})).rejects.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockRegisterValidatorTxrequestConnector.transaction,
+				params: {
+					...remParams,
+					blsKey,
+					proofOfPossession: 'invalidProofOfPossession',
+					generatorKey,
+				},
+			}),
+		).rejects.toThrow();
 	});
 
 	it('should throw an error for incorrect generatorKey in register validator transaction', () => {
-		const {
-			blsKey,
-			proofOfPossession,
-			generatorKey,
-			...remParams
-		} = mockRegisterValidatorTxrequestConnector.transaction.params;
+		const { blsKey, proofOfPossession, generatorKey, ...remParams } =
+			mockRegisterValidatorTxrequestConnector.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams({
-			...mockRegisterValidatorTxrequestConnector.transaction,
-			params: {
-				...remParams,
-				blsKey,
-				proofOfPossession,
-				generatorKey: 'invalidGeneratorKey',
-			},
-		})).rejects.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockRegisterValidatorTxrequestConnector.transaction,
+				params: {
+					...remParams,
+					blsKey,
+					proofOfPossession,
+					generatorKey: 'invalidGeneratorKey',
+				},
+			}),
+		).rejects.toThrow();
 	});
 
 	it('should throw an error for incorrect sendingChainID in cross chain update transaction', () => {
-		const {
-			sendingChainID,
-			...remParams
-		} = mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
+		const { sendingChainID, ...remParams } =
+			mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
-		expect(() => validateTransactionParams({
-			...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
-			params: {
-				...remParams,
-				sendingChainID: 'invalidSendingChainID',
-			},
-		})).rejects.toThrow();
+		expect(() =>
+			validateTransactionParams({
+				...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
+				params: {
+					...remParams,
+					sendingChainID: 'invalidSendingChainID',
+				},
+			}),
+		).rejects.toThrow();
 	});
 });
 
@@ -283,9 +294,7 @@ describe('Test transaction fees estimates', () => {
 		const size = 150;
 
 		it('should return dynamic fee estimates', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const expectedResponse = {
 				low: BigInt('150000'),
@@ -300,9 +309,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when feeEstimatePerByte is undefined', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(() => {
 				calcDynamicFeeEstimates(undefined, minFee, size);
@@ -310,9 +317,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when minFee is undefined', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(() => {
 				calcDynamicFeeEstimates(feeEstimatePerByte, undefined, size);
@@ -320,9 +325,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when transaction size is undefined', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(() => {
 				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, undefined);
@@ -330,9 +333,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when feeEstimatePerByte is null', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(() => {
 				calcDynamicFeeEstimates(null, minFee, size);
@@ -340,9 +341,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when minFee is null', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(() => {
 				calcDynamicFeeEstimates(feeEstimatePerByte, null, size);
@@ -350,9 +349,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when transaction size is null', async () => {
-			const {
-				calcDynamicFeeEstimates,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(() => {
 				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, null);
@@ -366,18 +363,12 @@ describe('Test transaction fees estimates', () => {
 		const authInfoForMultisigAccount = {
 			...authAccountInfo,
 			numberOfSignatures: 2,
-			mandatoryKeys: [
-				'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
-			],
-			optionalKeys: [
-				'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
-			],
+			mandatoryKeys: ['4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d'],
+			optionalKeys: ['b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076'],
 		};
 
 		it('should return transaction when called with all valid params', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const transaction = await mockTransaction(
 				inputTransaction,
@@ -387,9 +378,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return multisignature transaction when called with all valid params', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const transaction = await mockTransaction(
 				inputMultisigTransaction,
@@ -408,9 +397,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction without id', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { id, ...remParams } = inputTransaction;
 			const transaction = await mockTransaction(remParams, authAccountInfo.numberOfSignatures);
@@ -424,9 +411,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction without fee', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { fee, ...remParams } = inputTransaction;
 			const transaction = await mockTransaction(remParams, authAccountInfo.numberOfSignatures);
@@ -440,9 +425,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return multisignature transaction when called transaction without signatures', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { signatures, ...remParams } = inputMultisigTransaction;
 			const transaction = await mockTransaction(
@@ -460,9 +443,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction params without messageFee', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { messageFee, ...remTransactionParams } = inputTransaction.params;
 
@@ -480,9 +461,7 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return transaction when called transaction params without messageFeeTokenID', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const { messageFeeTokenID, ...remTransactionParams } = inputTransaction.params;
 
@@ -500,17 +479,13 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should throw error when transaction is undefined', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(async () => mockTransaction(undefined)).rejects.toThrow();
 		});
 
 		it('should throw error when transaction is null', async () => {
-			const {
-				mockTransaction,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { mockTransaction } = require(mockedTransactionFeeEstimatesFilePath);
 
 			expect(async () => mockTransaction(null)).rejects.toThrow();
 		});
@@ -595,7 +570,9 @@ describe('Test transaction fees estimates', () => {
 
 		it('should calculate transaction fees correctly for transfer cross chain transaction', async () => {
 			// Mock the return values of the functions
-			dryRunTransactions.mockReturnValue({ data: { events: [{ name: 'ccmSendSuccess', data: { ccm: 'hello' } }] } });
+			dryRunTransactions.mockReturnValue({
+				data: { events: [{ name: 'ccmSendSuccess', data: { ccm: 'hello' } }] },
+			});
 			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
@@ -755,9 +732,13 @@ describe('Test transaction fees estimates', () => {
 					// Mock the return values of the functions
 					getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
 					getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
-					requestConnector
-						.mockReturnValueOnce(mockTxrequestConnector)
-						.mockReturnValue({ userAccount: '1', escrowAccount: '0', fee: '100000000', minFee: '166000', size: 166 });
+					requestConnector.mockReturnValueOnce(mockTxrequestConnector).mockReturnValue({
+						userAccount: '1',
+						escrowAccount: '0',
+						fee: '100000000',
+						minFee: '166000',
+						size: 166,
+					});
 					getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 					calcAdditionalFees.mockResolvedValue({});
 					calcMessageFee.mockResolvedValue({});
@@ -766,12 +747,8 @@ describe('Test transaction fees estimates', () => {
 					const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
 
 					// Call the function
-					const result = await estimateTransactionFees(
-						transactionInfo.request,
-					);
-					expect(result).toEqual(
-						transactionInfo.result,
-					);
+					const result = await estimateTransactionFees(transactionInfo.request);
+					expect(result).toEqual(transactionInfo.result);
 				});
 			});
 		});
@@ -781,9 +758,7 @@ describe('Test transaction fees estimates', () => {
 		const optionalProps = ['id', 'fee', 'signatures'];
 
 		it('should return object with required properties', async () => {
-			const {
-				filterOptionalProps,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { filterOptionalProps } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const input = {
 				module: 'token',
@@ -809,18 +784,14 @@ describe('Test transaction fees estimates', () => {
 		});
 
 		it('should return an object when input is undefined', async () => {
-			const {
-				filterOptionalProps,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { filterOptionalProps } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const txWithRequiredProps = filterOptionalProps(undefined, optionalProps);
 			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);
 		});
 
 		it('should return an object when input is null', async () => {
-			const {
-				filterOptionalProps,
-			} = require(mockedTransactionFeeEstimatesFilePath);
+			const { filterOptionalProps } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const txWithRequiredProps = filterOptionalProps(null, optionalProps);
 			expect(Object.getOwnPropertyNames(txWithRequiredProps).length).toBe(0);

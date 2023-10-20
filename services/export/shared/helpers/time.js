@@ -18,7 +18,7 @@ const moment = require('moment');
 const config = require('../../config');
 
 const DAY_IN_MILLISEC = moment().endOf('day').valueOf() - moment().startOf('day').valueOf() + 1;
-const getDaysInMilliseconds = (days) => days * DAY_IN_MILLISEC;
+const getDaysInMilliseconds = days => days * DAY_IN_MILLISEC;
 
 const momentFromTimestamp = timestamp => moment.unix(timestamp);
 

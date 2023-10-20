@@ -38,9 +38,13 @@ const configure = config => {
 		categories: { default: { appenders: [], level: LOG_LEVEL } },
 	};
 
-	const coverPasswords = input => `${input}`.replace(
-		/(\b(?!:\/\/\b)[^@/$]+(\b!?@)\b)/g,
-		`${Array(8).join('*')}:${Array(8).join('*')}@`);
+	/* eslint-disable implicit-arrow-linebreak */
+	const coverPasswords = input =>
+		`${input}`.replace(
+			/(\b(?!:\/\/\b)[^@/$]+(\b!?@)\b)/g,
+			`${Array(8).join('*')}:${Array(8).join('*')}@`,
+		);
+	/* eslint-enable implicit-arrow-linebreak */
 
 	const textLayout = {
 		type: 'pattern',
@@ -153,11 +157,11 @@ const getLogger = configuration => {
 	return {
 		trace: debugInstance,
 		debug: debugInstance,
-		info: () => { },
-		warn: () => { },
-		error: () => { },
-		fatal: () => { },
-		mark: () => { },
+		info: () => {},
+		warn: () => {},
+		error: () => {},
+		fatal: () => {},
+		mark: () => {},
 	};
 };
 
@@ -165,11 +169,10 @@ const getDebug = entityName => {
 	if (!entityName) entityName = getFileNameWhichCalledGetLogger();
 	const debugInstance = debug(`${packageName}:${entityName}`);
 
-	return [
-		'trace', 'debug', 'info',
-		'warn', 'error', 'fatal',
-		'mark']
-		.reduce((acc, item) => (acc[item] = debugInstance) && acc, {});
+	return ['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'mark'].reduce(
+		(acc, item) => (acc[item] = debugInstance) && acc,
+		{},
+	);
 };
 
 // Set default logger config

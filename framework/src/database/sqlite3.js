@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
+/* eslint-disable nonblock-statement-body-position */
 const { mkdir, exists } = require('../fs');
 const Logger = require('../logger').get;
 
@@ -38,14 +38,23 @@ const createDBConnection = async (dbDataDir, tableName) => {
 			min: 2,
 		},
 		log: {
-			warn(message) { logger.warn(message); },
-			error(message) { logger.error(message); },
-			deprecate(message) { logger.warn(message); },
-			debug(message) { logger.debug(message); },
+			warn(message) {
+				logger.warn(message);
+			},
+			error(message) {
+				logger.error(message);
+			},
+			deprecate(message) {
+				logger.warn(message);
+			},
+			debug(message) {
+				logger.debug(message);
+			},
 		},
 	});
 
-	knex.select(1)
+	knex
+		.select(1)
 		.on('query-error', error => {
 			logger.error(error.message);
 		})
@@ -104,15 +113,17 @@ const getTableInstance = async (tableConfig, dbDataDir = DB_DATA_DIR) => {
 
 		const query = trx.raw(queryStatement);
 
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 
 		return query;
 	};

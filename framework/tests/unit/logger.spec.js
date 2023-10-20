@@ -14,7 +14,5 @@
  *
  */
 xdescribe('Logger', () => {
-	xtest('exists', async () => {
-
-	});
+	xtest('exists', async () => {});
 });

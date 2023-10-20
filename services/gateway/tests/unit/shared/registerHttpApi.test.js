@@ -18,9 +18,16 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { buildAPIAliasesPrefix, buildAPIAliasesMethods, buildAPIAliasesResponse,
-	buildAPIAliasesPrefixWithFalseEtag, buildAPIAliasesMethodsWithFalseEtag,
-	buildAPIAliasesWithFalseEtagResponse, getAllAPIsExpectedResponse, expectedResponseForRegisterHttpApi } = require('../../constants/registerApi');
+const {
+	buildAPIAliasesPrefix,
+	buildAPIAliasesMethods,
+	buildAPIAliasesResponse,
+	buildAPIAliasesPrefixWithFalseEtag,
+	buildAPIAliasesMethodsWithFalseEtag,
+	buildAPIAliasesWithFalseEtagResponse,
+	getAllAPIsExpectedResponse,
+	expectedResponseForRegisterHttpApi,
+} = require('../../constants/registerApi');
 
 describe('Test buildAPIConfig method', () => {
 	let config;
@@ -86,7 +93,7 @@ describe('Test buildAPIConfig method', () => {
 			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
-			result.onBeforeCall(ctx, route, req, res).catch((e) => {
+			result.onBeforeCall(ctx, route, req, res).catch(e => {
 				expect(e).toBeInstanceOf(ValidationException);
 			});
 		});
@@ -105,7 +112,7 @@ describe('Test buildAPIConfig method', () => {
 			const { buildAPIConfig } = require('../../../shared/registerHttpApi');
 			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
-			result.onBeforeCall(ctx, route, req, res).catch((e) => {
+			result.onBeforeCall(ctx, route, req, res).catch(e => {
 				expect(e).toBeInstanceOf(ValidationException);
 			});
 		});
@@ -125,7 +132,7 @@ describe('Test buildAPIConfig method', () => {
 
 			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
-			result.onBeforeCall(ctx, route, req, res).catch((e) => {
+			result.onBeforeCall(ctx, route, req, res).catch(e => {
 				expect(e).toBeInstanceOf(ValidationException);
 			});
 		});
@@ -145,7 +152,7 @@ describe('Test buildAPIConfig method', () => {
 
 			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 
-			result.onBeforeCall(ctx, route, req, res).catch((e) => {
+			result.onBeforeCall(ctx, route, req, res).catch(e => {
 				expect(e).toBeInstanceOf(ValidationException);
 			});
 		});
@@ -194,7 +201,10 @@ describe('Test buildAPIConfig method', () => {
 			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			await result.onAfterCall(ctx, route, req, res, data);
 
-			expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="data.csv"');
+			expect(res.setHeader).toHaveBeenCalledWith(
+				'Content-Disposition',
+				'attachment; filename="data.csv"',
+			);
 			expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/csv');
 			expect(res.end).toHaveBeenCalledWith(data.data);
 		});
@@ -205,7 +215,10 @@ describe('Test buildAPIConfig method', () => {
 			const result = buildAPIConfig('/api/users', config, {}, [], methodPaths, 'strong');
 			await result.onAfterCall(ctx, route, req, res, excelData);
 
-			expect(res.setHeader).toHaveBeenCalledWith('Content-Disposition', 'attachment; filename="data.xlsx"');
+			expect(res.setHeader).toHaveBeenCalledWith(
+				'Content-Disposition',
+				'attachment; filename="data.xlsx"',
+			);
 			expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/vnd.ms-excel');
 			expect(res.end).toHaveBeenCalledWith(excelData.data);
 		});
@@ -353,9 +366,7 @@ describe('Test getMethodName method', () => {
 
 	it('should throw error when called with null or undefined', async () => {
 		const { getMethodName } = require('../../../shared/registerHttpApi');
-		[null, undefined].forEach(
-			param => expect(() => getMethodName(param)).toThrow(),
-		);
+		[null, undefined].forEach(param => expect(() => getMethodName(param)).toThrow());
 	});
 });
 
@@ -366,7 +377,15 @@ describe('Test registerApi method', () => {
 		aliases: {},
 		path: '/v3',
 	};
-	const registeredModuleNames = ['fee', 'interoperability', 'legacy', 'pos', 'random', 'token', 'validators'];
+	const registeredModuleNames = [
+		'fee',
+		'interoperability',
+		'legacy',
+		'pos',
+		'random',
+		'token',
+		'validators',
+	];
 
 	it('should return correct api info when called with valid inputs', async () => {
 		const { registerApi } = require('../../../shared/registerHttpApi');
@@ -424,8 +443,11 @@ describe('Test buildAPIAliases method', () => {
 
 	it('should return proper response when called with correct params and eTag as false', async () => {
 		const { buildAPIAliases } = require('../../../shared/registerHttpApi');
-		const response = buildAPIAliases(buildAPIAliasesPrefixWithFalseEtag,
-			buildAPIAliasesMethodsWithFalseEtag, false);
+		const response = buildAPIAliases(
+			buildAPIAliasesPrefixWithFalseEtag,
+			buildAPIAliasesMethodsWithFalseEtag,
+			false,
+		);
 
 		expect(response).toEqual(buildAPIAliasesWithFalseEtagResponse);
 	});

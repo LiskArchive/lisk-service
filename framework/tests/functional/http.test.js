@@ -15,16 +15,17 @@
  */
 const http = require('../../src/http');
 
-const getTimestamp = () => (new Date().getTime());
+const getTimestamp = () => new Date().getTime();
 
-const waitMs = n => new Promise(resolve => {
-	setTimeout(() => {
-		resolve();
-	}, n);
-});
+const waitMs = n =>
+	// eslint-disable-next-line implicit-arrow-linebreak
+	new Promise(resolve => {
+		setTimeout(() => {
+			resolve();
+		}, n);
+	});
 
-beforeEach(() => {
-});
+beforeEach(() => {});
 
 // TODO: Update to mainnet url after production
 const url = 'https://testnet-service.lisk.com/api/v3/blocks';

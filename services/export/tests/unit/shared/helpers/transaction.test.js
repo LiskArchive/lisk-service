@@ -19,9 +19,7 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('../../../../shared/helpers/transaction');
 
-const {
-	transactions,
-} = require('../../../constants/transaction');
+const { transactions } = require('../../../constants/transaction');
 
 describe('Test Transaction utility', () => {
 	describe('Validate transaction amount is properly normalized', () => {

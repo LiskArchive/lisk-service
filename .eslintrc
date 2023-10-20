@@ -1,6 +1,7 @@
 {
 	"extends": [
-		"lisk-base"
+		"lisk-base",
+		"prettier"
 	],
 	"plugins": [
 		"import",
@@ -70,9 +71,6 @@
 			}
 		],
 		"mocha/no-skipped-tests": "off",
-		"indent": [
-			"error",
-			"tab"
-		]
+		"indent": "off"
 	}
 }

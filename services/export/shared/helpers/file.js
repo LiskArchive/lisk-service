@@ -17,40 +17,26 @@ const fs = require('fs');
 const BluebirdPromise = require('bluebird');
 const {
 	Utils: {
-		fs: {
-			stats,
-			mkdir,
-			read,
-			write,
-			isFile,
-			getFiles,
-			fileExists,
-			isFilePathInDirectory,
-			rm,
-		},
+		fs: { stats, mkdir, read, write, isFile, getFiles, fileExists, isFilePathInDirectory, rm },
 	},
 	Logger,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const {
-	getDaysInMilliseconds,
-} = require('./time');
+const { getDaysInMilliseconds } = require('./time');
 
 const logger = Logger();
 
-const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) => {
-	fs.readdir(
-		dirPath,
-		(err, files) => {
+const list = (dirPath, count = 100, page = 0) =>
+	new Promise((resolve, reject) => {
+		fs.readdir(dirPath, (err, files) => {
 			if (err) {
 				logger.error(err);
 				return reject(err);
 			}
 			return resolve(files.slice(page, page + count));
-		},
-	);
-});
+		});
+	});
 
 const purge = async (dirPath, days) => {
 	if (days === undefined) throw new ValidationException('days cannot be undefined.');
@@ -62,7 +48,7 @@ const purge = async (dirPath, days) => {
 		// Calculate the expiration time for each file and remove if expired
 		await BluebirdPromise.map(
 			files,
-			async (filePath) => {
+			async filePath => {
 				const stat = await stats(filePath);
 				const currentTime = new Date().getTime();
 				const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
@@ -81,7 +67,7 @@ const purge = async (dirPath, days) => {
 	}
 };
 
-const init = async (params) => mkdir(params.dirPath);
+const init = async params => mkdir(params.dirPath);
 
 module.exports = {
 	init,

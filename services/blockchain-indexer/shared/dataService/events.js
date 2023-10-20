@@ -15,7 +15,7 @@
  */
 const business = require('./business');
 
-const getEvents = async (params) => {
+const getEvents = async params => {
 	const response = await business.getEvents(params);
 	return response;
 };

@@ -59,9 +59,7 @@
 					"senderPublicKey": "32df51ba1b8457a6492b1e3bcca6ab447439a2743492431e02fa0595eb016f24",
 					"nonce": "658",
 					"params": {
-						"mandatoryKeys": [
-							"+eee675138ab96d3eadf157a3be780464453434a8163c009b0d01d1d25c520fb5"
-						],
+						"mandatoryKeys": ["+eee675138ab96d3eadf157a3be780464453434a8163c009b0d01d1d25c520fb5"],
 						"optionalKeys": [
 							"+cd76c3513926cb8bdb68142858d0735d329b2f44341f95b25f6c2a406cf1a4b7",
 							"735a8cbea048c8c979c0367420d477a1475b897178b474b1fd4701bcbcd7a8eff0c8c9e1c0cd2075244d76b82fafff57381592e1dcd95d0e6d243c5dd87765d2"
@@ -120,9 +118,7 @@
 					"senderPublicKey": "fcb597ceade08073538598ca54062b00f2dd9b2620c8cbce29d550714a166f54",
 					"nonce": "59",
 					"params": {
-						"mandatoryKeys": [
-							"+4d3234dbc9925d0e3aaa8e02f31101b3a20971e879210b26c5bf6fc479db6676"
-						],
+						"mandatoryKeys": ["+4d3234dbc9925d0e3aaa8e02f31101b3a20971e879210b26c5bf6fc479db6676"],
 						"optionalKeys": [
 							"+a4c789b42b597f24f9beb81d146bf6a16c4cf40c24eaba238dfe73e981635601",
 							"bff67b7f6bc5bc0b7455ec69c69cbbe345353e3cdad6907165303481c7c60550c285194d47e00d79be15f746c491ba111df00c014e34fdd82b3318b8d891e146",
@@ -145,12 +141,8 @@
 					"senderPublicKey": "5725c2cda63e12077bf8eb846434a76b64c913686c318bdd0d1ee6678f82e9b5",
 					"nonce": "254",
 					"params": {
-						"mandatoryKeys": [
-							"+d676dccd58baba8752289baa3a98c895d728fc6731b0166a70c4dc7770132bae"
-						],
-						"optionalKeys": [
-							"+37cded128d02523ab3a04f2538c197589389f82cba8e1cc5375839c1b83cc101"
-						],
+						"mandatoryKeys": ["+d676dccd58baba8752289baa3a98c895d728fc6731b0166a70c4dc7770132bae"],
+						"optionalKeys": ["+37cded128d02523ab3a04f2538c197589389f82cba8e1cc5375839c1b83cc101"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -279,12 +271,8 @@
 					"senderPublicKey": "5338e6d16e6429560a6f186b156a3d6c55ac637f35ea338f9708ff43249d0c91",
 					"nonce": "96",
 					"params": {
-						"mandatoryKeys": [
-							"+c15b2da28f40abd28c0536c0ddf29fc06a293bd035c313bb60f07c94dd4fa369"
-						],
-						"optionalKeys": [
-							"+895a963d2ab8701551bfcc12f84b7fce16c37dec359481aa9c2c50cb3cd5a626"
-						],
+						"mandatoryKeys": ["+c15b2da28f40abd28c0536c0ddf29fc06a293bd035c313bb60f07c94dd4fa369"],
+						"optionalKeys": ["+895a963d2ab8701551bfcc12f84b7fce16c37dec359481aa9c2c50cb3cd5a626"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -381,9 +369,7 @@
 							"f1b9872456eba65ba0dd16f60a3f18a52d4da57611f7fba51c09bb5969ecbed56b3eccc20c2acdc1245a0fd157cb5e45c7cd4a453d9554d6e3941aed8e393d40",
 							"8ac65b04d57a7b8c50473d4c793dee2b7844a44c0e8dc07b42c0024011e7d21fee45bc17d9b09ad51d9c3528949cec0c1bb857fd71514a24721fa81029a3dd0f"
 						],
-						"optionalKeys": [
-							"+037a0d415a7435bc43ee90dc3a3ff2f6dc1cde7fd997089a9b786ae17958a6f2"
-						],
+						"optionalKeys": ["+037a0d415a7435bc43ee90dc3a3ff2f6dc1cde7fd997089a9b786ae17958a6f2"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -419,12 +405,8 @@
 					"senderPublicKey": "953907cf52e41e4cb405e4df3f2ce7514e46cdf8a15c591c3687c0e7aae9f099",
 					"nonce": "448",
 					"params": {
-						"mandatoryKeys": [
-							"+cd1c4908e7dceb4cca5f8cff105a0ab61a80acb2b97d67d2ab52f8da3f40993b"
-						],
-						"optionalKeys": [
-							"+03710dba20146db754e564462602fd12f67503e353701f5995d266576be0c16f"
-						],
+						"mandatoryKeys": ["+cd1c4908e7dceb4cca5f8cff105a0ab61a80acb2b97d67d2ab52f8da3f40993b"],
+						"optionalKeys": ["+03710dba20146db754e564462602fd12f67503e353701f5995d266576be0c16f"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -523,9 +505,7 @@
 					"senderPublicKey": "6bf4e7b6f1613439a82f1d2bd6b44634355083d7f76c1de8e21fb27475f302de",
 					"nonce": "197",
 					"params": {
-						"mandatoryKeys": [
-							"+9658b0bcda316be1fe5b9f5517fde4ca4773bcd3b0612302fe9ced4a03468903"
-						],
+						"mandatoryKeys": ["+9658b0bcda316be1fe5b9f5517fde4ca4773bcd3b0612302fe9ced4a03468903"],
 						"optionalKeys": [
 							"+5fa5e94f651ea8e0c96d56aadb66cb71390facf0750371a63ab9ed35a4234f53",
 							"28d36b1031f923b45696ecbb3a30c2685764ed6271242426f073d185796e8eb40c0d8c14487597fabbb9c36e8ebb85cbe1631824b184435bde556cd5103163d6"
@@ -546,9 +526,7 @@
 					"senderPublicKey": "e3e76881a67070d854ff9ad2b6880e0c230e658ca57059e42b48af4d95f4a928",
 					"nonce": "556",
 					"params": {
-						"mandatoryKeys": [
-							"+2bfcd383639bcba712f4469158f77d70f0d60166bbdf8788c6f2410acb8e5f59"
-						],
+						"mandatoryKeys": ["+2bfcd383639bcba712f4469158f77d70f0d60166bbdf8788c6f2410acb8e5f59"],
 						"optionalKeys": [
 							"+1dbe2527dcfc6384af42ff2b8b6cc7a0ed2cdd19f6a0391fcfc9292f17eeb8f2",
 							"e2dc3f08d6b0d8758b0c71b3c9768ce9bbed4329251d11eda082bd7a6b34405bc543ccae54f4d1e5f469bd7cf2c21dbdc5c80bfd6cfed3767d40a70e25fcb710"
@@ -970,12 +948,8 @@
 					"senderPublicKey": "851429b60d752c8c9733fd64526014f77b1a6f443087f4f13cd085ddfe5568f6",
 					"nonce": "106",
 					"params": {
-						"mandatoryKeys": [
-							"+873ca370b63651dc60238cd7893d1495dfcd98b36a1de6bf781475e2e91e805f"
-						],
-						"optionalKeys": [
-							"+10a1010ecdf3eca0cd452918dbbe7b8d985df6c438539908688d09c91d2d7268"
-						],
+						"mandatoryKeys": ["+873ca370b63651dc60238cd7893d1495dfcd98b36a1de6bf781475e2e91e805f"],
+						"optionalKeys": ["+10a1010ecdf3eca0cd452918dbbe7b8d985df6c438539908688d09c91d2d7268"],
 						"numberOfSignatures": 0
 					},
 					"signatures": [
@@ -997,9 +971,7 @@
 							"ea1be9e210f2ae66764a456f65a8e3858bf6bf014a004feab60e7f9267c431281357190638ff63021aab162796ca5d95f2d7adf473f8e308e9bd63172fb1d047",
 							"1e30576ec2f7669e68160fa5b61ba30f456bd68e268d327b5fd0e8fd16493a9a18715fcb049eb93c099f5a321df3a34a1de98fd3ae7e227e82a198265b3b5c1f"
 						],
-						"optionalKeys": [
-							"+01e43ddfbe3214230266839330648002932ef224000dff6eaedb7410b5f11475"
-						],
+						"optionalKeys": ["+01e43ddfbe3214230266839330648002932ef224000dff6eaedb7410b5f11475"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -1183,9 +1155,7 @@
 							"333f6a1bc1cee075bc13b265bd7b39c60bf687042c6115a965915d712ea4e2c6056dc7ee182f174be33ffa9e5e5906defbb4437c2d80aedfc48ee0553ae44c2f",
 							"b8d6129031c207c6d8190765140623476268e0b8dd22676707cadabaf2eb34c6f2d9062222185e325722df23e01bb8ee8011974e94d5e21bce4acb44a7f7e0e8"
 						],
-						"optionalKeys": [
-							"+d02f884b5195249731cf04e10165518d919c3b68ff209c2c656e7f4ea5f4e0eb"
-						],
+						"optionalKeys": ["+d02f884b5195249731cf04e10165518d919c3b68ff209c2c656e7f4ea5f4e0eb"],
 						"numberOfSignatures": 4
 					},
 					"signatures": [
@@ -1202,12 +1172,8 @@
 					"senderPublicKey": "ef1f6a3ddc8d23e5744389b21728b21e465af08a1b052670d4c5143edf75026b",
 					"nonce": "316",
 					"params": {
-						"mandatoryKeys": [
-							"+a234929f940354f0fa90a6d2a7e0bf71ad59ff0aaf5af79361b450de6184c7df"
-						],
-						"optionalKeys": [
-							"+d8647fa27b12363aba134a5fe90bc582f0047ca037e6a7ab6dce33408523be2a"
-						],
+						"mandatoryKeys": ["+a234929f940354f0fa90a6d2a7e0bf71ad59ff0aaf5af79361b450de6184c7df"],
+						"optionalKeys": ["+d8647fa27b12363aba134a5fe90bc582f0047ca037e6a7ab6dce33408523be2a"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -1322,9 +1288,7 @@
 							"24ff4febc98dee2cd43385f302c19ca0aaaa5f95f37e3ce329cb5943239bcca493e4635914605a2054bee3ceb2ddd749adb8bbec626ad6892000a6001f508f6a",
 							"53fc9efa5abff0bcd9f7be2352a9767c29137778ef7bd23a2fab1a2ab57623fe1664414a67f9337386f6700f0d943633e3d8d9d2741372720609daf545a0ccf5"
 						],
-						"optionalKeys": [
-							"+2997567ec87e5c8710130efb9aa1f7c346a8b91c2f471df5d0582f5c73f2f219"
-						],
+						"optionalKeys": ["+2997567ec87e5c8710130efb9aa1f7c346a8b91c2f471df5d0582f5c73f2f219"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -1444,9 +1408,7 @@
 							"2256a7f536709f6b199cb998aba67f3993bbed6fb0494f3aa0567366f980ffe97313b3eb3635bdb7f9d58c301b7c105f015a8a23dc4e42deb47d94fad9d32245",
 							"460612d5c36dec7df9640d365624d8cc46c373a34d90612ba6e8acb662930c2b61b1cf234528fcba90fcb42a8af9ab699efca05cc858232fc0ce875bbc45de56"
 						],
-						"optionalKeys": [
-							"+ee6125bfcfee1d1ec438146729a9282afc6f6bed833465c5a63420e3ed78c6b4"
-						],
+						"optionalKeys": ["+ee6125bfcfee1d1ec438146729a9282afc6f6bed833465c5a63420e3ed78c6b4"],
 						"numberOfSignatures": 4
 					},
 					"signatures": [
@@ -1662,9 +1624,7 @@
 							"1949fbfacf10dd63c1efef6faa555fda1dd1f98ff070841a2b70a60d8bffee2d7699ab9724fdf76c134b640e9f674cb197860c9af3635a6ed62803b3931bf344",
 							"05d9edad3560795e5b3628cf11fe4e8b37fca7c723ba924b7caa17ce914a4c9b4468ab371f962e8cc620376631119e447bdb61b0c02d9258d9efed3c15e406a9"
 						],
-						"optionalKeys": [
-							"+902b54f4f1767a37cbb287987c23c9214abc23e2d9b1556079d42a1d0f5855f3"
-						],
+						"optionalKeys": ["+902b54f4f1767a37cbb287987c23c9214abc23e2d9b1556079d42a1d0f5855f3"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -1685,9 +1645,7 @@
 							"+b582a9bf2333cb4c8cd54c52823a5f71814f65264c7e76d3eae4c4f06a97be21",
 							"ab0281fa4839f0bceef97fe85c6f16e24476410114813f3ff69246fa0cbbda9e266c7b6cf8857deb4e49d30e9b7f9c3e2837246d451e114f3171ac7408c521f6"
 						],
-						"optionalKeys": [
-							"+e84345108b7053e8a9e8e512b15ae4ee8123464fa93c5464ed797cdd17705c2f"
-						],
+						"optionalKeys": ["+e84345108b7053e8a9e8e512b15ae4ee8123464fa93c5464ed797cdd17705c2f"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -1953,9 +1911,7 @@
 							"+2369132f0362e6af1389a99739e17794d78fb270b70d03133391d333a54f3f3c",
 							"ffad7ac36701327f1e15fa2cd71a2841334fdd5d815e53d5860c9710b2ce239454455e18977edc85aa1228391c11c41dc8ebc45420c5288f1efca8fb38854c2f"
 						],
-						"optionalKeys": [
-							"+a89ee6a4b048e062e945583ca05126e4cc46762781d2ad915dc52396d7367fb3"
-						],
+						"optionalKeys": ["+a89ee6a4b048e062e945583ca05126e4cc46762781d2ad915dc52396d7367fb3"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -1994,9 +1950,7 @@
 							"5f1b8886ae6593e94a24faed6bed617e01a4eab05ace13b3e09e46adfa7db1d4af0de8e6b5e3f6bff17729f5cc51670a56fe84304956d08512940caafbf8e437",
 							"41008628ad6c559918fd92c39d6ae39b286239e33f69550158c8f7f64336553312ab9cf4901867c43b221b81944a443f6582d1847b0cb7cd3ea090df3eeecb1c"
 						],
-						"optionalKeys": [
-							"+55cbcb118ea888bdb12a4045644ba419db36d33a8f38302ba455659029d4e9c4"
-						],
+						"optionalKeys": ["+55cbcb118ea888bdb12a4045644ba419db36d33a8f38302ba455659029d4e9c4"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -2032,12 +1986,8 @@
 					"senderPublicKey": "ca3c4e502ec9e7474944c2716bb195d82fd096fa167277699fe7ad8d933db2a1",
 					"nonce": "328",
 					"params": {
-						"mandatoryKeys": [
-							"+7935b080639bfcd5be0f2e4caab5ed6f33a08365208b1aed72f3a0af038d1a1e"
-						],
-						"optionalKeys": [
-							"+20903ab67ae89d28f9edf4c4ea6882e1ff67cc281f1623bbbbc64ce162703756"
-						],
+						"mandatoryKeys": ["+7935b080639bfcd5be0f2e4caab5ed6f33a08365208b1aed72f3a0af038d1a1e"],
+						"optionalKeys": ["+20903ab67ae89d28f9edf4c4ea6882e1ff67cc281f1623bbbbc64ce162703756"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -2075,12 +2025,8 @@
 					"senderPublicKey": "4c53bc7f6aec4b12c432cc56bdffb7ce72b9afa2771b8bc98145cbc6124908e4",
 					"nonce": "105",
 					"params": {
-						"mandatoryKeys": [
-							"+7bb5c7510e0ad17a6f680133cd18737618819a5af74985095834218b6139243f"
-						],
-						"optionalKeys": [
-							"+e3d61bb1d72caf1113f6b70c57214d44063f389aae9ffaaa24155476537d5e9c"
-						],
+						"mandatoryKeys": ["+7bb5c7510e0ad17a6f680133cd18737618819a5af74985095834218b6139243f"],
+						"optionalKeys": ["+e3d61bb1d72caf1113f6b70c57214d44063f389aae9ffaaa24155476537d5e9c"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -2521,9 +2467,7 @@
 							"4530a957383872ac64c8b447cc45904c109e6282ed6be60a2d3b9c39411aa9afb8338fbe7123884f8c8812369e08ce4f5230ecf1ef918368eb376c78f2b925b0",
 							"bd1c25c603024ede8bd0ec057f17f5bc6d5dfd31ab93bf1908aa4a1919bf0ad042e2bb29a8e5587adf6379e9cbfbd3eb50df5e9f39d34b9619c48c0c7547f14f"
 						],
-						"optionalKeys": [
-							"+8c45d93aad67fad063e092c557fe3c03926d89ca5c27e6f5efd5f52ebcb41012"
-						],
+						"optionalKeys": ["+8c45d93aad67fad063e092c557fe3c03926d89ca5c27e6f5efd5f52ebcb41012"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -2565,9 +2509,7 @@
 							"+1ba642ac57324925114b127c8ed06aedc946634ee70372122a90ddac84f13716",
 							"370613c7a3b301762f11dc8abc0d04395b3c47bce106406690a66a3a32b4157ea80f09ab52c572e864ed390f8b8a11dfb92fcadcf65dcf8d46370537a7edfc8c"
 						],
-						"optionalKeys": [
-							"+7d7ad6a28c9059c8de4f23cc091a48395ce9b0baec8994af2344b37bda66e100"
-						],
+						"optionalKeys": ["+7d7ad6a28c9059c8de4f23cc091a48395ce9b0baec8994af2344b37bda66e100"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -2662,9 +2604,7 @@
 					"senderPublicKey": "304bca265637900496395488f3e5e8442e4e228a2afd66753d22333abb50da4c",
 					"nonce": "106",
 					"params": {
-						"mandatoryKeys": [
-							"+fb43ac7a7d6ff657fbf3f3399c8cd7a5f3ed85c963dfb3fa04a20955bf80645e"
-						],
+						"mandatoryKeys": ["+fb43ac7a7d6ff657fbf3f3399c8cd7a5f3ed85c963dfb3fa04a20955bf80645e"],
 						"optionalKeys": [
 							"+bd91c39f9ec4894eeccb949921f73bea45e7a2ed348b85146949077eef20bece",
 							"ab5236716c3ee84b72e051d0a6f4523619d491eca9fb55568d38c4dd614ff97154e52ad97c7d0b16227b104ffc848de0235def62409a27686e48fa3186f4a656",
@@ -3010,9 +2950,7 @@
 					"senderPublicKey": "20a922fd5cc7036e4a5afb6092bb7b533f406d82250ea87730c34801785f1393",
 					"nonce": "69",
 					"params": {
-						"mandatoryKeys": [
-							"+da8908e9897ef2d78b4faa0792b661679effffd31cce5cd110a1bceedeb72140"
-						],
+						"mandatoryKeys": ["+da8908e9897ef2d78b4faa0792b661679effffd31cce5cd110a1bceedeb72140"],
 						"optionalKeys": [
 							"+99e81c817c64b500fc146d75b252afa49da20a68dc1c68a7bd83d208825ef068",
 							"3b0e910aa828c4b651046730e176fdd402882b541f909846a6cba93df9facf158fbf48ee70d5bf186590870b78fae2e589d82febf194ce580976e5f32168451a"
@@ -3126,9 +3064,7 @@
 					"senderPublicKey": "c20f569d2b27646881b7eff3a991486b1c4121f170fa7968b2e0eb34235265e8",
 					"nonce": "659",
 					"params": {
-						"mandatoryKeys": [
-							"+7c8be909a6909c000294362ab3cb6cec49c23025a49d90af0c64f42b22cfaf29"
-						],
+						"mandatoryKeys": ["+7c8be909a6909c000294362ab3cb6cec49c23025a49d90af0c64f42b22cfaf29"],
 						"optionalKeys": [
 							"+e55d2b27256dd9dfca53e2f6db1f240222f3c01bd9493d328e3f89bdbe019a44",
 							"35eaabf9b9774687af82accf4714ece408448aeca33ca8312e70260de5a4a778e52a1717cce04a97a9656bfe57bc710f14a8ba574ec73f41e2529da97aa18db0",
@@ -3314,9 +3250,7 @@
 					"senderPublicKey": "6c5198571bb8c7c9130f272eb99df261dffc636c97d2df1381161e1d4892e863",
 					"nonce": "947",
 					"params": {
-						"mandatoryKeys": [
-							"+d1f6f3079981c553a72653182521070874120d323dbd214c03f4bc31c6926d8b"
-						],
+						"mandatoryKeys": ["+d1f6f3079981c553a72653182521070874120d323dbd214c03f4bc31c6926d8b"],
 						"optionalKeys": [
 							"+92841e4a36f91154e38217e079126cd9b30c40cdefd78f063c7d916014be122c",
 							"5d6939e7e9c77eb08520c93aa273609a2035856f1de6ba24f2e1b849f48a9c094b725b6245d8b14334a79a9d52155fdf59912bb8b40c69fba58c7485aa5d06e8",
@@ -3518,9 +3452,7 @@
 							"+032c988eb71d33a47526c0b11268bab3547b6e173b61bb3fc85afc918f1b0190",
 							"5bcb6b374f31ff03e7f801975277557b6b08d5d28970f135708fe1e13126f3f0c2bdbca93352ce8c32446b60be7eae9d5b7b5ab4a19249abcac35b5530dfb6d1"
 						],
-						"optionalKeys": [
-							"+89c40a4f078ff1e36446252a52c30d8bcaff429de3320f190f24259a4c0bfc1e"
-						],
+						"optionalKeys": ["+89c40a4f078ff1e36446252a52c30d8bcaff429de3320f190f24259a4c0bfc1e"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -3577,12 +3509,8 @@
 					"senderPublicKey": "613cf7cf90e298a1bbe6f1fb650ab7124ee67bcc59169dc02074f5bf3d1b8366",
 					"nonce": "949",
 					"params": {
-						"mandatoryKeys": [
-							"+a18894e9a2260ddc4aa7874a8b1f8b700df9dfce58f85b8d2e810c4d34958e14"
-						],
-						"optionalKeys": [
-							"+1c125cbe653514e189a7d00a6f15de1d20eaa45d48e82a7a0040de312960d16b"
-						],
+						"mandatoryKeys": ["+a18894e9a2260ddc4aa7874a8b1f8b700df9dfce58f85b8d2e810c4d34958e14"],
+						"optionalKeys": ["+1c125cbe653514e189a7d00a6f15de1d20eaa45d48e82a7a0040de312960d16b"],
 						"numberOfSignatures": 0
 					},
 					"signatures": [
@@ -3717,9 +3645,7 @@
 							"ba47e53ef27223f021a9c5014a2a808d97f8491448882c7b0fc07039c43051eeda895a19baa96ef4609dbb8ebb3db51fc2153242f711afda07cb78d69ac5a8c3",
 							"67ace9866d6b90b33a0e9d19c974ec08fb73218b360b410a16ebbb67228daeb93c38feb32144b28e156d5b0b1081398eafdc0969e639f0e6f45a935f589e305e"
 						],
-						"optionalKeys": [
-							"+42765417c0777a084606af5feb91cea0ec186789c7fbce853837740566fcb7bb"
-						],
+						"optionalKeys": ["+42765417c0777a084606af5feb91cea0ec186789c7fbce853837740566fcb7bb"],
 						"numberOfSignatures": 4
 					},
 					"signatures": [
@@ -3736,9 +3662,7 @@
 					"senderPublicKey": "0b1b2c0c59f72a0231697630ecfca3bac360f05c8b54c2ef2870e8d173ca408a",
 					"nonce": "654",
 					"params": {
-						"mandatoryKeys": [
-							"+d22a2bb4f308fe4024c9a856fb0f6e25fc84dc2a826f7bb87d742d45aee53cd2"
-						],
+						"mandatoryKeys": ["+d22a2bb4f308fe4024c9a856fb0f6e25fc84dc2a826f7bb87d742d45aee53cd2"],
 						"optionalKeys": [
 							"+1c650c75ac2c23ca3b1ed735ab0c52f7f6a31589abc3731696b92faf618eedcc",
 							"c326cad7ff4f853645b04391d0d573c677a3d69371b291fd7826c47ac8d37471e845da9a9016a3ba8d0c6a18603a438b619bf88876e778906f60eb54a807b336",
@@ -3853,9 +3777,7 @@
 					"senderPublicKey": "fd5e4e45c7cea108bf084d4c100f2314c44e46fe402234c5fa5371a822506d9a",
 					"nonce": "632",
 					"params": {
-						"mandatoryKeys": [
-							"+f787e4514cb1fe350f4dd650d364569b1fdd045aef9f3a327120755bb15487c7"
-						],
+						"mandatoryKeys": ["+f787e4514cb1fe350f4dd650d364569b1fdd045aef9f3a327120755bb15487c7"],
 						"optionalKeys": [
 							"+ef8aa6f0cb7e23bc73afbc489b40394701397192f931388fce07da0e38803b86",
 							"e8af9899951d2207a89bb88f8303e7dc2c644e9549abc936167ddac15d63f2d44767f6845c6d0d9a5488a59384a7e2cb1135c80d80b5af9850bd233ee379206a",
@@ -3951,9 +3873,7 @@
 					"senderPublicKey": "27eebed38d51beb41c626b56b33cb32e58ae6c7dd54d93440ad44f5129d1a44a",
 					"nonce": "134",
 					"params": {
-						"mandatoryKeys": [
-							"+6619ea6267c339320caf7c387c7573b941600dfad280466a0b67ea14bd44df4e"
-						],
+						"mandatoryKeys": ["+6619ea6267c339320caf7c387c7573b941600dfad280466a0b67ea14bd44df4e"],
 						"optionalKeys": [
 							"+d38be352976f4efa317d942d41d8f7c33652a2a5720d08f5f221e4aa7289f471",
 							"6f09c9dac7029fa7e664e442d93ade693aacfa6e757034d8be7ed9cc7b2e3be47dac1685b77e6e0f885b680648798dd7cc8e1bcd93d35109a8282354c7f3f0d8",
@@ -4134,9 +4054,7 @@
 							"+e0c1319b74c2c82004892c181c037c07e91b230a2f195bd43e6cec0fb837962b",
 							"c1f94ae8cbe8c0c00804aae0f1e156d37203ebb5e630893559798640caae92ffc922d5a6e7e753b861f6384f44a12a308f7d8f65ed9a5dd8a8eda883c63348e3"
 						],
-						"optionalKeys": [
-							"+03a39a574511e8c151f22ebdc8ac7998d138256d4247a66d30d451bbca8586d5"
-						],
+						"optionalKeys": ["+03a39a574511e8c151f22ebdc8ac7998d138256d4247a66d30d451bbca8586d5"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -4179,9 +4097,7 @@
 					"senderPublicKey": "d70f55726da853f65d17e5e33447e5baf3434dc50832c18baab5f7a429ba7b9b",
 					"nonce": "366",
 					"params": {
-						"mandatoryKeys": [
-							"+1cb8795f0fd1680f056e3afa142c85af49d2e627fe920a0802b110d3bdfced0f"
-						],
+						"mandatoryKeys": ["+1cb8795f0fd1680f056e3afa142c85af49d2e627fe920a0802b110d3bdfced0f"],
 						"optionalKeys": [
 							"+1936cdc574c22c9747788c5045e35df3aa14334c17f914203b575c68a1a274d6",
 							"221739f07a4271f69c795c67b81952fbed5ef984feca2f64b3621c8fff80056a5678669152555755789e0829553f29b235e5cb4204517b34f7a4834337ada42a",
@@ -4224,9 +4140,7 @@
 					"senderPublicKey": "05017339b007a4503bf6375642ee48d8b80b39ecf68a70799ee58c27136c1755",
 					"nonce": "421",
 					"params": {
-						"mandatoryKeys": [
-							"+f613b3670dd3df7df6b03e7063b6506cfcac9fedd8c4dca40e1ddfdfaa7bfcf5"
-						],
+						"mandatoryKeys": ["+f613b3670dd3df7df6b03e7063b6506cfcac9fedd8c4dca40e1ddfdfaa7bfcf5"],
 						"optionalKeys": [
 							"+9391b6456d0a234a42133173d7363085edf579fd03c1923c1f56e833c51b6b8d",
 							"b907e1e4070ff8147f2ad0fe14bd3703823626277f1723a3f1f86931a7e858a05b4d1cd85d676894e03a477945fe04fdbf436de2ec029b202be9e1d209cec2c5",
@@ -4388,9 +4302,7 @@
 					"senderPublicKey": "a72a6190ce608b56b48f40428c6ee14f0c1f42c00c1a68e7acb8b9dc5394d954",
 					"nonce": "287",
 					"params": {
-						"mandatoryKeys": [
-							"+8a5be4c995004cad9831512b5275a7f5c6ba7d0312363a36d86144db7404a912"
-						],
+						"mandatoryKeys": ["+8a5be4c995004cad9831512b5275a7f5c6ba7d0312363a36d86144db7404a912"],
 						"optionalKeys": [
 							"+3bc4e94c0f59ed14fe2b719bedb2adfc853f447173de5ecaca89b09240fa7085",
 							"a592b7c8035b765c7def46cc8a643d71b9dfd1097fa876c8b80c2d4ed2066188adfc4d5106354f6b53c69de41e7742fcf47a21c6fab21d836f7c41632f9d9081",
@@ -4465,9 +4377,7 @@
 					"senderPublicKey": "bc8b7fe3b6ec05550d76e45eb8894698a8188d4a611095e19f7e3a5fd34812fb",
 					"nonce": "346",
 					"params": {
-						"mandatoryKeys": [
-							"+3d4078e6f92a23af7d6094b2ae0a8e477f00ba5a13142eaefb86cfa60951c334"
-						],
+						"mandatoryKeys": ["+3d4078e6f92a23af7d6094b2ae0a8e477f00ba5a13142eaefb86cfa60951c334"],
 						"optionalKeys": [
 							"+ee937abd182d1032c530dde0c1d7a3b4b448ed66be769e74156a566d8baa654b",
 							"86988ad2706bc34d88bd07654e4aae3d32ac02d3e653d8720e1ac3d747e34ff70b80a98cd45a10b9b5672d36517531664e8fa5f4d2b16d84edb75978cacfce19"
@@ -4704,12 +4614,8 @@
 					"senderPublicKey": "96baf2dbc2acb16667c150767c44f00fd831584f45f2cc1a26c02b669d872bc8",
 					"nonce": "259",
 					"params": {
-						"mandatoryKeys": [
-							"+a9e04ab672e2a8d4e37cf757fa8fd24156b5eca0732a18bf4c6f2a686283caa0"
-						],
-						"optionalKeys": [
-							"+a5201a23cd1993e608d60e736459d9f0f2e08cf2edbb36c1cb603bfdfa390c6f"
-						],
+						"mandatoryKeys": ["+a9e04ab672e2a8d4e37cf757fa8fd24156b5eca0732a18bf4c6f2a686283caa0"],
+						"optionalKeys": ["+a5201a23cd1993e608d60e736459d9f0f2e08cf2edbb36c1cb603bfdfa390c6f"],
 						"numberOfSignatures": 0
 					},
 					"signatures": [
@@ -4732,9 +4638,7 @@
 							"eeb3dd2018ec6b44c79df780afd918fff946a98dfa8a9f6ef4c8c527a7a6e5e30044210396f7d2c2d27050667d1951922a4b069deac42e62b658d592b79e32e8",
 							"4b5bb53caf8dadb7303930fa3a7aa399b715a7aaa2151cfbebe360b82bd14d4a4cd3585de9da3549b9664696cfa11d8f37554795f7153363a3506f57189152a0"
 						],
-						"optionalKeys": [
-							"+4f08254f3350ebb48daa5d77d170db6166a2cae964ddf73646a5edb583342475"
-						],
+						"optionalKeys": ["+4f08254f3350ebb48daa5d77d170db6166a2cae964ddf73646a5edb583342475"],
 						"numberOfSignatures": 4
 					},
 					"signatures": [
@@ -4768,12 +4672,8 @@
 					"senderPublicKey": "38e7aaf2cefc4b2a1b52da0cac3f508198a8e36ce02f2ffe5800a1e3bdeb96a9",
 					"nonce": "645",
 					"params": {
-						"mandatoryKeys": [
-							"+80b4458868ff1c6a3041043b54e59ec1ea5df0b530c95615c71fc7c0c67efbfd"
-						],
-						"optionalKeys": [
-							"+d6c321186f978e869fc539f6859402bce6a43a71767550029d97df6bf8ea0326"
-						],
+						"mandatoryKeys": ["+80b4458868ff1c6a3041043b54e59ec1ea5df0b530c95615c71fc7c0c67efbfd"],
+						"optionalKeys": ["+d6c321186f978e869fc539f6859402bce6a43a71767550029d97df6bf8ea0326"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -4817,9 +4717,7 @@
 							"95917f00212d89d036395e956dc66c95d7e27d7c9bb02c059a1bc6d6bb17052540b295f979e119cd95e80487437f8dda9d3890210fc94c02af129d49cc632a85",
 							"064811307cccb539f39657d67c6b036b9d610a0c9639e7690443f51bcb0f26f48c09a1440adea70942d2434b4f8d0ccd089a244d5b049e3b92a035da6f87a38f"
 						],
-						"optionalKeys": [
-							"+f8b5e206190b27a988b31e2048989e35790db30343ffaa5efad8647655736927"
-						],
+						"optionalKeys": ["+f8b5e206190b27a988b31e2048989e35790db30343ffaa5efad8647655736927"],
 						"numberOfSignatures": 4
 					},
 					"signatures": [
@@ -4876,9 +4774,7 @@
 							"+8bd562503995dd875a671daa0db338189dc47c20c5aa4af578a4ecacd87e7066",
 							"347de40774da34e4309d4671337c0e0996f4bee879d96db062090c5e87a851aa8db8f6ba2f37fe466e62a23ea5dc08bd204b42162fd11e4c47887950b51177a7"
 						],
-						"optionalKeys": [
-							"+10def28c3d52daf184a4ccac3570de2e939de676985faf0d9014efa1e93a9267"
-						],
+						"optionalKeys": ["+10def28c3d52daf184a4ccac3570de2e939de676985faf0d9014efa1e93a9267"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -4895,9 +4791,7 @@
 					"senderPublicKey": "aea8591e46dda23b3f3a82297d9224f1882ba0bdd05a86860bee7fc394ad15c6",
 					"nonce": "574",
 					"params": {
-						"mandatoryKeys": [
-							"+453d09873e62c00aba40afec36108761d3e6e469ac47d893436b82856e64b41d"
-						],
+						"mandatoryKeys": ["+453d09873e62c00aba40afec36108761d3e6e469ac47d893436b82856e64b41d"],
 						"optionalKeys": [
 							"+d3a26cdba5b958be05c5b72f321f4653a036cfc21a3aa939915964c40884bcc9",
 							"29755733b8d7ce2cea03580ff47b17279bf4d24b5f5a3285af19ff118fa3bae25f1e37d9d9346743df5d77910ff06a0638f71293a062b0a29a2b51c48a17d11c"
@@ -5106,12 +5000,8 @@
 					"senderPublicKey": "25b848ce25b4c0c132e827ffb27d7db42de41d164393954b8d604ffb9d0ef9b1",
 					"nonce": "254",
 					"params": {
-						"mandatoryKeys": [
-							"+e5afb53aecbbe5ba849f8a24683af37f328ac95ad1a86a5ce30b8df545761c32"
-						],
-						"optionalKeys": [
-							"+5cf1fee48156268a87f6a426c4b3c735d95154b9fe68123078d1fb7052830c10"
-						],
+						"mandatoryKeys": ["+e5afb53aecbbe5ba849f8a24683af37f328ac95ad1a86a5ce30b8df545761c32"],
+						"optionalKeys": ["+5cf1fee48156268a87f6a426c4b3c735d95154b9fe68123078d1fb7052830c10"],
 						"numberOfSignatures": 0
 					},
 					"signatures": [
@@ -5154,9 +5044,7 @@
 							"d6f7c53de4585a327c7bc95614c9ce40a78bef3d212051b14e7df65a4ff7cdb54218c0dca9750158a08f7b2d5d0d4ef05620dfdf31897f536228b11dd69a2631",
 							"56105d5722780690f7238e34c10d020ac119152768b0a7a80a4004d6fb95848c8c920607072e2cfcb7ea11065a0dfea4ae9ce089d3eb5f6cade638dcd1877368"
 						],
-						"optionalKeys": [
-							"+26f254e434eaab63452bca496f68a95049d6b7851bb174826a3db2ac8bd9c1e9"
-						],
+						"optionalKeys": ["+26f254e434eaab63452bca496f68a95049d6b7851bb174826a3db2ac8bd9c1e9"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -5296,12 +5184,8 @@
 					"senderPublicKey": "451ba7c544e609b040e504ec54863eaa215fa37b77963d52024b98ad38a65229",
 					"nonce": "908",
 					"params": {
-						"mandatoryKeys": [
-							"+b4ecc30f2d08ee1af014b68f83c3d41015d64c9f06e42b5675251bac0f72edf6"
-						],
-						"optionalKeys": [
-							"+0a7f4e614d51a3352638d272de9cec0fbe554dbaedba0789748843135a1ea577"
-						],
+						"mandatoryKeys": ["+b4ecc30f2d08ee1af014b68f83c3d41015d64c9f06e42b5675251bac0f72edf6"],
+						"optionalKeys": ["+0a7f4e614d51a3352638d272de9cec0fbe554dbaedba0789748843135a1ea577"],
 						"numberOfSignatures": 0
 					},
 					"signatures": [
@@ -5343,9 +5227,7 @@
 							"+f15e778fc39355a9ef7061bc6a3702d4b5b92230054a8f33a9fbe785b7290a91",
 							"197cdb3561f48b6fa2e80131dd28f5cd6e5bc7101f90dcc007b5b6d295110fe3345d932fe5bc02efdb5c0498112e6ce77775c7a4b7db2a31f0319e179a642a34"
 						],
-						"optionalKeys": [
-							"+d7fdeffa48412e4221ea206b5b3a08833d2c9e6618cc5adfea3786cf96dbcac8"
-						],
+						"optionalKeys": ["+d7fdeffa48412e4221ea206b5b3a08833d2c9e6618cc5adfea3786cf96dbcac8"],
 						"numberOfSignatures": 2
 					},
 					"signatures": [
@@ -5386,9 +5268,7 @@
 							"d186556bf6f5a0efc421e4ec06c47df2e51418e0d56f2e3cbe812f2a27e2c82d097bf78ee2492fcf04f1000396c38d081204c0998147e76c321600f18715b7c8",
 							"1905b9d013d03992463518eef5a05dfe39bf8edb69d71298e3358d7b618e93514d376b8d8791fbd242d04065b8fb596fb8929c24a3b308f2b94b76e50ef80147"
 						],
-						"optionalKeys": [
-							"+a902d83f854bcb5659018e142cfe57eb3044ff7183ac35f7f3eae2b971691628"
-						],
+						"optionalKeys": ["+a902d83f854bcb5659018e142cfe57eb3044ff7183ac35f7f3eae2b971691628"],
 						"numberOfSignatures": 3
 					},
 					"signatures": [
@@ -5445,9 +5325,7 @@
 					"senderPublicKey": "9f7304b4be5819d935c6a76d004d03d22c7cd856f4cc61f4e202e13fa0c98616",
 					"nonce": "817",
 					"params": {
-						"mandatoryKeys": [
-							"+9fa3a3f688526f8d7c75d7aa9e3c7be237a76cef26c59ddf41537926bd866ebb"
-						],
+						"mandatoryKeys": ["+9fa3a3f688526f8d7c75d7aa9e3c7be237a76cef26c59ddf41537926bd866ebb"],
 						"optionalKeys": [
 							"+b82a29071793d6dbd8f0348109ccfb30a686322ebe29d35a84c4de96f52aaeb5",
 							"3f74df48c923930fbabfd248f23a4e9dc368cef5b0cad9f5718a06bc9c8bcb67ceedb141268ca760489463f86ebb714bc28a9a06f372e0e9e864ea24e8468148",
@@ -5548,9 +5426,7 @@
 					"senderPublicKey": "099ff6d90466f91bdaf6a725d78324503468fbe5ebaa1e8eb62255b5c2d04922",
 					"nonce": "715",
 					"params": {
-						"mandatoryKeys": [
-							"+cf5eaf5e8f43c792dfdea416b4d7cdf0a0ae51be0b7d8d460d57fc89edd296eb"
-						],
+						"mandatoryKeys": ["+cf5eaf5e8f43c792dfdea416b4d7cdf0a0ae51be0b7d8d460d57fc89edd296eb"],
 						"optionalKeys": [
 							"+d208956bd09b2933aa3b8ee4a29780e4ace775e57738413d09699a374e7dec69",
 							"344fd8c04353728c8f38b5454baea505519b8395c6ad971607126dc3484d16740caefcefe4bcd00c481d12647e6b8a8233b68ceb36b567d717e4e6c5ae898ea9",
@@ -5608,9 +5484,7 @@
 					"senderPublicKey": "cc38a4db2e09649520880f6446f2c5b24146c5327dac05467a2640d48c200dd8",
 					"nonce": "383",
 					"params": {
-						"mandatoryKeys": [
-							"+1dc0568532a3aad1299f32caba1a1cac505acf9eaab1dccdf733461d63b5b783"
-						],
+						"mandatoryKeys": ["+1dc0568532a3aad1299f32caba1a1cac505acf9eaab1dccdf733461d63b5b783"],
 						"optionalKeys": [
 							"+d48e3ddd02061eeb842c1432838255ae507e28b883866d25217f466c6b23e674",
 							"881958671e2b6a3c3cf3557f3f23dae73ad52d83a3907ff5ad9b4e1698833b9f2e509d7496e2a91c4d63423388f3ee5579c678fb798a245921ad475d57661b46"
@@ -5710,9 +5584,7 @@
 							"b907b8d4e145b4992b80f6408b3a0bad36b32d8bf423d0fce8c1630e27d2ed9c7c304c5358b7ab48c3412a7825674c70a8e59e80acac20474f37c2db6f1c3b6a",
 							"2ded363006ee5284ce8f74ddff2d5f513315d46ea58079d708fcc04d7b15faf67ba164bb35dc56cf63ba6063de6cfc2f09b5a90a17e33cb95a46bc21efc4ffb2"
 						],
-						"optionalKeys": [
-							"+bc3963d7d6ea6ccd9f135501cbccde445a2e40774e9dba6d4166ba2d7705d9ac"
-						],
+						"optionalKeys": ["+bc3963d7d6ea6ccd9f135501cbccde445a2e40774e9dba6d4166ba2d7705d9ac"],
 						"numberOfSignatures": 4
 					},
 					"signatures": [
@@ -5853,12 +5725,8 @@
 					"senderPublicKey": "dd3e6be914bef577121331a5dd334e0c7415eec16905aaff7dede21c15d5089b",
 					"nonce": "562",
 					"params": {
-						"mandatoryKeys": [
-							"+56177cddb80bad31b48613da8c76528df9ca06350dcdfa4d7bd30c6f2e86e571"
-						],
-						"optionalKeys": [
-							"+90eee82050473ceeb95dac4cba2469816c78dcb6d0ef9fce0d5257708bf22711"
-						],
+						"mandatoryKeys": ["+56177cddb80bad31b48613da8c76528df9ca06350dcdfa4d7bd30c6f2e86e571"],
+						"optionalKeys": ["+90eee82050473ceeb95dac4cba2469816c78dcb6d0ef9fce0d5257708bf22711"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [
@@ -5949,9 +5817,7 @@
 					"senderPublicKey": "f8f3e0c5c9f401060e76be05a5d2086fde5fd3c087c43896a7f5f691164085f3",
 					"nonce": "419",
 					"params": {
-						"mandatoryKeys": [
-							"+d7da7922a77c65fc86010d681587b912dd2a2210422640cf804153a41ad106a6"
-						],
+						"mandatoryKeys": ["+d7da7922a77c65fc86010d681587b912dd2a2210422640cf804153a41ad106a6"],
 						"optionalKeys": [
 							"+67bb14883c04c3e1b4f27775f17476a68b79974af708aeaff017be219bc87fb3",
 							"4d0d358586927d84e959a786b9639cc4a86110c4b3d1dc18641da06e72f5455c2c32afab05fdd815bdd94e9af0612f1077e9cf9824078f46608636e63f8f17d9",
@@ -5995,12 +5861,8 @@
 					"senderPublicKey": "96ba9c0a280361f9daafa6ec6137feb34b1e2d5f1c360d5485ddc2042c6f4bf8",
 					"nonce": "750",
 					"params": {
-						"mandatoryKeys": [
-							"+29e530978cbf9764967a113e2f3014dafca08902894ec2e5a6c556c76e505d7f"
-						],
-						"optionalKeys": [
-							"+e4479c73f0cd7018189fadb1944c385aaddc78fd1d5f3e30c95a2ddf43a4afa5"
-						],
+						"mandatoryKeys": ["+29e530978cbf9764967a113e2f3014dafca08902894ec2e5a6c556c76e505d7f"],
+						"optionalKeys": ["+e4479c73f0cd7018189fadb1944c385aaddc78fd1d5f3e30c95a2ddf43a4afa5"],
 						"numberOfSignatures": 1
 					},
 					"signatures": [

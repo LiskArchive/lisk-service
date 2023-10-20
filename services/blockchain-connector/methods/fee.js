@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getFeeTokenID,
-	getMinFeePerByte,
-} = require('../shared/sdk');
+const { getFeeTokenID, getMinFeePerByte } = require('../shared/sdk');
 
 module.exports = [
 	{

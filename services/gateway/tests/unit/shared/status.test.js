@@ -30,23 +30,22 @@ describe('Test getBuildTimestamp method', () => {
 	const filePath = path.resolve(__dirname, '../../../build.json');
 	let fileExistBefore = false;
 
-	beforeAll(async () => new Promise((resolve, reject) => {
-		exists(filePath).then((isExists) => {
-			fileExistBefore = isExists;
-			if (!isExists) {
-				return fs.writeFile(
-					filePath,
-					jsonStr,
-					(err) => {
-						if (err) return reject(err);
-						return resolve();
-					},
-				);
-			}
+	beforeAll(
+		async () =>
+			new Promise((resolve, reject) => {
+				exists(filePath).then(isExists => {
+					fileExistBefore = isExists;
+					if (!isExists) {
+						return fs.writeFile(filePath, jsonStr, err => {
+							if (err) return reject(err);
+							return resolve();
+						});
+					}
 
-			return resolve();
-		});
-	}));
+					return resolve();
+				});
+			}),
+	);
 
 	afterAll(async () => {
 		if (!fileExistBefore) await rmdir(filePath);

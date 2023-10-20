@@ -1,1 +1,14 @@
-{"amount":"10000000","recipientId":"4570231238910956803L","senderPublicKey":"15e16a3a49918d03199bedc5c883f119f830b4ad24ce7a432a10f22864ca6aea","timestamp":96748860,"type":0,"fee":"10000000","asset":{"data":"testing"},"signature":"1847325363f32faa7d961bcbf4a69094746c416e41abfeb44780c3a761373ab599a522471a0142d5c648abe24c6491bf6cf69eb844439126cdd4e63522468d0c","id":"2501715993150071146","senderId":"6511056441219918686L","ready":true,"relays":1}
+{
+	"amount": "10000000",
+	"recipientId": "4570231238910956803L",
+	"senderPublicKey": "15e16a3a49918d03199bedc5c883f119f830b4ad24ce7a432a10f22864ca6aea",
+	"timestamp": 96748860,
+	"type": 0,
+	"fee": "10000000",
+	"asset": { "data": "testing" },
+	"signature": "1847325363f32faa7d961bcbf4a69094746c416e41abfeb44780c3a761373ab599a522471a0142d5c648abe24c6491bf6cf69eb844439126cdd4e63522468d0c",
+	"id": "2501715993150071146",
+	"senderId": "6511056441219918686L",
+	"ready": true,
+	"relays": 1
+}

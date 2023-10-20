@@ -61,12 +61,7 @@ const metadata = {
 								fieldNumber: 4,
 							},
 						},
-						required: [
-							'numberOfSignatures',
-							'mandatoryKeys',
-							'optionalKeys',
-							'signatures',
-						],
+						required: ['numberOfSignatures', 'mandatoryKeys', 'optionalKeys', 'signatures'],
 					},
 				},
 			],
@@ -76,11 +71,7 @@ const metadata = {
 					data: {
 						$id: '/auth/events/multisigRegData',
 						type: 'object',
-						required: [
-							'numberOfSignatures',
-							'mandatoryKeys',
-							'optionalKeys',
-						],
+						required: ['numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 						properties: {
 							numberOfSignatures: {
 								dataType: 'uint32',
@@ -198,12 +189,7 @@ const metadata = {
 								fieldNumber: 4,
 							},
 						},
-						required: [
-							'nonce',
-							'numberOfSignatures',
-							'mandatoryKeys',
-							'optionalKeys',
-						],
+						required: ['nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 					},
 				},
 			],
@@ -219,9 +205,7 @@ const metadata = {
 								format: 'lisk32',
 							},
 						},
-						required: [
-							'address',
-						],
+						required: ['address'],
 					},
 					response: {
 						$id: '/auth/account',
@@ -260,12 +244,7 @@ const metadata = {
 								fieldNumber: 4,
 							},
 						},
-						required: [
-							'nonce',
-							'numberOfSignatures',
-							'mandatoryKeys',
-							'optionalKeys',
-						],
+						required: ['nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 					},
 				},
 				{
@@ -279,9 +258,7 @@ const metadata = {
 								format: 'hex',
 							},
 						},
-						required: [
-							'transaction',
-						],
+						required: ['transaction'],
 					},
 					response: {
 						$id: '/auth/verifyResult',
@@ -291,9 +268,7 @@ const metadata = {
 								type: 'boolean',
 							},
 						},
-						required: [
-							'verified',
-						],
+						required: ['verified'],
 					},
 				},
 				{
@@ -307,9 +282,7 @@ const metadata = {
 								format: 'hex',
 							},
 						},
-						required: [
-							'transaction',
-						],
+						required: ['transaction'],
 					},
 					response: {
 						$id: '/auth/verifyResult',
@@ -319,9 +292,7 @@ const metadata = {
 								type: 'boolean',
 							},
 						},
-						required: [
-							'verified',
-						],
+						required: ['verified'],
 					},
 				},
 				{
@@ -329,13 +300,7 @@ const metadata = {
 					response: {
 						$id: '/auth/command/regMultisigMsg',
 						type: 'object',
-						required: [
-							'address',
-							'nonce',
-							'numberOfSignatures',
-							'mandatoryKeys',
-							'optionalKeys',
-						],
+						required: ['address', 'nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -376,10 +341,7 @@ const metadata = {
 					name: 'sortMultisignatureGroup',
 					request: {
 						$id: '/auth/command/sortMultisig',
-						required: [
-							'mandatory',
-							'optional',
-						],
+						required: ['mandatory', 'optional'],
 						type: 'object',
 						properties: {
 							mandatory: {
@@ -464,11 +426,7 @@ const metadata = {
 								fieldNumber: 3,
 							},
 						},
-						required: [
-							'mandatoryKeys',
-							'optionalKeys',
-							'signatures',
-						],
+						required: ['mandatoryKeys', 'optionalKeys', 'signatures'],
 					},
 				},
 				{
@@ -481,9 +439,7 @@ const metadata = {
 								type: 'string',
 							},
 						},
-						required: [
-							'tag',
-						],
+						required: ['tag'],
 					},
 				},
 			],
@@ -493,19 +449,14 @@ const metadata = {
 					data: {
 						$id: '/auth/module/genesis',
 						type: 'object',
-						required: [
-							'authDataSubstore',
-						],
+						required: ['authDataSubstore'],
 						properties: {
 							authDataSubstore: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'address',
-										'authAccount',
-									],
+									required: ['address', 'authAccount'],
 									properties: {
 										address: {
 											dataType: 'bytes',
@@ -514,12 +465,7 @@ const metadata = {
 										authAccount: {
 											type: 'object',
 											fieldNumber: 2,
-											required: [
-												'nonce',
-												'numberOfSignatures',
-												'mandatoryKeys',
-												'optionalKeys',
-											],
+											required: ['nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 											properties: {
 												nonce: {
 													dataType: 'uint64',
@@ -566,10 +512,7 @@ const metadata = {
 					data: {
 						$id: '/reward/events/rewardMintedData',
 						type: 'object',
-						required: [
-							'amount',
-							'reduction',
-						],
+						required: ['amount', 'reduction'],
 						properties: {
 							amount: {
 								dataType: 'uint64',
@@ -595,9 +538,7 @@ const metadata = {
 								fieldNumber: 1,
 							},
 						},
-						required: [
-							'timestamp',
-						],
+						required: ['timestamp'],
 					},
 				},
 			],
@@ -607,9 +548,7 @@ const metadata = {
 					request: {
 						$id: '/reward/endpoint/height',
 						type: 'object',
-						required: [
-							'height',
-						],
+						required: ['height'],
 						properties: {
 							height: {
 								type: 'integer',
@@ -620,9 +559,7 @@ const metadata = {
 					response: {
 						$id: '/reward/endpoint/getDefaultRewardAtHeightResponse',
 						type: 'object',
-						required: [
-							'reward',
-						],
+						required: ['reward'],
 						properties: {
 							reward: {
 								type: 'string',
@@ -636,9 +573,7 @@ const metadata = {
 					request: {
 						$id: '/reward/endpoint/height',
 						type: 'object',
-						required: [
-							'height',
-						],
+						required: ['height'],
 						properties: {
 							height: {
 								type: 'integer',
@@ -649,10 +584,7 @@ const metadata = {
 					response: {
 						$id: '/reward/endpoint/getAnnualInflationResponse',
 						type: 'object',
-						required: [
-							'tokenID',
-							'rate',
-						],
+						required: ['tokenID', 'rate'],
 						properties: {
 							tokenID: {
 								type: 'string',
@@ -672,9 +604,7 @@ const metadata = {
 					response: {
 						$id: '/reward/endpoint/getRewardTokenID',
 						type: 'object',
-						required: [
-							'tokenID',
-						],
+						required: ['tokenID'],
 						properties: {
 							tokenID: {
 								type: 'string',
@@ -690,11 +620,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getExpectedSharedRewardsRequest',
 						type: 'object',
-						required: [
-							'validatorAddress',
-							'validatorReward',
-							'stake',
-						],
+						required: ['validatorAddress', 'validatorReward', 'stake'],
 						properties: {
 							validatorAddress: {
 								type: 'string',
@@ -713,9 +639,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getExpectedSharedRewardsResponse',
 						type: 'object',
-						required: [
-							'reward',
-						],
+						required: ['reward'],
 						properties: {
 							reward: {
 								type: 'string',
@@ -736,12 +660,7 @@ const metadata = {
 					data: {
 						$id: '/fee/events/generatorFeeProcessed',
 						type: 'object',
-						required: [
-							'senderAddress',
-							'generatorAddress',
-							'burntAmount',
-							'generatorAmount',
-						],
+						required: ['senderAddress', 'generatorAddress', 'burntAmount', 'generatorAmount'],
 						properties: {
 							senderAddress: {
 								dataType: 'bytes',
@@ -769,12 +688,7 @@ const metadata = {
 					data: {
 						$id: '/fee/events/relayerFeeProcessed',
 						type: 'object',
-						required: [
-							'ccmID',
-							'relayerAddress',
-							'burntAmount',
-							'relayerAmount',
-						],
+						required: ['ccmID', 'relayerAddress', 'burntAmount', 'relayerAmount'],
 						properties: {
 							ccmID: {
 								dataType: 'bytes',
@@ -820,9 +734,7 @@ const metadata = {
 								format: 'uint32',
 							},
 						},
-						required: [
-							'minFeePerByte',
-						],
+						required: ['minFeePerByte'],
 					},
 				},
 				{
@@ -836,9 +748,7 @@ const metadata = {
 								format: 'hex',
 							},
 						},
-						required: [
-							'feeTokenID',
-						],
+						required: ['feeTokenID'],
 					},
 				},
 			],
@@ -873,11 +783,7 @@ const metadata = {
 							activeValidatorsUpdate: {
 								type: 'object',
 								fieldNumber: 3,
-								required: [
-									'blsKeysUpdate',
-									'bftWeightsUpdate',
-									'bftWeightsUpdateBitmap',
-								],
+								required: ['blsKeysUpdate', 'bftWeightsUpdate', 'bftWeightsUpdateBitmap'],
 								properties: {
 									blsKeysUpdate: {
 										type: 'array',
@@ -908,11 +814,7 @@ const metadata = {
 							inboxUpdate: {
 								type: 'object',
 								fieldNumber: 5,
-								required: [
-									'crossChainMessages',
-									'messageWitnessHashes',
-									'outboxRootWitness',
-								],
+								required: ['crossChainMessages', 'messageWitnessHashes', 'outboxRootWitness'],
 								properties: {
 									crossChainMessages: {
 										type: 'array',
@@ -933,10 +835,7 @@ const metadata = {
 									outboxRootWitness: {
 										type: 'object',
 										fieldNumber: 3,
-										required: [
-											'bitmap',
-											'siblingHashes',
-										],
+										required: ['bitmap', 'siblingHashes'],
 										properties: {
 											bitmap: {
 												dataType: 'bytes',
@@ -963,12 +862,7 @@ const metadata = {
 					params: {
 						$id: '/modules/interoperability/mainchain/messageRecoveryInitialization',
 						type: 'object',
-						required: [
-							'chainID',
-							'channel',
-							'bitmap',
-							'siblingHashes',
-						],
+						required: ['chainID', 'channel', 'bitmap', 'siblingHashes'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -1001,12 +895,7 @@ const metadata = {
 					params: {
 						$id: '/modules/interoperability/mainchain/messageRecovery',
 						type: 'object',
-						required: [
-							'chainID',
-							'crossChainMessages',
-							'idxs',
-							'siblingHashes',
-						],
+						required: ['chainID', 'crossChainMessages', 'idxs', 'siblingHashes'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -1045,12 +934,7 @@ const metadata = {
 					params: {
 						$id: '/modules/interoperability/mainchain/sidechainRegistration',
 						type: 'object',
-						required: [
-							'chainID',
-							'name',
-							'sidechainValidators',
-							'sidechainCertificateThreshold',
-						],
+						required: ['chainID', 'name', 'sidechainValidators', 'sidechainCertificateThreshold'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -1068,10 +952,7 @@ const metadata = {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'blsKey',
-										'bftWeight',
-									],
+									required: ['blsKey', 'bftWeight'],
 									properties: {
 										blsKey: {
 											dataType: 'bytes',
@@ -1101,12 +982,7 @@ const metadata = {
 					params: {
 						$id: '/modules/interoperability/mainchain/commands/stateRecovery',
 						type: 'object',
-						required: [
-							'chainID',
-							'module',
-							'storeEntries',
-							'siblingHashes',
-						],
+						required: ['chainID', 'module', 'storeEntries', 'siblingHashes'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -1145,12 +1021,7 @@ const metadata = {
 											fieldNumber: 4,
 										},
 									},
-									required: [
-										'substorePrefix',
-										'storeKey',
-										'storeValue',
-										'bitmap',
-									],
+									required: ['substorePrefix', 'storeKey', 'storeValue', 'bitmap'],
 								},
 							},
 							siblingHashes: {
@@ -1170,9 +1041,7 @@ const metadata = {
 					params: {
 						$id: '/modules/interoperability/mainchain/terminateSidechainForLiveness',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -1190,11 +1059,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/chainData',
 						type: 'object',
-						required: [
-							'name',
-							'lastCertificate',
-							'status',
-						],
+						required: ['name', 'lastCertificate', 'status'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -1205,12 +1070,7 @@ const metadata = {
 							lastCertificate: {
 								type: 'object',
 								fieldNumber: 2,
-								required: [
-									'height',
-									'timestamp',
-									'stateRoot',
-									'validatorsHash',
-								],
+								required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 								properties: {
 									height: {
 										dataType: 'uint32',
@@ -1246,11 +1106,7 @@ const metadata = {
 					data: {
 						$id: '/interoperability/events/ccmProcessed',
 						type: 'object',
-						required: [
-							'ccm',
-							'result',
-							'code',
-						],
+						required: ['ccm', 'result', 'code'],
 						properties: {
 							ccm: {
 								fieldNumber: 1,
@@ -1324,9 +1180,7 @@ const metadata = {
 					data: {
 						$id: '/interoperability/events/ccmSendSuccess',
 						type: 'object',
-						required: [
-							'ccm',
-						],
+						required: ['ccm'],
 						properties: {
 							ccm: {
 								fieldNumber: 1,
@@ -1392,10 +1246,7 @@ const metadata = {
 					data: {
 						$id: '/interoperability/events/ccmSendFail',
 						type: 'object',
-						required: [
-							'ccm',
-							'code',
-						],
+						required: ['ccm', 'code'],
 						properties: {
 							ccm: {
 								$id: '/modules/interoperability/ccm',
@@ -1474,11 +1325,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/terminatedState',
 						type: 'object',
-						required: [
-							'stateRoot',
-							'mainchainStateRoot',
-							'initialized',
-						],
+						required: ['stateRoot', 'mainchainStateRoot', 'initialized'],
 						properties: {
 							stateRoot: {
 								dataType: 'bytes',
@@ -1504,11 +1351,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/terminatedOutbox',
 						type: 'object',
-						required: [
-							'outboxRoot',
-							'outboxSize',
-							'partnerChainInboxSize',
-						],
+						required: ['outboxRoot', 'outboxSize', 'partnerChainInboxSize'],
 						properties: {
 							outboxRoot: {
 								dataType: 'bytes',
@@ -1558,9 +1401,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/outbox',
 						type: 'object',
-						required: [
-							'root',
-						],
+						required: ['root'],
 						properties: {
 							root: {
 								dataType: 'bytes',
@@ -1576,11 +1417,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/chainData',
 						type: 'object',
-						required: [
-							'name',
-							'lastCertificate',
-							'status',
-						],
+						required: ['name', 'lastCertificate', 'status'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -1591,12 +1428,7 @@ const metadata = {
 							lastCertificate: {
 								type: 'object',
 								fieldNumber: 2,
-								required: [
-									'height',
-									'timestamp',
-									'stateRoot',
-									'validatorsHash',
-								],
+								required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 								properties: {
 									height: {
 										dataType: 'uint32',
@@ -1632,11 +1464,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/ownChainAccount',
 						type: 'object',
-						required: [
-							'name',
-							'chainID',
-							'nonce',
-						],
+						required: ['name', 'chainID', 'nonce'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -1673,11 +1501,7 @@ const metadata = {
 							inbox: {
 								type: 'object',
 								fieldNumber: 1,
-								required: [
-									'appendPath',
-									'size',
-									'root',
-								],
+								required: ['appendPath', 'size', 'root'],
 								properties: {
 									appendPath: {
 										type: 'array',
@@ -1703,11 +1527,7 @@ const metadata = {
 							outbox: {
 								type: 'object',
 								fieldNumber: 2,
-								required: [
-									'appendPath',
-									'size',
-									'root',
-								],
+								required: ['appendPath', 'size', 'root'],
 								properties: {
 									appendPath: {
 										type: 'array',
@@ -1754,10 +1574,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/chainValidators',
 						type: 'object',
-						required: [
-							'activeValidators',
-							'certificateThreshold',
-						],
+						required: ['activeValidators', 'certificateThreshold'],
 						properties: {
 							activeValidators: {
 								type: 'array',
@@ -1766,10 +1583,7 @@ const metadata = {
 								maxItems: 199,
 								items: {
 									type: 'object',
-									required: [
-										'blsKey',
-										'bftWeight',
-									],
+									required: ['blsKey', 'bftWeight'],
 									properties: {
 										blsKey: {
 											dataType: 'bytes',
@@ -1796,11 +1610,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/terminatedState',
 						type: 'object',
-						required: [
-							'stateRoot',
-							'mainchainStateRoot',
-							'initialized',
-						],
+						required: ['stateRoot', 'mainchainStateRoot', 'initialized'],
 						properties: {
 							stateRoot: {
 								dataType: 'bytes',
@@ -1826,11 +1636,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/terminatedOutbox',
 						type: 'object',
-						required: [
-							'outboxRoot',
-							'outboxSize',
-							'partnerChainInboxSize',
-						],
+						required: ['outboxRoot', 'outboxSize', 'partnerChainInboxSize'],
 						properties: {
 							outboxRoot: {
 								dataType: 'bytes',
@@ -1854,9 +1660,7 @@ const metadata = {
 					data: {
 						$id: '/modules/interoperability/chainId',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -1874,9 +1678,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -1889,11 +1691,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/chainData',
 						type: 'object',
-						required: [
-							'name',
-							'lastCertificate',
-							'status',
-						],
+						required: ['name', 'lastCertificate', 'status'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -1904,12 +1702,7 @@ const metadata = {
 							lastCertificate: {
 								type: 'object',
 								fieldNumber: 2,
-								required: [
-									'height',
-									'timestamp',
-									'stateRoot',
-									'validatorsHash',
-								],
+								required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 								properties: {
 									height: {
 										dataType: 'uint32',
@@ -1945,9 +1738,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -1960,19 +1751,13 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/allChainAccounts',
 						type: 'object',
-						required: [
-							'chains',
-						],
+						required: ['chains'],
 						properties: {
 							chains: {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'name',
-										'lastCertificate',
-										'status',
-									],
+									required: ['name', 'lastCertificate', 'status'],
 									properties: {
 										name: {
 											dataType: 'string',
@@ -1981,12 +1766,7 @@ const metadata = {
 										lastCertificate: {
 											type: 'object',
 											fieldNumber: 2,
-											required: [
-												'height',
-												'timestamp',
-												'stateRoot',
-												'validatorsHash',
-											],
+											required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 											properties: {
 												height: {
 													dataType: 'uint32',
@@ -2023,9 +1803,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -2049,11 +1827,7 @@ const metadata = {
 							inbox: {
 								type: 'object',
 								fieldNumber: 1,
-								required: [
-									'appendPath',
-									'size',
-									'root',
-								],
+								required: ['appendPath', 'size', 'root'],
 								properties: {
 									appendPath: {
 										type: 'array',
@@ -2079,11 +1853,7 @@ const metadata = {
 							outbox: {
 								type: 'object',
 								fieldNumber: 2,
-								required: [
-									'appendPath',
-									'size',
-									'root',
-								],
+								required: ['appendPath', 'size', 'root'],
 								properties: {
 									appendPath: {
 										type: 'array',
@@ -2130,11 +1900,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/ownChainAccount',
 						type: 'object',
-						required: [
-							'name',
-							'chainID',
-							'nonce',
-						],
+						required: ['name', 'chainID', 'nonce'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -2160,9 +1926,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -2175,11 +1939,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/terminatedState',
 						type: 'object',
-						required: [
-							'stateRoot',
-							'mainchainStateRoot',
-							'initialized',
-						],
+						required: ['stateRoot', 'mainchainStateRoot', 'initialized'],
 						properties: {
 							stateRoot: {
 								dataType: 'bytes',
@@ -2205,9 +1965,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -2220,11 +1978,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/terminatedOutbox',
 						type: 'object',
-						required: [
-							'outboxRoot',
-							'outboxSize',
-							'partnerChainInboxSize',
-						],
+						required: ['outboxRoot', 'outboxSize', 'partnerChainInboxSize'],
 						properties: {
 							outboxRoot: {
 								dataType: 'bytes',
@@ -2248,9 +2002,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/mainchain/registrationFee',
 						type: 'object',
-						required: [
-							'registrationFee',
-						],
+						required: ['registrationFee'],
 						properties: {
 							registrationFee: {
 								type: 'string',
@@ -2263,9 +2015,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/mainchain/minimumMessageFeeResponse',
 						type: 'object',
-						required: [
-							'fee',
-						],
+						required: ['fee'],
 						properties: {
 							fee: {
 								type: 'string',
@@ -2278,9 +2028,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -2293,20 +2041,14 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/validatorsHashInput',
 						type: 'object',
-						required: [
-							'activeValidators',
-							'certificateThreshold',
-						],
+						required: ['activeValidators', 'certificateThreshold'],
 						properties: {
 							activeValidators: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'blsKey',
-										'bftWeight',
-									],
+									required: ['blsKey', 'bftWeight'],
 									properties: {
 										blsKey: {
 											dataType: 'bytes',
@@ -2331,9 +2073,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/getChainAccountRequest',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								type: 'string',
@@ -2346,9 +2086,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/endpoint/isChainIDAvailableResponseSchema',
 						type: 'object',
-						required: [
-							'result',
-						],
+						required: ['result'],
 						properties: {
 							result: {
 								type: 'boolean',
@@ -2361,9 +2099,7 @@ const metadata = {
 					request: {
 						$id: '/modules/interoperability/endpoint/isChainNameAvailableRequest',
 						type: 'object',
-						required: [
-							'name',
-						],
+						required: ['name'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -2376,9 +2112,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/endpoint/isChainNameAvailableResponseSchema',
 						type: 'object',
-						required: [
-							'result',
-						],
+						required: ['result'],
 						properties: {
 							result: {
 								type: 'boolean',
@@ -2391,9 +2125,7 @@ const metadata = {
 					response: {
 						$id: '/modules/interoperability/endpoint/getCCMSchemaResponseSchema',
 						type: 'object',
-						required: [
-							'schema',
-						],
+						required: ['schema'],
 						properties: {
 							schema: {
 								$id: '/modules/interoperability/ccm',
@@ -2483,12 +2215,7 @@ const metadata = {
 								fieldNumber: 3,
 								items: {
 									type: 'object',
-									required: [
-										'chainID',
-										'chainData',
-										'channelData',
-										'chainValidators',
-									],
+									required: ['chainID', 'chainData', 'channelData', 'chainValidators'],
 									properties: {
 										chainID: {
 											dataType: 'bytes',
@@ -2499,11 +2226,7 @@ const metadata = {
 										chainData: {
 											$id: '/modules/interoperability/chainData',
 											type: 'object',
-											required: [
-												'name',
-												'lastCertificate',
-												'status',
-											],
+											required: ['name', 'lastCertificate', 'status'],
 											properties: {
 												name: {
 													dataType: 'string',
@@ -2514,12 +2237,7 @@ const metadata = {
 												lastCertificate: {
 													type: 'object',
 													fieldNumber: 2,
-													required: [
-														'height',
-														'timestamp',
-														'stateRoot',
-														'validatorsHash',
-													],
+													required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 													properties: {
 														height: {
 															dataType: 'uint32',
@@ -2564,11 +2282,7 @@ const metadata = {
 												inbox: {
 													type: 'object',
 													fieldNumber: 1,
-													required: [
-														'appendPath',
-														'size',
-														'root',
-													],
+													required: ['appendPath', 'size', 'root'],
 													properties: {
 														appendPath: {
 															type: 'array',
@@ -2594,11 +2308,7 @@ const metadata = {
 												outbox: {
 													type: 'object',
 													fieldNumber: 2,
-													required: [
-														'appendPath',
-														'size',
-														'root',
-													],
+													required: ['appendPath', 'size', 'root'],
 													properties: {
 														appendPath: {
 															type: 'array',
@@ -2643,10 +2353,7 @@ const metadata = {
 										chainValidators: {
 											$id: '/modules/interoperability/chainValidators',
 											type: 'object',
-											required: [
-												'activeValidators',
-												'certificateThreshold',
-											],
+											required: ['activeValidators', 'certificateThreshold'],
 											properties: {
 												activeValidators: {
 													type: 'array',
@@ -2655,10 +2362,7 @@ const metadata = {
 													maxItems: 199,
 													items: {
 														type: 'object',
-														required: [
-															'blsKey',
-															'bftWeight',
-														],
+														required: ['blsKey', 'bftWeight'],
 														properties: {
 															blsKey: {
 																dataType: 'bytes',
@@ -2688,10 +2392,7 @@ const metadata = {
 								fieldNumber: 4,
 								items: {
 									type: 'object',
-									required: [
-										'chainID',
-										'terminatedStateAccount',
-									],
+									required: ['chainID', 'terminatedStateAccount'],
 									properties: {
 										chainID: {
 											dataType: 'bytes',
@@ -2702,11 +2403,7 @@ const metadata = {
 										terminatedStateAccount: {
 											$id: '/modules/interoperability/terminatedState',
 											type: 'object',
-											required: [
-												'stateRoot',
-												'mainchainStateRoot',
-												'initialized',
-											],
+											required: ['stateRoot', 'mainchainStateRoot', 'initialized'],
 											properties: {
 												stateRoot: {
 													dataType: 'bytes',
@@ -2735,10 +2432,7 @@ const metadata = {
 								fieldNumber: 5,
 								items: {
 									type: 'object',
-									required: [
-										'chainID',
-										'terminatedOutboxAccount',
-									],
+									required: ['chainID', 'terminatedOutboxAccount'],
 									properties: {
 										chainID: {
 											dataType: 'bytes',
@@ -2749,11 +2443,7 @@ const metadata = {
 										terminatedOutboxAccount: {
 											$id: '/modules/interoperability/terminatedOutbox',
 											type: 'object',
-											required: [
-												'outboxRoot',
-												'outboxSize',
-												'partnerChainInboxSize',
-											],
+											required: ['outboxRoot', 'outboxSize', 'partnerChainInboxSize'],
 											properties: {
 												outboxRoot: {
 													dataType: 'bytes',
@@ -2788,9 +2478,7 @@ const metadata = {
 					request: {
 						$id: '/legacy/endpoint/legacyAccountRequest',
 						type: 'object',
-						required: [
-							'publicKey',
-						],
+						required: ['publicKey'],
 						properties: {
 							publicKey: {
 								type: 'string',
@@ -2801,9 +2489,7 @@ const metadata = {
 					response: {
 						$id: '/legacy/store/genesis',
 						type: 'object',
-						required: [
-							'balance',
-						],
+						required: ['balance'],
 						properties: {
 							balance: {
 								dataType: 'uint64',
@@ -2819,9 +2505,7 @@ const metadata = {
 					params: {
 						$id: '/legacy/command/reclaimLSKParams',
 						type: 'object',
-						required: [
-							'amount',
-						],
+						required: ['amount'],
 						properties: {
 							amount: {
 								dataType: 'uint64',
@@ -2835,11 +2519,7 @@ const metadata = {
 					params: {
 						$id: '/legacy/command/registerKeysParams',
 						type: 'object',
-						required: [
-							'blsKey',
-							'proofOfPossession',
-							'generatorKey',
-						],
+						required: ['blsKey', 'proofOfPossession', 'generatorKey'],
 						properties: {
 							blsKey: {
 								dataType: 'bytes',
@@ -2869,11 +2549,7 @@ const metadata = {
 					data: {
 						$id: 'lisk/legacy/accountReclaimedEventData',
 						type: 'object',
-						required: [
-							'legacyAddress',
-							'address',
-							'amount',
-						],
+						required: ['legacyAddress', 'address', 'amount'],
 						properties: {
 							legacyAddress: {
 								dataType: 'bytes',
@@ -2897,11 +2573,7 @@ const metadata = {
 					data: {
 						$id: 'lisk/legacy/keysRegisteredEventData',
 						type: 'object',
-						required: [
-							'address',
-							'generatorKey',
-							'blsKey',
-						],
+						required: ['address', 'generatorKey', 'blsKey'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -2928,19 +2600,14 @@ const metadata = {
 					data: {
 						$id: '/legacy/module/genesis',
 						type: 'object',
-						required: [
-							'accounts',
-						],
+						required: ['accounts'],
 						properties: {
 							accounts: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'address',
-										'balance',
-									],
+									required: ['address', 'balance'],
 									properties: {
 										address: {
 											dataType: 'bytes',
@@ -2969,12 +2636,7 @@ const metadata = {
 					params: {
 						$id: '/pos/command/registerValidatorParams',
 						type: 'object',
-						required: [
-							'name',
-							'blsKey',
-							'proofOfPossession',
-							'generatorKey',
-						],
+						required: ['name', 'blsKey', 'proofOfPossession', 'generatorKey'],
 						properties: {
 							name: {
 								dataType: 'string',
@@ -3008,10 +2670,7 @@ const metadata = {
 					params: {
 						$id: '/pos/command/reportMisbehaviorParams',
 						type: 'object',
-						required: [
-							'header1',
-							'header2',
-						],
+						required: ['header1', 'header2'],
 						properties: {
 							header1: {
 								dataType: 'bytes',
@@ -3037,9 +2696,7 @@ const metadata = {
 					params: {
 						$id: '/pos/command/updateGeneratorKeyParams',
 						type: 'object',
-						required: [
-							'generatorKey',
-						],
+						required: ['generatorKey'],
 						properties: {
 							generatorKey: {
 								dataType: 'bytes',
@@ -3055,9 +2712,7 @@ const metadata = {
 					params: {
 						$id: '/pos/command/stakeValidatorParams',
 						type: 'object',
-						required: [
-							'stakes',
-						],
+						required: ['stakes'],
 						properties: {
 							stakes: {
 								type: 'array',
@@ -3066,10 +2721,7 @@ const metadata = {
 								maxItems: 20,
 								items: {
 									type: 'object',
-									required: [
-										'validatorAddress',
-										'amount',
-									],
+									required: ['validatorAddress', 'amount'],
 									properties: {
 										validatorAddress: {
 											dataType: 'bytes',
@@ -3091,9 +2743,7 @@ const metadata = {
 					params: {
 						$id: '/pos/command/changeCommissionCommandParams',
 						type: 'object',
-						required: [
-							'newCommission',
-						],
+						required: ['newCommission'],
 						properties: {
 							newCommission: {
 								dataType: 'uint32',
@@ -3118,10 +2768,7 @@ const metadata = {
 					data: {
 						$id: '/pos/events/validatorBannedData',
 						type: 'object',
-						required: [
-							'address',
-							'height',
-						],
+						required: ['address', 'height'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -3140,10 +2787,7 @@ const metadata = {
 					data: {
 						$id: '/pos/events/punishValidatorData',
 						type: 'object',
-						required: [
-							'address',
-							'height',
-						],
+						required: ['address', 'height'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -3162,10 +2806,7 @@ const metadata = {
 					data: {
 						$id: '/pos/events/registerValidatorData',
 						type: 'object',
-						required: [
-							'address',
-							'name',
-						],
+						required: ['address', 'name'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -3184,12 +2825,7 @@ const metadata = {
 					data: {
 						$id: '/pos/events/validatorStakedData',
 						type: 'object',
-						required: [
-							'senderAddress',
-							'validatorAddress',
-							'amount',
-							'result',
-						],
+						required: ['senderAddress', 'validatorAddress', 'amount', 'result'],
 						properties: {
 							senderAddress: {
 								dataType: 'bytes',
@@ -3217,11 +2853,7 @@ const metadata = {
 					data: {
 						$id: '/pos/events/commissionChangeData',
 						type: 'object',
-						required: [
-							'validatorAddress',
-							'oldCommission',
-							'newCommission',
-						],
+						required: ['validatorAddress', 'oldCommission', 'newCommission'],
 						properties: {
 							validatorAddress: {
 								dataType: 'bytes',
@@ -3244,12 +2876,7 @@ const metadata = {
 					data: {
 						$id: '/pos/events/rewardsAssignedData',
 						type: 'object',
-						required: [
-							'stakerAddress',
-							'validatorAddress',
-							'tokenID',
-							'amount',
-						],
+						required: ['stakerAddress', 'validatorAddress', 'tokenID', 'amount'],
 						properties: {
 							stakerAddress: {
 								dataType: 'bytes',
@@ -3281,21 +2908,14 @@ const metadata = {
 					data: {
 						$id: '/pos/staker',
 						type: 'object',
-						required: [
-							'stakes',
-							'pendingUnlocks',
-						],
+						required: ['stakes', 'pendingUnlocks'],
 						properties: {
 							stakes: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'validatorAddress',
-										'amount',
-										'sharingCoefficients',
-									],
+									required: ['validatorAddress', 'amount', 'sharingCoefficients'],
 									properties: {
 										validatorAddress: {
 											dataType: 'bytes',
@@ -3311,10 +2931,7 @@ const metadata = {
 											fieldNumber: 3,
 											items: {
 												type: 'object',
-												required: [
-													'tokenID',
-													'coefficient',
-												],
+												required: ['tokenID', 'coefficient'],
 												properties: {
 													tokenID: {
 														dataType: 'bytes',
@@ -3338,11 +2955,7 @@ const metadata = {
 								fieldNumber: 2,
 								items: {
 									type: 'object',
-									required: [
-										'validatorAddress',
-										'amount',
-										'unstakeHeight',
-									],
+									required: ['validatorAddress', 'amount', 'unstakeHeight'],
 									properties: {
 										validatorAddress: {
 											dataType: 'bytes',
@@ -3425,10 +3038,7 @@ const metadata = {
 								fieldNumber: 10,
 								items: {
 									type: 'object',
-									required: [
-										'tokenID',
-										'coefficient',
-									],
+									required: ['tokenID', 'coefficient'],
 									properties: {
 										tokenID: {
 											dataType: 'bytes',
@@ -3452,9 +3062,7 @@ const metadata = {
 					data: {
 						$id: '/pos/name',
 						type: 'object',
-						required: [
-							'validatorAddress',
-						],
+						required: ['validatorAddress'],
 						properties: {
 							validatorAddress: {
 								dataType: 'bytes',
@@ -3469,19 +3077,14 @@ const metadata = {
 					data: {
 						$id: '/pos/store/snapshot',
 						type: 'object',
-						required: [
-							'validatorWeightSnapshot',
-						],
+						required: ['validatorWeightSnapshot'],
 						properties: {
 							validatorWeightSnapshot: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'address',
-										'weight',
-									],
+									required: ['address', 'weight'],
 									properties: {
 										address: {
 											dataType: 'bytes',
@@ -3503,11 +3106,7 @@ const metadata = {
 					data: {
 						$id: '/pos/store/genesis',
 						type: 'object',
-						required: [
-							'height',
-							'initRounds',
-							'initValidators',
-						],
+						required: ['height', 'initRounds', 'initValidators'],
 						properties: {
 							height: {
 								dataType: 'uint32',
@@ -3533,9 +3132,7 @@ const metadata = {
 					data: {
 						$id: '/pos/store/previousTimestamp',
 						type: 'object',
-						required: [
-							'timestamp',
-						],
+						required: ['timestamp'],
 						properties: {
 							timestamp: {
 								dataType: 'uint32',
@@ -3549,9 +3146,7 @@ const metadata = {
 					data: {
 						$id: '/pos/eligibleValidators',
 						type: 'object',
-						required: [
-							'lastReportMisbehaviorHeight',
-						],
+						required: ['lastReportMisbehaviorHeight'],
 						properties: {
 							lastReportMisbehaviorHeight: {
 								dataType: 'uint32',
@@ -3567,9 +3162,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getAllValidatorsResponse',
 						type: 'object',
-						required: [
-							'validators',
-						],
+						required: ['validators'],
 						properties: {
 							validators: {
 								type: 'array',
@@ -3620,10 +3213,7 @@ const metadata = {
 											type: 'array',
 											items: {
 												type: 'object',
-												required: [
-													'start',
-													'end',
-												],
+												required: ['start', 'end'],
 												properties: {
 													start: {
 														type: 'integer',
@@ -3651,9 +3241,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getValidatorRequest',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -3709,10 +3297,7 @@ const metadata = {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'start',
-										'end',
-									],
+									required: ['start', 'end'],
 									properties: {
 										start: {
 											type: 'integer',
@@ -3737,9 +3322,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getValidatorRequest',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -3750,20 +3333,14 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getStakerResponse',
 						type: 'object',
-						required: [
-							'stakes',
-							'pendingUnlocks',
-						],
+						required: ['stakes', 'pendingUnlocks'],
 						properties: {
 							stakes: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'validatorAddress',
-										'amount',
-									],
+									required: ['validatorAddress', 'amount'],
 									properties: {
 										validatorAddress: {
 											type: 'string',
@@ -3781,11 +3358,7 @@ const metadata = {
 								fieldNumber: 2,
 								items: {
 									type: 'object',
-									required: [
-										'validatorAddress',
-										'amount',
-										'unstakeHeight',
-									],
+									required: ['validatorAddress', 'amount', 'unstakeHeight'],
 									properties: {
 										validatorAddress: {
 											type: 'string',
@@ -3945,9 +3518,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getPoSTokenIDResponse',
 						type: 'object',
-						required: [
-							'tokenID',
-						],
+						required: ['tokenID'],
 						properties: {
 							tokenID: {
 								type: 'string',
@@ -3961,9 +3532,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getClaimableRewardsRequest',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -3978,10 +3547,7 @@ const metadata = {
 							rewards: {
 								items: {
 									type: 'object',
-									required: [
-										'tokenID',
-										'reward',
-									],
+									required: ['tokenID', 'reward'],
 									properties: {
 										tokenID: {
 											type: 'string',
@@ -4002,10 +3568,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getLockedRewardRequest',
 						type: 'object',
-						required: [
-							'address',
-							'tokenID',
-						],
+						required: ['address', 'tokenID'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4020,9 +3583,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getLockedRewardResponse',
 						type: 'object',
-						required: [
-							'reward',
-						],
+						required: ['reward'],
 						properties: {
 							reward: {
 								type: 'string',
@@ -4036,9 +3597,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getLockedStakedAmountRequest',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4049,9 +3608,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getLockedStakedAmountResponse',
 						type: 'object',
-						required: [
-							'amount',
-						],
+						required: ['amount'],
 						properties: {
 							amount: {
 								type: 'string',
@@ -4075,9 +3632,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getValidatorsByStakeResponse',
 						type: 'object',
-						required: [
-							'validators',
-						],
+						required: ['validators'],
 						properties: {
 							validators: {
 								type: 'array',
@@ -4128,10 +3683,7 @@ const metadata = {
 											type: 'array',
 											items: {
 												type: 'object',
-												required: [
-													'start',
-													'end',
-												],
+												required: ['start', 'end'],
 												properties: {
 													start: {
 														type: 'integer',
@@ -4159,9 +3711,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getPendingUnlocksRequest',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4172,9 +3722,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getPendingUnlocksResponse',
 						type: 'object',
-						required: [
-							'pendingUnlocks',
-						],
+						required: ['pendingUnlocks'],
 						properties: {
 							pendingUnlocks: {
 								type: 'array',
@@ -4218,9 +3766,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getRegistrationFeeResponse',
 						type: 'object',
-						required: [
-							'registrationFee',
-						],
+						required: ['registrationFee'],
 						properties: {
 							registrationFee: {
 								type: 'string',
@@ -4233,11 +3779,7 @@ const metadata = {
 					request: {
 						$id: 'modules/pos/endpoint/getExpectedSharedRewardsRequest',
 						type: 'object',
-						required: [
-							'validatorAddress',
-							'validatorReward',
-							'stake',
-						],
+						required: ['validatorAddress', 'validatorReward', 'stake'],
 						properties: {
 							validatorAddress: {
 								type: 'string',
@@ -4256,9 +3798,7 @@ const metadata = {
 					response: {
 						$id: 'modules/pos/endpoint/getExpectedSharedRewardsResponse',
 						type: 'object',
-						required: [
-							'reward',
-						],
+						required: ['reward'],
 						properties: {
 							reward: {
 								type: 'string',
@@ -4274,11 +3814,7 @@ const metadata = {
 					data: {
 						$id: '/pos/module/genesis',
 						type: 'object',
-						required: [
-							'validators',
-							'stakers',
-							'genesisData',
-						],
+						required: ['validators', 'stakers', 'genesisData'],
 						properties: {
 							validators: {
 								type: 'array',
@@ -4362,10 +3898,7 @@ const metadata = {
 											fieldNumber: 12,
 											items: {
 												type: 'object',
-												required: [
-													'tokenID',
-													'coefficient',
-												],
+												required: ['tokenID', 'coefficient'],
 												properties: {
 													tokenID: {
 														dataType: 'bytes',
@@ -4389,11 +3922,7 @@ const metadata = {
 								fieldNumber: 2,
 								items: {
 									type: 'object',
-									required: [
-										'address',
-										'stakes',
-										'pendingUnlocks',
-									],
+									required: ['address', 'stakes', 'pendingUnlocks'],
 									properties: {
 										address: {
 											dataType: 'bytes',
@@ -4405,11 +3934,7 @@ const metadata = {
 											fieldNumber: 2,
 											items: {
 												type: 'object',
-												required: [
-													'validatorAddress',
-													'amount',
-													'sharingCoefficients',
-												],
+												required: ['validatorAddress', 'amount', 'sharingCoefficients'],
 												properties: {
 													validatorAddress: {
 														dataType: 'bytes',
@@ -4425,10 +3950,7 @@ const metadata = {
 														fieldNumber: 3,
 														items: {
 															type: 'object',
-															required: [
-																'tokenID',
-																'coefficient',
-															],
+															required: ['tokenID', 'coefficient'],
 															properties: {
 																tokenID: {
 																	dataType: 'bytes',
@@ -4452,11 +3974,7 @@ const metadata = {
 											fieldNumber: 3,
 											items: {
 												type: 'object',
-												required: [
-													'validatorAddress',
-													'amount',
-													'unstakeHeight',
-												],
+												required: ['validatorAddress', 'amount', 'unstakeHeight'],
 												properties: {
 													validatorAddress: {
 														dataType: 'bytes',
@@ -4480,10 +3998,7 @@ const metadata = {
 							genesisData: {
 								type: 'object',
 								fieldNumber: 3,
-								required: [
-									'initRounds',
-									'initValidators',
-								],
+								required: ['initRounds', 'initValidators'],
 								properties: {
 									initRounds: {
 										dataType: 'uint32',
@@ -4514,21 +4029,14 @@ const metadata = {
 					data: {
 						$id: '/modules/random/seedReveal',
 						type: 'object',
-						required: [
-							'validatorReveals',
-						],
+						required: ['validatorReveals'],
 						properties: {
 							validatorReveals: {
 								type: 'array',
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'generatorAddress',
-										'seedReveal',
-										'height',
-										'valid',
-									],
+									required: ['generatorAddress', 'seedReveal', 'height', 'valid'],
 									properties: {
 										generatorAddress: {
 											dataType: 'bytes',
@@ -4563,10 +4071,7 @@ const metadata = {
 					request: {
 						$id: '/modules/random/endpoint/isSeedRevealRequest',
 						type: 'object',
-						required: [
-							'generatorAddress',
-							'seedReveal',
-						],
+						required: ['generatorAddress', 'seedReveal'],
 						properties: {
 							generatorAddress: {
 								type: 'string',
@@ -4581,9 +4086,7 @@ const metadata = {
 					response: {
 						$id: '/modules/random/endpoint/isSeedRevealResponse',
 						type: 'object',
-						required: [
-							'valid',
-						],
+						required: ['valid'],
 						properties: {
 							valid: {
 								type: 'boolean',
@@ -4597,9 +4100,7 @@ const metadata = {
 						$id: 'lisk/random/setSeedRequestSchema',
 						type: 'object',
 						title: 'Random setSeed request',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4639,9 +4140,7 @@ const metadata = {
 						$id: 'lisk/random/setSeedRequestSchema',
 						type: 'object',
 						title: 'Random setSeed request',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4680,9 +4179,7 @@ const metadata = {
 					request: {
 						$id: 'lisk/random/addressSchema',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4693,10 +4190,7 @@ const metadata = {
 					response: {
 						$id: 'lisk/random/hasHashOnionResponseSchema',
 						type: 'object',
-						required: [
-							'hasSeed',
-							'remaining',
-						],
+						required: ['hasSeed', 'remaining'],
 						properties: {
 							hasSeed: {
 								type: 'boolean',
@@ -4713,9 +4207,7 @@ const metadata = {
 					request: {
 						$id: 'lisk/random/addressSchema',
 						type: 'object',
-						required: [
-							'address',
-						],
+						required: ['address'],
 						properties: {
 							address: {
 								type: 'string',
@@ -4726,19 +4218,13 @@ const metadata = {
 					response: {
 						$id: 'lisk/random/getHashOnionUsageResponse',
 						type: 'object',
-						required: [
-							'usedHashOnions',
-							'seed',
-						],
+						required: ['usedHashOnions', 'seed'],
 						properties: {
 							usedHashOnions: {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'count',
-										'height',
-									],
+									required: ['count', 'height'],
 									properties: {
 										count: {
 											type: 'integer',
@@ -4773,9 +4259,7 @@ const metadata = {
 								maxLength: 16,
 							},
 						},
-						required: [
-							'seedReveal',
-						],
+						required: ['seedReveal'],
 					},
 				},
 			],
@@ -4789,12 +4273,7 @@ const metadata = {
 						$id: '/lisk/transferParams',
 						title: 'Transfer transaction params',
 						type: 'object',
-						required: [
-							'tokenID',
-							'amount',
-							'recipientAddress',
-							'data',
-						],
+						required: ['tokenID', 'amount', 'recipientAddress', 'data'],
 						properties: {
 							tokenID: {
 								dataType: 'bytes',
@@ -4882,13 +4361,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/transfer',
 						type: 'object',
-						required: [
-							'senderAddress',
-							'recipientAddress',
-							'tokenID',
-							'amount',
-							'result',
-						],
+						required: ['senderAddress', 'recipientAddress', 'tokenID', 'amount', 'result'],
 						properties: {
 							senderAddress: {
 								dataType: 'bytes',
@@ -5016,12 +4489,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/mint',
 						type: 'object',
-						required: [
-							'address',
-							'tokenID',
-							'amount',
-							'result',
-						],
+						required: ['address', 'tokenID', 'amount', 'result'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -5050,12 +4518,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/burn',
 						type: 'object',
-						required: [
-							'address',
-							'tokenID',
-							'amount',
-							'result',
-						],
+						required: ['address', 'tokenID', 'amount', 'result'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -5084,13 +4547,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/lock',
 						type: 'object',
-						required: [
-							'address',
-							'module',
-							'tokenID',
-							'amount',
-							'result',
-						],
+						required: ['address', 'module', 'tokenID', 'amount', 'result'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -5125,13 +4582,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/unlock',
 						type: 'object',
-						required: [
-							'address',
-							'module',
-							'tokenID',
-							'amount',
-							'result',
-						],
+						required: ['address', 'module', 'tokenID', 'amount', 'result'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -5166,10 +4617,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/initializeTokenEvent',
 						type: 'object',
-						required: [
-							'tokenID',
-							'result',
-						],
+						required: ['tokenID', 'result'],
 						properties: {
 							tokenID: {
 								dataType: 'bytes',
@@ -5189,12 +4637,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/initializeUserAccount',
 						type: 'object',
-						required: [
-							'address',
-							'tokenID',
-							'initializationFee',
-							'result',
-						],
+						required: ['address', 'tokenID', 'initializationFee', 'result'],
 						properties: {
 							address: {
 								dataType: 'bytes',
@@ -5223,12 +4666,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/initializeEscrowAccount',
 						type: 'object',
-						required: [
-							'chainID',
-							'tokenID',
-							'initializationFee',
-							'result',
-						],
+						required: ['chainID', 'tokenID', 'initializationFee', 'result'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -5258,12 +4696,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/recover',
 						type: 'object',
-						required: [
-							'terminatedChainID',
-							'tokenID',
-							'amount',
-							'result',
-						],
+						required: ['terminatedChainID', 'tokenID', 'amount', 'result'],
 						properties: {
 							terminatedChainID: {
 								dataType: 'bytes',
@@ -5293,12 +4726,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/beforeCCCExecution',
 						type: 'object',
-						required: [
-							'ccmID',
-							'messageFeeTokenID',
-							'relayerAddress',
-							'result',
-						],
+						required: ['ccmID', 'messageFeeTokenID', 'relayerAddress', 'result'],
 						properties: {
 							ccmID: {
 								dataType: 'bytes',
@@ -5329,11 +4757,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/beforeCCMForwarding',
 						type: 'object',
-						required: [
-							'ccmID',
-							'messageFeeTokenID',
-							'result',
-						],
+						required: ['ccmID', 'messageFeeTokenID', 'result'],
 						properties: {
 							ccmID: {
 								dataType: 'bytes',
@@ -5375,9 +4799,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/allTokensFromChainSupported',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -5393,9 +4815,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/allTokensFromChainSupportRemoved',
 						type: 'object',
-						required: [
-							'chainID',
-						],
+						required: ['chainID'],
 						properties: {
 							chainID: {
 								dataType: 'bytes',
@@ -5411,9 +4831,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/tokenIDSupported',
 						type: 'object',
-						required: [
-							'tokenID',
-						],
+						required: ['tokenID'],
 						properties: {
 							tokenID: {
 								dataType: 'bytes',
@@ -5429,9 +4847,7 @@ const metadata = {
 					data: {
 						$id: '/token/events/tokenIDSupportRemoved',
 						type: 'object',
-						required: [
-							'tokenID',
-						],
+						required: ['tokenID'],
 						properties: {
 							tokenID: {
 								dataType: 'bytes',
@@ -5449,10 +4865,7 @@ const metadata = {
 					data: {
 						$id: '/token/store/user',
 						type: 'object',
-						required: [
-							'availableBalance',
-							'lockedBalances',
-						],
+						required: ['availableBalance', 'lockedBalances'],
 						properties: {
 							availableBalance: {
 								dataType: 'uint64',
@@ -5463,10 +4876,7 @@ const metadata = {
 								fieldNumber: 2,
 								items: {
 									type: 'object',
-									required: [
-										'module',
-										'amount',
-									],
+									required: ['module', 'amount'],
 									properties: {
 										module: {
 											dataType: 'string',
@@ -5489,9 +4899,7 @@ const metadata = {
 					data: {
 						$id: '/token/store/supply',
 						type: 'object',
-						required: [
-							'totalSupply',
-						],
+						required: ['totalSupply'],
 						properties: {
 							totalSupply: {
 								dataType: 'uint64',
@@ -5505,9 +4913,7 @@ const metadata = {
 					data: {
 						$id: '/token/store/escrow',
 						type: 'object',
-						required: [
-							'amount',
-						],
+						required: ['amount'],
 						properties: {
 							amount: {
 								dataType: 'uint64',
@@ -5521,9 +4927,7 @@ const metadata = {
 					data: {
 						$id: '/token/store/supportedTokens',
 						type: 'object',
-						required: [
-							'supportedTokenIDs',
-						],
+						required: ['supportedTokenIDs'],
 						properties: {
 							supportedTokenIDs: {
 								type: 'array',
@@ -5556,18 +4960,12 @@ const metadata = {
 								maxLength: 16,
 							},
 						},
-						required: [
-							'address',
-							'tokenID',
-						],
+						required: ['address', 'tokenID'],
 					},
 					response: {
 						$id: '/token/endpoint/getBalanceResponse',
 						type: 'object',
-						required: [
-							'availableBalance',
-							'lockedBalances',
-						],
+						required: ['availableBalance', 'lockedBalances'],
 						properties: {
 							availableBalance: {
 								type: 'string',
@@ -5577,10 +4975,7 @@ const metadata = {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'module',
-										'amount',
-									],
+									required: ['module', 'amount'],
 									properties: {
 										module: {
 											type: 'string',
@@ -5606,26 +5001,18 @@ const metadata = {
 								format: 'lisk32',
 							},
 						},
-						required: [
-							'address',
-						],
+						required: ['address'],
 					},
 					response: {
 						$id: '/token/endpoint/getBalancesResponse',
 						type: 'object',
-						required: [
-							'balances',
-						],
+						required: ['balances'],
 						properties: {
 							balances: {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'availableBalance',
-										'lockedBalances',
-										'tokenID',
-									],
+									required: ['availableBalance', 'lockedBalances', 'tokenID'],
 									properties: {
 										tokenID: {
 											type: 'string',
@@ -5639,10 +5026,7 @@ const metadata = {
 											type: 'array',
 											items: {
 												type: 'object',
-												required: [
-													'module',
-													'amount',
-												],
+												required: ['module', 'amount'],
 												properties: {
 													module: {
 														type: 'string',
@@ -5670,10 +5054,7 @@ const metadata = {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'totalSupply',
-										'tokenID',
-									],
+									required: ['totalSupply', 'tokenID'],
 									properties: {
 										tokenID: {
 											type: 'string',
@@ -5718,9 +5099,7 @@ const metadata = {
 								maxLength: 16,
 							},
 						},
-						required: [
-							'tokenID',
-						],
+						required: ['tokenID'],
 					},
 					response: {
 						$id: '/token/endpoint/isSupportedResponse',
@@ -5730,9 +5109,7 @@ const metadata = {
 								dataType: 'boolean',
 							},
 						},
-						required: [
-							'supported',
-						],
+						required: ['supported'],
 					},
 				},
 				{
@@ -5745,11 +5122,7 @@ const metadata = {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'escrowChainID',
-										'amount',
-										'tokenID',
-									],
+									required: ['escrowChainID', 'amount', 'tokenID'],
 									properties: {
 										escrowChainID: {
 											type: 'string',
@@ -5784,10 +5157,7 @@ const metadata = {
 								format: 'uint64',
 							},
 						},
-						required: [
-							'userAccount',
-							'escrowAccount',
-						],
+						required: ['userAccount', 'escrowAccount'],
 					},
 				},
 				{
@@ -5807,10 +5177,7 @@ const metadata = {
 								maxLength: 16,
 							},
 						},
-						required: [
-							'address',
-							'tokenID',
-						],
+						required: ['address', 'tokenID'],
 					},
 					response: {
 						$id: '/token/endpoint/hasUserAccountResponse',
@@ -5839,10 +5206,7 @@ const metadata = {
 								format: 'hex',
 							},
 						},
-						required: [
-							'tokenID',
-							'escrowChainID',
-						],
+						required: ['tokenID', 'escrowChainID'],
 					},
 					response: {
 						$id: '/token/endpoint/hasEscrowAccountResponse',
@@ -5873,12 +5237,7 @@ const metadata = {
 								fieldNumber: 1,
 								items: {
 									type: 'object',
-									required: [
-										'address',
-										'tokenID',
-										'availableBalance',
-										'lockedBalances',
-									],
+									required: ['address', 'tokenID', 'availableBalance', 'lockedBalances'],
 									properties: {
 										address: {
 											dataType: 'bytes',
@@ -5900,10 +5259,7 @@ const metadata = {
 											fieldNumber: 4,
 											items: {
 												type: 'object',
-												required: [
-													'module',
-													'amount',
-												],
+												required: ['module', 'amount'],
 												properties: {
 													module: {
 														dataType: 'string',
@@ -5926,10 +5282,7 @@ const metadata = {
 								fieldNumber: 2,
 								items: {
 									type: 'object',
-									required: [
-										'tokenID',
-										'totalSupply',
-									],
+									required: ['tokenID', 'totalSupply'],
 									properties: {
 										tokenID: {
 											dataType: 'bytes',
@@ -5949,11 +5302,7 @@ const metadata = {
 								fieldNumber: 3,
 								items: {
 									type: 'object',
-									required: [
-										'escrowChainID',
-										'tokenID',
-										'amount',
-									],
+									required: ['escrowChainID', 'tokenID', 'amount'],
 									properties: {
 										escrowChainID: {
 											dataType: 'bytes',
@@ -5979,10 +5328,7 @@ const metadata = {
 								fieldNumber: 4,
 								items: {
 									type: 'object',
-									required: [
-										'chainID',
-										'supportedTokenIDs',
-									],
+									required: ['chainID', 'supportedTokenIDs'],
 									properties: {
 										chainID: {
 											dataType: 'bytes',
@@ -6014,10 +5360,7 @@ const metadata = {
 					data: {
 						$id: '/validators/event/generatorKeyRegData',
 						type: 'object',
-						required: [
-							'generatorKey',
-							'result',
-						],
+						required: ['generatorKey', 'result'],
 						properties: {
 							generatorKey: {
 								dataType: 'bytes',
@@ -6037,11 +5380,7 @@ const metadata = {
 					data: {
 						$id: '/validators/event/blsKeyRegData',
 						type: 'object',
-						required: [
-							'blsKey',
-							'proofOfPossession',
-							'result',
-						],
+						required: ['blsKey', 'proofOfPossession', 'result'],
 						properties: {
 							blsKey: {
 								dataType: 'bytes',
@@ -6084,10 +5423,7 @@ const metadata = {
 								maxLength: 48,
 							},
 						},
-						required: [
-							'generatorKey',
-							'blsKey',
-						],
+						required: ['generatorKey', 'blsKey'],
 					},
 				},
 				{
@@ -6095,11 +5431,7 @@ const metadata = {
 					data: {
 						$id: '/validators/validatorsParams',
 						type: 'object',
-						required: [
-							'validators',
-							'preCommitThreshold',
-							'certificateThreshold',
-						],
+						required: ['validators', 'preCommitThreshold', 'certificateThreshold'],
 						properties: {
 							preCommitThreshold: {
 								fieldNumber: 1,
@@ -6114,12 +5446,7 @@ const metadata = {
 								type: 'array',
 								items: {
 									type: 'object',
-									required: [
-										'address',
-										'bftWeight',
-										'generatorKey',
-										'blsKey',
-									],
+									required: ['address', 'bftWeight', 'generatorKey', 'blsKey'],
 									properties: {
 										address: {
 											fieldNumber: 1,
@@ -6156,9 +5483,7 @@ const metadata = {
 								fieldNumber: 1,
 							},
 						},
-						required: [
-							'address',
-						],
+						required: ['address'],
 					},
 				},
 			],
@@ -6179,10 +5504,7 @@ const metadata = {
 								format: 'hex',
 							},
 						},
-						required: [
-							'proofOfPossession',
-							'blsKey',
-						],
+						required: ['proofOfPossession', 'blsKey'],
 					},
 					response: {
 						$id: '/validators/endpoint/validateBLSKeyResponse',
@@ -6193,9 +5515,7 @@ const metadata = {
 								type: 'boolean',
 							},
 						},
-						required: [
-							'valid',
-						],
+						required: ['valid'],
 					},
 				},
 				{
@@ -6210,9 +5530,7 @@ const metadata = {
 								format: 'lisk32',
 							},
 						},
-						required: [
-							'address',
-						],
+						required: ['address'],
 					},
 					response: {
 						$id: '/validators/endpoint/getValidatorResponse',
@@ -6228,10 +5546,7 @@ const metadata = {
 								format: 'hex',
 							},
 						},
-						required: [
-							'generatorKey',
-							'blsKey',
-						],
+						required: ['generatorKey', 'blsKey'],
 					},
 				},
 			],

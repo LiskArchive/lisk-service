@@ -14,7 +14,9 @@
  *
  */
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 const config = require('../../config');
 
@@ -23,14 +25,16 @@ const ccuTableSchema = require('../database/schema/ccu');
 
 const getCCUTable = () => getTableInstance(ccuTableSchema, MYSQL_ENDPOINT);
 
-const deleteFinalizedCCUMetadata = async (height) => {
+const deleteFinalizedCCUMetadata = async height => {
 	const ccuTable = await getCCUTable();
 
 	const searchParams = {
-		propBetweens: [{
-			property: 'height',
-			to: height,
-		}],
+		propBetweens: [
+			{
+				property: 'height',
+				to: height,
+			},
+		],
 	};
 
 	await ccuTable.delete(searchParams);

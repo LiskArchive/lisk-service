@@ -32,20 +32,35 @@ const DEFAULT_METHOD_PATH = '';
 const DEFAULT_ETAG_VALUE = 'strong';
 const ALLOWED_ETAG_VALUES = ['strong', 'weak', true, false, 'custom'];
 
-const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
+const getMethodName = method => (method.httpMethod ? method.httpMethod : 'GET');
 
 const buildAPIAliases = (apiPrefix, methods, eTag = DEFAULT_ETAG_VALUE) => {
-	const whitelist = Object.keys(methods).reduce((acc, key) => [
-		...acc, methods[key].source.method,
-	], []);
+	const whitelist = Object.keys(methods).reduce(
+		(acc, key) => [...acc, methods[key].source.method],
+		[],
+	);
 
-	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${eTag === DEFAULT_ETAG_VALUE ? transformPath(methods[key].swaggerApiPath) : DEFAULT_ALIAS}`]: methods[key].source.method,
-	}), {});
+	const aliases = Object.keys(methods).reduce(
+		(acc, key) => ({
+			...acc,
+			[`${getMethodName(methods[key])} ${
+				eTag === DEFAULT_ETAG_VALUE ? transformPath(methods[key].swaggerApiPath) : DEFAULT_ALIAS
+			}`]: methods[key].source.method,
+		}),
+		{},
+	);
 
-	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${eTag === DEFAULT_ETAG_VALUE ? transformPath(methods[key].swaggerApiPath) : DEFAULT_METHOD_PATH}`]: methods[key],
-	}), {});
+	const methodPaths = Object.keys(methods).reduce(
+		(acc, key) => ({
+			...acc,
+			[`${getMethodName(methods[key])} ${
+				eTag === DEFAULT_ETAG_VALUE
+					? transformPath(methods[key].swaggerApiPath)
+					: DEFAULT_METHOD_PATH
+			}`]: methods[key],
+		}),
+		{},
+	);
 
 	return { aliases, whitelist, methodPaths };
 };
@@ -64,12 +79,11 @@ const getAllAPIs = (apiNames, registeredModuleNames) => {
 		registeredModuleNames.forEach(moduleName => {
 			const dirPath = `../apis/${apiName}/methods/modules/${moduleName}`;
 			try {
-				Object.assign(
-					allMethods,
-					Utils.requireAllJs(path.resolve(__dirname, dirPath)),
-				);
+				Object.assign(allMethods, Utils.requireAllJs(path.resolve(__dirname, dirPath)));
 			} catch (err) {
-				logger.warn(`Moleculer method definitions (HTTP endpoints) missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`);
+				logger.warn(
+					`Moleculer method definitions (HTTP endpoints) missing for module: ${module}. Is this expected?\nWas expected at: ${dirPath}.`,
+				);
 			}
 		});
 	});
@@ -87,22 +101,26 @@ const getAllAPIs = (apiNames, registeredModuleNames) => {
 };
 
 /* eslint-disable-next-line max-len */
-const buildAPIConfig = (configPath, config, aliases, whitelist, methodPaths, eTag = DEFAULT_ETAG_VALUE) => ({
+const buildAPIConfig = (
+	configPath,
+	config,
+	aliases,
+	whitelist,
+	methodPaths,
+	eTag = DEFAULT_ETAG_VALUE,
+) => ({
 	...config,
 
 	path: configPath,
 
-	whitelist: [
-		...config.whitelist,
-		...whitelist,
-	],
+	whitelist: [...config.whitelist, ...whitelist],
 
 	aliases: {
 		...config.aliases,
 		...aliases,
 	},
 
-	etag: (typeof eTag === 'function') ? eTag() : eTag,
+	etag: typeof eTag === 'function' ? eTag() : eTag,
 
 	// eslint-disable-next-line no-unused-vars
 	async onBeforeCall(ctx, route, req, res) {
@@ -119,7 +137,9 @@ const buildAPIConfig = (configPath, config, aliases, whitelist, methodPaths, eTa
 		}
 
 		if (paramReport.required.length) {
-			throw new ValidationException(`Require one of the following parameter combination(s): ${paramReport.required.join('; ')}`);
+			throw new ValidationException(
+				`Require one of the following parameter combination(s): ${paramReport.required.join('; ')}`,
+			);
 		}
 
 		const invalidList = paramReport.invalid;
@@ -182,27 +202,41 @@ const registerApi = (apiNames, config, registeredModuleNames) => {
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const eTagVal of ALLOWED_ETAG_VALUES) {
-		const eTagAPIs = Object.fromEntries(Object.entries(allAPIs)
-			.filter(([, value]) => {
+		const eTagAPIs = Object.fromEntries(
+			Object.entries(allAPIs).filter(([, value]) => {
 				if (value.eTag === undefined) value.eTag = DEFAULT_ETAG_VALUE;
 				return (eTagVal === 'custom' && typeof value.eTag === 'function') || value.eTag === eTagVal;
-			}));
+			}),
+		);
 
 		// Build a common config for eTag == DEFAULT_ETAG_VALUE APIs
 		if (eTagVal === DEFAULT_ETAG_VALUE) {
-			const etagAPIsConfig = buildAPIAliases(
-				config.path,
-				eTagAPIs,
-				DEFAULT_ETAG_VALUE,
-			);
+			const etagAPIsConfig = buildAPIAliases(config.path, eTagAPIs, DEFAULT_ETAG_VALUE);
 
-			apisToRegister.push(buildAPIConfig(config.path, config, etagAPIsConfig.aliases,
-				etagAPIsConfig.whitelist, etagAPIsConfig.methodPaths, DEFAULT_ETAG_VALUE));
+			apisToRegister.push(
+				buildAPIConfig(
+					config.path,
+					config,
+					etagAPIsConfig.aliases,
+					etagAPIsConfig.whitelist,
+					etagAPIsConfig.methodPaths,
+					DEFAULT_ETAG_VALUE,
+				),
+			);
 		} else {
 			// eslint-disable-next-line no-restricted-syntax
 			for (const key of Object.keys(eTagAPIs)) {
 				const etagAPIsConfig = buildAPIAliases(config.path, { key: eTagAPIs[key] }, true);
-				apisToRegister.push(buildAPIConfig(`${config.path}${eTagAPIs[key].swaggerApiPath}`, config, etagAPIsConfig.aliases, etagAPIsConfig.whitelist, etagAPIsConfig.methodPaths, eTagAPIs[key].eTag));
+				apisToRegister.push(
+					buildAPIConfig(
+						`${config.path}${eTagAPIs[key].swaggerApiPath}`,
+						config,
+						etagAPIsConfig.aliases,
+						etagAPIsConfig.whitelist,
+						etagAPIsConfig.methodPaths,
+						eTagAPIs[key].eTag,
+					),
+				);
 			}
 		}
 	}

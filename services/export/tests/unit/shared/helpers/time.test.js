@@ -13,16 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	dateFromTimestamp,
-	timeFromTimestamp,
-} = require('../../../../shared/helpers/time');
+const { dateFromTimestamp, timeFromTimestamp } = require('../../../../shared/helpers/time');
 
-const {
-	timestamp,
-	expectedDate,
-	expectedTime,
-} = require('../../../constants/time');
+const { timestamp, expectedDate, expectedTime } = require('../../../constants/time');
 
 describe('Time utils', () => {
 	it('returns ISO format UTC Date from unix timestamp', async () => {

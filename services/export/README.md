@@ -37,7 +37,7 @@ A list of the most commonly used environment variables is presented below:
 - `EXPORT_S3_BUCKET_NAME`: Amazon S3 bucket name. Optional.
 
 > **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
-> **Note**: When EXPORT_S3_* environment variables are not specified, the local filesystem is used.
+> **Note**: When EXPORT*S3*\* environment variables are not specified, the local filesystem is used.
 
 ## Management
 

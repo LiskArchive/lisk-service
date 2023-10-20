@@ -15,7 +15,9 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../../../../services/blockchain-app-registry/config');
+const {
+	CHAIN_ID_PREFIX_NETWORK_MAP,
+} = require('../../../../services/blockchain-app-registry/config');
 
 const {
 	badRequestSchema,
@@ -26,7 +28,14 @@ const {
 const {
 	blockchainAppsTokenMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsTokenMetadataSchema.schema');
-const { invalidNamesCSV, invalidTokenIDCSV, invalidOffsets, invalidLimits, invalidNames, invalidChainIDCSV } = require('../constants/invalidInputs');
+const {
+	invalidNamesCSV,
+	invalidTokenIDCSV,
+	invalidOffsets,
+	invalidLimits,
+	invalidNames,
+	invalidChainIDCSV,
+} = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -177,7 +186,9 @@ describe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('should return blockchain application off-chain metadata for tokens by chainID and csv tokenName', async () => {
-		const response = await api.get(`${endpoint}?network=${curNetwork}&tokenName=Lik,Lisk&chainID=${curChainID}`);
+		const response = await api.get(
+			`${endpoint}?network=${curNetwork}&tokenName=Lik,Lisk&chainID=${curChainID}`,
+		);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(0);

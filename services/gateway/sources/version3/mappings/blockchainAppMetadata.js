@@ -25,23 +25,32 @@ module.exports = {
 	genesisURL: '=,string',
 	projectPage: '=,string',
 	appPage: '=,string',
-	serviceURLs: ['serviceURLs', {
-		http: '=,string',
-		ws: '=,string',
-		apiCertificatePublicKey: '=,string',
-	}],
+	serviceURLs: [
+		'serviceURLs',
+		{
+			http: '=,string',
+			ws: '=,string',
+			apiCertificatePublicKey: '=,string',
+		},
+	],
 	logo: {
 		png: '=,string',
 		svg: '=,string',
 	},
-	explorers: ['explorers', {
-		url: '=,string',
-		txnPage: '=,string',
-	}],
-	appNodes: ['appNodes', {
-		url: '=,string',
-		apiCertificatePublicKey: '=,string',
-		maintainer: '=,string',
-	}],
+	explorers: [
+		'explorers',
+		{
+			url: '=,string',
+			txnPage: '=,string',
+		},
+	],
+	appNodes: [
+		'appNodes',
+		{
+			url: '=,string',
+			apiCertificatePublicKey: '=,string',
+			maintainer: '=,string',
+		},
+	],
 	backgroundColor: '=,string',
 };

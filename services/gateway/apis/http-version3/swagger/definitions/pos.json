@@ -153,10 +153,7 @@
 	},
 	"validatorsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of validators.",
@@ -172,11 +169,7 @@
 	},
 	"unlock": {
 		"type": "object",
-		"required": [
-			"address",
-			"publicKey",
-			"name"
-		],
+		"required": ["address", "publicKey", "name"],
 		"properties": {
 			"address": {
 				"type": "string",
@@ -197,11 +190,7 @@
 			},
 			"unlocking": {
 				"type": "array",
-				"required": [
-					"validatorAddress",
-					"amount",
-					"unvoteHeight"
-				],
+				"required": ["validatorAddress", "amount", "unvoteHeight"],
 				"items": {
 					"type": "object",
 					"properties": {
@@ -215,10 +204,7 @@
 						},
 						"unvoteHeight": {
 							"type": "object",
-							"required": [
-								"start",
-								"end"
-							],
+							"required": ["start", "end"],
 							"properties": {
 								"start": {
 									"type": "integer",
@@ -237,10 +223,7 @@
 	},
 	"unlocksWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of validator unlocks.",
@@ -256,11 +239,7 @@
 	},
 	"posUnlock": {
 		"type": "object",
-		"required": [
-			"address",
-			"publicKey",
-			"pendingUnlocks"
-		],
+		"required": ["address", "publicKey", "pendingUnlocks"],
 		"properties": {
 			"address": {
 				"type": "string",
@@ -335,10 +314,7 @@
 	},
 	"posUnlocksWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "Array of PoS unlocks data.",
@@ -351,11 +327,7 @@
 	},
 	"posStake": {
 		"type": "object",
-		"required": [
-			"address",
-			"amount",
-			"name"
-		],
+		"required": ["address", "amount", "name"],
 		"properties": {
 			"address": {
 				"type": "string",
@@ -378,10 +350,7 @@
 	},
 	"posStakesMeta": {
 		"type": "object",
-		"required": [
-			"staker",
-			"count"
-		],
+		"required": ["staker", "count"],
 		"properties": {
 			"staker": {
 				"type": "object",
@@ -416,10 +385,7 @@
 	},
 	"posStakesWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of stakes for the queried staker.",
@@ -440,10 +406,7 @@
 	},
 	"posStaker": {
 		"type": "object",
-		"required": [
-			"address",
-			"amount"
-		],
+		"required": ["address", "amount"],
 		"properties": {
 			"address": {
 				"type": "string",
@@ -466,20 +429,11 @@
 	},
 	"posStakersMeta": {
 		"type": "object",
-		"required": [
-			"validator",
-			"count",
-			"offset",
-			"total"
-		],
+		"required": ["validator", "count", "offset", "total"],
 		"properties": {
 			"validator": {
 				"type": "object",
-				"required": [
-					"address",
-					"publicKey",
-					"name"
-				],
+				"required": ["address", "publicKey", "name"],
 				"properties": {
 					"address": {
 						"type": "string",
@@ -522,17 +476,12 @@
 	},
 	"posStakersWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of stakers for the queried validator.",
 				"type": "object",
-				"required": [
-					"stakers"
-				],
+				"required": ["stakers"],
 				"properties": {
 					"stakers": {
 						"type": "array",
@@ -549,10 +498,7 @@
 	},
 	"posConstantsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "PoS module constants.",
@@ -702,9 +648,7 @@
 					"extraCommandFees": {
 						"description": "Extra fees associated (beyond the usual transaction fees) for the listed commands.",
 						"type": "object",
-						"required": [
-							"validatorRegistrationFee"
-						],
+						"required": ["validatorRegistrationFee"],
 						"properties": {
 							"validatorRegistrationFee": {
 								"type": "string",
@@ -722,20 +666,14 @@
 	},
 	"posRewardsLockedWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "PoS Locked Rewards.",
 				"type": "array",
 				"items": {
 					"type": "object",
-					"required": [
-						"tokenID",
-						"reward"
-					],
+					"required": ["tokenID", "reward"],
 					"properties": {
 						"tokenID": {
 							"type": "string",
@@ -757,20 +695,14 @@
 	},
 	"posClaimableRewardsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "PoS claimable Rewards.",
 				"type": "array",
 				"items": {
 					"type": "object",
-					"required": [
-						"tokenID",
-						"reward"
-					],
+					"required": ["tokenID", "reward"],
 					"properties": {
 						"tokenID": {
 							"type": "string",

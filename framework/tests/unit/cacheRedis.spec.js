@@ -20,16 +20,15 @@
 const Cache = require('../../src/cacheRedis');
 
 const customMemoryBank = 'memBank';
-const testData = [
-	{ test: 'test_value' },
-	{ test: 'another_test_value' },
-];
+const testData = [{ test: 'test_value' }, { test: 'another_test_value' }];
 
-const waitMs = n => new Promise(resolve => {
-	setTimeout(() => {
-		resolve();
-	}, n);
-});
+const waitMs = n =>
+	// eslint-disable-next-line implicit-arrow-linebreak
+	new Promise(resolve => {
+		setTimeout(() => {
+			resolve();
+		}, n);
+	});
 
 test('store value in default memory bank', async () => {
 	const cache = Cache();

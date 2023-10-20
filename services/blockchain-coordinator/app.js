@@ -14,12 +14,7 @@
  *
  */
 const path = require('path');
-const {
-	Microservice,
-	Logger,
-	LoggerConfig,
-	Signals,
-} = require('lisk-service-framework');
+const { Microservice, Logger, LoggerConfig, Signals } = require('lisk-service-framework');
 
 const config = require('./config');
 const packageJson = require('./package.json');
@@ -36,27 +31,24 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: config.log,
 	events: {
-		chainNewBlock: async (payload) => {
-			logger.debug('Received a \'chainNewBlock\' event from connecter.');
+		chainNewBlock: async payload => {
+			logger.debug("Received a 'chainNewBlock' event from connecter.");
 			Signals.get('newBlock').dispatch(payload);
 		},
-		chainDeleteBlock: async (payload) => {
-			logger.debug('Received a \'chainDeleteBlock\' event from connecter.');
+		chainDeleteBlock: async payload => {
+			logger.debug("Received a 'chainDeleteBlock' event from connecter.");
 			Signals.get('deleteBlock').dispatch(payload);
 		},
-		chainValidatorsChange: async (payload) => {
-			logger.debug('Received a \'chainValidatorsChange\' event from connecter.');
+		chainValidatorsChange: async payload => {
+			logger.debug("Received a 'chainValidatorsChange' event from connecter.");
 			Signals.get('newRound').dispatch(payload);
 		},
-		systemNodeInfo: async (payload) => {
-			logger.debug('Received a \'systemNodeInfo\' event from connecter.');
+		systemNodeInfo: async payload => {
+			logger.debug("Received a 'systemNodeInfo' event from connecter.");
 			Signals.get('nodeInfo').dispatch(payload);
 		},
 	},
-	dependencies: [
-		'connector',
-		'indexer',
-	],
+	dependencies: ['connector', 'indexer'],
 });
 
 setAppContext(app);
@@ -64,12 +56,15 @@ setAppContext(app);
 app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
-app.run().then(async () => {
-	logger.info(`Service started ${packageJson.name}.`);
-	logger.info('Initializing coordinator activities.');
-	await init();
-}).catch(err => {
-	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
-	logger.fatal(err.stack);
-	process.exit(1);
-});
+app
+	.run()
+	.then(async () => {
+		logger.info(`Service started ${packageJson.name}.`);
+		logger.info('Initializing coordinator activities.');
+		await init();
+	})
+	.catch(err => {
+		logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});

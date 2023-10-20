@@ -23,7 +23,8 @@ const emptyBlock = {
 	generatorUsername: 'Donny',
 	payloadLength: 0,
 	payloadHash: '0f7223e4ecd83fc073769842411df416abc12b42b4250effd0eb08f2a7beb6c9',
-	blockSignature: '463a470819ab5b52bcd3c9b2f2ef20ec73dca067b864881b74fb7b48369b48c4af5cfeb670b16995c7548960451a7726aa1da69fefcdada56c1c782ee7c1742f',
+	blockSignature:
+		'463a470819ab5b52bcd3c9b2f2ef20ec73dca067b864881b74fb7b48369b48c4af5cfeb670b16995c7548960451a7726aa1da69fefcdada56c1c782ee7c1742f',
 	confirmations: 0,
 	previousBlockId: 5141834954599138000,
 	numberOfTransactions: 0,
@@ -44,7 +45,8 @@ const nonEmptyBlock = {
 	generatorUsername: 'Cara',
 	payloadLength: 15305,
 	payloadHash: '9627009e95c973191ad3936822237cc03a657da7509bc04654abbc918db0942f',
-	blockSignature: 'bc362a7d7313cedb959220e4b66e76368a74f496eff4e7fb08482e1f279990ad610bdc1844e26f67ced0aba463ebfee7b2add1ac9bec91884989182b981991a2',
+	blockSignature:
+		'bc362a7d7313cedb959220e4b66e76368a74f496eff4e7fb08482e1f279990ad610bdc1844e26f67ced0aba463ebfee7b2add1ac9bec91884989182b981991a2',
 	confirmations: 2,
 	previousBlockId: 903460792049175600,
 	numberOfTransactions: 118,
@@ -330,12 +332,8 @@ const nonEmptyBlock = {
 			senderPublicKey: 'e6ed29c261106770f762d3b64182978b369b5a5ee92ac30cf37a009e2650095e',
 			nonce: '577',
 			asset: {
-				mandatoryKeys: [
-					'+22c8b61d06b095f5807b31f3ca6ee6b3fcc3f08103c1d43d6c2f2e30c7075675',
-				],
-				optionalKeys: [
-					'+a68ff7efcb63f19d8e434b908ec4a9c3a2c5557ed0a10646f5cc1fe13998bf58',
-				],
+				mandatoryKeys: ['+22c8b61d06b095f5807b31f3ca6ee6b3fcc3f08103c1d43d6c2f2e30c7075675'],
+				optionalKeys: ['+a68ff7efcb63f19d8e434b908ec4a9c3a2c5557ed0a10646f5cc1fe13998bf58'],
 				numberOfSignatures: 1,
 			},
 			signatures: [
@@ -738,12 +736,8 @@ const nonEmptyBlock = {
 			senderPublicKey: 'cb70e531da420cde7a5fc29fef30d02fc9e0f08a6277d5da3e8e47f05e5a2667',
 			nonce: '56',
 			asset: {
-				mandatoryKeys: [
-					'+9608291c9fc0226ce0809c6501bcd0c7b32df3f990d08070ca8b72e8d7652c94',
-				],
-				optionalKeys: [
-					'+baa6ba370e8f014f5347e4e498a9f519724ba343ae41236ce39f5c84e558d7d4',
-				],
+				mandatoryKeys: ['+9608291c9fc0226ce0809c6501bcd0c7b32df3f990d08070ca8b72e8d7652c94'],
+				optionalKeys: ['+baa6ba370e8f014f5347e4e498a9f519724ba343ae41236ce39f5c84e558d7d4'],
 				numberOfSignatures: 1,
 			},
 			signatures: [
@@ -1930,9 +1924,7 @@ const nonEmptyBlock = {
 					'+252afa5ba174ec71e5fa8ffddbf7d67729d3c8c5cb9971d27b850654a1cdefbe',
 					'459eed08f40b1a1c8c61f3eec2df6cbab4ee7aca9d66f9ec7bc6a9a2a2fe4910173ca2e6cc0df2caad3309091be5235eaad6087392a5ebc528b0d05759f10789',
 				],
-				optionalKeys: [
-					'+430073d7e8262272537f38352b0dd11fea72d4e5f9f70253f7a7ec5e087e8ea3',
-				],
+				optionalKeys: ['+430073d7e8262272537f38352b0dd11fea72d4e5f9f70253f7a7ec5e087e8ea3'],
 				numberOfSignatures: 2,
 			},
 			signatures: [
@@ -2333,7 +2325,6 @@ const nonEmptyBlock = {
 			confirmations: 2,
 		},
 	],
-
 };
 
 const blockWithTransaction = Object.freeze({
@@ -2356,14 +2347,16 @@ const blockWithTransaction = Object.freeze({
 		maxHeightPrevoted: 0,
 		maxHeightGenerated: 0,
 		impliesMaxPrevotes: true,
-		signature: '82e8916fc8a839518cb9e2a2c7b092c40e7d0ade90de8ec99925efc1a1480927d51dc2c889f755e0eef5425689be6edb2f2cbe726fcbb60aaebf7f5c24b52809',
+		signature:
+			'82e8916fc8a839518cb9e2a2c7b092c40e7d0ade90de8ec99925efc1a1480927d51dc2c889f755e0eef5425689be6edb2f2cbe726fcbb60aaebf7f5c24b52809',
 		id: 'c1c7c28f5b123135cb5a25f210390f200cd0ed7cc901c0b5997f084e2998c9cc',
 	},
 	transactions: [
 		{
 			module: 'token',
 			command: 'transfer',
-			params: '0a0804000000000000001080c8afa0251a1402604d9e57a39772fa12f2a860ecf6c1e9cae91122075465737420747828c096b102',
+			params:
+				'0a0804000000000000001080c8afa0251a1402604d9e57a39772fa12f2a860ecf6c1e9cae91122075465737420747828c096b102',
 			nonce: '0',
 			fee: '100000000',
 			senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
@@ -2401,7 +2394,8 @@ const decodedBlockWithTransaction = Object.freeze({
 		maxHeightPrevoted: 0,
 		maxHeightGenerated: 0,
 		impliesMaxPrevotes: true,
-		signature: '82e8916fc8a839518cb9e2a2c7b092c40e7d0ade90de8ec99925efc1a1480927d51dc2c889f755e0eef5425689be6edb2f2cbe726fcbb60aaebf7f5c24b52809',
+		signature:
+			'82e8916fc8a839518cb9e2a2c7b092c40e7d0ade90de8ec99925efc1a1480927d51dc2c889f755e0eef5425689be6edb2f2cbe726fcbb60aaebf7f5c24b52809',
 		id: 'c1c7c28f5b123135cb5a25f210390f200cd0ed7cc901c0b5997f084e2998c9cc',
 	},
 	assets: [
@@ -2456,7 +2450,8 @@ const blockWithoutTransaction = Object.freeze({
 		maxHeightPrevoted: 0,
 		maxHeightGenerated: 0,
 		impliesMaxPrevotes: true,
-		signature: '274585e5e93fefa239766d7ca2720fed9118c6c53e95d3ec8d47bbe6c3194d7fe86d6e2d3e8d440e5637da0d1212d6d58985cbc21eb3536e7e67f56bd0582e06',
+		signature:
+			'274585e5e93fefa239766d7ca2720fed9118c6c53e95d3ec8d47bbe6c3194d7fe86d6e2d3e8d440e5637da0d1212d6d58985cbc21eb3536e7e67f56bd0582e06',
 		id: '1363799498535e4e565673855e1a740da99bf910fcaf7b9b9fdf3de7e14a836b',
 	},
 	transactions: [],
@@ -2488,7 +2483,8 @@ const decodedBlockWithoutTransaction = Object.freeze({
 		maxHeightPrevoted: 0,
 		maxHeightGenerated: 0,
 		impliesMaxPrevotes: true,
-		signature: '274585e5e93fefa239766d7ca2720fed9118c6c53e95d3ec8d47bbe6c3194d7fe86d6e2d3e8d440e5637da0d1212d6d58985cbc21eb3536e7e67f56bd0582e06',
+		signature:
+			'274585e5e93fefa239766d7ca2720fed9118c6c53e95d3ec8d47bbe6c3194d7fe86d6e2d3e8d440e5637da0d1212d6d58985cbc21eb3536e7e67f56bd0582e06',
 		id: '1363799498535e4e565673855e1a740da99bf910fcaf7b9b9fdf3de7e14a836b',
 	},
 	assets: [
@@ -2530,7 +2526,9 @@ const invalidBlock = Object.freeze({
 	transactions: [],
 });
 
-const invalidEncodedBlock = '80210a197db9206180122202d7c1de74a7353a8bea6f1af1620e5bbb9f6170fa4b5376267f8fb3d0e314d322a141348bdced232cf3c74742d8f3d96f436de3220e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b8553a20e626f31527f88edd955c3ce5b6eea63f8c1d2fb6ddd329eac0b81d9ab0919b77422041e6b1c0cd1eb398e64a0af03f1b6547096fb005669b35985776d8f1c2564107480050005a20f89987de86e18d8391339c3b92c796ae7d0f7a75f8d57b2392539cc3c39e5ffe6206080012001a006a40efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e74041a16080f12120a10a21eee43f81c4bc447ee5f';
+// eslint-disable-next-line operator-linebreak
+const invalidEncodedBlock =
+	'80210a197db9206180122202d7c1de74a7353a8bea6f1af1620e5bbb9f6170fa4b5376267f8fb3d0e314d322a141348bdced232cf3c74742d8f3d96f436de3220e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b8553a20e626f31527f88edd955c3ce5b6eea63f8c1d2fb6ddd329eac0b81d9ab0919b77422041e6b1c0cd1eb398e64a0af03f1b6547096fb005669b35985776d8f1c2564107480050005a20f89987de86e18d8391339c3b92c796ae7d0f7a75f8d57b2392539cc3c39e5ffe6206080012001a006a40efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e74041a16080f12120a10a21eee43f81c4bc447ee5f';
 
 const genesisBlock = {
 	header: {

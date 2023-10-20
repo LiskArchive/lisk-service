@@ -28,9 +28,7 @@ module.exports = [
 		params: {
 			block: { optional: false, type: 'object' },
 		},
-		controller: ({ block }) => parseToJSONCompatObj(
-			formatBlock(block),
-		),
+		controller: ({ block }) => parseToJSONCompatObj(formatBlock(block)),
 	},
 	{
 		name: 'formatAPIClientEventPayload',

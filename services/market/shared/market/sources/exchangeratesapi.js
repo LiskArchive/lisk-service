@@ -36,7 +36,7 @@ const symbolMap = (() => {
 	const map = {};
 	baseCurrencies.forEach((baseCurrency, index) => {
 		const targetCurrencies = baseCurrencies.slice(index + 1);
-		targetCurrencies.forEach((targetCurrency) => {
+		targetCurrencies.forEach(targetCurrency => {
 			map[`${baseCurrency}_${targetCurrency}`] = `${baseCurrency}${targetCurrency}`;
 		});
 	});
@@ -47,9 +47,13 @@ const fetchAllCurrencyConversionRates = async () => {
 	try {
 		const allMarketConversionRates = {};
 		await BluebirdPromise.all(
-			baseCurrencies.map(async (baseCurrency) => {
+			baseCurrencies.map(async baseCurrency => {
 				const remainingCurrencies = baseCurrencies.filter(c => c !== baseCurrency);
-				const response = await requestLib(`${apiEndpoint}/latest?access_key=${accessKey}&base=${baseCurrency}&symbols=${remainingCurrencies.join(',')}`);
+				const response = await requestLib(
+					`${apiEndpoint}/latest?access_key=${accessKey}&base=${baseCurrency}&symbols=${remainingCurrencies.join(
+						',',
+					)}`,
+				);
 				if (response) allMarketConversionRates[baseCurrency] = response.data.rates;
 			}),
 		);
@@ -61,24 +65,27 @@ const fetchAllCurrencyConversionRates = async () => {
 	}
 };
 
-const standardizeCurrencyConversionRates = (rawConversionRates) => {
+const standardizeCurrencyConversionRates = rawConversionRates => {
 	const [transformedConversionRates] = Object.entries(rawConversionRates).map(
-		([baseCur, conversionRates]) => Object.getOwnPropertyNames(conversionRates)
-			.map(targetCur => ({ symbol: `${baseCur}_${targetCur}`, price: conversionRates[targetCur] })),
+		([baseCur, conversionRates]) =>
+			Object.getOwnPropertyNames(conversionRates).map(targetCur => ({
+				symbol: `${baseCur}_${targetCur}`,
+				price: conversionRates[targetCur],
+			})),
 	);
-	const standardizedConversionRates = (Array.isArray(transformedConversionRates))
+	const standardizedConversionRates = Array.isArray(transformedConversionRates)
 		? transformedConversionRates.map(conversionRate => {
-			const [from, to] = conversionRate.symbol.split('_');
-			const price = {
-				code: conversionRate.symbol,
-				from,
-				to,
-				rate: conversionRate.price,
-				updateTimestamp: Math.floor(Date.now() / 1000),
-				sources: ['exchangeratesapi'],
-			};
-			return price;
-		})
+				const [from, to] = conversionRate.symbol.split('_');
+				const price = {
+					code: conversionRate.symbol,
+					from,
+					to,
+					rate: conversionRate.price,
+					updateTimestamp: Math.floor(Date.now() / 1000),
+					sources: ['exchangeratesapi'],
+				};
+				return price;
+		  })
 		: [];
 	return standardizedConversionRates;
 };
@@ -87,7 +94,7 @@ const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const conversionRates = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
-		async (itemCode) => {
+		async itemCode => {
 			const serializedPrice = await exchangeratesapiCache.get(`exchangeratesapi_${itemCode}`);
 			if (serializedPrice) return JSON.parse(serializedPrice);
 			return null;
@@ -106,15 +113,22 @@ const reload = async () => {
 
 	// Check if prices exists in cache
 	if (
-		conversionRatesFromCache.length === 0
-		|| validateEntries(conversionRatesFromCache, allowRefreshAfter)
+		conversionRatesFromCache.length === 0 ||
+		validateEntries(conversionRatesFromCache, allowRefreshAfter)
 	) {
 		const currencyConversionRates = await fetchAllCurrencyConversionRates();
 		const transformedRates = standardizeCurrencyConversionRates(currencyConversionRates);
 
 		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedRates
-			.map(item => exchangeratesapiCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), expireMilliseconds)));
+		await BluebirdPromise.all(
+			transformedRates.map(item =>
+				exchangeratesapiCache.set(
+					`exchangeratesapi_${item.code}`,
+					JSON.stringify(item),
+					expireMilliseconds,
+				),
+			),
+		);
 	}
 };
 

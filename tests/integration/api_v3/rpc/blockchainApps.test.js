@@ -15,22 +15,24 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { blockchainAppsSchema } = require('../../../schemas/api_v3/blockchainApps.schema');
 const {
-	blockchainAppsSchema,
-} = require('../../../schemas/api_v3/blockchainApps.schema');
-const { invalidPartialSearches, invalidLimits, invalidOffsets, invalidNames, invalidChainIDCSV } = require('../constants/invalidInputs');
+	invalidPartialSearches,
+	invalidLimits,
+	invalidOffsets,
+	invalidNames,
+	invalidChainIDCSV,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getBlockchainApps = async (params) => request(wsRpcUrl, 'get.blockchain.apps', params);
+const getBlockchainApps = async params => request(wsRpcUrl, 'get.blockchain.apps', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
 let curChainID;

@@ -35,7 +35,7 @@ const cacheFeeTokenID = async () => {
 		logger.info(`Updated feeTokenID to ${feeTokenID}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'cacheFeeTokenID\'.');
+			throw new TimeoutException("Request timed out when calling 'cacheFeeTokenID'.");
 		}
 		logger.warn(`Error occurred when calling 'cacheFeeTokenID':\n${err.stack}`);
 		throw err;
@@ -52,7 +52,7 @@ const cacheMinFeePerByte = async () => {
 		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'cacheMinFeePerByte\'.');
+			throw new TimeoutException("Request timed out when calling 'cacheMinFeePerByte'.");
 		}
 		logger.warn(`Error occurred when calling 'cacheMinFeePerByte':\n${err.stack}`);
 		throw err;

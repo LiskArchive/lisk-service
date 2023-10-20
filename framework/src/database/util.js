@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable nonblock-statement-body-position */
 const Logger = require('../logger').get;
 
 const logger = Logger();
@@ -37,7 +38,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			if (charset) table.charset(charset);
 
 			Object.keys(schema).map(p => {
-				const kProp = (table[schema[p].type])(p);
+				const kProp = table[schema[p].type](p);
 				if (schema[p].null === false) kProp.notNullable();
 				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
 				if (indexes[p]) kProp.index();
@@ -78,10 +79,32 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const KNOWN_QUERY_PARAMS = [
-		'sort', 'limit', 'offset', 'propBetweens', 'andWhere', 'orWhere', 'orWhereWith', 'whereNot',
-		'whereIn', 'whereNotIn', 'orWhereIn', 'whereBetween', 'whereJsonSupersetOf', 'search', 'aggregate',
-		'distinct', 'order', 'orSearch', 'whereNull', 'whereNotNull', 'leftOuterJoin', 'rightOuterJoin',
-		'innerJoin', 'groupBy', 'orderByRaw', 'havingRaw',
+		'sort',
+		'limit',
+		'offset',
+		'propBetweens',
+		'andWhere',
+		'orWhere',
+		'orWhereWith',
+		'whereNot',
+		'whereIn',
+		'whereNotIn',
+		'orWhereIn',
+		'whereBetween',
+		'whereJsonSupersetOf',
+		'search',
+		'aggregate',
+		'distinct',
+		'order',
+		'orSearch',
+		'whereNull',
+		'whereNotNull',
+		'leftOuterJoin',
+		'rightOuterJoin',
+		'innerJoin',
+		'groupBy',
+		'orderByRaw',
+		'havingRaw',
 	];
 	const queryParams = Object.keys(params)
 		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
@@ -135,23 +158,24 @@ const getTableInstance = (tableConfig, knex) => {
 		const rows = await mapRowsBySchema(rawRows, schema);
 
 		// Create all queries for `INSERT or UPDATE on Duplicate keys`
-		const queries = rows.map(row => knex(tableName)
-			.transacting(trx)
-			.insert(row)
-			.onConflict(primaryKey)
-			.merge(),
+		// eslint-disable-next-line max-len
+		const queries = rows.map(row =>
+			// eslint-disable-next-line implicit-arrow-linebreak, newline-per-chained-call
+			knex(tableName).transacting(trx).insert(row).onConflict(primaryKey).merge(),
 		);
 
 		// Perform all queries within a batch together
-		if (isDefaultTrx) return Promise.all(queries)
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return Promise.all(queries)
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 		return Promise.all(queries);
 	};
 
@@ -192,11 +216,10 @@ const getTableInstance = (tableConfig, knex) => {
 			}
 
 			if (params.orderByRaw) {
-				params.orderByRaw.forEach(
-					orderBy => {
-						const [col] = orderBy.split(' ');
-						query.select(knex.raw(col)).orderByRaw(orderBy);
-					});
+				params.orderByRaw.forEach(orderBy => {
+					const [col] = orderBy.split(' ');
+					query.select(knex.raw(col)).orderByRaw(orderBy);
+				});
 			}
 
 			if (params.havingRaw) {
@@ -224,15 +247,18 @@ const getTableInstance = (tableConfig, knex) => {
 
 		if (params.propBetweens) {
 			const { propBetweens } = params;
-			propBetweens.forEach(
-				propBetween => {
-					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
-					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
-					if ('greaterThanEqualTo' in propBetween) query.where(propBetween.property, '>=', propBetween.greaterThanEqualTo);
-					if ('lowerThanEqualTo' in propBetween) query.where(propBetween.property, '<=', propBetween.lowerThanEqualTo);
-					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
-				});
+			propBetweens.forEach(propBetween => {
+				if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+				if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+				if ('greaterThanEqualTo' in propBetween)
+					query.where(propBetween.property, '>=', propBetween.greaterThanEqualTo);
+				if ('lowerThanEqualTo' in propBetween)
+					query.where(propBetween.property, '<=', propBetween.lowerThanEqualTo);
+				if ('greaterThan' in propBetween)
+					query.where(propBetween.property, '>', propBetween.greaterThan);
+				if ('lowerThan' in propBetween)
+					query.where(propBetween.property, '<', propBetween.lowerThan);
+			});
 		}
 
 		if (params.whereIn) {
@@ -250,9 +276,13 @@ const getTableInstance = (tableConfig, knex) => {
 			query.where(function () {
 				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
 				this.whereJsonSupersetOf(property, [val0]);
-				remValues.forEach(value => this.orWhere(function () {
-					this.whereJsonSupersetOf(property, [value]);
-				}));
+				// eslint-disable-next-line implicit-arrow-linebreak
+				remValues.forEach(value =>
+					// eslint-disable-next-line implicit-arrow-linebreak
+					this.orWhere(function () {
+						this.whereJsonSupersetOf(property, [value]);
+					}),
+				);
 			});
 		}
 
@@ -362,7 +392,8 @@ const getTableInstance = (tableConfig, knex) => {
 
 		if (params.whereNotNull) {
 			params.whereNotNull = Array.isArray(params.whereNotNull)
-				? params.whereNotNull : [params.whereNotNull];
+				? params.whereNotNull
+				: [params.whereNotNull];
 
 			params.whereNotNull.forEach(whereNotNullProperty => {
 				query.whereNotNull(whereNotNullProperty);
@@ -380,15 +411,17 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		const query = queryBuilder(params, tableConfig.primaryKey, false, trx).del();
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 		return query;
 	};
 
@@ -401,15 +434,17 @@ const getTableInstance = (tableConfig, knex) => {
 
 		ids = Array.isArray(ids) ? ids : [ids];
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 		return query;
 	};
 
@@ -421,18 +456,21 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		const { where, updates } = params;
-		const query = queryBuilder({ ...where }, tableConfig.primaryKey, false, trx)
-			.update({ ...updates });
+		const query = queryBuilder({ ...where }, tableConfig.primaryKey, false, trx).update({
+			...updates,
+		});
 
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 		return query;
 	};
 
@@ -444,23 +482,28 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (!columns) {
-			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
+			logger.trace(
+				`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`,
+			);
 			columns = Array.isArray(tableConfig.primaryKey)
-				? tableConfig.primaryKey : [tableConfig.primaryKey];
+				? tableConfig.primaryKey
+				: [tableConfig.primaryKey];
 		}
 		const query = queryBuilder(params, columns, false, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
-		if (isDefaultTrx) return query
-			.then(async response => {
-				await trx.commit();
-				return response;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async response => {
+					await trx.commit();
+					return response;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 
 		return query;
 	};
@@ -473,9 +516,12 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (!column) {
-			logger.trace(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`);
+			logger.trace(
+				`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}.'`,
+			);
 			column = Array.isArray(tableConfig.primaryKey)
-				? [tableConfig.primaryKey[0]] : [tableConfig.primaryKey];
+				? [tableConfig.primaryKey[0]]
+				: [tableConfig.primaryKey];
 		} else {
 			column = Array.isArray(column) ? [column[0]] : [column];
 		}
@@ -484,16 +530,18 @@ const getTableInstance = (tableConfig, knex) => {
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}.`);
 
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				const [totalCount] = result;
-				return totalCount.count;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					const [totalCount] = result;
+					return totalCount.count;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 
 		return query;
 	};
@@ -507,16 +555,18 @@ const getTableInstance = (tableConfig, knex) => {
 
 		const query = trx.raw(queryStatement);
 
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				const [resultSet] = result;
-				return resultSet;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					const [resultSet] = result;
+					return resultSet;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 
 		return query;
 	};
@@ -530,15 +580,17 @@ const getTableInstance = (tableConfig, knex) => {
 
 		const query = queryBuilder(params, false, false, trx).increment(params.increment);
 
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 		return query;
 	};
 
@@ -551,15 +603,17 @@ const getTableInstance = (tableConfig, knex) => {
 
 		const query = queryBuilder(params, false, false, trx).decrement(params.decrement);
 
-		if (isDefaultTrx) return query
-			.then(async result => {
-				await trx.commit();
-				return result;
-			}).catch(async err => {
-				await trx.rollback();
-				logger.error(err.message);
-				throw err;
-			});
+		if (isDefaultTrx)
+			return query
+				.then(async result => {
+					await trx.commit();
+					return result;
+				})
+				.catch(async err => {
+					await trx.rollback();
+					logger.error(err.message);
+					throw err;
+				});
 		return query;
 	};
 

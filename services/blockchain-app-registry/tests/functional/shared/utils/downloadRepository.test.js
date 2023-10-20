@@ -28,10 +28,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const {
-	appMetaObj,
-	tokenMetaObj,
-} = require('../../../constants/metadataIndex');
+const { appMetaObj, tokenMetaObj } = require('../../../constants/metadataIndex');
 
 const config = require('../../../../config');
 
@@ -101,7 +98,8 @@ xdescribe('Test getCommitInfo method', () => {
 xdescribe('Test getRepoDownloadURL method', () => {
 	it('should return correct repository download url info', async () => {
 		/* eslint-disable-next-line no-useless-escape */
-		const repoUrlRegex =			/^https:\/\/\w*\.github\.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main(?:\?token=\w+)?$/;
+		const repoUrlRegex =
+			/^https:\/\/\w*\.github\.com\/LiskHQ\/app-registry\/legacy.tar.gz\/refs\/heads\/main(?:\?token=\w+)?$/;
 		const response = await getRepoDownloadURL();
 		expect(response.url).toMatch(repoUrlRegex);
 	});
@@ -123,7 +121,9 @@ xdescribe('Test getFileDownloadURLAndHeaders method', () => {
 	});
 
 	it('should throw error when file is invalid', async () => {
-		expect(async () => getFileDownloadURLAndHeaders('devnet/Enevti/invalid_file')).rejects.toThrow();
+		expect(async () =>
+			getFileDownloadURLAndHeaders('devnet/Enevti/invalid_file'),
+		).rejects.toThrow();
 	});
 
 	it('should throw error when file is undefined', async () => {
@@ -150,26 +150,29 @@ xdescribe('Test getDiff method', () => {
 	});
 
 	it('should throw error when both commits are invalid', async () => {
-		expect(() => getDiff(
-			'aaaa64896420410dcbade293980fe42ca95931d0',
-			'bbbb21f84cdcdb3b28d3766cf675d942887327c3',
-		),
+		expect(() =>
+			getDiff(
+				'aaaa64896420410dcbade293980fe42ca95931d0',
+				'bbbb21f84cdcdb3b28d3766cf675d942887327c3',
+			),
 		).rejects.toThrow();
 	});
 
 	it('should throw error when lastSyncedCommitHash is invalid', async () => {
-		expect(() => getDiff(
-			'aaaa64896420410dcbade293980fe42ca95931d0',
-			'5ca021f84cdcdb3b28d3766cf675d942887327c3',
-		),
+		expect(() =>
+			getDiff(
+				'aaaa64896420410dcbade293980fe42ca95931d0',
+				'5ca021f84cdcdb3b28d3766cf675d942887327c3',
+			),
 		).rejects.toThrow();
 	});
 
 	it('should throw error when both latestCommitHash is invalid', async () => {
-		expect(() => getDiff(
-			'838464896420410dcbade293980fe42ca95931d0',
-			'bbbb21f84cdcdb3b28d3766cf675d942887327c3',
-		),
+		expect(() =>
+			getDiff(
+				'838464896420410dcbade293980fe42ca95931d0',
+				'bbbb21f84cdcdb3b28d3766cf675d942887327c3',
+			),
 		).rejects.toThrow();
 	});
 

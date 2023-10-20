@@ -44,7 +44,9 @@ describe('Functional tests for download utility', () => {
 	});
 
 	describe('Test downloadAndExtractTarball method', () => {
-		const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
+		const [{ genesisBlockUrl }] = config.networks.LISK.filter(
+			network => network.name === 'testnet',
+		);
 		it('should download and extract tar file -> valid url', async () => {
 			const filePath = `${testDir}/genesis_block.json`;
 			expect(exists(filePath)).resolves.toBe(false);
@@ -71,7 +73,8 @@ describe('Functional tests for download utility', () => {
 
 	describe('Test downloadJSONFile method', () => {
 		it('should download JSON file -> valid url', async () => {
-			const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
+			const url =
+				'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 			const filePath = `${testDir}/apiJson.json`;
 			expect(exists(filePath)).resolves.toBe(false);
 			await downloadJSONFile(url, filePath);
@@ -102,7 +105,9 @@ describe('Functional tests for download utility', () => {
 
 	describe('Test downloadAndUnzipFile method', () => {
 		it('should download and unzip file -> valid url', async () => {
-			const [{ genesisBlockUrl }] = config.networks.LISK.filter(network => network.name === 'testnet');
+			const [{ genesisBlockUrl }] = config.networks.LISK.filter(
+				network => network.name === 'testnet',
+			);
 			const filePath = `${testDir}/genesis_block.json`;
 			expect(exists(filePath)).resolves.toBe(false);
 			await downloadAndUnzipFile(genesisBlockUrl, filePath);
@@ -133,7 +138,8 @@ describe('Functional tests for download utility', () => {
 
 	describe('Test downloadFile method', () => {
 		it('should download file -> valid url', async () => {
-			const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
+			const url =
+				'https://raw.githubusercontent.com/LiskHQ/lisk-service/development/services/gateway/apis/http-version3/swagger/apiJson.json';
 			const filePath = `${testDir}/apiJson.json`;
 			expect(exists(filePath)).resolves.toBe(false);
 			await downloadFile(url, testDir);

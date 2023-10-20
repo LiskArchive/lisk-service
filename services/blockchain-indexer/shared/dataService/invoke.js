@@ -15,7 +15,7 @@
  */
 const business = require('./business');
 
-const invokeEndpoint = async (params) => {
+const invokeEndpoint = async params => {
 	const response = await business.invokeEndpoint(params);
 	return response;
 };

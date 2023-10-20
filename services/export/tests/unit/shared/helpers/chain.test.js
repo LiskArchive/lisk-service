@@ -13,14 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	resolveReceivingChainID,
-	getUniqueChainIDs,
-} = require('../../../../shared/helpers/chain');
+const { resolveReceivingChainID, getUniqueChainIDs } = require('../../../../shared/helpers/chain');
 
-const {
-	transactions,
-} = require('../../../constants/transaction');
+const { transactions } = require('../../../constants/transaction');
 
 describe('Test chain utils', () => {
 	const currentChainID = '04000000';

@@ -19,7 +19,11 @@ const { resolve } = require('path');
 
 const knownAccountsPath = resolve(`${__dirname}/../../../../../shared/dataService/knownAccounts`);
 const tokensPath = resolve(`${__dirname}/../../../../../shared/dataService/business/token`);
-const { mockTokenTopBalancesParams, mockTokenTopBalancesTokenInfos, mockTokenTopBalancesDbSearchResult } = require('../../constants/token');
+const {
+	mockTokenTopBalancesParams,
+	mockTokenTopBalancesTokenInfos,
+	mockTokenTopBalancesDbSearchResult,
+} = require('../../constants/token');
 
 describe('getTokenTopBalances', () => {
 	afterEach(() => {
@@ -55,11 +59,11 @@ describe('getTokenTopBalances', () => {
 				DB: {
 					MySQL: {
 						getTableInstance: jest.fn(() => ({
-							find: jest.fn((data) => {
+							find: jest.fn(data => {
 								expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
 								return mockTokenTopBalancesTokenInfos;
 							}),
-							count: jest.fn((data) => {
+							count: jest.fn(data => {
 								expect(data).toEqual(mockTokenTopBalancesDbSearchResult);
 								return count;
 							}),

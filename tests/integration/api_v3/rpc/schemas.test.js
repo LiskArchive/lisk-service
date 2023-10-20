@@ -46,8 +46,9 @@ describe('Method get.schemas', () => {
 		expect(result.data.standardEvent.schema).toStrictEqual(schemas.standardEventSchema);
 		expect(result.data.ccm.schema).toStrictEqual(schemas.ccmSchema);
 
-		result.data.messages
-			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));
+		result.data.messages.forEach(message =>
+			expect(message.schema).toStrictEqual(schemas.messageSchema),
+		);
 	});
 
 	it('should return invalid params for invalid param', async () => {

@@ -15,19 +15,11 @@
  */
 const config = require('../../../config');
 
-const {
-	subscribeAndReturn,
-	closeAllConnections,
-} = require('../../../helpers/socketIoSubscribe');
+const { subscribeAndReturn, closeAllConnections } = require('../../../helpers/socketIoSubscribe');
 
-const {
-	goodRequestSchema,
-	metaSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { goodRequestSchema, metaSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	blockSchema,
-} = require('../../../schemas/api_v3/block.schema');
+const { blockSchema } = require('../../../schemas/api_v3/block.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 

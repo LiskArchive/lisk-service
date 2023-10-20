@@ -16,18 +16,15 @@
 const business = require('./business');
 const { TRANSACTION_STATUS } = require('../constants');
 
-const isIncludePendingTransactions = (executionStatus) => {
+const isIncludePendingTransactions = executionStatus => {
 	if (!executionStatus) return false;
 
 	const INCLUDE_PENDING_WHEN_STATUSES = [TRANSACTION_STATUS.PENDING];
 	const execStatuses = executionStatus.split(',');
-	const isIncludePending = execStatuses.reduce(
-		(isInclude, status) => {
-			isInclude = isInclude || INCLUDE_PENDING_WHEN_STATUSES.includes(status);
-			return isInclude;
-		},
-		false,
-	);
+	const isIncludePending = execStatuses.reduce((isInclude, status) => {
+		isInclude = isInclude || INCLUDE_PENDING_WHEN_STATUSES.includes(status);
+		return isInclude;
+	}, false);
 	return isIncludePending;
 };
 
@@ -44,7 +41,7 @@ const getPendingTransactions = async params => {
 	return pendingTransactions;
 };
 
-const mergeTransactions = async (params) => {
+const mergeTransactions = async params => {
 	const allTransactions = {
 		data: [],
 		meta: {},
@@ -78,9 +75,10 @@ const mergeTransactions = async (params) => {
 		transactions.meta.total = transactions.meta.total || 0;
 	}
 
-	allTransactions.data = pendingTxs.data.length === limit
-		? pendingTxs.data
-		: pendingTxs.data.concat(transactions.data).slice(0, limit);
+	allTransactions.data =
+		pendingTxs.data.length === limit
+			? pendingTxs.data
+			: pendingTxs.data.concat(transactions.data).slice(0, limit);
 
 	allTransactions.meta.count = allTransactions.data.length;
 	allTransactions.meta.offset = offset;
@@ -112,10 +110,11 @@ const postTransactions = async params => {
 			transactionID: response.transactionId,
 		};
 	} catch (err) {
-		if (err.message.includes('ECONNREFUSED')) return {
-			data: { error: 'Unable to reach a network node.' },
-			status: 'INTERNAL_SERVER_ERROR',
-		};
+		if (err.message.includes('ECONNREFUSED'))
+			return {
+				data: { error: 'Unable to reach a network node.' },
+				status: 'INTERNAL_SERVER_ERROR',
+			};
 
 		return {
 			data: { error: `Transaction payload was rejected by the network node: ${err.message}.` },
@@ -133,10 +132,11 @@ const dryRunTransactions = async params => {
 		const response = await business.dryRunTransactions(params);
 		return response;
 	} catch (err) {
-		if (err.message.includes('ECONNREFUSED')) return {
-			data: { error: 'Unable to reach a network node.' },
-			status: 'INTERNAL_SERVER_ERROR',
-		};
+		if (err.message.includes('ECONNREFUSED'))
+			return {
+				data: { error: 'Unable to reach a network node.' },
+				status: 'INTERNAL_SERVER_ERROR',
+			};
 
 		return {
 			data: { error: `Failed to dry run transaction: ${err.message}.` },

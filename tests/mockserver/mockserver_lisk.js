@@ -36,11 +36,11 @@ const emitData = [
 	[() => io.sockets.emit('rounds/change', rounds), 101 * 10],
 ];
 
-emitData.forEach((emitItem) => {
+emitData.forEach(emitItem => {
 	setInterval(emitItem[0], Math.ceil(emitItem[1] * eventFreqMultiplier));
 });
 
-server.listen(port, undefined, (err) => {
+server.listen(port, undefined, err => {
 	if (err) logger.error(err);
 	else logger.info(`Mockserver for ${mockserverName} is listening on port ${port}`);
 });

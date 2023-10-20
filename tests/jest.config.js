@@ -22,10 +22,7 @@ module.exports = {
 	],
 	testEnvironment: 'node',
 	testTimeout: 15000,
-	setupFilesAfterEnv: [
-		'jest-extended',
-		'<rootDir>/helpers/setupCustomMatchers.js',
-	],
+	setupFilesAfterEnv: ['jest-extended', '<rootDir>/helpers/setupCustomMatchers.js'],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],
 		['jest-watch-toggle-config', { setting: 'bail' }],

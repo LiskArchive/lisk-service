@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	invokeEndpoint,
-} = require('./controllers/invoke');
+const { invokeEndpoint } = require('./controllers/invoke');
 
 module.exports = [
 	{

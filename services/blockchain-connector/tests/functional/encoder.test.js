@@ -15,9 +15,7 @@
  */
 const { ServiceBroker } = require('moleculer');
 
-const {
-	invalidBlock,
-} = require('../constants/blocks');
+const { invalidBlock } = require('../constants/blocks');
 
 const {
 	decodedTransaction,
@@ -25,11 +23,7 @@ const {
 	encodedTransaction,
 } = require('../constants/transactions');
 
-const {
-	decodedCCM,
-	encodedCCM,
-	invalidCCM,
-} = require('../constants/ccm');
+const { decodedCCM, encodedCCM, invalidCCM } = require('../constants/ccm');
 
 const config = require('../../config');
 
@@ -45,13 +39,17 @@ afterAll(() => broker.stop());
 
 describe('Encode transaction', () => {
 	it('should encode transaction', async () => {
-		const result = await broker.call('connector.encodeTransaction', { transaction: decodedTransaction });
+		const result = await broker.call('connector.encodeTransaction', {
+			transaction: decodedTransaction,
+		});
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedTransaction);
 	});
 
 	it('should throw error when encoding invalid transaction', async () => {
-		expect(broker.call('connector.encodeTransaction', { transaction: invalidTransaction })).rejects.toThrow();
+		expect(
+			broker.call('connector.encodeTransaction', { transaction: invalidTransaction }),
+		).rejects.toThrow();
 	});
 
 	it('should throw error when encoding invalid block', async () => {

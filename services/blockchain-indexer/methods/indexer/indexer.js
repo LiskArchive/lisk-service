@@ -21,10 +21,7 @@ const {
 	getLiveIndexingJobCount,
 } = require('../../shared/indexer/blockchainIndex');
 
-const {
-	getCurrentHeight,
-	getGenesisHeight,
-} = require('../../shared/constants');
+const { getCurrentHeight, getGenesisHeight } = require('../../shared/constants');
 
 module.exports = [
 	{

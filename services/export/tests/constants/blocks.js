@@ -38,7 +38,8 @@ const blocks = [
 		maxHeightPrevoted: 0,
 		maxHeightGenerated: 0,
 		impliesMaxPrevotes: true,
-		signature: '82e8916fc8a839518cb9e2a2c7b092c40e7d0ade90de8ec99925efc1a1480927d51dc2c889f755e0eef5425689be6edb2f2cbe726fcbb60aaebf7f5c24b52809',
+		signature:
+			'82e8916fc8a839518cb9e2a2c7b092c40e7d0ade90de8ec99925efc1a1480927d51dc2c889f755e0eef5425689be6edb2f2cbe726fcbb60aaebf7f5c24b52809',
 		id: 'c1c7c28f5b123135cb5a25f210390f200cd0ed7cc901c0b5997f084e2998c9cc',
 		totalBurnt: '0',
 		totalForged: '0',
@@ -69,7 +70,8 @@ const blocks = [
 		maxHeightPrevoted: 0,
 		maxHeightGenerated: 0,
 		impliesMaxPrevotes: true,
-		signature: 'fdbcd50af2298cd5635c7925a63811297ab80aac588dac394ce73b16eafa9cd6367b7f5107368d3f109cf0300550d719c0d2643f36d57883b5776e2a74da130f',
+		signature:
+			'fdbcd50af2298cd5635c7925a63811297ab80aac588dac394ce73b16eafa9cd6367b7f5107368d3f109cf0300550d719c0d2643f36d57883b5776e2a74da130f',
 		id: '92bc032502b98d2638efb27958ce42fb5b9afc6436e71109bb636c4464d896fbx',
 		totalBurnt: '0',
 		totalForged: '0',

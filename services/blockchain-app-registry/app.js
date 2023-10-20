@@ -14,11 +14,7 @@
  *
  */
 const path = require('path');
-const {
-	Microservice,
-	LoggerConfig,
-	Logger,
-} = require('lisk-service-framework');
+const { Microservice, LoggerConfig, Logger } = require('lisk-service-framework');
 
 const config = require('./config');
 
@@ -39,9 +35,7 @@ const app = Microservice({
 	timeout: config.brokerTimeout,
 	packageJson,
 	logger: config.log,
-	dependencies: [
-		'indexer',
-	],
+	dependencies: ['indexer'],
 });
 
 setAppContext(app);
@@ -52,18 +46,20 @@ app.addJobs(path.join(__dirname, 'jobs'));
 app.addEvents(path.join(__dirname, 'events'));
 
 // Run the application
-const reportErrorAndExitProcess = (err) => {
+const reportErrorAndExitProcess = err => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 	logger.fatal(err.stack);
 	process.exit(1);
 };
 
 initDatabase()
-	.then(() => app.run()
-		.then(async () => {
-			await init();
-			logger.info(`Service started ${packageJson.name}.`);
-		})
-		.catch(reportErrorAndExitProcess),
+	.then(() =>
+		app
+			.run()
+			.then(async () => {
+				await init();
+				logger.info(`Service started ${packageJson.name}.`);
+			})
+			.catch(reportErrorAndExitProcess),
 	)
 	.catch(reportErrorAndExitProcess);

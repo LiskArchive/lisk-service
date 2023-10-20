@@ -15,7 +15,9 @@
  */
 const {
 	Logger,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
@@ -38,7 +40,9 @@ const EVENT_NAME_INITIALIZE_USER_ACCOUNT = 'initializeUserAccount';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
+	logger.trace(
+		`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`,
+	);
 	indexAccountAddress(tx.params.recipientAddress);
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
@@ -48,10 +52,12 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 		...tx.params,
 	};
 
-	const filterInitializeUserAccountEvent = events
-		.find(event => event.name === EVENT_NAME_INITIALIZE_USER_ACCOUNT
-			&& event.data.address === tx.params.recipientAddress
-			&& event.topics.includes(tx.id));
+	const filterInitializeUserAccountEvent = events.find(
+		event =>
+			event.name === EVENT_NAME_INITIALIZE_USER_ACCOUNT &&
+			event.data.address === tx.params.recipientAddress &&
+			event.topics.includes(tx.id),
+	);
 
 	if (filterInitializeUserAccountEvent) {
 		const formattedTransaction = await requestConnector('formatTransaction', {
@@ -70,7 +76,9 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
+	logger.trace(
+		`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`,
+	);
 	indexAccountAddress(tx.params.recipientAddress);
 };
 

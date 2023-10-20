@@ -1,9 +1,9 @@
 {
-    "moduleCommand": {
-        "name": "moduleCommand",
-        "in": "query",
-        "description": "Combination of moduleName:commandName",
-        "type": "string",
-        "minLength": 1
-    }
+	"moduleCommand": {
+		"name": "moduleCommand",
+		"in": "query",
+		"description": "Combination of moduleName:commandName",
+		"type": "string",
+		"minLength": 1
+	}
 }

@@ -59,7 +59,7 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolveModuleCommands = (systemMeta) => {
+const resolveModuleCommands = systemMeta => {
 	const moduleCommandList = [];
 	systemMeta.forEach(module => {
 		module.commands.forEach(command => {
@@ -111,9 +111,7 @@ const getAllRegisteredEndpoints = async () => {
 		const _registeredEndpoints = await getRegisteredEndpoints();
 		const _engineEndpoints = await getEngineEndpoints();
 
-		allRegisteredEndpoints = _engineEndpoints
-			.map(e => e.name)
-			.concat(_registeredEndpoints);
+		allRegisteredEndpoints = _engineEndpoints.map(e => e.name).concat(_registeredEndpoints);
 	}
 
 	return allRegisteredEndpoints;
@@ -189,7 +187,7 @@ const TRANSACTION_VERIFY_RESULT = {
 };
 
 const initNodeConstants = async () => {
-	const nodeInfoListener = async (payload) => {
+	const nodeInfoListener = async payload => {
 		// Caching all node constants
 		genesisHeight = payload.genesisHeight;
 		genesisConfig = payload.genesis;

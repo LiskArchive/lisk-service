@@ -19,13 +19,9 @@ const { api } = require('../../../helpers/api');
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	rewardDefaultResponseSchema,
-} = require('../../../schemas/api_v3/rewardDefault.schema');
+const { rewardDefaultResponseSchema } = require('../../../schemas/api_v3/rewardDefault.schema');
 
 const endpoint = `${baseUrlV3}/reward/default`;
 

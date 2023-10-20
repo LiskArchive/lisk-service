@@ -46,33 +46,40 @@ const getRandInt = max => {
 
 const httpTest = new RegExp('http:*');
 
-const getFromHttp = ip => new Promise((resolve, reject) => {
-	if (httpTest.test(freegeoAddress)) {
-		requestLib(`${freegeoAddress}/${ip}`)
-			.then(body => {
-				let jsonContent;
-				if (typeof body === 'string') jsonContent = JSON.parse(body);
-				else jsonContent = body;
-				return resolve(jsonContent);
-			})
-			.catch(err => {
-				reject(err);
-			});
-	}
-});
+const getFromHttp = ip =>
+	new Promise((resolve, reject) => {
+		if (httpTest.test(freegeoAddress)) {
+			requestLib(`${freegeoAddress}/${ip}`)
+				.then(body => {
+					let jsonContent;
+					if (typeof body === 'string') jsonContent = JSON.parse(body);
+					else jsonContent = body;
+					return resolve(jsonContent);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		}
+	});
 
 const requestData = async requestedIp => {
 	const key = `geoip:${requestedIp}`;
 
-	const refreshData = ip => getFromHttp(ip).then(data => {
-		if (data) cacheRedis.set(key, data.data, GEOIP_TTL);
-		logger.debug(`Fetched geolocation data from online service for IP ${ip}`);
-		refreshSchedule.push(setTimeout(
-			() => refreshData(ip),
-			GEOIP_TTL - (getRandInt(SCHEDULE_INTERVAL) + REQUEST_LATENCY)));
-	}).catch(err => {
-		logger.warn(`Could not retrieve geolocation data: ${err.message}`);
-	});
+	const refreshData = ip =>
+		getFromHttp(ip)
+			.then(data => {
+				if (data) cacheRedis.set(key, data.data, GEOIP_TTL);
+				logger.debug(`Fetched geolocation data from online service for IP ${ip}`);
+				refreshSchedule.push(
+					setTimeout(
+						() => refreshData(ip),
+						GEOIP_TTL - (getRandInt(SCHEDULE_INTERVAL) + REQUEST_LATENCY),
+					),
+				);
+			})
+			.catch(err => {
+				logger.warn(`Could not retrieve geolocation data: ${err.message}`);
+			});
 
 	const geodata = await cacheRedis.get(key);
 	if (!geodata) {
@@ -81,11 +88,14 @@ const requestData = async requestedIp => {
 	return geodata;
 };
 
-const autoCleanUp = () => setInterval(() => {
-	const tooMuch = refreshSchedule.splice(0, refreshSchedule.length - SCHEDULE_MAX_LENGTH);
-	tooMuch.forEach(item => clearInterval(item));
-	logger.debug(`Cache queue: Removed ${tooMuch.length} items, ${refreshSchedule.length} last elements left`);
-}, SCHEDULE_CLEANUP_INTERVAL);
+const autoCleanUp = () =>
+	setInterval(() => {
+		const tooMuch = refreshSchedule.splice(0, refreshSchedule.length - SCHEDULE_MAX_LENGTH);
+		tooMuch.forEach(item => clearInterval(item));
+		logger.debug(
+			`Cache queue: Removed ${tooMuch.length} items, ${refreshSchedule.length} last elements left`,
+		);
+	}, SCHEDULE_CLEANUP_INTERVAL);
 
 autoCleanUp();
 
