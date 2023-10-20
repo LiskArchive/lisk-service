@@ -39,7 +39,7 @@ const { getMinFeePerByte } = require('./fee');
 
 const logger = Logger();
 
-const formatTransaction = (transaction) => {
+const formatTransaction = (transaction, additionalFee = 0) => {
 	// Calculate transaction size
 	const txSchema = getTransactionSchema();
 
@@ -57,8 +57,6 @@ const formatTransaction = (transaction) => {
 		);
 	}
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
-	const transactionBuffer = codec.encode(txSchema, schemaCompliantTransaction);
-	const transactionSize = transactionBuffer.length;
 
 	// Calculate transaction min fee
 	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
@@ -71,8 +69,19 @@ const formatTransaction = (transaction) => {
 			minFeePerByte: getMinFeePerByte() || null,
 			numberOfSignatures: nonEmptySignatureCount,
 			numberOfEmptySignatures: transaction.signatures.length - nonEmptySignatureCount,
+			additionalFee: BigInt(additionalFee),
 		},
 	);
+
+	// Calculate transaction size
+	const transactionBuffer = codec.encode(
+		txSchema,
+		{
+			...schemaCompliantTransaction,
+			fee: schemaCompliantTransaction.fee || transactionMinFee,
+		},
+	);
+	const transactionSize = transactionBuffer.length;
 
 	const formattedTransaction = {
 		...transaction,
@@ -88,23 +97,25 @@ const formatBlock = (block) => {
 	const blockHeader = block.header;
 
 	const blockAssets = block.assets.map(asset => {
-		const assetModule = asset.module;
-		const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
-		const formattedAssetData = blockAssetDataSchema
-			? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
-			: asset.data;
+		// Decode asset data in case of binary payload
+		if (typeof (asset.data) === 'string') {
+			const assetModule = asset.module;
+			const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
+			const formattedAssetData = blockAssetDataSchema
+				? codec.decodeJSON(blockAssetDataSchema, Buffer.from(asset.data, 'hex'))
+				: asset.data;
 
-		if (!blockAssetDataSchema) {
-			// TODO: Remove this after all asset schemas are exposed (before tagging rc.0)
-			console.error(`Block asset schema missing for module ${assetModule}.`);
-			logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+			if (!blockAssetDataSchema) {
+				logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+			}
+
+			const formattedBlockAsset = {
+				module: assetModule,
+				data: formattedAssetData,
+			};
+			return formattedBlockAsset;
 		}
-
-		const formattedBlockAsset = {
-			module: assetModule,
-			data: formattedAssetData,
-		};
-		return formattedBlockAsset;
+		return asset;
 	});
 
 	const blockTransactions = block.transactions.map(t => formatTransaction(t));
@@ -129,9 +140,14 @@ const formatEvent = (event, skipDecode) => {
 		eventData = event.data;
 	} else {
 		const eventDataSchema = getDataSchemaByEventName(event.name);
-		eventData = eventDataSchema
-			? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
-			: { data: event.data };
+		try {
+			eventData = eventDataSchema
+				? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
+				: { data: event.data };
+		} catch (err) {
+			logger.warn(`Unable to decode data for ${event.name} (${event.module}) event:\n${err.stack}`);
+			return { data: event.data };
+		}
 
 		if (!eventDataSchema) {
 			// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)

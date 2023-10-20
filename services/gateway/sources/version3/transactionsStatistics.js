@@ -35,6 +35,5 @@ module.exports = {
 				to: '=,string',
 			},
 		},
-		links: {},
 	},
 };

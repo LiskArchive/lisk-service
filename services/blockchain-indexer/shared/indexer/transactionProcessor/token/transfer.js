@@ -15,54 +15,64 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
+
+const { TRANSACTION_STATUS } = require('../../../constants');
+const { indexAccountAddress } = require('../../accountIndex');
+const { requestConnector } = require('../../../utils/request');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const accountsTableSchema = require('../../../database/schema/accounts');
 const transactionsTableSchema = require('../../../database/schema/transactions');
 
-const getAccountsTable = () => getTableInstance(
-	accountsTableSchema.tableName,
-	accountsTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTransactionsTable = () => getTableInstance(
-	transactionsTableSchema.tableName,
-	transactionsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'transfer';
 
+const EVENT_NAME_INITIALIZE_USER_ACCOUNT = 'initializeUserAccount';
+
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	const accountsTable = await getAccountsTable();
-	const transactionsTable = await getTransactionsTable();
+	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
+	indexAccountAddress(tx.params.recipientAddress);
+
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	tx = {
 		...tx,
 		...tx.params,
 	};
 
-	const account = { address: tx.recipientAddress };
-	logger.trace(`Updating account index for the account with address ${account.address}.`);
-	await accountsTable.upsert(account, dbTrx);
-	logger.debug(`Updated account index for the account with address ${account.address}.`);
+	const filterInitializeUserAccountEvent = events
+		.find(event => event.name === EVENT_NAME_INITIALIZE_USER_ACCOUNT
+			&& event.data.address === tx.params.recipientAddress
+			&& event.topics.includes(tx.id));
 
+	if (filterInitializeUserAccountEvent) {
+		const formattedTransaction = await requestConnector('formatTransaction', {
+			transaction: tx,
+			additionalFee: filterInitializeUserAccountEvent.data.initializationFee,
+		});
+
+		tx.minFee = formattedTransaction.minFee;
+	}
+
+	const transactionsTable = await getTransactionsTable();
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}.`);
 	await transactionsTable.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 };
 
 // eslint-disable-next-line no-unused-vars
-const revertTransaction = async (blockHeader, tx, events, dbTrx) => { };
+const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	logger.trace(`Updating index for the account with address ${tx.params.recipientAddress} asynchronously.`);
+	indexAccountAddress(tx.params.recipientAddress);
+};
 
 module.exports = {
 	COMMAND_NAME,

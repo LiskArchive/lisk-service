@@ -2,27 +2,27 @@
 	"BlockchainApp": {
 		"type": "object",
 		"required": [
-			"name",
+			"chainName",
 			"chainID",
 			"state",
 			"address"
 		],
 		"properties": {
-			"name": {
+			"chainName": {
 				"type": "string",
 				"example": "Lisk",
-				"description": "Name of the blockchain application"
+				"description": "Name of the blockchain application."
 			},
 			"chainID": {
 				"type": "string",
 				"format": "id",
-				"minLength": 1,
+				"minLength": 8,
 				"example": "00000000",
 				"description": "Chain ID of the blockchain application."
 			},
 			"status": {
 				"type": "string",
-				"example": "active",
+				"example": "activated",
 				"description": "Current status of the application."
 			},
 			"address": {
@@ -41,6 +41,11 @@
 				"type": "integer",
 				"example": 1616008148,
 				"description": "timestamp"
+			},
+			"escrowedLSK": {
+				"type": "string",
+				"example": "50000000000",
+				"description": "Number of LSK tokens escrowed to the sidechain."
 			},
 			"escrow": {
 				"type": "array",
@@ -99,17 +104,17 @@
 					"registered": {
 						"type": "integer",
 						"example": 2503,
-						"description": "List of registered blockchain applications"
+						"description": "List of registered blockchain applications."
 					},
-					"active": {
+					"activated": {
 						"type": "integer",
 						"example": 2328,
-						"description": "List of active blockchain applications"
+						"description": "List of activated blockchain applications."
 					},
 					"terminated": {
 						"type": "integer",
 						"example": 35,
-						"description": "List of terminated blockchain applications"
+						"description": "List of terminated blockchain applications."
 					},
 					"totalSupplyLSK": {
 						"type": "string",
@@ -199,13 +204,18 @@
 				"example": "00000000",
 				"description": "Chain ID of the blockchain application."
 			},
+			"displayName": {
+				"type": "string",
+				"description": "Application display name for the wallets.",
+				"example": "Lisk"
+			},
 			"title": {
 				"type": "string",
-				"example": "Lisk blockchain application"
+				"example": "Lisk blockchain application."
 			},
 			"status": {
 				"type": "string",
-				"example": "active",
+				"example": "activated",
 				"description": "Current status of the application."
 			},
 			"description": {
@@ -215,26 +225,31 @@
 			"networkType": {
 				"type": "string",
 				"example": "mainnet",
-				"description": "Network for which this configuration is specified. Must be one of 'mainnet', 'testnet' or 'betanet'"
+				"description": "Network for which this configuration is specified. Must be one of 'mainnet', 'testnet', 'devnet' or 'betanet'."
 			},
 			"isDefault": {
 				"type": "boolean",
-				"example": "true"
+				"example": "true",
+				"description": "A boolean indicator to filter default blockchain applications."
 			},
 			"genesisURL": {
 				"type": "string",
 				"example": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz",
-				"description": "URI to the network genesis block"
+				"description": "URI to the network genesis block."
 			},
 			"projectPage": {
 				"type": "string",
 				"example": "https://lisk.com",
-				"description": "URL to the project's homepage"
+				"description": "URL to the project's homepage."
 			},
 			"serviceURLs": {
 				"type": "array",
 				"items": {
 					"type": "object",
+					"required": [
+						"http",
+						"ws"
+					],
 					"properties": {
 						"http": {
 							"type": "string",
@@ -245,12 +260,21 @@
 							"type": "string",
 							"example": "wss://service.lisk.com",
 							"description": "WS endpoint to access Lisk Service API against the blockchain application"
+						},
+						"apiCertificatePublicKey": {
+							"type": "string",
+							"example": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxd93uLDs8HTPqcSPpxZ\nrf0Dc29r3iPp0a8filjAyeX4RAH6lWm9qFt26CcE8ESYtmo1sVtswvs7VH4Bjg/F\nDlRpd+MnAlXuxChij8/vjyAwE71ucMrmZhxM8rOSfPML8fniZ8trr3I4R2o4xWh6\nno/xTUtZ02/yUEXbphw3DEuefzHEQnEF+quGji9pvGnPO6Krmnri9H4WPY0ysPQQ\nQd82bUZCk9XdhSZcW/am8wBulYokITRMVHlbRXqu1pOFmQMO5oSpyZU3pXbsx+Ox\nIOc4EDX0WMa9aH4+snt18WAXVGwF2B4fmBk7AtmkFzrTmbpmyVqA3KO2IjzMZPw0\nhQIDAQAB\n-----END PUBLIC KEY-----",
+							"description": "Public key corresponding to the SSL/TLS certificate for the API endpoints."
 						}
 					}
 				}
 			},
 			"logo": {
 				"type": "object",
+				"required": [
+					"png",
+					"svg"
+				],
 				"properties": {
 					"png": {
 						"type": "string",
@@ -276,6 +300,10 @@
 			},
 			"explorers": {
 				"type": "array",
+				"required": [
+					"url",
+					"txnPage"
+				],
 				"items": {
 					"type": "object",
 					"properties": {
@@ -296,6 +324,10 @@
 				"type": "array",
 				"items": {
 					"type": "object",
+					"required": [
+						"url",
+						"maintainer"
+					],
 					"properties": {
 						"url": {
 							"type": "string",
@@ -306,6 +338,11 @@
 							"type": "string",
 							"example": "Lightcurve GmbH",
 							"description": "Maintainer details of the node"
+						},
+						"apiCertificatePublicKey": {
+							"type": "string",
+							"example": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxd93uLDs8HTPqcSPpxZ\nrf0Dc29r3iPp0a8filjAyeX4RAH6lWm9qFt26CcE8ESYtmo1sVtswvs7VH4Bjg/F\nDlRpd+MnAlXuxChij8/vjyAwE71ucMrmZhxM8rOSfPML8fniZ8trr3I4R2o4xWh6\nno/xTUtZ02/yUEXbphw3DEuefzHEQnEF+quGji9pvGnPO6Krmnri9H4WPY0ysPQQ\nQd82bUZCk9XdhSZcW/am8wBulYokITRMVHlbRXqu1pOFmQMO5oSpyZU3pXbsx+Ox\nIOc4EDX0WMa9aH4+snt18WAXVGwF2B4fmBk7AtmkFzrTmbpmyVqA3KO2IjzMZPw0\nhQIDAQAB\n-----END PUBLIC KEY-----",
+							"description": "Public key corresponding to the SSL/TLS certificate for the API endpoint."
 						}
 					}
 				}

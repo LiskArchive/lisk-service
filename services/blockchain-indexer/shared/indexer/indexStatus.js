@@ -13,14 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const path = require('path');
-const BluebirdPromise = require('bluebird');
-
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 	Signals,
-	Utils,
 } = require('lisk-service-framework');
 
 const {
@@ -34,23 +30,15 @@ const {
 	updateFinalizedHeight,
 } = require('../constants');
 
-const {
-	getBlockByHeight,
-} = require('../dataService');
-
 const logger = Logger();
 
 const blocksTableSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getBlocksTable = () => getTableInstance(
-	blocksTableSchema.tableName,
-	blocksTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
@@ -110,36 +98,24 @@ const reportIndexStatus = async () => {
 
 	logger.info([
 		`currentChainHeight: ${currentChainHeight}`,
-		`lastIndexedBlock: ${lastIndexedBlock.height}`,
+		`lastIndexedBlockHeight: ${lastIndexedBlock.height}`,
 	].join(', '));
 
-	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
-};
-
-const initializeSearchIndex = async () => {
-	// Dynamically fetch all available table schemas
-	const tableSchemas = Object.values(Utils.requireAllJs(path.join(__dirname, '../database/schema')));
-	await BluebirdPromise.map(
-		tableSchemas,
-		schema => getTableInstance(schema.tableName, schema, MYSQL_ENDPOINT),
-		{ concurrency: 1 },
-	);
-	Signals.get('searchIndexInitialized').dispatch();
+	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%).`);
 };
 
 const init = async () => {
-	await initializeSearchIndex();
+	// Initialize index status reporting and schedule regular updates
+	await reportIndexStatus();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
 
 	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('chainNewBlock').add(updateFinalizedHeight);
 
-	const genesisBlock = await getBlockByHeight(await getGenesisHeight());
-
 	// Index stakers and commission information available in genesis block
-	await indexValidatorCommissionInfo(genesisBlock);
-	await indexStakersInfo(genesisBlock);
+	await indexValidatorCommissionInfo();
+	await indexStakersInfo();
 };
 
 module.exports = {

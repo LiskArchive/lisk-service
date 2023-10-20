@@ -14,6 +14,8 @@
  *
  */
 import moment from 'moment';
+import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import { waitMs } from '../../../helpers/utils';
 
 const util = require('util');
 
@@ -41,11 +43,34 @@ const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 describe('Method get.blocks', () => {
 	let refBlock;
 	beforeAll(async () => {
-		[refBlock] = (await getBlocks({ limit: 1, offset: 5 })).result.data;
+		let retries = 10;
+		let success = false;
+
+		while (retries > 0 && !success) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				[refBlock] = (await getBlocks({ limit: 1, offset: 5 })).result.data;
+
+				if (refBlock) {
+					success = true;
+				}
+			} catch (error) {
+				console.error(`Error fetching blocks. Retries left: ${retries}`);
+				retries--;
+
+				// Delay by 3 sec
+				// eslint-disable-next-line no-await-in-loop
+				await waitMs(3000);
+			}
+		}
+
+		if (!success) {
+			throw new Error('Failed to fetch blocks even after retrying.');
+		}
 	});
 
 	describe('is able to retireve block lists', () => {
-		it('no params -> ok', async () => {
+		it('should return list of blocks', async () => {
 			const response = await getBlocks({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -61,7 +86,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('limit=10 -> ok', async () => {
+		it('should return list of blocks when requested with limit=10', async () => {
 			const response = await getBlocks({ limit: 10 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -77,7 +102,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('offset -> ok', async () => {
+		it('should return list of blocks when requested with offset=1', async () => {
 			const [...topTenBlocks] = (await getBlocks({})).result.data;
 			const [...topTenOffsetBlocks] = (await getBlocks({ offset: 1 })).result.data;
 
@@ -87,7 +112,7 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		it('limit & offset -> ok', async () => {
+		it('should return list of blocks when requested with limit=12 and offset=1', async () => {
 			const [...topTenBlocks] = (await getBlocks({})).result.data;
 			const [...topTenOffsetBlocks] = (await getBlocks({ offset: 1, limit: 12 })).result.data;
 
@@ -99,7 +124,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block details by block ID', () => {
-		it('known block by blockID -> ok', async () => {
+		it('should return block by blockID', async () => {
 			const response = await getBlocks({ blockID: refBlock.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -111,26 +136,51 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('too long blockID -> empty response', async () => {
-			const response = await getBlocks({ blockID: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e);
-			expect(response).toMap(invalidParamsSchema);
+		it('should return invalid params if requested with invalid blockID', async () => {
+			expect(await getBlocks({ blockID: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e)).toMap(invalidParamsSchema);
+			expect(await getBlocks({ blockID: '12602944501676077162' }).catch(e => e)).toMap(invalidParamsSchema);
 		});
 
-		it('invalid blockID -> empty response', async () => {
-			const response = await getBlocks({ blockID: '12602944501676077162' }).catch(e => e);
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
-		});
-
-		it('invalid query parameter -> -32602', async () => {
+		it('shoudd return invalid query parameter for invalid param', async () => {
 			const response = await getBlocks({ block: '12602944501676077162' }).catch(e => e);
 			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('should return bad request when requested with invalid Addresse', async () => {
+			for (let i = 0; i < invalidAddresses.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocks({ generatorAddress: invalidAddresses[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return bad request when requested with invalid limit', async () => {
+			for (let i = 0; i < invalidLimits.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocks({ limit: invalidLimits[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return bad request when requested with offset', async () => {
+			for (let i = 0; i < invalidOffsets.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocks({ offset: invalidOffsets[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+
+		it('should return bad request when requested with invalid block ID', async () => {
+			for (let i = 0; i < invalidBlockIDs.length; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				const response = await getBlocks({ blockID: invalidBlockIDs[i] }).catch(e => e);
+				expect(response).toMap(invalidParamsSchema);
+			}
 		});
 	});
 
 	describe('is able to retireve block details by height', () => {
-		it('known block by height -> ok', async () => {
+		it('should return known block by height', async () => {
 			const response = await getBlocks({ height: `${refBlock.height}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -141,14 +191,14 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		it('height = 0 -> -32602', async () => {
+		it('should return invalid params if requested with height=0', async () => {
 			const response = await getBlocks({ height: 0 }).catch(e => e);
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retireve block lists by generatorAddress', () => {
-		it('block list by known generatorAddress', async () => {
+		it('should return block list by known generatorAddress', async () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -166,7 +216,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block lists by timestamp', () => {
-		it('Blocks with from...to timestamp -> ok', async () => {
+		it('should return blocks with from...to timestamp', async () => {
 			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const to = refBlock.timestamp;
 			const response = await getBlocks({ timestamp: `${from}:${to}` });
@@ -185,7 +235,7 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		it('Blocks with from... timestamp -> ok', async () => {
+		it('should return blocks with from... timestamp', async () => {
 			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await getBlocks({ timestamp: `${from}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -202,7 +252,7 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		it('Blocks with ...to timestamp -> ok', async () => {
+		it('should return blocks with ...to timestamp', async () => {
 			const to = refBlock.timestamp;
 			const response = await getBlocks({ timestamp: `:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -221,7 +271,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block lists within height range', () => {
-		it('Blocks with min...max height -> ok', async () => {
+		it('should return blocks with min...max height', async () => {
 			const minHeight = refBlock.height - 10;
 			const maxHeight = refBlock.height;
 			const response = await getBlocks({ height: `${minHeight}:${maxHeight}` });
@@ -240,7 +290,7 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		it('Blocks with min... height -> ok', async () => {
+		it('should return blocks with min... height', async () => {
 			const minHeight = refBlock.height - 10;
 			const response = await getBlocks({ height: `${minHeight}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -257,7 +307,7 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		it('Blocks with ...max height -> ok', async () => {
+		it('should return blocks with ...max height', async () => {
 			const maxHeight = refBlock.height;
 			const response = await getBlocks({ height: `:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -276,7 +326,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('Blocks sorted by height', () => {
-		it('returns 10 blocks sorted by height descending', async () => {
+		it('should return 10 blocks sorted by height descending', async () => {
 			const response = await getBlocks({ sort: 'height:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -294,7 +344,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 blocks sorted by height ascending', async () => {
+		it('should return 10 blocks sorted by height ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await getBlocks({ sort: 'height:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -315,7 +365,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('Blocks sorted by timestamp', () => {
-		it('returns 10 blocks sorted by timestamp descending', async () => {
+		it('should return 10 blocks sorted by timestamp descending', async () => {
 			const response = await getBlocks({ sort: 'timestamp:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -333,7 +383,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns 10 blocks sorted by timestamp ascending', async () => {
+		it('should return 10 blocks sorted by timestamp ascending', async () => {
 			// Ignore the genesis block with offset=1
 			const response = await getBlocks({ sort: 'timestamp:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -354,7 +404,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('Fetch blocks based on multiple request params', () => {
-		it('returns blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
+		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress, sort: 'timestamp:desc', limit: 100, offset: 0 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -375,7 +425,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
+		it('should return blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generator.address, sort: 'height:asc', limit: 5, offset: 0 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -396,7 +446,7 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns empty response when queried with blockID and wrong height', async () => {
+		it('should return empty response when queried with blockID and wrong height', async () => {
 			const height = String(refBlock.height - 10);
 			const response = await getBlocks({ blockID: refBlock.id, height }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
@@ -404,7 +454,7 @@ describe('Method get.blocks', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('returns empty response when queried with blockID and wrong timestamp', async () => {
+		it('should return empty response when queried with blockID and wrong timestamp', async () => {
 			const timestamp = String(moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix());
 			const response = await getBlocks({ blockID: refBlock.id, timestamp }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
@@ -412,14 +462,14 @@ describe('Method get.blocks', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('returns empty response when queried with blockID and non-zero offset', async () => {
+		it('should return empty response when queried with blockID and non-zero offset', async () => {
 			const response = await getBlocks({ blockID: refBlock.id, offset: 1 }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('returns empty response when queried with block height and non-zero offset', async () => {
+		it('should return empty response when queried with block height and non-zero offset', async () => {
 			const response = await getBlocks({
 				height: String(refBlock.height),
 				offset: 1,
@@ -429,7 +479,7 @@ describe('Method get.blocks', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('returns empty response when queried with block timestamp and non-zero offset', async () => {
+		it('should return empty response when queried with block timestamp and non-zero offset', async () => {
 			const response = await getBlocks({ timestamp: String(refBlock.timestamp), offset: 1 })
 				.catch(e => e);
 			expect(response).toMap(emptyResponseSchema);

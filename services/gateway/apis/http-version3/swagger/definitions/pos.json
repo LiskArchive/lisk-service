@@ -289,13 +289,14 @@
 						"tokenID",
 						"unstakeHeight",
 						"expectedUnlockableHeight",
+						"expectedUnlockTime",
 						"isLocked"
 					],
 					"properties": {
 						"validatorAddress": {
 							"type": "string",
 							"example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-							"description": "Address of the validator against whom the stake was made."
+							"description": "Address of the validator against which the stake was made."
 						},
 						"amount": {
 							"type": "string",
@@ -317,10 +318,15 @@
 							"example": 270000,
 							"description": "The block height at which the corresponding unstaked (locked) amount is available to be unlocked."
 						},
+						"expectedUnlockTime": {
+							"type": "integer",
+							"example": 1556100060,
+							"description": "The timestamp at which the corresponding unstaked (locked) amount is available to be unlocked."
+						},
 						"isLocked": {
 							"type": "boolean",
 							"example": true,
-							"description": "A boolean flag indicating if the corresponding (previously) un-staked amount is available to be unlocked. When `isLocked: false`, the amount be unlocked with a `pos:unlock` transaction."
+							"description": "A boolean flag indicating if the corresponding (previously) un-staked amount is available to be unlocked. When `isLocked: false`, the amount can be unlocked with a `pos:unlock` transaction."
 						}
 					}
 				}
@@ -558,7 +564,8 @@
 					"maxNumberPendingUnlocks",
 					"failSafeMissedBlocks",
 					"failSafeInactiveWindow",
-					"punishmentWindow",
+					"punishmentWindowStaking",
+					"punishmentWindowSelfStaking",
 					"roundLength",
 					"minWeightStandby",
 					"numberActiveValidators",
@@ -567,6 +574,13 @@
 					"maxBFTWeightCap",
 					"commissionIncreasePeriod",
 					"maxCommissionIncreaseRate",
+					"useInvalidBLSKey",
+					"baseStakeAmount",
+					"lockingPeriodStaking",
+					"lockingPeriodSelfStaking",
+					"reportMisbehaviorReward",
+					"reportMisbehaviorLimitBanned",
+					"weightScaleFactor",
 					"extraCommandFees"
 				],
 				"properties": {
@@ -600,10 +614,15 @@
 						"example": 260000,
 						"description": "The length of the inactivity window used in the fail-safe banning mechanism."
 					},
-					"punishmentWindow": {
+					"punishmentWindowStaking": {
 						"type": "integer",
-						"example": 780000,
-						"description": "The punishment time for punished delegates."
+						"example": 241920,
+						"description": "The punishment period for regular stakes, i.e., how many blocks after misbehavior report stakers can unlock tokens unstaked from a punished validator."
+					},
+					"punishmentWindowSelfStaking": {
+						"type": "integer",
+						"example": 725760,
+						"description": "The punishment period for self-stakes, i.e., how many blocks after misbehavior report punished validators can unlock their self-unstaked tokens."
 					},
 					"roundLength": {
 						"type": "integer",
@@ -620,7 +639,7 @@
 						"example": 101,
 						"description": "The number of active validators in a round."
 					},
-					"numberStandbyDelegates": {
+					"numberStandbyValidators": {
 						"type": "integer",
 						"example": 2,
 						"description": "The number of standby validators in a round."
@@ -644,6 +663,41 @@
 						"type": "number",
 						"example": 500,
 						"description": "Determines the maximum allowed increase on the commission per transaction. It is set to 5% on the Lisk Mainchain."
+					},
+					"useInvalidBLSKey": {
+						"type": "boolean",
+						"example": false,
+						"description": "This value determines if the function registerValidatorKeys or registerValidatorWithoutBLSKey from the validators module should be used when registering validators listed in a genesis block."
+					},
+					"baseStakeAmount": {
+						"type": "string",
+						"example": "1000000000",
+						"description": "The minimum staking amount. All staked amounts should be multiples of this value."
+					},
+					"lockingPeriodStaking": {
+						"type": "number",
+						"example": 26000,
+						"description": "The locking period for regular staked tokens, measured in number of blocks."
+					},
+					"lockingPeriodSelfStaking": {
+						"type": "number",
+						"example": 260000,
+						"description": "The locking period for self-staked tokens."
+					},
+					"reportMisbehaviorReward": {
+						"type": "string",
+						"example": "100000000",
+						"description": "The reward for a sender of a report misbehavior transaction."
+					},
+					"reportMisbehaviorLimitBanned": {
+						"type": "number",
+						"example": 5,
+						"description": "The number of report misbehavior transactions against a validator for getting banned."
+					},
+					"weightScaleFactor": {
+						"type": "string",
+						"example": "100000000000",
+						"description": "Determines the factor by which BFT weights are divided."
 					},
 					"extraCommandFees": {
 						"description": "Extra fees associated (beyond the usual transaction fees) for the listed commands.",

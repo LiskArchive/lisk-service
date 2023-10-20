@@ -26,9 +26,15 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 	isMainchain,
 	resolveMainchainServiceURL,
+	getCurrentChainID,
+	resolveChannelInfo,
+	initFeeEstimates,
 } = require('./business');
 
 const {
@@ -42,6 +48,7 @@ const {
 
 const {
 	getPosValidators,
+	getAllValidators,
 	reloadValidatorCache,
 	getPosConstants,
 	getPosLockedRewards,
@@ -94,10 +101,11 @@ const {
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
 } = require('./network');
-const { getIndexStatus } = require('./indexStatus');
+const { getIndexStatus, isBlockchainFullyIndexed } = require('./indexStatus');
 const { getLegacyAccountInfo } = require('./legacy');
 const { getValidator, validateBLSKey } = require('./validator');
 const { getGenerators } = require('./generators');
+const { invokeEndpoint } = require('./invoke');
 
 module.exports = {
 	// Blocks
@@ -110,6 +118,7 @@ module.exports = {
 
 	// PoS
 	getPosValidators,
+	getAllValidators,
 	reloadValidatorCache,
 	getPosConstants,
 	getPosUnlocks,
@@ -140,6 +149,8 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	reloadBlockchainAppsStats,
+	getCurrentChainID,
+	resolveChannelInfo,
 
 	// Events
 	getEvents,
@@ -159,6 +170,7 @@ module.exports = {
 
 	// Index Status
 	getIndexStatus,
+	isBlockchainFullyIndexed,
 
 	// Legacy
 	getLegacyAccountInfo,
@@ -170,6 +182,9 @@ module.exports = {
 	// Generators
 	reloadGeneratorsCache,
 	getGenerators,
+
+	// Fee estimates
+	initFeeEstimates,
 
 	isPosModuleRegistered,
 	getNumberOfGenerators,
@@ -183,6 +198,9 @@ module.exports = {
 	normalizeTransaction,
 	getPosLockedRewards,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 
 	getAnnualInflation,
@@ -191,4 +209,6 @@ module.exports = {
 
 	isMainchain,
 	resolveMainchainServiceURL,
+
+	invokeEndpoint,
 };

@@ -26,6 +26,7 @@ const {
 const {
 	blockchainAppsTokenMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsTokenMetadataSchema.schema');
+const { invalidNamesCSV, invalidTokenIDCSV, invalidOffsets, invalidLimits, invalidNames, invalidChainIDCSV } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -44,7 +45,7 @@ describe('Blockchain application tokens metadata API', () => {
 		defaultToken = `${curChainID}00000000`;
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens', async () => {
+	it('should return blockchain applications off-chain metadata for tokens', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -56,7 +57,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens with limit=5', async () => {
+	it('should return blockchain applications off-chain metadata for tokens with limit=5', async () => {
 		const response = await api.get(`${endpoint}?limit=5`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -68,7 +69,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens with limit=5 and offset=1', async () => {
+	it('should return blockchain applications off-chain metadata for tokens with limit=5 and offset=1', async () => {
 		const response = await api.get(`${endpoint}?limit=5&offset=1`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -80,7 +81,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens with limit=5, offset=1 and sort=chainName:desc', async () => {
+	it('should return blockchain applications off-chain metadata for tokens with limit=5, offset=1 and sort=chainName:desc', async () => {
 		const response = await api.get(`${endpoint}?limit=5&offset=1&sort=chainName:desc`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -92,7 +93,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens chainID', async () => {
+	it('should return blockchain application off-chain metadata for tokens chainID', async () => {
 		const response = await api.get(`${endpoint}?chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -103,8 +104,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by chainName', async () => {
-		const response = await api.get(`${endpoint}?chainName=Lisk`);
+	it('should return blockchain application off-chain metadata for tokens by chainName', async () => {
+		const response = await api.get(`${endpoint}?chainName=lisk_mainchain`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -115,7 +116,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by tokenID', async () => {
+	it('should return blockchain application off-chain metadata by tokenID', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${defaultToken}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -127,8 +128,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by csv tokenID', async () => {
-		const response = await api.get(`${endpoint}?tokenID=${defaultToken},0300000000000000`);
+	it('should return blockchain application off-chain metadata for tokens by csv tokenID', async () => {
+		const response = await api.get(`${endpoint}?tokenID=${defaultToken},0400000000000000`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -139,7 +140,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
+	it('should return blockchain application off-chain metadata for tokens by tokenID and chainID', async () => {
 		const response = await api.get(`${endpoint}?tokenID=${defaultToken}&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -151,7 +152,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by tokenName and chainID', async () => {
+	it('should return blockchain application off-chain metadata for tokens by tokenName and chainID', async () => {
 		const response = await api.get(`${endpoint}?tokenName=Lisk&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -163,7 +164,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by tokenName and tokenID', async () => {
+	it('should return blockchain application off-chain metadata for tokens by tokenName and tokenID', async () => {
 		const response = await api.get(`${endpoint}?tokenName=Lisk&tokenID=${defaultToken}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -175,7 +176,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by chainID and csv tokenName', async () => {
+	it('should return blockchain application off-chain metadata for tokens by chainID and csv tokenName', async () => {
 		const response = await api.get(`${endpoint}?network=${curNetwork}&tokenName=Lik,Lisk&chainID=${curChainID}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -187,19 +188,19 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('fails validation error when only tokenName specified', async () => {
-		const response = await api.get(`${endpoint}?tokenName=Lisk`, 400);
-		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
+	it('should return blockchain application off-chain metadata for tokens by tokenName', async () => {
+		const response = await api.get(`${endpoint}?tokenName=Lisk`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(0);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		response.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('fails validation error when only tokenName and chainName specified', async () => {
-		const response = await api.get(`${endpoint}?tokenName=Lisk&chainName=${curNetwork}`, 400);
-		expect(response).toMap(badRequestSchema);
-		expect(response.message).toInclude('\'tokenName\' must be specified with either \'chainID\', or \'chainName\' and \'network\'.');
-	});
-
-	it('retrieves blockchain application off-chain metadata for tokens by network', async () => {
+	it('should return blockchain application off-chain metadata for tokens by network', async () => {
 		const response = await api.get(`${endpoint}?network=${curNetwork}`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -211,8 +212,8 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata for tokens by csv network', async () => {
-		const response = await api.get(`${endpoint}?network=${curNetwork},alphanet`);
+	it('should return blockchain application off-chain metadata for tokens by csv network', async () => {
+		const response = await api.get(`${endpoint}?network=${curNetwork},betanet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -223,7 +224,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens by search', async () => {
+	it('should return blockchain applications off-chain metadata for tokens by search', async () => {
 		const response = await api.get(`${endpoint}?search=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -235,7 +236,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens by partial search', async () => {
+	it('should return blockchain applications off-chain metadata for tokens by partial search', async () => {
 		const response = await api.get(`${endpoint}?search=Lis`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -247,7 +248,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens by case-insensitive search (Upper-case)', async () => {
+	it('should return blockchain applications off-chain metadata for tokens by case-insensitive search (Upper-case)', async () => {
 		const response = await api.get(`${endpoint}?search=LISK`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -259,7 +260,7 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata for tokens by case-insensitive search (Lower-case)', async () => {
+	it('should return blockchain applications off-chain metadata for tokens by case-insensitive search (Lower-case)', async () => {
 		const response = await api.get(`${endpoint}?search=lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
@@ -271,8 +272,66 @@ describe('Blockchain application tokens metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('invalid request param -> bad request', async () => {
+	it('should return bad request for an invalid param', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for an invalid chainID param', async () => {
+		for (let i = 0; i < invalidChainIDCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?chainID=${invalidChainIDCSV[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid chainName param', async () => {
+		for (let i = 0; i < invalidNames.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?chainName=${invalidNames[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid tokenName param', async () => {
+		for (let i = 0; i < invalidNamesCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?tokenName=${invalidNamesCSV[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid tokenID param', async () => {
+		for (let i = 0; i < invalidTokenIDCSV.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?tokenID=${invalidTokenIDCSV[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid network', async () => {
+		const response = await api.get(`${endpoint}?network=gammanet`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for an invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
+			expect(response).toMap(badRequestSchema);
+		}
+	});
+
+	it('should return bad request for an invalid sort option', async () => {
+		const response = await api.get(`${endpoint}?sort=invalidSort`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

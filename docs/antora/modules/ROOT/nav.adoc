@@ -1,3 +1,12 @@
 * Setup
+** xref:setup/docker.adoc[]
 ** xref:setup/source.adoc[]
 
+* xref:configuration/index.adoc[Configuration]
+** xref:configuration/docker.adoc[]
+** xref:configuration/source.adoc[]
+
+* Management
+** xref:management/snapshots.adoc[]
+** xref:management/docker.adoc[]
+** xref:management/source.adoc[]

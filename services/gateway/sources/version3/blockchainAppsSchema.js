@@ -20,7 +20,7 @@ module.exports = {
 	method: 'indexer.blockchain.apps',
 	params: {
 		chainID: '=,string',
-		name: '=,string',
+		chainName: '=,string',
 		search: '=,string',
 		status: '=,string',
 		offset: '=,number',
@@ -33,6 +33,5 @@ module.exports = {
 			offset: '=,number',
 			total: '=,number',
 		},
-		links: {},
 	},
 };

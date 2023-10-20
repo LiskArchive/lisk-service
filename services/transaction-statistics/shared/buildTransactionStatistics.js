@@ -20,33 +20,33 @@ const BigNumber = require('big-number');
 const {
 	Logger,
 	Queue,
-	MySQL: {
-		getDbConnection,
-		getTableInstance,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
+	DB: {
+		MySQL: {
+			getDBConnection,
+			getTableInstance,
+			startDBTransaction,
+			commitDBTransaction,
+			rollbackDBTransaction,
+		},
 	},
 	Signals,
 } = require('lisk-service-framework');
 
 const { getDistributionByType } = require('./transactionStatistics');
-const { resolveGlobalTokenID, DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
+const { DB_CONSTANT, DATE_FORMAT } = require('./utils/constants');
 const { requestIndexer } = require('./utils/request');
-const requestAll = require('./utils/requestAll');
 
-const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
+const requestAll = require('./utils/requestAll');
+const txStatisticsTableSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
 const logger = Logger();
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysql;
+const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
-const getDBInstance = () => getTableInstance(
-	txStatisticsIndexSchema.tableName,
-	txStatisticsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
+	txStatisticsTableSchema, dbEndpoint);
 
 const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
@@ -105,7 +105,7 @@ const computeTransactionStats = transactions => transactions.reduce(
 				[getRange(tx)]: {
 					count: txStatsWithFallback.count + 1,
 					volume: BigNumber(txStatsWithFallback.volume).add(getTxValue(tx)),
-					tokenID: resolveGlobalTokenID(tx.params.tokenID),
+					tokenID: tx.params.tokenID || DB_CONSTANT.UNAVAILABLE,
 				},
 			},
 		};
@@ -130,13 +130,13 @@ const transformStatsObjectToList = statsObject => (
 );
 
 const insertToDB = async (statsList, date) => {
-	const db = await getDBInstance();
-	const connection = await getDbConnection(MYSQL_ENDPOINT);
-	const trx = await startDbTransaction(connection);
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_PRIMARY);
+	const connection = await getDBConnection(MYSQL_ENDPOINT_PRIMARY);
+	const trx = await startDBTransaction(connection);
 	try {
 		try {
-			const [{ id }] = db.find({ date, limit: 1 }, ['id']);
-			await db.deleteByPrimaryKey([id]);
+			const [{ id }] = transactionStatisticsTable.find({ date, limit: 1 }, ['id']);
+			await transactionStatisticsTable.deleteByPrimaryKey([id]);
 			logger.debug(`Removed the following date from the database: ${date}`);
 		} catch (err) {
 			logger.debug(`The database does not contain the entry with the following date: ${date}`);
@@ -149,12 +149,12 @@ const insertToDB = async (statsList, date) => {
 			const { range, ...finalStats } = statistic;
 			return finalStats;
 		});
-		await db.upsert(statsList, trx);
-		await commitDbTransaction(trx);
+		await transactionStatisticsTable.upsert(statsList, trx);
+		await commitDBTransaction(trx);
 		const count = statsList.reduce((acc, row) => acc + row.count, 0);
 		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await rollbackDBTransaction(trx);
 		throw error;
 	}
 };
@@ -194,14 +194,14 @@ const transactionStatisticsQueue = Queue(
 );
 
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
-	const db = await getDBInstance();
+	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 	const scheduledDays = [];
 	for (let i = 0; i < n; i++) {
 		/* eslint-disable no-await-in-loop */
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
+		const shouldUpdate = i === 0 || !((await transactionStatisticsTable.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
@@ -236,7 +236,7 @@ const validateTransactionStatistics = async historyLengthDays => {
 			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
 			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
 
-			const { meta: { total } } = await requestIndexer('getTransactions', {
+			const { meta: { total } } = await requestIndexer('transactions', {
 				moduleCommand,
 				timestamp: `${fromTimestamp}:${toTimestamp}`,
 				limit: 1,

@@ -47,6 +47,7 @@ setAppContext(app);
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
+app.addEvents(path.join(__dirname, 'events'));
 
 // Run the application
 app.run().then(async () => {

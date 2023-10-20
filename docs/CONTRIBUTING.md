@@ -10,18 +10,19 @@ propose changes to this document in a pull request.
 #### Table Of Contents
 
 1. [Code of Conduct](#code-of-conduct)
-
-1. [Help! I don’t want to read this whole thing, I just have one question. :mag_right:](#help!-i-dont-want-to-read-this-whole-thing-i-just-have-a-question)
-
-1. [How Can I Contribute?](#how-can-i-contribute)
-
-	1. [Reporting Bugs](#reporting-bugs)
-	1. [Suggesting Enhancements](#suggesting-enhancements)
-	1. [Pull Requests](#pull-requests)
-
-1. [Styleguides](#styleguides)
-	1. [Git Commit Messages](#git-commit-messages)
-	1. [JavaScript Styleguide](#javascript-styleguide)
+2. [Project License](#project-license)
+3. [Help! I don’t want to read this whole thing, I just have a question. :mag_right:](#help-i-dont-want-to-read-this-whole-thing-i-just-have-a-question-mag_right)
+4. [How Can I Contribute?](#how-can-i-contribute)
+    1. [Pull Requests](#pull-requests)
+    2. [Reporting Bugs](#reporting-bugs)
+       1. [Before Submitting A Bug Report](#before-submitting-a-bug-report)
+       2. [How Do I Submit A (Good) Bug Report?](#how-do-i-submit-a-good-bug-report)
+    3. [Suggesting Enhancements](#suggesting-enhancements)
+       1. [How Do I Submit A (Good) Enhancement Suggestion?](#how-do-i-submit-a-good-enhancement-suggestion)
+5. [Styleguides](#styleguides)
+    1. [Git Commit Messages](#git-commit-messages)
+    2. [JavaScript Styleguide](#javascript-styleguide)
+    3. [Code Documentation Styleguide](#code-documentation-styleguide)
 
 ## Code of Conduct
 
@@ -89,8 +90,8 @@ _Before_ submitting a pull request, please make sure the following is done:
 	changes that adhere to your new code.
 1. Format your code using [Prettier](https://prettier.io/). This should be done
 	for you automatically when you commit files, but can be performed manually
-	with `npm run format`.
-1. Ensure the test and linting suite passes (`npm run prepush` runs both).
+	with `yarn run format`.
+1. Ensure the test and linting suite passes (`yarn run prepush` runs both).
 	Follow the [JavaScript](https://github.com/airbnb/javascript) styleguide from
 	Airbnb with the
 	[lisk extension](https://github.com/LiskHQ/eslint-config-lisk-base).

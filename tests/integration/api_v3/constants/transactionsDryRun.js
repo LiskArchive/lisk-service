@@ -31,7 +31,7 @@ const TRANSACTION_OBJECT_VALID = {
 	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
 };
 
-// Invalid receipient address
+// Invalid recipient address
 const TRANSACTION_OBJECT_INVALID = {
 	module: 'token',
 	command: 'transfer',
@@ -55,15 +55,15 @@ const TRANSACTION_OBJECT_INVALID = {
 const TRANSACTION_OBJECT_PENDING = {
 	module: 'token',
 	command: 'transfer',
-	fee: '166000',
+	fee: '165000',
 	nonce: '1',
 	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
 	signatures: [
 		'ea97e1131adbd6059d8922b14c1dc15a9070d28dfa36d5b492a6850a22fde2407d1d95e73785057adec5631906e2639d5e0e5974537606c9f45ce5af2e2fab06',
 	],
 	params: {
-		amount: '1000000000000',
-		recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+		amount: '10000000000',
+		recipientAddress: 'e32913576c52e2b6b466d8fbd017f066778802b8',
 		data: '',
 		tokenID: '0400000000000000',
 	},
@@ -77,6 +77,35 @@ const TRANSACTION_ENCODED_INVALID = '0a05746f6b656e12087472616e7366657218002080c
 // i.e missing account initialization fee
 const TRANSACTION_ENCODED_PENDING = '0a05746f6b656e12087472616e7366657218012088890a2a203972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c32280a0804000000000000001080c8afa0251a14e32913576c52e2b6b466d8fbd017f066778802b822003a401b02722ba836d8675becd9357be69b12546d8c2583730b4cc112df54b76288990bf53312e7cf426d91ffeeaaf8c87e9e38ef7205fa16ab237208d96f2d0f0c0e';
 
+const UNSIGNED_TRANSACTION_OBJECT = {
+	module: 'token',
+	command: 'transfer',
+	fee: '100000000',
+	nonce: '1',
+	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+	signatures: [],
+	params: {
+		amount: '1000000000000',
+		recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+		data: '',
+		tokenID: '0400000000000000',
+	},
+	id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
+};
+
+const TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS = {
+	module: 'token',
+	command: 'transfer',
+	nonce: '1',
+	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
+	params: {
+		amount: '1000000000000',
+		recipientAddress: 'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+		data: '',
+		tokenID: '0400000000000000',
+	},
+};
+
 module.exports = {
 	TRANSACTION_ENCODED_VALID,
 	TRANSACTION_ENCODED_INVALID,
@@ -84,4 +113,6 @@ module.exports = {
 	TRANSACTION_OBJECT_INVALID,
 	TRANSACTION_OBJECT_VALID,
 	TRANSACTION_OBJECT_PENDING,
+	UNSIGNED_TRANSACTION_OBJECT,
+	TRANSACTION_OBJECT_VALID_WITH_REQUIRED_PROPS,
 };

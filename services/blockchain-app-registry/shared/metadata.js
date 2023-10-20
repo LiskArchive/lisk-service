@@ -16,44 +16,42 @@
 const BluebirdPromise = require('bluebird');
 
 const {
+	Utils: {
+		fs: { read },
+	},
 	HTTP,
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
+	Logger,
 } = require('lisk-service-framework');
+
+const logger = Logger();
 
 const { LENGTH_CHAIN_ID } = require('./constants');
 const { isMainchain } = require('./chain');
-const { read } = require('./utils/fs');
 const { requestIndexer } = require('./utils/request');
 
 const config = require('../config');
-const applicationMetadataIndexSchema = require('./database/schema/application_metadata');
-const tokenMetadataIndexSchema = require('./database/schema/token_metadata');
+const appMetadataTableSchema = require('./database/schema/application_metadata');
+const tokenMetadataTableSchema = require('./database/schema/token_metadata');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const APP_STATUS = {
 	DEFAULT: 'unregistered',
-	ACTIVE: 'active',
+	ACTIVATED: 'activated',
 };
 
 const knownMainchainIDs = Object
 	.keys(config.CHAIN_ID_PREFIX_NETWORK_MAP)
 	.map(e => e.padEnd(LENGTH_CHAIN_ID, '0'));
 
-const getApplicationMetadataIndex = () => getTableInstance(
-	applicationMetadataIndexSchema.tableName,
-	applicationMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTokenMetadataIndex = () => getTableInstance(
-	tokenMetadataIndexSchema.tableName,
-	tokenMetadataIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getApplicationMetadataTable = () => getTableInstance(appMetadataTableSchema, MYSQL_ENDPOINT);
+const getTokenMetadataTable = () => getTableInstance(tokenMetadataTableSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsMetaList = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const blockchainAppsMetaList = {
 		data: [],
@@ -79,23 +77,30 @@ const getBlockchainAppsMetaList = async (params) => {
 		}];
 	}
 
-	const limit = params.limit * config.supportedNetworks.length;
+	let { offset, limit } = params;
 	const defaultApps = await applicationMetadataTable.find(
-		{ ...params, limit, isDefault: true },
+		{ ...params, isDefault: true },
 		['network', 'chainID', 'chainName'],
 	);
 
-	if (defaultApps.length < params.limit) {
+	if (defaultApps.length < limit) {
+		// Update offset and limit
+		limit -= defaultApps.length;
+		const totalDefaultAppsCount = await applicationMetadataTable.count(
+			{ ...params, isDefault: true },
+		);
+
+		offset = Math.max(offset - totalDefaultAppsCount, 0);
+
 		const nonDefaultApps = await applicationMetadataTable.find(
-			{ ...params, limit, isDefault: false },
+			{ ...params, limit, offset, isDefault: false },
 			['network', 'chainID', 'chainName'],
 		);
 
 		blockchainAppsMetaList.data = defaultApps.concat(nonDefaultApps);
+	} else {
+		blockchainAppsMetaList.data = defaultApps;
 	}
-
-	blockchainAppsMetaList.data = blockchainAppsMetaList.data
-		.slice(params.offset, params.offset + params.limit);
 
 	const total = await applicationMetadataTable.count(params);
 
@@ -122,7 +127,7 @@ const readMetadataFromClonedRepo = async (network, appDirName, filename) => {
 };
 
 const getBlockchainAppsMetadata = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const blockchainAppsMetadata = {
 		data: [],
@@ -164,10 +169,14 @@ const getBlockchainAppsMetadata = async (params) => {
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
-		params.search = {
+
+		params.orSearch = [{
 			property: 'chainName',
 			pattern: search,
-		};
+		}, {
+			property: 'displayName',
+			pattern: search,
+		}];
 	}
 
 	const limit = params.limit * config.supportedNetworks.length;
@@ -211,7 +220,7 @@ const getBlockchainAppsMetadata = async (params) => {
 
 			if (await isMainchain()
 				&& knownMainchainIDs.includes(appMeta.chainID)) {
-				appMeta.status = APP_STATUS.ACTIVE;
+				appMeta.status = APP_STATUS.ACTIVATED;
 			} else {
 				const [blockchainApp] = (await requestIndexer('blockchain.apps', { chainID: appMeta.chainID })).data;
 				appMeta.status = blockchainApp ? blockchainApp.status : APP_STATUS.DEFAULT;
@@ -234,8 +243,8 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
-	const applicationMetadataTable = await getApplicationMetadataIndex();
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
+	const tokenMetadataTable = await getTokenMetadataTable();
 
 	const blockchainAppsTokenMetadata = {
 		data: [],
@@ -267,34 +276,20 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	if (params.tokenID) {
 		const { tokenID, ...remParams } = params;
 		params = remParams;
-		const networkSet = new Set();
-
-		const chainIDlocalIDPairs = tokenID.split(',').map(_tokenID => {
-			const chainID = _tokenID.substring(0, LENGTH_CHAIN_ID).toLowerCase();
-			const localID = _tokenID.substring(LENGTH_CHAIN_ID).toLowerCase();
-
-			if (!('network' in params)) {
-				const network = config.CHAIN_ID_PREFIX_NETWORK_MAP[chainID.substring(0, 2)];
-				networkSet.add(network);
-			}
-
-			return [chainID, localID];
-		});
 
 		params.whereIn.push({
-			property: ['chainID', 'localID'],
-			values: chainIDlocalIDPairs,
+			property: 'tokenID',
+			values: tokenID.split(','),
 		});
-
-		// Set network if not already specified in the request params
-		if (!('network' in params)) {
-			params.network = Array.from(networkSet).join(',');
-		}
 	}
 
-	// Resolve network from chainID if present
-	if (params.chainID && !('network' in params)) {
-		params.network = config.CHAIN_ID_PREFIX_NETWORK_MAP[params.chainID.substring(0, 2)];
+	if (params.chainID) {
+		const { chainID, ...remParams } = params;
+		params = remParams;
+		params.search = {
+			property: 'tokenID',
+			startsWith: chainID,
+		};
 	}
 
 	if (params.network) {
@@ -307,17 +302,25 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		});
 	}
 
-	const tokensResultSet = await tokenMetadataTable.find(params, ['network', 'chainID', 'chainName']);
+	const tokensResultSet = await tokenMetadataTable.find(params, ['network', 'tokenID', 'chainName']);
 
+	// Used to avoid reading same token metadata json file multiple times
 	const uniqueChainMap = {};
-	tokensResultSet.forEach(item => uniqueChainMap[item.chainID] = item);
+	// Used to only return the filtered token details in response
+	const resultTokenIDSet = new Set();
+	tokensResultSet.forEach(tokenMeta => {
+		const chainID = tokenMeta.tokenID.substring(0, LENGTH_CHAIN_ID);
+		uniqueChainMap[chainID] = tokenMeta;
+		resultTokenIDSet.add(tokenMeta.tokenID);
+	});
 	const uniqueChainList = Object.values(uniqueChainMap);
 
 	await BluebirdPromise.map(
 		uniqueChainList,
 		async (tokenMeta) => {
+			const chainID = tokenMeta.tokenID.substring(0, LENGTH_CHAIN_ID);
 			const [{ appDirName }] = await applicationMetadataTable.find(
-				{ network: tokenMeta.network, chainID: tokenMeta.chainID },
+				{ network: tokenMeta.network, chainID },
 				['appDirName'],
 			);
 
@@ -327,12 +330,14 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 				config.FILENAME.NATIVETOKENS_JSON,
 			);
 			parsedTokenMeta.tokens.forEach(token => {
-				blockchainAppsTokenMetadata.data.push({
-					...token,
-					chainID: tokenMeta.chainID,
-					chainName: tokenMeta.chainName,
-					network: tokenMeta.network,
-				});
+				if (resultTokenIDSet.has(token.tokenID)) {
+					blockchainAppsTokenMetadata.data.push({
+						...token,
+						chainID,
+						chainName: tokenMeta.chainName,
+						network: tokenMeta.network,
+					});
+				}
 			});
 		},
 		{ concurrency: uniqueChainList.length },
@@ -350,28 +355,41 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 };
 
 const resolveTokenMetaInfo = async (tokenInfoFromDB) => {
+	const applicationMetadataTable = await getApplicationMetadataTable();
+
 	const tokensMeta = [];
+	const processedChainIDs = new Set();
+	const resultTokenIDsSet = new Set(tokenInfoFromDB.map(tokenInfo => tokenInfo.tokenID));
 
-	await BluebirdPromise.map(
-		tokenInfoFromDB,
-		async (entry) => {
-			const parsedTokenMeta = await readMetadataFromClonedRepo(
-				entry.network,
-				entry.chainName,
-				config.FILENAME.NATIVETOKENS_JSON,
-			);
+	/* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
+	for (const entry of tokenInfoFromDB) {
+		const chainID = entry.tokenID.substring(0, LENGTH_CHAIN_ID);
 
-			parsedTokenMeta.tokens.forEach(async token => {
+		// Avoid reading same token metadata file multiple times
+		if (processedChainIDs.has(chainID)) {
+			continue;
+		}
+
+		processedChainIDs.add(chainID);
+		const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['appDirName']);
+		const parsedTokenMeta = await readMetadataFromClonedRepo(
+			entry.network,
+			requestedAppInfo.appDirName,
+			config.FILENAME.NATIVETOKENS_JSON,
+		);
+
+		for (const token of parsedTokenMeta.tokens) {
+			if (resultTokenIDsSet.has(token.tokenID)) {
 				tokensMeta.push({
 					...token,
-					chainID: entry.chainID,
+					chainID,
 					chainName: entry.chainName,
 					network: entry.network,
 				});
-			});
-		},
-		{ concurrency: tokenInfoFromDB.length },
-	);
+			}
+		}
+	}
+	/* eslint-enable no-restricted-syntax, no-await-in-loop */
 
 	return tokensMeta;
 };
@@ -380,17 +398,17 @@ const getSupportedTokensFromServiceURLs = async (serviceURLs) => {
 	for (let i = 0; i < serviceURLs.length; i++) {
 		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
 		// eslint-disable-next-line no-await-in-loop
-		const { data: response } = await HTTP.request(tokenSummaryEndpoint);
+		const response = await HTTP.request(tokenSummaryEndpoint);
 
-		if (response.data && response.data.supportedTokens) {
-			return Promise.resolve(response.data.supportedTokens);
+		if (response && response.data && response.data.data && response.data.data.supportedTokens) {
+			return Promise.resolve(response.data.data.supportedTokens);
 		}
 	}
-	return Promise.resolve({});
+	return Promise.reject(new Error('Failed to retrieve supported tokens from service URLs.'));
 };
 
 const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	const searchParams = {
 		search: {
 			property: 'tokenID',
@@ -400,15 +418,15 @@ const getAllTokensMetaInNetworkByChainID = async (chainID, limit, offset, sort) 
 		offset,
 		sort,
 	};
-	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
-	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
+	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'tokenID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams);
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
 	// Fetch the data
 	return { tokensMeta, total };
 };
 
 const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, offset, sort) => {
-	const tokenMetadataTable = await getTokenMetadataIndex();
+	const tokenMetadataTable = await getTokenMetadataTable();
 	const searchParams = {
 		whereIn: [{
 			property: 'tokenID',
@@ -426,8 +444,8 @@ const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, of
 		sort,
 	};
 
-	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'chainID', 'chainName']);
-	const total = await tokenMetadataTable.count(searchParams, ['network', 'chainID', 'chainName']);
+	const tokensResultSet = await tokenMetadataTable.find(searchParams, ['network', 'tokenID', 'chainName']);
+	const total = await tokenMetadataTable.count(searchParams);
 
 	// Fetch the data
 	const tokensMeta = await resolveTokenMetaInfo(tokensResultSet);
@@ -436,7 +454,7 @@ const getTokensMetaByTokenIDs = async (patternTokenIDs, exactTokenIDs, limit, of
 
 const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 	const { chainID, limit, offset, sort } = params;
-	const applicationMetadataTable = await getApplicationMetadataIndex();
+	const applicationMetadataTable = await getApplicationMetadataTable();
 
 	const tokenMetadata = {
 		data: [],
@@ -444,31 +462,36 @@ const getBlockchainAppsTokensSupportedMetadata = async (params) => {
 	};
 
 	// Check if the metadata for the requested chainID exists
-	const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['network', 'chainName']);
+	const [requestedAppInfo] = await applicationMetadataTable.find({ chainID, limit: 1 }, ['network', 'chainName', 'appDirName']);
 	if (!requestedAppInfo) return tokenMetadata;
 
 	const { serviceURLs } = await readMetadataFromClonedRepo(
 		requestedAppInfo.network,
-		requestedAppInfo.chainName,
+		requestedAppInfo.appDirName,
 		config.FILENAME.APP_JSON,
 	);
 
-	// Query supported tokens information for the requested chainID
-	const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
-	const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
+	try {
+		// Query supported tokens information for the requested chainID
+		const supportedTokensInfo = await getSupportedTokensFromServiceURLs(serviceURLs);
+		const { isSupportAllTokens, exactTokenIDs, patternTokenIDs } = supportedTokensInfo;
 
-	const { tokensMeta, total } = isSupportAllTokens
-		? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
-		: await getTokensMetaByTokenIDs(patternTokenIDs, exactTokenIDs, limit, offset, sort);
+		const { tokensMeta, total } = isSupportAllTokens
+			? await getAllTokensMetaInNetworkByChainID(chainID, limit, offset, sort)
+			: await getTokensMetaByTokenIDs(patternTokenIDs, exactTokenIDs, limit, offset, sort);
 
-	tokenMetadata.data = tokensMeta;
-	tokenMetadata.meta = {
-		count: tokensMeta.length,
-		offset,
-		total,
-	};
+		tokenMetadata.data = tokensMeta;
+		tokenMetadata.meta = {
+			count: tokensMeta.length,
+			offset,
+			total,
+		};
 
-	return tokenMetadata;
+		return tokenMetadata;
+	} catch (err) {
+		logger.warn(err.stack);
+		return tokenMetadata;
+	}
 };
 
 module.exports = {

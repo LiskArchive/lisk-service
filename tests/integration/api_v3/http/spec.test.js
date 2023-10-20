@@ -29,13 +29,18 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/spec`;
 
 describe('Swagger spec API', () => {
-	it('return swagger specifications -> 200 OK', async () => {
+	it('should return swagger specifications', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(specResponseSchema);
 	});
 
-	it('params not supported -> 400 BAD_REQUEST', async () => {
+	it('should return bad request for unsupported param', async () => {
 		const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for empty param', async () => {
+		const response = await api.get(`${endpoint}?someparam=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

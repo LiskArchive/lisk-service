@@ -13,13 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('../config');
 const { updateSvcStatus } = require('../shared/ready');
 
 module.exports = [
 	{
-		name: 'readiness.status',
+		name: 'update.readiness.status',
 		description: 'Keep the readiness status up-to-date',
-		schedule: '* * * * *', // Every min
+		interval: config.job.updateReadinessStatus.interval,
+		schedule: config.job.updateReadinessStatus.schedule,
 		init: updateSvcStatus,
 		controller: updateSvcStatus,
 	},

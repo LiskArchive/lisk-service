@@ -27,7 +27,9 @@ const getTransactionExecutionStatus = (tx, events) => {
 	const txExecResultEvent = commandExecResultEvents.find(e => e.topics.includes(tx.id));
 	if (!txExecResultEvent) throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
 
-	return txExecResultEvent.data.success ? TRANSACTION_STATUS.SUCCESS : TRANSACTION_STATUS.FAIL;
+	return txExecResultEvent.data.success
+		? TRANSACTION_STATUS.SUCCESSFUL
+		: TRANSACTION_STATUS.FAILED;
 };
 
 module.exports = {

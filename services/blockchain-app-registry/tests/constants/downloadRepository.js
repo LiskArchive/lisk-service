@@ -14,16 +14,6 @@
  *
  */
 const getModifiedFileNamesInput = {
-	alphanet: {
-		Lisk: [
-			{ filename: 'alphanet/Lisk/app.json' },
-			{ filename: 'alphanet/Lisk/nativetokens.json' },
-		],
-		Enevti: [
-			{ filename: 'alphanet/Enevti/app.json' },
-			{ filename: 'alphanet/Enevti/nativetokens.json' },
-		],
-	},
 	betanet: {
 		Lisk: [
 			{ filename: 'betanet/Lisk/app.json' },
@@ -37,11 +27,6 @@ const getModifiedFileNamesInput = {
 };
 
 const getModifiedFileNamesExpectedResponse = [
-	'alphanet/Lisk/app.json',
-	'alphanet/Lisk/nativetokens.json',
-	'alphanet/Enevti/app.json',
-	'alphanet/Enevti/nativetokens.json',
-
 	'betanet/Lisk/app.json',
 	'betanet/Lisk/nativetokens.json',
 	'betanet/Enevti/app.json',

@@ -23,21 +23,26 @@ const {
 const {
 	blockchainAppsStatsSchema,
 	goodRequestSchemaForStats,
-} = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
+} = require('../../../schemas/api_v3/blockchainApps.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/statistics`;
 
 describe('Blockchain apps statistics API', () => {
-	it('returns apps statistics', async () => {
+	it('should return blockchain apps statistics', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchemaForStats);
 		expect(response.data).toMap(blockchainAppsStatsSchema);
 	});
 
-	it('invalid param -> 400', async () => {
+	it('should return bad request for invalid param', async () => {
 		const response = await api.get(`${endpoint}?invalid_param=invalid_param`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for an empty invalid param', async () => {
+		const response = await api.get(`${endpoint}?invalid_param=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

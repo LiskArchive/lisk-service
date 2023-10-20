@@ -22,13 +22,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+const packageJson = require('./package.json');
+
+const { init } = require('./shared/scheduler');
+const { setAppContext } = require('./shared/utils/request');
 
 LoggerConfig(config.log);
-
-const packageJson = require('./package.json');
-const { setAppContext } = require('./shared/utils/request');
-const { init } = require('./shared/scheduler');
-
 const logger = Logger();
 
 const app = Microservice({
@@ -49,6 +48,10 @@ const app = Microservice({
 			logger.debug('Received a \'chainValidatorsChange\' event from connecter.');
 			Signals.get('newRound').dispatch(payload);
 		},
+		systemNodeInfo: async (payload) => {
+			logger.debug('Received a \'systemNodeInfo\' event from connecter.');
+			Signals.get('nodeInfo').dispatch(payload);
+		},
 	},
 	dependencies: [
 		'connector',
@@ -63,6 +66,7 @@ app.addJobs(path.join(__dirname, 'jobs'));
 // Run the application
 app.run().then(async () => {
 	logger.info(`Service started ${packageJson.name}.`);
+	logger.info('Initializing coordinator activities.');
 	await init();
 }).catch(err => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);

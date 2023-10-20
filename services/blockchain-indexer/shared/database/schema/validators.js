@@ -18,7 +18,7 @@ module.exports = {
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },
-		name: { type: 'string', null: true },
+		name: { type: 'string' },
 		blsKey: { type: 'string', null: true },
 		proofOfPossession: { type: 'string', null: true },
 		generatorKey: { type: 'string', null: true },

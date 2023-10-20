@@ -38,6 +38,5 @@ module.exports = {
 			lastBlockHeight: '=,number',
 			lastBlockID: '=,string',
 		},
-		links: {},
 	},
 };

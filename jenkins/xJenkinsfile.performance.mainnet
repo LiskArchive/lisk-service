@@ -24,7 +24,7 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				// Mainnet service URL
-				waitForHttp('http://localhost:9901/api/ready')
+				waitForHttp('http://127.0.0.1:9901/api/ready')
 			}
 		}
 		stage('Run performance tests Mainnet') {
@@ -33,7 +33,7 @@ pipeline {
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
 						// Mainnet service URL
-						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
+						dir('./tests') { sh 'LISK_SERVICE_URL=http://127.0.0.1:9901 yarn run benchmark' }
 					}
 				}
 			}

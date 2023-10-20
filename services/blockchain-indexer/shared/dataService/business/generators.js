@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 const { Logger } = require('lisk-service-framework');
 
 const { getPosConstants } = require('./pos');
-const { getIndexedAccountInfo } = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../utils/validator');
 
@@ -46,7 +46,7 @@ const getGeneratorsInfo = async () => {
 };
 
 const getNumberOfGenerators = async () => {
-	const constants = await getPosConstants();
+	const { data: constants } = await getPosConstants();
 	return constants.numberActiveValidators + constants.numberStandbyValidators;
 };
 

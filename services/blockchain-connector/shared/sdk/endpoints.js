@@ -13,20 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const {
 	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
 const {
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('./endpoints_1');
+const {
+	cacheBlocksIfEnabled,
+	getBlockByIDFromCache,
+	getTransactionByIDFromCache,
+} = require('./cache');
 const { timeoutMessage, invokeEndpoint } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
+
+const config = require('../../config');
 
 const getNetworkConnectedPeers = async () => {
 	try {
@@ -34,7 +44,7 @@ const getNetworkConnectedPeers = async () => {
 		return connectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNetworkConnectedPeers\'.');
+			throw new TimeoutException("Request timed out when calling 'getNetworkConnectedPeers'.");
 		}
 		throw err;
 	}
@@ -46,7 +56,7 @@ const getNetworkDisconnectedPeers = async () => {
 		return disconnectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNetworkDisconnectedPeers\'.');
+			throw new TimeoutException("Request timed out when calling 'getNetworkDisconnectedPeers'.");
 		}
 		throw err;
 	}
@@ -58,19 +68,19 @@ const getGeneratorStatus = async () => {
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGeneratorStatus\'.');
+			throw new TimeoutException("Request timed out when calling 'getGeneratorStatus'.");
 		}
 		throw err;
 	}
 };
 
-const updateGeneratorStatus = async (config) => {
+const updateGeneratorStatus = async generatorConfig => {
 	try {
-		const response = await invokeEndpoint('generator_updateStatus', { ...config });
+		const response = await invokeEndpoint('generator_updateStatus', { ...generatorConfig });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'updateGeneratorStatus\'.');
+			throw new TimeoutException("Request timed out when calling 'updateGeneratorStatus'.");
 		}
 		throw err;
 	}
@@ -82,7 +92,7 @@ const getLastBlock = async () => {
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getLastBlock\'.');
+			throw new TimeoutException("Request timed out when calling 'getLastBlock'.");
 		}
 		throw err;
 	}
@@ -90,15 +100,19 @@ const getLastBlock = async () => {
 
 const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 	try {
-		if (Number(height) === await getGenesisHeight()) {
+		if (Number(height) === (await getGenesisHeight())) {
 			return getGenesisBlock(includeGenesisAssets);
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
+		cacheBlocksIfEnabled(block);
+
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getBlockByHeight' for height: ${height}.`,
+			);
 		}
 		throw err;
 	}
@@ -107,7 +121,7 @@ const getBlockByHeight = async (height, includeGenesisAssets = false) => {
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
 		const gHeight = await getGenesisHeight();
-		const blocks = [[], []];
+		const blocksNestedList = [[], []];
 
 		if (from < gHeight) {
 			throw new Error(`'from' cannot be lower than the genesis height (${gHeight}).`);
@@ -115,18 +129,22 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 
 		// File based Genesis block handling
 		if (Number(from) === gHeight) {
-			blocks[0] = await getBlockByHeight(gHeight);
+			blocksNestedList[0] = await getBlockByHeight(gHeight);
 			from++;
 		}
 
 		if (from <= to) {
-			blocks[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
+			blocksNestedList[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
 		}
 
-		return ([blocks[0], ...blocks[1]]);
+		const blocks = blocksNestedList.flat();
+		cacheBlocksIfEnabled(blocks);
+		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}.`,
+			);
 		}
 		throw err;
 	}
@@ -135,11 +153,15 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 const getBlockByID = async (id, includeGenesisAssets = false) => {
 	try {
 		// File based Genesis block handling
-		if (id === await getGenesisBlockID()) {
+		if (id === (await getGenesisBlockID())) {
 			return getGenesisBlock(includeGenesisAssets);
 		}
 
+		const blockFromCache = await getBlockByIDFromCache(id);
+		if (blockFromCache) return blockFromCache;
+
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
+		cacheBlocksIfEnabled(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -149,7 +171,7 @@ const getBlockByID = async (id, includeGenesisAssets = false) => {
 	}
 };
 
-const getBlocksByIDs = async (ids) => {
+const getBlocksByIDs = async ids => {
 	try {
 		// File based Genesis block handling
 		const genesisBlockId = await getGenesisBlockID();
@@ -164,47 +186,62 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks;
 		}
 
-		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
+		const blocks = config.cache.isBlockCachingEnabled
+			? await BluebirdPromise.map(ids, async id => getBlockByID(id), { concurrency: 1 })
+			: await invokeEndpoint('chain_getBlocksByIDs', { ids });
+
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}.`,
+			);
 		}
 		throw err;
 	}
 };
 
-const getEventsByHeight = async (height) => {
+const getEventsByHeight = async height => {
 	try {
 		const events = await invokeEndpoint('chain_getEvents', { height });
 		return events;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getEvents\'.');
+			throw new TimeoutException("Request timed out when calling 'getEvents'.");
 		}
 		throw err;
 	}
 };
 
-const getTransactionByID = async (id) => {
+const getTransactionByID = async id => {
 	try {
+		const transactionFromCache = await getTransactionByIDFromCache(id);
+		if (transactionFromCache) return transactionFromCache;
+
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
 		return transaction;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getTransactionByID' for ID: ${id}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getTransactionByID' for ID: ${id}.`,
+			);
 		}
 		throw err;
 	}
 };
 
-const getTransactionsByIDs = async (ids) => {
+const getTransactionsByIDs = async ids => {
 	try {
-		const transactions = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
+		const transactions = config.cache.isBlockCachingEnabled
+			? await BluebirdPromise.map(ids, async id => getTransactionByID(id), { concurrency: 1 })
+			: await invokeEndpoint('chain_getTransactionsByIDs', { ids });
+
 		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}.`,
+			);
 		}
 		throw err;
 	}
@@ -216,31 +253,39 @@ const getTransactionsFromPool = async () => {
 		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getTransactionsFromPool\'.');
+			throw new TimeoutException("Request timed out when calling 'getTransactionsFromPool'.");
 		}
 		throw err;
 	}
 };
 
-const postTransaction = async (transaction) => {
+const postTransaction = async transaction => {
 	try {
 		const response = await invokeEndpoint('txpool_postTransaction', { transaction });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'postTransaction' with transaction: ${transaction}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'postTransaction' with transaction: ${transaction}.`,
+			);
 		}
 		throw err;
 	}
 };
 
-const dryRunTransaction = async ({ transaction, skipVerify }) => {
+const dryRunTransaction = async ({ transaction, skipVerify, strict }) => {
 	try {
-		const response = await invokeEndpoint('txpool_dryRunTransaction', { transaction, skipVerify });
+		const response = await invokeEndpoint('txpool_dryRunTransaction', {
+			transaction,
+			skipVerify,
+			strict,
+		});
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'dryRunTransaction' with transaction: ${transaction}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'dryRunTransaction' with transaction: ${transaction}.`,
+			);
 		}
 		throw err;
 	}
@@ -252,7 +297,7 @@ const getGenerators = async () => {
 		return generators;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenerators\'.');
+			throw new TimeoutException("Request timed out when calling 'getGenerators'.");
 		}
 		throw err;
 	}
@@ -261,11 +306,12 @@ const getGenerators = async () => {
 module.exports = {
 	invokeEndpoint,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 	getNetworkConnectedPeers,
 	getNetworkDisconnectedPeers,
 	getGeneratorStatus,

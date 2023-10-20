@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 const { TRANSACTION_STATUS } = require('../../../constants');
@@ -26,18 +26,14 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
 const { getChainInfo } = require('./registerMainchain');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'terminateSidechainForLiveness';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const chainInfo = await getChainInfo(tx.params.chainID);
@@ -55,7 +51,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 

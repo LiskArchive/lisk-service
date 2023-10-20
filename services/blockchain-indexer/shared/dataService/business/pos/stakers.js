@@ -16,26 +16,25 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
-const stakesIndexSchema = require('../../../database/schema/stakes');
+const stakesTableSchema = require('../../../database/schema/stakes');
+
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
 const {
-	updateAccountPublicKey,
 	getIndexedAccountInfo,
 	getAccountsTable,
-	getLisk32AddressFromPublicKey,
-} = require('../../../utils/account');
+} = require('../../utils/account');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getStakesTable = () => getTableInstance(
-	stakesIndexSchema.tableName,
-	stakesIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
 const getStakers = async params => {
 	const stakesTable = await getStakesTable();
@@ -71,7 +70,7 @@ const getStakers = async params => {
 		stakersResponse.meta.validator.publicKey = publicKey;
 
 		// Index publicKey
-		await updateAccountPublicKey(publicKey);
+		indexAccountPublicKey(publicKey);
 	}
 
 	if (params.name) {

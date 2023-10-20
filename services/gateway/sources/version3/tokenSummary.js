@@ -33,6 +33,5 @@ module.exports = {
 			totalSupply: ['data.totalSupply', totalSupplyByToken],
 		},
 		meta: {},
-		links: {},
 	},
 };

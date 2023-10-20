@@ -27,6 +27,7 @@ const {
 const {
 	goodResponseSchemaForTokenTopBalances,
 } = require('../../../schemas/api_v3/tokenTopBalances.schema');
+const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidTokenIDs } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
@@ -34,10 +35,14 @@ const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-id
 
 describe('get.token.balances.top', () => {
 	let tokenID;
+	let tokenInfo;
 
 	beforeAll(async () => {
 		const { result } = await getTokensIDs({});
 		[tokenID] = result.data.tokenIDs;
+
+		const { result: { data: tokenInformation } } = await getTokensTopBalances({ tokenID });
+		[tokenInfo] = tokenInformation[tokenID];
 	});
 
 	it('should retrieve top token balances when called with token ID', async () => {
@@ -76,23 +81,109 @@ describe('get.token.balances.top', () => {
 		expect(result.data[tokenID].length).toBeLessThanOrEqual(5);
 	});
 
-	it('should return Invalid request param when called without token ID', async () => {
+	it('should retrieve top token balances when called with token ID and search param (partial name)', async () => {
+		const searchParam = tokenInfo.name ? tokenInfo.name.substring(0, 3) : '';
+		const response = await getTokensTopBalances({ tokenID, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial address)', async () => {
+		const searchParam = tokenInfo.address ? tokenInfo.address.substring(0, 3) : '';
+		const response = await getTokensTopBalances({ tokenID, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (partial public key)', async () => {
+		const searchParam = tokenInfo.publicKey ? tokenInfo.publicKey.substring(0, 3) : '';
+		const response = await getTokensTopBalances({ tokenID, search: searchParam });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact name)', async () => {
+		const response = await getTokensTopBalances({ tokenID, search: tokenInfo.name });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact address)', async () => {
+		const response = await getTokensTopBalances({ tokenID, search: tokenInfo.address });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+		expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+		expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+	});
+
+	it('should retrieve top token balances when called with token ID and search param (exact public key)', async () => {
+		if (tokenInfo.publicKey) {
+			const response = await getTokensTopBalances({ tokenID, search: tokenInfo.publicKey });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodResponseSchemaForTokenTopBalances);
+			expect(result.data[tokenID].length).toBeGreaterThanOrEqual(1);
+			expect(result.data[tokenID].length).toBeLessThanOrEqual(10);
+		}
+	});
+
+	it('should return invalid params when called without token ID', async () => {
 		const response = await getTokensTopBalances({});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return Invalid request param when called with invalid param', async () => {
+	it('should return invalid params when called with invalid token ID', async () => {
+		for (let i = 0; i < invalidTokenIDs.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID: invalidTokenIDs[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with token ID and invalid search', async () => {
+		for (let i = 0; i < invalidPartialSearches.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID, search: invalidPartialSearches[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with invalid limit', async () => {
+		for (let i = 0; i < invalidLimits.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID, limit: invalidLimits[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with invalid offset', async () => {
+		for (let i = 0; i < invalidOffsets.length; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			const response = await getTokensTopBalances({ tokenID, offset: invalidOffsets[i] });
+			expect(response).toMap(invalidParamsSchema);
+		}
+	});
+
+	it('should return invalid params when called with invalid param', async () => {
 		const response = await getTokensTopBalances({ tokenID, invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('should return Invalid request param when called with Invalid limit', async () => {
-		const response = await getTokensTopBalances({ tokenID, limit: 'L' });
-		expect(response).toMap(invalidParamsSchema);
-	});
-
-	it('should return Invalid request param when called with Invalid offset', async () => {
-		const response = await getTokensTopBalances({ tokenID, offset: 'L' });
+	it('should return invalid params when called with invalid empty param', async () => {
+		const response = await getTokensTopBalances({ tokenID, invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

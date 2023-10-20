@@ -32,7 +32,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getIndexStatus = async (params) => request(wsRpcUrl, 'get.index.status', params);
 
 describe('get.index.status', () => {
-	it('Retrieves index status', async () => {
+	it('should return index status', async () => {
 		const response = await getIndexStatus({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -40,8 +40,13 @@ describe('get.index.status', () => {
 		expect(result).toMap(goodResponseSchema);
 	});
 
-	it('Invalid request param -> invalid param', async () => {
+	it('should return invalid params for unsupported param', async () => {
 		const response = await getIndexStatus({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for empty param', async () => {
+		const response = await getIndexStatus({ someparam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

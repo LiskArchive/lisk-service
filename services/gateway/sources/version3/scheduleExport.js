@@ -28,6 +28,5 @@ module.exports = {
 		meta: {
 			ready: '=,boolean',
 		},
-		links: {},
 	},
 };

@@ -32,7 +32,7 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/schemas`;
 
 describe('Schemas API', () => {
-	it('returns list of all available schemas', async () => {
+	it('should return list of all available schemas', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(allSchemasSchema);
@@ -48,7 +48,7 @@ describe('Schemas API', () => {
 			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));
 	});
 
-	it('invalid param -> 400', async () => {
+	it('should return bad request for invalid param', async () => {
 		const response = await api.get(`${endpoint}?invalid_param=invalid_param`, 400);
 		expect(response).toMap(badRequestSchema);
 	});

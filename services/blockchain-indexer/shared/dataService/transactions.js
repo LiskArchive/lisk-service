@@ -14,11 +14,12 @@
  *
  */
 const business = require('./business');
+const { TRANSACTION_STATUS } = require('../constants');
 
 const isIncludePendingTransactions = (executionStatus) => {
 	if (!executionStatus) return false;
 
-	const INCLUDE_PENDING_WHEN_STATUSES = ['pending'];
+	const INCLUDE_PENDING_WHEN_STATUSES = [TRANSACTION_STATUS.PENDING];
 	const execStatuses = executionStatus.split(',');
 	const isIncludePending = execStatuses.reduce(
 		(isInclude, status) => {
@@ -128,8 +129,20 @@ const initPendingTransactionsList = () => business.loadAllPendingTransactions();
 const reload = () => business.loadAllPendingTransactions();
 
 const dryRunTransactions = async params => {
-	const response = await business.dryRunTransactions(params);
-	return response;
+	try {
+		const response = await business.dryRunTransactions(params);
+		return response;
+	} catch (err) {
+		if (err.message.includes('ECONNREFUSED')) return {
+			data: { error: 'Unable to reach a network node.' },
+			status: 'INTERNAL_SERVER_ERROR',
+		};
+
+		return {
+			data: { error: `Failed to dry run transaction: ${err.message}.` },
+			status: 'BAD_REQUEST',
+		};
+	}
 };
 
 const estimateTransactionFees = async params => {

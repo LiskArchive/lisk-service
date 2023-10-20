@@ -26,7 +26,7 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-xdescribe('Test requestAll method', () => {
+describe('Test requestAll method', () => {
 	beforeAll(async () => {
 		await broker.start();
 		await request.setAppContext({
@@ -62,4 +62,3 @@ xdescribe('Test requestAll method', () => {
 		expect(requestAll(request.requestIndexer, null, {})).rejects.toThrow();
 	});
 });
-

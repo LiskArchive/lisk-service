@@ -26,21 +26,26 @@ const {
 const {
 	blockchainAppsStatsSchema,
 	goodRequestSchemaForStats,
-} = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
+} = require('../../../schemas/api_v3/blockchainApps.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsStatistics = async (params) => request(wsRpcUrl, 'get.blockchain.apps.statistics', params);
 
 describe('get.blockchain.apps.statistics', () => {
-	it('returns apps statistics', async () => {
+	it('should return blockchain apps statistics', async () => {
 		const response = await getBlockchainAppsStatistics();
 		const { result } = response;
 		expect(result).toMap(goodRequestSchemaForStats);
 		expect(result.data).toMap(blockchainAppsStatsSchema);
 	});
 
-	it('invalid request param -> invalid param', async () => {
+	it('should return invalid params for invalid param', async () => {
 		const response = await getBlockchainAppsStatistics({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params for an empty invalid param', async () => {
+		const response = await getBlockchainAppsStatistics({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

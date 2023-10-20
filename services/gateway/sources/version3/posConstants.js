@@ -22,6 +22,5 @@ module.exports = {
 	definition: {
 		data: posConstants,
 		meta: {},
-		links: {},
 	},
 };

@@ -14,12 +14,13 @@
  *
  */
 module.exports = {
-	name: '=,string',
+	chainName: '=,string',
 	chainID: '=,string',
 	status: '=,string',
 	address: '=,string',
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
+	escrowedLSK: '=,string',
 	escrow: ['escrow', {
 		tokenID: '=,string',
 		amount: '=,string',

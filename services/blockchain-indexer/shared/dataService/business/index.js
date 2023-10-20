@@ -48,6 +48,10 @@ const {
 	getChainAccount,
 	getMainchainID,
 	reloadBlockchainAppsStats,
+	isMainchain,
+	resolveMainchainServiceURL,
+	resolveChannelInfo,
+	getCurrentChainID,
 } = require('./interoperability');
 
 const {
@@ -85,6 +89,9 @@ const { postTransactions } = require('./postTransactions');
 const {
 	getEvents,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 } = require('./events');
 const { dryRunTransactions } = require('./transactionsDryRun');
@@ -97,7 +104,9 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 const { estimateTransactionFees } = require('./transactionsEstimateFees');
-const { isMainchain, resolveMainchainServiceURL } = require('./mainchain');
+const { invokeEndpoint } = require('./invoke');
+
+const { setFeeEstimates, getFeeEstimates, initFeeEstimates } = require('./feeEstimates');
 
 module.exports = {
 	// Generators
@@ -129,6 +138,9 @@ module.exports = {
 	// Events
 	getEvents,
 	getEventsByHeight,
+	cacheEventsByBlockID,
+	deleteEventsFromCacheByBlockID,
+	getEventsByBlockID,
 	deleteEventsFromCache,
 
 	// Interoperability
@@ -137,6 +149,10 @@ module.exports = {
 	getMainchainID,
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
+	isMainchain,
+	resolveMainchainServiceURL,
+	resolveChannelInfo,
+	getCurrentChainID,
 
 	// Token
 	tokenHasUserAccount,
@@ -176,6 +192,11 @@ module.exports = {
 	getDefaultRewardAtHeight,
 	getRewardConstants,
 
+	// Fee estimates
+	initFeeEstimates,
+	setFeeEstimates,
+	getFeeEstimates,
+
 	// Network
 	getNetworkStatus,
 	getNetworkPeers,
@@ -183,6 +204,5 @@ module.exports = {
 	getNetworkDisconnectedPeers,
 	getNetworkPeersStatistics,
 
-	isMainchain,
-	resolveMainchainServiceURL,
+	invokeEndpoint,
 };

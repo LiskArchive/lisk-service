@@ -13,11 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-const path = require('path');
 const fs = require('fs');
-
+const BluebirdPromise = require('bluebird');
 const {
+	Utils: {
+		fs: {
+			stats,
+			mkdir,
+			read,
+			write,
+			isFile,
+			getFiles,
+			fileExists,
+			isFilePathInDirectory,
+			rm,
+		},
+	},
 	Logger,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
@@ -27,67 +38,6 @@ const {
 } = require('./time');
 
 const logger = Logger();
-
-const getFileStats = filePath => new Promise((resolve, reject) => {
-	fs.stat(filePath, (err, stat) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		return resolve(stat);
-	});
-});
-
-const createDir = (dirPath, options = { recursive: true }) => new Promise((resolve, reject) => {
-	logger.debug(`Creating directory: ${dirPath}`);
-	return fs.mkdir(
-		dirPath,
-		options,
-		(err) => {
-			if (err) {
-				logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
-				return reject(err);
-			}
-			logger.debug(`Successfully created directory: ${dirPath}`);
-			return resolve();
-		},
-	);
-});
-
-const init = async (params) => createDir(params.dirPath);
-
-const write = (filePath, content) => new Promise((resolve, reject) => {
-	fs.writeFile(filePath, content, (err) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		return resolve();
-	});
-});
-
-const read = (filePath) => new Promise((resolve, reject) => {
-	fs.readFile(filePath, 'utf8', (err, data) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
-		return resolve(data);
-	});
-});
-
-const remove = (filePath) => new Promise((resolve, reject) => {
-	fs.unlink(
-		filePath,
-		(err) => {
-			if (err) {
-				logger.error(err);
-				return reject(err);
-			}
-			return resolve();
-		},
-	);
-});
 
 const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) => {
 	fs.readdir(
@@ -102,39 +52,45 @@ const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) =
 	);
 });
 
-const purge = (dirPath, days) => new Promise((resolve, reject) => {
-	if (days === undefined) throw new ValidationException('days cannot be undefined');
-	fs.readdir(dirPath, async (err, files) => {
-		if (err) {
-			logger.error(err);
-			return reject(err);
-		}
+const purge = async (dirPath, days) => {
+	if (days === undefined) throw new ValidationException('days cannot be undefined.');
+
+	try {
+		// Get the list of files in the directory using getFiles method
+		const files = await getFiles(dirPath, { withFileTypes: true });
+
+		// Calculate the expiration time for each file and remove if expired
 		await BluebirdPromise.map(
 			files,
-			async (file) => {
-				const stat = await getFileStats(path.join(dirPath, file));
+			async (filePath) => {
+				const stat = await stats(filePath);
 				const currentTime = new Date().getTime();
 				const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
+
 				try {
-					if (currentTime > expirationTime) await remove(path.join(dirPath, file));
+					if (currentTime > expirationTime) await rm(filePath);
 				} catch (error) {
-					logger.error(err);
+					logger.error(error);
 				}
 			},
 			{ concurrency: files.length },
 		);
-		return resolve();
-	});
-});
+	} catch (err) {
+		logger.error(err);
+		throw err;
+	}
+};
 
-const exists = async filePath => !!(await fs.promises.stat(filePath).catch(() => null));
+const init = async (params) => mkdir(params.dirPath);
 
 module.exports = {
 	init,
 	write,
 	read,
-	remove,
+	remove: rm,
 	list,
 	purge,
-	exists,
+	fileExists,
+	isFile,
+	isFilePathInDirectory,
 };

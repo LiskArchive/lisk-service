@@ -13,14 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
 const { requestConnector } = require('./utils/request');
 
 let genesisConfig;
 let genesisHeight;
+let currentHeight;
 let moduleCommands;
 let registeredModules;
+let registeredEndpoints;
 let systemMetadata;
 let finalizedHeight;
+let engineEndpoints;
+let allRegisteredEndpoints;
 
 const updateFinalizedHeight = async () => {
 	const { finalizedHeight: latestFinalizedHeight } = await requestConnector('getNetworkStatus');
@@ -42,8 +47,11 @@ const getGenesisHeight = async () => {
 };
 
 const getCurrentHeight = async () => {
-	const { height } = await requestConnector('getNetworkStatus');
-	return height;
+	if (typeof currentHeight !== 'number') {
+		const networkStatus = await requestConnector('getNetworkStatus');
+		currentHeight = networkStatus.height;
+	}
+	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
@@ -84,6 +92,33 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
+const getRegisteredEndpoints = async () => {
+	if (!registeredEndpoints) {
+		registeredEndpoints = await requestConnector('getRegisteredEndpoints');
+	}
+	return registeredEndpoints;
+};
+
+const getEngineEndpoints = async () => {
+	if (!engineEndpoints) {
+		engineEndpoints = await requestConnector('getEngineEndpoints');
+	}
+	return engineEndpoints;
+};
+
+const getAllRegisteredEndpoints = async () => {
+	if (!allRegisteredEndpoints) {
+		const _registeredEndpoints = await getRegisteredEndpoints();
+		const _engineEndpoints = await getEngineEndpoints();
+
+		allRegisteredEndpoints = _engineEndpoints
+			.map(e => e.name)
+			.concat(_registeredEndpoints);
+	}
+
+	return allRegisteredEndpoints;
+};
+
 const MODULE = Object.freeze({
 	POS: 'pos',
 	AUTH: 'auth',
@@ -106,8 +141,11 @@ const MODULE_SUB_STORE = Object.freeze({
 const COMMAND = Object.freeze({
 	REGISTER_VALIDATOR: 'registerValidator',
 	STAKE: 'stake',
+	CHANGE_COMMISSION: 'changeCommission',
 	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
+	REGISTER_SIDECHAIN: 'registerSidechain',
+	REGISTER_MAINCHAIN: 'registerMainchain',
 });
 
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
@@ -116,6 +154,9 @@ const PATTERN_ANY_TOKEN_ID = '*';
 const PATTERN_ANY_CHAIN_TOKEN_ID = '*'.repeat(LENGTH_TOKEN_LOCAL_ID);
 const LENGTH_TOKEN_ID = LENGTH_CHAIN_ID + LENGTH_TOKEN_LOCAL_ID;
 const LENGTH_NETWORK_ID = 1 * 2; // Each byte is represented with 2 nibbles
+const LENGTH_BYTE_SIGNATURE = 64;
+const LENGTH_BYTE_ID = 32;
+const DEFAULT_NUM_OF_SIGNATURES = 1;
 
 const MAX_COMMISSION = BigInt('10000');
 
@@ -128,8 +169,9 @@ const KV_STORE_KEY = Object.freeze({
 });
 
 const TRANSACTION_STATUS = Object.freeze({
-	SUCCESS: 'success',
-	FAIL: 'fail',
+	SUCCESSFUL: 'successful',
+	FAILED: 'failed',
+	PENDING: 'pending',
 });
 
 const EVENT = Object.freeze({
@@ -143,7 +185,18 @@ const EVENT = Object.freeze({
 const TRANSACTION_VERIFY_RESULT = {
 	INVALID: -1,
 	PENDING: 0,
-	OK: 1,
+	VALID: 1,
+};
+
+const initNodeConstants = async () => {
+	const nodeInfoListener = async (payload) => {
+		// Caching all node constants
+		genesisHeight = payload.genesisHeight;
+		genesisConfig = payload.genesis;
+		currentHeight = payload.height;
+		finalizedHeight = payload.finalizedHeight;
+	};
+	Signals.get('nodeInfo').add(nodeInfoListener);
 };
 
 module.exports = {
@@ -155,7 +208,11 @@ module.exports = {
 	getAvailableModuleCommands,
 	resolveModuleCommands,
 	getRegisteredModules,
+	getRegisteredEndpoints,
 	getSystemMetadata,
+	getEngineEndpoints,
+	getAllRegisteredEndpoints,
+	initNodeConstants,
 
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,
@@ -170,4 +227,7 @@ module.exports = {
 	KV_STORE_KEY,
 	TRANSACTION_STATUS,
 	TRANSACTION_VERIFY_RESULT,
+	LENGTH_BYTE_SIGNATURE,
+	LENGTH_BYTE_ID,
+	DEFAULT_NUM_OF_SIGNATURES,
 };

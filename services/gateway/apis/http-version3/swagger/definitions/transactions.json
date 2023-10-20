@@ -148,7 +148,6 @@
 			"minFee",
 			"size",
 			"nonce",
-			"block",
 			"sender",
 			"params",
 			"executionStatus"
@@ -158,7 +157,7 @@
 				"type": "string",
 				"format": "id",
 				"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
-				"minLength": 1,
+				"minLength": 64,
 				"maxLength": 64,
 				"description": "Unique identifier of the transaction.\nDerived from the transaction signature."
 			},
@@ -193,7 +192,7 @@
 					"id": {
 						"type": "string",
 						"format": "id",
-						"minLength": 1,
+						"minLength": 64,
 						"maxLength": 64,
 						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
 						"description": "Unique identifier of the block.\nDerived from the block signature."
@@ -263,8 +262,8 @@
 			},
 			"executionStatus": {
 				"type": "string",
-				"example": "success",
-				"description": "Execution status of the transaction.\nAccepted values: pending, success, fail."
+				"example": "successful",
+				"description": "Execution status of the transaction.\nAccepted values: pending, successful, failed."
 			},
 			"index": {
 				"type": "integer",
@@ -383,6 +382,12 @@
 				"example": "false",
 				"default": false
 			},
+			"strict": {
+				"type": "boolean",
+				"description": "A boolean indicator to enable strict mode. By default, it is set to false which skips the nonce and signature checks.",
+				"example": "false",
+				"default": false
+			},
 			"transaction": {
 				"type": "object",
 				"description": "Binary payload or the transaction object.",
@@ -468,7 +473,7 @@
 					},
 					"status": {
 						"type": "string",
-						"example": "ok",
+						"example": "valid",
 						"description": "Transaction verification status."
 					},
 					"events": {
@@ -537,7 +542,7 @@
 									"type": "string",
 									"format": "id",
 									"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
-									"minLength": 1,
+									"minLength": 64,
 									"maxLength": 64,
 									"description": "Unique identifier of the transaction.\nDerived from the transaction signature."
 								}
@@ -559,10 +564,13 @@
 	},
 	"transactionEstimateFeesRequestBody": {
 		"type": "object",
+		"required": [
+			"transaction"
+		],
 		"properties": {
 			"transaction": {
 				"type": "object",
-				"description": "Transaction object.\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.",
+				"description": "Transaction object.\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.\nWhen estimating 'token:transferCrossChain' transactions do not include 'messageFee' and 'messageFeeTokenID' in the params.",
 				"required": [
 					"module",
 					"command",
@@ -571,6 +579,11 @@
 					"params"
 				],
 				"properties": {
+					"id": {
+						"type": "string",
+						"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
+						"description": "Unique identifier of the transaction."
+					},
 					"module": {
 						"type": "string",
 						"example": "token",
@@ -581,14 +594,14 @@
 						"example": "transferCrossChain",
 						"description": "Specific command name in the module to be executed."
 					},
-					"fee": {
-						"type": "string",
-						"example": "100000000",
-						"description": "Transaction fee."
-					},
 					"nonce": {
 						"type": "string",
 						"example": "0"
+					},
+					"fee": {
+						"type": "string",
+						"example": "1000000",
+						"description": "Transaction fee."
 					},
 					"senderPublicKey": {
 						"type": "string",
@@ -596,11 +609,14 @@
 						"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owner's private key."
 					},
 					"signatures": {
-						"type": "string",
+						"type": "array",
+						"description": "An array representing signature(s) of the transaction sender.",
+						"items": {
+							"type": "string"
+						},
 						"example": [
 							"48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
-						],
-						"description": "An array representing signature(s) of the transaction sender."
+						]
 					},
 					"params": {
 						"type": "object",
@@ -632,13 +648,13 @@
 							},
 							"messageFee": {
 								"type": "string",
-								"example": "10000000",
-								"description": "The fee required for CCM execution."
+								"example": "1000000",
+								"description": "Fee to be used for transaction processing in the receiving chain."
 							},
 							"messageFeeTokenID": {
 								"type": "string",
 								"example": "0000000000000000",
-								"description": "The token ID of the token required to pay cross-chain message fee."
+								"description": "Token used for cross-chain message fee."
 							}
 						}
 					}
@@ -656,85 +672,86 @@
 			"data": {
 				"type": "object",
 				"required": [
-					"transactionFeeEstimates",
-					"dynamicFeeEstimates"
+					"transaction"
 				],
 				"properties": {
-					"transactionFeeEstimates": {
+					"transaction": {
 						"type": "object",
 						"required": [
-							"minFee",
-							"accountInitializationFee"
+							"fee"
 						],
 						"properties": {
-							"minFee": {
-								"type": "string",
-								"example": "135000",
-								"description": "Minimum required transaction fee."
-							},
-							"accountInitializationFee": {
+							"fee": {
 								"type": "object",
 								"required": [
 									"tokenID",
-									"amount"
+									"minimum"
 								],
 								"properties": {
 									"tokenID": {
 										"type": "string",
-										"example": "0400000000000000",
+										"example": "0000000000000000",
 										"description": "The universal token identifier for the token."
 									},
-									"amount": {
+									"minimum": {
 										"type": "string",
 										"example": "5000000",
-										"description": "The extra fee to be supplied for initializing a new user account."
+										"description": "Minimum fee required for the transaction. This is the sum of the transaction byteFee and any other applicable additionalFee. The breakdown is available in the response meta."
+									},
+									"priority": {
+										"type": "object",
+										"required": [
+											"low",
+											"medium",
+											"high"
+										],
+										"description": "Transaction fee recommendations by priority based on the dynamic fees algorithm.",
+										"properties": {
+											"low": {
+												"type": "string",
+												"description": "Estimated transaction fee with low priority.",
+												"example": "135000"
+											},
+											"medium": {
+												"type": "string",
+												"description": "Estimated transaction fee with medium priority.",
+												"example": "207000"
+											},
+											"high": {
+												"type": "string",
+												"description": "Estimated transaction fee with high priority.",
+												"example": "405000"
+											}
+										}
 									}
 								}
 							},
-							"messageFee": {
+							"params": {
 								"type": "object",
 								"required": [
-									"tokenID",
-									"amount"
+									"messageFee"
 								],
 								"properties": {
-									"tokenID": {
-										"type": "string",
-										"example": "0400000000000000",
-										"description": "The universal token identifier for the token."
-									},
-									"amount": {
-										"type": "string",
-										"example": "343000",
-										"description": "The fee required for CCM execution."
+									"messageFee": {
+										"type": "object",
+										"required": [
+											"tokenID",
+											"amount"
+										],
+										"properties": {
+											"tokenID": {
+												"type": "string",
+												"example": "0000000000000000",
+												"description": "The universal token identifier for the token with which the cross-chain message fee is to be paid."
+											},
+											"amount": {
+												"type": "string",
+												"example": "5000000",
+												"description": "Amount of tokens to be paid for cross-chain message fees."
+											}
+										}
 									}
 								}
-							}
-						}
-					},
-					"dynamicFeeEstimates": {
-						"type": "object",
-						"required": [
-							"low",
-							"medium",
-							"high"
-						],
-						"description": "Estimated fees based on priority.",
-						"properties": {
-							"low": {
-								"type": "string",
-								"description": "Estimated transaction fee with low priority.",
-								"example": "135000"
-							},
-							"medium": {
-								"type": "string",
-								"description": "Estimated transaction fee with medium priority.",
-								"example": "207000"
-							},
-							"high": {
-								"type": "string",
-								"description": "Estimated transaction fee with high priority.",
-								"example": "405000"
 							}
 						}
 					}
@@ -742,7 +759,106 @@
 			},
 			"meta": {
 				"type": "object",
-				"properties": {}
+				"required": [
+					"breakdown"
+				],
+				"properties": {
+					"breakdown": {
+						"type": "object",
+						"required": [
+							"fee"
+						],
+						"properties": {
+							"fee": {
+								"type": "object",
+								"required": [
+									"minimum"
+								],
+								"properties": {
+									"minimum": {
+										"type": "object",
+										"required": [
+											"byteFee"
+										],
+										"properties": {
+											"byteFee": {
+												"type": "string",
+												"example": "135000",
+												"description": "The byte fee for the transaction. This is the product of the transaction length times the fee per byte as configured in the application's 'fee' module."
+											},
+											"additionalFees": {
+												"type": "object",
+												"properties": {
+													"validatorRegistrationFee": {
+														"type": "string",
+														"example": "1000000000",
+														"description": "The extra fee to be supplied for a PoS Validator registration transaction."
+													},
+													"userAccountInitializationFee": {
+														"type": "string",
+														"example": "5000000",
+														"description": "The extra fee to be supplied for initializing a new user token account."
+													},
+													"escrowAccountInitializationFee": {
+														"type": "string",
+														"example": "10000000",
+														"description": "The extra fee to be supplied for initializing an escrow token account."
+													},
+													"chainRegistrationFee": {
+														"type": "string",
+														"example": "1000000000",
+														"description": "The extra fee to be supplied for a chain registration transaction."
+													},
+													"bufferBytes": {
+														"type": "string",
+														"example": "6000",
+														"description": "The extra fee to be supplied for buffer bytes."
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							"params": {
+								"type": "object",
+								"required": [
+									"messageFee"
+								],
+								"properties": {
+									"messageFee": {
+										"type": "object",
+										"required": [
+											"ccmByteFee"
+										],
+										"properties": {
+											"ccmByteFee": {
+												"type": "string",
+												"example": "135000",
+												"description": "The byte fee for the ccm transaction. This is the product of the ccm buffer size times the message fee per byte as configured in the application's 'interoperability' module, available within the channel information."
+											},
+											"additionalFees": {
+												"type": "object",
+												"properties": {
+													"userAccountInitializationFee": {
+														"type": "string",
+														"example": "5000000",
+														"description": "The extra fee to be supplied for initializing a new user token account."
+													},
+													"bufferBytes": {
+														"type": "string",
+														"example": "6000",
+														"description": "The extra fee to be supplied for buffer bytes."
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

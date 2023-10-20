@@ -25,7 +25,8 @@ module.exports = [
 	{
 		name: 'job.purge.cache',
 		description: 'Cache maintenance',
-		schedule: '45 4 * * *',
+		interval: config.job.purgeCache.interval,
+		schedule: config.job.purgeCache.schedule,
 		controller: () => {
 			logger.info('Performing cache maintenance');
 			partials.purge();

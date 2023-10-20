@@ -1,27 +1,28 @@
 /* eslint-disable import/no-extraneous-dependencies,no-restricted-syntax,guard-for-in,no-use-before-define,prefer-const,no-unused-vars,eqeqeq,consistent-return,max-len,array-callback-return,no-const-assign */
 
+const util = require('util');
 const IO = require('socket.io');
 const _ = require('lodash');
-const { match } = require('moleculer').Utils;
 const { ServiceNotFoundError } = require('moleculer').Errors;
 const chalk = require('chalk');
-
-const util = require('util');
 
 const BluebirdPromise = require('bluebird');
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 const {
-	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
+	Constants: {
+		JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR },
+	},
 	Utils,
 	CacheRedis,
 } = require('lisk-service-framework');
+const { checkWhitelist } = require('./util');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
 const { isValidNonEmptyResponse } = require('../utils');
 
 const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
-const expireMiliseconds = config.rpcCache.ttl * 1000;
+const expireMilliseconds = config.rpcCache.ttl * 1000;
 
 const rateLimiter = new RateLimiterMemory(config.websocket.rateLimit);
 
@@ -86,7 +87,9 @@ module.exports = {
 			if (item.authorization) {
 				this.logger.debug('Add authorization to handler:', item);
 				if (!_.isFunction(this.socketAuthorize)) {
-					this.logger.warn("Define 'socketAuthorize' method in the service to enable authorization.");
+					this.logger.warn(
+						"Define 'socketAuthorize' method in the service to enable authorization.",
+					);
 					item.authorization = false;
 				} else {
 					// add authorize middleware
@@ -104,13 +107,17 @@ module.exports = {
 				socket.$service = this;
 				this.logger.debug(`(nsp:'${nsp}') Client connected:`, socket.id);
 				if (item.packetMiddlewares) {
-					// socketmiddlewares
+					// socket middlewares
 					for (const middleware of item.packetMiddlewares) {
 						socket.use(middleware.bind(this));
 					}
 				}
 				for (const eventName in handlers) {
-					socket.on(eventName, handlers[eventName]);
+					// eslint-disable-next-line prefer-arrow-callback
+					socket.on(eventName, async function (request, respond) {
+						const boundedHandler = handlers[eventName].bind(this);
+						await boundedHandler(request, respond, socket, eventName);
+					});
 				}
 			});
 		}
@@ -157,13 +164,16 @@ module.exports = {
 					throw new ServiceNotFoundError({ action });
 				}
 				// get callOptions
-				const opts = _.assign({
-					meta: this.socketGetMeta(socket),
-					callOptions: {
-						timeout: 30000,
-						retries: 3,
+				const opts = _.assign(
+					{
+						meta: this.socketGetMeta(socket),
+						callOptions: {
+							timeout: 30000,
+							retries: 3,
+						},
 					},
-				}, handlerItem.callOptions);
+					handlerItem.callOptions,
+				);
 				this.logger.debug('Call action:', action, params, opts);
 				const request = {
 					action,
@@ -184,8 +194,10 @@ module.exports = {
 						if (handlerItem.onAfterCall) {
 							res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
 						}
-						// Store tranformed response in redis cache
-						if (isValidNonEmptyResponse(res)) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
+						// Store transformed response in redis cache
+						if (isValidNonEmptyResponse(res)) {
+							await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMilliseconds);
+						}
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
@@ -243,12 +255,15 @@ module.exports = {
 			},
 			handler(ctx) {
 				return new Promise((resolve, reject) => {
-					this.io.of(ctx.params.namespaces || '/').to(ctx.params.room).clients((err, clients) => {
-						if (err) {
-							return reject(err);
-						}
-						resolve(clients);
-					});
+					this.io
+						.of(ctx.params.namespaces || '/')
+						.to(ctx.params.room)
+						.clients((err, clients) => {
+							if (err) {
+								return reject(err);
+							}
+							resolve(clients);
+						});
 				});
 			},
 		},
@@ -262,7 +277,7 @@ module.exports = {
 			opts = opts || this.settings.io.options || {};
 			srv = srv || this.server || (this.settings.server ? this.settings.port : undefined);
 
-			// comptability flag to support v2.x
+			// Compatibility flag to support v2.x
 			opts.allowEIO3 = true;
 
 			if (this.settings.cors && this.settings.cors.origin && !opts.origins) {
@@ -304,7 +319,7 @@ module.exports = {
 		},
 		socketJoinRooms(socket, rooms) {
 			this.logger.debug(`socket ${socket.id} join room:`, rooms);
-			return new Promise(((resolve, reject) => {
+			return new Promise((resolve, reject) => {
 				socket.join(rooms, err => {
 					if (err) {
 						reject(err);
@@ -312,10 +327,10 @@ module.exports = {
 						resolve();
 					}
 				});
-			}));
+			});
 		},
 		socketLeaveRoom(socket, room) {
-			return new Promise(((resolve, reject) => {
+			return new Promise((resolve, reject) => {
 				socket.leave(room, err => {
 					if (err) {
 						reject(err);
@@ -323,20 +338,10 @@ module.exports = {
 						resolve();
 					}
 				});
-			}));
+			});
 		},
 	},
 };
-
-function checkWhitelist(action, whitelist) {
-	return whitelist.find(mask => {
-		if (_.isString(mask)) {
-			return match(action, mask);
-		} if (_.isRegExp(mask)) {
-			return mask.test(action);
-		}
-	}) != null;
-}
 
 function checkOrigin(origin, settings) {
 	if (_.isString(settings)) {
@@ -344,7 +349,9 @@ function checkOrigin(origin, settings) {
 
 		if (settings.indexOf('*') !== -1) {
 			// Based on: https://github.com/hapijs/hapi
-			const wildcard = new RegExp(`^${_.escapeRegExp(settings).replace(/\\\*/g, '.*').replace(/\\\?/g, '.')}$`);
+			const wildcard = new RegExp(
+				`^${_.escapeRegExp(settings).replace(/\\\*/g, '.*').replace(/\\\?/g, '.')}$`,
+			);
 			return origin.match(wildcard);
 		}
 	} else if (Array.isArray(settings)) {
@@ -399,11 +406,16 @@ function translateHttpToRpcCode(code) {
 
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
-	return async function (requests, respond) {
+	return async function (requests, respond, socket, eventName) {
 		if (config.websocket.enableRateLimit) await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
-			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
-				const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(jsonRpcInput)}`;
+			if (
+				config.jsonRpcStrictMode === 'true'
+				&& (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')
+			) {
+				const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(
+					jsonRpcInput,
+				)}`;
 				svc.logger.debug(message);
 				return addErrorEnvelope(id, INVALID_REQUEST[0], `Client input error: ${message}`);
 			}
@@ -415,22 +427,47 @@ function makeHandler(svc, handlerItem) {
 			const action = jsonRpcInput.method;
 			const { params } = jsonRpcInput;
 			svc.logger.info(`   => Client '${this.id}' call '${action}'`);
-			if (svc.settings.logRequestParams && svc.settings.logRequestParams in svc.logger) svc.logger[svc.settings.logRequestParams]('   Params:', params);
+			if (svc.settings.logRequestParams && svc.settings.logRequestParams in svc.logger) {
+				svc.logger[svc.settings.logRequestParams]('   Params:', params);
+			}
 			try {
 				if (_.isFunction(params)) {
 					respond = params;
 					params = null;
 				}
-				const res = await svc.actions.call({ socket: this, action, params: jsonRpcInput, handlerItem });
+				const res = await svc.actions.call({
+					socket: this,
+					action,
+					params: jsonRpcInput,
+					handlerItem,
+				});
 				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
-				return addJsonRpcEnvelope(id, res);
+
+				const output = addJsonRpcEnvelope(id, res);
+				respond(output);
 			} catch (err) {
-				if (svc.settings.log4XXResponses || Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
-					svc.logger.error('   Request error!', err.name, ':', err.message, '\n', err.stack, '\nData:', err.data);
+				if (
+					svc.settings.log4XXResponses
+					|| (Utils.isProperObject(err) && !_.inRange(err.code, 400, 500))
+				) {
+					svc.logger.error(
+						'   Request error!',
+						err.name,
+						':',
+						err.message,
+						'\n',
+						err.stack,
+						'\nData:',
+						err.data,
+					);
 				}
 				if (typeof err.message === 'string') {
 					if (!err.code || err.code === 500) {
-						return addErrorEnvelope(id, translateHttpToRpcCode(err.code), `Server error: ${err.message}`);
+						return addErrorEnvelope(
+							id,
+							translateHttpToRpcCode(err.code),
+							`Server error: ${err.message}`,
+						);
 					}
 					return addErrorEnvelope(id, translateHttpToRpcCode(err.code), err.message);
 				}
@@ -447,12 +484,14 @@ function makeHandler(svc, handlerItem) {
 		}
 
 		try {
-			const responses = await BluebirdPromise.map(
+			const data = await BluebirdPromise.map(
 				requests,
-				async (request) => {
-					const id = request.id || (requests.indexOf(request)) + 1;
+				async request => {
+					const id = request.id || requests.indexOf(request) + 1;
 					const response = await performClientRequest(request, id);
-					svc.logger.debug(`Requested ${request.method} with params ${JSON.stringify(request.params)}`);
+					svc.logger.debug(
+						`Requested ${request.method} with params ${JSON.stringify(request.params)}`,
+					);
 					if (response.error) {
 						svc.logger.warn(`${response.error.code} ${response.error.message}`);
 					}
@@ -461,10 +500,17 @@ function makeHandler(svc, handlerItem) {
 				{ concurrency: MULTI_REQUEST_CONCURRENCY },
 			);
 
-			if (singleResponse) respond(responses[0]);
-			else respond(responses);
+			let response = null;
+			if (singleResponse) [response] = data;
+			else response = data;
+
+			if (respond) respond(response);
+			else socket.emit('request', response);
 		} catch (err) {
-			svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`), respond);
+			svc.socketOnError(
+				addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`),
+				respond,
+			);
 		}
 	};
 }

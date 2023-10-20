@@ -13,15 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const { requestConnector } = require('../../../utils/request');
 
-let moduleConstants;
+const logger = Logger();
+
+let posModuleConstants;
 
 const getPosConstants = async () => {
-	if (typeof moduleConstants === 'undefined') moduleConstants = await requestConnector('getPosConstants');
+	try {
+		if (typeof posModuleConstants === 'undefined') posModuleConstants = await requestConnector('getPosConstants');
+	} catch (err) {
+		const errMessage = `Unable to fetch the PoS constants from connector due to: ${err.message}.`;
+		logger.warn(errMessage);
+		logger.trace(err.stack);
+		throw new Error(errMessage);
+	}
 
 	return {
-		data: moduleConstants,
+		data: posModuleConstants,
 		meta: {},
 	};
 };

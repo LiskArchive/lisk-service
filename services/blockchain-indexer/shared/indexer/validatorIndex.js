@@ -14,32 +14,29 @@
  *
  */
 const {
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const { requestConnector } = require('../utils/request');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
+const {
+	getBlockByHeight,
+} = require('../dataService');
+const { getGenesisHeight } = require('../constants');
+
 const config = require('../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getCommissionsTable = () => getTableInstance(
-	commissionsTableSchema.tableName,
-	commissionsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 
-const getStakesTable = () => getTableInstance(
-	stakesTableSchema.tableName,
-	stakesTableSchema,
-	MYSQL_ENDPOINT,
-);
-
-const indexValidatorCommissionInfo = async (genesisBlock) => {
+const indexValidatorCommissionInfo = async () => {
+	const genesisBlock = await getBlockByHeight(await getGenesisHeight());
 	const commissionsTable = await getCommissionsTable();
-	const validators = await requestConnector('getPoSGenesisValidators', { height: genesisBlock.height });
+	const validators = await requestConnector('getPoSGenesisValidators');
 	const commissionInfo = validators.map(validator => ({
 		address: validator.address,
 		height: genesisBlock.height,
@@ -48,19 +45,19 @@ const indexValidatorCommissionInfo = async (genesisBlock) => {
 	if (commissionInfo.length) await commissionsTable.upsert(commissionInfo);
 };
 
-const indexStakersInfo = async (genesisBlock) => {
+const indexStakersInfo = async () => {
 	const stakesTable = await getStakesTable();
-	const stakers = await requestConnector('getPoSGenesisStakers', { height: genesisBlock.height });
-	const stakestoIndex = [];
+	const stakers = await requestConnector('getPoSGenesisStakers');
+	const stakesToIndex = [];
 	await stakers.forEach(async staker => staker.stakes.forEach(stake => {
-		stakestoIndex.push({
+		stakesToIndex.push({
 			stakerAddress: staker.address,
 			validatorAddress: stake.validatorAddress,
 			amount: stake.amount,
 		});
 	}));
 
-	if (stakestoIndex.length) await stakesTable.upsert(stakestoIndex);
+	if (stakesToIndex.length) await stakesTable.upsert(stakesToIndex);
 };
 
 module.exports = {

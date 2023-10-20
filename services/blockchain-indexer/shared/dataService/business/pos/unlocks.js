@@ -14,27 +14,38 @@
  *
  */
 const { getPosTokenID } = require('./constants');
-const {
-	getIndexedAccountInfo,
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
-const { getAddressByName } = require('../../../utils/validator');
+const { getBlockByID } = require('../blocks');
+const { getNetworkStatus } = require('../network');
+const { getAddressByName } = require('../../utils/validator');
+const { getIndexedAccountInfo } = require('../../utils/account');
 const { requestConnector } = require('../../../utils/request');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const getPosUnlocks = async params => {
 	const unlocks = {
 		data: {},
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	if (params.name) params.address = await getAddressByName(params.name);
 	if (params.publicKey) params.address = await getLisk32AddressFromPublicKey(params.publicKey);
 
+	if (!params.address) {
+		return unlocks;
+	}
+
 	const { pendingUnlocks = [] } = await requestConnector(
 		'getPosPendingUnlocks',
 		{ address: params.address },
 	);
+
+	const { data: { lastBlockID, genesis: { blockTime } } } = await getNetworkStatus();
+	const { height, timestamp } = await getBlockByID(lastBlockID);
 
 	const tokenID = await getPosTokenID();
 	const filteredPendingUnlocks = pendingUnlocks.reduce(
@@ -43,9 +54,14 @@ const getPosUnlocks = async params => {
 			const isLocked = !pendingUnlock.unlockable;
 			// Filter results based on `params.isLocked`
 			if (params.isLocked === undefined || params.isLocked === isLocked) {
+				// Calculate expected unlock time
+				const expectedUnlockTime = timestamp
+					+ (remPendingUnlock.expectedUnlockableHeight - height) * blockTime;
+
 				accumulator.push({
 					...remPendingUnlock,
 					isLocked,
+					expectedUnlockTime,
 					tokenID,
 				});
 			}
@@ -60,7 +76,7 @@ const getPosUnlocks = async params => {
 	);
 
 	// Update index if public key is not indexed asynchronously
-	if (!publicKey && params.publicKey) updateAccountPublicKey(params.publicKey);
+	if (!publicKey && params.publicKey) indexAccountPublicKey(params.publicKey);
 
 	unlocks.data = {
 		address: params.address,

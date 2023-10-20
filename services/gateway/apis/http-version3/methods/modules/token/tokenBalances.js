@@ -23,6 +23,7 @@ module.exports = {
 	swaggerApiPath: '/token/balances',
 	rpcMethod: 'get.token.balances',
 	tags: ['Token'],
+	eTag: false,
 	params: {
 		address: { optional: false, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID },

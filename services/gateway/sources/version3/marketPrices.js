@@ -24,6 +24,5 @@ module.exports = {
 		meta: {
 			count: '=,number',
 		},
-		links: {},
 	},
 };

@@ -15,6 +15,7 @@
  */
 const { Signals } = require('lisk-service-framework');
 
+const config = require('../../config');
 const { getLiveIndexingJobCount } = require('../../shared/indexer/blockchainIndex');
 
 const reloadLiveIndexingJobCount = async () => {
@@ -24,9 +25,10 @@ const reloadLiveIndexingJobCount = async () => {
 
 module.exports = [
 	{
-		name: 'reload.live.indexing.job.count',
+		name: 'refresh.live.indexing.job.count',
 		description: 'Update the current number of jobs for block indexing in progress/wait.',
-		interval: 10, // Every 10 secs
+		interval: config.job.refreshLiveIndexingJobCount.interval,
+		schedule: config.job.refreshLiveIndexingJobCount.schedule,
 		init: reloadLiveIndexingJobCount,
 		controller: reloadLiveIndexingJobCount,
 	},

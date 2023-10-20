@@ -22,11 +22,12 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('./config');
+const packageJson = require('./package.json');
+
+const { initDatabase } = require('./shared/database/init');
+const { setAppContext } = require('./shared/utils/request');
 
 LoggerConfig(config.log);
-
-const packageJson = require('./package.json');
-const { setAppContext } = require('./shared/utils/request');
 
 const logger = Logger();
 
@@ -51,10 +52,15 @@ app.addMethods(path.join(__dirname, 'methods'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
-app.run().then(async () => {
-	logger.info(`Service started ${packageJson.name}.`);
-}).catch(err => {
+const reportErrorAndExitProcess = (err) => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 	logger.fatal(err.stack);
 	process.exit(1);
-});
+};
+
+initDatabase()
+	.then(() => app.run()
+		.then(() => { logger.info(`Service started ${packageJson.name}.`); })
+		.catch(reportErrorAndExitProcess),
+	)
+	.catch(reportErrorAndExitProcess);

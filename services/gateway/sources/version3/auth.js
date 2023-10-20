@@ -28,6 +28,5 @@ module.exports = {
 			publicKey: '=,string',
 			name: '=,string',
 		},
-		links: {},
 	},
 };

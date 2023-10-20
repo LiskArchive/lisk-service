@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
+const Redis = require('ioredis');
 const {
-	MySQL: { getTableInstance },
-	Queue,
+	DB: { MySQL: { getTableInstance } },
+	Logger,
 } = require('lisk-service-framework');
 
 const config = require('../../config');
@@ -24,12 +24,16 @@ const { MODULE } = require('../constants');
 const { getTokenBalances } = require('../dataService');
 const accountBalancesTableSchema = require('../database/schema/accountBalances');
 
+const logger = Logger();
+
+const redis = new Redis(config.endpoints.cache);
+
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const getAccountBalancesTable = () => getTableInstance(
-	accountBalancesTableSchema.tableName,
-	accountBalancesTableSchema,
-	MYSQL_ENDPOINT,
-);
+
+const ACCOUNTS_BALANCE_UPDATE_SET_NAME = 'AccountsBalanceUpdate';
+const MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION = 1000; // 1e3
+
+const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 const updateAccountBalances = async (address) => {
 	const accountBalancesTable = await getAccountBalancesTable();
@@ -45,42 +49,60 @@ const updateAccountBalances = async (address) => {
 	await accountBalancesTable.upsert(updatedTokenBalances);
 };
 
-const accountBalanceIndexProcessor = async job => updateAccountBalances(job.data.address);
-const accountBalanceIndexQueue = Queue(
-	config.endpoints.cache,
-	config.queue.accountBalanceIndex.name,
-	accountBalanceIndexProcessor,
-	config.queue.accountBalanceIndex.concurrency,
-);
+const scheduleAddressesBalanceUpdate = async (addresses) => {
+	if (addresses.length) {
+		redis.sadd(
+			ACCOUNTS_BALANCE_UPDATE_SET_NAME,
+			addresses,
+		);
+	}
+};
 
-const scheduleAccountBalanceUpdateFromEvents = async (events) => {
-	await BluebirdPromise.map(
-		events,
-		async event => {
-			// Skip non token module events
-			if (event.module !== MODULE.TOKEN) return;
+const getAddressesFromTokenEvents = (events) => {
+	const addressesToUpdate = [];
+	const tokenModuleEvents = events.filter(event => event.module === MODULE.TOKEN);
 
-			const { data: eventData = {} } = event;
-			const eventDataKeys = Object.keys(eventData);
-			await BluebirdPromise.map(
-				eventDataKeys,
-				async key => {
-					// Schedule account balance update for address related properties
-					if (key.toLowerCase().includes('address')) {
-						await accountBalanceIndexQueue.add({ address: eventData[key] });
-					}
-				},
-				{ concurrency: eventDataKeys.length },
-			);
-		},
-		{ concurrency: events.length },
+	// eslint-disable-next-line no-restricted-syntax
+	for (const event of tokenModuleEvents) {
+		const { data: eventData = {} } = event;
+		const eventDataKeys = Object.keys(eventData);
+		// eslint-disable-next-line no-restricted-syntax
+		for (const key of eventDataKeys) {
+			if (key.toLowerCase().includes('address')) {
+				const address = eventData[key];
+				addressesToUpdate.push(address);
+			}
+		}
+	}
+
+	return addressesToUpdate;
+};
+
+const triggerAccountsBalanceUpdate = async () => {
+	const addresses = await redis.spop(
+		ACCOUNTS_BALANCE_UPDATE_SET_NAME,
+		MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION,
 	);
+
+	try {
+		// eslint-disable-next-line no-restricted-syntax
+		for (const address of addresses) {
+			// eslint-disable-next-line no-await-in-loop
+			await updateAccountBalances(address);
+		}
+	} catch (err) {
+		// Reschedule accounts balance update on error
+		await scheduleAddressesBalanceUpdate(addresses);
+	}
+
+	if (addresses.length) {
+		logger.info(`Updated account balance for ${addresses.length} account(s).`);
+	}
 };
 
 module.exports = {
-	scheduleAccountBalanceUpdateFromEvents,
 	updateAccountBalances,
-
-	// For testing
-	accountBalanceIndexQueue,
+	getAddressesFromTokenEvents,
+	triggerAccountsBalanceUpdate,
+	scheduleAddressesBalanceUpdate,
 };

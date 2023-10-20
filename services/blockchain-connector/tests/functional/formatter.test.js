@@ -43,17 +43,17 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-xdescribe('Functional tests for formatter', () => {
+describe('Functional tests for formatter', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
-	it('format Transaction', async () => {
+	it('should format Transaction', async () => {
 		const result = await broker.call('connector.formatTransaction', { transaction });
 		expect(Object.keys(result)).toEqual(Object.keys(decodedTransaction));
 		expect(result).toMatchObject(decodedTransaction);
 	});
 
-	it('format block with transaction', async () => {
+	it('should format block with transaction', async () => {
 		const result = await broker.call('connector.formatBlock', { block: blockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
@@ -70,7 +70,7 @@ xdescribe('Functional tests for formatter', () => {
 		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
-	it('format block without transactions', async () => {
+	it('should format block without transactions', async () => {
 		const result = await broker.call('connector.formatBlock', { block: blockWithoutTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
@@ -84,7 +84,15 @@ xdescribe('Functional tests for formatter', () => {
 		expect(result).toMatchObject(decodedBlockWithoutTransaction);
 	});
 
-	it('format subscription event payload', async () => {
+	it('should format subscription event payload of block without transaction', async () => {
+		const result = await broker.call('connector.formatAPIClientEventPayload', {
+			eventName: 'app_newBlock',
+			payload: { block: blockWithoutTransaction },
+		});
+		expect(result).toMatchObject(decodedBlockWithoutTransaction);
+	});
+
+	it('should format subscription event payload of block with transaction', async () => {
 		const result = await broker.call('connector.formatAPIClientEventPayload', {
 			eventName: 'app_newBlock',
 			payload: { block: blockWithTransaction },
@@ -92,14 +100,22 @@ xdescribe('Functional tests for formatter', () => {
 		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
-	it('format event payload for token:transferEvent', async () => {
+	it('should format event payload for token:transferEvent', async () => {
 		const result = await broker.call('connector.formatEvent', {
 			event: transferEventInput,
 		});
 		expect(result).toMatchObject(decodedTransferEvent);
 	});
 
-	it('format response', async () => {
+	it('should format response when requested with block without transaction', async () => {
+		const result = await broker.call('connector.formatResponse', {
+			endpoint: 'app_getBlockByHeight',
+			response: blockWithoutTransaction,
+		});
+		expect(result).toMatchObject(decodedBlockWithoutTransaction);
+	});
+
+	it('should format response when requested with block with transaction', async () => {
 		const result = await broker.call('connector.formatResponse', {
 			endpoint: 'app_getBlockByHeight',
 			response: blockWithTransaction,
@@ -107,11 +123,11 @@ xdescribe('Functional tests for formatter', () => {
 		expect(result).toMatchObject(decodedBlockWithTransaction);
 	});
 
-	it('throws error when decoding invalid encoded transaction', async () => {
+	it('should throw error when decoding invalid encoded transaction', async () => {
 		expect(broker.call('connector.formatTransaction', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
 	});
 
-	it('throws error when decoding invalid encoded block', async () => {
+	it('should throw error when decoding invalid encoded block', async () => {
 		expect(broker.call('connector.formatBlock', { block: invalidEncodedBlock })).rejects.toThrow();
 	});
 });

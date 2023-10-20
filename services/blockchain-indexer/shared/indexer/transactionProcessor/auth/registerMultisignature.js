@@ -15,25 +15,21 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
-const {
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
+const { TRANSACTION_STATUS } = require('../../../constants');
+
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 const multisignatureTableSchema = require('../../../database/schema/multisignature');
+const { indexAccountPublicKey } = require('../../accountIndex');
 
-const getMultisignatureTable = () => getTableInstance(
-	multisignatureTableSchema.tableName,
-	multisignatureTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getMultisignatureTable = () => getTableInstance(multisignatureTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'registerMultisignature';
@@ -49,9 +45,6 @@ const resolveMultisignatureMemberships = (tx) => {
 			groupAddress: tx.senderAddress,
 		};
 		multisignatureInfoToIndex.push(members);
-
-		// Asynchronously index all the publicKeys
-		updateAccountPublicKey(key);
 	});
 
 	return multisignatureInfoToIndex;
@@ -59,6 +52,12 @@ const resolveMultisignatureMemberships = (tx) => {
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
+	// Asynchronously index all the publicKeys
+	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
+	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
+
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
+
 	const multisignatureTable = await getMultisignatureTable();
 
 	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
@@ -69,6 +68,12 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
+	// Asynchronously index all the publicKeys
+	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
+	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
+
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
+
 	const multisignatureTable = await getMultisignatureTable();
 
 	const multisignatureInfo = resolveMultisignatureMemberships(tx);

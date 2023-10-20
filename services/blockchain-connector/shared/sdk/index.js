@@ -27,11 +27,12 @@ const {
 	getGeneratorStatus,
 	updateGeneratorStatus,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 } = require('./endpoints');
 
 const {
@@ -52,13 +53,15 @@ const {
 
 const {
 	tokenHasUserAccount,
+	tokenHasEscrowAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenInitializationFees,
-} = require('./tokens');
+	updateTokenInfo,
+} = require('./token');
 
 const {
 	getAllPosValidators,
@@ -95,6 +98,7 @@ const {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getRegistrationFee,
 } = require('./interoperability');
 
 const { getLegacyAccount } = require('./legacy');
@@ -110,18 +114,20 @@ const {
 	getNetworkPeersStatistics,
 } = require('./network');
 
+const { cacheCleanup } = require('./cache');
 const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
 
 const init = async () => {
+	// Cache all the schemas
+	setSchemas(await getSchemas());
+	setMetadata(await getSystemMetadata());
+
 	// Initialize the local cache
 	await getNodeInfo(true);
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
-
-	// Cache all the schemas
-	setSchemas(await getSchemas());
-	setMetadata(await getSystemMetadata());
+	await updateTokenInfo();
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
@@ -143,11 +149,12 @@ module.exports = {
 	getGeneratorStatus,
 	updateGeneratorStatus,
 	getSchemas,
-	getRegisteredActions,
+	getRegisteredEndpoints,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
 	getSystemMetadata,
+	getEngineEndpoints,
 
 	// Blocks
 	getLastBlock,
@@ -166,6 +173,7 @@ module.exports = {
 
 	// Tokens
 	tokenHasUserAccount,
+	tokenHasEscrowAccount,
 	getTokenBalance,
 	getTokenBalances,
 	getEscrowedAmounts,
@@ -203,6 +211,7 @@ module.exports = {
 	getChainAccount,
 	getMainchainID,
 	getChannel,
+	getChainRegistrationFee: getRegistrationFee,
 
 	// Legacy
 	getLegacyAccount,
@@ -230,4 +239,7 @@ module.exports = {
 
 	// CCM
 	encodeCCM,
+
+	// Cache
+	cacheCleanup,
 };

@@ -17,34 +17,30 @@ const BluebirdPromise = require('bluebird');
 
 const {
 	Exceptions: { InvalidParamsException },
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const { getBlockByID } = require('./blocks');
 const { getEventsByHeight } = require('./events');
 
-const {
-	getLisk32AddressFromPublicKey,
-	getIndexedAccountInfo,
-} = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { normalizeTransaction, getTransactionExecutionStatus } = require('../../utils/transactions');
 const { getFinalizedHeight } = require('../../constants');
 
-const transactionsIndexSchema = require('../../database/schema/transactions');
+const transactionsTableSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
+const { getLisk32AddressFromPublicKey } = require('../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.tableName,
-	transactionsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 const getTransactionIDsByBlockID = async blockID => {
-	const transactionsTable = await getTransactionsIndex();
+	const transactionsTable = await getTransactionsTable();
 	const transactions = await transactionsTable.find({
 		whereIn: {
 			property: 'blockId',
@@ -106,7 +102,7 @@ const validateParams = async params => {
 };
 
 const getTransactions = async params => {
-	const transactionsTable = await getTransactionsIndex();
+	const transactionsTable = await getTransactionsTable();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -117,7 +113,7 @@ const getTransactions = async params => {
 	const total = await transactionsTable.count(params);
 	const resultSet = await transactionsTable.find(
 		{ ...params, limit: params.limit || total },
-		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index'],
+		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index', 'minFee'],
 	);
 	params.ids = resultSet.map(row => row.id);
 
@@ -176,6 +172,7 @@ const getTransactions = async params => {
 
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 			transaction.index = indexedTxInfo.index;
+			transaction.minFee = indexedTxInfo.minFee;
 
 			return transaction;
 		},
@@ -228,8 +225,7 @@ const getTransactionsByBlockID = async blockID => {
 				timestamp: block.timestamp,
 			};
 
-			// TODO: Check - this information might not be available yet
-			const transactionsTable = await getTransactionsIndex();
+			const transactionsTable = await getTransactionsTable();
 			const [indexedTxInfo = {}] = await transactionsTable.find(
 				{ id: transaction.id, limit: 1 },
 				['executionStatus'],
@@ -263,4 +259,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+
+	// For unit test
+	validateParams,
 };

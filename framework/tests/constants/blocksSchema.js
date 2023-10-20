@@ -23,6 +23,8 @@ module.exports = {
 		size: { type: 'integer' },
 		reward: { type: 'bigInteger' },
 		isFinal: { type: 'boolean' },
+		payload: { type: 'json' },
+		generatorAddress: { type: 'string' },
 	},
 	indexes: {
 		id: { type: 'key' },

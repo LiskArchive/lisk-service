@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	DB: { MySQL: { getTableInstance } },
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
@@ -29,17 +29,13 @@ const blockchainAppsTableSchema = require('../../../database/schema/blockchainAp
 const { TRANSACTION_STATUS } = require('../../../constants');
 const { getChainInfo } = require('./registerMainchain');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const COMMAND_NAME = 'registerSidechain';
 
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const chainInfo = await getChainInfo(tx.params.chainID);
@@ -47,7 +43,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.trace(`Indexing sidechain (${tx.params.chainID}) registration information.`);
 	const appInfo = {
 		chainID: tx.params.chainID,
-		name: tx.params.name,
+		chainName: tx.params.name,
 		status: chainInfo.status,
 		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		lastUpdated: blockHeader.timestamp,
@@ -59,7 +55,7 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
-	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESS) return;
+	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const blockchainAppsTable = await getBlockchainAppsTable();
 

@@ -30,6 +30,5 @@ module.exports = {
 		meta: {
 			lastUpdate: '=,number',
 		},
-		links: {},
 	},
 };

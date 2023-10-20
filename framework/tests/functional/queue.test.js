@@ -17,9 +17,9 @@ const Queue = require('../../src/queue');
 
 describe('Test queue', () => {
 	let queue;
-	const redisEndpoint = process.env.REDIS_URL || 'redis://localhost:6379/0';
+	const redisEndpoint = process.env.REDIS_URL || 'redis://127.0.0.1:6379/0';
 
-	it('Should create a queue with a given redis instance', async () => {
+	it('should create a queue with a given redis instance', async () => {
 		const testFunc = async (a, b) => a + b;
 		queue = Queue(redisEndpoint, 'testQueue', testFunc, 1);
 
@@ -37,7 +37,7 @@ describe('Test queue', () => {
 		expect(queue.queue.client.options.port).toEqual(port);
 	});
 
-	it('Add job to the queue', async () => {
+	it('should add a job to the queue', async () => {
 		const data = { a: 1, b: 2 };
 		await queue.add(data).then(job => {
 			expect(job.id).not.toBe(undefined);

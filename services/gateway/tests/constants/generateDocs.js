@@ -83,13 +83,13 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/chainIDCSV',
 				},
 				{
-					$ref: '#/parameters/name',
+					$ref: '#/parameters/chainName',
 				},
 				{
 					$ref: '#/parameters/blockchainAppStatus',
 				},
 				{
-					$ref: '#/parameters/blockchainAppSearch',
+					$ref: '#/parameters/searchByChainName',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -178,6 +178,9 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/chainName',
 				},
 				{
+					$ref: '#/parameters/displayName',
+				},
+				{
 					$ref: '#/parameters/chainIDCSV',
 				},
 				{
@@ -187,7 +190,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/network',
 				},
 				{
-					$ref: '#/parameters/searchByChainName',
+					$ref: '#/parameters/searchByChainAndDisplayName',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -425,6 +428,12 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/topic',
 				},
 				{
+					$ref: '#/parameters/module',
+				},
+				{
+					$ref: '#/parameters/eventName',
+				},
+				{
 					$ref: '#/parameters/blockID',
 				},
 				{
@@ -494,6 +503,12 @@ const createApiDocsExpectedResponse = {
 					description: 'Returns the fee estimate per byte used for transaction fee calculation',
 					schema: {
 						$ref: '#/definitions/FeeEstimateEnvelope',
+					},
+				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},
@@ -575,6 +590,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/badRequest',
 					},
 				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
+					},
+				},
 			},
 		},
 	},
@@ -599,6 +620,12 @@ const createApiDocsExpectedResponse = {
 					description: 'Bad request',
 					schema: {
 						$ref: '#/definitions/badRequest',
+					},
+				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
 					},
 				},
 			},
@@ -675,6 +702,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/NetworkStatistics',
 					},
 				},
+				503: {
+					description: 'Service Unavailable',
+					schema: {
+						$ref: '#/definitions/serviceUnavailable',
+					},
+				},
 			},
 		},
 	},
@@ -713,7 +746,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/senderAddress',
 				},
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/senderAndRecipientAddress',
 				},
 				{
 					$ref: '#/parameters/recipientAddress',
@@ -962,7 +995,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns auth details by address\n RPC => get.auth',
 			parameters: [
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/addressRequired',
 				},
 			],
 			responses: {
@@ -990,7 +1023,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns validator information\n RPC => get.validator',
 			parameters: [
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/addressRequired',
 				},
 			],
 			responses: {
@@ -1055,7 +1088,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/accountName',
 				},
 				{
-					$ref: '#/parameters/tokenID',
+					$ref: '#/parameters/tokenIDRequired',
 				},
 			],
 			responses: {
@@ -1212,7 +1245,10 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
 			parameters: [
 				{
-					$ref: '#/parameters/tokenID',
+					$ref: '#/parameters/tokenIDRequired',
+				},
+				{
+					$ref: '#/parameters/searchByNameAddressPubKey',
 				},
 				{
 					$ref: '#/parameters/limit',

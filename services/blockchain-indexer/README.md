@@ -22,7 +22,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/blockchain-indexer # move into blockchain-indexer microservice directory
-npm ci # install required Node.js dependencies
+yarn install --frozen-lockfile # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -32,12 +32,38 @@ To configure the different microservices, there are several environment variable
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis).
-- `SERVICE_INDEXER_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
+- `SERVICE_INDEXER_MYSQL`: Connection string of the (read/write) primary MySQL instance that the microservice connects to.
+- `SERVICE_INDEXER_MYSQL_READ_REPLICA`: Connection string of the (read only) replicated MySQL instance that the microservice connects to.
 - `SERVICE_MESSAGE_QUEUE_REDIS`: URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis).
 - `SERVICE_INDEXER_REDIS_VOLATILE`: URL of the volatile cache storage (Redis).
 - `ENABLE_DATA_RETRIEVAL_MODE`: Boolean flag to enable the Data Service mode.
 - `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode.
 - `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently maintain the events in the MySQL database.
+- `ENABLE_APPLY_SNAPSHOT`: Boolean flag to enable initialization of the index with the Lisk Service DB snapshot.
+- `INDEX_SNAPSHOT_URL`: URL from where the Lisk Service DB snapshot will be downloaded.
+- `ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`: Boolean flag to enable downloading snapshot from an (unsecured) HTTP URL.
+- `LISK_STATIC`: URL of Lisk static assets.
+- `SERVICE_INDEXER_CACHE_REDIS`: URL of the cache storage (Redis).
+- `JOB_INTERVAL_DELETE_SERIALIZED_EVENTS`: Job run interval to delete serialized events. By default, it is set to 0.
+- `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`: Job run cron schedule to delete serialized events. By default, it is set to run every 5th minute (`*/5 * * * *`).
+- `JOB_INTERVAL_REFRESH_VALIDATORS`: Job run interval to refresh validators cache. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_VALIDATORS`: Job run cron schedule to refresh validators cache. By default, it is set to run every 5th minute (`*/5 * * * *`).
+- `JOB_INTERVAL_VALIDATE_VALIDATORS_RANK`: Job run interval to validate the rank for all the validators. By default, it is set to 0.
+- `JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK`: Job run cron schedule to validate the rank for all the validators. By default, it is set to run every 15 minutes, and starts at 4 minutes past the hour (`4-59/15 * * * *`).
+- `JOB_INTERVAL_REFRESH_INDEX_STATUS`: Job run interval to refresh indexing status. By default, it is set to run every 10 seconds.
+- `JOB_SCHEDULE_REFRESH_INDEX_STATUS`: Job run cron schedule to refresh indexing status. By default, it is set to ''.
+- `JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS`: Job run interval to refresh blockchain application statistics. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS`: Job run cron schedule to refresh blockchain application statistics. By default, it is set to run every 15th minute (`*/15 * * * *`).
+- `JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE`: Job run interval to refresh account knowledge. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE`: Job run cron schedule to refresh account knowledge. By default, it is set to run every 15th minute (`*/15 * * * *`).
+- `JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA`: Job run interval to delete finalized CCU metadata. By default, it is set to 0.
+- `JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA`: Job run cron schedule to delete finalized CCU metadata. By default, it is set to run once a day at 02:00 am (`0 2 * * *`).
+- `JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES`: Job run interval to trigger account updates. By default, it is set to 0.
+- `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`: Job run cron schedule to trigger account updates. By default, it is set to run every 15th minute (`*/15 * * * *`).
+- `ESTIMATES_BUFFER_BYTES_LENGTH`: Transaction buffer bytes to consider when estimating the transaction fees. By default, it is set to 0.
+- `MAINCHAIN_SERVICE_URL`: Mainchain service URL for custom deployments.
+
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
 ## Management
 
@@ -45,7 +71,7 @@ A list of the most commonly used environment variables is presented below:
 
 ```bash
 cd lisk-service/services/blockchain-indexer # move into the root directory of the blockchain-indexer microservice
-npm start # start the microservice with running nodes locally
+yarn start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.

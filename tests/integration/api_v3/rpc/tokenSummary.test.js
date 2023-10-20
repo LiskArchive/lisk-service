@@ -34,7 +34,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const gettokenSummaryInfo = async (params) => request(wsRpcUrl, 'get.token.summary', params);
 
 describe('get.token.summary', () => {
-	it('Retrieves tokens summary', async () => {
+	it('should return tokens summary', async () => {
 		const response = await gettokenSummaryInfo({});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 
@@ -45,8 +45,13 @@ describe('get.token.summary', () => {
 		expect(result.meta).toMap(tokenSummaryMetaResponseSchema);
 	});
 
-	it('Invalid request param -> invalid param', async () => {
+	it('should return invalid params when requested with invalid params', async () => {
 		const response = await gettokenSummaryInfo({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('should return invalid params when requested with empty invalid params', async () => {
+		const response = await gettokenSummaryInfo({ invalidParam: '' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

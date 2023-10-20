@@ -1,11 +1,18 @@
-version: "3"
+version: '3.3'
 services:
 
   nats:
     image: nats:2.6-alpine
+    ports:
+      - "4222:4222"
+    volumes:
+      - ./docker/nats-server.conf:/etc/nats/nats-server.conf:ro
+    command: nats-server --config /etc/nats/nats-server.conf
     networks:
       - services_network
     restart: always
+    healthcheck:
+      test: echo $$(wget --server-response http://nats:8222/varz 2>&1 | grep  '200 OK') | grep '200'  || exit 1
 
   redis_persistent:
     image: redis:5-alpine
@@ -30,13 +37,15 @@ services:
     healthcheck:
       test: redis-cli ping
 
-  mysql:
+  mysql-primary:
     image: mysql:8
     platform: linux/amd64
     command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - mysql-primary-data:/var/lib/mysql
+      - ./docker/mysql/primary/init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/mysql-healthcheck.sh:/healthcheck.sh
     restart: always
     networks:
       - services_network
@@ -44,6 +53,31 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
       - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=lisk
+    healthcheck:
+      test: [ 'CMD', 'bash', '/healthcheck.sh' ]
+
+  mysql-read-replica:
+    image: mysql:8
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+    platform: linux/amd64
+    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
+    volumes:
+      - ./docker/mysql/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
+    restart: always
+    expose:
+      - "3306"
+    networks:
+      - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: vip
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
     healthcheck:
       test:
         [
@@ -53,35 +87,84 @@ services:
           "-hlocalhost",
           "-ppassword"
         ]
-      timeout: 20s
-      retries: 10
+
+  mysql-read-replica-haproxy:
+    image: nginx:latest
+    restart: always
+    expose:
+      - "3307"
+    depends_on:
+      mysql-read-replica:
+        condition: service_healthy
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - services_network
+    healthcheck:
+      test: [ "CMD", "service", "nginx", "status" ]
 
   blockchain-app-registry:
     image: lisk/service_blockchain_app_registry
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_APP_REGISTRY_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - ENABLE_REBUILD_INDEX_AT_INIT=${ENABLE_REBUILD_INDEX_AT_INIT}
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      - GITHUB_APP_REGISTRY_REPO=${GITHUB_APP_REGISTRY_REPO}
+      - GITHUB_APP_REGISTRY_REPO_BRANCH=${GITHUB_APP_REGISTRY_REPO_BRANCH}
+      - DEFAULT_APPS=${DEFAULT_APPS}
+      - JOB_INTERVAL_DELETE_NON_METADATA_FILES=${JOB_INTERVAL_DELETE_NON_METADATA_FILES}
+      - JOB_SCHEDULE_DELETE_NON_METADATA_FILES=${JOB_SCHEDULE_DELETE_NON_METADATA_FILES}
+      - JOB_INTERVAL_UPDATE_METADATA=${JOB_INTERVAL_UPDATE_METADATA}
+      - JOB_SCHEDULE_UPDATE_METADATA=${JOB_SCHEDULE_UPDATE_METADATA}
     restart: always
 
   blockchain-connector:
     image: lisk/service_blockchain_connector
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
       - LISK_APP_WS=${LISK_APP_WS}
-      # - GENESIS_BLOCK_URL=
-      # - ENABLE_TESTING_MODE=
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - USE_LISK_IPC_CLIENT=${USE_LISK_IPC_CLIENT}
+      - LISK_APP_DATA_PATH=${LISK_APP_DATA_PATH}
+      - GENESIS_BLOCK_URL=${GENESIS_BLOCK_URL}
+      - ENABLE_TESTING_MODE=${ENABLE_TESTING_MODE}
+      - ENABLE_BLOCK_CACHING=${ENABLE_BLOCK_CACHING}
+      - EXPIRY_IN_HOURS=${EXPIRY_IN_HOURS}
+      - JOB_INTERVAL_CACHE_CLEANUP=${JOB_INTERVAL_CACHE_CLEANUP}
+      - JOB_SCHEDULE_CACHE_CLEANUP=${JOB_SCHEDULE_CACHE_CLEANUP}
+      - JOB_INTERVAL_REFRESH_PEERS=${JOB_INTERVAL_REFRESH_PEERS}
+      - JOB_SCHEDULE_REFRESH_PEERS=${JOB_SCHEDULE_REFRESH_PEERS}
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -90,82 +173,162 @@ services:
     image: lisk/service_blockchain_indexer
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_persistent:
         condition: service_healthy
       redis_volatile:
         condition: service_healthy
-      mysql:
+      mysql-primary:
+        condition: service_healthy
+      mysql-read-replica-haproxy:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_INDEXER_CACHE_REDIS=redis://redis_persistent:6379/0
       - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
-      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
+      - SERVICE_INDEXER_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica-haproxy:3307/lisk
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
       - ENABLE_PERSIST_EVENTS=${ENABLE_PERSIST_EVENTS}
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - ENABLE_APPLY_SNAPSHOT=${ENABLE_APPLY_SNAPSHOT}
+      - INDEX_SNAPSHOT_URL=${INDEX_SNAPSHOT_URL}
+      - ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP=${ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - MAINCHAIN_SERVICE_URL=${MAINCHAIN_SERVICE_URL}
+      - LISK_STATIC=${LISK_STATIC}
+      - DEVNET_MAINCHAIN_URL=${DEVNET_MAINCHAIN_URL}
+      - JOB_INTERVAL_DELETE_SERIALIZED_EVENTS=${JOB_INTERVAL_DELETE_SERIALIZED_EVENTS}
+      - JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS=${JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS}
+      - JOB_INTERVAL_REFRESH_VALIDATORS=${JOB_INTERVAL_REFRESH_VALIDATORS}
+      - JOB_SCHEDULE_REFRESH_VALIDATORS=${JOB_SCHEDULE_REFRESH_VALIDATORS}
+      - JOB_INTERVAL_VALIDATE_VALIDATORS_RANK=${JOB_INTERVAL_VALIDATE_VALIDATORS_RANK}
+      - JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK=${JOB_SCHEDULE_VALIDATE_VALIDATORS_RANK}
+      - JOB_INTERVAL_REFRESH_INDEX_STATUS=${JOB_INTERVAL_REFRESH_INDEX_STATUS}
+      - JOB_SCHEDULE_REFRESH_INDEX_STATUS=${JOB_SCHEDULE_REFRESH_INDEX_STATUS}
+      - JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS=${JOB_INTERVAL_REFRESH_BLOCKCHAIN_APPS_STATS}
+      - JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS=${JOB_SCHEDULE_REFRESH_BLOCKCHAIN_APPS_STATS}
+      - JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE=${JOB_INTERVAL_REFRESH_ACCOUNT_KNOWLEDGE}
+      - JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE=${JOB_SCHEDULE_REFRESH_ACCOUNT_KNOWLEDGE}
+      - JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA=${JOB_INTERVAL_DELETE_FINALIZED_CCU_METADATA}
+      - JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA=${JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA}
+      - JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES=${JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES}
+      - JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES=${JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES}
+      - ESTIMATES_BUFFER_BYTES_LENGTH=${ESTIMATES_BUFFER_BYTES_LENGTH}
     restart: always
 
   blockchain-coordinator:
     image: lisk/service_blockchain_coordinator
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_persistent:
         condition: service_healthy
       blockchain-indexer:
         condition: service_started
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - JOB_INTERVAL_INDEX_MISSING_BLOCKS=${JOB_INTERVAL_INDEX_MISSING_BLOCKS}
+      - JOB_SCHEDULE_INDEX_MISSING_BLOCKS=${JOB_SCHEDULE_INDEX_MISSING_BLOCKS}
     restart: always
 
   transaction-statistics:
     image: lisk/service_transaction_statistics
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_persistent:
         condition: service_healthy
-      mysql:
+      mysql-primary:
+        condition: service_healthy
+      mysql-read-replica-haproxy:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
-      - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
+      - SERVICE_STATISTICS_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica-haproxy:3307/lisk
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - JOB_INTERVAL_REFRESH_TRANSACTION_STATS=${JOB_INTERVAL_REFRESH_TRANSACTION_STATS}
+      - JOB_SCHEDULE_REFRESH_TRANSACTION_STATS=${JOB_SCHEDULE_REFRESH_TRANSACTION_STATS}
+      - JOB_INTERVAL_VERIFY_TRANSACTION_STATS=${JOB_INTERVAL_VERIFY_TRANSACTION_STATS}
+      - JOB_SCHEDULE_VERIFY_TRANSACTION_STATS=${JOB_SCHEDULE_VERIFY_TRANSACTION_STATS}
     restart: always
 
   fee-estimator:
     image: lisk/service_fee_estimator
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_persistent:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
-      - FEE_EST_COLD_START_BATCH_SIZE=${ENABLE_FEE_ESTIMATOR_FULL}
+      - FEE_EST_COLD_START_BATCH_SIZE=${FEE_EST_COLD_START_BATCH_SIZE}
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - FEE_EST_DEFAULT_START_BLOCK_HEIGHT=${FEE_EST_DEFAULT_START_BLOCK_HEIGHT}
+      - FEE_EST_EMA_BATCH_SIZE=${FEE_EST_EMA_BATCH_SIZE}
+      - FEE_EST_EMA_DECAY_RATE=${FEE_EST_EMA_DECAY_RATE}
+      - FEE_EST_WAVG_DECAY_PERCENTAGE=${FEE_EST_WAVG_DECAY_PERCENTAGE}
+
     restart: always
 
   gateway:
     image: lisk/service_gateway
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_volatile:
         condition: service_healthy
       blockchain-connector:
@@ -174,56 +337,122 @@ services:
         condition: service_started
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
+      - PORT=${PORT}
+      - HOST=${HOST}
       - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
       - HTTP_CACHE_CONTROL_DIRECTIVES=${HTTP_CACHE_CONTROL_DIRECTIVES}
       - ENABLE_HTTP_CACHE_CONTROL=${ENABLE_HTTP_CACHE_CONTROL}
-      - ENABLE_WS_RATELIMIT=${ENABLE_WS_RATELIMIT}
-      - WS_RATELIMIT_POINTS=${WS_RATELIMIT_POINTS}
-      - WS_RATELIMIT_DURATION=${WS_RATELIMIT_DURATION}
+      - ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS=${ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS}
+      - HTTP_KEEP_ALIVE_TIMEOUT=${HTTP_KEEP_ALIVE_TIMEOUT}
+      - HTTP_HEADERS_TIMEOUT=${HTTP_HEADERS_TIMEOUT}
+      - HTTP_RATE_LIMIT_ENABLE=${HTTP_RATE_LIMIT_ENABLE}
+      - HTTP_RATE_LIMIT_CONNECTIONS=${HTTP_RATE_LIMIT_CONNECTIONS}
+      - HTTP_RATE_LIMIT_WINDOW=${HTTP_RATE_LIMIT_WINDOW}
+      - HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR=${HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR}
+      - HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES=${HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES}
+      - WS_RATE_LIMIT_ENABLE=${WS_RATE_LIMIT_ENABLE}
+      - WS_RATE_LIMIT_CONNECTIONS=${WS_RATE_LIMIT_CONNECTIONS}
+      - WS_RATE_LIMIT_DURATION=${WS_RATE_LIMIT_DURATION}
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - JSON_RPC_STRICT_MODE=${JSON_RPC_STRICT_MODE}
+      - ENABLE_REQUEST_CACHING=${ENABLE_REQUEST_CACHING}
+      - GATEWAY_DEPENDENCIES=${GATEWAY_DEPENDENCIES}
+      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
+      - JOB_INTERVAL_UPDATE_READINESS_STATUS=${JOB_INTERVAL_UPDATE_READINESS_STATUS}
+      - JOB_SCHEDULE_UPDATE_READINESS_STATUS=${JOB_SCHEDULE_UPDATE_READINESS_STATUS}
     restart: always
     ports:
-      - 9901:9901
+      - ${HOST:-0.0.0.0}:${PORT:-9901}:${PORT:-9901}
     healthcheck:
-      test: curl --fail http://gateway:9901/api/v3/blocks
+      test: curl --fail http://gateway:${PORT:-9901}/api/v3/blocks
 
   market:
     image: lisk/service_market
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_persistent:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
       - EXCHANGERATESAPI_IO_API_KEY=${EXCHANGERATESAPI_IO_API_KEY}
       - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
       - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - JOB_INTERVAL_REFRESH_PRICES_BINANCE=${JOB_INTERVAL_REFRESH_PRICES_BINANCE}
+      - JOB_SCHEDULE_REFRESH_PRICES_BINANCE=${JOB_SCHEDULE_REFRESH_PRICES_BINANCE}
+      - JOB_INTERVAL_REFRESH_PRICES_BITTREX=${JOB_INTERVAL_REFRESH_PRICES_BITTREX}
+      - JOB_SCHEDULE_REFRESH_PRICES_BITTREX=${JOB_SCHEDULE_REFRESH_PRICES_BITTREX}
+      - JOB_INTERVAL_REFRESH_PRICES_EXCHANGERATESAPI=${JOB_INTERVAL_REFRESH_PRICES_EXCHANGERATESAPI}
+      - JOB_SCHEDULE_REFRESH_PRICES_EXCHANGERATESAPI=${JOB_SCHEDULE_REFRESH_PRICES_EXCHANGERATESAPI}
+      - JOB_INTERVAL_REFRESH_PRICES_KRAKEN=${JOB_INTERVAL_REFRESH_PRICES_KRAKEN}
+      - JOB_SCHEDULE_REFRESH_PRICES_KRAKEN=${JOB_SCHEDULE_REFRESH_PRICES_KRAKEN}
+      - JOB_INTERVAL_UPDATE_PRICES=${JOB_INTERVAL_UPDATE_PRICES}
+      - JOB_SCHEDULE_UPDATE_PRICES=${JOB_SCHEDULE_UPDATE_PRICES}
     restart: always
 
   export:
     image: lisk/service_export
     depends_on:
       nats:
-        condition: service_started
+        condition: service_healthy
       redis_persistent:
         condition: service_healthy
       redis_volatile:
         condition: service_healthy
     networks:
       - services_network
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
       - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
       - SERVICE_EXPORT_PARTIALS=/home/lisk/lisk-service/export/data/partials
+      - EXPORT_S3_BUCKET_NAME_PARTIALS=${EXPORT_S3_BUCKET_NAME_PARTIALS}
       - SERVICE_EXPORT_STATIC=/home/lisk/lisk-service/export/data/static
+      - EXPORT_S3_BUCKET_NAME_EXPORTS=${EXPORT_S3_BUCKET_NAME_EXPORTS}
+      - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - DOCKER_HOST=${DOCKER_HOST}
+      - EXPORT_S3_ENDPOINT=${EXPORT_S3_ENDPOINT}
+      - EXPORT_S3_ACCESS_KEY=${EXPORT_S3_ACCESS_KEY}
+      - EXPORT_S3_SECRET_KEY=${EXPORT_S3_SECRET_KEY}
+      - EXPORT_S3_SESSION_TOKEN=${EXPORT_S3_SESSION_TOKEN}
+      - EXPORT_S3_REGION=${EXPORT_S3_REGION}
+      - EXPORT_S3_BUCKET_NAME=${EXPORT_S3_BUCKET_NAME}
+      - JOB_INTERVAL_CACHE_PURGE=${JOB_INTERVAL_CACHE_PURGE}
+      - JOB_SCHEDULE_CACHE_PURGE=${JOB_SCHEDULE_CACHE_PURGE}
     volumes:
       - export-data:/home/lisk/lisk-service/export/data
     restart: always
@@ -231,8 +460,7 @@ services:
 networks:
   services_network:
 
-
 volumes:
-  mysql-data:
+  mysql-primary-data:
   redis-data:
   export-data:

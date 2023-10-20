@@ -30,14 +30,19 @@ const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/network/statistics`;
 
 describe(`GET ${endpoint}`, () => {
-	it('retrieves network statistics -> ok', async () => {
+	it('should return network statistics', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(networkStatisticsSchema);
 	});
 
-	it('invalid request param -> bad request', async () => {
+	it('should return bad request for unsupported param', async () => {
 		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
+	});
+
+	it('should return bad request for empty param', async () => {
+		const response = await api.get(`${endpoint}?emptyParam=`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 });

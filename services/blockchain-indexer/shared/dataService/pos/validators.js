@@ -20,40 +20,31 @@ const {
 	CacheRedis,
 	Logger,
 	Signals,
-	MySQL: { getTableInstance },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
-const { getPosConstants } = require('../business');
 const business = require('../business');
 const config = require('../../../config');
-const accountsIndexSchema = require('../../database/schema/accounts');
-const validatorsIndexSchema = require('../../database/schema/validators');
-const { isSubstringInArray } = require('../../utils/array');
 
-const {
-	getLisk32AddressFromPublicKey,
-	getHexAddress,
-	updateAccountPublicKey,
-	getIndexedAccountInfo,
-} = require('../../utils/account');
 const { getLastBlock } = require('../blocks');
+const { isSubstringInArray } = require('../../utils/array');
+const { getHexAddress } = require('../utils/account');
 const { MODULE, COMMAND } = require('../../constants');
 const { sortComparator } = require('../../utils/array');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+const {
+	updateAccountInfo,
+	getLisk32AddressFromPublicKey,
+} = require('../../utils/account');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const validatorsTableSchema = require('../../database/schema/validators');
+const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
-const getAccountsTable = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
-const getValidatorsTable = () => getTableInstance(
-	validatorsIndexSchema.tableName,
-	validatorsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
@@ -72,11 +63,11 @@ let validatorList = [];
 const validatorComparator = (a, b) => {
 	const diff = BigInt(b.validatorWeight) - BigInt(a.validatorWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return a.hexAddress.localeCompare(b.hexAddress, 'en');
+	return Buffer.from(a.hexAddress, 'hex').compare(Buffer.from(b.hexAddress, 'hex'));
 };
 
 const computeValidatorRank = async () => {
-	validatorList
+	validatorList = validatorList
 		.map(validator => ({ ...validator, hexAddress: getHexAddress(validator.address) }))
 		.sort(validatorComparator);
 	validatorList.map((validator, index) => {
@@ -88,11 +79,11 @@ const computeValidatorRank = async () => {
 const computeValidatorStatus = async () => {
 	const {
 		data: { numberActiveValidators, numberStandbyValidators },
-	} = await getPosConstants();
+	} = await business.getPosConstants();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
-	const latestBlock = getLastBlock();
+	const latestBlock = await getLastBlock();
 	const generatorsList = await business.getGenerators();
 
 	const generatorMap = new Map(generatorsList.map(generator => [generator.address, generator]));
@@ -144,14 +135,13 @@ const loadAllPosValidators = async () => {
 		validatorList = await business.getAllPosValidators();
 
 		// Cache and index all the necessary information
-		const accountsTable = await getAccountsTable();
 		await BluebirdPromise.map(
 			validatorList,
 			async validator => {
 				const { address, name } = validator;
 				await validatorCache.set(address, name);
 				await validatorCache.set(name, address);
-				await accountsTable.upsert({ address, name, isValidator: true });
+				await updateAccountInfo({ address, name, isValidator: true });
 			},
 			{ concurrency: validatorList.length },
 		);
@@ -180,7 +170,11 @@ const getAllValidators = async () => {
 const getPosValidators = async params => {
 	const validators = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	const addressSet = new Set();
@@ -191,13 +185,13 @@ const getPosValidators = async params => {
 		const address = getLisk32AddressFromPublicKey(params.publicKey);
 
 		// Return empty response if user specified address and publicKey pair does not match
-		if (params.address && params.address.split(',').includes(address)) {
+		if (params.address && !params.address.split(',').includes(address)) {
 			return validators;
 		}
 		params.address = address;
 
 		// Index publicKey asynchronously
-		updateAccountPublicKey(params.publicKey);
+		indexAccountPublicKey(params.publicKey);
 	}
 
 	if (params.address) params.address.split(',').forEach(address => addressSet.add(address));
@@ -224,7 +218,7 @@ const getPosValidators = async params => {
 		filteredValidators,
 		async validator => {
 			const [validatorInfo = {}] = await validatorsTable.find(
-				{ address: validator.address },
+				{ address: validator.address, limit: 1 },
 				['generatedBlocks', 'totalCommission', 'totalSelfStakeRewards'],
 			);
 			const {
@@ -233,11 +227,8 @@ const getPosValidators = async params => {
 				totalSelfStakeRewards = BigInt('0'),
 			} = validatorInfo;
 
-			const { publicKey = null } = await getIndexedAccountInfo({ address: validator.address }, ['publicKey']);
-
 			return {
 				...validator,
-				publicKey,
 				generatedBlocks,
 				totalCommission,
 				totalSelfStakeRewards,
@@ -276,7 +267,7 @@ const updateValidatorListEveryBlock = () => {
 			if (block && block.transactions && Array.isArray(block.transactions)) {
 				block.transactions.forEach(tx => {
 					if (tx.module === MODULE.POS) {
-						if (tx.command === COMMAND.REGISTER_VALIDATOR) {
+						if ([COMMAND.REGISTER_VALIDATOR, COMMAND.CHANGE_COMMISSION].includes(tx.command)) {
 							updatedValidatorAddresses
 								.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 						} else if (tx.command === COMMAND.STAKE) {
@@ -376,4 +367,7 @@ module.exports = {
 	reloadValidatorCache,
 	getPosValidators,
 	getAllValidators,
+
+	// For testing
+	validatorComparator,
 };

@@ -23,7 +23,7 @@ module.exports = {
 	rpcMethod: 'get.legacy',
 	tags: ['Legacy'],
 	params: {
-		publicKey: { optional: false, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY },
+		publicKey: { optional: false, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY, altSwaggerKey: 'publicKeyRequired' },
 	},
 	get schema() {
 		const legacyAccountSchema = {};

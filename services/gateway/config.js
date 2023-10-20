@@ -32,9 +32,9 @@ config.host = process.env.HOST || '0.0.0.0';
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
-config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/5';
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://127.0.0.1:6379/5';
 
 /**
  * Compatibility
@@ -42,10 +42,16 @@ config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://lo
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
 
 config.rateLimit = {};
-config.rateLimit.enable = Boolean(String(process.env.HTTP_RATE_LIMIT_ENABLE).toLowerCase() === 'true');
+config.rateLimit.enable = Boolean(
+	String(process.env.HTTP_RATE_LIMIT_ENABLE).toLowerCase() === 'true',
+);
 config.rateLimit.window = Number(process.env.HTTP_RATE_LIMIT_WINDOW) || 10; // in seconds
 // Max number of requests during window
 config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTIONS || 200);
+config.rateLimit.enableXForwardedFor = Boolean(
+	String(process.env.HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR).toLowerCase() === 'true',
+);
+config.rateLimit.numKnownProxies = Number(process.env.HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES || 0);
 
 /**
  * LOGGING
@@ -54,7 +60,7 @@ config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTION
  * log.console - Plain JavaScript console.log() output (true/false)
  * log.stdout  - Writes directly to stdout (true/false)
  * log.file    - outputs to a file (ie. ./logs/app.log)
- * log.gelf    - Writes to GELF-compatible socket (ie. localhost:12201/udp)
+ * log.gelf    - Writes to GELF-compatible socket (ie. 127.0.0.1:12201/udp)
  */
 config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
@@ -78,10 +84,23 @@ config.api.versions = {
 };
 
 /**
+ * API timeout
+ */
+config.api.isReverseProxyPresent = Boolean(
+	String(process.env.ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS).toLowerCase() === 'true',
+);
+config.api.httpKeepAliveTimeout = Number(process.env.HTTP_KEEP_ALIVE_TIMEOUT || 65000);
+config.api.httpHeadersTimeout = Number(process.env.HTTP_HEADERS_TIMEOUT || 66000);
+
+/**
  * HTTP API response caching support
  */
-config.api.httpCacheControlDirectives = String(process.env.HTTP_CACHE_CONTROL_DIRECTIVES || 'public, max-age=10');
-config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE_CONTROL).toLowerCase() === 'true');
+config.api.httpCacheControlDirectives = String(
+	process.env.HTTP_CACHE_CONTROL_DIRECTIVES || 'public, max-age=10',
+);
+config.api.enableHttpCacheControl = Boolean(
+	String(process.env.ENABLE_HTTP_CACHE_CONTROL).toLowerCase() === 'true',
+);
 
 // configuration for websocket rate limit
 config.websocket = {
@@ -102,5 +121,17 @@ const DEFAULT_DEPENDENCIES = 'indexer,connector';
 const { GATEWAY_DEPENDENCIES } = process.env;
 
 config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIES || '').split(',');
+
+config.job = {
+	// Interval takes priority over schedule and must be greater than 0 to be valid
+	updateReadinessStatus: {
+		interval: process.env.JOB_INTERVAL_UPDATE_READINESS_STATUS || 0,
+		schedule: process.env.JOB_SCHEDULE_UPDATE_READINESS_STATUS || '* * * * *',
+	},
+};
+
+config.cors = {
+	allowedOrigin: process.env.CORS_ALLOWED_ORIGIN ? process.env.CORS_ALLOWED_ORIGIN.split(',') : '*',
+};
 
 module.exports = config;

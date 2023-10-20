@@ -13,9 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
-const { dataDir, ALLOWED_FILE_EXTENSIONS } = require('../config');
-const { getFilesAndDirs, rmdir, rm, stats } = require('../shared/utils/fs');
+const {
+	Utils: {
+		fs: { rmdir, rm, getFilesAndDirs, stats },
+	},
+	Logger,
+} = require('lisk-service-framework');
+
+const logger = Logger();
+const config = require('../config');
 const { isMetadataFile } = require('../shared/utils/downloadRepository');
 
 const removeDirectoryIfEmpty = async (dirPath) => {
@@ -38,8 +44,8 @@ const removeEmptyDirectoriesAndNonMetaFiles = async (dirPath) => {
 		if (isDirectory) {
 			await removeEmptyDirectoriesAndNonMetaFiles(filePath);
 			await removeDirectoryIfEmpty(filePath);
-		} else if (!ALLOWED_FILE_EXTENSIONS.some((ending) => filePath.endsWith(ending))
-					&& !isMetadataFile(filePath)) {
+		} else if (!config.ALLOWED_FILE_EXTENSIONS.some((ending) => filePath.endsWith(ending))
+			&& !isMetadataFile(filePath)) {
 			await rm(filePath);
 			logger.trace(`Removed file: ${filePath}.`);
 		}
@@ -51,12 +57,13 @@ module.exports = [
 	{
 		name: 'delete.non.metadata.files',
 		description: 'Delete any non-metadata files and empty folders inside data directory.',
-		schedule: '0 0 * * *', // Every day at midnight
+		interval: config.job.deleteNonMetadataFiles.interval,
+		schedule: config.job.deleteNonMetadataFiles.schedule,
 		controller: async () => {
 			logger.debug('Cleaning data directory...');
 			try {
 				logger.info('Starting to clean data directory.');
-				await removeEmptyDirectoriesAndNonMetaFiles(dataDir);
+				await removeEmptyDirectoriesAndNonMetaFiles(config.dataDir);
 				logger.info('Data directory has been successfully cleaned.');
 			} catch (err) {
 				logger.warn(`Cleaning data directory failed due to: ${err.message}.`);

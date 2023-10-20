@@ -1,68 +1,76 @@
 {
-    "executionStatus": {
-        "name": "executionStatus",
-        "in": "query",
-        "description": "Retrieve pending transactions.\nAccepted values: pending, success, fail.",
-        "type": "string",
-        "minLength": 1
-    },
-    "transaction": {
-        "name": "body",
-        "in": "body",
-        "required": true,
-        "description": "The request body can contain only one property:\n- transaction (required): Binary payload",
-        "schema": {
-            "$ref": "#/definitions/transactionParamEnvelope"
-        }
-    },
-    "dryrunTransaction": {
-        "name": "dryrunTransaction",
-        "in": "body",
-        "required": true,
-        "description": "The request body can contain three properties:\n- transaction (required): Binary payload or a transaction object\n- skipVerify (optional, default: false): A boolean indicator to skip the transaction verification\n- skipDecode (optional, default: false): A boolean indicator to skip the auto-decoding of the event data",
-        "schema": {
-            "$ref": "#/definitions/dryrunTransactionParamEnvelope"
-        }
-    },
-    "recipientAddress": {
-        "name": "recipientAddress",
-        "in": "query",
-        "description": "Lisk account address",
-        "type": "string",
-        "minLength": 3,
-        "maxLength": 41
-    },
-    "senderAddress": {
-        "name": "senderAddress",
-        "in": "query",
-        "description": "Lisk account address",
-        "type": "string",
-        "minLength": 3,
-        "maxLength": 41
-    },
-    "transactionID": {
-        "name": "transactionID",
-        "in": "query",
-        "description": "Transaction ID to query",
-        "type": "string",
-        "format": "id",
-        "minLength": 1,
-        "maxLength": 64
-    },
-    "nonce": {
-        "name": "nonce",
-        "in": "query",
-        "description": "Query by nonce",
-        "type": "string",
-        "minLength": 1
-    },
-    "transactionEstimateFees": {
-        "name": "transaction",
-        "in": "body",
-        "required": true,
-        "description": "The request body can only contain one property:\n- transaction (required): Transaction object\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.",
-        "schema": {
-            "$ref": "#/definitions/transactionEstimateFeesRequestBody"
-        }
-    }
+	"executionStatus": {
+		"name": "executionStatus",
+		"in": "query",
+		"description": "Query transactions by their executionStatus.\nAccepted values: pending, successful, failed.",
+		"type": "string",
+		"minLength": 1
+	},
+	"transaction": {
+		"name": "body",
+		"in": "body",
+		"required": true,
+		"description": "The request body can contain only one property:\n- transaction (required): Binary payload.",
+		"schema": {
+			"$ref": "#/definitions/transactionParamEnvelope"
+		}
+	},
+	"dryrunTransaction": {
+		"name": "dryrunTransaction",
+		"in": "body",
+		"required": true,
+		"description": "The request body can contain three properties:\n- transaction (required): Binary payload or a transaction object\n- skipVerify (optional, default: false): A boolean indicator to skip the transaction verification\n- strict (optional, default: false): A boolean indicator to enable strict mode. When set false, it skips the nonce and signature checks\n- skipDecode (optional, default: false): A boolean indicator to skip the auto-decoding of the event data.",
+		"schema": {
+			"$ref": "#/definitions/dryrunTransactionParamEnvelope"
+		}
+	},
+	"senderAndRecipientAddress": {
+		"name": "address",
+		"in": "query",
+		"description": "Resolves for both senderAddress and recipientAddress.",
+		"type": "string",
+		"minLength": 41,
+		"maxLength": 41
+	},
+	"recipientAddress": {
+		"name": "recipientAddress",
+		"in": "query",
+		"description": "Lisk account address.",
+		"type": "string",
+		"minLength": 41,
+		"maxLength": 41
+	},
+	"senderAddress": {
+		"name": "senderAddress",
+		"in": "query",
+		"description": "Lisk account address.",
+		"type": "string",
+		"minLength": 41,
+		"maxLength": 41
+	},
+	"transactionID": {
+		"name": "transactionID",
+		"in": "query",
+		"description": "Transaction ID to query.",
+		"type": "string",
+		"format": "id",
+		"minLength": 64,
+		"maxLength": 64
+	},
+	"nonce": {
+		"name": "nonce",
+		"in": "query",
+		"description": "Query by nonce. Nonce is only allowed if senderAddress is supplied as a parameter.",
+		"type": "string",
+		"minLength": 1
+	},
+	"transactionEstimateFees": {
+		"name": "transaction",
+		"in": "body",
+		"required": true,
+		"description": "The request body can only contain one property:\n- transaction (required): Transaction object\n\n Note:\n - The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.\n - All types of transactions require valid params as defined in the schema except the 'transferCrossChain' (messageFee and messageFeeTokenID can be mocked if not passed).",
+		"schema": {
+			"$ref": "#/definitions/transactionEstimateFeesRequestBody"
+		}
+	}
 }

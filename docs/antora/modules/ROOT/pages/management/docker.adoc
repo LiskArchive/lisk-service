@@ -6,13 +6,15 @@ Mona Bärenfänger <mona@lightcurve.io>
 :idprefix:
 :experimental:
 :imagesdir: ../assets/images
-
+:source-language: bash
 :url_config: configuration/docker.adoc
+:url_FLUSHALL: https://redis.io/commands/FLUSHALL
+:url_snapshot_config: configuration/index.adoc
+:url_backups: management/snapshots.adoc
 
 == Start
 
-.Inside of the `lisk-service` root folder
-[source,bash]
+.Inside the lisk-service root folder
 ----
 make up
 ----
@@ -23,44 +25,53 @@ In case a different node or network shall be used, xref:{url_config}[configure] 
 
 == Stop
 
-.Inside of the `lisk-service` root folder
-[source,bash]
+.Inside the lisk-service root folder
 ----
 make down
 ----
 
 This will stop Lisk Service.
 
-== Show status of Docker containers
+== Show the status of Docker containers
 
-[source,bash]
 ----
 docker ps
 ----
 
-== Reset Lisk Service database
+== Reset the Lisk Service database
 
-To reset the database of Lisk Service, drop the respective MYSQL and Redis databases.
+To reset the database of Lisk Service, drop the respective MySQL and Redis databases.
 
 Before resetting the database, stop Lisk Service:
 
- make down
-
-Now connect to the Docker container in which you wish to reset the database. If you are not sure what to choose here, check the available containers via <<show-status-of-docker-containers>>.
-
-[source,bash]
 ----
-$ docker exec -it lisk-service_mysql_core_1 bash # <1>
+make stop
 ----
 
-<1> Connect to the interactive shell of the MYSQL Docker container in which you wish to reset the MYSQL database.
+Now connect to the Docker container in which you wish to reset the database. If you are not sure what to choose here, check the available containers via <<show-the-status-of-docker-containers>>.
 
-=== Drop MYSQL DB
+To connect to the interactive shell of the MySQL Docker container in which you wish to reset the MySQL database, execute the following command:
 
-[source,bash]
 ----
-root@f1413b535254:/# mysql -u lisk -ppassword # <1>
-mysql: [Warning] Using a password on the command line interface can be insecure.
+docker exec -it lisk-service-mysql-primary-1 bash
+----
+
+=== Drop Database
+
+[tabs]
+====
+MySQL DB::
++
+--
+. Login to MySQL with the `lisk` user.
++
+----
+mysql -ulisk -ppassword
+----
++
+On successful login, you enter the MYSQL command-line client:
++
+----
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 2044
 Server version: 8.0.27 MySQL Community Server - GPL
@@ -71,25 +82,91 @@ Oracle is a registered trademark of Oracle Corporation and/or its
 affiliates. Other names may be trademarks of their respective
 owners.
 
+
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-mysql> drop database lisk; # <2>
-mysql> create database lisk; # <3>
-mysql> quit; # <4>
+----
+. Drop the `lisk` database.
++
+----
+mysql> drop database lisk;
+----
+. Create a fresh database `lisk`.
++
+----
+mysql> create database lisk;
+----
+. Log out from MySQL by typing `quit;`
++
+----
+mysql> quit;
 ----
 
+Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
 
-<1> Login to MYSQL with the `lisk` user.
-<2> Drop the `lisk` database.
-<3> Create a fresh database `lisk`.
-<4> Log out from MYSQL by typing `quit;`. Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
+--
+MariaDB::
++
+--
+MariaDB also uses the same SQL commands for querying and manipulating the relevant data, including data storage, client libraries, and replication.
+
+. Login to MariaDB with the `lisk` user.
++
+----
+docker exec -it lisk_mariadb mysql -uroot -p
+----
++
+On successful login, you enter the MariaDB command-line client:
++
+----
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 9
+Server version: 10.7.8-MariaDB-1:10.7.8+maria~ubu2004 mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+----
+. Drop the `lisk` database.
++
+----
+MariaDB [(none)]> drop database lisk;
+----
++
+.Result
+----
+Query OK, 0 rows affected (0.009 sec)
+----
+. Create a fresh database `lisk`
++
+----
+MariaDB [(none)]> create database lisk;
+----
++
+.Result
+----
+Query OK, 1 row affected (0.001 sec)
+----
+. Log out by typing `quit;`.
++
+----
+MariaDB [(none)]> exit;
+----
+
+Log out of the docker container by pressing kbd:[CRTL] + kbd:[D].
+--
+====
 
 === Flush Redis DB
 
-Reset the databases for Redis after dropping the MYSQL database:
+Reset the databases for Redis after dropping the MySQL database:
 
-[source,bash]
+.Execute command in running docker container.
 ----
 sudo docker exec -it lisk-service_redis_core_persistent_1 /bin/sh
+----
+
+.Truncate redis database.
+----
 redis-cli flushall
 ----
 
@@ -97,15 +174,16 @@ TIP: Log out of the docker container again by pressing kbd:[CRTL] + kbd:[D].
 
 [NOTE]
 ====
-The `flushall` command removes all existing Redis databases:
+The `flushall` command truncates all existing Redis databases:
 
 > Deletes all the keys of all the existing databases, not just the current selected one. This command never fails.
 
-For more information check the Redis documentation: https://redis.io/commands/FLUSHALL[FLUSHALL]
+For more information, check the Redis documentation: {url_FLUSHALL}[FLUSHALL].
 
 To flush only a particular DB in Redis, execute the following command instead:
+
 ----
- redis-cli -n <db_number> flushdb
+redis-cli -n <db_number> flushdb
 ----
 ====
 
@@ -113,17 +191,23 @@ To flush only a particular DB in Redis, execute the following command instead:
 
 After the databases are reset, start Lisk Service again as usual:
 
- make up
+----
+make up
+----
 
-NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated. This can be quite time-consuming and may take up to 2 hours.
+NOTE: When Lisk Service is started again after a database reset, then the process to reindex all the data is initiated.
+This can be quite time-consuming when the chain is long, spanning over hours.
+
+== Taking Snapshots
+
+If you wish to take a snapshot of your Docker installation, the details can be found here on the xref:{url_backups}[Snapshots] page.
 
 == Logging
 
 To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
 
-For example, to see the logs for the Gateway microservice, execute:
+For example, to see the logs for the Gateway microservice, execute the following command:
 
-[source,bash]
 ----
 docker container logs lisk-service_gateway_1
 ----

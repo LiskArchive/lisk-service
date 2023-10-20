@@ -14,22 +14,30 @@
 *
 */
 const BluebirdPromise = require('bluebird');
-const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const { DB: { MySQL: { getTableInstance } } } = require('lisk-service-framework');
 const { getNetworkStatus } = require('../network');
 const { requestConnector } = require('../../../utils/request');
 const { LENGTH_NETWORK_ID, LENGTH_TOKEN_ID } = require('../../../constants');
 
 const config = require('../../../../config');
 
-const MYSQL_ENDPOINT = config.endpoints.mysql;
+const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const blockchainAppsTableSchema = require('../../../database/schema/blockchainApps');
+const { getMainchainID } = require('./mainchain');
 
-const getBlockchainAppsTable = () => getTableInstance(
-	blockchainAppsTableSchema.tableName,
-	blockchainAppsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getBlockchainAppsTable = () => getTableInstance(blockchainAppsTableSchema, MYSQL_ENDPOINT);
+
+let lskTokenID;
+
+const getLSKTokenID = async () => {
+	if (!lskTokenID) {
+		const mainchainID = await getMainchainID();
+		lskTokenID = mainchainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0');
+	}
+
+	return lskTokenID;
+};
 
 const getBlockchainApps = async (params) => {
 	// TODO: Update implementation when interoperability_getOwnChainAccount is available
@@ -59,7 +67,7 @@ const getBlockchainApps = async (params) => {
 		params = remParams;
 
 		params.search = {
-			property: 'name',
+			property: 'chainName',
 			pattern: search,
 		};
 	}
@@ -83,13 +91,18 @@ const getBlockchainApps = async (params) => {
 	const { data: { chainID } } = await getNetworkStatus();
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 
+	const tokenIdForLSK = await getLSKTokenID();
 	blockchainAppsInfo.data = await BluebirdPromise.map(
 		dbBlockchainApps,
 		async blockchainAppInfo => {
 			const escrow = escrowedAmounts.filter(e => e.escrowChainID === blockchainAppInfo.chainID);
 
+			const escrowEntryForLSKTokenID = escrow.find(item => item.tokenID === tokenIdForLSK);
+			const escrowedLSK = escrowEntryForLSKTokenID ? escrowEntryForLSKTokenID.amount : '0';
+
 			return {
 				...blockchainAppInfo,
+				escrowedLSK,
 				escrow: escrow.length ? escrow : [{
 					tokenID: chainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0'),
 					amount: '0',
@@ -110,4 +123,7 @@ const getBlockchainApps = async (params) => {
 
 module.exports = {
 	getBlockchainApps,
+
+	// Testing
+	getLSKTokenID,
 };

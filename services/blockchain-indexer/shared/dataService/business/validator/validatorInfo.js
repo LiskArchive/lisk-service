@@ -13,21 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const { DB: { MySQL: { getTableInstance } } } = require('lisk-service-framework');
 
 const config = require('../../../../config');
 const validatorsTableSchema = require('../../../database/schema/validators');
 
 const { requestConnector } = require('../../../utils/request');
-const { getIndexedAccountInfo } = require('../../../utils/account');
+const { getIndexedAccountInfo } = require('../../utils/account');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getValidatorsTable = () => getTableInstance(
-	validatorsTableSchema.tableName,
-	validatorsTableSchema,
-	MYSQL_ENDPOINT,
-);
+const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const getValidator = async params => {
 	const validator = {

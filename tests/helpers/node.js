@@ -26,7 +26,7 @@ node.chai = require('chai');
 node.chai.config.includeStack = true;
 
 // Node configuration
-node.baseUrl = 'http://localhost:9901';
+node.baseUrl = 'http://127.0.0.1:9901';
 node.api = node.supertest(node.baseUrl);
 
 function abstractRequest(options, done) {

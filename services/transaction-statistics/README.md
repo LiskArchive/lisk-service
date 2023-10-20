@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/transaction-statistics # move into the transaction-statistics microservice directory
-npm ci # install required Node.js dependencies
+yarn install --frozen-lockfile # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -27,9 +27,16 @@ To configure the different microservices, there are several environment variable
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
-- `SERVICE_STATISTICS_MYSQL`: Connection string of the MySQL instance that the microservice connects to.
+- `SERVICE_STATISTICS_MYSQL`: Connection string of the (read/write) primary MySQL instance that the microservice connects to.
+- `SERVICE_STATISTICS_MYSQL_READ_REPLICA`: Connection string of the (read only) replicated MySQL instance that the microservice connects to.
 - `SERVICE_STATISTICS_REDIS`: URL of the cache storage (Redis).
 - `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`: The number of days for which the transaction statistics need to be built in retrospect to the application init.
+- `JOB_INTERVAL_REFRESH_TRANSACTION_STATS`: Job run interval to refresh transaction statistics. By default, it is set to 0.
+- `JOB_SCHEDULE_REFRESH_TRANSACTION_STATS`: Job run cron schedule to refresh transaction statistics. By default, it is set to run every 30th minute (`*/30 * * * *`).
+- `JOB_INTERVAL_VERIFY_TRANSACTION_STATS`: Job run interval to verify if the transaction statistics have been built correctly. By default, it is set to 0.
+- `JOB_SCHEDULE_VERIFY_TRANSACTION_STATS`: Job run cron schedule to verify if the transaction statistics have been built correctly. By default, it is set to run every 3rd hour after the first 15 minutes (`15 */3 * * *`).
+
+> **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
 ## Management
 
@@ -37,7 +44,7 @@ A list of the most commonly used environment variables is presented below:
 
 ```bash
 cd lisk-service/services/transaction-statistics # move into the root directory of the transaction-statistics microservice
-npm start # start the microservice with running nodes locally
+yarn start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.

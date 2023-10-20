@@ -25,7 +25,7 @@ const config = require('./config');
 LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
-const { setAppContext } = require('./shared/csvExport');
+const { setAppContext } = require('./shared/helpers');
 
 const logger = Logger();
 

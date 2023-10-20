@@ -60,6 +60,9 @@ const getIndexStatus = async () => {
 	};
 };
 
+const isBlockchainFullyIndexed = () => Number(indexStatsCache.percentage) === 100;
+
 module.exports = {
 	getIndexStatus,
+	isBlockchainFullyIndexed,
 };

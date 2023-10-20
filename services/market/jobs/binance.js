@@ -18,6 +18,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
+const config = require('../config');
 const { reload } = require('../shared/market/sources/binance');
 
 const logger = Logger();
@@ -35,7 +36,8 @@ module.exports = [
 	{
 		name: 'prices.retrieve.binance',
 		description: 'Fetches up-to-date market prices from Binance',
-		schedule: '* * * * *',
+		interval: config.job.refreshPricesBinance.interval,
+		schedule: config.job.refreshPricesBinance.schedule,
 		init: async () => {
 			logger.debug('Initializing market prices from Binance');
 			await reloadMarketPrices();

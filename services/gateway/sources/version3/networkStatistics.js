@@ -29,6 +29,5 @@ module.exports = {
 			totalSelfStaked: amountEntry,
 		},
 		meta: {},
-		links: {},
 	},
 };

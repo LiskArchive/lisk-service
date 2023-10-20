@@ -22,8 +22,11 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 const { MODULE_NAME_POS } = require('./constants/names');
 const { getBlockByHeight } = require('./blocks');
 const regex = require('../utils/regex');
+const { getGenesisHeight } = require('./genesisBlock');
 
 const logger = Logger();
+
+let posModuleConstants;
 
 const getPosValidator = async (address) => {
 	try {
@@ -65,17 +68,22 @@ const getPosValidatorsByStake = async (limit) => {
 };
 
 const getPosConstants = async () => {
-	try {
-		const response = await invokeEndpoint('pos_getConstants');
-		if (response.error) throw new Error(response.error);
-		return response;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getPosConstants\'.');
+	if (typeof posModuleConstants === 'undefined') {
+		try {
+			const response = await invokeEndpoint('pos_getConstants');
+
+			if (response.error) throw new Error(response.error);
+			posModuleConstants = response;
+		} catch (err) {
+			if (err.message.includes(timeoutMessage)) {
+				throw new TimeoutException('Request timed out when calling \'getPosConstants\'.');
+			}
+			logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
+			throw err;
 		}
-		logger.warn(`Error returned when invoking 'pos_getConstants'.\n${err.stack}`);
-		throw err;
 	}
+
+	return posModuleConstants;
 };
 
 const getPosPendingUnlocks = async (address) => {
@@ -138,9 +146,10 @@ const getPosLockedReward = async ({ address, tokenID }) => {
 	}
 };
 
-const getPoSGenesisStakers = async (height) => {
+const getPoSGenesisStakers = async () => {
 	try {
-		const block = await getBlockByHeight(height, true);
+		const genesisHeight = await getGenesisHeight();
+		const block = await getBlockByHeight(genesisHeight, true);
 		const { stakers = [] } = (block.assets
 			.find(asset => asset.module === MODULE_NAME_POS)).data;
 		return stakers;
@@ -152,9 +161,10 @@ const getPoSGenesisStakers = async (height) => {
 	}
 };
 
-const getPoSGenesisValidators = async (height) => {
+const getPoSGenesisValidators = async () => {
 	try {
-		const block = await getBlockByHeight(height, true);
+		const genesisHeight = await getGenesisHeight();
+		const block = await getBlockByHeight(genesisHeight, true);
 		const { validators = [] } = (block.assets
 			.find(asset => asset.module === MODULE_NAME_POS)).data;
 		return validators;

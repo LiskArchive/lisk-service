@@ -31,18 +31,18 @@ const endpoint = `${baseUrlV3}/network/status`;
 
 describe('Network Status API', () => {
 	describe(`GET ${endpoint}`, () => {
-		it('retrieves network status -> 200 OK', async () => {
+		it('should network status', async () => {
 			const response = await api.get(endpoint);
 			expect(response.data).toMap(networkStatusSchema);
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('params not supported -> 400 BAD REQUEST', async () => {
+		it('should return bad request for unsupported param', async () => {
 			const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('params (empty) not supported -> 400 BAD REQUEST', async () => {
+		it('should return bad request for empty param', async () => {
 			const response = await api.get(`${endpoint}?emptyparam=`, 400);
 			expect(response).toMap(badRequestSchema);
 		});

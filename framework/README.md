@@ -3,6 +3,7 @@
 Lisk Service Framework is made for quick development of Micoservice-based applications with minimal requirements.
 
 It has the following features built-in:
+
 - Microservice framework based on Moleculer
 - Logger with GELF support
 - HTTP library with LRU cache
@@ -13,8 +14,9 @@ All modules can be easily replaced by other libraries when needed.
 ## Installation
 
 Set the target URL to the desired tarball distribution permalink.
+
 ```
-npm install https://github.com/LiskHQ/lisk-service/raw/2fbc65f49ae5c5aaa3689667051dbd4082b8c25a/framework/dist/lisk-service-framework-1.4.10.tgz
+yarn install https://github.com/LiskHQ/lisk-service/raw/d63fb9be0e01a28ea8dc5f87a2d1b70a61650dda/framework/dist/lisk-service-framework-1.4.22.tgz
 ```
 
 ## Quick Start
@@ -39,7 +41,7 @@ const logger = Logger('test-microservice');
 // Initialize Microservice framework
 const app = Microservice({
 	name: 'test',
-	transporter: 'redis://localhost:6379',
+	transporter: 'redis://127.0.0.1:6379',
 	logger: Logger('test-moleculer'),
 });
 
@@ -48,14 +50,19 @@ app.addMethod({
 	name: 'hello',
 	description: 'Hello method',
 	controller: async () => ({
-		data: { message: 'Hello World!' }
+		data: { message: 'Hello World!' },
 	}),
 });
 
 // Run the application
-app.run().then(() => {
-	logger.info(`Service started`);
-}).catch((err) => { logger.fatal(err.stack) });
+app
+	.run()
+	.then(() => {
+		logger.info(`Service started`);
+	})
+	.catch(err => {
+		logger.fatal(err.stack);
+	});
 ```
 
 Browse the Lisk Service Template repo for more examples.

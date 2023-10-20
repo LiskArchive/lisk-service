@@ -13,12 +13,62 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRepoInfoFromURL, getUniqueNetworkAppDirPairs, filterMetaConfigFilesByNetwork, getModifiedFileNames } = require('../../../../shared/utils/downloadRepository');
 const config = require('../../../../config');
+const {
+	getRepoInfoFromURL,
+	getUniqueNetworkAppDirPairs,
+	filterMetaConfigFilesByNetwork,
+	getModifiedFileNames,
+	isMetadataFile,
+	getFileDownloadURLAndHeaders,
+} = require('../../../../shared/utils/downloadRepository');
 const {
 	getModifiedFileNamesInput,
 	getModifiedFileNamesExpectedResponse,
 } = require('../../../constants/downloadRepository');
+
+// Mock KeyValueStore table
+jest.mock('lisk-service-framework', () => {
+	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
+	return {
+		...actualLiskServiceFramework,
+		DB: {
+			MySQL: {
+				...actualLiskServiceFramework.DB.MySQL,
+				KVStore: {
+					...actualLiskServiceFramework.KVStore,
+					configureKeyValueTable: jest.fn(),
+					getKeyValueTable: jest.fn(),
+				},
+			},
+		},
+	};
+});
+
+describe('getFileDownloadURLAndHeaders', () => {
+	const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+	const file = 'testFile';
+
+	it('should return the correct URL and headers for a public repository', async () => {
+		const result = await getFileDownloadURLAndHeaders(file);
+		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
+		expect(result.headers).toHaveProperty('User-Agent');
+	});
+
+	it('should return the correct URL and headers for a private repository with access token', async () => {
+		config.gitHub.accessToken = 'testToken';
+
+		const result = await getFileDownloadURLAndHeaders(file);
+		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
+		expect(result.headers).toHaveProperty('User-Agent');
+		expect(result.headers).toHaveProperty('Authorization');
+		expect(result.headers.Authorization).toEqual('token testToken');
+	});
+
+	it('should throw error if no params are supplied', async () => {
+		await expect(getFileDownloadURLAndHeaders()).rejects.toThrow();
+	});
+});
 
 describe('Test getRepoInfoFromURL method', () => {
 	it('should return proper response when url is valid', async () => {
@@ -61,12 +111,8 @@ describe('Test getRepoInfoFromURL method', () => {
 		});
 	});
 
-	it('should return proper response when url is null', async () => {
-		const response = getRepoInfoFromURL(null);
-		expect(response).toMatchObject({
-			owner: undefined,
-			repo: undefined,
-		});
+	it('should throw error when url is null', async () => {
+		expect(async () => getRepoInfoFromURL(null)).rejects.toThrow();
 	});
 });
 
@@ -189,5 +235,32 @@ describe('Test getModifiedFileNames method', () => {
 	it('should throw error when called with null or undefined groupedFiles', async () => {
 		expect(() => getModifiedFileNames(null)).toThrow();
 		expect(() => getModifiedFileNames(undefined)).toThrow();
+	});
+});
+
+describe('Test isMetadataFile method', () => {
+	it('should return true when called with app.json', async () => {
+		const response = isMetadataFile(config.FILENAME.APP_JSON);
+		expect(response).toEqual(true);
+	});
+
+	it('should return true when called with nativetokens.json', async () => {
+		const response = isMetadataFile(config.FILENAME.NATIVETOKENS_JSON);
+		expect(response).toEqual(true);
+	});
+
+	it('should return false when called with random.json', async () => {
+		const response = isMetadataFile('random.json');
+		expect(response).toEqual(false);
+	});
+
+	it('should return false when called with null', async () => {
+		const response = isMetadataFile(null);
+		expect(response).toEqual(false);
+	});
+
+	it('should return false when called with undefined', async () => {
+		const response = isMetadataFile(undefined);
+		expect(response).toEqual(false);
 	});
 });

@@ -13,17 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getLisk32AddressFromPublicKey,
-	updateAccountPublicKey,
-} = require('../../../utils/account');
 const { requestConnector } = require('../../../utils/request');
-const { getAddressByName } = require('../../../utils/validator');
+const { getAddressByName } = require('../../utils/validator');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
+const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const getPosClaimableRewards = async params => {
 	const claimableRewards = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: 0,
+			total: 0,
+		},
 	};
 
 	if (!params.address && params.name) {
@@ -34,7 +36,7 @@ const getPosClaimableRewards = async params => {
 		params.address = getLisk32AddressFromPublicKey(params.publicKey);
 
 		// Index publicKey
-		updateAccountPublicKey(params.publicKey);
+		indexAccountPublicKey(params.publicKey);
 	}
 
 	if (!params.address) {

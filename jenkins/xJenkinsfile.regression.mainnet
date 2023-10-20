@@ -24,7 +24,7 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				// Mainnet service URL
-				waitForHttp('http://localhost:9901/api/ready')
+				waitForHttp('http://127.0.0.1:9901/api/ready')
 			}
 		}
 		stage('Run regression tests Mainnet') {
@@ -32,7 +32,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'npm run test:regression:mainnet' }
+						dir('./tests') { sh 'yarn run test:regression:mainnet' }
 					}
 				}
 			}
