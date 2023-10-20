@@ -3927,7 +3927,6 @@ lines-and-columns@^1.1.6:
   resolved "https://npm.lisk.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-<<<<<<< HEAD
 "lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/19417a9e6e4eb07032aef25e8647f9f7536a5a40/framework/dist/lisk-service-framework-1.6.2.tgz":
   version "1.6.2"
   resolved "https://github.com/LiskHQ/lisk-service/raw/19417a9e6e4eb07032aef25e8647f9f7536a5a40/framework/dist/lisk-service-framework-1.6.2.tgz#3a1c20e380a57bb188fc0d9f59bde18957655156"
@@ -3958,14 +3957,9 @@ lines-and-columns@^1.1.6:
     socket.io-client "^4.0.1"
     stack-trace "0.0.10"
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz":
-  version "1.6.1"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/9e278b6e073c60eac0d9616197c7a385db01d4c8/framework/dist/lisk-service-framework-1.6.1.tgz#ca20b4aa4202b9500b1f6f0d9269601253908ea9"
-=======
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/f84c21e6955b64ceeb006e4b685a06a9f41e5004/framework/dist/lisk-service-framework-1.6.2.tgz":
-  version "1.6.2"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/f84c21e6955b64ceeb006e4b685a06a9f41e5004/framework/dist/lisk-service-framework-1.6.2.tgz#1cfec75d732778d5a1106aa9c107ba42e20e0fbf"
->>>>>>> release/0.7.0
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/b73fbbf7ff44398b0ce1e0f542b408326bb834db/framework/dist/lisk-service-framework-1.6.3.tgz":
+  version "1.6.3"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/b73fbbf7ff44398b0ce1e0f542b408326bb834db/framework/dist/lisk-service-framework-1.6.3.tgz#f29759d295ee9b913213387fdb32d97985e2d6f3"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
