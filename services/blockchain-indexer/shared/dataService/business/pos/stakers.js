@@ -26,10 +26,7 @@ const stakesTableSchema = require('../../../database/schema/stakes');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
-const {
-	getIndexedAccountInfo,
-	getAccountsTable,
-} = require('../../utils/account');
+const { getIndexedAccountInfo, getAccountsTable } = require('../../utils/account');
 const { indexAccountPublicKey } = require('../../../indexer/accountIndex');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
@@ -95,16 +92,20 @@ const getStakers = async params => {
 	if (params.search) {
 		const stakerAccountsInfo = await accountsTable.find(
 			{
-				orSearch: [{
-					property: 'name',
-					pattern: params.search,
-				}, {
-					property: 'address',
-					pattern: params.search,
-				}, {
-					property: 'publicKey',
-					pattern: params.search,
-				}],
+				orSearch: [
+					{
+						property: 'name',
+						pattern: params.search,
+					},
+					{
+						property: 'address',
+						pattern: params.search,
+					},
+					{
+						property: 'publicKey',
+						pattern: params.search,
+					},
+				],
 			},
 			['name', 'address'],
 		);
@@ -151,10 +152,10 @@ const getStakers = async params => {
 		{ concurrency: stakes.length },
 	);
 
-	const validatorAccountInfo = await getIndexedAccountInfo(
-		{ address: params.validatorAddress },
-		['name', 'publicKey'],
-	);
+	const validatorAccountInfo = await getIndexedAccountInfo({ address: params.validatorAddress }, [
+		'name',
+		'publicKey',
+	]);
 	stakersResponse.meta.validator = {
 		address: stakersResponse.meta.validator.address || params.validatorAddress,
 		name: stakersResponse.meta.validator.name || validatorAccountInfo.name,

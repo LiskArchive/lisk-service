@@ -22,7 +22,7 @@ const {
 const camelCase = require('camelcase');
 const requireAll = require('require-all');
 
-const getDirectoryNamesInPath = async (sourceDirPath) => {
+const getDirectoryNamesInPath = async sourceDirPath => {
 	const directories = await getDirectories(sourceDirPath, { withFileTypes: true });
 	const dirNames = directories.map(path => path.split('/').pop());
 	return dirNames;
@@ -32,19 +32,17 @@ const getAllJSFiles = async (
 	sourceDirPath,
 	pascalCase = false,
 	preserveConsecutiveUppercase = true,
-) => requireAll({
-	dirname: sourceDirPath,
-	filter: /(.+)\.js$/,
-	excludeDirs: /^\.(git|svn)$/,
-	recursive: false,
-	map: (fileName) => {
-		const formattedFileName = camelCase(
-			fileName,
-			{ pascalCase, preserveConsecutiveUppercase },
-		);
-		return formattedFileName;
-	},
-});
+) =>
+	requireAll({
+		dirname: sourceDirPath,
+		filter: /(.+)\.js$/,
+		excludeDirs: /^\.(git|svn)$/,
+		recursive: false,
+		map: fileName => {
+			const formattedFileName = camelCase(fileName, { pascalCase, preserveConsecutiveUppercase });
+			return formattedFileName;
+		},
+	});
 
 module.exports = {
 	getDirectoryNamesInPath,

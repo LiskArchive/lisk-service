@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { validateParams } = require('../../../../../shared/dataService/business/pendingTransactions');
+const {
+	validateParams,
+} = require('../../../../../shared/dataService/business/pendingTransactions');
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');

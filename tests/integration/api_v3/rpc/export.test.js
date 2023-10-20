@@ -17,9 +17,7 @@ const moment = require('moment');
 
 const config = require('../../../config');
 const exportConfig = require('../../../../services/export/config');
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
@@ -35,7 +33,8 @@ const {
 const { waitForSuccess } = require('../../../helpers/utils');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const requestTransactionExport = async (params) => request(wsRpcUrl, 'get.export.transactions', params);
+const requestTransactionExport = async params =>
+	request(wsRpcUrl, 'get.export.transactions', params);
 
 describe('Export API', () => {
 	const startDate = moment('2023-01-10').format(exportConfig.excel.dateFormat);
@@ -76,13 +75,14 @@ describe('Export API', () => {
 	});
 
 	describe('File is ready to export', () => {
-		const successValidator = (response) => response.result.meta.ready;
+		const successValidator = response => response.result.meta.ready;
 
 		it('should schedule from account address and confirm it is ready', async () => {
-			const scheduleExport = async () => requestTransactionExport({
-				address: mockAddress,
-				interval: `${startDate}:${endDate}`,
-			});
+			const scheduleExport = async () =>
+				requestTransactionExport({
+					address: mockAddress,
+					interval: `${startDate}:${endDate}`,
+				});
 			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -94,10 +94,11 @@ describe('Export API', () => {
 		}, 2147483647);
 
 		it('should schedule from account publicKey and confirm it is ready', async () => {
-			const scheduleExport = async () => requestTransactionExport({
-				publicKey: mockPublicKey,
-				interval: `${startDate}:${endDate}`,
-			});
+			const scheduleExport = async () =>
+				requestTransactionExport({
+					publicKey: mockPublicKey,
+					interval: `${startDate}:${endDate}`,
+				});
 			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(jsonRpcEnvelopeSchema);

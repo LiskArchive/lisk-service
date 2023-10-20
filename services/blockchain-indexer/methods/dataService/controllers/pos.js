@@ -14,7 +14,9 @@
  *
  */
 const {
-	HTTP: { StatusCodes: { BAD_REQUEST } },
+	HTTP: {
+		StatusCodes: { BAD_REQUEST },
+	},
 	Exceptions: { ValidationException, InvalidParamsException },
 } = require('lisk-service-framework');
 
@@ -93,7 +95,7 @@ const getStakers = async params => {
 	return stakers;
 };
 
-const getPosClaimableRewards = async (params) => {
+const getPosClaimableRewards = async params => {
 	const claimableRewards = {
 		data: [],
 		meta: {},
@@ -106,7 +108,7 @@ const getPosClaimableRewards = async (params) => {
 	return claimableRewards;
 };
 
-const getPosLockedRewards = async (params) => {
+const getPosLockedRewards = async params => {
 	try {
 		const rewardsLocked = {
 			data: [],

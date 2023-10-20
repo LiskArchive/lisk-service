@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-} = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 const { reloadValidatorCache } = require('../../../dataService');
 
 const { TRANSACTION_STATUS } = require('../../../constants');

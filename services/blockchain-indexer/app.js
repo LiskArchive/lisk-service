@@ -50,15 +50,15 @@ const defaultBrokerConfig = {
 	logger: config.log,
 	events: {
 		chainNewBlock: async () => {
-			logger.debug('Received a \'chainNewBlock\' event from connecter.');
+			logger.debug("Received a 'chainNewBlock' event from connecter.");
 			Signals.get('chainNewBlock').dispatch();
 		},
-		systemNodeInfo: async (payload) => {
-			logger.debug('Received a \'systemNodeInfo\' event from connecter.');
+		systemNodeInfo: async payload => {
+			logger.debug("Received a 'systemNodeInfo' event from connecter.");
 			Signals.get('nodeInfo').dispatch(payload);
 		},
-		'update.fee_estimates': async (payload) => {
-			logger.debug('Received a \'update.fee_estimates\' event from fee-estimator.');
+		'update.fee_estimates': async payload => {
+			logger.debug("Received a 'update.fee_estimates' event from fee-estimator.");
 			await setFeeEstimates(payload);
 		},
 	},
@@ -66,7 +66,7 @@ const defaultBrokerConfig = {
 };
 
 // Add routes, events & jobs
-const reportErrorAndExitProcess = (err) => {
+const reportErrorAndExitProcess = err => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 	logger.fatal(err.stack);
 	process.exit(1);
@@ -86,7 +86,7 @@ initDatabase()
 			setAppContext(tempApp);
 			await tempApp.run();
 			const { getRegisteredModules } = require('./shared/constants');
-			registeredModules.push(...await getRegisteredModules());
+			registeredModules.push(...(await getRegisteredModules()));
 			// Stop the temporary node before app definition to avoid context (logger) overwriting issue
 			await tempApp.getBroker().stop();
 		}
@@ -104,13 +104,21 @@ initDatabase()
 				// Map 'reward' module to the 'dynamicReward' module endpoints
 				if (module === MODULE.REWARD) module = MODULE.DYNAMIC_REWARD;
 
-				const methodsFilePath = path.join(__dirname, 'methods', 'dataService', 'modules', `${module}.js`);
+				const methodsFilePath = path.join(
+					__dirname,
+					'methods',
+					'dataService',
+					'modules',
+					`${module}.js`,
+				);
 				try {
 					// eslint-disable-next-line import/no-dynamic-require
 					const methods = require(methodsFilePath);
 					methods.forEach(method => app.addMethod(method));
 				} catch (err) {
-					logger.warn(`Moleculer method definitions missing for module: ${module}. Is this expected?\nWas expected at: ${methodsFilePath}.`);
+					logger.warn(
+						`Moleculer method definitions missing for module: ${module}. Is this expected?\nWas expected at: ${methodsFilePath}.`,
+					);
 				}
 			});
 		}
@@ -123,10 +131,13 @@ initDatabase()
 
 		// Set the app context and start the application
 		setAppContext(app);
-		app.run().then(async () => {
-			logger.info(`Service started ${packageJson.name}.`);
+		app
+			.run()
+			.then(async () => {
+				logger.info(`Service started ${packageJson.name}.`);
 
-			await init();
-		}).catch(reportErrorAndExitProcess);
+				await init();
+			})
+			.catch(reportErrorAndExitProcess);
 	})
 	.catch(reportErrorAndExitProcess);

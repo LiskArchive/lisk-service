@@ -46,35 +46,50 @@ const getRewardTokenID = async () => {
 		return rewardTokenID;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRewardTokenID\'.');
+			throw new TimeoutException("Request timed out when calling 'getRewardTokenID'.");
 		}
-		logger.warn(`Error returned when invoking '${registeredRewardModule}_getRewardTokenID'.\n${err.stack}`);
+		logger.warn(
+			`Error returned when invoking '${registeredRewardModule}_getRewardTokenID'.\n${err.stack}`,
+		);
 		throw err;
 	}
 };
 
-const getAnnualInflation = async (height) => {
+const getAnnualInflation = async height => {
 	try {
-		const annualInflation = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, { height });
+		const annualInflation = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, {
+			height,
+		});
 		return annualInflation;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAnnualInflation' with block height:${height}.`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getAnnualInflation' with block height:${height}.`,
+			);
 		}
-		logger.warn(`Error returned when invoking '${registeredRewardModule}_getAnnualInflation' with block height:${height}.\n${err.stack}`);
+		logger.warn(
+			`Error returned when invoking '${registeredRewardModule}_getAnnualInflation' with block height:${height}.\n${err.stack}`,
+		);
 		throw err;
 	}
 };
 
 const getDefaultRewardAtHeight = async height => {
 	try {
-		const defaultRewardResponse = await invokeEndpoint(`${registeredRewardModule}_getDefaultRewardAtHeight`, { height });
+		const defaultRewardResponse = await invokeEndpoint(
+			`${registeredRewardModule}_getDefaultRewardAtHeight`,
+			{ height },
+		);
 		return defaultRewardResponse;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`);
+			throw new TimeoutException(
+				`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`,
+			);
 		}
-		logger.warn(`Error returned when invoking '${registeredRewardModule}_getDefaultRewardAtHeight' with height: ${height}.\n${err.stack}`);
+		logger.warn(
+			`Error returned when invoking '${registeredRewardModule}_getDefaultRewardAtHeight' with height: ${height}.\n${err.stack}`,
+		);
 		throw err;
 	}
 };

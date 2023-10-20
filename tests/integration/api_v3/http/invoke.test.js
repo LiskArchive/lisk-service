@@ -16,13 +16,9 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	invokeResponseSchema,
-} = require('../../../schemas/api_v3/invoke.schema');
+const { invokeResponseSchema } = require('../../../schemas/api_v3/invoke.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -35,7 +31,10 @@ describe('Invoke API', () => {
 	});
 
 	it('should return response when valid SDK endpoint invoked with valid params', async () => {
-		const response = await api.post(endpoint, { endpoint: 'chain_getBlockByHeight', params: { height: 1 } });
+		const response = await api.post(endpoint, {
+			endpoint: 'chain_getBlockByHeight',
+			params: { height: 1 },
+		});
 		const [block] = (await api.get(`${baseUrlV3}/blocks?height=1`)).data;
 		expect(response).toMap(invokeResponseSchema);
 
@@ -45,7 +44,11 @@ describe('Invoke API', () => {
 	});
 
 	it('should return bad request when requested with valid SDK endpoint invoked with invalid params', async () => {
-		const response = await api.post(endpoint, { endpoint: 'chain_getBlockByHeight', params: { height: 'abc' } }, 400);
+		const response = await api.post(
+			endpoint,
+			{ endpoint: 'chain_getBlockByHeight', params: { height: 'abc' } },
+			400,
+		);
 		expect(response).toMap(badRequestSchema);
 	});
 

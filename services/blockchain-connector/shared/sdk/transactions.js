@@ -23,29 +23,28 @@ const {
 	dryRunTransaction,
 } = require('./endpoints');
 
-const getTransactionByIDFormatted = async (id) => {
+const getTransactionByIDFormatted = async id => {
 	const transaction = await getTransactionByID(id);
 	const formattedTransaction = formatTransaction(transaction);
 	return formattedTransaction;
 };
 
-const getTransactionsByIDsFormatted = async (ids) => {
+const getTransactionsByIDsFormatted = async ids => {
 	const transactions = await getTransactionsByIDs(ids);
-	const formattedTransactions = transactions.map((t) => formatTransaction(t));
+	const formattedTransactions = transactions.map(t => formatTransaction(t));
 	return formattedTransactions;
 };
 
 const getTransactionsFromPoolFormatted = async () => {
 	const transactions = await getTransactionsFromPool();
-	const formattedTransactions = transactions.map((t) => formatTransaction(t));
+	const formattedTransactions = transactions.map(t => formatTransaction(t));
 	return formattedTransactions;
 };
 
-const dryRunTransactionWrapper = async (params) => {
+const dryRunTransactionWrapper = async params => {
 	const { transaction, skipVerify, skipDecode, strict } = params;
-	const encodedTransaction = typeof transaction === 'object'
-		? encodeTransaction(transaction)
-		: transaction;
+	const encodedTransaction =
+		typeof transaction === 'object' ? encodeTransaction(transaction) : transaction;
 
 	const response = await dryRunTransaction({ transaction: encodedTransaction, skipVerify, strict });
 	response.events = response.events.map(event => formatEvent(event, skipDecode));

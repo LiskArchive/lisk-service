@@ -40,7 +40,9 @@ const formatValue = (value, type) => {
 
 const getKeyValueTable = () => {
 	const getKeyValueTableInstance = getTableInstance(
-		keyValueStoreSchema, kvStoreConfig.connEndpoint);
+		keyValueStoreSchema,
+		kvStoreConfig.connEndpoint,
+	);
 
 	const set = async (key, value, dbTrx) => {
 		const keyValueTable = await getKeyValueTableInstance;
@@ -51,7 +53,10 @@ const getKeyValueTable = () => {
 		}
 
 		const finalValue = value === undefined ? value : String(value);
-		await keyValueTable.upsert({ key: `${kvStoreConfig.prefix}_${key}`, value: finalValue, type }, dbTrx);
+		await keyValueTable.upsert(
+			{ key: `${kvStoreConfig.prefix}_${key}`, value: finalValue, type },
+			dbTrx,
+		);
 	};
 
 	const get = async (key, dbTrx) => {

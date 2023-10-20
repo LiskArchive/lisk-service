@@ -1,10 +1,9 @@
 version: '3.3'
 services:
-
   nats:
     image: nats:2.6-alpine
     ports:
-      - "4222:4222"
+      - '4222:4222'
     volumes:
       - ./docker/nats-server.conf:/etc/nats/nats-server.conf:ro
     command: nats-server --config /etc/nats/nats-server.conf
@@ -55,7 +54,7 @@ services:
       - MYSQL_PASSWORD=password
       - MYSQL_DATABASE=lisk
     healthcheck:
-      test: [ 'CMD', 'bash', '/healthcheck.sh' ]
+      test: ['CMD', 'bash', '/healthcheck.sh']
 
   mysql-read-replica:
     image: mysql:8
@@ -69,7 +68,7 @@ services:
       - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
     restart: always
     expose:
-      - "3306"
+      - '3306'
     networks:
       - services_network
     deploy:
@@ -79,20 +78,13 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=password
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-hlocalhost",
-          "-ppassword"
-        ]
+      test: ['CMD', 'mysqladmin', 'ping', '-hlocalhost', '-ppassword']
 
   mysql-read-replica-haproxy:
     image: nginx:latest
     restart: always
     expose:
-      - "3307"
+      - '3307'
     depends_on:
       mysql-read-replica:
         condition: service_healthy
@@ -101,7 +93,7 @@ services:
     networks:
       - services_network
     healthcheck:
-      test: [ "CMD", "service", "nginx", "status" ]
+      test: ['CMD', 'service', 'nginx', 'status']
 
   blockchain-app-registry:
     image: lisk/service_blockchain_app_registry
@@ -167,7 +159,7 @@ services:
       - JOB_SCHEDULE_REFRESH_PEERS=${JOB_SCHEDULE_REFRESH_PEERS}
     restart: always
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
 
   blockchain-indexer:
     image: lisk/service_blockchain_indexer

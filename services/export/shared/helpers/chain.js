@@ -31,12 +31,12 @@ const getCurrentChainID = async () => {
 	return chainID;
 };
 
-const resolveReceivingChainID = (tx, currentChainID) => tx
-	.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
-	? tx.params.receivingChainID
-	: currentChainID;
+const resolveReceivingChainID = (tx, currentChainID) =>
+	tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
+		? tx.params.receivingChainID
+		: currentChainID;
 
-const getUniqueChainIDs = async (txs) => {
+const getUniqueChainIDs = async txs => {
 	const chainIDs = new Set();
 	txs.forEach(tx => {
 		if (tx.sendingChainID) chainIDs.add(tx.sendingChainID);

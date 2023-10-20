@@ -99,8 +99,8 @@ describe('Unit tests for array utilities', () => {
 	});
 
 	describe('Test dropDuplicates method', () => {
-		const isEveryElementUnique = (array) => array
-			.every((e, i, a) => a.filter(n => n === e).length === 1);
+		const isEveryElementUnique = array =>
+			array.every((e, i, a) => a.filter(n => n === e).length === 1);
 
 		it('Array with duplicates', async () => {
 			const input1 = range(2, 8);

@@ -47,4 +47,3 @@ describe('Tokens API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 });
-

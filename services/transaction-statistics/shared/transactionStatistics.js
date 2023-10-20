@@ -17,7 +17,9 @@ const BluebirdPromise = require('bluebird');
 const moment = require('moment');
 
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 	Utils: { isEmptyObject },
 } = require('lisk-service-framework');
 
@@ -33,7 +35,7 @@ let numTrxTypes;
 
 const getTransactionStatisticsTable = () => getTableInstance(txStatsTableSchema, MYSQL_ENDPOINT);
 
-const getSelector = async (params) => {
+const getSelector = async params => {
 	if (!numTrxTypes) {
 		const networkStatus = await requestIndexer('network.status');
 		numTrxTypes = networkStatus.data.moduleCommands.length;
@@ -91,9 +93,10 @@ const getStatsTimeline = async params => {
 
 			if (tokenID !== DB_CONSTANT.UNAVAILABLE) {
 				const timelineRaw = Object.values(unorderedFinalResult)
-					.sort((a, b) => a.date.localeCompare(b.date)).reverse();
+					.sort((a, b) => a.date.localeCompare(b.date))
+					.reverse();
 
-				tokenStatsTimeline[tokenID] = timelineRaw.map((el) => ({
+				tokenStatsTimeline[tokenID] = timelineRaw.map(el => ({
 					...el,
 					timestamp: Date.parse(el.date) / 1000,
 					transactionCount: parseInt(el.transactionCount, 10),
@@ -114,12 +117,15 @@ const getDistributionByAmount = async params => {
 		params.tokenIDs,
 		async tokenID => {
 			const queryParams = await getSelector(params);
-			const result = (await transactionStatisticsTable.find(
-				{
-					...queryParams,
-					whereIn: { property: 'tokenID', values: [tokenID, DB_CONSTANT.UNAVAILABLE] },
-				},
-				['amount_range', 'count'])).filter(o => o.count > 0);
+			const result = (
+				await transactionStatisticsTable.find(
+					{
+						...queryParams,
+						whereIn: { property: 'tokenID', values: [tokenID, DB_CONSTANT.UNAVAILABLE] },
+					},
+					['amount_range', 'count'],
+				)
+			).filter(o => o.count > 0);
 
 			const unorderedFinalResult = {};
 			result.forEach(entry => {
@@ -147,7 +153,9 @@ const getDistributionByAmount = async params => {
 const getDistributionByType = async params => {
 	const transactionStatisticsTable = await getTransactionStatisticsTable();
 
-	const result = (await transactionStatisticsTable.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
+	const result = (
+		await transactionStatisticsTable.find(await getSelector(params), ['moduleCommand', 'count'])
+	).filter(o => o.count > 0);
 
 	const unorderedFinalResult = {};
 	result.forEach(entry => {
@@ -175,10 +183,7 @@ const getTransactionsStatistics = async params => {
 
 	const dateFormat = params.interval === 'day' ? DATE_FORMAT.DAY : DATE_FORMAT.MONTH;
 
-	const dateTo = moment()
-		.utc()
-		.endOf(params.interval)
-		.subtract(params.offset, params.interval);
+	const dateTo = moment().utc().endOf(params.interval).subtract(params.offset, params.interval);
 	const dateFrom = moment(dateTo)
 		.startOf(params.interval)
 		.subtract(params.limit - 1, params.interval);
@@ -200,7 +205,10 @@ const getTransactionsStatistics = async params => {
 
 	transactionsStatistics.data = { timeline, distributionByType, distributionByAmount };
 
-	const [{ date: minDate } = {}] = await transactionStatisticsTable.find({ sort: 'date:asc', limit: 1 }, 'date');
+	const [{ date: minDate } = {}] = await transactionStatisticsTable.find(
+		{ sort: 'date:asc', limit: 1 },
+		'date',
+	);
 	const total = minDate ? moment().diff(moment.unix(minDate), params.interval) : 0;
 
 	transactionsStatistics.meta = {

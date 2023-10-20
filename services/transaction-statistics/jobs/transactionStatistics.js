@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Signals,
-} = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
 const config = require('../config');
 
@@ -37,7 +34,9 @@ module.exports = [
 					logger.debug('Initiating transaction statistics computation.');
 					await transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 				} catch (err) {
-					logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
+					logger.warn(
+						`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`,
+					);
 				}
 				Signals.get('blockIndexReady').remove(indexReadyListener);
 			};
@@ -48,7 +47,9 @@ module.exports = [
 				logger.debug('Job scheduled to update transaction statistics.');
 				await transactionStatistics.updateTodayStats();
 			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
+				logger.warn(
+					`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`,
+				);
 			}
 		},
 	},
@@ -60,8 +61,9 @@ module.exports = [
 		controller: async () => {
 			try {
 				logger.debug('Verifying the transaction stats...');
-				await transactionStatistics
-					.validateTransactionStatistics(config.transactionStatistics.historyLengthDays);
+				await transactionStatistics.validateTransactionStatistics(
+					config.transactionStatistics.historyLengthDays,
+				);
 			} catch (err) {
 				logger.warn(`Verifying transaction statistics failed due to: ${err.message}`);
 			}

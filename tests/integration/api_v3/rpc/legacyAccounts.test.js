@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -30,11 +28,13 @@ const {
 } = require('../../../schemas/api_v3/legacyAccountsSchema.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getLegacyAccountInfo = async (params) => request(wsRpcUrl, 'get.legacy', params);
+const getLegacyAccountInfo = async params => request(wsRpcUrl, 'get.legacy', params);
 
 describe('get.legacy', () => {
 	it('should return legacy account info', async () => {
-		const response = await getLegacyAccountInfo({ publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc' });
+		const response = await getLegacyAccountInfo({
+			publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcc',
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(legacyAccountsSchema);
@@ -42,17 +42,23 @@ describe('get.legacy', () => {
 	});
 
 	it('should return bad request if requested with public key less than 64 chars', async () => {
-		const response = await getLegacyAccountInfo({ publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bc' });
+		const response = await getLegacyAccountInfo({
+			publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bc',
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('should return bad request if requested with public key more than 64 chars', async () => {
-		const response = await getLegacyAccountInfo({ publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcca' });
+		const response = await getLegacyAccountInfo({
+			publicKey: '1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcca',
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('should return bad request if requested with invalid public key of 64 characters', async () => {
-		const response = await getLegacyAccountInfo({ publicKey: '!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$' });
+		const response = await getLegacyAccountInfo({
+			publicKey: '!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$',
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 

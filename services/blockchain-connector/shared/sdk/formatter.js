@@ -15,7 +15,9 @@
  */
 const { inspect } = require('util');
 const { codec } = require('@liskhq/lisk-codec');
-const { utils: { hash } } = require('@liskhq/lisk-cryptography');
+const {
+	utils: { hash },
+} = require('@liskhq/lisk-cryptography');
 const { computeMinFee } = require('@liskhq/lisk-transactions');
 const { Logger } = require('lisk-service-framework');
 
@@ -59,8 +61,14 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
 
 	// Calculate transaction min fee
-	const transactionParams = codec.decodeJSON(txParamsSchema, Buffer.from(transaction.params, 'hex'));
-	const schemaCompliantTransactionParams = codec.decode(txParamsSchema, Buffer.from(transaction.params, 'hex'));
+	const transactionParams = codec.decodeJSON(
+		txParamsSchema,
+		Buffer.from(transaction.params, 'hex'),
+	);
+	const schemaCompliantTransactionParams = codec.decode(
+		txParamsSchema,
+		Buffer.from(transaction.params, 'hex'),
+	);
 	const nonEmptySignatureCount = transaction.signatures.filter(s => s).length;
 	const transactionMinFee = computeMinFee(
 		{ ...schemaCompliantTransaction, params: schemaCompliantTransactionParams },
@@ -74,13 +82,10 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 	);
 
 	// Calculate transaction size
-	const transactionBuffer = codec.encode(
-		txSchema,
-		{
-			...schemaCompliantTransaction,
-			fee: schemaCompliantTransaction.fee || transactionMinFee,
-		},
-	);
+	const transactionBuffer = codec.encode(txSchema, {
+		...schemaCompliantTransaction,
+		fee: schemaCompliantTransaction.fee || transactionMinFee,
+	});
 	const transactionSize = transactionBuffer.length;
 
 	const formattedTransaction = {
@@ -93,12 +98,12 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 	return parseToJSONCompatObj(formattedTransaction);
 };
 
-const formatBlock = (block) => {
+const formatBlock = block => {
 	const blockHeader = block.header;
 
 	const blockAssets = block.assets.map(asset => {
 		// Decode asset data in case of binary payload
-		if (typeof (asset.data) === 'string') {
+		if (typeof asset.data === 'string') {
 			const assetModule = asset.module;
 			const blockAssetDataSchema = getBlockAssetDataSchemaByModule(assetModule);
 			const formattedAssetData = blockAssetDataSchema
@@ -106,7 +111,9 @@ const formatBlock = (block) => {
 				: asset.data;
 
 			if (!blockAssetDataSchema) {
-				logger.error(`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`);
+				logger.error(
+					`Unable to decode asset data. Block asset schema missing for module ${assetModule}.`,
+				);
 			}
 
 			const formattedBlockAsset = {
@@ -152,10 +159,12 @@ const formatEvent = (event, skipDecode) => {
 		if (!eventDataSchema) {
 			// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)
 			console.error(`Event data schema missing for ${event.module}:${event.name}.`);
-			logger.error(`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`);
+			logger.error(
+				`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`,
+			);
 		} else {
 			// TODO: Remove after SDK fixes the address format (before tagging rc.0)
-			Object.keys(eventDataSchema.properties).forEach((prop) => {
+			Object.keys(eventDataSchema.properties).forEach(prop => {
 				if (prop.endsWith('Address')) {
 					eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
 				}
@@ -170,9 +179,10 @@ const formatEvent = (event, skipDecode) => {
 		console.info(inspect(event));
 	}
 
-	const topics = event.name === EVENT_NAME_COMMAND_EXECUTION_RESULT
-		? COMMAND_EXECUTION_RESULT_TOPICS
-		: eventTopicMappings[event.name];
+	const topics =
+		event.name === EVENT_NAME_COMMAND_EXECUTION_RESULT
+			? COMMAND_EXECUTION_RESULT_TOPICS
+			: eventTopicMappings[event.name];
 
 	// TODO: Remove after all transaction types are tested (before tagging rc.0)
 	if (!topics || topics.length === 0) {

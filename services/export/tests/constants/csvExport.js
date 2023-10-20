@@ -13,11 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const generateExcpectedCsv = (json, delimiter) => ''.concat(
-	Object.keys(json).map(k => typeof k === 'number' ? k : `"${k}"`).join(delimiter),
-	'\n',
-	Object.values(json).map(k => (typeof k === 'number' || !k) ? k : `"${k}"`).join(delimiter),
-);
+const generateExcpectedCsv = (json, delimiter) =>
+	''.concat(
+		Object.keys(json)
+			.map(k => (typeof k === 'number' ? k : `"${k}"`))
+			.join(delimiter),
+		'\n',
+		Object.values(json)
+			.map(k => (typeof k === 'number' || !k ? k : `"${k}"`))
+			.join(delimiter),
+	);
 
 const tokenTransferTransaction = {
 	id: 'd41e8fbb909fdf44ffccef6f5b0fb5edf853f0dcf699243a0a92403d2a4f1d1d',

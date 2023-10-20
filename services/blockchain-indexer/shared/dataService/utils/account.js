@@ -14,14 +14,8 @@
  *
  */
 const {
-	address: {
-		getLisk32AddressFromAddress,
-		getAddressFromLisk32Address,
-	},
-	legacyAddress: {
-		getLegacyAddressFromPublicKey,
-
-	},
+	address: { getLisk32AddressFromAddress, getAddressFromLisk32Address },
+	legacyAddress: { getLegacyAddressFromPublicKey },
 } = require('@liskhq/lisk-cryptography');
 
 const {
@@ -52,23 +46,29 @@ const getLegacyFormatAddressFromPublicKey = publicKey => {
 	return legacyAddress;
 };
 
-const getLisk32AddressFromHexAddress = address => getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
+const getLisk32AddressFromHexAddress = address =>
+	getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 
-const getLisk32Address = address => address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
+const getLisk32Address = address =>
+	address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
 
-const getHexAddress = address => address.startsWith('lsk')
-	? getAddressFromLisk32Address(address).toString('hex')
-	: address;
+const getHexAddress = address =>
+	address.startsWith('lsk') ? getAddressFromLisk32Address(address).toString('hex') : address;
 
 const isStringType = value => typeof value === 'string';
 
-const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
+const parseAddress = address => (isStringType(address) ? address.toUpperCase() : '');
 
-const validateLisk32Address = address => (typeof address === 'string' && regex.ADDRESS_LISK32.test(address));
+const validateLisk32Address = address =>
+	typeof address === 'string' && regex.ADDRESS_LISK32.test(address);
 
 const getCachedAccountBy = async (key, value) => {
 	const accountsTable = await getAccountsTable();
-	const [result] = await accountsTable.find({ [key]: value, limit: 1 }, ['address', 'name', 'publicKey']);
+	const [result] = await accountsTable.find({ [key]: value, limit: 1 }, [
+		'address',
+		'name',
+		'publicKey',
+	]);
 	if (!result) return null;
 	const { address, name, publicKey } = result;
 	const account = { address, name, publicKey };

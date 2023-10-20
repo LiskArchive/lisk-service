@@ -16,9 +16,7 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	posConstantsSchema,
@@ -35,8 +33,9 @@ describe('PoS Constants API', () => {
 		expect(response.data).toMap(posConstantsSchema);
 		expect(response.meta).toMap(posConstantsMetaSchema);
 
-		expect(response.data.roundLength)
-			.toEqual(response.data.numberActiveValidators + response.data.numberStandbyValidators);
+		expect(response.data.roundLength).toEqual(
+			response.data.numberActiveValidators + response.data.numberStandbyValidators,
+		);
 	});
 
 	it('should return bad request for unsupported param', async () => {

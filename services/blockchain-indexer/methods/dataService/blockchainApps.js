@@ -14,10 +14,7 @@
  *
  */
 
-const {
-	getBlockchainAppsStatistics,
-	getBlockchainApps,
-} = require('./controllers/blockchainApps');
+const { getBlockchainAppsStatistics, getBlockchainApps } = require('./controllers/blockchainApps');
 
 module.exports = [
 	{

@@ -22,14 +22,19 @@ const {
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { goodResponseSchema } = require('../../../schemas/api_v3/posClaimableRewards.schema');
 const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/posClaimableRewards.schema');
-const { invalidAddresses, invalidNames, invalidPublicKeys, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
+	invalidAddresses,
+	invalidNames,
+	invalidPublicKeys,
+	invalidLimits,
+	invalidOffsets,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getPosClaimableRewards = async (params) => request(wsRpcUrl, 'get.pos.rewards.claimable', params);
+const getPosClaimableRewards = async params =>
+	request(wsRpcUrl, 'get.pos.rewards.claimable', params);
 const getGenerators = async () => request(wsRpcUrl, 'get.generators');
 
 describe('Claimable rewards API', () => {
@@ -110,7 +115,9 @@ describe('Claimable rewards API', () => {
 
 	it('should return list of claimable rewards with known validator address, offset=1 and limit=5', async () => {
 		const response = await getPosClaimableRewards({
-			address: refGenerator.address, offset: 1, limit: 5,
+			address: refGenerator.address,
+			offset: 1,
+			limit: 5,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -134,7 +141,8 @@ describe('Claimable rewards API', () => {
 	it('should return list of of claimable rewards with known validator publicKey and offset=1', async () => {
 		if (refGenerator.publicKey) {
 			const response = await getPosClaimableRewards({
-				publicKey: refGenerator.publicKey, offset: 1,
+				publicKey: refGenerator.publicKey,
+				offset: 1,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -147,7 +155,8 @@ describe('Claimable rewards API', () => {
 	it('should return list of claimable rewards with known validator publicKey and limit=5', async () => {
 		if (refGenerator.publicKey) {
 			const response = await getPosClaimableRewards({
-				publicKey: refGenerator.publicKey, limit: 5,
+				publicKey: refGenerator.publicKey,
+				limit: 5,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -160,7 +169,9 @@ describe('Claimable rewards API', () => {
 	it('should return list of claimable rewards with known validator publicKey, offset=1 and limit=5', async () => {
 		if (refGenerator.publicKey) {
 			const response = await getPosClaimableRewards({
-				publicKey: refGenerator.publicKey, offset: 1, limit: 5,
+				publicKey: refGenerator.publicKey,
+				offset: 1,
+				limit: 5,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

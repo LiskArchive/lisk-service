@@ -1,102 +1,90 @@
 {
-    "validatorWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "type": "object",
-                "required": [
-                    "generatorKey",
-                    "blsKey"
-                ],
-                "description": "Validator information for a given address.",
-                "properties": {
-                    "generatorKey": {
-                        "type": "string",
-                        "format": "id",
-                        "example": "59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf",
-                        "description": "Generator key"
-                    },
-                    "blsKey": {
-                        "type": "string",
-                        "format": "id",
-                        "example": "8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32",
-                        "description": "BLS key."
-                    },
-                    "proofOfPossession": {
-                        "type": "string",
-                        "example": "abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996",
-                        "description": "The Proof of Possession corresponding the BLS key."
-                    }
-                }
-            },
-            "meta": {
-                "type": "object",
-                "required": [
-                    "address",
-                    "publicKey"
-                ],
-                "properties": {
-                    "address": {
-                        "type": "string",
-                        "format": "address",
-                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
-                    },
-                    "publicKey": {
-                        "type": "string",
-                        "format": "publicKey",
-                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd"
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "genesis_84",
-                        "description": "Validator name"
-                    }
-                }
-            }
-        }
-    },
-    "blsKeyValidationWithEnvelope": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "type": "object",
-                "description": "Validity of the supplied BLS key and Proof of Possession.",
-                "properties": {
-                    "isValid": {
-                        "type": "boolean",
-                        "example": "true",
-                        "description": "Returns a boolean representing the validity of the supplied BLS key and Proof of Possession."
-                    }
-                }
-            },
-            "meta": {
-                "type": "object",
-                "properties": {}
-            }
-        }
-    },
-    "blsKeyValidationParamEnvelope": {
-        "type": "object",
-        "properties": {
-            "blsKey": {
-                "type": "string",
-                "example": "b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81",
-                "description": "The BLS key."
-            },
-            "proofOfPossession": {
-                "type": "string",
-                "example": "88bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26",
-                "description": "The Proof of Possession corresponding to the specified BLS key."
-            }
-        }
-    }
+	"validatorWithEnvelope": {
+		"type": "object",
+		"required": ["data", "meta"],
+		"properties": {
+			"data": {
+				"type": "object",
+				"required": ["generatorKey", "blsKey"],
+				"description": "Validator information for a given address.",
+				"properties": {
+					"generatorKey": {
+						"type": "string",
+						"format": "id",
+						"example": "59274923432b74133be4def9c9f8e544bf032184a2153b0ca34b1dd5669f5fdf",
+						"description": "Generator key"
+					},
+					"blsKey": {
+						"type": "string",
+						"format": "id",
+						"example": "8aeba1cc038ad2cf1ba6ae1479f293f1e3c074369c3afe623e6921ac4cd6c959647ca85fe197228c38dda1df18812d32",
+						"description": "BLS key."
+					},
+					"proofOfPossession": {
+						"type": "string",
+						"example": "abb6c31f5885022765301fbfcc6c34686ef9a9b0eec34cb487433558071ab57fd28852752f81dda00447e69d61f63f48174c10a0a0a2d34d230b9a75d903a0befdef82708e5f869ff75090c1b5ce85565e8a17e5e06c4cae305c5efb1f37d996",
+						"description": "The Proof of Possession corresponding the BLS key."
+					}
+				}
+			},
+			"meta": {
+				"type": "object",
+				"required": ["address", "publicKey"],
+				"properties": {
+					"address": {
+						"type": "string",
+						"format": "address",
+						"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+						"description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`."
+					},
+					"publicKey": {
+						"type": "string",
+						"format": "publicKey",
+						"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd"
+					},
+					"name": {
+						"type": "string",
+						"example": "genesis_84",
+						"description": "Validator name"
+					}
+				}
+			}
+		}
+	},
+	"blsKeyValidationWithEnvelope": {
+		"type": "object",
+		"required": ["data", "meta"],
+		"properties": {
+			"data": {
+				"type": "object",
+				"description": "Validity of the supplied BLS key and Proof of Possession.",
+				"properties": {
+					"isValid": {
+						"type": "boolean",
+						"example": "true",
+						"description": "Returns a boolean representing the validity of the supplied BLS key and Proof of Possession."
+					}
+				}
+			},
+			"meta": {
+				"type": "object",
+				"properties": {}
+			}
+		}
+	},
+	"blsKeyValidationParamEnvelope": {
+		"type": "object",
+		"properties": {
+			"blsKey": {
+				"type": "string",
+				"example": "b301803f8b5ac4a1133581fc676dfedc60d891dd5fa99028805e5ea5b08d3491af75d0707adab3b70c6a6a580217bf81",
+				"description": "The BLS key."
+			},
+			"proofOfPossession": {
+				"type": "string",
+				"example": "88bb31b27eae23038e14f9d9d1b628a39f5881b5278c3c6f0249f81ba0deb1f68aa5f8847854d6554051aa810fdf1cdb02df4af7a5647b1aa4afb60ec6d446ee17af24a8a50876ffdaf9bf475038ec5f8ebeda1c1c6a3220293e23b13a9a5d26",
+				"description": "The Proof of Possession corresponding to the specified BLS key."
+			}
+		}
+	}
 }

@@ -23,18 +23,28 @@ module.exports = {
 	rpcMethod: 'get.reward.default',
 	tags: ['(Dynamic) Reward'],
 	params: {
-		height: { optional: false, type: 'number', min: 0, integer: true, altSwaggerKey: 'blockHeightRequired' },
+		height: {
+			optional: false,
+			type: 'number',
+			min: 0,
+			integer: true,
+			altSwaggerKey: 'blockHeightRequired',
+		},
 	},
 	get schema() {
 		const rewardDefaultSchema = {};
 		rewardDefaultSchema[this.swaggerApiPath] = { get: {} };
 		rewardDefaultSchema[this.swaggerApiPath].get.tags = this.tags;
-		rewardDefaultSchema[this.swaggerApiPath].get.summary = 'Requests default block generation reward at a specified height.';
+		rewardDefaultSchema[this.swaggerApiPath].get.summary =
+			'Requests default block generation reward at a specified height.';
 		rewardDefaultSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns default block generation reward at the specified height.',
 		});
-		rewardDefaultSchema[this.swaggerApiPath].get.parameters = transformParams('reward', this.params);
+		rewardDefaultSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'reward',
+			this.params,
+		);
 		rewardDefaultSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns the default block generation reward at the specified height.',

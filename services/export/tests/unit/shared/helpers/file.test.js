@@ -27,9 +27,7 @@ const {
 	isFilePathInDirectory,
 } = require('../../../../shared/helpers/file');
 
-const {
-	dynamicFieldsCustomDelimiter,
-} = require('../../../constants/csv');
+const { dynamicFieldsCustomDelimiter } = require('../../../constants/csv');
 
 describe('Test filesystem interface', () => {
 	let dirPath;
@@ -58,7 +56,7 @@ describe('Test filesystem interface', () => {
 		await write(filePath, testData);
 
 		// Verify if data is written into the file
-		expect((fs.statSync(filePath)).size).toBeGreaterThan(0);
+		expect(fs.statSync(filePath).size).toBeGreaterThan(0);
 	});
 
 	it('should return the data from a file when calling read() method', async () => {

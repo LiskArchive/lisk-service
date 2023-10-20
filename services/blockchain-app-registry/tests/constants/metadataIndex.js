@@ -62,16 +62,12 @@ const tokenMetaObj = {
 				{
 					denom: 'beddows-test',
 					decimals: 0,
-					aliases: [
-						'Beddows-test',
-					],
+					aliases: ['Beddows-test'],
 				},
 				{
 					denom: 'lsk-test',
 					decimals: 8,
-					aliases: [
-						'Lisk-test',
-					],
+					aliases: ['Lisk-test'],
 				},
 			],
 			baseDenom: 'beddows-test',

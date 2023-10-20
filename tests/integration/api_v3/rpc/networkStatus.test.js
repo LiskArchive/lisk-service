@@ -21,10 +21,7 @@ const {
 	invalidParamsSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	networkStatusSchema,
-	metaSchema,
-} = require('../../../schemas/api_v3/networkStatus.schema');
+const { networkStatusSchema, metaSchema } = require('../../../schemas/api_v3/networkStatus.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);

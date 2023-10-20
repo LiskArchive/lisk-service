@@ -21,13 +21,11 @@ const {
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	rewardInflationResponseSchema,
-} = require('../../../schemas/api_v3/rewardInflation.schema');
+const { rewardInflationResponseSchema } = require('../../../schemas/api_v3/rewardInflation.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getRewardInflation = async (params) => request(wsRpcUrl, 'get.reward.annual-inflation', params);
+const getRewardInflation = async params => request(wsRpcUrl, 'get.reward.annual-inflation', params);
 
 let latestBlockHeight;
 

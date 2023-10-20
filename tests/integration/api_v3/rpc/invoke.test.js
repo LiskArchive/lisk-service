@@ -22,13 +22,11 @@ const {
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	invokeResponseSchema,
-} = require('../../../schemas/api_v3/invoke.schema');
+const { invokeResponseSchema } = require('../../../schemas/api_v3/invoke.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
-const getBlocks = async (params) => request(wsRpcUrl, 'get.blocks', params);
+const invoke = async params => request(wsRpcUrl, 'post.invoke', params);
+const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 
 describe('post.invoke', () => {
 	it('should return response when valid SDK endpoint invoked', async () => {
@@ -51,7 +49,10 @@ describe('post.invoke', () => {
 	});
 
 	it('should return invalid request when requested with valid SDK endpoint invoked with invalid params', async () => {
-		const response = await invoke({ endpoint: 'chain_getBlockByHeight', params: { height: 'abc' } });
+		const response = await invoke({
+			endpoint: 'chain_getBlockByHeight',
+			params: { height: 'abc' },
+		});
 		expect(response).toMap(invalidRequestSchema);
 	});
 

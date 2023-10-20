@@ -31,7 +31,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestPeers = async params => request(wsRpcUrl, 'get.network.peers', params);
-const invoke = async (params) => request(wsRpcUrl, 'post.invoke', params);
+const invoke = async params => request(wsRpcUrl, 'post.invoke', params);
 
 describe('Network peers API', () => {
 	describe('get.peers', () => {
@@ -288,10 +288,12 @@ describe('Network peers API', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevPeer = result.data[i - 1];
 					const currPeer = result.data[i];
-					expect(semver.gte(
-						semver.coerce(prevPeer.networkVersion),
-						semver.coerce(currPeer.networkVersion),
-					)).toBeTruthy();
+					expect(
+						semver.gte(
+							semver.coerce(prevPeer.networkVersion),
+							semver.coerce(currPeer.networkVersion),
+						),
+					).toBeTruthy();
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
@@ -309,10 +311,12 @@ describe('Network peers API', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevPeer = result.data[i - 1];
 					const currPeer = result.data[i];
-					expect(semver.lte(
-						semver.coerce(prevPeer.networkVersion),
-						semver.coerce(currPeer.networkVersion),
-					)).toBeTruthy();
+					expect(
+						semver.lte(
+							semver.coerce(prevPeer.networkVersion),
+							semver.coerce(currPeer.networkVersion),
+						),
+					).toBeTruthy();
 				}
 			}
 			expect(result.meta).toMap(metaSchema);

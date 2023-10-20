@@ -21,13 +21,11 @@ const {
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	rewardDefaultResponseSchema,
-} = require('../../../schemas/api_v3/rewardDefault.schema');
+const { rewardDefaultResponseSchema } = require('../../../schemas/api_v3/rewardDefault.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getRewardDefault = async (params) => request(wsRpcUrl, 'get.reward.default', params);
+const getRewardDefault = async params => request(wsRpcUrl, 'get.reward.default', params);
 
 describe('get.reward.default', () => {
 	it('should return default reward when requested with block height=1', async () => {

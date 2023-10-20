@@ -1,12 +1,7 @@
 {
 	"BlockchainApp": {
 		"type": "object",
-		"required": [
-			"chainName",
-			"chainID",
-			"state",
-			"address"
-		],
+		"required": ["chainName", "chainID", "state", "address"],
 		"properties": {
 			"chainName": {
 				"type": "string",
@@ -49,10 +44,7 @@
 			},
 			"escrow": {
 				"type": "array",
-				"required": [
-					"tokenID",
-					"amount"
-				],
+				"required": ["tokenID", "amount"],
 				"items": {
 					"type": "object",
 					"properties": {
@@ -73,10 +65,7 @@
 	},
 	"BlockchainAppsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of blockchain applications",
@@ -92,10 +81,7 @@
 	},
 	"blockchainAppsStatsEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "Blockchain applications statistics",
@@ -137,11 +123,7 @@
 	},
 	"BlockchainAppMetaList": {
 		"type": "object",
-		"required": [
-			"chainName",
-			"chainID",
-			"networkType"
-		],
+		"required": ["chainName", "chainID", "networkType"],
 		"properties": {
 			"chainName": {
 				"type": "string",
@@ -162,10 +144,7 @@
 	},
 	"BlockchainAppsMetaListWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of blockchain applications for which off-chain data is available",
@@ -246,10 +225,7 @@
 				"type": "array",
 				"items": {
 					"type": "object",
-					"required": [
-						"http",
-						"ws"
-					],
+					"required": ["http", "ws"],
 					"properties": {
 						"http": {
 							"type": "string",
@@ -271,10 +247,7 @@
 			},
 			"logo": {
 				"type": "object",
-				"required": [
-					"png",
-					"svg"
-				],
+				"required": ["png", "svg"],
 				"properties": {
 					"png": {
 						"type": "string",
@@ -300,10 +273,7 @@
 			},
 			"explorers": {
 				"type": "array",
-				"required": [
-					"url",
-					"txnPage"
-				],
+				"required": ["url", "txnPage"],
 				"items": {
 					"type": "object",
 					"properties": {
@@ -324,10 +294,7 @@
 				"type": "array",
 				"items": {
 					"type": "object",
-					"required": [
-						"url",
-						"maintainer"
-					],
+					"required": ["url", "maintainer"],
 					"properties": {
 						"url": {
 							"type": "string",
@@ -351,10 +318,7 @@
 	},
 	"BlockchainAppsMetadataWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of blockchain applications with off-chain metadata",
@@ -469,10 +433,7 @@
 	},
 	"BlockchainAppsTokenMetadataWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of blockchain applications off-chain metadata for tokens",

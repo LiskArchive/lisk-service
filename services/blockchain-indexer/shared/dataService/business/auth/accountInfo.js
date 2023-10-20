@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getIndexedAccountInfo,
-} = require('../../utils/account');
+const { getIndexedAccountInfo } = require('../../utils/account');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
 const { requestConnector } = require('../../../utils/request');
 
@@ -28,7 +26,10 @@ const getAuthAccountInfo = async params => {
 	const response = await requestConnector('getAuthAccount', { address: params.address });
 	authInfo.data = parseToJSONCompatObj(response);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);
+	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, [
+		'name',
+		'publicKey',
+	]);
 	authInfo.meta = {
 		address: params.address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,

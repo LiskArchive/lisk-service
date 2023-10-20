@@ -24,13 +24,11 @@ const isGenesisBlockIndexed = async () => {
 	return isGenesisBlockIndexedFlag;
 };
 
-const getMissingBlocks = async (from, to) => requestIndexer(
-	'getMissingBlocks', { from, to },
-);
+const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', { from, to });
 
 const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
 
-const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
+const setIndexVerifiedHeight = async height => requestIndexer('setIndexVerifiedHeight', { height });
 
 const getLiveIndexingJobCount = async () => requestIndexer('getLiveIndexingJobCount');
 

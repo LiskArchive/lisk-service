@@ -20,7 +20,7 @@ const transformParams = (type, params) => {
 	const data = [];
 	const paramsKeys = Object.keys(params);
 
-	paramsKeys.forEach((paramKey) => {
+	paramsKeys.forEach(paramKey => {
 		let value = {};
 
 		if (params[paramKey].altSwaggerKey) {
@@ -41,7 +41,8 @@ const transformParams = (type, params) => {
 			value = {
 				name: 'order',
 				in: 'query',
-				description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
+				description:
+					'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
 				required: false,
 				type: params[paramKey].type,
 				enum: params[paramKey].enum,
@@ -98,7 +99,12 @@ const getSwaggerDescription = params => `${params.description}\n RPC => ${params
 
 const isValidNonEmptyResponse = res => {
 	if (Array.isArray(res.data) && res.data.length) return true;
-	if ((res.data && res.data.constructor.name === 'Object') && Object.getOwnPropertyNames(res.data).length) return true;
+	if (
+		res.data &&
+		res.data.constructor.name === 'Object' &&
+		Object.getOwnPropertyNames(res.data).length
+	)
+		return true;
 	return false;
 };
 

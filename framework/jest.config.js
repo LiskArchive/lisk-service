@@ -2,12 +2,12 @@
 // https://jestjs.io/docs/en/configuration.html
 
 module.exports = {
-  // Automatically clear mock calls and instances between every test
-  clearMocks: false,
+	// Automatically clear mock calls and instances between every test
+	clearMocks: false,
 
-  // The directory where Jest should output its coverage files
-  coverageDirectory: 'coverage',
+	// The directory where Jest should output its coverage files
+	coverageDirectory: 'coverage',
 
-  // The test environment that will be used for testing
-  testEnvironment: 'node',
+	// The test environment that will be used for testing
+	testEnvironment: 'node',
 };

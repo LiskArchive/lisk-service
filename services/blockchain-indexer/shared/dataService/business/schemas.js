@@ -72,7 +72,9 @@ const getAllSchemas = async () => {
 		});
 
 		// Assign generic schemas
-		Object.entries(schemas.schemas).forEach(([entity, schema]) => allSchemas[entity] = { schema });
+		Object.entries(schemas.schemas).forEach(
+			([entity, schema]) => (allSchemas[entity] = { schema }),
+		);
 
 		// Assign messages schemas
 		Object.assign(allSchemas, { messages: schemas.messageSchemas });

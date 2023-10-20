@@ -14,4 +14,4 @@
  *
  */
 // eslint-disable-next-line no-console
-console.log('Use \'npm test\' to run tests');
+console.log("Use 'npm test' to run tests");

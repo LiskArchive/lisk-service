@@ -14,7 +14,12 @@
  *
  */
 import moment from 'moment';
-import { invalidAddresses, invalidLimits, invalidBlockIDs, invalidOffsets } from '../constants/invalidInputs';
+import {
+	invalidAddresses,
+	invalidLimits,
+	invalidBlockIDs,
+	invalidOffsets,
+} from '../constants/invalidInputs';
 import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
@@ -31,9 +36,7 @@ const {
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	blockSchema,
-} = require('../../../schemas/api_v3/block.schema');
+const { blockSchema } = require('../../../schemas/api_v3/block.schema');
 
 describe('Blocks API', () => {
 	let refBlock;
@@ -100,7 +103,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
-			response.data.forEach((block) => {
+			response.data.forEach(block => {
 				expect(block).toMap(blockSchema, { id: refBlock.id });
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -113,7 +116,7 @@ describe('Blocks API', () => {
 			expect(response.data.length).toEqual(1);
 			expect(response.data[0].height).toEqual(refBlock.height);
 			expect(response.data[0]).toEqual(refBlock);
-			response.data.forEach((block) => {
+			response.data.forEach(block => {
 				expect(block).toMap(blockSchema, { height: refBlock.height });
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -140,7 +143,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(1);
-			response.data.forEach((block) => {
+			response.data.forEach(block => {
 				expect(block).toMap(blockSchema, { timestamp: refBlock.timestamp });
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -203,7 +206,9 @@ describe('Blocks API', () => {
 
 	describe('Retrieve blocks list within timestamps', () => {
 		it('should return blocks within set timestamps', async () => {
-			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const from = moment(refBlock.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const toTimestamp = refBlock.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
@@ -222,7 +227,9 @@ describe('Blocks API', () => {
 		});
 
 		it('should return blocks with half bounded range: fromTimestamp', async () => {
-			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const from = moment(refBlock.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -387,7 +394,9 @@ describe('Blocks API', () => {
 
 	describe('Fetch blocks based on multiple request params', () => {
 		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=timestamp:desc&limit=100`);
+			const response = await api.get(
+				`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=timestamp:desc&limit=100`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -407,7 +416,9 @@ describe('Blocks API', () => {
 		});
 
 		it('should return blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=height:asc&limit=5`);
+			const response = await api.get(
+				`${endpoint}?generatorAddress=${refBlock.generator.address}&sort=height:asc&limit=5`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -435,7 +446,9 @@ describe('Blocks API', () => {
 		});
 
 		it('should return 200 OK when queried with invalid combination: blockID and wrong timestamp', async () => {
-			const timestamp = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const timestamp = moment(refBlock.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&timestamp=${timestamp}`);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBe(0);

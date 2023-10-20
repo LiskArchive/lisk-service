@@ -15,21 +15,17 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/indexStatus.schema');
+const { goodResponseSchema } = require('../../../schemas/api_v3/indexStatus.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getIndexStatus = async (params) => request(wsRpcUrl, 'get.index.status', params);
+const getIndexStatus = async params => request(wsRpcUrl, 'get.index.status', params);
 
 describe('get.index.status', () => {
 	it('should return index status', async () => {

@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getGenerators,
-} = require('./controllers/generators');
+const { getGenerators } = require('./controllers/generators');
 
 module.exports = [
 	{

@@ -27,9 +27,10 @@ const requestAllStandard = async (fn, params, limit) => {
 	});
 	const { data } = firstRequest;
 	if (data.error && data.error.includes('Not found')) return [];
-	const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
-		? defaultMaxAmount
-		: firstRequest.meta.total;
+	const maxAmount =
+		!firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
+			? defaultMaxAmount
+			: firstRequest.meta.total;
 
 	if (maxAmount > oneRequestLimit) {
 		for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
@@ -52,14 +53,13 @@ const requestAllStandard = async (fn, params, limit) => {
 const requestAllCustom = async (fn, method, params, limit) => {
 	const maxAmount = limit || Number.MAX_SAFE_INTEGER;
 	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(method,
-		{
-			...params,
-			...{
-				limit: oneRequestLimit,
-				offset: 0,
-			},
-		});
+	const firstRequest = await fn(method, {
+		...params,
+		...{
+			limit: oneRequestLimit,
+			offset: 0,
+		},
+	});
 	const totalResponse = firstRequest;
 	if (totalResponse && !totalResponse.error) {
 		if (maxAmount > oneRequestLimit) {
@@ -85,16 +85,15 @@ const requestAllCustom = async (fn, method, params, limit) => {
 					// When response is an object, we should traverse the properties and merge the values.
 					// We can safely assume that the properties would be of type array, so concatenation will
 					// result in the whole response. If property is not an array, the latest value is kept.
-					Object.entries(totalResponse).forEach(
-						([dataKey, dataVal]) => {
-							if (Array.isArray(dataVal)) {
-								totalResponse[dataKey].push(...result[dataKey]);
-							} else if (Utils.isObject(dataVal)) {
-								totalResponse[dataKey] = { ...totalResponse[dataKey], ...result[dataKey] };
-							} else {
-								totalResponse[dataKey] = result[dataKey];
-							}
-						});
+					Object.entries(totalResponse).forEach(([dataKey, dataVal]) => {
+						if (Array.isArray(dataVal)) {
+							totalResponse[dataKey].push(...result[dataKey]);
+						} else if (Utils.isObject(dataVal)) {
+							totalResponse[dataKey] = { ...totalResponse[dataKey], ...result[dataKey] };
+						} else {
+							totalResponse[dataKey] = result[dataKey];
+						}
+					});
 				}
 			}
 		}

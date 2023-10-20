@@ -18,7 +18,9 @@
 const { resolve } = require('path');
 const { defaultFeeEstimates } = require('../../../../../shared/dataService/business/feeEstimates');
 
-const mockFeeEstimatesFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/feeEstimates`);
+const mockFeeEstimatesFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/business/feeEstimates`,
+);
 
 const { requestFeeEstimator } = require('../../../../../shared/utils/request');
 const { mockTxFeeEstimate } = require('../../constants/transactionEstimateFees');
@@ -85,7 +87,9 @@ describe('Test getFeeEstimatesFromFeeEstimator', () => {
 
 	it('should return default fee estimates when underlying api call throws error', async () => {
 		jest.mock('../../../../../shared/utils/request', () => ({
-			requestFeeEstimator: () => { throw new Error('Custom Error'); },
+			requestFeeEstimator: () => {
+				throw new Error('Custom Error');
+			},
 		}));
 
 		const { getFeeEstimatesFromFeeEstimator } = require(mockFeeEstimatesFilePath);

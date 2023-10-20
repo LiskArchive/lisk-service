@@ -14,11 +14,11 @@
  *
  */
 const config = require('../../../config');
-const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../../../../services/blockchain-app-registry/config');
-
 const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+	CHAIN_ID_PREFIX_NETWORK_MAP,
+} = require('../../../../services/blockchain-app-registry/config');
+
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -30,10 +30,17 @@ const {
 	blockchainAppMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetadataSchema.schema');
 
-const { invalidChainIDCSV, invalidNamesCSV, invalidOffsets, invalidLimits, invalidPartialSearches } = require('../constants/invalidInputs');
+const {
+	invalidChainIDCSV,
+	invalidNamesCSV,
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getBlockchainAppsMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta', params);
+const getBlockchainAppsMetadata = async params =>
+	request(wsRpcUrl, 'get.blockchain.apps.meta', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
 let curChainID;
@@ -80,7 +87,11 @@ describe('get.blockchain.apps.meta', () => {
 	});
 
 	it('should retrieve blockchain applications off-chain metadata with limit=5, offset=1, and sort=chainName:desc', async () => {
-		const response = await getBlockchainAppsMetadata({ limit: 5, offset: 1, sort: 'chainName:desc' });
+		const response = await getBlockchainAppsMetadata({
+			limit: 5,
+			offset: 1,
+			sort: 'chainName:desc',
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -221,8 +232,9 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(blockchainAppMetadata => expect(blockchainAppMetadata)
-			.toMap(blockchainAppMetadataSchema, { isDefault: true }));
+		result.data.forEach(blockchainAppMetadata =>
+			expect(blockchainAppMetadata).toMap(blockchainAppMetadataSchema, { isDefault: true }),
+		);
 		expect(result.meta).toMap(metaSchema);
 	});
 
@@ -233,8 +245,9 @@ describe('get.blockchain.apps.meta', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(blockchainAppMetadata => expect(blockchainAppMetadata)
-			.toMap(blockchainAppMetadataSchema, { isDefault: false }));
+		result.data.forEach(blockchainAppMetadata =>
+			expect(blockchainAppMetadata).toMap(blockchainAppMetadataSchema, { isDefault: false }),
+		);
 		expect(result.meta).toMap(metaSchema);
 	});
 

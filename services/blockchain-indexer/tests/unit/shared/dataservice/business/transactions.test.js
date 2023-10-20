@@ -40,11 +40,13 @@ describe('Test validateParams method', () => {
 		const result = await validateParams(params);
 
 		const expectedResult = {
-			propBetweens: [{
-				property: 'height',
-				from: 10,
-				to: 1000,
-			}],
+			propBetweens: [
+				{
+					property: 'height',
+					from: 10,
+					to: 1000,
+				},
+			],
 		};
 		expect(result).toEqual(expectedResult);
 	});

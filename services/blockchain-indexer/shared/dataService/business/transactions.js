@@ -41,12 +41,15 @@ const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYS
 
 const getTransactionIDsByBlockID = async blockID => {
 	const transactionsTable = await getTransactionsTable();
-	const transactions = await transactionsTable.find({
-		whereIn: {
-			property: 'blockId',
-			values: [blockID],
+	const transactions = await transactionsTable.find(
+		{
+			whereIn: {
+				property: 'blockId',
+				values: [blockID],
+			},
 		},
-	}, ['id']);
+		['id'],
+	);
 	const transactionsIds = transactions.map(t => t.id);
 	return transactionsIds;
 };
@@ -79,14 +82,19 @@ const validateParams = async params => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	if (params.nonce && !(params.senderAddress)) {
-		throw new InvalidParamsException('Nonce based retrieval is only possible along with senderAddress');
+	if (params.nonce && !params.senderAddress) {
+		throw new InvalidParamsException(
+			'Nonce based retrieval is only possible along with senderAddress',
+		);
 	}
 
 	if (params.executionStatus) {
 		const { executionStatus, ...remParams } = params;
 		params = remParams;
-		const executionStatuses = executionStatus.split(',').map(e => e.trim()).filter(e => e !== 'any');
+		const executionStatuses = executionStatus
+			.split(',')
+			.map(e => e.trim())
+			.filter(e => e !== 'any');
 		params.whereIn = { property: 'executionStatus', values: executionStatuses };
 	}
 
@@ -111,10 +119,15 @@ const getTransactions = async params => {
 	params = await validateParams(params);
 
 	const total = await transactionsTable.count(params);
-	const resultSet = await transactionsTable.find(
-		{ ...params, limit: params.limit || total },
-		['id', 'timestamp', 'height', 'blockID', 'executionStatus', 'index', 'minFee'],
-	);
+	const resultSet = await transactionsTable.find({ ...params, limit: params.limit || total }, [
+		'id',
+		'timestamp',
+		'height',
+		'blockID',
+		'executionStatus',
+		'index',
+		'minFee',
+	]);
 	params.ids = resultSet.map(row => row.id);
 
 	if (params.ids.length) {
@@ -136,10 +149,9 @@ const getTransactions = async params => {
 		transactions.data,
 		async transaction => {
 			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
-			const senderAccount = await getIndexedAccountInfo(
-				{ address: senderAddress, limit: 1 },
-				['name'],
-			);
+			const senderAccount = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, [
+				'name',
+			]);
 
 			transaction.sender = {
 				address: senderAddress,
@@ -190,13 +202,12 @@ const getTransactionsByBlockID = async blockID => {
 	const block = await getBlockByID(blockID);
 	const transactions = await BluebirdPromise.map(
 		block.transactions,
-		async (transaction) => {
+		async transaction => {
 			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 
-			const senderAccount = await getIndexedAccountInfo(
-				{ address: senderAddress, limit: 1 },
-				['name'],
-			);
+			const senderAccount = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, [
+				'name',
+			]);
 
 			transaction.sender = {
 				address: senderAddress,
@@ -226,10 +237,9 @@ const getTransactionsByBlockID = async blockID => {
 			};
 
 			const transactionsTable = await getTransactionsTable();
-			const [indexedTxInfo = {}] = await transactionsTable.find(
-				{ id: transaction.id, limit: 1 },
-				['executionStatus'],
-			);
+			const [indexedTxInfo = {}] = await transactionsTable.find({ id: transaction.id, limit: 1 }, [
+				'executionStatus',
+			]);
 
 			if (indexedTxInfo.executionStatus) {
 				transaction.executionStatus = indexedTxInfo.executionStatus;

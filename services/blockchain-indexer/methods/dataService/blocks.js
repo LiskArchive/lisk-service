@@ -14,10 +14,7 @@
  *
  */
 
-const {
-	getBlocks,
-	getBlocksAssets,
-} = require('./controllers/blocks');
+const { getBlocks, getBlocksAssets } = require('./controllers/blocks');
 
 module.exports = [
 	{

@@ -15,14 +15,9 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const {
-	CacheRedis,
-	Logger,
-} = require('lisk-service-framework');
+const { CacheRedis, Logger } = require('lisk-service-framework');
 
-const {
-	getEstimateFeePerByteForBlock,
-} = require('./dynamicFeesLIP');
+const { getEstimateFeePerByteForBlock } = require('./dynamicFeesLIP');
 const { requestConnector } = require('./request');
 
 const config = require('../../config');
@@ -33,7 +28,7 @@ const executionStatus = Object.freeze({
 	[config.cacheKeys.cacheKeyFeeEstQuick]: false,
 });
 
-const isFeeCalculationRunningInMode = (execMode) => executionStatus[execMode];
+const isFeeCalculationRunningInMode = execMode => executionStatus[execMode];
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
 const logger = Logger();
@@ -44,19 +39,24 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 
 	// Check if the starting height is permitted by config or adjust acc.
 	// Use incrementation to skip the genesis block - it is not needed
-	fromHeight = Math.max(...[defaultStartBlockHeight, genesisHeight + 1, fromHeight]
-		.filter(n => !Number.isNaN(n)));
+	fromHeight = Math.max(
+		...[defaultStartBlockHeight, genesisHeight + 1, fromHeight].filter(n => !Number.isNaN(n)),
+	);
 
 	const cachedFeeEstimate = await cacheRedisFees.get(cacheKey);
 
-	const cachedFeeEstimateHeight = !cacheKey.includes('Quick') && cachedFeeEstimate
-		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
+	const cachedFeeEstimateHeight =
+		!cacheKey.includes('Quick') && cachedFeeEstimate ? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
 
-	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
-		? { blockHeight: fromHeight - 1, low: 0, med: 0, high: 0 }
-		: cachedFeeEstimate;
+	const prevFeeEstPerByte =
+		fromHeight > cachedFeeEstimateHeight
+			? { blockHeight: fromHeight - 1, low: 0, med: 0, high: 0 }
+			: cachedFeeEstimate;
 
-	const range = size => Array(size).fill().map((_, index) => index);
+	const range = size =>
+		Array(size)
+			.fill()
+			.map((_, index) => index);
 	const feeEstPerByte = {};
 	const blockBatch = {};
 	do {
@@ -71,17 +71,18 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { header, transactions } = await requestConnector(
-					'getBlockByHeight',
-					{ height: prevFeeEstPerByte.blockHeight + 1 - i },
-				);
+				const { header, transactions } = await requestConnector('getBlockByHeight', {
+					height: prevFeeEstPerByte.blockHeight + 1 - i,
+				});
 				return { ...header, transactions };
 			},
 			{ concurrency: 50 },
 		);
 
-		Object.assign(prevFeeEstPerByte,
-			await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte));
+		Object.assign(
+			prevFeeEstPerByte,
+			await getEstimateFeePerByteForBlock(blockBatch, prevFeeEstPerByte),
+		);
 
 		// Store intermediate values, in case of a long running loop
 		if (prevFeeEstPerByte.blockHeight < toHeight) {
@@ -94,7 +95,9 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 	Object.assign(feeEstPerByte, prevFeeEstPerByte);
 	await cacheRedisFees.set(cacheKey, feeEstPerByte);
 
-	logger.info(`Recalulated dynamic fees: L: ${feeEstPerByte.low} M: ${feeEstPerByte.med} H: ${feeEstPerByte.high}`);
+	logger.info(
+		`Recalulated dynamic fees: L: ${feeEstPerByte.low} M: ${feeEstPerByte.med} H: ${feeEstPerByte.high}`,
+	);
 
 	return feeEstPerByte;
 };

@@ -16,7 +16,8 @@
 const validTx = {
 	module: 'token',
 	command: 'transfer',
-	params: '0a0804000000000000001080c8afa0251a1402604d9e57a39772fa12f2a860ecf6c1e9cae911221054657374207472616e73616374696f6e',
+	params:
+		'0a0804000000000000001080c8afa0251a1402604d9e57a39772fa12f2a860ecf6c1e9cae911221054657374207472616e73616374696f6e',
 	nonce: '0',
 	fee: '100000000',
 	senderPublicKey: '3972849f2ab66376a68671c10a00e8b8b67d880434cc65b04c6ed886dfa91c2c',
@@ -34,9 +35,7 @@ const eventsForValidTx = [
 		data: {
 			success: true,
 		},
-		topics: [
-			'3187fcfe95e11849ecd1c31c0e497512eee86a8b32e5a96613c4356fb036b486',
-		],
+		topics: ['3187fcfe95e11849ecd1c31c0e497512eee86a8b32e5a96613c4356fb036b486'],
 		index: 7,
 		block: {
 			id: 'ac558649b4c06ef300db7dd86612c1f4f8e3011c4c632ba8a8a8eaa1c54e7993',
@@ -54,9 +53,7 @@ const eventsWithFailStatus = [
 		data: {
 			success: false,
 		},
-		topics: [
-			'3187fcfe95e11849ecd1c31c0e497512eee86a8b32e5a96613c4356fb036b486',
-		],
+		topics: ['3187fcfe95e11849ecd1c31c0e497512eee86a8b32e5a96613c4356fb036b486'],
 		index: 7,
 		block: {
 			id: 'ac558649b4c06ef300db7dd86612c1f4f8e3011c4c632ba8a8a8eaa1c54e7993',
@@ -95,10 +92,7 @@ const eventsIncludingTokenModule = [
 		index: 1,
 		module: 'token',
 		name: 'initializeEscrowAccount',
-		topics: [
-			'76d4488029f123f8754f5f8182aba8574638ba3ac40a5d4d03c7ff7d2aa31472',
-			'04000001',
-		],
+		topics: ['76d4488029f123f8754f5f8182aba8574638ba3ac40a5d4d03c7ff7d2aa31472', '04000001'],
 		height: 8,
 		id: '07b9af818f25f7671411e2e7939c6db60474f3dd04a2e1c52ba073d39a8ac58b',
 	},
@@ -116,10 +110,7 @@ const eventsIncludingTokenModule = [
 		index: 2,
 		module: 'interoperability',
 		name: 'chainAccountUpdated',
-		topics: [
-			'76d4488029f123f8754f5f8182aba8574638ba3ac40a5d4d03c7ff7d2aa31472',
-			'04000001',
-		],
+		topics: ['76d4488029f123f8754f5f8182aba8574638ba3ac40a5d4d03c7ff7d2aa31472', '04000001'],
 		height: 8,
 		id: 'be9f3fd78c455be02dbdcb2c80d333730983b369f4e087486e139dc3a0a6261d',
 	},
@@ -227,9 +218,7 @@ const eventsIncludingTokenModule = [
 		index: 8,
 		module: 'interoperability',
 		name: 'commandExecutionResult',
-		topics: [
-			'76d4488029f123f8754f5f8182aba8574638ba3ac40a5d4d03c7ff7d2aa31472',
-		],
+		topics: ['76d4488029f123f8754f5f8182aba8574638ba3ac40a5d4d03c7ff7d2aa31472'],
 		height: 8,
 		id: '6296d435e43aaa2568b9cd6ae17098790053ffce78e7699e179d5c1295c1685b',
 	},
@@ -241,10 +230,7 @@ const eventsIncludingTokenModule = [
 		index: 9,
 		module: 'dynamicReward',
 		name: 'rewardMinted',
-		topics: [
-			'03',
-			'lsk6q3eq5qnahyytpywoxkgarzh8gck396wmd3yeu',
-		],
+		topics: ['03', 'lsk6q3eq5qnahyytpywoxkgarzh8gck396wmd3yeu'],
 		height: 8,
 		id: '4fe3de569aa98e98a7fb42435e4a8c053b2ef79ed120f0be332b6718a26f8e26',
 	},

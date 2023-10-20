@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	parseJsonToCsv,
-} = require('../../../../shared/helpers/csv');
+const { parseJsonToCsv } = require('../../../../shared/helpers/csv');
 
 const {
 	dynamicFields,

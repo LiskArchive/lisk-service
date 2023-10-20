@@ -14,9 +14,7 @@
  *
  */
 
-const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
+const { getTransactionsStatistics } = require('./controllers/transactions');
 
 module.exports = [
 	{

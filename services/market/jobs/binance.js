@@ -23,8 +23,8 @@ const { reload } = require('../shared/market/sources/binance');
 
 const logger = Logger();
 
-const reloadMarketPrices = async () => reload()
-	.catch(err => {
+const reloadMarketPrices = async () =>
+	reload().catch(err => {
 		if (err instanceof ServiceUnavailableException) {
 			logger.warn('Unable to fetch market prices from Binance right now. Will retry later.');
 			return;

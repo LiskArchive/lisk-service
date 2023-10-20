@@ -23,8 +23,8 @@ const { reload } = require('../shared/market/sources/kraken');
 
 const logger = Logger();
 
-const reloadMarketPrices = async () => reload()
-	.catch(err => {
+const reloadMarketPrices = async () =>
+	reload().catch(err => {
 		if (err instanceof ServiceUnavailableException) {
 			logger.warn('Unable to fetch market prices from Kraken right now. Will retry later.');
 			return;

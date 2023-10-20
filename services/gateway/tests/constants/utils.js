@@ -19,18 +19,12 @@ const transformParamsInput = {
 	},
 	sort: {
 		type: 'string',
-		enum: [
-			'name:asc',
-			'name:desc',
-		],
+		enum: ['name:asc', 'name:desc'],
 		default: 'name:asc',
 	},
 	order: {
 		type: 'string',
-		enum: [
-			'rank:asc',
-			'rank:desc',
-		],
+		enum: ['rank:asc', 'rank:desc'],
 		default: 'rank:asc',
 	},
 	'custom key': {},
@@ -46,22 +40,17 @@ const transformParamsExpectedResponse = [
 		description: 'Fields to sort results by.',
 		required: false,
 		type: 'string',
-		enum: [
-			'name:asc',
-			'name:desc',
-		],
+		enum: ['name:asc', 'name:desc'],
 		default: 'name:asc',
 	},
 	{
 		name: 'order',
 		in: 'query',
-		description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
+		description:
+			'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
 		required: false,
 		type: 'string',
-		enum: [
-			'rank:asc',
-			'rank:desc',
-		],
+		enum: ['rank:asc', 'rank:desc'],
 		default: 'rank:asc',
 	},
 	{
@@ -73,21 +62,21 @@ const requireAllJsonExpectedResponse = {
 	definitions: {
 		ExportScheduled: {
 			type: 'object',
-			required: [
-				'address',
-			],
+			required: ['address'],
 			properties: {
 				address: {
 					type: 'string',
 					format: 'address',
 					example: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
-					description: "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n",
+					description:
+						"The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n",
 				},
 				publicKey: {
 					type: 'string',
 					format: 'publicKey',
 					example: 'b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd',
-					description: 'The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n',
+					description:
+						'The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n',
 				},
 				interval: {
 					type: 'string',
@@ -99,10 +88,7 @@ const requireAllJsonExpectedResponse = {
 		},
 		ExportScheduledWithEnvelope: {
 			type: 'object',
-			required: [
-				'data',
-				'meta',
-			],
+			required: ['data', 'meta'],
 			properties: {
 				data: {
 					description: 'Transaction history export information',
@@ -115,7 +101,8 @@ const requireAllJsonExpectedResponse = {
 						ready: {
 							type: 'boolean',
 							example: 'false',
-							description: 'False when scheduled to export. True when already exported and available for download',
+							description:
+								'False when scheduled to export. True when already exported and available for download',
 						},
 					},
 				},
@@ -126,21 +113,21 @@ const requireAllJsonExpectedResponse = {
 		},
 		ExportFile: {
 			type: 'object',
-			required: [
-				'address',
-			],
+			required: ['address'],
 			properties: {
 				address: {
 					type: 'string',
 					format: 'address',
 					example: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
-					description: "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n",
+					description:
+						"The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n",
 				},
 				publicKey: {
 					type: 'string',
 					format: 'publicKey',
 					example: 'b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd',
-					description: 'The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n',
+					description:
+						'The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n',
 				},
 				interval: {
 					type: 'string',
@@ -152,7 +139,8 @@ const requireAllJsonExpectedResponse = {
 					type: 'string',
 					format: 'fileName',
 					example: 'transactions_<currentChainID>_<address>_<from>_<to>.csv',
-					description: 'The name of the file containing the exported account transaction history.\n',
+					description:
+						'The name of the file containing the exported account transaction history.\n',
 				},
 				fileUrl: {
 					type: 'string',
@@ -164,10 +152,7 @@ const requireAllJsonExpectedResponse = {
 		},
 		ExportFileUrlWithEnvelope: {
 			type: 'object',
-			required: [
-				'data',
-				'meta',
-			],
+			required: ['data', 'meta'],
 			properties: {
 				data: {
 					description: 'Transaction history export information',
@@ -180,7 +165,8 @@ const requireAllJsonExpectedResponse = {
 						ready: {
 							type: 'boolean',
 							example: 'true',
-							description: 'True when already exported and available for download. False when scheduled to export',
+							description:
+								'True when already exported and available for download. False when scheduled to export',
 						},
 					},
 				},
@@ -236,7 +222,8 @@ const requireAllJsonExpectedResponse = {
 			contact: {
 				email: 'admin@lisk.com',
 			},
-			description: '# Lisk Service API Documentation\n\nLisk Service is a middleware web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data (both on-chain and off-chain information), retrieving and storing market data, and exporting account history.\n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in a standardized JSON format and exposing a public RESTful API. The project is split into several smaller components (microservices) each focused on serving a single specific purpose. \n\nAs a pure backend project, it is designed to meet the requirements of front-end developers, especially Lisk Desktop and Lisk Mobile.\n\nThe API can be accessed at `https://service.lisk.com`.\nIt is also possible to access the Testnet network at `https://testnet-service.lisk.com`.\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  "data": {}, // Contains the requested data\n  "meta": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n}\n```\n\nAnd, the error responses adhere to the following structure:\n\n```\n{\n  "error": true,\n  "message": "Not found", // Contains the error message\n}\n```',
+			description:
+				'# Lisk Service API Documentation\n\nLisk Service is a middleware web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data (both on-chain and off-chain information), retrieving and storing market data, and exporting account history.\n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in a standardized JSON format and exposing a public RESTful API. The project is split into several smaller components (microservices) each focused on serving a single specific purpose. \n\nAs a pure backend project, it is designed to meet the requirements of front-end developers, especially Lisk Desktop and Lisk Mobile.\n\nThe API can be accessed at `https://service.lisk.com`.\nIt is also possible to access the Testnet network at `https://testnet-service.lisk.com`.\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  "data": {}, // Contains the requested data\n  "meta": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n}\n```\n\nAnd, the error responses adhere to the following structure:\n\n```\n{\n  "error": true,\n  "message": "Not found", // Contains the error message\n}\n```',
 			license: {
 				name: 'GPL v3.0',
 				url: 'https://www.gnu.org/licenses/gpl-3.0.en.html',
@@ -249,13 +236,8 @@ const requireAllJsonExpectedResponse = {
 				description: 'Lisk network transaction history export API.',
 			},
 		],
-		schemes: [
-			'http',
-			'https',
-		],
-		paths: {
-
-		},
+		schemes: ['http', 'https'],
+		paths: {},
 	},
 	responses: {
 		badParameter: {

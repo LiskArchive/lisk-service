@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getIndexStatus,
-	isBlockchainFullyIndexed,
-} = require('./controllers/indexStatus');
+const { getIndexStatus, isBlockchainFullyIndexed } = require('./controllers/indexStatus');
 
 module.exports = [
 	{

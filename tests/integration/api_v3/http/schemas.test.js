@@ -23,9 +23,7 @@ const {
 
 const schemas = require('../../../schemas/api_v3/constants/schemas');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -44,8 +42,9 @@ describe('Schemas API', () => {
 		expect(response.data.ccm.schema).toStrictEqual(schemas.ccmSchema);
 		expect(response.data.standardEvent.schema).toStrictEqual(schemas.standardEventSchema);
 
-		response.data.messages
-			.forEach(message => expect(message.schema).toStrictEqual(schemas.messageSchema));
+		response.data.messages.forEach(message =>
+			expect(message.schema).toStrictEqual(schemas.messageSchema),
+		);
 	});
 
 	it('should return bad request for invalid param', async () => {

@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
+const {
+	address: { getAddressFromLisk32Address },
+} = require('@liskhq/lisk-cryptography');
 
 const LISK_ADDRESS_FORMAT = 'lisk32';
 
@@ -23,16 +25,20 @@ const parseToJSONCompatObj = obj => {
 	if (['string', 'number'].includes(typeof obj)) return obj;
 	if (obj instanceof Buffer) return Buffer.from(obj).toString('hex');
 	if (typeof obj === 'bigint') return String(obj);
-	if (typeof obj === 'object' && Array.isArray(obj)) return (() => { obj.forEach((o, i) => obj[i] = parseToJSONCompatObj(o)); return obj; })();
+	if (typeof obj === 'object' && Array.isArray(obj))
+		return (() => {
+			obj.forEach((o, i) => (obj[i] = parseToJSONCompatObj(o)));
+			return obj;
+		})();
 
-	Object.entries(obj)
-		.forEach(([k, v]) => {
-			if (v instanceof Buffer) obj[k] = Buffer.from(v).toString('hex');
-			else if (typeof v === 'bigint') obj[k] = String(v);
-			else if (typeof v === 'object' && Array.isArray(v)) obj[k].forEach((o, i) => obj[k][i] = parseToJSONCompatObj(o));
-			else if (typeof v === 'object' && v !== null) obj[k] = parseToJSONCompatObj(v);
-			else obj[k] = v;
-		});
+	Object.entries(obj).forEach(([k, v]) => {
+		if (v instanceof Buffer) obj[k] = Buffer.from(v).toString('hex');
+		else if (typeof v === 'bigint') obj[k] = String(v);
+		else if (typeof v === 'object' && Array.isArray(v))
+			obj[k].forEach((o, i) => (obj[k][i] = parseToJSONCompatObj(o)));
+		else if (typeof v === 'object' && v !== null) obj[k] = parseToJSONCompatObj(v);
+		else obj[k] = v;
+	});
 	return obj;
 };
 
@@ -60,13 +66,15 @@ const parseInputBySchema = (input, schema) => {
 			if (type === 'array') {
 				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
 			} else {
-				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType, format };
+				const innerSchema =
+					typeof currValue === 'object' ? schema.properties[key] : { dataType, format };
 				acc[key] = parseInputBySchema(currValue, innerSchema);
 			}
 			return acc;
 		}, {});
 		return formattedObj;
-	} if (schemaType === 'array') {
+	}
+	if (schemaType === 'array') {
 		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
 		return formattedArray;
 	}

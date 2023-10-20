@@ -23,15 +23,20 @@ const {
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { unlockSchema } = require('../../../schemas/api_v3/unlock.schema');
 const {
-	unlockSchema,
-} = require('../../../schemas/api_v3/unlock.schema');
-const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidNames, invalidPublicKeys, invalidAddresses } = require('../constants/invalidInputs');
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+	invalidNames,
+	invalidPublicKeys,
+	invalidAddresses,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getUnlocks = async (params) => request(wsRpcUrl, 'get.pos.unlocks', params);
-const getTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
+const getUnlocks = async params => request(wsRpcUrl, 'get.pos.unlocks', params);
+const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
 describe('get.pos.unlocks', () => {
 	let refTransaction;

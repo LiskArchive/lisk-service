@@ -19,10 +19,7 @@ const {
 	getLisk32AddressFromPublicKey,
 } = require('../../../../shared/helpers/account');
 
-const {
-	valid,
-	invalid,
-} = require('../../../constants/account');
+const { valid, invalid } = require('../../../constants/account');
 
 describe('Account utils', () => {
 	describe('Validate address', () => {

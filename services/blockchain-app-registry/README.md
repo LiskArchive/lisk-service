@@ -22,7 +22,7 @@ yarn install --frozen-lockfile # install required Node.js dependencies
 
 ## Configuration
 
-To configure the different microservices, there are several environment variables the user can define to customize the configurations. 
+To configure the different microservices, there are several environment variables the user can define to customize the configurations.
 
 A list of the most commonly used environment variables is presented below:
 

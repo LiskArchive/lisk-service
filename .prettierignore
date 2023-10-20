@@ -27,6 +27,11 @@ mocha.opts
 *.sh
 *.conf
 *.env
+*.info
+*.log
+*.tgz
+*.lock
+*.sqlite3
 
 ## jest snapshot
 *.snap
@@ -35,6 +40,7 @@ mocha.opts
 # project specific paths
 test/.coverage-unit/
 helm
+coverage/
 build/
 dist/
 docker/.env*

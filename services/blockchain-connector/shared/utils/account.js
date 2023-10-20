@@ -18,10 +18,7 @@ const {
 		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
 		getLisk32AddressFromAddress,
 	},
-	legacyAddress: {
-		getLegacyAddressFromPublicKey,
-
-	},
+	legacyAddress: { getLegacyAddressFromPublicKey },
 } = require('@liskhq/lisk-cryptography');
 
 const getLegacyFormatAddressFromPublicKey = publicKey => {
@@ -29,12 +26,15 @@ const getLegacyFormatAddressFromPublicKey = publicKey => {
 	return legacyAddress;
 };
 
-const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
+const getLisk32AddressFromPublicKey = publicKey =>
+	getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
-const getLisk32AddressFromHexAddress = address => getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
+const getLisk32AddressFromHexAddress = address =>
+	getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 
 // TODO: Remove once SDK returns address in Lisk32 format
-const getLisk32Address = address => address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
+const getLisk32Address = address =>
+	address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
 
 module.exports = {
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,

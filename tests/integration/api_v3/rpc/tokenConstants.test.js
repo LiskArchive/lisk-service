@@ -28,7 +28,7 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getTokenConstants = async (params) => request(wsRpcUrl, 'get.token.constants', params);
+const getTokenConstants = async params => request(wsRpcUrl, 'get.token.constants', params);
 
 describe('get.token.constants', () => {
 	it('should return token module constants', async () => {

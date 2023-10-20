@@ -19,14 +19,7 @@ const { Octokit } = require('octokit');
 
 const {
 	Utils: {
-		fs: {
-			exists,
-			mkdir,
-			getDirectories,
-			rmdir,
-			rm,
-			mv,
-		},
+		fs: { exists, mkdir, getDirectories, rmdir, rm, mv },
 	},
 	Logger,
 	DB: {
@@ -128,7 +121,7 @@ const getRepoDownloadURL = async () => {
 	}
 };
 
-const getFileDownloadURLAndHeaders = async (file) => {
+const getFileDownloadURLAndHeaders = async file => {
 	if (!file) {
 		throw new Error('getFileDownloadURLAndHeaders requires a filename as a parameter.');
 	}
@@ -159,14 +152,11 @@ const getFileDownloadURLAndHeaders = async (file) => {
 const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	const url = `GET /repos/${owner}/${repo}/compare/${lastSyncedCommitHash}...${latestCommitHash}`;
 	try {
-		const result = await octokit.request(
-			url,
-			{
-				owner,
-				repo,
-				ref: `${config.gitHub.branch}`,
-			},
-		);
+		const result = await octokit.request(url, {
+			owner,
+			repo,
+			ref: `${config.gitHub.branch}`,
+		});
 
 		return result;
 	} catch (error) {
@@ -181,13 +171,14 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
 	const filesChangedInput = filesChanged || [];
 	const filesUpdated = filesChangedInput.filter(
-		file => file.startsWith(network)
-			&& (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
+		file =>
+			file.startsWith(network) &&
+			(file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
 	);
 	return filesUpdated;
 };
 
-const getUniqueNetworkAppDirPairs = async (files) => {
+const getUniqueNetworkAppDirPairs = async files => {
 	const filesInput = files || [];
 	const map = new Map();
 
@@ -200,7 +191,7 @@ const getUniqueNetworkAppDirPairs = async (files) => {
 	return [...map.values()];
 };
 
-const buildEventPayload = async (allFilesModified) => {
+const buildEventPayload = async allFilesModified => {
 	const eventPayload = {};
 	const { supportedNetworks } = config;
 	const numSupportedNetworks = supportedNetworks.length;
@@ -223,10 +214,11 @@ const buildEventPayload = async (allFilesModified) => {
 	return eventPayload;
 };
 
-const isMetadataFile = (filePath) => (
-	!!(filePath
-		&& (filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON)))
-);
+const isMetadataFile = filePath =>
+	!!(
+		filePath &&
+		(filePath.endsWith(FILENAME.APP_JSON) || filePath.endsWith(FILENAME.NATIVETOKENS_JSON))
+	);
 
 /* Sorts the passed array and groups files by the network and app. Returns following structure:
 {
@@ -237,7 +229,7 @@ const isMetadataFile = (filePath) => (
 	}
 }
 */
-const groupFilesByNetworkAndApp = (fileInfos) => {
+const groupFilesByNetworkAndApp = fileInfos => {
 	// Stores an map of {networkName} -> {appName} -> [files]
 	const groupedFiles = {};
 
@@ -258,7 +250,7 @@ const groupFilesByNetworkAndApp = (fileInfos) => {
 	return groupedFiles;
 };
 
-const getModifiedFileNames = (groupedFiles) => {
+const getModifiedFileNames = groupedFiles => {
 	const fileNames = [];
 
 	Object.keys(groupedFiles).forEach(network => {
@@ -274,12 +266,14 @@ const getModifiedFileNames = (groupedFiles) => {
 
 const syncWithRemoteRepo = async (_dbTrx = null) => {
 	let isCustomDBTrx = false;
-	const dbTrx = _dbTrx || await (async () => {
-		const connection = await getDBConnection(MYSQL_ENDPOINT);
-		const newDBTrx = await startDBTransaction(connection);
-		isCustomDBTrx = true;
-		return newDBTrx;
-	})();
+	const dbTrx =
+		_dbTrx ||
+		(await (async () => {
+			const connection = await getDBConnection(MYSQL_ENDPOINT);
+			const newDBTrx = await startDBTransaction(connection);
+			isCustomDBTrx = true;
+			return newDBTrx;
+		})());
 
 	try {
 		const dataDirectory = config.dataDir;
@@ -315,12 +309,12 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 
 		await BluebirdPromise.map(
 			Object.keys(groupedFiles),
-			async (networkName) => {
+			async networkName => {
 				const appsInNetwork = groupedFiles[networkName];
 
 				await BluebirdPromise.map(
 					Object.keys(appsInNetwork),
-					async (appName) => {
+					async appName => {
 						const appFiles = appsInNetwork[appName];
 
 						// Should process app files sequentially as nativetokens.json is dependant on app.json
@@ -355,7 +349,9 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 
 							// Update DB with latest metadata file information
 							await indexMetadataFromFile(tempFilePath, dbTrx);
-							logger.debug(`Successfully updated the database with the latest changes of file: ${remoteFilePath}.`);
+							logger.debug(
+								`Successfully updated the database with the latest changes of file: ${remoteFilePath}.`,
+							);
 
 							// Schedule files to be moved once db transaction is committed
 							filesToBeMoved.push({
@@ -375,16 +371,14 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 		if (isCustomDBTrx) await commitDBTransaction(dbTrx);
 
 		// Delete files which are removed from remote
-		await BluebirdPromise.map(
-			filesToBeDeleted,
-			async (filePath) => rm(filePath),
-			{ concurrency: filesToBeDeleted.length },
-		);
+		await BluebirdPromise.map(filesToBeDeleted, async filePath => rm(filePath), {
+			concurrency: filesToBeDeleted.length,
+		});
 
 		// Move downloaded files
 		await BluebirdPromise.map(
 			filesToBeMoved,
-			async (filePathInfo) => {
+			async filePathInfo => {
 				// Create directory to move file
 				await mkdir(path.dirname(filePathInfo.to));
 				await mv(filePathInfo.from, filePathInfo.to);
@@ -409,7 +403,7 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 	}
 };
 
-const downloadRepositoryToFS = async (dbTrx) => {
+const downloadRepositoryToFS = async dbTrx => {
 	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
 
@@ -418,7 +412,7 @@ const downloadRepositoryToFS = async (dbTrx) => {
 		dbTrx,
 	);
 
-	if (lastSyncedCommitHash && await exists(appDirPath)) {
+	if (lastSyncedCommitHash && (await exists(appDirPath))) {
 		logger.trace('Synchronizing with the remote repository.');
 		await syncWithRemoteRepo(dbTrx);
 		logger.info('Finished synchronizing with the remote repository successfully.');

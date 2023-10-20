@@ -23,7 +23,15 @@ describe('Test registerApi method', () => {
 		whitelist: [],
 		aliases: {},
 	};
-	const registeredModuleNames = ['fee', 'interoperability', 'legacy', 'pos', 'random', 'token', 'validators'];
+	const registeredModuleNames = [
+		'fee',
+		'interoperability',
+		'legacy',
+		'pos',
+		'random',
+		'token',
+		'validators',
+	];
 
 	it('should return correct api info when called with valid inputs', async () => {
 		const response = await registerApi(apiNames, config, registeredModuleNames);

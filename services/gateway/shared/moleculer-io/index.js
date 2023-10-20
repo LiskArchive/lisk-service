@@ -410,8 +410,8 @@ function makeHandler(svc, handlerItem) {
 		if (config.websocket.enableRateLimit) await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (
-				config.jsonRpcStrictMode === 'true'
-				&& (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')
+				config.jsonRpcStrictMode === 'true' &&
+				(!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')
 			) {
 				const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(
 					jsonRpcInput,
@@ -447,8 +447,8 @@ function makeHandler(svc, handlerItem) {
 				respond(output);
 			} catch (err) {
 				if (
-					svc.settings.log4XXResponses
-					|| (Utils.isProperObject(err) && !_.inRange(err.code, 400, 500))
+					svc.settings.log4XXResponses ||
+					(Utils.isProperObject(err) && !_.inRange(err.code, 400, 500))
 				) {
 					svc.logger.error(
 						'   Request error!',

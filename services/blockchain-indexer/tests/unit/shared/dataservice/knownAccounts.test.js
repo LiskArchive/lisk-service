@@ -18,8 +18,12 @@
 const { resolve } = require('path');
 
 // All file paths
-const mockedNetworkFilePath = resolve(`${__dirname}/../../../../shared/dataService/business/network`);
-const mockedAccountKnowledgeConstantsFilePath = resolve(`${__dirname}/../constants/accountKnowledge`);
+const mockedNetworkFilePath = resolve(
+	`${__dirname}/../../../../shared/dataService/business/network`,
+);
+const mockedAccountKnowledgeConstantsFilePath = resolve(
+	`${__dirname}/../constants/accountKnowledge`,
+);
 const knownAccountsFilePath = resolve(`${__dirname}/../../../../shared/dataService/knownAccounts`);
 
 // Mock config
@@ -56,7 +60,7 @@ describe('reloadAccountKnowledge', () => {
 				Queue: jest.fn(),
 				Logger: () => ({
 					debug: jest.fn(),
-					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
+					info: async data => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
 					warn: jest.fn(),
 					error: jest.fn(),
 				}),
@@ -85,7 +89,8 @@ describe('reloadAccountKnowledge', () => {
 				Logger: () => ({
 					debug: jest.fn(),
 					info: jest.fn(),
-					warn: async (data) => expect(data).toEqual('Lisk static URL did not respond with valid data.'),
+					warn: async data =>
+						expect(data).toEqual('Lisk static URL did not respond with valid data.'),
 					error: jest.fn(),
 				}),
 			};
@@ -114,7 +119,8 @@ describe('reloadAccountKnowledge', () => {
 					debug: jest.fn(),
 					info: jest.fn(),
 					warn: jest.fn(),
-					error: async (data) => expect(data).toEqual('Could not reload known accounts: Test error message.'),
+					error: async data =>
+						expect(data).toEqual('Could not reload known accounts: Test error message.'),
 				}),
 			};
 		});
@@ -141,7 +147,10 @@ describe('reloadAccountKnowledge', () => {
 				Logger: () => ({
 					debug: jest.fn(),
 					info: jest.fn(),
-					warn: async (data) => expect(data).toEqual('Static information anavailable for the current chainID: invalidChainID.'),
+					warn: async data =>
+						expect(data).toEqual(
+							'Static information anavailable for the current chainID: invalidChainID.',
+						),
 					error: jest.fn(),
 				}),
 			};
@@ -169,7 +178,7 @@ describe('reloadAccountKnowledge', () => {
 				},
 				Logger: () => ({
 					debug: jest.fn(),
-					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
+					info: async data => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
 					warn: jest.fn(),
 					error: jest.fn(),
 				}),
@@ -200,18 +209,14 @@ describe('reloadAccountKnowledge', () => {
 
 describe('resolveNetworkByChainID', () => {
 	it('should return the network name for a valid chain ID', () => {
-		const {
-			resolveNetworkByChainID,
-		} = require(knownAccountsFilePath);
+		const { resolveNetworkByChainID } = require(knownAccountsFilePath);
 
 		const result = resolveNetworkByChainID(chainID);
 		expect(result).toEqual('mainnet');
 	});
 
 	it('should return the network name for a valid network ID', () => {
-		const {
-			resolveNetworkByChainID,
-		} = require(knownAccountsFilePath);
+		const { resolveNetworkByChainID } = require(knownAccountsFilePath);
 
 		const validSidechainID = '00000001';
 		const result = resolveNetworkByChainID(validSidechainID);
@@ -219,9 +224,7 @@ describe('resolveNetworkByChainID', () => {
 	});
 
 	it('should return null if the chain ID does not exist in any network', () => {
-		const {
-			resolveNetworkByChainID,
-		} = require(knownAccountsFilePath);
+		const { resolveNetworkByChainID } = require(knownAccountsFilePath);
 
 		const invalidChainID = '99999999';
 		const result = resolveNetworkByChainID(invalidChainID);
@@ -245,7 +248,7 @@ describe('getAccountKnowledge', () => {
 				},
 				Logger: () => ({
 					debug: jest.fn(),
-					info: async (data) => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
+					info: async data => expect(data).toEqual('Updated known accounts cache with 2 entries.'),
 					warn: jest.fn(),
 					error: jest.fn(),
 				}),

@@ -24,15 +24,18 @@ const {
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	eventSchema,
-} = require('../../../schemas/api_v3/event.schema');
+const { eventSchema } = require('../../../schemas/api_v3/event.schema');
 
 const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/events`;
 
-const { invalidAddresses, invalidBlockIDs, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
+const {
+	invalidAddresses,
+	invalidBlockIDs,
+	invalidOffsets,
+	invalidLimits,
+} = require('../constants/invalidInputs');
 
 describe('Events API', () => {
 	let refTransaction;
@@ -141,7 +144,10 @@ describe('Events API', () => {
 		});
 
 		it('should return bad request for long invalid transactionID', async () => {
-			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
+			const response = await api.get(
+				`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`,
+				400,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
@@ -289,7 +295,9 @@ describe('Events API', () => {
 
 	describe('Retrieve event list within timestamps', () => {
 		it('should return events within set timestamps', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refTransaction.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
@@ -314,7 +322,9 @@ describe('Events API', () => {
 		});
 
 		it('should return events with half bounded range: fromTimestamp', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refTransaction.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -442,7 +452,10 @@ describe('Events API', () => {
 			const expectedStatusCode = 500;
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
-			const response = await api.get(`${endpoint}?height=${maxHeight}:${minHeight}&limit=100`, expectedStatusCode);
+			const response = await api.get(
+				`${endpoint}?height=${maxHeight}:${minHeight}&limit=100`,
+				expectedStatusCode,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
@@ -493,7 +506,9 @@ describe('Events API', () => {
 
 	describe('Fetch events based on multiple request params', () => {
 		it('should return event when queried with transactionID and blockID', async () => {
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
+			const response = await api.get(
+				`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -508,7 +523,9 @@ describe('Events API', () => {
 		});
 
 		it('should return event when queried with transactionID and height', async () => {
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
+			const response = await api.get(
+				`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -524,7 +541,10 @@ describe('Events API', () => {
 
 		it('should return 400 BAD REQUEST with unsupported params', async () => {
 			const expectedStatusCode = 400;
-			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`, expectedStatusCode);
+			const response = await api.get(
+				`${endpoint}?address=${refTransaction.sender.address}`,
+				expectedStatusCode,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 

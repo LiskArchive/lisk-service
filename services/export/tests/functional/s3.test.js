@@ -27,26 +27,21 @@ describe('Test AWS s3 interface', () => {
 
 	afterAll(async () => {
 		/* eslint-disable no-console */
-		await s3.minioClient.removeBucket(
-			lConfig.s3.bucketName,
-			(err) => err
-				? console.log('unable to remove bucket.')
-				: console.log('Bucket removed successfully.'),
+		await s3.minioClient.removeBucket(lConfig.s3.bucketName, err =>
+			err ? console.log('unable to remove bucket.') : console.log('Bucket removed successfully.'),
 		);
 		/* eslint-enable no-console */
 	});
 
 	describe('init() method', () => {
 		it('Successfully initializes', async () => {
-			expect(s3.init(lConfig))
-				.resolves
-				.toBeTruthy();
+			expect(s3.init(lConfig)).resolves.toBeTruthy();
 		});
 
 		it('Re-initializing does not throw errors', async () => {
-			expect(s3.init(lConfig))
-				.resolves
-				.toBe(`Bucket ${lConfig.s3.bucketName} already exists in region '${config.s3.region}'.`);
+			expect(s3.init(lConfig)).resolves.toBe(
+				`Bucket ${lConfig.s3.bucketName} already exists in region '${config.s3.region}'.`,
+			);
 		});
 	});
 
@@ -64,7 +59,7 @@ describe('Test AWS s3 interface', () => {
 
 		it('writes string', async () => {
 			const fileName = 'test.txt';
-			const fileContent = 'It\'s a string.';
+			const fileContent = "It's a string.";
 
 			await s3.write(fileName, fileContent);
 			const content = await s3.read(fileName);
@@ -88,7 +83,7 @@ describe('Test AWS s3 interface', () => {
 	describe('exists() method', () => {
 		it('returns true for existing file', async () => {
 			expect(existingFiles.length).toBeGreaterThan(0);
-			existingFiles.forEach(async (fileName) => {
+			existingFiles.forEach(async fileName => {
 				const isExists = await s3.exists(fileName);
 				expect(isExists).toBe(true);
 			});
@@ -96,7 +91,7 @@ describe('Test AWS s3 interface', () => {
 
 		it('returns false for non-existing file', async () => {
 			expect(nonexistingFiles.length).toBeGreaterThan(0);
-			nonexistingFiles.forEach(async (fileName) => {
+			nonexistingFiles.forEach(async fileName => {
 				const isExists = await s3.exists(fileName);
 				expect(isExists).toBe(false);
 			});
@@ -109,7 +104,7 @@ describe('Test AWS s3 interface', () => {
 			expect(typeof listedFiles).toBe('object');
 			expect(Array.isArray(listedFiles)).toBeTruthy();
 			expect(listedFiles.length).toBeGreaterThan(0);
-			existingFiles.forEach(async (fileName) => {
+			existingFiles.forEach(async fileName => {
 				expect(listedFiles).toContain(fileName);
 			});
 		});
@@ -135,7 +130,7 @@ describe('Test AWS s3 interface', () => {
 			const message = await s3.remove(existingFiles);
 			expect(message).toBe(successMessage);
 
-			existingFiles.forEach(async (fileName) => {
+			existingFiles.forEach(async fileName => {
 				const isExists = await s3.exists(fileName);
 				expect(isExists).toBe(false);
 			});
@@ -149,7 +144,9 @@ describe('Test AWS s3 interface', () => {
 
 	describe('purge() method', () => {
 		it('removes the files by their last modified time', async () => {
-			const randomList = Array(10).fill().map((_, i) => ({ index: i }));
+			const randomList = Array(10)
+				.fill()
+				.map((_, i) => ({ index: i }));
 			randomList.forEach(async (item, i) => {
 				await s3.write(`purgeFile_${i + 1}.json`, item);
 			});

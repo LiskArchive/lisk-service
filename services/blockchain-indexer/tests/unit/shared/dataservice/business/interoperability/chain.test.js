@@ -16,7 +16,9 @@
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
 
-const mockedFilePath = resolve(`${__dirname}/../../../../../../shared/dataService/business/network`);
+const mockedFilePath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/network`,
+);
 const dataServicePath = resolve(`${__dirname}/../../../../../../shared/dataService`);
 
 beforeEach(() => {

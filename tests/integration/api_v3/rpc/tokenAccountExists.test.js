@@ -17,9 +17,18 @@
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const { invalidParamsSchema, jsonRpcEnvelopeSchema, invalidRequestSchema } = require('../../../schemas/rpcGenerics.schema');
+const {
+	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
+	invalidRequestSchema,
+} = require('../../../schemas/rpcGenerics.schema');
 const { tokenAccountExistsSchema } = require('../../../schemas/api_v3/tokenAccountExists.schema');
-const { invalidNames, invalidPublicKeys, invalidAddresses, invalidTokenIDs } = require('../constants/invalidInputs');
+const {
+	invalidNames,
+	invalidPublicKeys,
+	invalidAddresses,
+	invalidTokenIDs,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -33,15 +42,24 @@ describe('get.token.account.exists', () => {
 		let refValidatorAddress;
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			const transactionsResponse = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'pos:stake', limit: 1 });
+			const transactionsResponse = await request(wsRpcUrl, 'get.transactions', {
+				moduleCommand: 'pos:stake',
+				limit: 1,
+			});
 			const { data: [stakeTx] = [] } = transactionsResponse.result;
 			if (stakeTx) {
 				// Destructure to refer first entry of all the sent votes within the transaction
-				const { params: { stakes: [stake] } } = stakeTx;
+				const {
+					params: {
+						stakes: [stake],
+					},
+				} = stakeTx;
 				refValidatorAddress = stake.validatorAddress;
 			}
 		} while (!refValidatorAddress);
-		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
+		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', {
+			address: refValidatorAddress,
+		});
 		[refValidator] = validatorsResponse.result.data;
 		// Fetch tokenID
 		const tokenConstantsResponse = await request(wsRpcUrl, 'get.pos.constants');
@@ -60,7 +78,10 @@ describe('get.token.account.exists', () => {
 	});
 
 	it('should return isExists:false when requested for unknown address', async () => {
-		const response = await getTokenAccountExists({ address: 'lskvmcf8bphtskyv49xg866u9a9dm7ftkxremzbkr', tokenID: refTokenID });
+		const response = await getTokenAccountExists({
+			address: 'lskvmcf8bphtskyv49xg866u9a9dm7ftkxremzbkr',
+			tokenID: refTokenID,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(tokenAccountExistsSchema);
@@ -92,7 +113,10 @@ describe('get.token.account.exists', () => {
 	});
 
 	it('should return isExists:false requested for unknown publicKey', async () => {
-		const response = await getTokenAccountExists({ publicKey: '7dda7d86986775bd9ee4bc2f974e31d58b5280e02513c216143574866933bbdf', tokenID: refTokenID });
+		const response = await getTokenAccountExists({
+			publicKey: '7dda7d86986775bd9ee4bc2f974e31d58b5280e02513c216143574866933bbdf',
+			tokenID: refTokenID,
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result).toMap(tokenAccountExistsSchema);
@@ -165,12 +189,20 @@ describe('get.token.account.exists', () => {
 	});
 
 	it('should return bad request for an invalid param', async () => {
-		const response = await await getTokenAccountExists({ name: refValidator.name, tokenID: refTokenID, invalidParam: 'invalid' });
+		const response = await await getTokenAccountExists({
+			name: refValidator.name,
+			tokenID: refTokenID,
+			invalidParam: 'invalid',
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('should return bad request for an invalid empty param', async () => {
-		const response = await await getTokenAccountExists({ name: refValidator.name, tokenID: refTokenID, invalidParam: '' });
+		const response = await await getTokenAccountExists({
+			name: refValidator.name,
+			tokenID: refTokenID,
+			invalidParam: '',
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 

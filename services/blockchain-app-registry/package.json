@@ -1,44 +1,44 @@
 {
-  "name": "lisk-service-blockchain-app-registry",
-  "version": "0.7.0-rc.1",
-  "description": "Lisk Service Blockchain Application Registry",
-  "keywords": [
-    "lisk",
-    "blockchain"
-  ],
-  "homepage": "https://github.com/LiskHQ/lisk-service",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:LiskHQ/lisk-service.git"
-  },
-  "bugs": {
-    "url": "https://github.com/LiskHQ/lisk-service/issues"
-  },
-  "private": true,
-  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
-  "license": "Apache-2.0",
-  "main": "app.js",
-  "engines": {
-    "node": ">=18.16 <=18",
-    "npm": ">=8.5.0"
-  },
-  "scripts": {
-    "start": "node app.js",
-    "eslint": "eslint . --ext .js",
-    "eslint-fix": "eslint . --fix --ext .js",
-    "clean": "rm -rf ./node_modules",
-    "watch": "supervisor -w . -i ./node_modules app.js",
-    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
-    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
-  },
-  "dependencies": {
-    "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/f84c21e6955b64ceeb006e4b685a06a9f41e5004/framework/dist/lisk-service-framework-1.6.2.tgz",
-    "lodash": "^4.17.21",
-    "octokit": "^2.0.4",
-    "tar": "^6.1.11"
-  },
-  "devDependencies": {
-    "jest": "^27.3.0"
-  }
+	"name": "lisk-service-blockchain-app-registry",
+	"version": "0.7.0-rc.1",
+	"description": "Lisk Service Blockchain Application Registry",
+	"keywords": [
+		"lisk",
+		"blockchain"
+	],
+	"homepage": "https://github.com/LiskHQ/lisk-service",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:LiskHQ/lisk-service.git"
+	},
+	"bugs": {
+		"url": "https://github.com/LiskHQ/lisk-service/issues"
+	},
+	"private": true,
+	"author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+	"license": "Apache-2.0",
+	"main": "app.js",
+	"engines": {
+		"node": ">=18.16 <=18",
+		"npm": ">=8.5.0"
+	},
+	"scripts": {
+		"start": "node app.js",
+		"eslint": "eslint . --ext .js",
+		"eslint-fix": "eslint . --fix --ext .js",
+		"clean": "rm -rf ./node_modules",
+		"watch": "supervisor -w . -i ./node_modules app.js",
+		"test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
+		"test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
+	},
+	"dependencies": {
+		"bluebird": "^3.7.2",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/f84c21e6955b64ceeb006e4b685a06a9f41e5004/framework/dist/lisk-service-framework-1.6.2.tgz",
+		"lodash": "^4.17.21",
+		"octokit": "^2.0.4",
+		"tar": "^6.1.11"
+	},
+	"devDependencies": {
+		"jest": "^27.3.0"
+	}
 }

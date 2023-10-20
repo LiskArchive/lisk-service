@@ -22,10 +22,7 @@ const moment = MomentRange.extendMoment(Moment);
 
 const {
 	CacheRedis,
-	Exceptions: {
-		NotFoundException,
-		ValidationException,
-	},
+	Exceptions: { NotFoundException, ValidationException },
 	Queue,
 	HTTP,
 } = require('lisk-service-framework');
@@ -70,42 +67,38 @@ let tokenModuleData;
 let feeTokenID;
 let defaultStartDate;
 
-const getTransactions = async (params) => requestIndexer('transactions', params);
-const getBlocks = async (params) => requestIndexer('blocks', params);
+const getTransactions = async params => requestIndexer('transactions', params);
+const getBlocks = async params => requestIndexer('blocks', params);
 
-const getGenesisBlock = async (height) => requestIndexer(
-	'blocks',
-	{ height },
-);
+const getGenesisBlock = async height => requestIndexer('blocks', { height });
 
-const getAddressFromParams = (params) => params.address
-	|| getLisk32AddressFromPublicKey(params.publicKey);
+const getAddressFromParams = params =>
+	params.address || getLisk32AddressFromPublicKey(params.publicKey);
 
-const getTransactionsInAsc = async (params) => getTransactions({
-	address: getAddressFromParams(params),
-	sort: 'timestamp:asc',
-	timestamp: params.timestamp,
-	limit: params.limit || 10,
-	offset: params.offset || 0,
-});
+const getTransactionsInAsc = async params =>
+	getTransactions({
+		address: getAddressFromParams(params),
+		sort: 'timestamp:asc',
+		timestamp: params.timestamp,
+		limit: params.limit || 10,
+		offset: params.offset || 0,
+	});
 
-const validateIfAccountExists = async (address) => {
+const validateIfAccountExists = async address => {
 	const { data: tokenBalances } = await requestIndexer('token.balances', { address });
 	return !!tokenBalances.length;
 };
 
-const getEvents = async (params) => requestAllStandard(
-	requestIndexer.bind(null, 'events'),
-	{
+const getEvents = async params =>
+	requestAllStandard(requestIndexer.bind(null, 'events'), {
 		topic: params.address,
 		timestamp: params.timestamp,
 		module: params.module,
 		name: params.name,
 		sort: 'timestamp:desc',
-	},
-);
+	});
 
-const getCrossChainTransferTransactionInfo = async (params) => {
+const getCrossChainTransferTransactionInfo = async params => {
 	const allEvents = await getEvents({
 		...params,
 		module: MODULE.TOKEN,
@@ -113,8 +106,9 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 	});
 
 	const transactions = [];
-	const ccmTransferEvents = allEvents
-		.filter(event => event.data.recipientAddress === params.address);
+	const ccmTransferEvents = allEvents.filter(
+		event => event.data.recipientAddress === params.address,
+	);
 
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
 		const ccmTransferEvent = ccmTransferEvents[i];
@@ -138,7 +132,7 @@ const getCrossChainTransferTransactionInfo = async (params) => {
 	return transactions;
 };
 
-const getRewardAssignedInfo = async (params) => {
+const getRewardAssignedInfo = async params => {
 	const allEvents = await getEvents({
 		...params,
 		module: MODULE.POS,
@@ -146,8 +140,9 @@ const getRewardAssignedInfo = async (params) => {
 	});
 
 	const transactions = [];
-	const rewardsAssignedEvents = allEvents
-		.filter(event => event.data.stakerAddress === params.address);
+	const rewardsAssignedEvents = allEvents.filter(
+		event => event.data.stakerAddress === params.address,
+	);
 
 	for (let i = 0; i < rewardsAssignedEvents.length; i++) {
 		const rewardsAssignedEvent = rewardsAssignedEvents[i];
@@ -172,23 +167,29 @@ const getRewardAssignedInfo = async (params) => {
 	return transactions;
 };
 
-const getBlocksInAsc = async (params) => {
-	const totalBlocks = (await getBlocks({
-		generatorAddress: params.address,
-		timestamp: params.timestamp,
-		limit: 1,
-	})).meta.total;
+const getBlocksInAsc = async params => {
+	const totalBlocks = (
+		await getBlocks({
+			generatorAddress: params.address,
+			timestamp: params.timestamp,
+			limit: 1,
+		})
+	).meta.total;
 
-	const blocks = await requestAllStandard(getBlocks, {
-		generatorAddress: params.address,
-		timestamp: params.timestamp,
-		sort: 'timestamp:desc',
-	}, totalBlocks);
+	const blocks = await requestAllStandard(
+		getBlocks,
+		{
+			generatorAddress: params.address,
+			timestamp: params.timestamp,
+			sort: 'timestamp:desc',
+		},
+		totalBlocks,
+	);
 
 	return blocks;
 };
 
-const normalizeBlocks = async (blocks) => {
+const normalizeBlocks = async blocks => {
 	const normalizedBlocks = blocks.map(block => ({
 		blockHeight: block.height,
 		date: dateFromTimestamp(block.timestamp),
@@ -199,9 +200,11 @@ const normalizeBlocks = async (blocks) => {
 	return normalizedBlocks;
 };
 
-const getBlockchainAppsMeta = async (chainID) => {
+const getBlockchainAppsMeta = async chainID => {
 	try {
-		const { data: [appMetadata] } = await requestAppRegistry('blockchain.apps.meta', { chainID });
+		const {
+			data: [appMetadata],
+		} = await requestAppRegistry('blockchain.apps.meta', { chainID });
 		return appMetadata;
 	} catch (error) {
 		// Redirect call to the mainchain service
@@ -211,25 +214,27 @@ const getBlockchainAppsMeta = async (chainID) => {
 		return appMetadata;
 	}
 };
-const getChainInfo = async (chainID) => {
+const getChainInfo = async chainID => {
 	const { chainName } = await getBlockchainAppsMeta(chainID);
 	return { chainID, chainName };
 };
 
-const getOpeningBalance = async (address) => {
+const getOpeningBalance = async address => {
 	if (!tokenModuleData) {
-		const genesisBlockAssetsLength = await requestConnector(
-			'getGenesisAssetsLength',
-			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-		);
+		const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
+			module: MODULE.TOKEN,
+			subStore: MODULE_SUB_STORE.TOKEN.USER,
+		});
 		const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
-		tokenModuleData = (await requestAllCustom(
-			requestConnector,
-			'getGenesisAssetByModule',
-			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-			totalUsers,
-		)).userSubstore;
+		tokenModuleData = (
+			await requestAllCustom(
+				requestConnector,
+				'getGenesisAssetByModule',
+				{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+				totalUsers,
+			)
+		).userSubstore;
 	}
 
 	const filteredAccount = tokenModuleData.find(e => e.address === address);
@@ -249,20 +254,24 @@ const getFeeTokenID = async () => {
 };
 
 const getMetadata = async (params, chainID, currentChainID) => ({
-	...await getChainInfo(chainID),
+	...(await getChainInfo(chainID)),
 	note: `Current Chain ID: ${currentChainID}`,
 	openingBalance: await getOpeningBalance(params.address),
 });
 
-const validateIfAccountHasTransactions = async (address) => {
+const validateIfAccountHasTransactions = async address => {
 	const response = await getTransactions({ address, limit: 1 });
 	return !!response.data.length;
 };
 
 const getDefaultStartDate = async () => {
 	if (!defaultStartDate) {
-		const { data: { genesisHeight } } = await getNetworkStatus();
-		const { data: [block] } = await getGenesisBlock(genesisHeight);
+		const {
+			data: { genesisHeight },
+		} = await getNetworkStatus();
+		const {
+			data: [block],
+		} = await getGenesisBlock(genesisHeight);
 		defaultStartDate = moment(block.timestamp * 1000).format(DATE_FORMAT);
 	}
 
@@ -276,7 +285,7 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	let to;
 	if (interval && interval.includes(':')) {
 		[from, to] = interval.split(':');
-		if ((moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT))) < 0) {
+		if (moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT)) < 0) {
 			throw new ValidationException(`Invalid interval supplied: ${interval}.`);
 		}
 	} else if (interval) {
@@ -310,9 +319,11 @@ const getExcelFileUrlFromParams = async (params, chainID) => {
 };
 
 const resolveChainIDs = (tx, currentChainID) => {
-	if (tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`
-		|| tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
-		|| tx.isIncomingCrossChainTransferTransaction) {
+	if (
+		tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}` ||
+		tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}` ||
+		tx.isIncomingCrossChainTransferTransaction
+	) {
 		const sendingChainID = tx.sendingChainID || currentChainID;
 		const receivingChainID = resolveReceivingChainID(tx, currentChainID);
 
@@ -325,10 +336,7 @@ const resolveChainIDs = (tx, currentChainID) => {
 };
 
 const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
-	const {
-		moduleCommand,
-		senderPublicKey,
-	} = tx;
+	const { moduleCommand, senderPublicKey } = tx;
 
 	const date = dateFromTimestamp(tx.block.timestamp);
 	const time = timeFromTimestamp(tx.block.timestamp);
@@ -337,7 +345,7 @@ const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
 	const amountTokenID = tx.params.tokenID;
 	const senderAddress = tx.sender.address;
 	const recipientAddress = tx.params.recipientAddress || null;
-	const recipientPublicKey = tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey || null;
+	const recipientPublicKey = (tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey) || null;
 	const blockHeight = tx.block.height;
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
@@ -371,7 +379,7 @@ const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
 	};
 };
 
-const exportTransactions = async (job) => {
+const exportTransactions = async job => {
 	const { params } = job.data;
 
 	const allTransactions = [];
@@ -392,7 +400,7 @@ const exportTransactions = async (job) => {
 			if (await partials.fileExists(partialFilename)) {
 				const transactions = JSON.parse(await partials.read(partialFilename));
 				allTransactions.push(...transactions);
-			} else if (await noTransactionsCache.get(partialFilename) !== true) {
+			} else if ((await noTransactionsCache.get(partialFilename)) !== true) {
 				const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
 				const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
 				const timestampRange = `${fromTimestamp}:${toTimestamp}`;
@@ -409,7 +417,8 @@ const exportTransactions = async (job) => {
 				});
 
 				const blocks = await getBlocksInAsc({
-					...params, timestamp: timestampRange,
+					...params,
+					timestamp: timestampRange,
 				});
 				allBlocks.push(...blocks);
 
@@ -450,21 +459,18 @@ const exportTransactions = async (job) => {
 		}
 	});
 
-	const normalizedTransactions = await Promise.all(allTransactions.map((t) => normalizeTransaction(
-		getAddressFromParams(params),
-		t,
-		currentChainID,
-		txFeeTokenID,
-	)));
+	const normalizedTransactions = await Promise.all(
+		allTransactions.map(t =>
+			normalizeTransaction(getAddressFromParams(params), t, currentChainID, txFeeTokenID),
+		),
+	);
 
 	const normalizedBlocks = await normalizeBlocks(allBlocks);
 
 	const uniqueChainIDs = await getUniqueChainIDs(normalizedTransactions);
-	const metadata = await Promise.all(uniqueChainIDs.map(async (chainID) => getMetadata(
-		params,
-		chainID,
-		currentChainID,
-	)));
+	const metadata = await Promise.all(
+		uniqueChainIDs.map(async chainID => getMetadata(params, chainID, currentChainID)),
+	);
 
 	const workBook = new excelJS.Workbook();
 	const transactionExportSheet = workBook.addWorksheet(config.excel.sheets.TRANSACTION_HISTORY);
@@ -485,10 +491,11 @@ const scheduleTransactionExportQueue = Queue(
 	config.queue.scheduleTransactionExport.concurrency,
 );
 
-const scheduleTransactionHistoryExport = async (params) => {
+const scheduleTransactionHistoryExport = async params => {
 	// Schedule only when index is completely built
 	const isBlockchainIndexReady = await requestIndexer('isBlockchainFullyIndexed');
-	if (!isBlockchainIndexReady) throw new ValidationException('The blockchain index is not yet ready. Please retry later.');
+	if (!isBlockchainIndexReady)
+		throw new ValidationException('The blockchain index is not yet ready. Please retry later.');
 
 	const exportResponse = {
 		data: {},
@@ -535,7 +542,9 @@ const downloadTransactionHistory = async ({ filename }) => {
 	const isFile = await staticFiles.isFile(filename);
 	if (!isFile) throw new NotFoundException(`Requested file (${filename}) does not exist.`);
 
-	excelResponse.data = xlsx.build(xlsx.parse(`${config.cache.exports.dirPath}/${filename}`)).toString('hex');
+	excelResponse.data = xlsx
+		.build(xlsx.parse(`${config.cache.exports.dirPath}/${filename}`))
+		.toString('hex');
 	excelResponse.meta.filename = filename;
 
 	// Remove the static file if endDate is current date

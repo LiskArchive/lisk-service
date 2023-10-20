@@ -19,7 +19,7 @@ const { api } = require('../../../helpers/api');
 
 const { address, privateKey, publicKey, tokenTransferParamsSchema } = require('./constants');
 
-const createTokenTransferTx = async (authEndpoint) => {
+const createTokenTransferTx = async authEndpoint => {
 	const authResponse = await api.get(`${authEndpoint}?address=${address}`);
 
 	const txBuilder = {
@@ -31,18 +31,25 @@ const createTokenTransferTx = async (authEndpoint) => {
 		params: {
 			tokenID: Buffer.from([4, 0, 0, 0, 0, 0, 0, 0]),
 			amount: BigInt('1000000000000'),
-			recipientAddress: cryptography.address.getAddressFromLisk32Address('lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x'),
+			recipientAddress: cryptography.address.getAddressFromLisk32Address(
+				'lskv6v53emsaen6cwbbk226wusdpa6ojdonunka4x',
+			),
 			data: '',
 		},
 	};
 
-	const signedTx = transactions.signTransaction(txBuilder, Buffer.from('04000000', 'hex'), Buffer.from(privateKey, 'hex'), tokenTransferParamsSchema);
+	const signedTx = transactions.signTransaction(
+		txBuilder,
+		Buffer.from('04000000', 'hex'),
+		Buffer.from(privateKey, 'hex'),
+		tokenTransferParamsSchema,
+	);
 
 	const tx = {
 		...signedTx,
 		id: signedTx.id.toString('hex'),
 		senderPublicKey: signedTx.senderPublicKey.toString('hex'),
-		signatures: signedTx.signatures.map((s) => s.toString('hex')),
+		signatures: signedTx.signatures.map(s => s.toString('hex')),
 		params: {
 			...signedTx.params,
 			tokenID: signedTx.params.tokenID.toString('hex'),

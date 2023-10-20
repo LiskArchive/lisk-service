@@ -1,20 +1,24 @@
 /*
-* LiskHQ/lisk-service
-* Copyright © 2022 Lisk Foundation
-*
-* See the LICENSE file at the top-level directory of this distribution
-* for licensing information.
-*
-* Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
-* no part of this software, including this file, may be copied, modified,
-* propagated, or distributed except according to the terms contained in the
-* LICENSE file.
-*
-* Removal or modification of this copyright notice is prohibited.
-*
-*/
+ * LiskHQ/lisk-service
+ * Copyright © 2022 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
 const BluebirdPromise = require('bluebird');
-const { DB: { MySQL: { getTableInstance } } } = require('lisk-service-framework');
+const {
+	DB: {
+		MySQL: { getTableInstance },
+	},
+} = require('lisk-service-framework');
 const { getNetworkStatus } = require('../network');
 const { requestConnector } = require('../../../utils/request');
 const { LENGTH_NETWORK_ID, LENGTH_TOKEN_ID } = require('../../../constants');
@@ -39,7 +43,7 @@ const getLSKTokenID = async () => {
 	return lskTokenID;
 };
 
-const getBlockchainApps = async (params) => {
+const getBlockchainApps = async params => {
 	// TODO: Update implementation when interoperability_getOwnChainAccount is available
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
@@ -88,7 +92,9 @@ const getBlockchainApps = async (params) => {
 		Object.getOwnPropertyNames(blockchainAppsTableSchema.schema),
 	);
 
-	const { data: { chainID } } = await getNetworkStatus();
+	const {
+		data: { chainID },
+	} = await getNetworkStatus();
 	const { escrowedAmounts } = await requestConnector('getEscrowedAmounts');
 
 	const tokenIdForLSK = await getLSKTokenID();
@@ -103,10 +109,14 @@ const getBlockchainApps = async (params) => {
 			return {
 				...blockchainAppInfo,
 				escrowedLSK,
-				escrow: escrow.length ? escrow : [{
-					tokenID: chainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0'),
-					amount: '0',
-				}],
+				escrow: escrow.length
+					? escrow
+					: [
+							{
+								tokenID: chainID.substring(0, LENGTH_NETWORK_ID).padEnd(LENGTH_TOKEN_ID, '0'),
+								amount: '0',
+							},
+					  ],
 			};
 		},
 		{ concurrency: dbBlockchainApps.length },

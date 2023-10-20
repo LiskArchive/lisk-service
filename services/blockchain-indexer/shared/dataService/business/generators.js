@@ -27,20 +27,18 @@ let generatorsListCache = [];
 
 const getGeneratorsInfo = async () => {
 	const { list: generatorsList } = await requestConnector('getGenerators');
-	const generators = await BluebirdPromise.map(
-		generatorsList,
-		async generator => {
-			const { name, publicKey } = await getIndexedAccountInfo(
-				{ address: generator.address, limit: 1 },
-				['name', 'publicKey'],
-			);
+	const generators = await BluebirdPromise.map(generatorsList, async generator => {
+		const { name, publicKey } = await getIndexedAccountInfo(
+			{ address: generator.address, limit: 1 },
+			['name', 'publicKey'],
+		);
 
-			return {
-				...generator,
-				name: name || await getNameByAddress(generator.address),
-				publicKey,
-			};
-		});
+		return {
+			...generator,
+			name: name || (await getNameByAddress(generator.address)),
+			publicKey,
+		};
+	});
 
 	return generators;
 };

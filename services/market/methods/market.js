@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getMarketPrices,
-} = require('./controllers/market');
+const { getMarketPrices } = require('./controllers/market');
 
 module.exports = [
 	{

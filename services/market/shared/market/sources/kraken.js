@@ -47,7 +47,7 @@ const fetchAllMarketTickers = async () => {
 	throw new ServiceUnavailableException('Data from Kraken is currently unavailable');
 };
 
-const standardizeTickers = (tickers) => {
+const standardizeTickers = tickers => {
 	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
 		if (v === symbolMap.LSK_BTC) v = 'LSKXBT'; // Kraken API returns LSKBTC as LSKXBT
 		const currentTicker = tickers[v];
@@ -69,7 +69,7 @@ const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
-		async (itemCode) => {
+		async itemCode => {
 			const serializedPrice = await krakenCache.get(`kraken_${itemCode}`);
 			if (serializedPrice) return JSON.parse(serializedPrice);
 			return null;
@@ -87,8 +87,11 @@ const reload = async () => {
 			const transformedPrices = standardizeTickers(tickers);
 
 			// Serialize individual price item and write to the cache
-			await BluebirdPromise.all(transformedPrices
-				.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+			await BluebirdPromise.all(
+				transformedPrices.map(item =>
+					krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds),
+				),
+			);
 		}
 	}
 };

@@ -49,18 +49,16 @@ const dataSchema = {
 
 const minimumFeeBreakdownSchema = {
 	byteFee: Joi.string().pattern(regex.DIGITS).required(),
-	additionalFees: Joi.object().pattern(
-		Joi.string().required(),
-		Joi.string().pattern(regex.DIGITS).required(),
-	).optional(),
+	additionalFees: Joi.object()
+		.pattern(Joi.string().required(), Joi.string().pattern(regex.DIGITS).required())
+		.optional(),
 };
 
 const metaMessageFeeSchema = {
 	ccmByteFee: Joi.string().pattern(regex.DIGITS).required(),
-	additionalFees: Joi.object().pattern(
-		Joi.string().required(),
-		Joi.string().pattern(regex.DIGITS).required(),
-	).optional(),
+	additionalFees: Joi.object()
+		.pattern(Joi.string().required(), Joi.string().pattern(regex.DIGITS).required())
+		.optional(),
 };
 
 const breakdownFeeSchema = {

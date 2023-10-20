@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getLegacyAccountInfo,
-} = require('../controllers/legacy');
+const { getLegacyAccountInfo } = require('../controllers/legacy');
 
 module.exports = [
 	{

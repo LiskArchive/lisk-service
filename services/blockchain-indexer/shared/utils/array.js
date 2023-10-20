@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dropDuplicates = arr => arr.filter((v, i, a) => a.findIndex(t => (t === v)) === i);
+const dropDuplicates = arr => arr.filter((v, i, a) => a.findIndex(t => t === v) === i);
 
 const range = (start = 0, end, step = 1) => {
 	if (!end) {
@@ -26,17 +26,17 @@ const range = (start = 0, end, step = 1) => {
 	return new Array(arrSize).fill().map((_, index) => start + index * step);
 };
 
-const sortComparator = (sortParam) => {
+const sortComparator = sortParam => {
 	const [sortProp, sortOrder] = sortParam.split(':');
 
 	const comparator = (a, b) => {
 		try {
 			if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting.');
-			return (sortOrder === 'asc')
+			return sortOrder === 'asc'
 				? Number(a[sortProp] - b[sortProp])
 				: Number(b[sortProp] - a[sortProp]);
 		} catch (_) {
-			return (sortOrder === 'asc')
+			return sortOrder === 'asc'
 				? a[sortProp].localeCompare(b[sortProp])
 				: b[sortProp].localeCompare(a[sortProp]);
 		}
@@ -44,8 +44,8 @@ const sortComparator = (sortParam) => {
 	return comparator;
 };
 
-const isSubstringInArray = (collection, pattern) => collection.some((item) => item && pattern
-	&& item.toLowerCase().includes(pattern.toLowerCase()));
+const isSubstringInArray = (collection, pattern) =>
+	collection.some(item => item && pattern && item.toLowerCase().includes(pattern.toLowerCase()));
 
 module.exports = {
 	dropDuplicates,

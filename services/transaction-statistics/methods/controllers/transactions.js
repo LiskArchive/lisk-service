@@ -15,7 +15,7 @@
  */
 const txStatisticsService = require('../../shared/transactionStatistics');
 
-const getTransactionsStatistics = async (params) => {
+const getTransactionsStatistics = async params => {
 	const transactionsStatistics = {
 		data: {},
 		meta: {},

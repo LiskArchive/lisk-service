@@ -31,31 +31,31 @@ const errorCodes = [
 ];
 
 const HTTP = {
-	PARSE_ERROR:            [400, 'Bad Request'],
-	INVALID_REQUEST:        [400, 'Bad Request'],
-	METHOD_NOT_FOUND:       [404, 'Not Found'],
-	INVALID_PARAMS:         [400, 'Bad Request'],
-	SERVER_ERROR:           [500, 'Internal Server Error'],
-	NOT_FOUND:              [404, 'Not Found'],
-	UNAUTHORIZED:           [401, 'Unauthorized'],
-	FORBIDDEN:              [403, 'Forbidden'],
-	TOO_MANY_REQUESTS:      [429, 'Too Many Requests'],
-	NOT_IMPLEMENTED:        [501, 'Not Implemented'],
-	SERVICE_UNAVAILABLE:    [503, 'Service Unavailable'],
+	PARSE_ERROR: [400, 'Bad Request'],
+	INVALID_REQUEST: [400, 'Bad Request'],
+	METHOD_NOT_FOUND: [404, 'Not Found'],
+	INVALID_PARAMS: [400, 'Bad Request'],
+	SERVER_ERROR: [500, 'Internal Server Error'],
+	NOT_FOUND: [404, 'Not Found'],
+	UNAUTHORIZED: [401, 'Unauthorized'],
+	FORBIDDEN: [403, 'Forbidden'],
+	TOO_MANY_REQUESTS: [429, 'Too Many Requests'],
+	NOT_IMPLEMENTED: [501, 'Not Implemented'],
+	SERVICE_UNAVAILABLE: [503, 'Service Unavailable'],
 };
 
 const JSON_RPC = {
-	PARSE_ERROR:            [-32700, 'Parse error'],
-	INVALID_REQUEST:        [-32600, 'Invalid Request'],
-	METHOD_NOT_FOUND:       [-32601, 'Method not found'],
-	INVALID_PARAMS:         [-32602, 'Invalid params'],
-	SERVER_ERROR:           [-32000, 'Server error'],
-	NOT_FOUND:              [null, ''], // not defined, use {} response instead
-	UNAUTHORIZED:           [-32600, 'Invalid Request'],
-	FORBIDDEN:              [-32600, 'Invalid Request'],
-	TOO_MANY_REQUESTS:      [-32001, 'Server error'],
-	NOT_IMPLEMENTED:        [-32603, 'Internal error'],
-	SERVICE_UNAVAILABLE:    [-32002, 'Server error'],
+	PARSE_ERROR: [-32700, 'Parse error'],
+	INVALID_REQUEST: [-32600, 'Invalid Request'],
+	METHOD_NOT_FOUND: [-32601, 'Method not found'],
+	INVALID_PARAMS: [-32602, 'Invalid params'],
+	SERVER_ERROR: [-32000, 'Server error'],
+	NOT_FOUND: [null, ''], // not defined, use {} response instead
+	UNAUTHORIZED: [-32600, 'Invalid Request'],
+	FORBIDDEN: [-32600, 'Invalid Request'],
+	TOO_MANY_REQUESTS: [-32001, 'Server error'],
+	NOT_IMPLEMENTED: [-32603, 'Internal error'],
+	SERVICE_UNAVAILABLE: [-32002, 'Server error'],
 };
 
 module.exports = {

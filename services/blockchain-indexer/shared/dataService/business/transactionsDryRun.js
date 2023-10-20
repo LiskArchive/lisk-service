@@ -23,12 +23,16 @@ const dryRunTransactions = async params => {
 	};
 	const { transaction, skipVerify, skipDecode, strict } = params;
 
-	const response = await requestConnector('dryRunTransaction', { transaction, skipVerify, skipDecode, strict });
+	const response = await requestConnector('dryRunTransaction', {
+		transaction,
+		skipVerify,
+		skipDecode,
+		strict,
+	});
 
 	dryRunTransactionsRes.data = {
 		...response,
-		status: Object
-			.keys(TRANSACTION_VERIFY_RESULT)
+		status: Object.keys(TRANSACTION_VERIFY_RESULT)
 			.find(e => TRANSACTION_VERIFY_RESULT[e] === response.result)
 			.toLowerCase(),
 	};

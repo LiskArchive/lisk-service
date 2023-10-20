@@ -27,21 +27,24 @@ module.exports = {
 		address: { optional: true, type: 'string', pattern: regex.ADDRESS_LISK32 },
 		publicKey: { optional: true, type: 'string', pattern: regex.PUBLIC_KEY },
 		name: { optional: true, type: 'string', pattern: regex.NAME, altSwaggerKey: 'accountName' },
-		search: { optional: true, type: 'string', min: 1, pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubKey' },
+		search: {
+			optional: true,
+			type: 'string',
+			min: 1,
+			pattern: regex.PARTIAL_SEARCH,
+			altSwaggerKey: 'searchByNameAddressPubKey',
+		},
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	paramsRequired: true,
-	validParamPairings: [
-		['address'],
-		['publicKey'],
-		['name'],
-	],
+	validParamPairings: [['address'], ['publicKey'], ['name']],
 	get schema() {
 		const stakersSchema = {};
 		stakersSchema[this.swaggerApiPath] = { get: {} };
 		stakersSchema[this.swaggerApiPath].get.tags = this.tags;
-		stakersSchema[this.swaggerApiPath].get.summary = 'Requests the list of stakers for the specified validator.';
+		stakersSchema[this.swaggerApiPath].get.summary =
+			'Requests the list of stakers for the specified validator.';
 		stakersSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns a list of stakers for the specified validator.',
@@ -49,7 +52,8 @@ module.exports = {
 		stakersSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
 		stakersSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of stakers for the specified validator address, publicKey or name.',
+				description:
+					'Returns a list of stakers for the specified validator address, publicKey or name.',
 				schema: {
 					$ref: '#/definitions/posStakersWithEnvelope',
 				},

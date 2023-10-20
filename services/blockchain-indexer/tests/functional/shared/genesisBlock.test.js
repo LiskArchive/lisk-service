@@ -19,9 +19,7 @@ const {
 			getDBConnection,
 			startDBTransaction,
 			commitDBTransaction,
-			KVStore: {
-				getKeyValueTable,
-			},
+			KVStore: { getKeyValueTable },
 		},
 	},
 } = require('lisk-service-framework');
@@ -59,15 +57,16 @@ const bigIntZero = BigInt('0');
 beforeAll(async () => {
 	await broker.start();
 	await request.setAppContext({
-		requestRpc: (method, params) => new Promise((resolve, reject) => {
-			broker
-				.call(method, params)
-				.then(res => resolve(res))
-				.catch(err => {
-					console.error(`Error occurred! ${err.message}`);
-					reject(err);
-				});
-		}),
+		requestRpc: (method, params) =>
+			new Promise((resolve, reject) => {
+				broker
+					.call(method, params)
+					.then(res => resolve(res))
+					.catch(err => {
+						console.error(`Error occurred! ${err.message}`);
+						reject(err);
+					});
+			}),
 	});
 
 	connection = await getDBConnection(MYSQL_ENDPOINT);

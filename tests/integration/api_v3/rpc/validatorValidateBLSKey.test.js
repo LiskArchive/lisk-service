@@ -19,9 +19,15 @@ const { BLS_KEY, PROOF_OF_POSSESSION } = require('../constants/validatorValidate
 
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const { jsonRpcEnvelopeSchema, invalidParamsSchema } = require('../../../schemas/rpcGenerics.schema');
+const {
+	jsonRpcEnvelopeSchema,
+	invalidParamsSchema,
+} = require('../../../schemas/rpcGenerics.schema');
 
-const { validateBLSKeySchema, validateBLSKeyGoodRequestSchema } = require('../../../schemas/api_v3/validatorSchema.schema');
+const {
+	validateBLSKeySchema,
+	validateBLSKeyGoodRequestSchema,
+} = require('../../../schemas/api_v3/validatorSchema.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const validateBLSKey = async params => request(wsRpcUrl, 'post.validator.validate-bls-key', params);

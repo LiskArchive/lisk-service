@@ -35,7 +35,7 @@ const getCurrentHeight = async () => {
 };
 
 const initNodeConstants = async () => {
-	const nodeInfoListener = async (payload) => {
+	const nodeInfoListener = async payload => {
 		// Caching all node constants
 		genesisHeight = payload.genesisHeight;
 		currentHeight = payload.height;

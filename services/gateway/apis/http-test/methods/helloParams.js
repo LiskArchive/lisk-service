@@ -33,10 +33,13 @@ module.exports = {
 			name: 'path_name',
 		},
 		definition: {
-			data: ['data', {
-				message: '=',
-				name: '=',
-			}],
+			data: [
+				'data',
+				{
+					message: '=',
+					name: '=',
+				},
+			],
 			meta: {
 				count: 'meta.count,number',
 				offset: '=,number',

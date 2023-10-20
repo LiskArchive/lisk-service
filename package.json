@@ -1,43 +1,44 @@
 {
-  "name": "lisk-service",
-  "version": "0.7.0-rc.1",
-  "description": "Lisk Service",
-  "keywords": [
-    "lisk",
-    "service",
-    "blockchain"
-  ],
-  "homepage": "https://github.com/LiskHQ/lisk-service",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LiskHQ/lisk-service.git"
-  },
-  "bugs": {
-    "url": "https://github.com/LiskHQ/lisk-service/issues"
-  },
-  "private": true,
-  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
-  "license": "Apache-2.0",
-  "main": "app.js",
-  "engines": {
-    "node": ">=18.16 <=18",
-    "npm": ">=8.5.0"
-  },
-  "scripts": {
-    "start": "pm2 start ecosystem.config.js",
-    "stop": "pm2 delete ecosystem.config.js",
-    "format": "prettier --write '**/*'",
-    "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
-    "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
-    "test:coverage": "jest --config=jest.config.unit.js --coverage=true --verbose --forceExit"
-  },
-  "devDependencies": {
-    "eslint": "^8.46.0",
-    "eslint-config-lisk-base": "^2.0.1",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^26.2.2",
-    "eslint-plugin-mocha": "^10.0.4",
-    "jest": "^27.3.0",
-    "prettier": "2.8.8"
-  }
+	"name": "lisk-service",
+	"version": "0.7.0-rc.1",
+	"description": "Lisk Service",
+	"keywords": [
+		"lisk",
+		"service",
+		"blockchain"
+	],
+	"homepage": "https://github.com/LiskHQ/lisk-service",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/LiskHQ/lisk-service.git"
+	},
+	"bugs": {
+		"url": "https://github.com/LiskHQ/lisk-service/issues"
+	},
+	"private": true,
+	"author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+	"license": "Apache-2.0",
+	"main": "app.js",
+	"engines": {
+		"node": ">=18.16 <=18",
+		"npm": ">=8.5.0"
+	},
+	"scripts": {
+		"start": "pm2 start ecosystem.config.js",
+		"stop": "pm2 delete ecosystem.config.js",
+		"format": "prettier --write '**/*'",
+		"eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
+		"eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
+		"test:coverage": "jest --config=jest.config.unit.js --coverage=true --verbose --forceExit"
+	},
+	"devDependencies": {
+		"eslint": "^8.46.0",
+		"eslint-config-lisk-base": "^2.0.1",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-jest": "^26.2.2",
+		"eslint-plugin-mocha": "^10.0.4",
+		"jest": "^27.3.0",
+		"prettier": "2.8.8"
+	}
 }

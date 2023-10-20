@@ -1,10 +1,10 @@
 {
-    "blockHeightRequired": {
-        "name": "height",
-        "in": "query",
-        "description": "Block height to query.",
-        "type": "number",
-        "minimum": 0,
-        "required": true
-    }
+	"blockHeightRequired": {
+		"name": "height",
+		"in": "query",
+		"description": "Block height to query.",
+		"type": "number",
+		"minimum": 0,
+		"required": true
+	}
 }

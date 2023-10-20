@@ -3,7 +3,6 @@
 # See https://docs.docker.com/compose/extends/#example-use-case
 version: '3.3'
 services:
-
   mariadb:
     image: mariadb:10.7
     command: mysqld --default-authentication-plugin=mysql_native_password
@@ -17,7 +16,7 @@ services:
       MARIADB_USER: lisk
       MARIADB_PASSWORD: password
     ports:
-      - "127.0.0.1:3306:3306"
+      - '127.0.0.1:3306:3306'
     healthcheck:
       test: ['CMD', 'bash', '/healthcheck.sh']
 

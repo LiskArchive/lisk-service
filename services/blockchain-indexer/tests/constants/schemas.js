@@ -23,19 +23,14 @@ const schemas = {
 				schema: {
 					$id: '/auth/module/genesis',
 					type: 'object',
-					required: [
-						'authDataSubstore',
-					],
+					required: ['authDataSubstore'],
 					properties: {
 						authDataSubstore: {
 							type: 'array',
 							fieldNumber: 1,
 							items: {
 								type: 'object',
-								required: [
-									'address',
-									'authAccount',
-								],
+								required: ['address', 'authAccount'],
 								properties: {
 									address: {
 										dataType: 'bytes',
@@ -44,12 +39,7 @@ const schemas = {
 									authAccount: {
 										type: 'object',
 										fieldNumber: 2,
-										required: [
-											'nonce',
-											'numberOfSignatures',
-											'mandatoryKeys',
-											'optionalKeys',
-										],
+										required: ['nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 										properties: {
 											nonce: {
 												dataType: 'uint64',
@@ -113,12 +103,7 @@ const schemas = {
 							fieldNumber: 3,
 							items: {
 								type: 'object',
-								required: [
-									'chainID',
-									'chainData',
-									'channelData',
-									'chainValidators',
-								],
+								required: ['chainID', 'chainData', 'channelData', 'chainValidators'],
 								properties: {
 									chainID: {
 										dataType: 'bytes',
@@ -129,11 +114,7 @@ const schemas = {
 									chainData: {
 										$id: '/modules/interoperability/chainData',
 										type: 'object',
-										required: [
-											'name',
-											'lastCertificate',
-											'status',
-										],
+										required: ['name', 'lastCertificate', 'status'],
 										properties: {
 											name: {
 												dataType: 'string',
@@ -144,12 +125,7 @@ const schemas = {
 											lastCertificate: {
 												type: 'object',
 												fieldNumber: 2,
-												required: [
-													'height',
-													'timestamp',
-													'stateRoot',
-													'validatorsHash',
-												],
+												required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 												properties: {
 													height: {
 														dataType: 'uint32',
@@ -194,11 +170,7 @@ const schemas = {
 											inbox: {
 												type: 'object',
 												fieldNumber: 1,
-												required: [
-													'appendPath',
-													'size',
-													'root',
-												],
+												required: ['appendPath', 'size', 'root'],
 												properties: {
 													appendPath: {
 														type: 'array',
@@ -224,11 +196,7 @@ const schemas = {
 											outbox: {
 												type: 'object',
 												fieldNumber: 2,
-												required: [
-													'appendPath',
-													'size',
-													'root',
-												],
+												required: ['appendPath', 'size', 'root'],
 												properties: {
 													appendPath: {
 														type: 'array',
@@ -273,10 +241,7 @@ const schemas = {
 									chainValidators: {
 										$id: '/modules/interoperability/chainValidators',
 										type: 'object',
-										required: [
-											'activeValidators',
-											'certificateThreshold',
-										],
+										required: ['activeValidators', 'certificateThreshold'],
 										properties: {
 											activeValidators: {
 												type: 'array',
@@ -285,10 +250,7 @@ const schemas = {
 												maxItems: 199,
 												items: {
 													type: 'object',
-													required: [
-														'blsKey',
-														'bftWeight',
-													],
+													required: ['blsKey', 'bftWeight'],
 													properties: {
 														blsKey: {
 															dataType: 'bytes',
@@ -318,10 +280,7 @@ const schemas = {
 							fieldNumber: 4,
 							items: {
 								type: 'object',
-								required: [
-									'chainID',
-									'terminatedStateAccount',
-								],
+								required: ['chainID', 'terminatedStateAccount'],
 								properties: {
 									chainID: {
 										dataType: 'bytes',
@@ -332,11 +291,7 @@ const schemas = {
 									terminatedStateAccount: {
 										$id: '/modules/interoperability/terminatedState',
 										type: 'object',
-										required: [
-											'stateRoot',
-											'mainchainStateRoot',
-											'initialized',
-										],
+										required: ['stateRoot', 'mainchainStateRoot', 'initialized'],
 										properties: {
 											stateRoot: {
 												dataType: 'bytes',
@@ -365,10 +320,7 @@ const schemas = {
 							fieldNumber: 5,
 							items: {
 								type: 'object',
-								required: [
-									'chainID',
-									'terminatedOutboxAccount',
-								],
+								required: ['chainID', 'terminatedOutboxAccount'],
 								properties: {
 									chainID: {
 										dataType: 'bytes',
@@ -379,11 +331,7 @@ const schemas = {
 									terminatedOutboxAccount: {
 										$id: '/modules/interoperability/terminatedOutbox',
 										type: 'object',
-										required: [
-											'outboxRoot',
-											'outboxSize',
-											'partnerChainInboxSize',
-										],
+										required: ['outboxRoot', 'outboxSize', 'partnerChainInboxSize'],
 										properties: {
 											outboxRoot: {
 												dataType: 'bytes',
@@ -414,19 +362,14 @@ const schemas = {
 				schema: {
 					$id: '/legacy/module/genesis',
 					type: 'object',
-					required: [
-						'accounts',
-					],
+					required: ['accounts'],
 					properties: {
 						accounts: {
 							type: 'array',
 							fieldNumber: 1,
 							items: {
 								type: 'object',
-								required: [
-									'address',
-									'balance',
-								],
+								required: ['address', 'balance'],
 								properties: {
 									address: {
 										dataType: 'bytes',
@@ -450,11 +393,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/module/genesis',
 					type: 'object',
-					required: [
-						'validators',
-						'stakers',
-						'genesisData',
-					],
+					required: ['validators', 'stakers', 'genesisData'],
 					properties: {
 						validators: {
 							type: 'array',
@@ -538,10 +477,7 @@ const schemas = {
 										fieldNumber: 12,
 										items: {
 											type: 'object',
-											required: [
-												'tokenID',
-												'coefficient',
-											],
+											required: ['tokenID', 'coefficient'],
 											properties: {
 												tokenID: {
 													dataType: 'bytes',
@@ -565,11 +501,7 @@ const schemas = {
 							fieldNumber: 2,
 							items: {
 								type: 'object',
-								required: [
-									'address',
-									'stakes',
-									'pendingUnlocks',
-								],
+								required: ['address', 'stakes', 'pendingUnlocks'],
 								properties: {
 									address: {
 										dataType: 'bytes',
@@ -581,11 +513,7 @@ const schemas = {
 										fieldNumber: 2,
 										items: {
 											type: 'object',
-											required: [
-												'validatorAddress',
-												'amount',
-												'sharingCoefficients',
-											],
+											required: ['validatorAddress', 'amount', 'sharingCoefficients'],
 											properties: {
 												validatorAddress: {
 													dataType: 'bytes',
@@ -601,10 +529,7 @@ const schemas = {
 													fieldNumber: 3,
 													items: {
 														type: 'object',
-														required: [
-															'tokenID',
-															'coefficient',
-														],
+														required: ['tokenID', 'coefficient'],
 														properties: {
 															tokenID: {
 																dataType: 'bytes',
@@ -628,11 +553,7 @@ const schemas = {
 										fieldNumber: 3,
 										items: {
 											type: 'object',
-											required: [
-												'validatorAddress',
-												'amount',
-												'unstakeHeight',
-											],
+											required: ['validatorAddress', 'amount', 'unstakeHeight'],
 											properties: {
 												validatorAddress: {
 													dataType: 'bytes',
@@ -656,10 +577,7 @@ const schemas = {
 						genesisData: {
 							type: 'object',
 							fieldNumber: 3,
-							required: [
-								'initRounds',
-								'initValidators',
-							],
+							required: ['initRounds', 'initValidators'],
 							properties: {
 								initRounds: {
 									dataType: 'uint32',
@@ -692,9 +610,7 @@ const schemas = {
 							maxLength: 16,
 						},
 					},
-					required: [
-						'seedReveal',
-					],
+					required: ['seedReveal'],
 				},
 			},
 			{
@@ -703,24 +619,14 @@ const schemas = {
 				schema: {
 					$id: '/token/module/genesis',
 					type: 'object',
-					required: [
-						'userSubstore',
-						'supplySubstore',
-						'escrowSubstore',
-						'supportedTokensSubstore',
-					],
+					required: ['userSubstore', 'supplySubstore', 'escrowSubstore', 'supportedTokensSubstore'],
 					properties: {
 						userSubstore: {
 							type: 'array',
 							fieldNumber: 1,
 							items: {
 								type: 'object',
-								required: [
-									'address',
-									'tokenID',
-									'availableBalance',
-									'lockedBalances',
-								],
+								required: ['address', 'tokenID', 'availableBalance', 'lockedBalances'],
 								properties: {
 									address: {
 										dataType: 'bytes',
@@ -742,10 +648,7 @@ const schemas = {
 										fieldNumber: 4,
 										items: {
 											type: 'object',
-											required: [
-												'module',
-												'amount',
-											],
+											required: ['module', 'amount'],
 											properties: {
 												module: {
 													dataType: 'string',
@@ -768,10 +671,7 @@ const schemas = {
 							fieldNumber: 2,
 							items: {
 								type: 'object',
-								required: [
-									'tokenID',
-									'totalSupply',
-								],
+								required: ['tokenID', 'totalSupply'],
 								properties: {
 									tokenID: {
 										dataType: 'bytes',
@@ -791,11 +691,7 @@ const schemas = {
 							fieldNumber: 3,
 							items: {
 								type: 'object',
-								required: [
-									'escrowChainID',
-									'tokenID',
-									'amount',
-								],
+								required: ['escrowChainID', 'tokenID', 'amount'],
 								properties: {
 									escrowChainID: {
 										dataType: 'bytes',
@@ -821,10 +717,7 @@ const schemas = {
 							fieldNumber: 4,
 							items: {
 								type: 'object',
-								required: [
-									'chainID',
-									'supportedTokenIDs',
-								],
+								required: ['chainID', 'supportedTokenIDs'],
 								properties: {
 									chainID: {
 										dataType: 'bytes',
@@ -891,12 +784,7 @@ const schemas = {
 							fieldNumber: 4,
 						},
 					},
-					required: [
-						'numberOfSignatures',
-						'mandatoryKeys',
-						'optionalKeys',
-						'signatures',
-					],
+					required: ['numberOfSignatures', 'mandatoryKeys', 'optionalKeys', 'signatures'],
 				},
 			},
 			{
@@ -925,11 +813,7 @@ const schemas = {
 						activeValidatorsUpdate: {
 							type: 'object',
 							fieldNumber: 3,
-							required: [
-								'blsKeysUpdate',
-								'bftWeightsUpdate',
-								'bftWeightsUpdateBitmap',
-							],
+							required: ['blsKeysUpdate', 'bftWeightsUpdate', 'bftWeightsUpdateBitmap'],
 							properties: {
 								blsKeysUpdate: {
 									type: 'array',
@@ -960,11 +844,7 @@ const schemas = {
 						inboxUpdate: {
 							type: 'object',
 							fieldNumber: 5,
-							required: [
-								'crossChainMessages',
-								'messageWitnessHashes',
-								'outboxRootWitness',
-							],
+							required: ['crossChainMessages', 'messageWitnessHashes', 'outboxRootWitness'],
 							properties: {
 								crossChainMessages: {
 									type: 'array',
@@ -985,10 +865,7 @@ const schemas = {
 								outboxRootWitness: {
 									type: 'object',
 									fieldNumber: 3,
-									required: [
-										'bitmap',
-										'siblingHashes',
-									],
+									required: ['bitmap', 'siblingHashes'],
 									properties: {
 										bitmap: {
 											dataType: 'bytes',
@@ -1015,12 +892,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/mainchain/messageRecoveryInitialization',
 					type: 'object',
-					required: [
-						'chainID',
-						'channel',
-						'bitmap',
-						'siblingHashes',
-					],
+					required: ['chainID', 'channel', 'bitmap', 'siblingHashes'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -1053,12 +925,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/mainchain/messageRecovery',
 					type: 'object',
-					required: [
-						'chainID',
-						'crossChainMessages',
-						'idxs',
-						'siblingHashes',
-					],
+					required: ['chainID', 'crossChainMessages', 'idxs', 'siblingHashes'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -1097,12 +964,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/mainchain/sidechainRegistration',
 					type: 'object',
-					required: [
-						'chainID',
-						'name',
-						'sidechainValidators',
-						'sidechainCertificateThreshold',
-					],
+					required: ['chainID', 'name', 'sidechainValidators', 'sidechainCertificateThreshold'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -1120,10 +982,7 @@ const schemas = {
 							type: 'array',
 							items: {
 								type: 'object',
-								required: [
-									'blsKey',
-									'bftWeight',
-								],
+								required: ['blsKey', 'bftWeight'],
 								properties: {
 									blsKey: {
 										dataType: 'bytes',
@@ -1153,12 +1012,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/mainchain/commands/stateRecovery',
 					type: 'object',
-					required: [
-						'chainID',
-						'module',
-						'storeEntries',
-						'siblingHashes',
-					],
+					required: ['chainID', 'module', 'storeEntries', 'siblingHashes'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -1197,12 +1051,7 @@ const schemas = {
 										fieldNumber: 4,
 									},
 								},
-								required: [
-									'substorePrefix',
-									'storeKey',
-									'storeValue',
-									'bitmap',
-								],
+								required: ['substorePrefix', 'storeKey', 'storeValue', 'bitmap'],
 							},
 						},
 						siblingHashes: {
@@ -1222,9 +1071,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/mainchain/terminateSidechainForLiveness',
 					type: 'object',
-					required: [
-						'chainID',
-					],
+					required: ['chainID'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -1240,9 +1087,7 @@ const schemas = {
 				schema: {
 					$id: '/legacy/command/reclaimLSKParams',
 					type: 'object',
-					required: [
-						'amount',
-					],
+					required: ['amount'],
 					properties: {
 						amount: {
 							dataType: 'uint64',
@@ -1256,11 +1101,7 @@ const schemas = {
 				schema: {
 					$id: '/legacy/command/registerKeysParams',
 					type: 'object',
-					required: [
-						'blsKey',
-						'proofOfPossession',
-						'generatorKey',
-					],
+					required: ['blsKey', 'proofOfPossession', 'generatorKey'],
 					properties: {
 						blsKey: {
 							dataType: 'bytes',
@@ -1288,12 +1129,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/command/registerValidatorParams',
 					type: 'object',
-					required: [
-						'name',
-						'blsKey',
-						'proofOfPossession',
-						'generatorKey',
-					],
+					required: ['name', 'blsKey', 'proofOfPossession', 'generatorKey'],
 					properties: {
 						name: {
 							dataType: 'string',
@@ -1327,10 +1163,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/command/reportMisbehaviorParams',
 					type: 'object',
-					required: [
-						'header1',
-						'header2',
-					],
+					required: ['header1', 'header2'],
 					properties: {
 						header1: {
 							dataType: 'bytes',
@@ -1356,9 +1189,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/command/updateGeneratorKeyParams',
 					type: 'object',
-					required: [
-						'generatorKey',
-					],
+					required: ['generatorKey'],
 					properties: {
 						generatorKey: {
 							dataType: 'bytes',
@@ -1374,9 +1205,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/command/stakeValidatorParams',
 					type: 'object',
-					required: [
-						'stakes',
-					],
+					required: ['stakes'],
 					properties: {
 						stakes: {
 							type: 'array',
@@ -1385,10 +1214,7 @@ const schemas = {
 							maxItems: 20,
 							items: {
 								type: 'object',
-								required: [
-									'validatorAddress',
-									'amount',
-								],
+								required: ['validatorAddress', 'amount'],
 								properties: {
 									validatorAddress: {
 										dataType: 'bytes',
@@ -1410,9 +1236,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/command/changeCommissionCommandParams',
 					type: 'object',
-					required: [
-						'newCommission',
-					],
+					required: ['newCommission'],
 					properties: {
 						newCommission: {
 							dataType: 'uint32',
@@ -1436,12 +1260,7 @@ const schemas = {
 					$id: '/lisk/transferParams',
 					title: 'Transfer transaction params',
 					type: 'object',
-					required: [
-						'tokenID',
-						'amount',
-						'recipientAddress',
-						'data',
-					],
+					required: ['tokenID', 'amount', 'recipientAddress', 'data'],
 					properties: {
 						tokenID: {
 							dataType: 'bytes',
@@ -1530,11 +1349,7 @@ const schemas = {
 				schema: {
 					$id: '/auth/events/multisigRegData',
 					type: 'object',
-					required: [
-						'numberOfSignatures',
-						'mandatoryKeys',
-						'optionalKeys',
-					],
+					required: ['numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 					properties: {
 						numberOfSignatures: {
 							dataType: 'uint32',
@@ -1618,10 +1433,7 @@ const schemas = {
 				schema: {
 					$id: '/reward/events/rewardMintedData',
 					type: 'object',
-					required: [
-						'amount',
-						'reduction',
-					],
+					required: ['amount', 'reduction'],
 					properties: {
 						amount: {
 							dataType: 'uint64',
@@ -1640,12 +1452,7 @@ const schemas = {
 				schema: {
 					$id: '/fee/events/generatorFeeProcessed',
 					type: 'object',
-					required: [
-						'senderAddress',
-						'generatorAddress',
-						'burntAmount',
-						'generatorAmount',
-					],
+					required: ['senderAddress', 'generatorAddress', 'burntAmount', 'generatorAmount'],
 					properties: {
 						senderAddress: {
 							dataType: 'bytes',
@@ -1674,12 +1481,7 @@ const schemas = {
 				schema: {
 					$id: '/fee/events/relayerFeeProcessed',
 					type: 'object',
-					required: [
-						'ccmID',
-						'relayerAddress',
-						'burntAmount',
-						'relayerAmount',
-					],
+					required: ['ccmID', 'relayerAddress', 'burntAmount', 'relayerAmount'],
 					properties: {
 						ccmID: {
 							dataType: 'bytes',
@@ -1718,11 +1520,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/chainData',
 					type: 'object',
-					required: [
-						'name',
-						'lastCertificate',
-						'status',
-					],
+					required: ['name', 'lastCertificate', 'status'],
 					properties: {
 						name: {
 							dataType: 'string',
@@ -1733,12 +1531,7 @@ const schemas = {
 						lastCertificate: {
 							type: 'object',
 							fieldNumber: 2,
-							required: [
-								'height',
-								'timestamp',
-								'stateRoot',
-								'validatorsHash',
-							],
+							required: ['height', 'timestamp', 'stateRoot', 'validatorsHash'],
 							properties: {
 								height: {
 									dataType: 'uint32',
@@ -1775,11 +1568,7 @@ const schemas = {
 				schema: {
 					$id: '/interoperability/events/ccmProcessed',
 					type: 'object',
-					required: [
-						'ccm',
-						'result',
-						'code',
-					],
+					required: ['ccm', 'result', 'code'],
 					properties: {
 						ccm: {
 							fieldNumber: 1,
@@ -1854,9 +1643,7 @@ const schemas = {
 				schema: {
 					$id: '/interoperability/events/ccmSendSuccess',
 					type: 'object',
-					required: [
-						'ccm',
-					],
+					required: ['ccm'],
 					properties: {
 						ccm: {
 							fieldNumber: 1,
@@ -1923,10 +1710,7 @@ const schemas = {
 				schema: {
 					$id: '/interoperability/events/ccmSendFail',
 					type: 'object',
-					required: [
-						'ccm',
-						'code',
-					],
+					required: ['ccm', 'code'],
 					properties: {
 						ccm: {
 							$id: '/modules/interoperability/ccm',
@@ -2007,11 +1791,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/terminatedState',
 					type: 'object',
-					required: [
-						'stateRoot',
-						'mainchainStateRoot',
-						'initialized',
-					],
+					required: ['stateRoot', 'mainchainStateRoot', 'initialized'],
 					properties: {
 						stateRoot: {
 							dataType: 'bytes',
@@ -2038,11 +1818,7 @@ const schemas = {
 				schema: {
 					$id: '/modules/interoperability/terminatedOutbox',
 					type: 'object',
-					required: [
-						'outboxRoot',
-						'outboxSize',
-						'partnerChainInboxSize',
-					],
+					required: ['outboxRoot', 'outboxSize', 'partnerChainInboxSize'],
 					properties: {
 						outboxRoot: {
 							dataType: 'bytes',
@@ -2094,11 +1870,7 @@ const schemas = {
 				schema: {
 					$id: 'lisk/legacy/accountReclaimedEventData',
 					type: 'object',
-					required: [
-						'legacyAddress',
-						'address',
-						'amount',
-					],
+					required: ['legacyAddress', 'address', 'amount'],
 					properties: {
 						legacyAddress: {
 							dataType: 'bytes',
@@ -2123,11 +1895,7 @@ const schemas = {
 				schema: {
 					$id: 'lisk/legacy/keysRegisteredEventData',
 					type: 'object',
-					required: [
-						'address',
-						'generatorKey',
-						'blsKey',
-					],
+					required: ['address', 'generatorKey', 'blsKey'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2153,10 +1921,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/events/validatorBannedData',
 					type: 'object',
-					required: [
-						'address',
-						'height',
-					],
+					required: ['address', 'height'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2176,10 +1941,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/events/punishValidatorData',
 					type: 'object',
-					required: [
-						'address',
-						'height',
-					],
+					required: ['address', 'height'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2199,10 +1961,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/events/registerValidatorData',
 					type: 'object',
-					required: [
-						'address',
-						'name',
-					],
+					required: ['address', 'name'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2222,12 +1981,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/events/validatorStakedData',
 					type: 'object',
-					required: [
-						'senderAddress',
-						'validatorAddress',
-						'amount',
-						'result',
-					],
+					required: ['senderAddress', 'validatorAddress', 'amount', 'result'],
 					properties: {
 						senderAddress: {
 							dataType: 'bytes',
@@ -2256,11 +2010,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/events/commissionChangeData',
 					type: 'object',
-					required: [
-						'validatorAddress',
-						'oldCommission',
-						'newCommission',
-					],
+					required: ['validatorAddress', 'oldCommission', 'newCommission'],
 					properties: {
 						validatorAddress: {
 							dataType: 'bytes',
@@ -2284,12 +2034,7 @@ const schemas = {
 				schema: {
 					$id: '/pos/events/rewardsAssignedData',
 					type: 'object',
-					required: [
-						'stakerAddress',
-						'validatorAddress',
-						'tokenID',
-						'amount',
-					],
+					required: ['stakerAddress', 'validatorAddress', 'tokenID', 'amount'],
 					properties: {
 						stakerAddress: {
 							dataType: 'bytes',
@@ -2320,13 +2065,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/transfer',
 					type: 'object',
-					required: [
-						'senderAddress',
-						'recipientAddress',
-						'tokenID',
-						'amount',
-						'result',
-					],
+					required: ['senderAddress', 'recipientAddress', 'tokenID', 'amount', 'result'],
 					properties: {
 						senderAddress: {
 							dataType: 'bytes',
@@ -2457,12 +2196,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/mint',
 					type: 'object',
-					required: [
-						'address',
-						'tokenID',
-						'amount',
-						'result',
-					],
+					required: ['address', 'tokenID', 'amount', 'result'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2492,12 +2226,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/burn',
 					type: 'object',
-					required: [
-						'address',
-						'tokenID',
-						'amount',
-						'result',
-					],
+					required: ['address', 'tokenID', 'amount', 'result'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2527,13 +2256,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/lock',
 					type: 'object',
-					required: [
-						'address',
-						'module',
-						'tokenID',
-						'amount',
-						'result',
-					],
+					required: ['address', 'module', 'tokenID', 'amount', 'result'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2569,13 +2292,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/unlock',
 					type: 'object',
-					required: [
-						'address',
-						'module',
-						'tokenID',
-						'amount',
-						'result',
-					],
+					required: ['address', 'module', 'tokenID', 'amount', 'result'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2611,10 +2328,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/initializeTokenEvent',
 					type: 'object',
-					required: [
-						'tokenID',
-						'result',
-					],
+					required: ['tokenID', 'result'],
 					properties: {
 						tokenID: {
 							dataType: 'bytes',
@@ -2635,12 +2349,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/initializeUserAccount',
 					type: 'object',
-					required: [
-						'address',
-						'tokenID',
-						'initializationFee',
-						'result',
-					],
+					required: ['address', 'tokenID', 'initializationFee', 'result'],
 					properties: {
 						address: {
 							dataType: 'bytes',
@@ -2670,12 +2379,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/initializeEscrowAccount',
 					type: 'object',
-					required: [
-						'chainID',
-						'tokenID',
-						'initializationFee',
-						'result',
-					],
+					required: ['chainID', 'tokenID', 'initializationFee', 'result'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -2706,12 +2410,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/recover',
 					type: 'object',
-					required: [
-						'terminatedChainID',
-						'tokenID',
-						'amount',
-						'result',
-					],
+					required: ['terminatedChainID', 'tokenID', 'amount', 'result'],
 					properties: {
 						terminatedChainID: {
 							dataType: 'bytes',
@@ -2742,12 +2441,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/beforeCCCExecution',
 					type: 'object',
-					required: [
-						'ccmID',
-						'messageFeeTokenID',
-						'relayerAddress',
-						'result',
-					],
+					required: ['ccmID', 'messageFeeTokenID', 'relayerAddress', 'result'],
 					properties: {
 						ccmID: {
 							dataType: 'bytes',
@@ -2779,11 +2473,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/beforeCCMForwarding',
 					type: 'object',
-					required: [
-						'ccmID',
-						'messageFeeTokenID',
-						'result',
-					],
+					required: ['ccmID', 'messageFeeTokenID', 'result'],
 					properties: {
 						ccmID: {
 							dataType: 'bytes',
@@ -2828,9 +2518,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/allTokensFromChainSupported',
 					type: 'object',
-					required: [
-						'chainID',
-					],
+					required: ['chainID'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -2847,9 +2535,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/allTokensFromChainSupportRemoved',
 					type: 'object',
-					required: [
-						'chainID',
-					],
+					required: ['chainID'],
 					properties: {
 						chainID: {
 							dataType: 'bytes',
@@ -2866,9 +2552,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/tokenIDSupported',
 					type: 'object',
-					required: [
-						'tokenID',
-					],
+					required: ['tokenID'],
 					properties: {
 						tokenID: {
 							dataType: 'bytes',
@@ -2885,9 +2569,7 @@ const schemas = {
 				schema: {
 					$id: '/token/events/tokenIDSupportRemoved',
 					type: 'object',
-					required: [
-						'tokenID',
-					],
+					required: ['tokenID'],
 					properties: {
 						tokenID: {
 							dataType: 'bytes',
@@ -2904,10 +2586,7 @@ const schemas = {
 				schema: {
 					$id: '/validators/event/generatorKeyRegData',
 					type: 'object',
-					required: [
-						'generatorKey',
-						'result',
-					],
+					required: ['generatorKey', 'result'],
 					properties: {
 						generatorKey: {
 							dataType: 'bytes',
@@ -2928,11 +2607,7 @@ const schemas = {
 				schema: {
 					$id: '/validators/event/blsKeyRegData',
 					type: 'object',
-					required: [
-						'blsKey',
-						'proofOfPossession',
-						'result',
-					],
+					required: ['blsKey', 'proofOfPossession', 'result'],
 					properties: {
 						blsKey: {
 							dataType: 'bytes',
@@ -2978,11 +2653,7 @@ const schemas = {
 						fieldNumber: 3,
 					},
 				},
-				required: [
-					'header',
-					'transactions',
-					'assets',
-				],
+				required: ['header', 'transactions', 'assets'],
 			},
 		},
 		header: {
@@ -3046,11 +2717,7 @@ const schemas = {
 					aggregateCommit: {
 						type: 'object',
 						fieldNumber: 14,
-						required: [
-							'height',
-							'aggregationBits',
-							'certificateSignature',
-						],
+						required: ['height', 'aggregationBits', 'certificateSignature'],
 						properties: {
 							height: {
 								dataType: 'uint32',
@@ -3094,10 +2761,7 @@ const schemas = {
 			schema: {
 				$id: '/block/asset/3',
 				type: 'object',
-				required: [
-					'module',
-					'data',
-				],
+				required: ['module', 'data'],
 				properties: {
 					module: {
 						dataType: 'string',
@@ -3114,14 +2778,7 @@ const schemas = {
 			schema: {
 				$id: '/lisk/transaction',
 				type: 'object',
-				required: [
-					'module',
-					'command',
-					'nonce',
-					'fee',
-					'senderPublicKey',
-					'params',
-				],
+				required: ['module', 'command', 'nonce', 'fee', 'senderPublicKey', 'params'],
 				properties: {
 					module: {
 						dataType: 'string',
@@ -3167,14 +2824,7 @@ const schemas = {
 			schema: {
 				$id: '/block/event',
 				type: 'object',
-				required: [
-					'module',
-					'name',
-					'data',
-					'topics',
-					'height',
-					'index',
-				],
+				required: ['module', 'name', 'data', 'topics', 'height', 'index'],
 				properties: {
 					module: {
 						dataType: 'string',
@@ -3216,9 +2866,7 @@ const schemas = {
 			schema: {
 				$id: '/block/event/standard',
 				type: 'object',
-				required: [
-					'success',
-				],
+				required: ['success'],
 				properties: {
 					success: {
 						dataType: 'boolean',
@@ -3292,13 +2940,7 @@ const schemas = {
 				schema: {
 					$id: '/auth/command/regMultisigMsg',
 					type: 'object',
-					required: [
-						'address',
-						'nonce',
-						'numberOfSignatures',
-						'mandatoryKeys',
-						'optionalKeys',
-					],
+					required: ['address', 'nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 					properties: {
 						address: {
 							dataType: 'bytes',
