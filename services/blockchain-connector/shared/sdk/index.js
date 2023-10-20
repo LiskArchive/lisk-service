@@ -119,15 +119,15 @@ const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
 
 const init = async () => {
+	// Cache all the schemas
+	setSchemas(await getSchemas());
+	setMetadata(await getSystemMetadata());
+
 	// Initialize the local cache
 	await getNodeInfo(true);
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 	await updateTokenInfo();
-
-	// Cache all the schemas
-	setSchemas(await getSchemas());
-	setMetadata(await getSystemMetadata());
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();

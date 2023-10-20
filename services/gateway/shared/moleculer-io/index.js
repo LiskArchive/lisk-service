@@ -427,7 +427,9 @@ function makeHandler(svc, handlerItem) {
 			const action = jsonRpcInput.method;
 			const { params } = jsonRpcInput;
 			svc.logger.info(`   => Client '${this.id}' call '${action}'`);
-			if (svc.settings.logRequestParams && svc.settings.logRequestParams in svc.logger) svc.logger[svc.settings.logRequestParams]('   Params:', params);
+			if (svc.settings.logRequestParams && svc.settings.logRequestParams in svc.logger) {
+				svc.logger[svc.settings.logRequestParams]('   Params:', params);
+			}
 			try {
 				if (_.isFunction(params)) {
 					respond = params;

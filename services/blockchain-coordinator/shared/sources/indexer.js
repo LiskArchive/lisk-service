@@ -17,9 +17,12 @@ const { requestIndexer } = require('../utils/request');
 
 let isGenesisBlockIndexedFlag = false;
 
-const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
-
-const getGenesisHeight = async () => requestIndexer('getGenesisHeight');
+const isGenesisBlockIndexed = async () => {
+	if (isGenesisBlockIndexedFlag !== true) {
+		isGenesisBlockIndexedFlag = await requestIndexer('isGenesisBlockIndexed');
+	}
+	return isGenesisBlockIndexedFlag;
+};
 
 const getMissingBlocks = async (from, to) => requestIndexer(
 	'getMissingBlocks', { from, to },
@@ -29,21 +32,12 @@ const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeigh
 
 const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
 
-const isGenesisBlockIndexed = async () => {
-	if (isGenesisBlockIndexedFlag !== true) {
-		isGenesisBlockIndexedFlag = await requestIndexer('isGenesisBlockIndexed');
-	}
-	return isGenesisBlockIndexedFlag;
-};
-
 const getLiveIndexingJobCount = async () => requestIndexer('getLiveIndexingJobCount');
 
 module.exports = {
+	isGenesisBlockIndexed,
 	getMissingBlocks,
-	getCurrentHeight,
-	getGenesisHeight,
 	getIndexVerifiedHeight,
 	setIndexVerifiedHeight,
-	isGenesisBlockIndexed,
 	getLiveIndexingJobCount,
 };

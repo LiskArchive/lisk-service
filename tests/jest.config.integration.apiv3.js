@@ -20,6 +20,8 @@ module.exports = {
 		'<rootDir>/integration/api_v3/rpc/*.test.js',
 		'<rootDir>/integration/api_v3/events/*.test.js',
 		'<rootDir>/integration/gateway/*.test.js',
+		'<rootDir>/integration/api_v3/consistency/http/*.test.js',
+		'<rootDir>/integration/api_v3/consistency/rpc/*.test.js',
 	],
 	testEnvironment: 'node',
 	testTimeout: 50000,

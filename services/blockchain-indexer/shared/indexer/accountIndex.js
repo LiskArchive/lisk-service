@@ -115,6 +115,7 @@ module.exports = {
 	indexAccountPublicKey,
 	indexAccountAddress,
 	triggerAccountUpdates,
+	accountAddrUpdateQueue,
 
 	// Testing
 	updateAccountInfoPk,

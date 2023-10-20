@@ -15,8 +15,8 @@
  */
 jest.setTimeout(2147483647);
 
-const config = require('../../../config');
-const { api } = require('../../../helpers/api');
+const config = require('../../../../config');
+const { api } = require('../../../../helpers/api');
 
 // Add all the service endpoints to the array that you wish to compare the data against
 const baseUrls = [config.SERVICE_ENDPOINT];

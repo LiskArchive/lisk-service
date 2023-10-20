@@ -27,7 +27,7 @@ const {
 } = require('./dataService');
 const { getFeeEstimatesFromFeeEstimator } = require('./dataService/business/feeEstimates');
 const indexStatus = require('./indexer/indexStatus');
-const processor = require('./processor');
+const messageProcessor = require('./messageProcessor');
 
 const logger = Logger();
 const snapshotUtils = require('./utils/snapshot');
@@ -59,11 +59,12 @@ const init = async () => {
 		await getFeeEstimatesFromFeeEstimator();
 
 		if (config.operations.isIndexingModeEnabled) {
-			await processor.init();
+			await messageProcessor.init();
 		}
-	} catch (error) {
-		logger.error(`Unable to initialize due to: ${error.message}. Try restarting the application.`);
-		logger.trace(error.stack);
+	} catch (err) {
+		logger.error(`Unable to initialize due to: ${err.message}. Try restarting the application.`);
+		logger.trace(err.stack);
+		throw err;
 	}
 };
 

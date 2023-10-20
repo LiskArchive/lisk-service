@@ -16,6 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 
 const config = require('../../config');
+const { triggerAccountsBalanceUpdate } = require('../../shared/indexer/accountBalanceIndex');
 const { triggerAccountUpdates } = require('../../shared/indexer/accountIndex');
 
 module.exports = [
@@ -31,6 +32,22 @@ module.exports = [
 				logger.info('Triggered account updates successfully.');
 			} catch (err) {
 				logger.warn(`Triggering account updates failed due to: ${err.message}.`);
+				logger.trace(err.stack);
+			}
+		},
+	},
+	{
+		name: 'trigger.account.balance.updates',
+		description: 'Triggers balance updates for queued accounts.',
+		interval: config.job.triggerAccountBalanceUpdates.interval,
+		schedule: config.job.triggerAccountBalanceUpdates.schedule,
+		controller: async () => {
+			try {
+				logger.debug('Triggering account balance updates.');
+				await triggerAccountsBalanceUpdate();
+				logger.info('Triggered account balance updates successfully.');
+			} catch (err) {
+				logger.warn(`Triggering account balance updates failed due to: ${err.message}.`);
 				logger.trace(err.stack);
 			}
 		},

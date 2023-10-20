@@ -34,8 +34,8 @@ const defaultOptions = {
     settings: {},
 };
 
-const queueInstance = (redisEndpoint, jobName = 'defaultJob', jobFn, concurrency = 1, options = defaultOptions) => {
-    const queueName = 'defaultQueue';
+const queueInstance = (redisEndpoint, _queueName = 'defaultQueue', jobFn, concurrency = 1, options = defaultOptions) => {
+    const queueName = _queueName || 'defaultQueue';
 
     if (!queuePool[queueName]) {
         queuePool[queueName] = new BullQueue(queueName,
@@ -52,32 +52,33 @@ const queueInstance = (redisEndpoint, jobName = 'defaultJob', jobFn, concurrency
         logger.info(`Initialized queue ${queueName}`);
 
         queue.on('completed', job => {
-            logger.debug(`${jobName} job completed ${job.name}`);
+            logger.debug(`${job.name} job completed.`);
             job.remove();
         });
 
         queue.on('error', err => {
-            logger.error(`${jobName} job error`, err);
+            logger.error(`${queue.name} job error`, err);
         });
 
         queue.on('failed', (job, err) => {
-            logger.warn(`${jobName} job failed`, err.message);
-            logger.warn(`${jobName} job failed`, err.stack);
+            logger.warn(`${job.name} job failed`, err.message);
+            logger.warn(`${job.name} job failed`, err.stack);
         });
 
         setInterval(async () => {
             const jc = await queue.getJobCounts();
             if (Number(jc.waiting) > 0 || Number(jc.active) > 0
                 || Number(jc.failed) > 0 || Number(jc.paused) > 0) {
-                logger.info(`Queue counters: waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
+                logger.info(`Queue counters (${queue.name}): waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
             } else {
-                logger.info('Queue counters: All scheduled jobs are done.');
+                logger.info(`Queue counters (${queue.name}): All scheduled jobs are done.`);
             }
         }, STATS_INTERVAL);
     }
 
     const queue = queuePool[queueName];
 
+    const jobName = queueName;
     queue.process(jobName, concurrency, jobFn);
 
     const add = params => queue.add(jobName, params);

@@ -60,6 +60,11 @@ const chainDeleteBlockController = async (cb) => {
 	Signals.get('chainDeleteBlock').add(chainDeleteBlockListener);
 };
 
+const systemNodeInfoEventController = async (cb) => {
+	const systemNodeInfoEventListener = async (payload) => cb(payload);
+	Signals.get('systemNodeInfo').add(systemNodeInfoEventListener);
+};
+
 module.exports = {
 	appReadyController,
 	appShutdownController,
@@ -70,4 +75,5 @@ module.exports = {
 	chainValidatorsChangeController,
 	chainNewBlockController,
 	chainDeleteBlockController,
+	systemNodeInfoEventController,
 };
