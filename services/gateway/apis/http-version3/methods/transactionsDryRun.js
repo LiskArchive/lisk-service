@@ -37,7 +37,12 @@ module.exports = {
 					fee: { type: 'string', pattern: regex.FEE },
 					nonce: { type: 'string', min: 1, pattern: regex.NONCE },
 					senderPublicKey: { type: 'string', pattern: regex.PUBLIC_KEY },
-					signatures: { type: 'array', optional: true, min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
+					signatures: {
+						type: 'array',
+						optional: true,
+						min: 0,
+						items: { type: 'string', pattern: regex.HASH_SHA512 },
+					},
 					params: { type: 'object', optional: false, minProps: 0 },
 				},
 			},
@@ -55,10 +60,12 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Dry run transactions.',
 		});
-		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/dryrunTransaction' }];
+		dryRunTransactionSchema[this.swaggerApiPath].post.parameters = [
+			{ $ref: '#/parameters/dryrunTransaction' },
+		];
 		dryRunTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
-				description: 'Dry run transactions. \'errorMessage\' is available only when \'result: -1\'.',
+				description: "Dry run transactions. 'errorMessage' is available only when 'result: -1'.",
 				schema: {
 					$ref: '#/definitions/dryTransactionWithEnvelope',
 				},

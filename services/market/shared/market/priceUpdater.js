@@ -47,7 +47,8 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 	Object.entries(rawPricesBySource).forEach(([source, prices]) => {
 		// Append source name to the price code and push to sourcePrices array
 		// Eg: LSK_BTC from binance results in binance_LSK_EUR
-		if (Array.isArray(prices)) prices.forEach(item => sourcePrices.push({ ...item, code: `${source}_${item.code}` }));
+		if (Array.isArray(prices))
+			prices.forEach(item => sourcePrices.push({ ...item, code: `${source}_${item.code}` }));
 		else if (isWarnMessageDisplayed === false) {
 			logger.warn(`Data from '${source}' is unavailable for market price computation.`);
 			isWarnMessageDisplayed = true;
@@ -103,15 +104,18 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 	return finalPrices;
 };
 
-const updatePricesCache = (prices) => BluebirdPromise
-	.all(targetPairs.map(pair => pricesCache.set(pair, JSON.stringify(prices[pair]))));
+const updatePricesCache = prices =>
+	BluebirdPromise.all(targetPairs.map(pair => pricesCache.set(pair, JSON.stringify(prices[pair]))));
 
 const updatePrices = async () => {
 	const rawPricesBySource = await getRawPricesBySource();
 	logger.debug('Raw prices by source: ', util.inspect(rawPricesBySource, false, 3, true));
 
 	const targetPairPrices = calcTargetPairPrices(rawPricesBySource);
-	logger.debug('Final calculated prices by target pairs: ', util.inspect(targetPairPrices, false, 3, true));
+	logger.debug(
+		'Final calculated prices by target pairs: ',
+		util.inspect(targetPairPrices, false, 3, true),
+	);
 
 	await updatePricesCache(targetPairPrices);
 	return true;

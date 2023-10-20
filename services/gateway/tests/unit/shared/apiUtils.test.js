@@ -57,9 +57,7 @@ describe('Test API utilities', () => {
 		});
 
 		it('should throw error when called with null or undefined', async () => {
-			[null, undefined].forEach(
-				param => expect(() => dropOneSlashAtBeginning(param)).toThrow(),
-			);
+			[null, undefined].forEach(param => expect(() => dropOneSlashAtBeginning(param)).toThrow());
 		});
 	});
 
@@ -80,9 +78,7 @@ describe('Test API utilities', () => {
 		});
 
 		it('should throw error when called with null or undefined', async () => {
-			[null, undefined].forEach(
-				param => expect(() => curlyBracketsToColon(param)).toThrow(),
-			);
+			[null, undefined].forEach(param => expect(() => curlyBracketsToColon(param)).toThrow());
 		});
 	});
 
@@ -165,29 +161,25 @@ describe('Test API utilities', () => {
 		});
 
 		it('should return empty object when mappingKey is null or undefined', async () => {
-			[null, undefined].forEach(
-				mappingKey => {
-					const response = mapParam(source, 'originalKey', mappingKey);
-					expect(response).toEqual({});
-				},
-			);
+			[null, undefined].forEach(mappingKey => {
+				const response = mapParam(source, 'originalKey', mappingKey);
+				expect(response).toEqual({});
+			});
 		});
 
 		it('should return undefined value when originalKey is null or undefined', async () => {
-			[null, undefined].forEach(
-				originalKey => {
-					const response = mapParam(source, originalKey, 'mappingKey');
-					expect(response).toEqual({
-						key: 'mappingKey',
-						value: undefined,
-					});
-				},
-			);
+			[null, undefined].forEach(originalKey => {
+				const response = mapParam(source, originalKey, 'mappingKey');
+				expect(response).toEqual({
+					key: 'mappingKey',
+					value: undefined,
+				});
+			});
 		});
 
 		it('should throw error when source is null or undefined', async () => {
-			[null, undefined].forEach(
-				sourceParam => expect(() => mapParam(sourceParam, 'originalKey', 'mappingKey')).toThrow(),
+			[null, undefined].forEach(sourceParam =>
+				expect(() => mapParam(sourceParam, 'originalKey', 'mappingKey')).toThrow(),
 			);
 		});
 	});
@@ -218,30 +210,24 @@ describe('Test API utilities', () => {
 		it('should throw error when source is null or undefined', async () => {
 			const originalSetup = 'key_number';
 			const mappingKey = 'new_key';
-			[null, undefined].forEach(
-				sourceParam => expect(
-					() => mapParamWithType(sourceParam, originalSetup, mappingKey),
-				).toThrow(),
+			[null, undefined].forEach(sourceParam =>
+				expect(() => mapParamWithType(sourceParam, originalSetup, mappingKey)).toThrow(),
 			);
 		});
 
 		it('should throw error when originalSetup is null or undefined', async () => {
 			const mappingKey = 'new_key';
-			[null, undefined].forEach(
-				originalSetup => {
-					expect(() => mapParamWithType(source, originalSetup, mappingKey)).toThrow();
-				},
-			);
+			[null, undefined].forEach(originalSetup => {
+				expect(() => mapParamWithType(source, originalSetup, mappingKey)).toThrow();
+			});
 		});
 
 		it('should return empty object when mappingKey is null or undefined', async () => {
 			const originalSetup = 'key_number';
-			[null, undefined].forEach(
-				mappingKey => {
-					const response = mapParamWithType(source, originalSetup, mappingKey);
-					expect(response).toEqual({});
-				},
-			);
+			[null, undefined].forEach(mappingKey => {
+				const response = mapParamWithType(source, originalSetup, mappingKey);
+				expect(response).toEqual({});
+			});
 		});
 	});
 
@@ -267,9 +253,7 @@ describe('Test API utilities', () => {
 		});
 
 		it('should throw error when called with null or undefined ', async () => {
-			[null, undefined].forEach(
-				param => expect(() => transformPath(param)).toThrow(),
-			);
+			[null, undefined].forEach(param => expect(() => transformPath(param)).toThrow());
 		});
 	});
 
@@ -298,8 +282,8 @@ describe('Test API utilities', () => {
 		});
 
 		it('should throw error when called with null or undefined specs', async () => {
-			[null, undefined].forEach(
-				specsParam => expect(() => transformParams(params, specsParam)).toThrow(),
+			[null, undefined].forEach(specsParam =>
+				expect(() => transformParams(params, specsParam)).toThrow(),
 			);
 		});
 	});
@@ -364,17 +348,15 @@ describe('Test API utilities', () => {
 		});
 
 		it('should return data when called with null or undefined methodDef', async () => {
-			[null, undefined].forEach(
-				async methodDefParam => {
-					const response = await transformResponse(methodDefParam, data);
-					expect(response).toEqual(data);
-				},
-			);
+			[null, undefined].forEach(async methodDefParam => {
+				const response = await transformResponse(methodDefParam, data);
+				expect(response).toEqual(data);
+			});
 		});
 
 		it('should throw error when called with null or undefined data', async () => {
-			[null, undefined].forEach(
-				dataParam => expect(() => transformResponse(methodDef, dataParam)).rejects.toThrow(),
+			[null, undefined].forEach(dataParam =>
+				expect(() => transformResponse(methodDef, dataParam)).rejects.toThrow(),
 			);
 		});
 

@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -28,10 +26,17 @@ const {
 const {
 	blockchainAppMetaListSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetaListSchema.schema');
-const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidNames, invalidChainIDCSV } = require('../constants/invalidInputs');
+const {
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+	invalidNames,
+	invalidChainIDCSV,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getBlockchainApps = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.list', params);
+const getBlockchainApps = async params =>
+	request(wsRpcUrl, 'get.blockchain.apps.meta.list', params);
 
 describe('get.blockchain.apps.meta.list', () => {
 	it('should return blockchain applications meta list', async () => {

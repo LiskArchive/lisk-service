@@ -15,7 +15,7 @@
  */
 const business = require('../business');
 
-const getDefaultRewardAtHeight = async (params) => {
+const getDefaultRewardAtHeight = async params => {
 	const response = await business.getDefaultRewardAtHeight(params);
 	return response;
 };

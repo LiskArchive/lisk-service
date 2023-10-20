@@ -37,26 +37,27 @@ const logger = Logger();
 let snapshotFilePath = './data/service-snapshot.sql';
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
+const getHTTPProtocolByURL = url => (url.startsWith('https') ? https : http);
 
 const checkCommandAvailability = async () => {
 	const { stdout: mysqlAvailable } = await execInShell('which mysql').catch(() => ({}));
 	if (!mysqlAvailable) throw new NotFoundException('mysql command is unavailable in PATH.');
 };
 
-const calculateSHA256 = async (file) => new Promise((resolve, reject) => {
-	const hash = crypto.createHash('sha256');
-	const stream = fs.createReadStream(file);
+const calculateSHA256 = async file =>
+	new Promise((resolve, reject) => {
+		const hash = crypto.createHash('sha256');
+		const stream = fs.createReadStream(file);
 
-	stream.on('data', (data) => hash.update(data));
-	stream.on('end', () => resolve(hash.digest('hex')));
-	stream.on('error', (error) => reject(error));
-});
+		stream.on('data', data => hash.update(data));
+		stream.on('end', () => resolve(hash.digest('hex')));
+		stream.on('error', error => reject(error));
+	});
 
 // Check if the IP address is local/private
-const isLocalIP = (ip) => ip === '127.0.0.1' || regex.PRIVATE_IP_REGEX.test(ip);
+const isLocalIP = ip => ip === '127.0.0.1' || regex.PRIVATE_IP_REGEX.test(ip);
 
-const validateSnapshotURL = async (snapshotURL) => {
+const validateSnapshotURL = async snapshotURL => {
 	const { hostname } = new URL(snapshotURL);
 
 	// Check if the hostname is a local/private IP address or localhost
@@ -71,16 +72,23 @@ const validateSnapshotURL = async (snapshotURL) => {
 			method: 'HEAD',
 		};
 
-		getHTTPProtocolByURL(snapshotURL).request(snapshotURL, options, (res) => {
-			if (res.statusCode === 200 && res.headers['content-type'] === 'application/octet-stream') {
-				logger.info('Content type is valid. Downloading the snapshot file.');
-				resolve();
-			} else {
-				reject(new Error(`Invalid content type or download failed when using snapshot URL: ${snapshotURL}.`));
-			}
-		}).on('error', (err) => {
-			reject(err);
-		}).end();
+		getHTTPProtocolByURL(snapshotURL)
+			.request(snapshotURL, options, res => {
+				if (res.statusCode === 200 && res.headers['content-type'] === 'application/octet-stream') {
+					logger.info('Content type is valid. Downloading the snapshot file.');
+					resolve();
+				} else {
+					reject(
+						new Error(
+							`Invalid content type or download failed when using snapshot URL: ${snapshotURL}.`,
+						),
+					);
+				}
+			})
+			.on('error', err => {
+				reject(err);
+			})
+			.end();
 	});
 };
 
@@ -90,71 +98,79 @@ const downloadUnzipAndVerifyChecksum = async (fileUrl, checksumUrl, filePath) =>
 	return new Promise((resolve, reject) => {
 		// Download the checksum file
 		logger.info('Attempting to download the snapshot checksum.');
-		getHTTPProtocolByURL(checksumUrl).get(checksumUrl, (response) => {
-			if (response.statusCode === 200) {
-				let checksumData = '';
+		getHTTPProtocolByURL(checksumUrl)
+			.get(checksumUrl, response => {
+				if (response.statusCode === 200) {
+					let checksumData = '';
 
-				response.on('data', (chunk) => {
-					checksumData += chunk;
-				});
+					response.on('data', chunk => {
+						checksumData += chunk;
+					});
 
-				response.on('end', () => {
-					// Extract the SHA256 hash from the downloaded data
-					const checksum = checksumData.trim().split(' ')[0];
+					response.on('end', () => {
+						// Extract the SHA256 hash from the downloaded data
+						const checksum = checksumData.trim().split(' ')[0];
 
-					// Download and unzip the file
-					logger.info('Attempting to download the snapshot file.');
-					getHTTPProtocolByURL(fileUrl).get(fileUrl, (res) => {
-						if (res.statusCode === 200) {
-							const unzip = zlib.createUnzip();
-							const writeFile = fs.createWriteStream(filePath);
+						// Download and unzip the file
+						logger.info('Attempting to download the snapshot file.');
+						getHTTPProtocolByURL(fileUrl)
+							.get(fileUrl, res => {
+								if (res.statusCode === 200) {
+									const unzip = zlib.createUnzip();
+									const writeFile = fs.createWriteStream(filePath);
 
-							res.pipe(unzip).pipe(writeFile);
+									res.pipe(unzip).pipe(writeFile);
 
-							res.on('error', (err) => {
+									res.on('error', err => {
+										reject(new Error(err));
+									});
+
+									writeFile.on('finish', () => {
+										// calculate hash from file.
+										calculateSHA256(filePath)
+											.then(calculatedChecksum => {
+												if (calculatedChecksum === checksum) {
+													resolve();
+												} else {
+													reject(new Error('Checksum verification failed.'));
+												}
+											})
+											.catch(err => {
+												reject(err);
+											});
+									});
+
+									writeFile.on('error', err => {
+										reject(err);
+									});
+								} else {
+									const errMessage = `Download failed with HTTP status code: ${res.statusCode} (${res.statusMessage}).`;
+									console.error(errMessage);
+									if (res.statusCode === 404) {
+										reject(new NotFoundException(errMessage));
+									} else {
+										reject(new Error(errMessage));
+									}
+								}
+							})
+							.on('error', err => {
 								reject(new Error(err));
 							});
-
-							writeFile.on('finish', () => {
-								// calculate hash from file.
-								calculateSHA256(filePath).then((calculatedChecksum) => {
-									if (calculatedChecksum === checksum) {
-										resolve();
-									} else {
-										reject(new Error('Checksum verification failed.'));
-									}
-								}).catch(err => {
-									reject(err);
-								});
-							});
-
-							writeFile.on('error', (err) => {
-								reject(err);
-							});
-						} else {
-							const errMessage = `Download failed with HTTP status code: ${res.statusCode} (${res.statusMessage}).`;
-							console.error(errMessage);
-							if (res.statusCode === 404) {
-								reject(new NotFoundException(errMessage));
-							} else {
-								reject(new Error(errMessage));
-							}
-						}
-					}).on('error', (err) => {
-						reject(new Error(err));
 					});
-				});
-			} else {
-				logger.error(`Failed to download the checksum file. HTTP status code: ${response.statusCode} (${response.statusMessage}).`);
-				reject(new Error('Failed to download the checksum file.'));
-			}
-		}).on('error', (err) => {
-			reject(new Error(err));
-		});
+				} else {
+					logger.error(
+						`Failed to download the checksum file. HTTP status code: ${response.statusCode} (${response.statusMessage}).`,
+					);
+					reject(new Error('Failed to download the checksum file.'));
+				}
+			})
+			.on('error', err => {
+				reject(new Error(err));
+			});
 	});
 };
 
-const resolveSnapshotRestoreCommand = async (connEndpoint) => {
+const resolveSnapshotRestoreCommand = async connEndpoint => {
 	await checkCommandAvailability();
 	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
 	const [host, port, database] = connEndpoint.split('@')[1].split(new RegExp('/|:', 'g'));
@@ -177,7 +193,7 @@ const applySnapshot = async (connEndpoint = MYSQL_ENDPOINT) => {
 	}
 };
 
-const downloadSnapshot = async (snapshotUrl) => {
+const downloadSnapshot = async snapshotUrl => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
@@ -192,8 +208,7 @@ const initSnapshot = async () => {
 	}
 
 	const { chainID } = await requestConnector('getNetworkStatus');
-	const network = config.networks.LISK
-		.find(networkInfo => networkInfo.chainID === chainID);
+	const network = config.networks.LISK.find(networkInfo => networkInfo.chainID === chainID);
 
 	snapshotFilePath = `./data/${network.name}/service-snapshot.sql`;
 	let { snapshotUrl } = network;
@@ -202,12 +217,16 @@ const initSnapshot = async () => {
 		// Override if custom snapshot URL is specified
 		snapshotUrl = config.snapshot.url;
 	} else if (!snapshotUrl) {
-		logger.warn(`Cannot apply snapshot. Snapshot URL for network (${network.name}) is unavailable.\nTry updating the config file or setting the 'INDEX_SNAPSHOT_URL' environment variable.`);
+		logger.warn(
+			`Cannot apply snapshot. Snapshot URL for network (${network.name}) is unavailable.\nTry updating the config file or setting the 'INDEX_SNAPSHOT_URL' environment variable.`,
+		);
 		return;
 	}
 
 	if (!snapshotUrl.startsWith('https') && !config.snapshot.allowInsecureHttp) {
-		throw new Error(`Please consider using a secured source (HTTPS). To continue to download snapshot from ${snapshotUrl}, set 'ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP' env variable.`);
+		throw new Error(
+			`Please consider using a secured source (HTTPS). To continue to download snapshot from ${snapshotUrl}, set 'ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP' env variable.`,
+		);
 	}
 
 	await downloadSnapshot(snapshotUrl);

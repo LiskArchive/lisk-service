@@ -91,9 +91,7 @@ const mockTransactionsDryRunResultFromNode = {
 			index: 6,
 			module: 'token',
 			name: 'commandExecutionResult',
-			topics: [
-				'2809da07c2a2af95cef96d5853ad6df61c797c88b1912a538ab2a290a413b31d',
-			],
+			topics: ['2809da07c2a2af95cef96d5853ad6df61c797c88b1912a538ab2a290a413b31d'],
 			height: 29137,
 		},
 	],
@@ -177,9 +175,7 @@ const mockTransactionsDryRunResult = {
 				index: 6,
 				module: 'token',
 				name: 'commandExecutionResult',
-				topics: [
-					'2809da07c2a2af95cef96d5853ad6df61c797c88b1912a538ab2a290a413b31d',
-				],
+				topics: ['2809da07c2a2af95cef96d5853ad6df61c797c88b1912a538ab2a290a413b31d'],
 				height: 29137,
 			},
 		],

@@ -21,10 +21,12 @@ const {
 	invalidParamsSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { generatorResponseSchema } = require('../../../schemas/api_v3/generator.schema');
 const {
-	generatorResponseSchema,
-} = require('../../../schemas/api_v3/generator.schema');
-const { invalidPartialSearches, invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
+	invalidPartialSearches,
+	invalidOffsets,
+	invalidLimits,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
@@ -76,10 +78,10 @@ describe('Generators API', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(103);
 
-			const activeGenerators = result.data
-				.filter(generator => generator.status === STATUS.ACTIVE);
-			const standbyGenerators = result.data
-				.filter(generator => generator.status === STATUS.STANDBY);
+			const activeGenerators = result.data.filter(generator => generator.status === STATUS.ACTIVE);
+			const standbyGenerators = result.data.filter(
+				generator => generator.status === STATUS.STANDBY,
+			);
 			expect(activeGenerators.length).toBeGreaterThanOrEqual(1);
 			expect(activeGenerators.length).toBeLessThanOrEqual(numberActiveValidators);
 			expect(standbyGenerators.length).toBeGreaterThanOrEqual(0);

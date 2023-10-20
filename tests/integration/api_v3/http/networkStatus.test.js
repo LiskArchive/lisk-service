@@ -16,14 +16,9 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	networkStatusSchema,
-	metaSchema,
-} = require('../../../schemas/api_v3/networkStatus.schema');
+const { networkStatusSchema, metaSchema } = require('../../../schemas/api_v3/networkStatus.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

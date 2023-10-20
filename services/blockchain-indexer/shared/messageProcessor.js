@@ -15,10 +15,7 @@
  */
 const MessageQueue = require('bull');
 
-const {
-	Logger,
-	Signals,
-} = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
 const config = require('../config');
 
@@ -52,31 +49,25 @@ const accountMessageQueue = new MessageQueue(
 );
 
 // Missing blocks
-const blockMessageQueue = new MessageQueue(
-	config.queue.block.name,
-	config.endpoints.messageQueue,
-	{ defaultJobOptions: config.queue.defaultJobOptions },
-);
+const blockMessageQueue = new MessageQueue(config.queue.block.name, config.endpoints.messageQueue, {
+	defaultJobOptions: config.queue.defaultJobOptions,
+});
 
 // Newly mined blocks
-const eventMessageQueue = new MessageQueue(
-	config.queue.event.name,
-	config.endpoints.messageQueue,
-	{ defaultJobOptions: config.queue.defaultJobOptions },
-);
+const eventMessageQueue = new MessageQueue(config.queue.event.name, config.endpoints.messageQueue, {
+	defaultJobOptions: config.queue.defaultJobOptions,
+});
 
-const queueStatus = async (messageQueue) => {
-	setInterval(
-		async () => {
-			const jc = await messageQueue.getJobCounts();
-			const logSuffix = (jc.waiting || jc.active || jc.failed || jc.paused)
+const queueStatus = async messageQueue => {
+	setInterval(async () => {
+		const jc = await messageQueue.getJobCounts();
+		const logSuffix =
+			jc.waiting || jc.active || jc.failed || jc.paused
 				? `waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`
 				: 'All scheduled jobs are done';
 
-			logger.info(`Message queue counters for ${messageQueue.name}: ${logSuffix}.`);
-		},
-		STATS_INTERVAL,
-	);
+		logger.info(`Message queue counters for ${messageQueue.name}: ${logSuffix}.`);
+	}, STATS_INTERVAL);
 };
 
 const initQueueStatus = async () => {
@@ -85,7 +76,7 @@ const initQueueStatus = async () => {
 	await queueStatus(eventMessageQueue);
 };
 
-const newBlockProcessor = async (block) => {
+const newBlockProcessor = async block => {
 	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
 	const response = await getBlocks({ height: block.height });
 	const [newBlock] = response.data;
@@ -94,18 +85,22 @@ const newBlockProcessor = async (block) => {
 	Signals.get('newBlock').dispatch(response);
 };
 
-const deleteBlockProcessor = async (block) => {
+const deleteBlockProcessor = async block => {
 	let response;
 	try {
-		logger.debug(`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`);
+		logger.debug(
+			`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`,
+		);
 		response = await getBlocks({ blockID: block.id });
 		await scheduleBlockDeletion(block);
 	} catch (error) {
-		const normalizedBlocks = await normalizeBlocks([{
-			header: block,
-			transactions: [],
-			assets: [],
-		}]);
+		const normalizedBlocks = await normalizeBlocks([
+			{
+				header: block,
+				transactions: [],
+				assets: [],
+			},
+		]);
 		response = { data: normalizedBlocks };
 	}
 	Signals.get('deleteBlock').dispatch(response);
@@ -123,14 +118,14 @@ const newRoundProcessor = async () => {
 
 const initMessageProcessors = async () => {
 	logger.info(`Registering job processor for ${accountMessageQueue.name} message queue.`);
-	accountMessageQueue.process(async (job) => {
+	accountMessageQueue.process(async job => {
 		const { account } = job.data;
 		logger.debug(`Scheduling indexing for account with address: ${account.address}.`);
 		await accountAddrUpdateQueue.add(account);
 	});
 
 	logger.info(`Registering job processor for ${blockMessageQueue.name} message queue.`);
-	blockMessageQueue.process(async (job) => {
+	blockMessageQueue.process(async job => {
 		logger.debug('Subscribed to block index message queue.');
 		const { height } = job.data;
 
@@ -140,7 +135,7 @@ const initMessageProcessors = async () => {
 
 	logger.info(`Registering job processor for ${eventMessageQueue.name} message queue.`);
 
-	eventMessageQueue.process(async (job) => {
+	eventMessageQueue.process(async job => {
 		logger.debug('Subscribed to the events from coordinator.');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 

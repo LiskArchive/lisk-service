@@ -13,11 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getRewardTokenID,
-	getAnnualInflation,
-	getDefaultRewardAtHeight,
-} = require('../shared/sdk');
+const { getRewardTokenID, getAnnualInflation, getDefaultRewardAtHeight } = require('../shared/sdk');
 
 module.exports = [
 	{

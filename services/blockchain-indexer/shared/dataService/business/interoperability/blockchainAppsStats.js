@@ -1,18 +1,18 @@
 /*
-* LiskHQ/lisk-service
-* Copyright © 2022 Lisk Foundation
-*
-* See the LICENSE file at the top-level directory of this distribution
-* for licensing information.
-*
-* Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
-* no part of this software, including this file, may be copied, modified,
-* propagated, or distributed except according to the terms contained in the
-* LICENSE file.
-*
-* Removal or modification of this copyright notice is prohibited.
-*
-*/
+ * LiskHQ/lisk-service
+ * Copyright © 2022 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
 const {
 	Logger,
 	DB: {
@@ -56,9 +56,15 @@ const reloadBlockchainAppsStats = async () => {
 		const numRegisteredChains = await blockchainAppsTable.count({ status: APP_STATUS.REGISTERED });
 		const numTerminatedChains = await blockchainAppsTable.count({ status: APP_STATUS.TERMINATED });
 
-		const { totalSupply: [{ totalSupply }] } = await requestConnector('getTotalSupply');
-		const { data: { height } } = await getNetworkStatus();
-		const { data: { rate: annualInflation } } = await getAnnualInflation({ height });
+		const {
+			totalSupply: [{ totalSupply }],
+		} = await requestConnector('getTotalSupply');
+		const {
+			data: { height },
+		} = await getNetworkStatus();
+		const {
+			data: { rate: annualInflation },
+		} = await getAnnualInflation({ height });
 		const { amount: totalStaked } = await getTotalStaked();
 
 		logger.debug('Updating blockchain apps statistics cache.');

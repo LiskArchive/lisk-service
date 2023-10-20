@@ -24,9 +24,7 @@ const {
 	urlNotFoundSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	networkPeerSchema,
-} = require('../../../schemas/api_v3/networkPeer.schema');
+const { networkPeerSchema } = require('../../../schemas/api_v3/networkPeer.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -278,10 +276,12 @@ describe('Network peers API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevPeer = response.data[i - 1];
 					const currPeer = response.data[i];
-					expect(semver.gte(
-						semver.coerce(prevPeer.networkVersion),
-						semver.coerce(currPeer.networkVersion),
-					)).toBeTruthy();
+					expect(
+						semver.gte(
+							semver.coerce(prevPeer.networkVersion),
+							semver.coerce(currPeer.networkVersion),
+						),
+					).toBeTruthy();
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -298,10 +298,12 @@ describe('Network peers API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevPeer = response.data[i - 1];
 					const currPeer = response.data[i];
-					expect(semver.lte(
-						semver.coerce(prevPeer.networkVersion),
-						semver.coerce(currPeer.networkVersion),
-					)).toBeTruthy();
+					expect(
+						semver.lte(
+							semver.coerce(prevPeer.networkVersion),
+							semver.coerce(currPeer.networkVersion),
+						),
+					).toBeTruthy();
 				}
 			}
 			expect(response.meta).toMap(metaSchema);

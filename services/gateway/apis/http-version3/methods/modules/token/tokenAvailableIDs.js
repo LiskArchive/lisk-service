@@ -36,12 +36,16 @@ module.exports = {
 		const tokenAvailableIDsSchema = {};
 		tokenAvailableIDsSchema[this.swaggerApiPath] = { get: {} };
 		tokenAvailableIDsSchema[this.swaggerApiPath].get.tags = this.tags;
-		tokenAvailableIDsSchema[this.swaggerApiPath].get.summary = 'Requests the list of available tokens identifiers.';
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.summary =
+			'Requests the list of available tokens identifiers.';
 		tokenAvailableIDsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns all the available token identifiers.',
 		});
-		tokenAvailableIDsSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
+		tokenAvailableIDsSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'tokens',
+			this.params,
+		);
 		tokenAvailableIDsSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns all the available token identifiers.',

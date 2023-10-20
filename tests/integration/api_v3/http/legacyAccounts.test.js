@@ -16,9 +16,7 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	goodRequestSchema,
@@ -40,17 +38,26 @@ describe('Legacy accounts API', () => {
 	});
 
 	it('should return bad request if requested with public key less than 64 chars', async () => {
-		const response = await api.get(`${endpoint}?publicKey=1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bc`, 400);
+		const response = await api.get(
+			`${endpoint}?publicKey=1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bc`,
+			400,
+		);
 		expect(response).toMap(badRequestSchema);
 	});
 
 	it('should return bad request if requested with public key more than 64 chars', async () => {
-		const response = await api.get(`${endpoint}?publicKey=1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcca`, 400);
+		const response = await api.get(
+			`${endpoint}?publicKey=1ec4a852f5cd5a86877243aca6f3585e5582fd22e8dc8b9d9232241b182c6bcca`,
+			400,
+		);
 		expect(response).toMap(badRequestSchema);
 	});
 
 	it('should return bad request if requested with invalid public key of 64 characters', async () => {
-		const response = await api.get(`${endpoint}?publicKey=!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$`, 400);
+		const response = await api.get(
+			`${endpoint}?publicKey=!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$%^&*()!@#$`,
+			400,
+		);
 		expect(response).toMap(badRequestSchema);
 	});
 

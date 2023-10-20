@@ -21,7 +21,9 @@ const { rawValidators } = require('../../../constants/validators');
 const { requestConnector } = require('../../../../../../shared/utils/request');
 
 const mockAccountPath = resolve(`${__dirname}/../../../../../../shared/dataService/utils/account`);
-const validatorsPath = resolve(`${__dirname}/../../../../../../shared/dataService/business/pos/validators`);
+const validatorsPath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/pos/validators`,
+);
 
 // Mock dependencies
 jest.mock('../../../../../../shared/utils/request', () => ({
@@ -58,7 +60,8 @@ describe('getAllPosValidators', () => {
 		// Mock getIndexedAccountInfo function to return
 		jest.mock(mockAccountPath);
 		const { getIndexedAccountInfo } = require(mockAccountPath);
-		getIndexedAccountInfo.mockResolvedValueOnce({ publicKey: 'key1' })
+		getIndexedAccountInfo
+			.mockResolvedValueOnce({ publicKey: 'key1' })
 			.mockResolvedValueOnce({ publicKey: 'key2' })
 			.mockResolvedValueOnce({ publicKey: 'key3' });
 
@@ -70,9 +73,15 @@ describe('getAllPosValidators', () => {
 		const result = await getAllPosValidators();
 
 		// Expect getIndexedAccountInfo to have been called 3 times with different addresses
-		expect(getIndexedAccountInfo).toHaveBeenCalledWith({ address: rawValidators[0].address }, ['publicKey']);
-		expect(getIndexedAccountInfo).toHaveBeenCalledWith({ address: rawValidators[1].address }, ['publicKey']);
-		expect(getIndexedAccountInfo).toHaveBeenCalledWith({ address: rawValidators[2].address }, ['publicKey']);
+		expect(getIndexedAccountInfo).toHaveBeenCalledWith({ address: rawValidators[0].address }, [
+			'publicKey',
+		]);
+		expect(getIndexedAccountInfo).toHaveBeenCalledWith({ address: rawValidators[1].address }, [
+			'publicKey',
+		]);
+		expect(getIndexedAccountInfo).toHaveBeenCalledWith({ address: rawValidators[2].address }, [
+			'publicKey',
+		]);
 		expect(getIndexedAccountInfo).toHaveBeenCalledTimes(3);
 
 		// Expect output to include public keys fetched from getIndexedAccountInfo function
@@ -142,20 +151,28 @@ describe('getPosValidators', () => {
 		const validators = rawValidators;
 
 		// Mock connector to respond with validators
-		requestConnector.mockReturnValueOnce(validators[0])
+		requestConnector
+			.mockReturnValueOnce(validators[0])
 			.mockReturnValueOnce(validators[1])
 			.mockReturnValueOnce(validators[2]);
 
 		// Make a query to getAllPosValidators function
 		const { getPosValidators } = require(validatorsPath);
-		const params = { addresses: [validators[0].address, validators[1].address,
-			validators[2].address] };
+		const params = {
+			addresses: [validators[0].address, validators[1].address, validators[2].address],
+		};
 		const result = await getPosValidators(params);
 
 		// Assert the result
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[0].address });
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[1].address });
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[2].address });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: validators[0].address,
+		});
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: validators[1].address,
+		});
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: validators[2].address,
+		});
 		expect(requestConnector).toHaveBeenCalledTimes(3);
 		expect(result).toEqual(validators);
 	});
@@ -165,20 +182,28 @@ describe('getPosValidators', () => {
 		validators[0].isBanned = true;
 
 		// Mock connector to respond with validators
-		requestConnector.mockReturnValueOnce(validators[0])
+		requestConnector
+			.mockReturnValueOnce(validators[0])
 			.mockReturnValueOnce(validators[1])
 			.mockReturnValueOnce(validators[2]);
 
 		// Make a query to getAllPosValidators function
 		const { getPosValidators } = require(validatorsPath);
-		const params = { addresses: [validators[0].address, validators[1].address,
-			validators[2].address] };
+		const params = {
+			addresses: [validators[0].address, validators[1].address, validators[2].address],
+		};
 		const result = await getPosValidators(params);
 
 		// Assert the result
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[0].address });
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[1].address });
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: validators[2].address });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: validators[0].address,
+		});
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: validators[1].address,
+		});
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: validators[2].address,
+		});
 		expect(requestConnector).toHaveBeenCalledTimes(3);
 
 		expect(result.length).toEqual(3);
@@ -198,7 +223,9 @@ describe('getPosValidators', () => {
 		await expect(getPosValidators(params)).rejects.toThrow(errorMessage);
 
 		// Assert the result
-		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', { address: 'validator-address' });
+		expect(requestConnector).toHaveBeenCalledWith('getPosValidator', {
+			address: 'validator-address',
+		});
 		expect(requestConnector).toHaveBeenCalledTimes(1);
 	});
 });

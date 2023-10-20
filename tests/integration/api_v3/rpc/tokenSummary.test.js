@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -31,7 +29,7 @@ const {
 } = require('../../../schemas/api_v3/tokenSummary.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const gettokenSummaryInfo = async (params) => request(wsRpcUrl, 'get.token.summary', params);
+const gettokenSummaryInfo = async params => request(wsRpcUrl, 'get.token.summary', params);
 
 describe('get.token.summary', () => {
 	it('should return tokens summary', async () => {

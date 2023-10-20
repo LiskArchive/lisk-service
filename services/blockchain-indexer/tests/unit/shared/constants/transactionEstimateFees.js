@@ -51,7 +51,8 @@ const mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest = {
 			messageFee: '10000000',
 			messageFeeTokenID: '0200000000000000',
 			sendingChainID: '04000000',
-			certificate: '0a2020dbc6528e1ff1d6d052adcb5c64f6e4a2e89e734fad19f03f8e872de1c4819d109f16189a8cffa5062220e6cec02a3ed23506a23149e4458b3477555c97f06726c01727a63baff29a6d4b2a2066300d82c14fe864b94177ebbfe7aa80ac9a07ef9fac31a02cee97b8221cb36132011f3a608d58b25b9924fbed599a663efca3186f4a14546f4ac0405c8d4744893e3e09cd7855922fdb82b1e4a318a0c7f38fa0ec0423e8865f5338f6437969e06c97b7d4bc822c92e13d00cfb9497cb37c26b1417e683d6284b225a98185ca1713119889',
+			certificate:
+				'0a2020dbc6528e1ff1d6d052adcb5c64f6e4a2e89e734fad19f03f8e872de1c4819d109f16189a8cffa5062220e6cec02a3ed23506a23149e4458b3477555c97f06726c01727a63baff29a6d4b2a2066300d82c14fe864b94177ebbfe7aa80ac9a07ef9fac31a02cee97b8221cb36132011f3a608d58b25b9924fbed599a663efca3186f4a14546f4ac0405c8d4744893e3e09cd7855922fdb82b1e4a318a0c7f38fa0ec0423e8865f5338f6437969e06c97b7d4bc822c92e13d00cfb9497cb37c26b1417e683d6284b225a98185ca1713119889',
 			activeValidatorsUpdate: {
 				blsKeysUpdate: [],
 				bftWeightsUpdate: [],
@@ -104,23 +105,28 @@ const mockInteroperabilityRegisterSidechainTxRequest = {
 			name: 'minichain',
 			sidechainValidators: [
 				{
-					blsKey: '81819334f20e5669a4ac38047d312112ff07d7a4a5705455204bc25f9360b1be95835ec50db7d7a600a944a3abd69753',
+					blsKey:
+						'81819334f20e5669a4ac38047d312112ff07d7a4a5705455204bc25f9360b1be95835ec50db7d7a600a944a3abd69753',
 					bftWeight: '1',
 				},
 				{
-					blsKey: '837166d173d699501ab5da3a6fe1e340659efd932d870c6f271cc28119662e22a3f6715b4118c25baeae40ac955b21c1',
+					blsKey:
+						'837166d173d699501ab5da3a6fe1e340659efd932d870c6f271cc28119662e22a3f6715b4118c25baeae40ac955b21c1',
 					bftWeight: '1',
 				},
 				{
-					blsKey: 'a35a7e57ea1efe4fb8102807a3c896236b696bcf3efb574950cf603bfbc2f104878499b4e20070718562dac0022345a1',
+					blsKey:
+						'a35a7e57ea1efe4fb8102807a3c896236b696bcf3efb574950cf603bfbc2f104878499b4e20070718562dac0022345a1',
 					bftWeight: '1',
 				},
 				{
-					blsKey: 'a889835e7d1d3fd6ab6a3903a6c3a3337d13545fda5f67581d28fa64938d169119e1ff3b825fe3b2a625aa4612e6b78c',
+					blsKey:
+						'a889835e7d1d3fd6ab6a3903a6c3a3337d13545fda5f67581d28fa64938d169119e1ff3b825fe3b2a625aa4612e6b78c',
 					bftWeight: '1',
 				},
 				{
-					blsKey: 'aed4794dc57abd9cbd67d72705a2dad2d0bf11e8709b2c268bf2d72c219e2945c5e57acbefb9d7906518242de4b1a807',
+					blsKey:
+						'aed4794dc57abd9cbd67d72705a2dad2d0bf11e8709b2c268bf2d72c219e2945c5e57acbefb9d7906518242de4b1a807',
 					bftWeight: '1',
 				},
 			],
@@ -302,8 +308,10 @@ const mockRegisterValidatorTxrequestConnector = {
 		],
 		params: {
 			name: 'test_validator',
-			blsKey: 'a984c12c76b42b2d6ef2cae7ce09951e7d71eb160abdedbfba51bd216c42f2f3eda04a2e57b2cfb01768b94419b65190',
-			proofOfPossession: 'ab7661489a290464310c8615b387117ff27a209742e0e711f22d5ba3e7480de4eda293a651a48be9ae57b569a977d65e101179e1fcd73ab32c6c3fef4a1aedc7119e90eb2af7a3450399b15743c145bb49fdcb61b333817345c1d46769005d04',
+			blsKey:
+				'a984c12c76b42b2d6ef2cae7ce09951e7d71eb160abdedbfba51bd216c42f2f3eda04a2e57b2cfb01768b94419b65190',
+			proofOfPossession:
+				'ab7661489a290464310c8615b387117ff27a209742e0e711f22d5ba3e7480de4eda293a651a48be9ae57b569a977d65e101179e1fcd73ab32c6c3fef4a1aedc7119e90eb2af7a3450399b15743c145bb49fdcb61b333817345c1d46769005d04',
 			generatorKey: 'b9c0211c8eb94ee61154a4dc7af36d2a36e14dd1644b43aa250186bfa107ce6b',
 		},
 		id: 'd96c777b67576ddf4cd933a97a60b4311881e68e3c8bef1393ac0020ec8a506c',
@@ -365,12 +373,8 @@ const mockAuthAccountInfo = { numberOfSignatures: 0, mandatoryKeys: [], optional
 
 const mockAuthInfoForMultisigAccount = {
 	...mockAuthAccountInfo,
-	mandatoryKeys: [
-		'4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d',
-	],
-	optionalKeys: [
-		'b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076',
-	],
+	mandatoryKeys: ['4d9c2774f1c98accafb8554c164ce5689f66a32d768b64a9f694d5bd51dc1b4d'],
+	optionalKeys: ['b1353e202043ead83083ce8b7eb3a9d04fb49cdcf8c73c0e81567d55d114c076'],
 };
 
 const mockChannelInfo = {
@@ -384,9 +388,7 @@ const mockChannelInfo = {
 		size: 12,
 	},
 	inbox: {
-		appendPath: [
-			'3e168e2181b08e53e656ee112abe15fd456a0598717241a1beeaada2983a1350',
-		],
+		appendPath: ['3e168e2181b08e53e656ee112abe15fd456a0598717241a1beeaada2983a1350'],
 		root: '3e168e2181b08e53e656ee112abe15fd456a0598717241a1beeaada2983a1350',
 		size: 2,
 	},

@@ -15,16 +15,11 @@
  */
 module.exports = {
 	verbose: true,
-	testMatch: [
-		'<rootDir>/regression/**/*.test.js',
-	],
+	testMatch: ['<rootDir>/regression/**/*.test.js'],
 	testEnvironment: 'node',
 	testTimeout: 50000,
 	maxWorkers: 1,
-	setupFilesAfterEnv: [
-		'jest-extended',
-		'<rootDir>/helpers/setupCustomMatchers.js',
-	],
+	setupFilesAfterEnv: ['jest-extended', '<rootDir>/helpers/setupCustomMatchers.js'],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],
 		['jest-watch-toggle-config', { setting: 'bail' }],

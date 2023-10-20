@@ -24,10 +24,25 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps',
 	tags: ['Interoperability'],
 	params: {
-		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID_CSV, altSwaggerKey: 'chainIDCSV' },
+		chainID: {
+			optional: true,
+			type: 'string',
+			pattern: regex.CHAIN_ID_CSV,
+			altSwaggerKey: 'chainIDCSV',
+		},
 		chainName: { optional: true, type: 'string', min: 3, max: 20, pattern: regex.NAME },
-		status: { optional: true, type: 'string', pattern: regex.APPLICATION_STATUS, altSwaggerKey: 'blockchainAppStatus' },
-		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH_NAME, altSwaggerKey: 'searchByChainName' },
+		status: {
+			optional: true,
+			type: 'string',
+			pattern: regex.APPLICATION_STATUS,
+			altSwaggerKey: 'blockchainAppStatus',
+		},
+		search: {
+			optional: true,
+			type: 'string',
+			pattern: regex.PARTIAL_SEARCH_NAME,
+			altSwaggerKey: 'searchByChainName',
+		},
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
@@ -35,12 +50,16 @@ module.exports = {
 		const blockchainAppsSchema = {};
 		blockchainAppsSchema[this.swaggerApiPath] = { get: {} };
 		blockchainAppsSchema[this.swaggerApiPath].get.tags = this.tags;
-		blockchainAppsSchema[this.swaggerApiPath].get.summary = 'Requests list of blockchain applications';
+		blockchainAppsSchema[this.swaggerApiPath].get.summary =
+			'Requests list of blockchain applications';
 		blockchainAppsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns a list of blockchain applications',
 		});
-		blockchainAppsSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainApps', this.params);
+		blockchainAppsSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'blockchainApps',
+			this.params,
+		);
 		blockchainAppsSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of blockchain applications in the Lisk ecosystem',

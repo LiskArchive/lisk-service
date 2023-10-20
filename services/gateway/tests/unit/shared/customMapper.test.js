@@ -13,13 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { resolvePath, mapObject, mapArray, mapper } = require('../../../shared/customMapper');
 const {
-	resolvePath,
-	mapObject,
-	mapArray,
-	mapper,
-} = require('../../../shared/customMapper');
-const { rootObj, definitionObj, mapObjectExpectedResponse } = require('../../constants/customMapper');
+	rootObj,
+	definitionObj,
+	mapObjectExpectedResponse,
+} = require('../../constants/customMapper');
 
 describe('Test resolvePath method', () => {
 	const obj = {
@@ -75,19 +74,14 @@ describe('Test mapObject method', () => {
 describe('Test mapArray method', () => {
 	it('should return definition array when called with a definition array of one string', async () => {
 		const arr = ['some string'];
-		const definition = [
-			'different_key',
-		];
+		const definition = ['different_key'];
 		const response = mapArray(arr, definition);
 		expect(response).toEqual(definition);
 	});
 
 	it('should return definition with first element when called with a definition array of strings', async () => {
 		const arr = ['some string'];
-		const definition = [
-			'different_key1',
-			'different_key2',
-		];
+		const definition = ['different_key1', 'different_key2'];
 		const response = mapArray(arr, definition);
 		expect(response).toEqual([definition[0]]);
 	});

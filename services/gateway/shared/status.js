@@ -43,9 +43,7 @@ const getStatus = async broker => {
 		version = networkStatistics.data.networkVersion;
 	}
 	const versionCount = Object.values(version);
-	const networkNodeVersion = Object.keys(version)[
-		versionCount.indexOf(Math.max(...versionCount))
-	];
+	const networkNodeVersion = Object.keys(version)[versionCount.indexOf(Math.max(...versionCount))];
 	return {
 		build: buildTimestamp,
 		description: 'Lisk Service Gateway',

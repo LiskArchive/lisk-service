@@ -24,24 +24,29 @@ const logger = Logger();
 
 const validateBLSKey = async ({ blsKey, proofOfPossession }) => {
 	try {
-		const response = await invokeEndpoint('validators_validateBLSKey', { blsKey, proofOfPossession });
+		const response = await invokeEndpoint('validators_validateBLSKey', {
+			blsKey,
+			proofOfPossession,
+		});
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			logger.warn(`Request timed out when calling 'validateBLSKey' with:\nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`);
-			throw new TimeoutException('Request timed out when calling \'validateBLSKey\'.');
+			logger.warn(
+				`Request timed out when calling 'validateBLSKey' with:\nblsKey: ${blsKey}\nproofOfPossession: ${proofOfPossession}`,
+			);
+			throw new TimeoutException("Request timed out when calling 'validateBLSKey'.");
 		}
 		throw err;
 	}
 };
 
-const getValidator = async (address) => {
+const getValidator = async address => {
 	try {
 		const validatorInfo = await invokeEndpoint('validators_getValidator', { address });
 		return validatorInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getValidator\'.');
+			throw new TimeoutException("Request timed out when calling 'getValidator'.");
 		}
 		throw err;
 	}

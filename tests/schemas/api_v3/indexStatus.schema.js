@@ -28,8 +28,7 @@ const indexStatusResponseSchema = {
 };
 
 const indexStatusMetaResponseSchema = {
-	lastUpdate: Joi.number().integer().positive().max(getCurrentTime())
-		.required(),
+	lastUpdate: Joi.number().integer().positive().max(getCurrentTime()).required(),
 };
 
 const goodResponseSchema = {

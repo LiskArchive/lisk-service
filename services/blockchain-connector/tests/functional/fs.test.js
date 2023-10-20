@@ -15,13 +15,7 @@
  */
 const { resolve, dirname } = require('path');
 
-const {
-	exists,
-	extractTarBall,
-	mkdir,
-	read,
-	rm,
-} = require('../../shared/utils/fs');
+const { exists, extractTarBall, mkdir, read, rm } = require('../../shared/utils/fs');
 
 const { genesisBlock } = require('../constants/blocks');
 

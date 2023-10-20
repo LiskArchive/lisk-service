@@ -15,7 +15,7 @@
  */
 const { requestConnector } = require('../../../utils/request');
 
-const getAnnualInflation = async (params) => {
+const getAnnualInflation = async params => {
 	const annualInflation = {
 		data: {},
 		meta: {},

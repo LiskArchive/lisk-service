@@ -26,9 +26,28 @@ module.exports = {
 	params: {
 		transactionID: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.HASH_SHA256 },
 		moduleCommand: { optional: true, type: 'string', min: 1, pattern: regex.MODULE_COMMAND },
-		senderAddress: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32 },
-		address: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32, altSwaggerKey: 'senderAndRecipientAddress' },
-		recipientAddress: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32 },
+		senderAddress: {
+			optional: true,
+			type: 'string',
+			min: 41,
+			max: 41,
+			pattern: regex.ADDRESS_LISK32,
+		},
+		address: {
+			optional: true,
+			type: 'string',
+			min: 41,
+			max: 41,
+			pattern: regex.ADDRESS_LISK32,
+			altSwaggerKey: 'senderAndRecipientAddress',
+		},
+		recipientAddress: {
+			optional: true,
+			type: 'string',
+			min: 41,
+			max: 41,
+			pattern: regex.ADDRESS_LISK32,
+		},
 		blockID: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.HASH_SHA256 },
 		height: { optional: true, type: 'string', min: 1, pattern: regex.HEIGHT_RANGE },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
@@ -46,7 +65,12 @@ module.exports = {
 			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'timestamp:desc',
 		},
-		order: { optional: true, type: 'string', enum: ['index:asc', 'index:desc'], default: 'index:asc' },
+		order: {
+			optional: true,
+			type: 'string',
+			enum: ['index:asc', 'index:desc'],
+			default: 'index:asc',
+		},
 	},
 	get schema() {
 		const transactionSchema = {};
@@ -57,7 +81,10 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns transactions data',
 		});
-		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'transactions',
+			this.params,
+		);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of transactions',

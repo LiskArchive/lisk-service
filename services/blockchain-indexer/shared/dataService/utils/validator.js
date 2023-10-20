@@ -13,15 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	CacheRedis,
-} = require('lisk-service-framework');
+const { CacheRedis } = require('lisk-service-framework');
 
 const config = require('../../../config');
 
 const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
-const getAddressByName = async (name) => {
+const getAddressByName = async name => {
 	if (name) {
 		const address = await validatorCache.get(name);
 		if (address) return address;

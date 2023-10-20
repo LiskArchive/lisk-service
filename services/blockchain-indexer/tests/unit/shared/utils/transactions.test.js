@@ -13,19 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { normalizeTransaction, getTransactionExecutionStatus } = require('../../../../shared/utils/transactions');
+const {
+	normalizeTransaction,
+	getTransactionExecutionStatus,
+} = require('../../../../shared/utils/transactions');
 const { TRANSACTION_STATUS } = require('../../../../shared/constants');
 
-const {
-	inputTransaction,
-	expectedTransaction,
-} = require('../../../constants/transactions');
+const { inputTransaction, expectedTransaction } = require('../../../constants/transactions');
 
-const {
-	validTx,
-	eventsForValidTx,
-	eventsWithFailStatus,
-} = require('../../../constants/events');
+const { validTx, eventsForValidTx, eventsWithFailStatus } = require('../../../constants/events');
 
 describe('Test normalizeTransaction method', () => {
 	it('should return normalizedTransaction -> valid tx', async () => {

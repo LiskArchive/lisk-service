@@ -1,10 +1,7 @@
 {
 	"Peer": {
 		"type": "object",
-		"required": [
-			"wsPort",
-			"state"
-		],
+		"required": ["wsPort", "state"],
 		"properties": {
 			"ip": {
 				"type": "string",
@@ -50,10 +47,7 @@
 	},
 	"PeersWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of peers.",

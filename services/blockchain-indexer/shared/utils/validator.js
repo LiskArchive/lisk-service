@@ -15,7 +15,9 @@
  */
 const {
 	CacheRedis,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const config = require('../../config');
@@ -27,7 +29,7 @@ const validatorCache = CacheRedis('validator', config.endpoints.cache);
 
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
-const getNameByAddress = async (address) => {
+const getNameByAddress = async address => {
 	if (address) {
 		const name = await validatorCache.get(address);
 		if (name) {

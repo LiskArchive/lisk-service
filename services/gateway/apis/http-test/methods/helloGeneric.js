@@ -28,10 +28,13 @@ module.exports = {
 		method: 'template.generic.hello',
 		params: {},
 		definition: {
-			data: ['data', {
-				message: '=',
-				name: '=',
-			}],
+			data: [
+				'data',
+				{
+					message: '=',
+					name: '=',
+				},
+			],
 			meta: {
 				count: 'meta.count,number',
 				offset: '=,number',

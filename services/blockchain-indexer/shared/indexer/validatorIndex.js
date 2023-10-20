@@ -14,16 +14,16 @@
  *
  */
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const { requestConnector } = require('../utils/request');
 const commissionsTableSchema = require('../database/schema/commissions');
 const stakesTableSchema = require('../database/schema/stakes');
 
-const {
-	getBlockByHeight,
-} = require('../dataService');
+const { getBlockByHeight } = require('../dataService');
 const { getGenesisHeight } = require('../constants');
 
 const config = require('../../config');
@@ -49,13 +49,15 @@ const indexStakersInfo = async () => {
 	const stakesTable = await getStakesTable();
 	const stakers = await requestConnector('getPoSGenesisStakers');
 	const stakesToIndex = [];
-	await stakers.forEach(async staker => staker.stakes.forEach(stake => {
-		stakesToIndex.push({
-			stakerAddress: staker.address,
-			validatorAddress: stake.validatorAddress,
-			amount: stake.amount,
-		});
-	}));
+	await stakers.forEach(async staker =>
+		staker.stakes.forEach(stake => {
+			stakesToIndex.push({
+				stakerAddress: staker.address,
+				validatorAddress: stake.validatorAddress,
+				amount: stake.amount,
+			});
+		}),
+	);
 
 	if (stakesToIndex.length) await stakesTable.upsert(stakesToIndex);
 };

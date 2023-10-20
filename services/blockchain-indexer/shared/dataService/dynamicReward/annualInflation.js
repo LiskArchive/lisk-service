@@ -15,7 +15,7 @@
  */
 const business = require('../business');
 
-const getAnnualInflation = async (height) => {
+const getAnnualInflation = async height => {
 	const response = await business.getAnnualInflation(height);
 	return response;
 };

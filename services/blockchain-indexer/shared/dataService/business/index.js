@@ -13,11 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getGenerators,
-	getNumberOfGenerators,
-	reloadGeneratorsCache,
-} = require('./generators');
+const { getGenerators, getNumberOfGenerators, reloadGeneratorsCache } = require('./generators');
 
 const {
 	getBlocks,
@@ -37,10 +33,7 @@ const {
 	normalizeTransaction,
 } = require('./transactions');
 
-const {
-	getPendingTransactions,
-	loadAllPendingTransactions,
-} = require('./pendingTransactions');
+const { getPendingTransactions, loadAllPendingTransactions } = require('./pendingTransactions');
 
 const {
 	getBlockchainApps,

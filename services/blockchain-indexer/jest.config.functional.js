@@ -4,9 +4,7 @@
 module.exports = {
 	coverageDirectory: 'test/coverage',
 
-	testMatch: [
-		'<rootDir>/tests/functional/**/*.test.js',
-	],
+	testMatch: ['<rootDir>/tests/functional/**/*.test.js'],
 
 	testTimeout: 15000,
 	testEnvironment: 'node',

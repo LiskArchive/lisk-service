@@ -89,9 +89,7 @@ const engineEndpoints = [
 	},
 ];
 
-const allRegisteredEndpoints = engineEndpoints
-	.map(e => e.name)
-	.concat(registeredEndpoints);
+const allRegisteredEndpoints = engineEndpoints.map(e => e.name).concat(registeredEndpoints);
 
 module.exports = {
 	registeredEndpoints,

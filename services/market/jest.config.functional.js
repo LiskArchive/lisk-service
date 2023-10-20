@@ -9,7 +9,5 @@ module.exports = {
 	testEnvironment: 'node',
 
 	// The glob patterns Jest uses to detect test files
-	testMatch: [
-		'**/tests/functional/?(*.)+(spec|test).[tj]s?(x)',
-	],
+	testMatch: ['**/tests/functional/?(*.)+(spec|test).[tj]s?(x)'],
 };

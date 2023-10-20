@@ -17,7 +17,9 @@
 const { resolve } = require('path');
 const config = require('../../../../../../config');
 
-const mockedFilePath = resolve(`${__dirname}/../../../../../../shared/dataService/business/network`);
+const mockedFilePath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/network`,
+);
 const dataServicePath = resolve(`${__dirname}/../../../../../../shared/dataService`);
 const mockedRequestFilePath = resolve(`${__dirname}/../../../../../../shared/utils/request`);
 

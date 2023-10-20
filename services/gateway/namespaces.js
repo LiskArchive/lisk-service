@@ -32,10 +32,10 @@ const filterApis = (requiredApis, availableApis) => {
 	return filteredApis;
 };
 
-const getSocketNamespaces = (registeredModuleNames) => filterApis(
-	config.api.ws,
-	{
-		'/rpc-v3': () => registerApi(['http-version3', 'http-exports'], { ...defaultConfig }, registeredModuleNames),
+const getSocketNamespaces = registeredModuleNames =>
+	filterApis(config.api.ws, {
+		'/rpc-v3': () =>
+			registerApi(['http-version3', 'http-exports'], { ...defaultConfig }, registeredModuleNames),
 		'/rpc-test': () => registerApi('http-test', { ...defaultConfig }, registeredModuleNames),
 		'/blockchain': () => ({
 			events: {
@@ -45,8 +45,7 @@ const getSocketNamespaces = (registeredModuleNames) => filterApis(
 				},
 			},
 		}),
-	},
-);
+	});
 
 module.exports = {
 	getSocketNamespaces,

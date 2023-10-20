@@ -14,11 +14,7 @@
  *
  */
 
-const TRANSACTION_EXECUTION_STATUSES = [
-	'pending',
-	'successful',
-	'failed',
-];
+const TRANSACTION_EXECUTION_STATUSES = ['pending', 'successful', 'failed'];
 
 module.exports = {
 	TRANSACTION_EXECUTION_STATUSES,

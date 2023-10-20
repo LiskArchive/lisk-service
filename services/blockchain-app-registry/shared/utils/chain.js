@@ -29,7 +29,9 @@ const getApplicationMetadataTable = () => getTableInstance(appMetadataTableSchem
 
 const resolveChainNameByNetworkAppDir = async (network, appDirName) => {
 	const applicationMetadataTable = await getApplicationMetadataTable();
-	const [{ chainName = '' } = {}] = await applicationMetadataTable.find({ network, appDirName }, ['chainName']);
+	const [{ chainName = '' } = {}] = await applicationMetadataTable.find({ network, appDirName }, [
+		'chainName',
+	]);
 	return chainName;
 };
 

@@ -24,17 +24,23 @@ module.exports = {
 	status: '=,string',
 	isBanned: '=,boolean',
 	reportMisbehaviorHeights: '=',
-	punishmentPeriods: ['punishmentPeriods', {
-		start: '=,number',
-		end: '=,number',
-	}],
+	punishmentPeriods: [
+		'punishmentPeriods',
+		{
+			start: '=,number',
+			end: '=,number',
+		},
+	],
 	consecutiveMissedBlocks: '=,number',
 	commission: '=,number',
 	lastCommissionIncreaseHeight: '=,number',
-	sharingCoefficients: ['sharingCoefficients', {
-		tokenID: '=,string',
-		coefficient: '=,string',
-	}],
+	sharingCoefficients: [
+		'sharingCoefficients',
+		{
+			tokenID: '=,string',
+			coefficient: '=,string',
+		},
+	],
 	rank: '=,number',
 	generatedBlocks: '=,number',
 	totalCommission: '=,string',

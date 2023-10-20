@@ -19,13 +19,13 @@ const {
 
 const { timeoutMessage, invokeEndpoint } = require('./client');
 
-const getLegacyAccount = async (publicKey) => {
+const getLegacyAccount = async publicKey => {
 	try {
 		const legacyAccount = await invokeEndpoint('legacy_getLegacyAccount', { publicKey });
 		return legacyAccount;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getLegacyAccount\'.');
+			throw new TimeoutException("Request timed out when calling 'getLegacyAccount'.");
 		}
 		throw err;
 	}

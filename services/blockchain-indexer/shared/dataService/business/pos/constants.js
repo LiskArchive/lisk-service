@@ -22,7 +22,8 @@ let posModuleConstants;
 
 const getPosConstants = async () => {
 	try {
-		if (typeof posModuleConstants === 'undefined') posModuleConstants = await requestConnector('getPosConstants');
+		if (typeof posModuleConstants === 'undefined')
+			posModuleConstants = await requestConnector('getPosConstants');
 	} catch (err) {
 		const errMessage = `Unable to fetch the PoS constants from connector due to: ${err.message}.`;
 		logger.warn(errMessage);
@@ -37,7 +38,9 @@ const getPosConstants = async () => {
 };
 
 const getPosTokenID = async () => {
-	const { data: { posTokenID } } = await getPosConstants();
+	const {
+		data: { posTokenID },
+	} = await getPosConstants();
 	return posTokenID;
 };
 

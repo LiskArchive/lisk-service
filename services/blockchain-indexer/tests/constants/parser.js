@@ -193,10 +193,7 @@ const liskAccount = Object.freeze({
 									fieldNumber: 2,
 								},
 							},
-							required: [
-								'delegateAddress',
-								'amount',
-							],
+							required: ['delegateAddress', 'amount'],
 						},
 					},
 					unlocking: {
@@ -218,24 +215,14 @@ const liskAccount = Object.freeze({
 									fieldNumber: 3,
 								},
 							},
-							required: [
-								'delegateAddress',
-								'amount',
-								'unvoteHeight',
-							],
+							required: ['delegateAddress', 'amount', 'unvoteHeight'],
 						},
 					},
 				},
 				fieldNumber: 5,
 			},
 		},
-		required: [
-			'address',
-			'token',
-			'sequence',
-			'keys',
-			'dpos',
-		],
+		required: ['address', 'token', 'sequence', 'keys', 'dpos'],
 	},
 });
 
@@ -254,7 +241,8 @@ const liskBlock = Object.freeze({
 				maxHeightPrevoted: 18211676,
 				seedReveal: 'bbe7d7e3afb79ff40551b3535c1fbd6b',
 			},
-			signature: 'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
+			signature:
+				'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
 			id: 'b179c1f9551f292938fe33f66e910cd78820a78a156efc5e0e14b19a53ef1363',
 		},
 		payload: [],
@@ -273,7 +261,8 @@ const liskBlock = Object.freeze({
 				maxHeightPrevoted: 18211676,
 				seedReveal: 'bbe7d7e3afb79ff40551b3535c1fbd6b',
 			},
-			signature: 'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
+			signature:
+				'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
 			id: 'b179c1f9551f292938fe33f66e910cd78820a78a156efc5e0e14b19a53ef1363',
 		},
 		payload: [],
@@ -294,10 +283,7 @@ const liskBlock = Object.freeze({
 				fieldNumber: 2,
 			},
 		},
-		required: [
-			'header',
-			'payload',
-		],
+		required: ['header', 'payload'],
 	},
 });
 
@@ -315,23 +301,36 @@ const liskBlockHeader = Object.freeze({
 			maxHeightPrevoted: 18211676,
 			seedReveal: 'bbe7d7e3afb79ff40551b3535c1fbd6b',
 		},
-		signature: 'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
+		signature:
+			'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
 		id: 'b179c1f9551f292938fe33f66e910cd78820a78a156efc5e0e14b19a53ef1363',
 	},
 	expected: {
 		version: 2,
 		timestamp: 1649419370,
 		height: 18211765,
-		previousBlockID: Buffer.from('82919375aeffdd90f32465cab6df95bdbc0c87698f17a539baad1b8575db4437', 'hex'),
-		transactionRoot: Buffer.from('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hex'),
-		generatorPublicKey: Buffer.from('6cb825715058d2e821aa4af75fbd0da52181910d9fda90fabe73cd533eeb6acb', 'hex'),
+		previousBlockID: Buffer.from(
+			'82919375aeffdd90f32465cab6df95bdbc0c87698f17a539baad1b8575db4437',
+			'hex',
+		),
+		transactionRoot: Buffer.from(
+			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+			'hex',
+		),
+		generatorPublicKey: Buffer.from(
+			'6cb825715058d2e821aa4af75fbd0da52181910d9fda90fabe73cd533eeb6acb',
+			'hex',
+		),
 		reward: BigInt('100000000'),
 		asset: {
 			maxHeightPreviouslyForged: 18211671,
 			maxHeightPrevoted: 18211676,
 			seedReveal: 'bbe7d7e3afb79ff40551b3535c1fbd6b',
 		},
-		signature: Buffer.from('b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c', 'hex'),
+		signature: Buffer.from(
+			'b82ef12b707669d86b970e73df7a39c3ad9e7a89725b683da67e7e3e2cefbef9645e2791e0f0134edcb07ad51ea46645bfe7666d8a672cd02d518d2c88a3850c',
+			'hex',
+		),
 		id: 'b179c1f9551f292938fe33f66e910cd78820a78a156efc5e0e14b19a53ef1363',
 	},
 	schema: {
@@ -530,11 +529,7 @@ const liskBlockHeaderAsset = Object.freeze({
 	schema: {
 		$id: '/genesisBlock/header/asset',
 		type: 'object',
-		required: [
-			'accounts',
-			'initDelegates',
-			'initRounds',
-		],
+		required: ['accounts', 'initDelegates', 'initRounds'],
 		properties: {
 			accounts: {
 				type: 'array',
@@ -650,10 +645,7 @@ const liskBlockHeaderAsset = Object.freeze({
 												fieldNumber: 2,
 											},
 										},
-										required: [
-											'delegateAddress',
-											'amount',
-										],
+										required: ['delegateAddress', 'amount'],
 									},
 								},
 								unlocking: {
@@ -675,24 +667,14 @@ const liskBlockHeaderAsset = Object.freeze({
 												fieldNumber: 3,
 											},
 										},
-										required: [
-											'delegateAddress',
-											'amount',
-											'unvoteHeight',
-										],
+										required: ['delegateAddress', 'amount', 'unvoteHeight'],
 									},
 								},
 							},
 							fieldNumber: 5,
 						},
 					},
-					required: [
-						'address',
-						'token',
-						'sequence',
-						'keys',
-						'dpos',
-					],
+					required: ['address', 'token', 'sequence', 'keys', 'dpos'],
 				},
 			},
 			initDelegates: {
@@ -742,11 +724,7 @@ const liskBlockHeaderAssetV3 = Object.freeze({
 				fieldNumber: 3,
 			},
 		},
-		required: [
-			'maxHeightPreviouslyForged',
-			'maxHeightPrevoted',
-			'seedReveal',
-		],
+		required: ['maxHeightPreviouslyForged', 'maxHeightPrevoted', 'seedReveal'],
 	},
 });
 
@@ -772,9 +750,15 @@ const liskTransaction = Object.freeze({
 		assetID: 0,
 		nonce: BigInt('4'),
 		fee: BigInt('1000000'),
-		senderPublicKey: Buffer.from('5133af7944acf5278b0310a11c06134f80ab4546d77d1b0e027c8430a7d2bb92', 'hex'),
+		senderPublicKey: Buffer.from(
+			'5133af7944acf5278b0310a11c06134f80ab4546d77d1b0e027c8430a7d2bb92',
+			'hex',
+		),
 		signatures: [
-			Buffer.from('98a9ee2cde8354d014cfe6367d430be2713e102f37d92ab91f03db780407e5bf6d818a45c21c9f5518638dfc3c5365fc2d497b928e0b9d6337988df46a663a02', 'hex'),
+			Buffer.from(
+				'98a9ee2cde8354d014cfe6367d430be2713e102f37d92ab91f03db780407e5bf6d818a45c21c9f5518638dfc3c5365fc2d497b928e0b9d6337988df46a663a02',
+				'hex',
+			),
 		],
 		asset: {
 			amount: '800000000',
@@ -786,14 +770,7 @@ const liskTransaction = Object.freeze({
 	schema: {
 		$id: 'lisk/transaction',
 		type: 'object',
-		required: [
-			'moduleID',
-			'assetID',
-			'nonce',
-			'fee',
-			'senderPublicKey',
-			'asset',
-		],
+		required: ['moduleID', 'assetID', 'nonce', 'fee', 'senderPublicKey', 'asset'],
 		properties: {
 			moduleID: {
 				dataType: 'uint32',
@@ -853,11 +830,7 @@ const liskTransactionAssets = Object.freeze([
 			$id: 'lisk/transfer-asset',
 			title: 'Transfer transaction asset',
 			type: 'object',
-			required: [
-				'amount',
-				'recipientAddress',
-				'data',
-			],
+			required: ['amount', 'recipientAddress', 'data'],
 			properties: {
 				amount: {
 					dataType: 'uint64',
@@ -898,11 +871,7 @@ const liskTransactionAssets = Object.freeze([
 		schema: {
 			$id: 'lisk/keys/register',
 			type: 'object',
-			required: [
-				'numberOfSignatures',
-				'optionalKeys',
-				'mandatoryKeys',
-			],
+			required: ['numberOfSignatures', 'optionalKeys', 'mandatoryKeys'],
 			properties: {
 				numberOfSignatures: {
 					dataType: 'uint32',
@@ -949,9 +918,7 @@ const liskTransactionAssets = Object.freeze([
 		schema: {
 			$id: 'lisk/dpos/register',
 			type: 'object',
-			required: [
-				'username',
-			],
+			required: ['username'],
 			properties: {
 				username: {
 					dataType: 'string',
@@ -1010,9 +977,7 @@ const liskTransactionAssets = Object.freeze([
 		schema: {
 			$id: 'lisk/dpos/vote',
 			type: 'object',
-			required: [
-				'votes',
-			],
+			required: ['votes'],
 			properties: {
 				votes: {
 					type: 'array',
@@ -1020,10 +985,7 @@ const liskTransactionAssets = Object.freeze([
 					maxItems: 20,
 					items: {
 						type: 'object',
-						required: [
-							'delegateAddress',
-							'amount',
-						],
+						required: ['delegateAddress', 'amount'],
 						properties: {
 							delegateAddress: {
 								dataType: 'bytes',
@@ -1098,9 +1060,7 @@ const liskTransactionAssets = Object.freeze([
 		schema: {
 			$id: 'lisk/dpos/unlock',
 			type: 'object',
-			required: [
-				'unlockObjects',
-			],
+			required: ['unlockObjects'],
 			properties: {
 				unlockObjects: {
 					type: 'array',
@@ -1108,11 +1068,7 @@ const liskTransactionAssets = Object.freeze([
 					maxItems: 20,
 					items: {
 						type: 'object',
-						required: [
-							'delegateAddress',
-							'amount',
-							'unvoteHeight',
-						],
+						required: ['delegateAddress', 'amount', 'unvoteHeight'],
 						properties: {
 							delegateAddress: {
 								dataType: 'bytes',
@@ -1154,7 +1110,8 @@ const liskTransactionAssets = Object.freeze([
 					maxHeightPrevoted: 18027210,
 					seedReveal: '6187c9991e64617cab4c54aa26e72431',
 				},
-				signature: 'f2d578a2b3f4d1244ac13b280be66080192943270c9be6b2304b7f2d3adf6c3c87d9faca7971b33aeb42c21fc58e9e26a5beffbad7dccc21ab859b89585b920b',
+				signature:
+					'f2d578a2b3f4d1244ac13b280be66080192943270c9be6b2304b7f2d3adf6c3c87d9faca7971b33aeb42c21fc58e9e26a5beffbad7dccc21ab859b89585b920b',
 			},
 			header2: {
 				version: 2,
@@ -1169,7 +1126,8 @@ const liskTransactionAssets = Object.freeze([
 					maxHeightPrevoted: 18142247,
 					seedReveal: '6187c9991e64617cab4c54aa26e72431',
 				},
-				signature: '4e01276f227080fdb91565567511744fb45b9aaa791cf277ba2124f751ad9214d81858dc1b6318f61b0002916484a139aebfaa6f60b7da7d792e160fbeee0608',
+				signature:
+					'4e01276f227080fdb91565567511744fb45b9aaa791cf277ba2124f751ad9214d81858dc1b6318f61b0002916484a139aebfaa6f60b7da7d792e160fbeee0608',
 			},
 		},
 		expected: {
@@ -1177,40 +1135,61 @@ const liskTransactionAssets = Object.freeze([
 				version: 2,
 				timestamp: 1647573700,
 				height: 18027287,
-				previousBlockID: Buffer.from('0b6b36182d28c6d88ecbc03427e4e9b3623a987873bb3696ffb77bbdf033b888', 'hex'),
-				transactionRoot: Buffer.from('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hex'),
-				generatorPublicKey: Buffer.from('d26f57478f8d30784ba36658873f84d5134da7eee31ada7d29183a4fe9cdafde', 'hex'),
+				previousBlockID: Buffer.from(
+					'0b6b36182d28c6d88ecbc03427e4e9b3623a987873bb3696ffb77bbdf033b888',
+					'hex',
+				),
+				transactionRoot: Buffer.from(
+					'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+					'hex',
+				),
+				generatorPublicKey: Buffer.from(
+					'd26f57478f8d30784ba36658873f84d5134da7eee31ada7d29183a4fe9cdafde',
+					'hex',
+				),
 				reward: BigInt('100000000'),
 				asset: {
 					maxHeightPreviouslyForged: 0,
 					maxHeightPrevoted: 18027210,
 					seedReveal: Buffer.from('6187c9991e64617cab4c54aa26e72431', 'hex'),
 				},
-				signature: Buffer.from('f2d578a2b3f4d1244ac13b280be66080192943270c9be6b2304b7f2d3adf6c3c87d9faca7971b33aeb42c21fc58e9e26a5beffbad7dccc21ab859b89585b920b', 'hex'),
+				signature: Buffer.from(
+					'f2d578a2b3f4d1244ac13b280be66080192943270c9be6b2304b7f2d3adf6c3c87d9faca7971b33aeb42c21fc58e9e26a5beffbad7dccc21ab859b89585b920b',
+					'hex',
+				),
 			},
 			header2: {
 				version: 2,
 				timestamp: 1648724430,
 				height: 18142315,
-				previousBlockID: Buffer.from('2c2765f67dda9c1e57d6bd3d8ca8da3db8a9354bf579d93e79d88635c0ecc6b6', 'hex'),
-				transactionRoot: Buffer.from('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hex'),
-				generatorPublicKey: Buffer.from('d26f57478f8d30784ba36658873f84d5134da7eee31ada7d29183a4fe9cdafde', 'hex'),
+				previousBlockID: Buffer.from(
+					'2c2765f67dda9c1e57d6bd3d8ca8da3db8a9354bf579d93e79d88635c0ecc6b6',
+					'hex',
+				),
+				transactionRoot: Buffer.from(
+					'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+					'hex',
+				),
+				generatorPublicKey: Buffer.from(
+					'd26f57478f8d30784ba36658873f84d5134da7eee31ada7d29183a4fe9cdafde',
+					'hex',
+				),
 				reward: BigInt('100000000'),
 				asset: {
 					maxHeightPreviouslyForged: 0,
 					maxHeightPrevoted: 18142247,
 					seedReveal: Buffer.from('6187c9991e64617cab4c54aa26e72431', 'hex'),
 				},
-				signature: Buffer.from('4e01276f227080fdb91565567511744fb45b9aaa791cf277ba2124f751ad9214d81858dc1b6318f61b0002916484a139aebfaa6f60b7da7d792e160fbeee0608', 'hex'),
+				signature: Buffer.from(
+					'4e01276f227080fdb91565567511744fb45b9aaa791cf277ba2124f751ad9214d81858dc1b6318f61b0002916484a139aebfaa6f60b7da7d792e160fbeee0608',
+					'hex',
+				),
 			},
 		},
 		schema: {
 			$id: 'lisk/dpos/pom',
 			type: 'object',
-			required: [
-				'header1',
-				'header2',
-			],
+			required: ['header1', 'header2'],
 			properties: {
 				header1: {
 					$id: 'block-header1',
@@ -1261,11 +1240,7 @@ const liskTransactionAssets = Object.freeze([
 									fieldNumber: 3,
 								},
 							},
-							required: [
-								'maxHeightPreviouslyForged',
-								'maxHeightPrevoted',
-								'seedReveal',
-							],
+							required: ['maxHeightPreviouslyForged', 'maxHeightPrevoted', 'seedReveal'],
 						},
 						signature: {
 							dataType: 'bytes',
@@ -1333,11 +1308,7 @@ const liskTransactionAssets = Object.freeze([
 									fieldNumber: 3,
 								},
 							},
-							required: [
-								'maxHeightPreviouslyForged',
-								'maxHeightPrevoted',
-								'seedReveal',
-							],
+							required: ['maxHeightPreviouslyForged', 'maxHeightPrevoted', 'seedReveal'],
 						},
 						signature: {
 							dataType: 'bytes',
@@ -1374,9 +1345,7 @@ const liskTransactionAssets = Object.freeze([
 			$id: 'lisk/legacyAccount/reclaim',
 			title: 'Reclaim transaction asset',
 			type: 'object',
-			required: [
-				'amount',
-			],
+			required: ['amount'],
 			properties: {
 				amount: {
 					dataType: 'uint64',
@@ -1385,7 +1354,6 @@ const liskTransactionAssets = Object.freeze([
 			},
 		},
 	},
-
 ]);
 
 module.exports = {

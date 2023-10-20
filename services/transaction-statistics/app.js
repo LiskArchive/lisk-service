@@ -14,12 +14,7 @@
  *
  */
 const path = require('path');
-const {
-	Microservice,
-	Logger,
-	LoggerConfig,
-	Signals,
-} = require('lisk-service-framework');
+const { Microservice, Logger, LoggerConfig, Signals } = require('lisk-service-framework');
 
 const config = require('./config');
 const packageJson = require('./package.json');
@@ -37,12 +32,9 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: config.log,
 	events: {
-		'index.ready': (payload) => Signals.get('blockIndexReady').dispatch(payload),
+		'index.ready': payload => Signals.get('blockIndexReady').dispatch(payload),
 	},
-	dependencies: [
-		'indexer',
-		'connector',
-	],
+	dependencies: ['indexer', 'connector'],
 });
 
 setAppContext(app);
@@ -52,15 +44,19 @@ app.addMethods(path.join(__dirname, 'methods'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
-const reportErrorAndExitProcess = (err) => {
+const reportErrorAndExitProcess = err => {
 	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
 	logger.fatal(err.stack);
 	process.exit(1);
 };
 
 initDatabase()
-	.then(() => app.run()
-		.then(() => { logger.info(`Service started ${packageJson.name}.`); })
-		.catch(reportErrorAndExitProcess),
+	.then(() =>
+		app
+			.run()
+			.then(() => {
+				logger.info(`Service started ${packageJson.name}.`);
+			})
+			.catch(reportErrorAndExitProcess),
 	)
 	.catch(reportErrorAndExitProcess);

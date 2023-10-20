@@ -31,23 +31,33 @@ describe('Test requestAll method', () => {
 	beforeAll(async () => {
 		await broker.start();
 		await request.setAppContext({
-			requestRpc: (method, params) => new Promise((resolve, reject) => {
-				broker
-					.call(method, params)
-					.then(res => resolve(res))
-					.catch(err => {
-						console.error(`Error occurred! ${err.message}`);
-						reject(err);
-					});
-			}),
+			requestRpc: (method, params) =>
+				new Promise((resolve, reject) => {
+					broker
+						.call(method, params)
+						.then(res => resolve(res))
+						.catch(err => {
+							console.error(`Error occurred! ${err.message}`);
+							reject(err);
+						});
+				}),
 		});
 	});
 	afterAll(() => broker.stop());
 
 	it('should return proper response', async () => {
 		const totalLimit = 27;
-		const genesisAsset = await request.requestConnector('getGenesisAssetByModule', { module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: totalLimit });
-		const result = await requestAll(request.requestConnector, 'getGenesisAssetByModule', { module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 10 }, totalLimit);
+		const genesisAsset = await request.requestConnector('getGenesisAssetByModule', {
+			module: MODULE.TOKEN,
+			subStore: MODULE_SUB_STORE.TOKEN.USER,
+			limit: totalLimit,
+		});
+		const result = await requestAll(
+			request.requestConnector,
+			'getGenesisAssetByModule',
+			{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 10 },
+			totalLimit,
+		);
 		expect(result).toBeInstanceOf(Object);
 		expect(result).toEqual(genesisAsset);
 	});

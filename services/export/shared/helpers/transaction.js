@@ -27,11 +27,13 @@ const normalizeTransactionAmount = (address, tx) => {
 	const { isIncomingCrossChainTransferTransaction } = tx;
 
 	const { isSelfTokenTransferCredit } = tx;
-	const sign = (isReclaim && isSender)
-		|| (isTokenTransfer && isRecipient && !isSelfTransfer)
-		|| (isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit)
-		|| isIncomingCrossChainTransferTransaction
-		? 1 : -1;
+	const sign =
+		(isReclaim && isSender) ||
+		(isTokenTransfer && isRecipient && !isSelfTransfer) ||
+		(isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit) ||
+		isIncomingCrossChainTransferTransaction
+			? 1
+			: -1;
 
 	return String(sign * tx.params.amount);
 };
@@ -45,7 +47,7 @@ const normalizeTransactionFee = (address, tx) => {
 	return isRecipient || isIncomingCrossChainTransferTransaction ? String(0) : tx.fee;
 };
 
-const checkIfSelfTokenTransfer = (tx) => {
+const checkIfSelfTokenTransfer = tx => {
 	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 	return isTokenTransfer && tx.sender.address === tx.params.recipientAddress;
 };

@@ -33,8 +33,11 @@ const getGenerators = async params => {
 	// TODO: Optimize. Generate the map with every 'chain_*' event and maintain in the memory
 	const validatorMap = new Map(validatorList.map(validator => [validator.address, validator]));
 	generatorsList.forEach(generator => {
-		if (validatorMap.has(generator.address)
-			&& (!('search' in params) || isSubstringInArray([generator.name, generator.address, generator.publicKey], params.search))) {
+		if (
+			validatorMap.has(generator.address) &&
+			(!('search' in params) ||
+				isSubstringInArray([generator.name, generator.address, generator.publicKey], params.search))
+		) {
 			const validator = validatorMap.get(generator.address);
 			generators.data.push({ ...generator, status: validator.status });
 		}

@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -27,11 +25,16 @@ const {
 const {
 	goodResponseSchemaForTokenTopBalances,
 } = require('../../../schemas/api_v3/tokenTopBalances.schema');
-const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidTokenIDs } = require('../constants/invalidInputs');
+const {
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+	invalidTokenIDs,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
-const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
+const getTokensTopBalances = async params => request(wsRpcUrl, 'get.token.balances.top', params);
+const getTokensIDs = async params => request(wsRpcUrl, 'get.token.available-ids', params);
 
 describe('get.token.balances.top', () => {
 	let tokenID;
@@ -41,7 +44,9 @@ describe('get.token.balances.top', () => {
 		const { result } = await getTokensIDs({});
 		[tokenID] = result.data.tokenIDs;
 
-		const { result: { data: tokenInformation } } = await getTokensTopBalances({ tokenID });
+		const {
+			result: { data: tokenInformation },
+		} = await getTokensTopBalances({ tokenID });
 		[tokenInfo] = tokenInformation[tokenID];
 	});
 

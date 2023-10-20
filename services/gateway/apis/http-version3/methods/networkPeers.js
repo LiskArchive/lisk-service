@@ -26,11 +26,22 @@ module.exports = {
 	params: {
 		ip: { optional: true, type: 'string', pattern: regex.IP },
 		networkVersion: { optional: true, type: 'string', pattern: regex.NETWORK_VERSION },
-		state: { optional: true, type: 'string', enum: ['connected', 'disconnected', 'any'], default: 'any', lowercase: true },
+		state: {
+			optional: true,
+			type: 'string',
+			enum: ['connected', 'disconnected', 'any'],
+			default: 'any',
+			lowercase: true,
+		},
 		height: { optional: true, min: 0, type: 'number', integer: true },
 		limit: { optional: true, min: 1, max: 100, type: 'number', integer: true, default: 10 },
 		offset: { optional: true, min: 0, type: 'number', integer: true, default: 0 },
-		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'networkVersion:asc', 'networkVersion:desc'], default: 'height:desc' },
+		sort: {
+			optional: true,
+			type: 'string',
+			enum: ['height:asc', 'height:desc', 'networkVersion:asc', 'networkVersion:desc'],
+			default: 'height:desc',
+		},
 	},
 	get schema() {
 		const networkPeerSchema = {};

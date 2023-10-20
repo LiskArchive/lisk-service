@@ -29,9 +29,7 @@ const {
 			KVStore: { getKeyValueTable },
 		},
 	},
-	Utils: {
-		delay,
-	},
+	Utils: { delay },
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
@@ -213,8 +211,9 @@ const indexBlock = async job => {
 
 			// Update block generator's rewards
 			const blockRewardEvent = events.find(
-				e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
-					&& e.name === EVENT.REWARD_MINTED,
+				e =>
+					[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
+					e.name === EVENT.REWARD_MINTED,
 			);
 			if (blockRewardEvent) {
 				blockReward = BigInt(blockRewardEvent.data.amount || '0');
@@ -266,8 +265,8 @@ const indexBlock = async job => {
 				const { data: eventData } = event;
 				// Initialize map entry with BigInt
 				if (
-					[EVENT.LOCK, EVENT.UNLOCK].includes(event.name)
-					&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)
+					[EVENT.LOCK, EVENT.UNLOCK].includes(event.name) &&
+					!(eventData.tokenID in tokenIDLockedAmountChangeMap)
 				) {
 					tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 				}
@@ -318,7 +317,8 @@ const indexBlock = async job => {
 		}
 
 		if (
-			['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e => error.message.includes(e),
+			['Deadlock found when trying to get lock', 'ER_LOCK_DEADLOCK'].some(e =>
+				error.message.includes(e),
 			)
 		) {
 			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later. sql:${error.sql}`;
@@ -409,8 +409,9 @@ const deleteIndexedBlocks = async job => {
 
 					// Update the generator's rewards
 					const blockRewardEvent = events.find(
-						e => [MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module)
-							&& e.name === EVENT.REWARD_MINTED,
+						e =>
+							[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
+							e.name === EVENT.REWARD_MINTED,
 					);
 					if (blockRewardEvent) {
 						blockReward = BigInt(blockRewardEvent.data.amount || '0');
@@ -463,8 +464,8 @@ const deleteIndexedBlocks = async job => {
 						const { data: eventData } = event;
 						// Initialize map entry with BigInt
 						if (
-							[EVENT.LOCK, EVENT.UNLOCK].includes(event.name)
-							&& !(eventData.tokenID in tokenIDLockedAmountChangeMap)
+							[EVENT.LOCK, EVENT.UNLOCK].includes(event.name) &&
+							!(eventData.tokenID in tokenIDLockedAmountChangeMap)
 						) {
 							tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
 						}
@@ -514,7 +515,7 @@ const deleteIndexedBlocks = async job => {
 let isIndexingRunning = false;
 const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
 
-const indexBlockAtomicWrapper = async (job) => {
+const indexBlockAtomicWrapper = async job => {
 	if (isIndexingRunning) {
 		logger.trace('Already indexing another block!');
 		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
@@ -529,7 +530,9 @@ const indexBlockAtomicWrapper = async (job) => {
 		await indexBlock(job);
 	} catch (err) {
 		isIndexingRunning = false;
-		logger.error(`Error occurred during indexing block.\nError: ${err.message}\nStack:${err.stack}`);
+		logger.error(
+			`Error occurred during indexing block.\nError: ${err.message}\nStack:${err.stack}`,
+		);
 		throw new Error(err);
 	}
 
@@ -662,7 +665,8 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 		}
 	}
 
-	result.forEach(({ from, to }) => logger.info(`Missing blocks in range: ${from}-${to} (${to - from + 1} blocks).`),
+	result.forEach(({ from, to }) =>
+		logger.info(`Missing blocks in range: ${from}-${to} (${to - from + 1} blocks).`),
 	);
 
 	return result;
@@ -676,9 +680,8 @@ const getMissingBlocks = async params => {
 	return listOfMissingBlocks;
 };
 
-const addHeightToIndexBlocksQueue = async (height, priority) => priority
-	? indexBlocksQueue.add({ height }, { priority })
-	: indexBlocksQueue.add({ height });
+const addHeightToIndexBlocksQueue = async (height, priority) =>
+	priority ? indexBlocksQueue.add({ height }, { priority }) : indexBlocksQueue.add({ height });
 
 const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
 

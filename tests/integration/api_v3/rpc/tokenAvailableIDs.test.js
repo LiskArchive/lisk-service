@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -30,7 +28,7 @@ const {
 const { invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
+const getTokensIDs = async params => request(wsRpcUrl, 'get.token.available-ids', params);
 
 describe('get.token.available-ids', () => {
 	it('should retrieve available token ids when called without any parameters', async () => {

@@ -16,11 +16,13 @@
 const path = require('path');
 const requireAll = require('require-all');
 
-const requireAllJs = absolutePath => requireAll({
-	filter: /(.+)\.js$/,
-	excludeDirs: /^\.(git|svn)$/,
-	recursive: false,
-	dirname: path.resolve(absolutePath),
-});
+const requireAllJs = absolutePath =>
+	// eslint-disable-next-line implicit-arrow-linebreak
+	requireAll({
+		filter: /(.+)\.js$/,
+		excludeDirs: /^\.(git|svn)$/,
+		recursive: false,
+		dirname: path.resolve(absolutePath),
+	});
 
 module.exports = requireAllJs;

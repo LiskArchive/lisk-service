@@ -25,7 +25,13 @@ const {
 const {
 	blockchainAppMetaListSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetaListSchema.schema');
-const { invalidLimits, invalidOffsets, invalidPartialSearches, invalidNames, invalidChainIDCSV } = require('../constants/invalidInputs');
+const {
+	invalidLimits,
+	invalidOffsets,
+	invalidPartialSearches,
+	invalidNames,
+	invalidChainIDCSV,
+} = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

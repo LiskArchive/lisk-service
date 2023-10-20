@@ -27,12 +27,7 @@ const {
 	getUniqueChainIDs,
 } = require('./chain');
 
-const {
-	MODULE,
-	COMMAND,
-	EVENT,
-	MODULE_SUB_STORE,
-} = require('./constants');
+const { MODULE, COMMAND, EVENT, MODULE_SUB_STORE } = require('./constants');
 
 const {
 	init,
@@ -53,11 +48,7 @@ const {
 	requestAppRegistry,
 } = require('./request');
 
-const {
-	getDaysInMilliseconds,
-	dateFromTimestamp,
-	timeFromTimestamp,
-} = require('./time');
+const { getDaysInMilliseconds, dateFromTimestamp, timeFromTimestamp } = require('./time');
 
 const {
 	normalizeTransactionAmount,

@@ -204,9 +204,7 @@ describe('Test validate method', () => {
 
 describe('Test validateFromParamPairings method', () => {
 	const inputParamKeys = ['key1', 'key2', 'key3'];
-	const schemaParamPairings = [
-		['key1', 'key2'],
-	];
+	const schemaParamPairings = [['key1', 'key2']];
 
 	it('should return empty array when inputParamKeys is part of schema paramPairings', async () => {
 		const response = validateFromParamPairings(true, inputParamKeys, schemaParamPairings);
@@ -219,11 +217,7 @@ describe('Test validateFromParamPairings method', () => {
 	});
 
 	it('should return schema paramPairings when inputParamKeys is not part of schema paramPairings', async () => {
-		const response = validateFromParamPairings(
-			true,
-			[inputParamKeys[0]],
-			schemaParamPairings,
-		);
+		const response = validateFromParamPairings(true, [inputParamKeys[0]], schemaParamPairings);
 		expect(response).toEqual(schemaParamPairings);
 	});
 
@@ -291,10 +285,7 @@ describe('Test parseDefaultParams method', () => {
 
 describe('Test parseAllParams method', () => {
 	it('should return correctly parsed object when called with valid routeParams and requestParams', async () => {
-		const response = parseAllParams(
-			parseAllParamsRouteParams,
-			parseAllParamsRequestParams,
-		);
+		const response = parseAllParams(parseAllParamsRouteParams, parseAllParamsRequestParams);
 		expect(response).toEqual(parseAllParamsExpectedResponse);
 	});
 

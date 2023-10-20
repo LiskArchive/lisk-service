@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getValidator,
-	validateBLSKey,
-} = require('../controllers/validator');
+const { getValidator, validateBLSKey } = require('../controllers/validator');
 
 const regex = require('../../../shared/regex');
 

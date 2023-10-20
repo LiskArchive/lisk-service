@@ -32,19 +32,20 @@ const getAvailableModuleProcessors = async () => {
 	return processors.filter(e => !IGNORE_DIRS.includes(e));
 };
 
-const getCommandProcessors = async (MODULE_NAME) => requireAll({
-	dirname: `${__dirname}/${MODULE_NAME}`,
-	filter: /(.+)\.js$/,
-	excludeDirs: /^\.(git|svn)$/,
-	recursive: false,
-});
+const getCommandProcessors = async MODULE_NAME =>
+	requireAll({
+		dirname: `${__dirname}/${MODULE_NAME}`,
+		filter: /(.+)\.js$/,
+		excludeDirs: /^\.(git|svn)$/,
+		recursive: false,
+	});
 
 const buildModuleCommandProcessorMap = async () => {
 	const systemMetadata = await requestConnector('getSystemMetadata');
 	const registeredModules = systemMetadata.modules.map(m => m.name);
 	const availableModuleProcessors = await getAvailableModuleProcessors();
 
-	const promises = availableModuleProcessors.map(async (moduleNameVal) => {
+	const promises = availableModuleProcessors.map(async moduleNameVal => {
 		const { index, ...availableCommandProcessors } = await getCommandProcessors(moduleNameVal);
 		const { MODULE_NAME } = index;
 
@@ -52,11 +53,10 @@ const buildModuleCommandProcessorMap = async () => {
 			if (!moduleProcessorMap.has(MODULE_NAME)) moduleProcessorMap.set(MODULE_NAME, new Map());
 
 			const moduleCommandProcessorMap = moduleProcessorMap.get(MODULE_NAME);
-			Object.values(availableCommandProcessors)
-				.forEach(e => {
-					moduleCommandProcessorMap.set(`apply_${e.COMMAND_NAME}`, e.applyTransaction);
-					moduleCommandProcessorMap.set(`revert_${e.COMMAND_NAME}`, e.revertTransaction);
-				});
+			Object.values(availableCommandProcessors).forEach(e => {
+				moduleCommandProcessorMap.set(`apply_${e.COMMAND_NAME}`, e.applyTransaction);
+				moduleCommandProcessorMap.set(`revert_${e.COMMAND_NAME}`, e.revertTransaction);
+			});
 		}
 	});
 
@@ -67,13 +67,17 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.module)) {
-		logger.warn(`No processors implemented for transactions from module: ${tx.module}. Continuing with generic transaction indexing.`);
+		logger.warn(
+			`No processors implemented for transactions from module: ${tx.module}. Continuing with generic transaction indexing.`,
+		);
 		return Promise.resolve();
 	}
 	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.module);
 
 	if (!moduleCommandProcessorMap.has(`apply_${tx.command}`)) {
-		logger.warn(`No applyTransaction hook implemented for transaction with moduleCommand: ${tx.module}:${tx.command}. Continuing with generic transaction indexing.`);
+		logger.warn(
+			`No applyTransaction hook implemented for transaction with moduleCommand: ${tx.module}:${tx.command}. Continuing with generic transaction indexing.`,
+		);
 		return Promise.resolve();
 	}
 	const transactionProcessor = moduleCommandProcessorMap.get(`apply_${tx.command}`);
@@ -85,13 +89,17 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.module)) {
-		logger.warn(`No processors implemented for transactions from module: ${tx.module}. Continuing with removal of the transaction from the index.`);
+		logger.warn(
+			`No processors implemented for transactions from module: ${tx.module}. Continuing with removal of the transaction from the index.`,
+		);
 		return Promise.resolve();
 	}
 	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.module);
 
 	if (!moduleCommandProcessorMap.has(`revert_${tx.command}`)) {
-		logger.warn(`No revertTransaction hook implemented for transactions with moduleCommand: ${tx.module}:${tx.command}. Continuing with removal of the transaction from the index.`);
+		logger.warn(
+			`No revertTransaction hook implemented for transactions with moduleCommand: ${tx.module}:${tx.command}. Continuing with removal of the transaction from the index.`,
+		);
 		return Promise.resolve();
 	}
 	const transactionProcessor = moduleCommandProcessorMap.get(`revert_${tx.command}`);

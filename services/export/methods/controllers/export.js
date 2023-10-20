@@ -17,15 +17,12 @@ const {
 	HTTP: {
 		StatusCodes: { NOT_FOUND },
 	},
-	Exceptions: {
-		ServiceUnavailableException,
-		NotFoundException,
-	},
+	Exceptions: { ServiceUnavailableException, NotFoundException },
 } = require('lisk-service-framework');
 
 const exportService = require('../../shared/transactionsExport');
 
-const scheduleTransactionHistoryExport = async (params) => {
+const scheduleTransactionHistoryExport = async params => {
 	const exportResponse = {
 		data: {},
 		meta: {},
@@ -50,7 +47,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 	}
 };
 
-const downloadTransactionHistory = async (params) => {
+const downloadTransactionHistory = async params => {
 	try {
 		const csv = await exportService.downloadTransactionHistory(params);
 		return csv;

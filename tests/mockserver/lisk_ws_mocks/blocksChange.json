@@ -1,1 +1,17 @@
-{"version":1,"reward":"300000000","payloadHash":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","timestamp":96740440,"previousBlock":"8589355646934983231","generatorPublicKey":"460dbadfd6fe57540606fb5a54b480d867bd310ccb2b2086c11fcadda414f70a","blockSignature":"f6c9a476c39eae30a5acf498ff4ec182f295e65e7dd9d9269dff1735a8fa255ebaf8231d4e61d97c2aa4f7ed4a5d39e2c6e33fe7782aebf8845d22541824ee0c","height":8550620,"id":"10861351478921440871","relays":3,"totalAmount":"0","totalFee":"0","numberOfTransactions":0,"payloadLength":0,"transactions":[]}
+{
+	"version": 1,
+	"reward": "300000000",
+	"payloadHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+	"timestamp": 96740440,
+	"previousBlock": "8589355646934983231",
+	"generatorPublicKey": "460dbadfd6fe57540606fb5a54b480d867bd310ccb2b2086c11fcadda414f70a",
+	"blockSignature": "f6c9a476c39eae30a5acf498ff4ec182f295e65e7dd9d9269dff1735a8fa255ebaf8231d4e61d97c2aa4f7ed4a5d39e2c6e33fe7782aebf8845d22541824ee0c",
+	"height": 8550620,
+	"id": "10861351478921440871",
+	"relays": 3,
+	"totalAmount": "0",
+	"totalFee": "0",
+	"numberOfTransactions": 0,
+	"payloadLength": 0,
+	"transactions": []
+}

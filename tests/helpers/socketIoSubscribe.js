@@ -17,15 +17,17 @@ import io from 'socket.io-client';
 
 const socketPool = {};
 
-export const subscribeAndReturn = (endpoint, event) => new Promise((resolve) => {
-	if (!socketPool[endpoint]) socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
-	const socket = socketPool[endpoint];
+export const subscribeAndReturn = (endpoint, event) =>
+	new Promise(resolve => {
+		if (!socketPool[endpoint])
+			socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
+		const socket = socketPool[endpoint];
 
-	socket.on(event, answer => {
-		socket.close();
-		resolve(answer);
+		socket.on(event, answer => {
+			socket.close();
+			resolve(answer);
+		});
 	});
-});
 
 export const closeAllConnections = () => {
 	Object.keys(socketPool).forEach(s => socketPool[s].close());

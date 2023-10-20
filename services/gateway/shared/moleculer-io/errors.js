@@ -1,22 +1,22 @@
 /* eslint-disable max-classes-per-file */
 
 /*
-* moleculer-sc
-* Copyright (c) 2018 tiaod (https://github.com/tiaod/moleculer-sc)
-* MIT Licensed
-*/
+ * moleculer-sc
+ * Copyright (c) 2018 tiaod (https://github.com/tiaod/moleculer-sc)
+ * MIT Licensed
+ */
 const { MoleculerError } = require('moleculer').Errors;
 
 const ERR_INVALID_TOKEN = 'ERR_INVALID_TOKEN';
 class UnAuthorizedError extends MoleculerError {
 	/**
-	* Creates an instance of UnAuthorizedError.
-	*
-	* @param {String} type
-	* @param {any} data
-	*
-	* @memberOf UnAuthorizedError
-	*/
+	 * Creates an instance of UnAuthorizedError.
+	 *
+	 * @param {String} type
+	 * @param {any} data
+	 *
+	 * @memberOf UnAuthorizedError
+	 */
 	constructor(type, data) {
 		super('Unauthorized', 401, type || ERR_INVALID_TOKEN, data);
 	}

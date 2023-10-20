@@ -15,23 +15,22 @@
  */
 const {
 	utils: { hash },
-	address: {
-		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
-	},
-	legacyAddress: {
-		getFirstEightBytesReversed,
-	},
+	address: { getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper },
+	legacyAddress: { getFirstEightBytesReversed },
 } = require('@liskhq/lisk-cryptography');
 
 const { PUBLIC_KEY, ADDRESS_LISK32 } = require('../regex');
 
-const validateLisk32Address = address => (typeof address === 'string' && ADDRESS_LISK32.test(address));
+const validateLisk32Address = address =>
+	typeof address === 'string' && ADDRESS_LISK32.test(address);
 
-const validatePublicKey = publicKey => (typeof publicKey === 'string' && PUBLIC_KEY.test(publicKey));
+const validatePublicKey = publicKey => typeof publicKey === 'string' && PUBLIC_KEY.test(publicKey);
 
-const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
+const getLisk32AddressFromPublicKey = publicKey =>
+	getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
-const getLegacyAddress = (publicKey) => getFirstEightBytesReversed(hash(Buffer.from(publicKey, 'hex'))).toString('hex');
+const getLegacyAddress = publicKey =>
+	getFirstEightBytesReversed(hash(Buffer.from(publicKey, 'hex'))).toString('hex');
 
 module.exports = {
 	validateLisk32Address,

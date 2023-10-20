@@ -21,15 +21,11 @@ const {
 } = require('lisk-service-framework');
 
 const { parseInputBySchema } = require('../utils/parser');
-const {
-	getTransactionSchema,
-	getTransactionParamsSchema,
-	getCCMSchema,
-} = require('./schema');
+const { getTransactionSchema, getTransactionParamsSchema, getCCMSchema } = require('./schema');
 
 const logger = Logger();
 
-const encodeTransaction = (transaction) => {
+const encodeTransaction = transaction => {
 	// Handle the transaction params
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const txSchema = getTransactionSchema();
@@ -52,15 +48,12 @@ const encodeTransaction = (transaction) => {
 		throw new InvalidParamsException(err);
 	}
 
-	const txBuffer = codec.encode(
-		txSchema,
-		{ ...parsedTx, params: txParamsBuffer },
-	);
+	const txBuffer = codec.encode(txSchema, { ...parsedTx, params: txParamsBuffer });
 
 	return txBuffer.toString('hex');
 };
 
-const encodeCCM = (ccm) => {
+const encodeCCM = ccm => {
 	const ccmSchema = getCCMSchema();
 	const parsedCCM = parseInputBySchema(ccm, ccmSchema);
 

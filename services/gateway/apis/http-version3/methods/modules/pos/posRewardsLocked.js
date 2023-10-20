@@ -31,11 +31,7 @@ module.exports = {
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	paramsRequired: true,
-	validParamPairings: [
-		['address'],
-		['name'],
-		['publicKey'],
-	],
+	validParamPairings: [['address'], ['name'], ['publicKey']],
 	get schema() {
 		const lockedRewardsSchema = {};
 		lockedRewardsSchema[this.swaggerApiPath] = { get: {} };
@@ -48,7 +44,8 @@ module.exports = {
 		lockedRewardsSchema[this.swaggerApiPath].get.parameters = transformParams('PoS', this.params);
 		lockedRewardsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of rewards locked by the PoS module for the specified address, publicKey or validator name.',
+				description:
+					'Returns a list of rewards locked by the PoS module for the specified address, publicKey or validator name.',
 				schema: {
 					$ref: '#/definitions/posRewardsLockedWithEnvelope',
 				},

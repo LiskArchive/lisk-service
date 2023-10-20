@@ -1,10 +1,7 @@
 {
 	"pagination": {
 		"type": "object",
-		"required": [
-			"count",
-			"offset"
-		],
+		"required": ["count", "offset"],
 		"properties": {
 			"count": {
 				"type": "integer",

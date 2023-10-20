@@ -14,22 +14,22 @@
 swagger: '2.0'
 info:
   title: Lisk Service Test API
-  version: "1.0"
+  version: '1.0'
   # put the contact info for your development or API team
   contact:
     email: admin@lisk.com
-  description: | 
+  description: |
     ## Endpoint Logic
-    
+
     The logic of the endpoints comes as follows:
     - the structure is always based on `/<root_entity>/<object>/<properties>`
-    
+
     ## Responses
-    
+
     All responses are returned in the JSON format - `application/json`.
-    
+
     Each API request has the following structure:
-    
+
     ```
     {
       "data": {}, // Contains the requested data
@@ -37,7 +37,7 @@ info:
       "links": {} // Contains links to connected API calls from here, e.g. pagination links
     }
     ```
-    
+
   license:
     name: GPL v3.0
     url: https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -47,8 +47,8 @@ basePath: /
 
 # Tags for organizing operations
 tags:
-- name: Generic
-  description: Generic endpoints
+  - name: Generic
+    description: Generic endpoints
 
 schemes:
   - http
@@ -62,11 +62,11 @@ paths:
     x-swagger-router-controller: mapper
     get:
       tags:
-      - Generic
+        - Generic
       summary: Sample response for testing.
       operationId: getHello
       produces:
-      - application/json
+        - application/json
       parameters:
         - $ref: '#/parameters/pathName'
       responses:

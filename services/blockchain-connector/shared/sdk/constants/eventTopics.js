@@ -91,7 +91,12 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	},
 	[MODULE_NAME_TOKEN]: {
 		[EVENT_NAME_TRANSFER]: ['defaultTopic', 'senderAddress', 'recipientAddress'],
-		[EVENT_NAME_TRANSFER_CROSS_CHAIN]: ['defaultTopic', 'senderAddress', 'recipientAddress', 'receivingChainID'],
+		[EVENT_NAME_TRANSFER_CROSS_CHAIN]: [
+			'defaultTopic',
+			'senderAddress',
+			'recipientAddress',
+			'receivingChainID',
+		],
 		[EVENT_NAME_CCM_TRANSFER]: ['transactionID', 'senderAddress', 'recipientAddress'],
 		[EVENT_NAME_MINT]: ['defaultTopic', 'address'],
 		[EVENT_NAME_BURN]: ['defaultTopic', 'address'],
@@ -119,7 +124,12 @@ const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 		[EVENT_NAME_INVALID_CERTIFICATE_SIGNATURE]: ['transactionID', 'chainID'],
 		[EVENT_NAME_INVALID_REGISTRATION_SIGNATURE]: ['transactionID', 'chainID'],
 		[EVENT_NAME_CHAIN_ACCOUNT_UPDATED]: ['transactionID', 'sendingChainID'],
-		[EVENT_NAME_CCM_SENT_SUCCESS]: ['transactionID', 'sendingChainID', 'receivingChainID', 'sentCCMID'],
+		[EVENT_NAME_CCM_SENT_SUCCESS]: [
+			'transactionID',
+			'sendingChainID',
+			'receivingChainID',
+			'sentCCMID',
+		],
 		[EVENT_NAME_CCM_SENT_FAILED]: ['transactionID'],
 		[EVENT_NAME_CCM_PROCESSED]: ['transactionID', 'sendingChainID', 'receivingChainID'],
 		[EVENT_NAME_TERMINATED_STATE_CREATED]: ['transactionID', 'chainID'],

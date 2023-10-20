@@ -17,13 +17,16 @@ module.exports = {
 	address: '=,string',
 	publicKey: '=,string',
 	name: '=,string',
-	pendingUnlocks: ['data.pendingUnlocks', {
-		validatorAddress: '=,string',
-		amount: '=,string',
-		tokenID: '=,string',
-		unstakeHeight: '=,number',
-		expectedUnlockableHeight: '=,number',
-		expectedUnlockTime: '=,number',
-		isLocked: '=,boolean',
-	}],
+	pendingUnlocks: [
+		'data.pendingUnlocks',
+		{
+			validatorAddress: '=,string',
+			amount: '=,string',
+			tokenID: '=,string',
+			unstakeHeight: '=,number',
+			expectedUnlockableHeight: '=,number',
+			expectedUnlockTime: '=,number',
+			isLocked: '=,boolean',
+		},
+	],
 };

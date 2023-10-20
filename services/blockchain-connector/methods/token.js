@@ -57,10 +57,11 @@ module.exports = [
 	},
 	{
 		name: 'tokenHasUserAccount',
-		controller: async ({ address, tokenID }) => tokenHasUserAccount({
-			address,
-			tokenID,
-		}),
+		controller: async ({ address, tokenID }) =>
+			tokenHasUserAccount({
+				address,
+				tokenID,
+			}),
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: false, type: 'string' },
@@ -68,10 +69,11 @@ module.exports = [
 	},
 	{
 		name: 'tokenHasEscrowAccount',
-		controller: async ({ tokenID, escrowChainID }) => tokenHasEscrowAccount({
-			tokenID,
-			escrowChainID,
-		}),
+		controller: async ({ tokenID, escrowChainID }) =>
+			tokenHasEscrowAccount({
+				tokenID,
+				escrowChainID,
+			}),
 		params: {
 			tokenID: { optional: false, type: 'string' },
 			escrowChainID: { optional: false, type: 'string' },

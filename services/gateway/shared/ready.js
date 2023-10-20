@@ -35,22 +35,20 @@ const currentSvcStatus = {
 };
 
 const updateSvcStatus = async () => {
-	await BluebirdPromise.map(
-		Object.keys(currentSvcStatus),
-		async microservice => {
-			const broker = (await getAppContext()).getBroker();
-			currentSvcStatus[microservice] = await broker.call(`${microservice}.status`)
-				.then((res) => res.isReady)
-				.catch((err) => {
-					if (err instanceof ServiceNotFoundError) {
-						logger.warn(err);
-					} else {
-						logger.error(err);
-					}
-					return false;
-				});
-		},
-	);
+	await BluebirdPromise.map(Object.keys(currentSvcStatus), async microservice => {
+		const broker = (await getAppContext()).getBroker();
+		currentSvcStatus[microservice] = await broker
+			.call(`${microservice}.status`)
+			.then(res => res.isReady)
+			.catch(err => {
+				if (err instanceof ServiceNotFoundError) {
+					logger.warn(err);
+				} else {
+					logger.error(err);
+				}
+				return false;
+			});
+	});
 };
 
 const getReady = () => {

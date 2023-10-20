@@ -44,15 +44,13 @@ const escrow = {
 const dataSchema = {
 	chainName: Joi.string().pattern(regex.NAME).required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
-	status: Joi.string().valid(...validStatuses).required(),
+	status: Joi.string()
+		.valid(...validStatuses)
+		.required(),
 	address: Joi.string().pattern(regex.ADDRESS_LISK32).required(),
 	lastCertificateHeight: Joi.number().integer().min(0).required(),
 	escrowedLSK: Joi.string().pattern(regex.DIGITS).required(),
-	lastUpdated: Joi.number()
-		.integer()
-		.positive()
-		.max(getCurrentTimestamp())
-		.required(),
+	lastUpdated: Joi.number().integer().positive().max(getCurrentTimestamp()).required(),
 	escrow: Joi.array().items(escrow).min(1).required(),
 };
 

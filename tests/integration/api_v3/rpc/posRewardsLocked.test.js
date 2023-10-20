@@ -22,16 +22,20 @@ const {
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { goodResponseSchema } = require('../../../schemas/api_v3/posRewardsLocked.schema');
 const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/posRewardsLocked.schema');
-const { invalidPublicKeys, invalidNames, invalidAddresses, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
+	invalidPublicKeys,
+	invalidNames,
+	invalidAddresses,
+	invalidLimits,
+	invalidOffsets,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getPosRewardsLocked = async (params) => request(wsRpcUrl, 'get.pos.rewards.locked', params);
+const getPosRewardsLocked = async params => request(wsRpcUrl, 'get.pos.rewards.locked', params);
 const getTransaction = async params => request(wsRpcUrl, 'get.transactions', params);
-const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
+const getStakes = async params => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('Rewards Locked API', () => {
 	let refStaker;

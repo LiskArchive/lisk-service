@@ -29,7 +29,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
-const getTokenTopBalances = async (params) => {
+const getTokenTopBalances = async params => {
 	const response = {
 		data: {},
 		meta: {},
@@ -49,27 +49,28 @@ const getTokenTopBalances = async (params) => {
 	};
 
 	if (search) {
-		params.orSearch = [{
-			property: `${accountTableSchema.tableName}.name`,
-			pattern: search,
-		}, {
-			property: `${accountTableSchema.tableName}.address`,
-			pattern: search,
-		}, {
-			property: `${accountTableSchema.tableName}.publicKey`,
-			pattern: search,
-		}];
+		params.orSearch = [
+			{
+				property: `${accountTableSchema.tableName}.name`,
+				pattern: search,
+			},
+			{
+				property: `${accountTableSchema.tableName}.address`,
+				pattern: search,
+			},
+			{
+				property: `${accountTableSchema.tableName}.publicKey`,
+				pattern: search,
+			},
+		];
 	}
 
-	const tokenInfos = await accountBalancesTable.find(
-		params,
-		[
-			`${accountBalancesTableSchema.tableName}.balance`,
-			`${accountBalancesTableSchema.tableName}.address`,
-			`${accountTableSchema.tableName}.publicKey`,
-			`${accountTableSchema.tableName}.name`,
-		],
-	);
+	const tokenInfos = await accountBalancesTable.find(params, [
+		`${accountBalancesTableSchema.tableName}.balance`,
+		`${accountBalancesTableSchema.tableName}.address`,
+		`${accountTableSchema.tableName}.publicKey`,
+		`${accountTableSchema.tableName}.name`,
+	]);
 
 	const filteredTokenInfos = [];
 	// eslint-disable-next-line no-restricted-syntax
@@ -90,7 +91,9 @@ const getTokenTopBalances = async (params) => {
 	response.meta = {
 		count: response.data[tokenID].length,
 		offset: params.offset,
-		total: await accountBalancesTable.count(params, [`${accountBalancesTableSchema.tableName}.address`]),
+		total: await accountBalancesTable.count(params, [
+			`${accountBalancesTableSchema.tableName}.address`,
+		]),
 	};
 
 	return response;

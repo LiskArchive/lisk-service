@@ -16,9 +16,15 @@
 const Joi = require('joi');
 
 const marketPriceItemSchema = {
-	code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
-	from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
-	to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	code: Joi.string()
+		.pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/)
+		.required(),
+	from: Joi.string()
+		.pattern(/^[A-Z]{3,4}$/)
+		.required(),
+	to: Joi.string()
+		.pattern(/^[A-Z]{3,4}$/)
+		.required(),
 	rate: Joi.string().required(),
 	updateTimestamp: Joi.number().integer().positive().required(),
 	sources: Joi.array().items(Joi.string().required()).required(),

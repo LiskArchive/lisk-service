@@ -17,14 +17,20 @@
  */
 const mapRequiredSchema = (response, schema) => {
 	let errors = '';
-	Object.keys(schema).forEach((key) => {
+	Object.keys(schema).forEach(key => {
 		if (!Object.prototype.hasOwnProperty.call(response, key)) {
 			errors += `${key} is not present in response \n`;
-		} else if (!['array', 'number', 'boolean', 'object', 'string', 'null'].some(type => type === schema[key])) {
+		} else if (
+			!['array', 'number', 'boolean', 'object', 'string', 'null'].some(type => type === schema[key])
+		) {
 			if (response[key] !== schema[key]) {
 				errors += `${key}: ${response[key]} is not equal ${schema[key]}\n`;
 			}
-		} else if (schema[key] === 'array' ? !Array.isArray(response[key]) : (!typeof response[key] === schema[key])) {
+		} else if (
+			schema[key] === 'array'
+				? !Array.isArray(response[key])
+				: !typeof response[key] === schema[key]
+		) {
 			errors += `${key}: ${response[key]} is not ${schema[key]}\n`;
 		}
 	});
@@ -43,7 +49,7 @@ const mapRequiredSchema = (response, schema) => {
 const mapOptionalSchema = (response, schema) => {
 	let result;
 	let errors = '';
-	Object.keys(schema).forEach((key) => {
+	Object.keys(schema).forEach(key => {
 		if (Object.prototype.hasOwnProperty.call(response, key)) {
 			// eslint-disable-next-line valid-typeof
 			if (typeof response[key] === schema[key]) {
@@ -73,13 +79,12 @@ const toMap = (response, schema, expectedValuesObject) => {
 	}
 	let errors = '';
 	if (expectedValuesObject) {
-		Object.entries(expectedValuesObject)
-			.forEach(([key, value]) => {
-				if (response && value !== response[key]) {
-					errors += `${key}: ${response[key]} is not equal ${value}\n`;
-					errors += `\nObject dump: ${JSON.stringify(response, null, 2)}\n`;
-				}
-			});
+		Object.entries(expectedValuesObject).forEach(([key, value]) => {
+			if (response && value !== response[key]) {
+				errors += `${key}: ${response[key]} is not equal ${value}\n`;
+				errors += `\nObject dump: ${JSON.stringify(response, null, 2)}\n`;
+			}
+		});
 		if (errors.length) {
 			return {
 				pass: false,

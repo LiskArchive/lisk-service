@@ -14,19 +14,14 @@
  *
  */
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 	Signals,
 } = require('lisk-service-framework');
 
-const {
-	MODULE,
-	MODULE_SUB_STORE,
-	getGenesisHeight,
-} = require('../constants');
-const {
-	updateTotalStake,
-	updateTotalSelfStake,
-} = require('./transactionProcessor/pos/stake');
+const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
+const { updateTotalStake, updateTotalSelfStake } = require('./transactionProcessor/pos/stake');
 const { requestConnector } = require('../utils/request');
 const { accountBalanceIndexQueue } = require('./accountBalanceIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
@@ -43,11 +38,11 @@ const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL
 const allAccountsAddresses = [];
 let isTokensBalanceIndexed = false;
 
-const indexTokenModuleAssets = async (dbTrx) => {
-	const genesisBlockAssetsLength = await requestConnector(
-		'getGenesisAssetsLength',
-		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-	);
+const indexTokenModuleAssets = async dbTrx => {
+	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
+		module: MODULE.TOKEN,
+		subStore: MODULE_SUB_STORE.TOKEN.USER,
+	});
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
 
 	const tokenModuleData = await requestAll(
@@ -122,7 +117,9 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 			stakes.forEach(stake => {
 				const { validatorAddress, amount } = stake;
 				totalStakeChange += BigInt(amount);
-				if (stakerAddress === validatorAddress) { totalSelfStakeChange += BigInt(amount); }
+				if (stakerAddress === validatorAddress) {
+					totalSelfStakeChange += BigInt(amount);
+				}
 			});
 		});
 	}
@@ -131,8 +128,10 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
 };
 
-const indexPosModuleAssets = async (dbTrx) => {
-	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', { module: MODULE.POS });
+const indexPosModuleAssets = async dbTrx => {
+	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
+		module: MODULE.POS,
+	});
 	const numValidators = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.VALIDATORS];
 	const numStakers = genesisBlockAssetsLength[MODULE.POS][MODULE_SUB_STORE.POS.STAKERS];
 
@@ -140,7 +139,7 @@ const indexPosModuleAssets = async (dbTrx) => {
 	await indexPosStakesInfo(numStakers, dbTrx);
 };
 
-const indexGenesisBlockAssets = async (dbTrx) => {
+const indexGenesisBlockAssets = async dbTrx => {
 	await indexTokenModuleAssets(dbTrx);
 	await indexPosModuleAssets(dbTrx);
 };

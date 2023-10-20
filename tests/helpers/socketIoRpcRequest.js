@@ -21,16 +21,17 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 const socketPool = {};
 
-const request = (endpoint, method, params) => new Promise(resolve => {
-	if (!socketPool[endpoint]) {
-		socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
-	}
-	const socket = socketPool[endpoint];
+const request = (endpoint, method, params) =>
+	new Promise(resolve => {
+		if (!socketPool[endpoint]) {
+			socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
+		}
+		const socket = socketPool[endpoint];
 
-	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
-		resolve(answer);
+		socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
+			resolve(answer);
+		});
 	});
-});
 
 const api = {
 	get: async (...args) => {
@@ -43,7 +44,7 @@ const api = {
 	getJsonRpcV1: (...args) => api.get(wsRpcUrl, ...args),
 };
 
-const close = (socketName) => {
+const close = socketName => {
 	if (socketPool[socketName]) {
 		socketPool[socketName].close();
 		delete socketPool[socketName];

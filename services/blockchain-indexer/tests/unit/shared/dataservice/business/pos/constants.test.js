@@ -18,7 +18,9 @@
 const { resolve } = require('path');
 
 const mockRequestFilePath = resolve(`${__dirname}/../../../../../../shared/utils/request`);
-const posConstantsFilePath = resolve(`${__dirname}/../../../../../../shared/dataService/business/pos/constants`);
+const posConstantsFilePath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/pos/constants`,
+);
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');

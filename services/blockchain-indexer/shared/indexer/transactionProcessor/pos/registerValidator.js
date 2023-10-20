@@ -15,7 +15,9 @@
  */
 const {
 	Logger,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
@@ -93,9 +95,13 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}.`);
 
 	const commissionInfo = await getCommissionIndexingInfo(blockHeader, tx);
-	logger.trace(`Indexing commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.trace(
+		`Indexing commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 	await commissionsTable.upsert(commissionInfo, dbTrx);
-	logger.debug(`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.debug(
+		`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -127,9 +133,13 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	logger.debug(`Removed validator entry for address ${account.address}.`);
 
 	const commissionInfo = await getCommissionIndexingInfo(blockHeader, tx);
-	logger.trace(`Deleting commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.trace(
+		`Deleting commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 	await commissionsTable.delete(commissionInfo, dbTrx);
-	logger.debug(`Deleted commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.debug(
+		`Deleted commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 };
 
 module.exports = {

@@ -15,7 +15,9 @@
  */
 const {
 	Logger,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 const { TRANSACTION_STATUS } = require('../../../constants');

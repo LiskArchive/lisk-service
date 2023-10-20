@@ -14,16 +14,19 @@
  *
  */
 import moment from 'moment';
-import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import {
+	invalidAddresses,
+	invalidBlockIDs,
+	invalidLimits,
+	invalidOffsets,
+} from '../constants/invalidInputs';
 import { waitMs } from '../../../helpers/utils';
 
 const util = require('util');
 
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -33,9 +36,7 @@ const {
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	blockSchema,
-} = require('../../../schemas/api_v3/block.schema');
+const { blockSchema } = require('../../../schemas/api_v3/block.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
@@ -107,8 +108,8 @@ describe('Method get.blocks', () => {
 			const [...topTenOffsetBlocks] = (await getBlocks({ offset: 1 })).result.data;
 
 			[...Array(topTenBlocks.length)].forEach((_, i) => {
-				if (i) expect(util.isDeepStrictEqual(topTenBlocks[i], topTenOffsetBlocks[i - 1]))
-					.toBeTruthy();
+				if (i)
+					expect(util.isDeepStrictEqual(topTenBlocks[i], topTenOffsetBlocks[i - 1])).toBeTruthy();
 			});
 		});
 
@@ -117,8 +118,8 @@ describe('Method get.blocks', () => {
 			const [...topTenOffsetBlocks] = (await getBlocks({ offset: 1, limit: 12 })).result.data;
 
 			[...Array(topTenBlocks.length)].forEach((_, i) => {
-				if (i) expect(util.isDeepStrictEqual(topTenBlocks[i], topTenOffsetBlocks[i - 1]))
-					.toBeTruthy();
+				if (i)
+					expect(util.isDeepStrictEqual(topTenBlocks[i], topTenOffsetBlocks[i - 1])).toBeTruthy();
 			});
 		});
 	});
@@ -130,15 +131,19 @@ describe('Method get.blocks', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
-			result.data.forEach((block) => {
+			result.data.forEach(block => {
 				expect(block).toMap(blockSchema, { id: refBlock.id });
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('should return invalid params if requested with invalid blockID', async () => {
-			expect(await getBlocks({ blockID: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e)).toMap(invalidParamsSchema);
-			expect(await getBlocks({ blockID: '12602944501676077162' }).catch(e => e)).toMap(invalidParamsSchema);
+			expect(
+				await getBlocks({ blockID: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e),
+			).toMap(invalidParamsSchema);
+			expect(await getBlocks({ blockID: '12602944501676077162' }).catch(e => e)).toMap(
+				invalidParamsSchema,
+			);
 		});
 
 		it('shoudd return invalid query parameter for invalid param', async () => {
@@ -186,7 +191,7 @@ describe('Method get.blocks', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
-			result.data.forEach((block) => {
+			result.data.forEach(block => {
 				expect(block).toMap(blockSchema, { height: refBlock.height });
 			});
 		});
@@ -217,7 +222,9 @@ describe('Method get.blocks', () => {
 
 	describe('is able to retireve block lists by timestamp', () => {
 		it('should return blocks with from...to timestamp', async () => {
-			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refBlock.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const to = refBlock.timestamp;
 			const response = await getBlocks({ timestamp: `${from}:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -236,7 +243,9 @@ describe('Method get.blocks', () => {
 		});
 
 		it('should return blocks with from... timestamp', async () => {
-			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refBlock.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await getBlocks({ timestamp: `${from}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -333,7 +342,7 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchema));
+			result.data.forEach(blockItem => expect(blockItem).toMap(blockSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlock = result.data[i - 1];
@@ -352,7 +361,7 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchema));
+			result.data.forEach(blockItem => expect(blockItem).toMap(blockSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlock = result.data[i - 1];
@@ -372,7 +381,7 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchema));
+			result.data.forEach(blockItem => expect(blockItem).toMap(blockSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlock = result.data[i - 1];
@@ -391,7 +400,7 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchema));
+			result.data.forEach(blockItem => expect(blockItem).toMap(blockSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlock = result.data[i - 1];
@@ -405,13 +414,18 @@ describe('Method get.blocks', () => {
 
 	describe('Fetch blocks based on multiple request params', () => {
 		it('should return blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
-			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress, sort: 'timestamp:desc', limit: 100, offset: 0 });
+			const response = await getBlocks({
+				generatorAddress: refBlock.generatorAddress,
+				sort: 'timestamp:desc',
+				limit: 100,
+				offset: 0,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
+			result.data.forEach(blockItem => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.generatorAddress).toEqual(refBlock.generatorAddress);
 			});
@@ -426,13 +440,18 @@ describe('Method get.blocks', () => {
 		});
 
 		it('should return blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
-			const response = await getBlocks({ generatorAddress: refBlock.generator.address, sort: 'height:asc', limit: 5, offset: 0 });
+			const response = await getBlocks({
+				generatorAddress: refBlock.generator.address,
+				sort: 'height:asc',
+				limit: 5,
+				offset: 0,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(5);
-			result.data.forEach((blockItem) => {
+			result.data.forEach(blockItem => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.generatorAddress).toEqual(refBlock.generatorAddress);
 			});
@@ -455,7 +474,11 @@ describe('Method get.blocks', () => {
 		});
 
 		it('should return empty response when queried with blockID and wrong timestamp', async () => {
-			const timestamp = String(moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix());
+			const timestamp = String(
+				moment(refBlock.timestamp * 10 ** 3)
+					.subtract(1, 'day')
+					.unix(),
+			);
 			const response = await getBlocks({ blockID: refBlock.id, timestamp }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -480,8 +503,9 @@ describe('Method get.blocks', () => {
 		});
 
 		it('should return empty response when queried with block timestamp and non-zero offset', async () => {
-			const response = await getBlocks({ timestamp: String(refBlock.timestamp), offset: 1 })
-				.catch(e => e);
+			const response = await getBlocks({ timestamp: String(refBlock.timestamp), offset: 1 }).catch(
+				e => e,
+			);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);

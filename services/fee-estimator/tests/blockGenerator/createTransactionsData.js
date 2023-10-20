@@ -27,14 +27,12 @@ const {
 let command;
 const TOKEN_ID = '0000000000000000';
 
-const generateHex = (size) => {
+const generateHex = size => {
 	let resultHex = '';
 	const hexCharacters = 'abcdef0123456789';
 
 	for (let i = 0; i < size; i++) {
-		resultHex += hexCharacters.charAt(
-			Math.floor(Math.random() * hexCharacters.length),
-		);
+		resultHex += hexCharacters.charAt(Math.floor(Math.random() * hexCharacters.length));
 	}
 
 	return resultHex;
@@ -84,10 +82,12 @@ const transactionData = {
 		numberOfSignatures: { function: () => 0 },
 
 		votes: {
-			function: () => [{
-				amount: String((Math.floor(Math.random() * 10) * 10 ** 7)),
-				delegateAddress: generateHex(40),
-			}],
+			function: () => [
+				{
+					amount: String(Math.floor(Math.random() * 10) * 10 ** 7),
+					delegateAddress: generateHex(40),
+				},
+			],
 		},
 	},
 	signatures: {
@@ -102,47 +102,55 @@ const transactionData = {
 };
 
 const paramsTransactionTypeTransfer = ['amount', 'recipientAddress', 'data', 'tokenID'];
-const paramsTransactionTypeRegisterMultisignature = ['mandatoryKeys', 'optionalKeys', 'numberOfSignatures'];
+const paramsTransactionTypeRegisterMultisignature = [
+	'mandatoryKeys',
+	'optionalKeys',
+	'numberOfSignatures',
+];
 const paramsTransactionTypeVoteDelegate = ['votes'];
 
-const txMocker = (batchSize) => mocker()
-	.schema('transactions', transactionData, batchSize)
-	.build((err, data) => {
-		if (err) throw err;
+const txMocker = batchSize =>
+	mocker()
+		.schema('transactions', transactionData, batchSize)
+		.build((err, data) => {
+			if (err) throw err;
 
-		data.transactions.forEach((transaction) => {
-			let containAssets = paramsTransactionTypeTransfer;
-			const nameFee = 0;
-			let avgTxSize = 130;
-			if (transaction.module === MODULE_AUTH) {
-				transaction.command = COMMAND_AUTH_REGISTER_MULTISIGNATURE;
-				containAssets = paramsTransactionTypeRegisterMultisignature;
-				avgTxSize = 117;
+			data.transactions.forEach(transaction => {
+				let containAssets = paramsTransactionTypeTransfer;
+				const nameFee = 0;
+				let avgTxSize = 130;
+				if (transaction.module === MODULE_AUTH) {
+					transaction.command = COMMAND_AUTH_REGISTER_MULTISIGNATURE;
+					containAssets = paramsTransactionTypeRegisterMultisignature;
+					avgTxSize = 117;
 
-				let n = Math.floor(Math.random() * 10) % 5;
-				let m = Math.floor(Math.random() * 10) % 5;
-				transaction.params.numberOfSignatures = n + (m > 2 ? m % 2 : 0);
-				while (--n > 0) transaction.params.mandatoryKeys.push(generateHex(128));
-				while (--m > 0) transaction.params.optionalKeys.push(generateHex(128));
-			} else if (transaction.module === MODULE_DPOS) {
-				transaction.command = COMMAND_DPOS_VOTE_DELEGATE;
-				containAssets = paramsTransactionTypeVoteDelegate;
-				avgTxSize = 130;
-			} else if (transaction.module === MODULE_TOKEN
-				&& transaction.command === COMMAND_TOKEN_TRANSFER) {
-				avgTxSize = 130;
-			}
+					let n = Math.floor(Math.random() * 10) % 5;
+					let m = Math.floor(Math.random() * 10) % 5;
+					transaction.params.numberOfSignatures = n + (m > 2 ? m % 2 : 0);
+					while (--n > 0) transaction.params.mandatoryKeys.push(generateHex(128));
+					while (--m > 0) transaction.params.optionalKeys.push(generateHex(128));
+				} else if (transaction.module === MODULE_DPOS) {
+					transaction.command = COMMAND_DPOS_VOTE_DELEGATE;
+					containAssets = paramsTransactionTypeVoteDelegate;
+					avgTxSize = 130;
+				} else if (
+					transaction.module === MODULE_TOKEN &&
+					transaction.command === COMMAND_TOKEN_TRANSFER
+				) {
+					avgTxSize = 130;
+				}
 
-			transaction.size = avgTxSize;
-			transaction.minFee = nameFee + avgTxSize * 10 ** 3;
-			transaction.fee = String(transaction.minFee
-				+ Math.round(Math.random() * transaction.minFee * 5));
-			Object.keys(transaction.params).forEach(key => {
-				if (!containAssets.includes(key)) delete transaction.params[key];
+				transaction.size = avgTxSize;
+				transaction.minFee = nameFee + avgTxSize * 10 ** 3;
+				transaction.fee = String(
+					transaction.minFee + Math.round(Math.random() * transaction.minFee * 5),
+				);
+				Object.keys(transaction.params).forEach(key => {
+					if (!containAssets.includes(key)) delete transaction.params[key];
+				});
 			});
-		});
 
-		return data.transactions;
-	});
+			return data.transactions;
+		});
 
 module.exports = txMocker;

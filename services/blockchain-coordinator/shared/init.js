@@ -35,7 +35,9 @@ const waitForNodeToFinishSync = async () => {
 
 			// eslint-disable-next-line no-unused-expressions
 			syncing
-				? logger.info('Node synchronization in progress. Will wait for node to sync with the network before scheduling indexing.')
+				? logger.info(
+						'Node synchronization in progress. Will wait for node to sync with the network before scheduling indexing.',
+				  )
 				: logger.info('Node is fully synchronized with the network.');
 		} catch (err) {
 			logger.warn(`Failed to check node synchronization status.\nError: ${err.message}`);

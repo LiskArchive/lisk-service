@@ -15,14 +15,15 @@
  */
 const io = require('socket.io-client');
 
-const request = (endpoint, params) => new Promise((resolve) => {
-	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
+const request = (endpoint, params) =>
+	new Promise(resolve => {
+		const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
 
-	socket.emit('request', params, (answer) => {
-		resolve(answer);
-		socket.close();
+		socket.emit('request', params, answer => {
+			resolve(answer);
+			socket.close();
+		});
 	});
-});
 
 module.exports = {
 	request,

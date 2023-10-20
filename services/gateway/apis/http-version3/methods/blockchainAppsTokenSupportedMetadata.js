@@ -38,15 +38,21 @@ module.exports = {
 		const endpointSchema = {};
 		endpointSchema[this.swaggerApiPath] = { get: {} };
 		endpointSchema[this.swaggerApiPath].get.tags = this.tags;
-		endpointSchema[this.swaggerApiPath].get.summary = 'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.';
+		endpointSchema[this.swaggerApiPath].get.summary =
+			'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.';
 		endpointSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+			description:
+				'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.',
 		});
-		endpointSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainAppsTokensSupportedMeta', this.params);
+		endpointSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'blockchainAppsTokensSupportedMeta',
+			this.params,
+		);
 		endpointSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns a list of blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+				description:
+					'Returns a list of blockchain applications off-chain metadata for tokens supported on the specified chainID.',
 				schema: {
 					$ref: '#/definitions/BlockchainAppsTokenMetadataWithEnvelope',
 				},

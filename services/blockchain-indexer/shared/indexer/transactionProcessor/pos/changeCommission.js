@@ -15,7 +15,9 @@
  */
 const {
 	Logger,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
@@ -53,9 +55,13 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
 
-	logger.trace(`Indexing commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.trace(
+		`Indexing commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 	await commissionsTable.upsert(commissionInfo, dbTrx);
-	logger.debug(`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.debug(
+		`Indexed commission update for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
@@ -65,9 +71,13 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	const commissionInfo = getCommissionIndexingInfo(blockHeader, tx);
 
-	logger.trace(`Remove commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.trace(
+		`Remove commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 	await commissionsTable.delete(commissionInfo, dbTrx);
-	logger.debug(`Remove commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`);
+	logger.debug(
+		`Remove commission entry for address ${commissionInfo.address} at height ${commissionInfo.height}.`,
+	);
 };
 
 module.exports = {

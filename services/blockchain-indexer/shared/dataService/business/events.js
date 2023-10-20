@@ -19,9 +19,7 @@ const {
 	CacheLRU,
 	Exceptions: { NotFoundException },
 	DB: {
-		MySQL: {
-			getTableInstance,
-		},
+		MySQL: { getTableInstance },
 	},
 } = require('lisk-service-framework');
 
@@ -44,12 +42,12 @@ const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL
 const eventCache = CacheLRU('events');
 const eventCacheByBlockID = CacheLRU('eventsByBlockID');
 
-const getEventsByHeightFromNode = async (height) => {
+const getEventsByHeightFromNode = async height => {
 	const events = await requestConnector('getEventsByHeight', { height });
 	return parseToJSONCompatObj(events);
 };
 
-const getEventsByHeight = async (height) => {
+const getEventsByHeight = async height => {
 	// Get from cache
 	const cachedEvents = await eventCache.get(height);
 	if (cachedEvents) return JSON.parse(cachedEvents);
@@ -60,8 +58,9 @@ const getEventsByHeight = async (height) => {
 		const dbEventStrings = await eventsTable.find({ height }, ['eventStr']);
 
 		if (dbEventStrings.length) {
-			const dbEvents = dbEventStrings
-				.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+			const dbEvents = dbEventStrings.map(({ eventStr }) =>
+				eventStr ? JSON.parse(eventStr) : eventStr,
+			);
 			await eventCache.set(height, JSON.stringify(dbEvents));
 			return dbEvents;
 		}
@@ -73,7 +72,7 @@ const getEventsByHeight = async (height) => {
 	return eventsFromNode;
 };
 
-const getEventsByBlockID = async (blockID) => {
+const getEventsByBlockID = async blockID => {
 	// Get from cache
 	const cachedEvents = await eventCacheByBlockID.get(blockID);
 	if (cachedEvents) return JSON.parse(cachedEvents);
@@ -83,8 +82,9 @@ const getEventsByBlockID = async (blockID) => {
 	const dbEventStrings = await eventsTable.find({ blockID }, ['eventStr']);
 
 	if (dbEventStrings.length) {
-		const dbEvents = dbEventStrings
-			.map(({ eventStr }) => eventStr ? JSON.parse(eventStr) : eventStr);
+		const dbEvents = dbEventStrings.map(({ eventStr }) =>
+			eventStr ? JSON.parse(eventStr) : eventStr,
+		);
 		eventCacheByBlockID.set(blockID, JSON.stringify(dbEvents));
 		return dbEvents;
 	}
@@ -96,11 +96,11 @@ const cacheEventsByBlockID = async (blockID, events) => {
 	await eventCacheByBlockID.set(blockID, JSON.stringify(events));
 };
 
-const deleteEventsFromCache = async (height) => eventCache.delete(height);
+const deleteEventsFromCache = async height => eventCache.delete(height);
 
-const deleteEventsFromCacheByBlockID = async (blockID) => eventCacheByBlockID.delete(blockID);
+const deleteEventsFromCacheByBlockID = async blockID => eventCacheByBlockID.delete(blockID);
 
-const getEvents = async (params) => {
+const getEvents = async params => {
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
 	const eventTopicsTable = await getEventTopicsTable();
@@ -161,7 +161,9 @@ const getEvents = async (params) => {
 			}
 
 			if (block.height < heightLowerBound || block.height > heightHigherBound) {
-				throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+				throw new NotFoundException(
+					`Invalid combination of blockID: ${blockID} and height: ${params.height}`,
+				);
 			}
 		}
 		params.height = block.height;
@@ -183,10 +185,7 @@ const getEvents = async (params) => {
 		params.whereIn = { property: 'id', values: eventIDs };
 	}
 
-	const eventsInfo = await eventsTable.find(
-		params,
-		['eventStr', 'height', 'index'],
-	);
+	const eventsInfo = await eventsTable.find(params, ['eventStr', 'height', 'index']);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
@@ -200,7 +199,10 @@ const getEvents = async (params) => {
 				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
-			const [{ id, timestamp } = {}] = await blocksTable.find({ height, limit: 1 }, ['id', 'timestamp']);
+			const [{ id, timestamp } = {}] = await blocksTable.find({ height, limit: 1 }, [
+				'id',
+				'timestamp',
+			]);
 
 			return parseToJSONCompatObj({
 				...event,

@@ -58,12 +58,16 @@ const transactionSchema = {
 	...pendingTransactionSchema,
 	block: Joi.object(block).required(),
 	index: Joi.number().integer().min(0).required(),
-	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES.filter(status => status !== 'pending')).required(),
+	executionStatus: Joi.string()
+		.valid(...TRANSACTION_EXECUTION_STATUSES.filter(status => status !== 'pending'))
+		.required(),
 };
 
 const postTransactionSchema = {
 	transactionID: Joi.string().required(),
-	message: Joi.string().valid('Transaction payload was successfully passed to the network node.').required(),
+	message: Joi.string()
+		.valid('Transaction payload was successfully passed to the network node.')
+		.required(),
 };
 
 module.exports = {

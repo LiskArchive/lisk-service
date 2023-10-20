@@ -7,7 +7,7 @@ services:
       - ./snapshots/:/tmp/snapshots
       - ./entrypoint.sh:/entrypoint.sh
     ports:
-      - "7887:7887"
+      - '7887:7887'
     restart: always
     entrypoint: ['sh', '/entrypoint.sh']
     environment:

@@ -57,13 +57,13 @@ const fetchAllMarketTickers = async () => {
 	throw new ServiceUnavailableException('Data from Binance is currently unavailable');
 };
 
-const filterTickers = (tickers) => {
+const filterTickers = tickers => {
 	const allowedMarketSymbols = Object.values(symbolMap);
 	const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
 	return filteredTickers;
 };
 
-const standardizeTickers = (tickers) => {
+const standardizeTickers = tickers => {
 	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
 		const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
 		const [from, to] = k.split('_');
@@ -84,7 +84,7 @@ const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
-		async (itemCode) => {
+		async itemCode => {
 			const serializedPrice = await binanceCache.get(`binance_${itemCode}`);
 			if (serializedPrice) return JSON.parse(serializedPrice);
 			return null;
@@ -103,8 +103,11 @@ const reload = async () => {
 			const transformedPrices = standardizeTickers(filteredTickers);
 
 			// Serialize individual price item and write to the cache
-			await BluebirdPromise.all(transformedPrices
-				.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+			await BluebirdPromise.all(
+				transformedPrices.map(item =>
+					binanceCache.set(`binance_${item.code}`, JSON.stringify(item), expireMiliseconds),
+				),
+			);
 		}
 	}
 };

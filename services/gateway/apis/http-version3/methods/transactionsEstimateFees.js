@@ -35,7 +35,12 @@ module.exports = {
 				fee: { optional: true, type: 'string', pattern: regex.FEE },
 				nonce: { optional: false, type: 'string', pattern: regex.NONCE },
 				senderPublicKey: { optional: false, type: 'string', pattern: regex.PUBLIC_KEY },
-				signatures: { optional: true, type: 'array', min: 0, items: { type: 'string', pattern: regex.HASH_SHA512 } },
+				signatures: {
+					optional: true,
+					type: 'array',
+					min: 0,
+					items: { type: 'string', pattern: regex.HASH_SHA512 },
+				},
 				params: { optional: false, type: 'object', minProps: 0 },
 			},
 			altSwaggerKey: 'transactionEstimateFees',
@@ -45,12 +50,15 @@ module.exports = {
 		const transactionsEstimateFeesSchema = {};
 		transactionsEstimateFeesSchema[this.swaggerApiPath] = { post: {} };
 		transactionsEstimateFeesSchema[this.swaggerApiPath].post.tags = this.tags;
-		transactionsEstimateFeesSchema[this.swaggerApiPath].post.summary = 'Requests estimated fees for the transaction.';
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.summary =
+			'Requests estimated fees for the transaction.';
 		transactionsEstimateFeesSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns estimated fees for the transaction.',
 		});
-		transactionsEstimateFeesSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transactionEstimateFees' }];
+		transactionsEstimateFeesSchema[this.swaggerApiPath].post.parameters = [
+			{ $ref: '#/parameters/transactionEstimateFees' },
+		];
 		transactionsEstimateFeesSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Returns estimated fees for the given transaction.',

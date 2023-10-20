@@ -24,10 +24,16 @@ const {
 	mockedNetworkStatus,
 } = require('../../../constants/blockchainApps');
 
-const mockNetworkPath = resolve(`${__dirname}/../../../../../../shared/dataService/business/network`);
-const mockMainchainPath = resolve(`${__dirname}/../../../../../../shared/dataService/business/interoperability/mainchain`);
+const mockNetworkPath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/network`,
+);
+const mockMainchainPath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/interoperability/mainchain`,
+);
 const mockRequestPath = resolve(`${__dirname}/../../../../../../shared/utils/request`);
-const mockBlockchainAppsPath = resolve(`${__dirname}/../../../../../../shared/dataService/business/interoperability/blockchainApps`);
+const mockBlockchainAppsPath = resolve(
+	`${__dirname}/../../../../../../shared/dataService/business/interoperability/blockchainApps`,
+);
 
 describe('getBlockchainApps', () => {
 	beforeEach(() => {
@@ -53,13 +59,11 @@ describe('getBlockchainApps', () => {
 		}));
 
 		jest.mock(mockNetworkPath, () => ({
-			getNetworkStatus: jest.fn(() => (
-				mockedNetworkStatus
-			)),
+			getNetworkStatus: jest.fn(() => mockedNetworkStatus),
 		}));
 
 		jest.mock(mockRequestPath, () => ({
-			requestConnector: jest.fn(() => (mockedEscrowedAmounts)),
+			requestConnector: jest.fn(() => mockedEscrowedAmounts),
 		}));
 
 		jest.mock(mockMainchainPath, () => ({
@@ -93,13 +97,11 @@ describe('getBlockchainApps', () => {
 		}));
 
 		jest.mock(mockNetworkPath, () => ({
-			getNetworkStatus: jest.fn(() => (
-				mockedNetworkStatus
-			)),
+			getNetworkStatus: jest.fn(() => mockedNetworkStatus),
 		}));
 
 		jest.mock(mockRequestPath, () => ({
-			requestConnector: jest.fn(() => (mockedEscrowedAmounts)),
+			requestConnector: jest.fn(() => mockedEscrowedAmounts),
 		}));
 
 		jest.mock(mockMainchainPath, () => ({
@@ -134,7 +136,7 @@ describe('getBlockchainApps', () => {
 		}));
 
 		jest.mock(mockRequestPath, () => ({
-			requestConnector: jest.fn(() => (mockedEscrowedAmounts)),
+			requestConnector: jest.fn(() => mockedEscrowedAmounts),
 		}));
 
 		jest.mock(mockMainchainPath, () => ({
@@ -163,9 +165,7 @@ describe('getBlockchainApps', () => {
 		}));
 
 		jest.mock(mockNetworkPath, () => ({
-			getNetworkStatus: jest.fn(() => (
-				mockedNetworkStatus
-			)),
+			getNetworkStatus: jest.fn(() => mockedNetworkStatus),
 		}));
 
 		jest.mock(mockRequestPath, () => ({

@@ -1,4 +1,7 @@
 {
-    "address"               : { "owner" : "owner", "description" : "description" },
-    "lskckzngagcs4d5gvsgxmgnabyfyj8pz266gv8s8t" : { "owner" : "Top Account", "description" : "from Testnet" }
+	"address": { "owner": "owner", "description": "description" },
+	"lskckzngagcs4d5gvsgxmgnabyfyj8pz266gv8s8t": {
+		"owner": "Top Account",
+		"description": "from Testnet"
+	}
 }

@@ -27,17 +27,18 @@ const { KV_STORE_KEY } = require('../../constants');
 
 const keyValueTable = getKeyValueTable();
 
-const updateTotalLockedAmounts = async (tokenIDLockedAmountChangeMap, dbTrx) => BluebirdPromise.map(
-	Object.entries(tokenIDLockedAmountChangeMap),
-	async ([tokenID, lockedAmountChange]) => {
-		const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
-		const curLockedAmount = BigInt(await keyValueTable.get(tokenKey) || 0);
-		const newLockedAmount = curLockedAmount + lockedAmountChange;
+const updateTotalLockedAmounts = async (tokenIDLockedAmountChangeMap, dbTrx) =>
+	BluebirdPromise.map(
+		Object.entries(tokenIDLockedAmountChangeMap),
+		async ([tokenID, lockedAmountChange]) => {
+			const tokenKey = KV_STORE_KEY.PREFIX.TOTAL_LOCKED.concat(tokenID);
+			const curLockedAmount = BigInt((await keyValueTable.get(tokenKey)) || 0);
+			const newLockedAmount = curLockedAmount + lockedAmountChange;
 
-		await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
-	},
-	{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
-);
+			await keyValueTable.set(tokenKey, newLockedAmount, dbTrx);
+		},
+		{ concurrency: Object.entries(tokenIDLockedAmountChangeMap).length },
+	);
 
 module.exports = {
 	updateTotalLockedAmounts,

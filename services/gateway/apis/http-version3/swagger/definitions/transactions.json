@@ -1,10 +1,7 @@
 {
 	"TransactionsStatisticsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"$ref": "#/definitions/TransactionsStatistics"
@@ -16,13 +13,7 @@
 	},
 	"TransactionStatisticsMeta": {
 		"type": "object",
-		"required": [
-			"count",
-			"offset",
-			"total",
-			"duration",
-			"info"
-		],
+		"required": ["count", "offset", "total", "duration", "info"],
 		"properties": {
 			"count": {
 				"type": "integer",
@@ -67,11 +58,7 @@
 	"TransactionsStatistics": {
 		"type": "object",
 		"description": "Transactions statistics",
-		"required": [
-			"distributionByType",
-			"distributionByAmount",
-			"timeline"
-		],
+		"required": ["distributionByType", "distributionByAmount", "timeline"],
 		"properties": {
 			"distributionByType": {
 				"type": "object",
@@ -105,12 +92,7 @@
 						"type": "array",
 						"items": {
 							"type": "object",
-							"required": [
-								"timestamp",
-								"date",
-								"transactionCount",
-								"volume"
-							],
+							"required": ["timestamp", "date", "transactionCount", "volume"],
 							"properties": {
 								"timestamp": {
 									"type": "integer",
@@ -300,10 +282,7 @@
 	},
 	"TransactionsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "List of transactions",
@@ -455,17 +434,11 @@
 	},
 	"dryTransactionWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"type": "object",
-				"required": [
-					"result",
-					"events"
-				],
+				"required": ["result", "events"],
 				"properties": {
 					"result": {
 						"type": "integer",
@@ -564,20 +537,12 @@
 	},
 	"transactionEstimateFeesRequestBody": {
 		"type": "object",
-		"required": [
-			"transaction"
-		],
+		"required": ["transaction"],
 		"properties": {
 			"transaction": {
 				"type": "object",
 				"description": "Transaction object.\n\n Note: The transaction object must contain the following properties: module, command, nonce, senderPublicKey and params.\nWhen estimating 'token:transferCrossChain' transactions do not include 'messageFee' and 'messageFeeTokenID' in the params.",
-				"required": [
-					"module",
-					"command",
-					"nonce",
-					"senderPublicKey",
-					"params"
-				],
+				"required": ["module", "command", "nonce", "senderPublicKey", "params"],
 				"properties": {
 					"id": {
 						"type": "string",
@@ -664,29 +629,19 @@
 	},
 	"txEstimateFeesWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"type": "object",
-				"required": [
-					"transaction"
-				],
+				"required": ["transaction"],
 				"properties": {
 					"transaction": {
 						"type": "object",
-						"required": [
-							"fee"
-						],
+						"required": ["fee"],
 						"properties": {
 							"fee": {
 								"type": "object",
-								"required": [
-									"tokenID",
-									"minimum"
-								],
+								"required": ["tokenID", "minimum"],
 								"properties": {
 									"tokenID": {
 										"type": "string",
@@ -700,11 +655,7 @@
 									},
 									"priority": {
 										"type": "object",
-										"required": [
-											"low",
-											"medium",
-											"high"
-										],
+										"required": ["low", "medium", "high"],
 										"description": "Transaction fee recommendations by priority based on the dynamic fees algorithm.",
 										"properties": {
 											"low": {
@@ -728,16 +679,11 @@
 							},
 							"params": {
 								"type": "object",
-								"required": [
-									"messageFee"
-								],
+								"required": ["messageFee"],
 								"properties": {
 									"messageFee": {
 										"type": "object",
-										"required": [
-											"tokenID",
-											"amount"
-										],
+										"required": ["tokenID", "amount"],
 										"properties": {
 											"tokenID": {
 												"type": "string",
@@ -759,27 +705,19 @@
 			},
 			"meta": {
 				"type": "object",
-				"required": [
-					"breakdown"
-				],
+				"required": ["breakdown"],
 				"properties": {
 					"breakdown": {
 						"type": "object",
-						"required": [
-							"fee"
-						],
+						"required": ["fee"],
 						"properties": {
 							"fee": {
 								"type": "object",
-								"required": [
-									"minimum"
-								],
+								"required": ["minimum"],
 								"properties": {
 									"minimum": {
 										"type": "object",
-										"required": [
-											"byteFee"
-										],
+										"required": ["byteFee"],
 										"properties": {
 											"byteFee": {
 												"type": "string",
@@ -822,15 +760,11 @@
 							},
 							"params": {
 								"type": "object",
-								"required": [
-									"messageFee"
-								],
+								"required": ["messageFee"],
 								"properties": {
 									"messageFee": {
 										"type": "object",
-										"required": [
-											"ccmByteFee"
-										],
+										"required": ["ccmByteFee"],
 										"properties": {
 											"ccmByteFee": {
 												"type": "string",

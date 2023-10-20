@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getLegacyAccount,
-} = require('../shared/sdk');
+const { getLegacyAccount } = require('../shared/sdk');
 
 module.exports = [
 	{

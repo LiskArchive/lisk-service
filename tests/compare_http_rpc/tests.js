@@ -107,16 +107,16 @@ module.exports = [
 	{
 		http: { url: '/api/v1/network/status' },
 		rpc: { method: 'get.network.status' },
-		commonParams: { },
+		commonParams: {},
 	},
 	{
 		http: { url: '/api/v1/network/statistics' },
 		rpc: { method: 'get.network.statistics' },
-		commonParams: { },
+		commonParams: {},
 	},
 	{
 		http: { url: '/api/v1/peers' },
 		rpc: { method: 'get.peers' },
-		commonParams: { },
+		commonParams: {},
 	},
 ];

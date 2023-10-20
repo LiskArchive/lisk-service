@@ -18,7 +18,7 @@ const jestIntegrationTestsConfig = require('./jest.config.integration.apiv3');
 
 const NUM_RETRIES = 20;
 
-const delay = (delayInms) => new Promise(resolve => setTimeout(resolve, delayInms));
+const delay = delayInms => new Promise(resolve => setTimeout(resolve, delayInms));
 
 async function runTestsAndRetry(jestConfig, retriesRemaining) {
 	const { results } = await runCLI(jestConfig, ['integration']);
@@ -33,8 +33,8 @@ async function runTestsAndRetry(jestConfig, retriesRemaining) {
 
 	// Compile a list of the test suites that failed and tell Jest to only run those files next time
 	const failedTestPaths = results.testResults
-		.filter((testResult) => testResult.numFailingTests > 0 || testResult.failureMessage)
-		.map((testResult) => testResult.testFilePath);
+		.filter(testResult => testResult.numFailingTests > 0 || testResult.failureMessage)
+		.map(testResult => testResult.testFilePath);
 	jestConfig.testMatch = failedTestPaths;
 
 	// Decrement retries remaining and retry

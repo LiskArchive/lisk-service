@@ -23,7 +23,14 @@ module.exports = {
 	rpcMethod: 'get.auth',
 	tags: ['Auth'],
 	params: {
-		address: { optional: false, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32, altSwaggerKey: 'addressRequired' },
+		address: {
+			optional: false,
+			type: 'string',
+			min: 41,
+			max: 41,
+			pattern: regex.ADDRESS_LISK32,
+			altSwaggerKey: 'addressRequired',
+		},
 	},
 	get schema() {
 		const authSchema = {};

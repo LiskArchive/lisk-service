@@ -16,4 +16,6 @@
 const { closeAll } = require('./helpers/socketIoRpcRequest');
 
 // eslint-disable-next-line mocha/no-top-level-hooks
-afterAll(async () => { closeAll(); });
+afterAll(async () => {
+	closeAll();
+});
