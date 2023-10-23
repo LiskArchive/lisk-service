@@ -326,7 +326,6 @@ describe('get.blockchain.apps.meta.tokens', () => {
 
 	it('should return invalid params for an invalid chainID param', async () => {
 		for (let i = 0; i < invalidChainIDCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokenMetadata({ chainID: invalidChainIDCSV[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -334,7 +333,6 @@ describe('get.blockchain.apps.meta.tokens', () => {
 
 	it('should return invalid params for an invalid chainName param', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokenMetadata({ chainName: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -342,7 +340,6 @@ describe('get.blockchain.apps.meta.tokens', () => {
 
 	it('should return invalid params for an invalid tokenName param', async () => {
 		for (let i = 0; i < invalidNamesCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokenMetadata({ tokenName: invalidNamesCSV[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -350,7 +347,6 @@ describe('get.blockchain.apps.meta.tokens', () => {
 
 	it('should return invalid params for an invalid tokenID param', async () => {
 		for (let i = 0; i < invalidTokenIDCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokenMetadata({ tokenID: invalidTokenIDCSV[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -363,7 +359,6 @@ describe('get.blockchain.apps.meta.tokens', () => {
 
 	it('should return invalid params for an invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokenMetadata({ limit: invalidLimits[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -371,7 +366,6 @@ describe('get.blockchain.apps.meta.tokens', () => {
 
 	it('should return invalid params for an invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokenMetadata({ offset: invalidOffsets[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}

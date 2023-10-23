@@ -95,7 +95,6 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensInfo({ address: invalidAddresses[i], tokenID: currTokenID });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -103,7 +102,6 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid tokenIDs', async () => {
 		for (let i = 0; i < invalidTokenIDs.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensInfo({
 				address: refValidator.address,
 				tokenID: invalidTokenIDs[i],
@@ -114,7 +112,6 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensInfo({
 				address: refValidator.address,
 				tokenID: currTokenID,
@@ -126,7 +123,6 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensInfo({
 				address: refValidator.address,
 				tokenID: currTokenID,

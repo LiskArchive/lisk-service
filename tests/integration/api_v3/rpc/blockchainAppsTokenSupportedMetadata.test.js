@@ -115,7 +115,6 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 
 	it('should return invalid params for an invalid chainID param', async () => {
 		for (let i = 0; i < invalidChainIDCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokensSupportedMetadata({
 				chainID: invalidChainIDCSV[i],
 			});
@@ -125,7 +124,6 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 
 	it('should return invalid params for an invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokensSupportedMetadata({ limit: invalidLimits[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -133,7 +131,6 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 
 	it('should return invalid params for an invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokensSupportedMetadata({
 				offset: invalidOffsets[i],
 			});

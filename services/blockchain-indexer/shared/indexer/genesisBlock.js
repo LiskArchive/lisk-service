@@ -67,7 +67,6 @@ const indexTokenModuleAssets = async dbTrx => {
 		}
 
 		// Index account balance
-		// eslint-disable-next-line no-await-in-loop
 		allAccountsAddresses.push(userInfo.address);
 	}
 

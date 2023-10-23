@@ -154,7 +154,6 @@ const getDirectories = async (directoryPath, options = { withFileTypes: true }) 
 			const subDirectories = dirs.filter(subDir => subDir.isDirectory());
 			for (let i = 0; i < subDirectories.length; i++) {
 				const fullSubDirPath = path.join(directoryPath, subDirectories[i].name);
-				// eslint-disable-next-line no-await-in-loop
 				const stat = await stats(fullSubDirPath);
 				subDirsWithTime.push({ name: fullSubDirPath, time: stat.ctime.getTime() });
 			}

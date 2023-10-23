@@ -37,7 +37,6 @@ describe('Token account exists API', () => {
 	beforeAll(async () => {
 		let refValidatorAddress;
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const { data: [stakeTx] = [] } = await api.get(
 				`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`,
 			);
@@ -176,7 +175,6 @@ describe('Token account exists API', () => {
 
 		it('should return bad request for an invalid token ID', async () => {
 			for (let i = 0; i < invalidTokenIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?tokenID=${invalidTokenIDs[i]}&address=${refValidator.address}`,
 					400,
@@ -187,7 +185,6 @@ describe('Token account exists API', () => {
 
 		it('should return bad request for an invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?tokenID=${refTokenID}&address=${invalidAddresses[i]}`,
 					400,
@@ -198,7 +195,6 @@ describe('Token account exists API', () => {
 
 		it('should return bad request for an invalid publicKey', async () => {
 			for (let i = 0; i < invalidPublicKeys.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?tokenID=${refTokenID}&publicKey=${invalidPublicKeys[i]}`,
 					400,
@@ -209,7 +205,6 @@ describe('Token account exists API', () => {
 
 		it('should return bad request for an invalid name', async () => {
 			for (let i = 0; i < invalidNames.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?tokenID=${refTokenID}&name=${invalidNames[i]}`,
 					400,

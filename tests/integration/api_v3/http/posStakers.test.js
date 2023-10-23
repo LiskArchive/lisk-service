@@ -42,7 +42,6 @@ describe('Stakers API', () => {
 		let retries = 10;
 		let success = false;
 
-		/* eslint-disable no-await-in-loop */
 		do {
 			const response1 = await api.get(`${baseUrlV3}/transactions?moduleCommand=pos:stake&limit=1`);
 			const { data: [stakeTx] = [] } = response1;
@@ -80,8 +79,6 @@ describe('Stakers API', () => {
 		if (!success) {
 			throw new Error('Failed to fetch validator address even after retrying.');
 		}
-
-		/* eslint-enable no-await-in-loop */
 	});
 
 	describe(`GET ${endpoint}`, () => {
@@ -264,7 +261,6 @@ describe('Stakers API', () => {
 
 		it('should return bad request for invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -272,7 +268,6 @@ describe('Stakers API', () => {
 
 		it('should return bad request for invalid publicKey', async () => {
 			for (let i = 0; i < invalidPublicKeys.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?publicKey=${invalidPublicKeys[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -280,7 +275,6 @@ describe('Stakers API', () => {
 
 		it('should return bad request for invalid name', async () => {
 			for (let i = 0; i < invalidNames.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?name=${invalidNames[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -288,7 +282,6 @@ describe('Stakers API', () => {
 
 		it('should return bad request for invalid search', async () => {
 			for (let i = 0; i < invalidPartialSearches.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?address=${refValidator.address}&search=${invalidPartialSearches[i]}`,
 					400,
@@ -299,7 +292,6 @@ describe('Stakers API', () => {
 
 		it('should return bad request for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?address=${refValidator.address}&limit=${invalidLimits[i]}`,
 					400,
@@ -310,7 +302,6 @@ describe('Stakers API', () => {
 
 		it('should return bad request for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(
 					`${endpoint}?address=${refValidator.address}&offset=${invalidOffsets[i]}`,
 					400,

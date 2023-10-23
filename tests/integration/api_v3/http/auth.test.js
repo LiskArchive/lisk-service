@@ -52,7 +52,6 @@ describe('Auth accounts API', () => {
 
 	it('should return bad request for an invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}

@@ -86,7 +86,6 @@ const triggerAccountsBalanceUpdate = async () => {
 	try {
 		// eslint-disable-next-line no-restricted-syntax
 		for (const address of addresses) {
-			// eslint-disable-next-line no-await-in-loop
 			await updateAccountBalances(address);
 		}
 	} catch (err) {

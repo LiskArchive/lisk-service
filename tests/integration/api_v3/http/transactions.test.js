@@ -50,7 +50,6 @@ describe('Transactions API', () => {
 
 		while (retries > 0 && !success) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
 				[refTransaction] = response.data;
 
@@ -62,7 +61,6 @@ describe('Transactions API', () => {
 				retries--;
 
 				// Delay by 3 sec
-				// eslint-disable-next-line no-await-in-loop
 				await waitMs(3000);
 			}
 		}
@@ -215,7 +213,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request when called with invalid blockID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -297,7 +294,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request when called with invalid senderAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?senderAddress=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -344,7 +340,6 @@ describe('Transactions API', () => {
 
 		it('should throw error when called with invalid recipientAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?recipientAddress=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -377,7 +372,6 @@ describe('Transactions API', () => {
 
 		it('should throw error when called with invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -690,7 +684,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request if requested with invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -698,7 +691,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request if requested with invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}

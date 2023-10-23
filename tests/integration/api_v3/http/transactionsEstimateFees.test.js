@@ -80,7 +80,6 @@ describe('Post estimate-fees transactions API', () => {
 		const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
 			remTransactionObject.senderPublicKey = invalidPublicKeys[i];
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.post(endpoint, { transaction: remTransactionObject }, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -93,7 +92,6 @@ describe('Post estimate-fees transactions API', () => {
 				...params,
 				recipientAddress: invalidAddresses[i],
 			};
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.post(endpoint, { transaction: remTransactionObject }, 400);
 			expect(response).toMap(badRequestSchema);
 		}

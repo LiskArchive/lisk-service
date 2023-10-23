@@ -53,7 +53,6 @@ describe('Method get.transactions', () => {
 
 		while (retries > 0 && !success) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
 				[refTransaction] = response.result.data;
 
@@ -65,7 +64,6 @@ describe('Method get.transactions', () => {
 				retries--;
 
 				// Delay by 3 sec
-				// eslint-disable-next-line no-await-in-loop
 				await waitMs(3000);
 			}
 		}
@@ -165,7 +163,6 @@ describe('Method get.transactions', () => {
 
 		it('should return bad request if requested with invalid sort ', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ blockID: invalidBlockIDs[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -237,7 +234,6 @@ describe('Method get.transactions', () => {
 
 		it('should throw error when called with invalid senderAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ senderAddress: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -274,7 +270,6 @@ describe('Method get.transactions', () => {
 
 		it('should throw error when called with invalid recipientAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ recipientAddress: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -310,7 +305,6 @@ describe('Method get.transactions', () => {
 
 		it('should throw error when called with invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ address: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -605,7 +599,6 @@ describe('Method get.transactions', () => {
 
 		it('should return bad request if requested with invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ limit: invalidLimits[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -613,7 +606,6 @@ describe('Method get.transactions', () => {
 
 		it('should return bad request if requested with invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getTransactions({ offset: invalidOffsets[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}

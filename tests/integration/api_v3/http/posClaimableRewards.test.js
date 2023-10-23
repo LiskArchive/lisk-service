@@ -36,7 +36,6 @@ describe('Claimable rewards API', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const generators = await api.get(`${baseUrlV3}/generators`);
 			if (generators.data.length) {
 				[refGenerator] = generators.data;
@@ -145,7 +144,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?address=${invalidAddresses}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -153,7 +151,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?name=${invalidNames[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -161,7 +158,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?publicKey=${invalidPublicKeys[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -169,7 +165,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(
 				`${endpoint}?address=${refGenerator.address}&limit=${invalidLimits[i]}`,
 				400,
@@ -180,7 +175,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(
 				`${endpoint}?address=${refGenerator.address}&offset=${invalidOffsets[i]}`,
 				400,
