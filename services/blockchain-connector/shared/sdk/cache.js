@@ -61,16 +61,24 @@ const cacheBlocksFromWaitlist = async () => {
 	/* eslint-disable no-await-in-loop */
 	while (blockCacheWaitlist.length) {
 		const block = blockCacheWaitlist.shift();
-		await BluebirdPromise.map(
-			block.transactions,
-			async transaction =>
-				trxIDToBlockIDCache.upsert({
-					transactionID: transaction.id,
-					blockID: block.header.id,
-				}),
-			{ concurrency: 1 },
-		);
-		await blocksCache.upsert({ id: block.header.id, timestamp: block.header.timestamp, block });
+		try {
+			await BluebirdPromise.map(
+				block.transactions,
+				async transaction =>
+					trxIDToBlockIDCache.upsert({
+						transactionID: transaction.id,
+						blockID: block.header.id,
+					}),
+				{ concurrency: 1 },
+			);
+			await blocksCache.upsert({ id: block.header.id, timestamp: block.header.timestamp, block });
+		} catch (err) {
+			logger.info(
+				`Caching block ID ${block.header.id} (height: ${block.header.height}) failed due to: ${err.message}. Will re-attempt caching.`,
+			);
+			logger.debug(err.stack);
+			blockCacheWaitlist.splice(0, 0, block);
+		}
 	}
 	/* eslint-enable no-await-in-loop */
 
