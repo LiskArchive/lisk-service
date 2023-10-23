@@ -58,7 +58,6 @@ const cacheBlocksFromWaitlist = async () => {
 	const blocksCache = await getBlocksCache();
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 
-	/* eslint-disable no-await-in-loop */
 	while (blockCacheWaitlist.length) {
 		const block = blockCacheWaitlist.shift();
 		try {
@@ -80,7 +79,6 @@ const cacheBlocksFromWaitlist = async () => {
 			blockCacheWaitlist.splice(0, 0, block);
 		}
 	}
-	/* eslint-enable no-await-in-loop */
 
 	setTimeout(cacheBlocksFromWaitlist, 15 * 1000);
 };

@@ -151,7 +151,6 @@ describe('Transaction statistics API', () => {
 
 				it('should return error 400 if called with invalid limits', async () => {
 					for (let i = 0; i < invalidLimits.length; i++) {
-						// eslint-disable-next-line no-await-in-loop
 						const response = await api.get(
 							`${baseEndpoint}?interval=${interval}&limit=${invalidLimits[i]}`,
 							400,
@@ -162,7 +161,6 @@ describe('Transaction statistics API', () => {
 
 				it('should return error 400 if called with invalid offset', async () => {
 					for (let i = 0; i < invalidLimits.length; i++) {
-						// eslint-disable-next-line no-await-in-loop
 						const response = await api.get(
 							`${baseEndpoint}?interval=${interval}&offset=${invalidOffsets[i]}`,
 							400,

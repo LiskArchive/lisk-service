@@ -32,7 +32,6 @@ const requestAll = async (fn, method, params, limit) => {
 
 		if (maxAmount > oneRequestLimit) {
 			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
-				/* eslint-disable-next-line no-await-in-loop */
 				const result = await fn(method, {
 					...params,
 					...{

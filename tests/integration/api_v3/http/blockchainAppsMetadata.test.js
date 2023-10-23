@@ -251,7 +251,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid chain ID param', async () => {
 		for (let i = 0; i < invalidChainIDCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?chainID=${invalidChainIDCSV[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -259,7 +258,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid chain name param', async () => {
 		for (let i = 0; i < invalidNamesCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?chainName=${invalidNamesCSV[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -267,7 +265,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid display name param', async () => {
 		for (let i = 0; i < invalidNamesCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?displayName=${invalidNamesCSV[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -280,7 +277,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid search param', async () => {
 		for (let i = 0; i < invalidPartialSearches.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?search=${invalidPartialSearches[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -288,7 +284,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -296,7 +291,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}

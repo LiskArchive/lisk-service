@@ -194,7 +194,6 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 	const scheduledDays = [];
 	for (let i = 0; i < n; i++) {
-		/* eslint-disable no-await-in-loop */
 		const date = moment().subtract(i, 'day').utc().startOf('day').unix();
 
 		const shouldUpdate =
@@ -214,7 +213,6 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 				} - ${scheduledDays[0]}).`,
 			);
 		}
-		/* eslint-enable no-await-in-loop */
 	}
 };
 

@@ -44,11 +44,9 @@ describe('Blocks Assets API', () => {
 
 		while (retries > 0 && !success) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				const invokeRes = await api.post(invokeEndpoint, { endpoint: 'system_getNodeInfo' });
 				const { genesisHeight } = invokeRes.data;
 
-				// eslint-disable-next-line no-await-in-loop
 				[refBlockAssets = {}] = (await api.get(`${endpoint}?height=${genesisHeight}`)).data;
 				[refAsset] = refBlockAssets.assets;
 
@@ -60,7 +58,6 @@ describe('Blocks Assets API', () => {
 				retries--;
 
 				// Delay by 3 sec
-				// eslint-disable-next-line no-await-in-loop
 				await waitMs(3000);
 			}
 		}
@@ -188,7 +185,6 @@ describe('Blocks Assets API', () => {
 
 		it('should return bad request if requested with invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			}
@@ -196,7 +192,6 @@ describe('Blocks Assets API', () => {
 
 		it('should return bad request if requested with invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			}
@@ -204,7 +199,6 @@ describe('Blocks Assets API', () => {
 
 		it('should return bad request if requested with invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			}

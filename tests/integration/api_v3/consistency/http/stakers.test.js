@@ -38,7 +38,6 @@ for (let i = 1; i < baseUrls.length; i++) {
 			const validatorsNames = response.data.map(({ name }) => name);
 
 			for (let j = 0; j < validatorsNames.length; j++) {
-				/* eslint-disable no-await-in-loop */
 				const name = validatorsNames[j];
 
 				const {
@@ -79,7 +78,6 @@ for (let i = 1; i < baseUrls.length; i++) {
 					// console.error(e);
 					// throw e;
 				}
-				/* eslint-enable no-await-in-loop */
 			}
 		});
 	});

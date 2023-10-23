@@ -95,7 +95,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ limit: invalidLimits[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -103,7 +102,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ offset: invalidOffsets[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -159,7 +157,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ blockID: invalidBlockIDs[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -204,7 +201,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid senderAddress', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ senderAddress: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}

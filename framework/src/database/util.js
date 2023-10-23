@@ -58,8 +58,6 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 		const indexColumns = directions.map(dir => `\`${dir.key}\` ${dir.direction}`).join(', ');
 
 		const sqlStatement = `ALTER TABLE ${tableName} ADD INDEX ${indexName} (${indexColumns})`;
-
-		// eslint-disable-next-line no-await-in-loop
 		await knex.raw(sqlStatement);
 	}
 

@@ -96,7 +96,6 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
-		/* eslint-disable no-await-in-loop */
 		try {
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
@@ -107,7 +106,6 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 				throw err;
 			}
 		}
-		/* eslint-enable no-await-in-loop */
 	} while (retries--);
 };
 

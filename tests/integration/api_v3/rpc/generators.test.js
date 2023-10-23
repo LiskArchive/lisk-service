@@ -174,7 +174,6 @@ describe('Generators API', () => {
 
 		it('should return invalid params when called with invalid search param', async () => {
 			for (let i = 0; i < invalidPartialSearches.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getGenerators({ search: invalidPartialSearches[i] }).catch(e => e);
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -182,7 +181,6 @@ describe('Generators API', () => {
 
 		it('should return invalid params when called with invalid limit param', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getGenerators({ limit: invalidLimits[i] }).catch(e => e);
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -190,7 +188,6 @@ describe('Generators API', () => {
 
 		it('should return invalid params when called with invalid offset param', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getGenerators({ offset: invalidOffsets[i] }).catch(e => e);
 				expect(response).toMap(invalidParamsSchema);
 			}

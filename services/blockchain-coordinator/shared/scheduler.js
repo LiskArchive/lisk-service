@@ -64,7 +64,7 @@ const getLiveIndexingJobCount = async () => {
 
 const waitForJobCountToFallBelowThreshold = async () => {
 	const { skipThreshold } = config.job.indexMissingBlocks;
-	/* eslint-disable no-await-in-loop, no-constant-condition */
+	/* eslint-disable no-constant-condition */
 	while (true) {
 		const count = await getLiveIndexingJobCount();
 		if (count < skipThreshold) return;
@@ -76,7 +76,7 @@ const waitForJobCountToFallBelowThreshold = async () => {
 		);
 		await delay(REFRESH_INTERVAL);
 	}
-	/* eslint-enable no-await-in-loop, no-constant-condition */
+	/* eslint-enable no-constant-condition */
 };
 
 const waitForGenesisBlockIndexing = resolve =>
@@ -122,7 +122,6 @@ const scheduleBlocksIndexing = async heights => {
 
 	const isMultiBatch = numBatches > 1;
 	for (let i = 0; i < numBatches; i++) {
-		/* eslint-disable no-await-in-loop */
 		if (isMultiBatch) logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
 		const blockHeightsBatch = blockHeights.slice(i * MAX_BATCH_SIZE, (i + 1) * MAX_BATCH_SIZE);
 
@@ -140,7 +139,6 @@ const scheduleBlocksIndexing = async heights => {
 				)} - ${blockHeightsBatch.at(-1)}, ${blockHeightsBatch.length} blocks).`,
 			);
 		await waitForJobCountToFallBelowThreshold();
-		/* eslint-enable no-await-in-loop */
 	}
 };
 
@@ -256,7 +254,6 @@ const scheduleMissingBlocksIndexing = async () => {
 
 		// Batch into smaller ranges to avoid microservice/DB query timeouts
 		for (let i = 0; i < NUM_BATCHES; i++) {
-			/* eslint-disable no-await-in-loop */
 			const batchStartHeight = blockIndexLowerRange + i * MAX_QUERY_RANGE;
 			const batchEndHeight = Math.min(batchStartHeight + MAX_QUERY_RANGE, blockIndexHigherRange);
 			const result = await getMissingBlocks(batchStartHeight, batchEndHeight);
@@ -274,7 +271,6 @@ const scheduleMissingBlocksIndexing = async () => {
 					}
 				}
 			}
-			/* eslint-enable no-await-in-loop */
 		}
 
 		if (missingBlocksByHeight.length === 0) {

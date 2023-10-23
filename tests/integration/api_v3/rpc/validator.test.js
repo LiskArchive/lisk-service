@@ -56,7 +56,6 @@ describe('get.validator', () => {
 
 	it('should return invalid params when requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getValidator({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}

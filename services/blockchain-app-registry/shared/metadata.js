@@ -376,7 +376,7 @@ const resolveTokenMetaInfo = async tokenInfoFromDB => {
 	const processedChainIDs = new Set();
 	const resultTokenIDsSet = new Set(tokenInfoFromDB.map(tokenInfo => tokenInfo.tokenID));
 
-	/* eslint-disable no-restricted-syntax, no-await-in-loop, no-continue */
+	/* eslint-disable no-restricted-syntax, no-continue */
 	for (const entry of tokenInfoFromDB) {
 		const chainID = entry.tokenID.substring(0, LENGTH_CHAIN_ID);
 
@@ -406,7 +406,7 @@ const resolveTokenMetaInfo = async tokenInfoFromDB => {
 			}
 		}
 	}
-	/* eslint-enable no-restricted-syntax, no-await-in-loop */
+	/* eslint-enable no-restricted-syntax */
 
 	return tokensMeta;
 };
@@ -414,7 +414,6 @@ const resolveTokenMetaInfo = async tokenInfoFromDB => {
 const getSupportedTokensFromServiceURLs = async serviceURLs => {
 	for (let i = 0; i < serviceURLs.length; i++) {
 		const tokenSummaryEndpoint = `${serviceURLs[i].http}/api/v3/token/summary`;
-		// eslint-disable-next-line no-await-in-loop
 		const response = await HTTP.request(tokenSummaryEndpoint);
 
 		if (response && response.data && response.data.data && response.data.data.supportedTokens) {

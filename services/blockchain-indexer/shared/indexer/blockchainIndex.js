@@ -655,7 +655,6 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 			logger.trace(
 				`Checking for missing blocks between heights: ${batchStartHeight} - ${batchEndHeight}.`,
 			);
-			// eslint-disable-next-line no-await-in-loop
 			const missingBlockRanges = await blocksTable.rawQuery(missingBlocksQueryStatement);
 			logger.trace(
 				`Found the following missing block ranges between heights: ${missingBlockRanges}.`,

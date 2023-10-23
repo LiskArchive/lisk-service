@@ -104,7 +104,6 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		const resultSet = await ccuTable.find(searchParams, 'height');
 
 		for (let i = 0; i < resultSet.length; i++) {
-			/* eslint-disable no-await-in-loop */
 			const result = (
 				await getTransactions({
 					height: resultSet[i].height,
@@ -149,7 +148,6 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	/* eslint-enable no-await-in-loop */
 	logger.debug(
 		`Reverted cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`,
 	);

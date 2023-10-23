@@ -89,7 +89,6 @@ describe('Events API', () => {
 
 		it('should return bad request for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidLimits[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -97,7 +96,6 @@ describe('Events API', () => {
 
 		it('should return bad request for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -191,7 +189,6 @@ describe('Events API', () => {
 
 		it('should return bad request for invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -286,7 +283,6 @@ describe('Events API', () => {
 
 		it('should return bad request for invalid sender address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?senderAddress=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}

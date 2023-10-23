@@ -45,7 +45,6 @@ describe('get.pos.stakers', () => {
 		let retries = 10;
 		let success = false;
 
-		/* eslint-disable no-await-in-loop */
 		do {
 			const response1 = await request(wsRpcUrl, 'get.transactions', {
 				moduleCommand: 'pos:stake',
@@ -86,8 +85,6 @@ describe('get.pos.stakers', () => {
 		if (!success) {
 			throw new Error('Failed to fetch validator address even after retrying.');
 		}
-
-		/* eslint-enable no-await-in-loop */
 	});
 
 	it('should return list of stakers when requested for known validator address', async () => {
@@ -306,7 +303,6 @@ describe('get.pos.stakers', () => {
 
 	it('should return invalid request for invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakers({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -314,7 +310,6 @@ describe('get.pos.stakers', () => {
 
 	it('should return invalid request for invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakers({ publicKey: invalidPublicKeys[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -322,7 +317,6 @@ describe('get.pos.stakers', () => {
 
 	it('should return invalid request for invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakers({ name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -330,7 +324,6 @@ describe('get.pos.stakers', () => {
 
 	it('should return invalid request for invalid search', async () => {
 		for (let i = 0; i < invalidPartialSearches.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakers({
 				address: refValidator.address,
 				search: invalidPartialSearches[i],
@@ -341,7 +334,6 @@ describe('get.pos.stakers', () => {
 
 	it('should return invalid request for invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakers({ address: refValidator.address, limit: invalidLimits[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -349,7 +341,6 @@ describe('get.pos.stakers', () => {
 
 	it('should return invalid request for invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakers({
 				address: refValidator.address,
 				offset: invalidOffsets[i],

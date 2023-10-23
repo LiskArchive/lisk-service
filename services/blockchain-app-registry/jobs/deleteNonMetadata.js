@@ -37,7 +37,6 @@ const removeEmptyDirectoriesAndNonMetaFiles = async dirPath => {
 	const contents = await getFilesAndDirs(dirPath);
 
 	for (let i = 0; i < contents.length; i++) {
-		/* eslint-disable no-await-in-loop */
 		const filePath = contents[i];
 		const isDirectory = (await stats(filePath)).isDirectory();
 
@@ -51,7 +50,6 @@ const removeEmptyDirectoriesAndNonMetaFiles = async dirPath => {
 			await rm(filePath);
 			logger.trace(`Removed file: ${filePath}.`);
 		}
-		/* eslint-enable no-await-in-loop */
 	}
 };
 

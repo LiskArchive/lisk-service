@@ -60,7 +60,6 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 	const feeEstPerByte = {};
 	const blockBatch = {};
 	do {
-		/* eslint-disable no-await-in-loop */
 		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
 		const finalEMABatchSize = (() => {
 			const maxEMABasedOnHeight = prevFeeEstPerByte.blockHeight - genesisHeight;
@@ -88,8 +87,6 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 		if (prevFeeEstPerByte.blockHeight < toHeight) {
 			await cacheRedisFees.set(cacheKey, prevFeeEstPerByte);
 		}
-
-		/* eslint-enable no-await-in-loop */
 	} while (toHeight > prevFeeEstPerByte.blockHeight);
 
 	Object.assign(feeEstPerByte, prevFeeEstPerByte);

@@ -41,7 +41,6 @@ describe('get.token.account.exists', () => {
 	beforeAll(async () => {
 		let refValidatorAddress;
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const transactionsResponse = await request(wsRpcUrl, 'get.transactions', {
 				moduleCommand: 'pos:stake',
 				limit: 1,
@@ -208,7 +207,6 @@ describe('get.token.account.exists', () => {
 
 	it('should return bad request for an invalid token ID', async () => {
 		for (let i = 0; i < invalidTokenIDs.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokenAccountExists({
 				tokenID: invalidTokenIDs[i],
 				address: refValidator.address,
@@ -219,7 +217,6 @@ describe('get.token.account.exists', () => {
 
 	it('should return bad request for an invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokenAccountExists({
 				tokenID: refTokenID,
 				address: invalidAddresses[i],
@@ -230,7 +227,6 @@ describe('get.token.account.exists', () => {
 
 	it('should return bad request for an invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokenAccountExists({
 				tokenID: refTokenID,
 				publicKey: invalidPublicKeys[i],
@@ -241,7 +237,6 @@ describe('get.token.account.exists', () => {
 
 	it('should return bad request for an invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokenAccountExists({ tokenID: refTokenID, name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}

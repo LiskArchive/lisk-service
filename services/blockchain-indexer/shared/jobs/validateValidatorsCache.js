@@ -38,7 +38,6 @@ const validateValidatorCache = async () => {
 	for (let index = 0; index < validatorsByStake.length; index++) {
 		if (validatorsByStake[index].address !== cachedValidators[index].address) {
 			logger.warn('Incorrect validator ranking detected. Reloading the validators cache.');
-			// eslint-disable-next-line no-await-in-loop
 			await reloadValidatorCache();
 			return;
 		}
